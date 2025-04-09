@@ -5,25 +5,106 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Academic Gates</title>
     <link rel="stylesheet" href="../css/index.css">
-    
+    <script src="https://d3js.org/d3.v7.min.js"></script>
 </head>
 <body>
     <header>
         <div class="logo">Academic Gates</div>
         <nav>
             <ul>
-                <li><a href="#" class="active">ホーム</a></li>
-                <li><a href="./self-intro.html">自己紹介</a></li>
-                <li><a href="#">論文調査</a></li>
-                <li><a href="#">ブログ</a></li>
-                <li><a href="#">各種SNS</a></li>
+                <li><a href="index.html">ホーム</a></li>
+                <li><a href="self-intro.html">自己紹介</a></li>
+                <li><a href="thesis.html">勉強の軌跡</a></li>
+                <li><a href="blog.html">ブログ</a></li>
+                <li><a href="sns.html">各種SNS</a></li>
             </ul>
         </nav>
     </header>
     <main>
         <h1>最新のニュース</h1>
-        あああああああああああああああああああああああああああああああああああああああああああああああああああああああああああ
+        ここに色々と記事を載せる
+        <section class="knowledge-map">
+            <h1>Archive Sphere</h1>
+            <div class="graph-controls">
+                <div class="control-panel">
+                    <div class="control-group">
+                        <h3>表示</h3>
+                        <div class="control-item">
+                            <label>
+                                <input type="checkbox" id="showTags" checked>
+                                タグ
+                            </label>
+                        </div>
+                        <div class="control-item">
+                            <label>
+                                <input type="checkbox" id="showAttachments" checked>
+                                添付書類
+                            </label>
+                        </div>
+                        <div class="control-item">
+                            <label>
+                                <input type="checkbox" id="showExistingFiles" checked>
+                                存在するファイルのみ表示
+                            </label>
+                        </div>
+                        <div class="control-item">
+                            <label>
+                                <input type="checkbox" id="showOrphans" checked>
+                                オーファン
+                            </label>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <h3>パラメータ</h3>
+                        <div class="control-item">
+                            <label>
+                                中心力
+                                <input type="range" id="centerForce" min="0" max="1" step="0.1" value="0.5">
+                            </label>
+                        </div>
+                        <div class="control-item">
+                            <label>
+                                リンクする力
+                                <input type="range" id="linkForce" min="0" max="2" step="0.1" value="1">
+                            </label>
+                        </div>
+                        <div class="control-item">
+                            <label>
+                                リンクの距離
+                                <input type="range" id="linkDistance" min="50" max="200" value="100">
+                            </label>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <h3>表示設定</h3>
+                        <div class="control-item">
+                            <label>
+                                矢印
+                                <input type="checkbox" id="showArrows">
+                            </label>
+                        </div>
+                        <div class="control-item">
+                            <label>
+                                ノードの大きさ
+                                <input type="range" id="nodeSize" min="4" max="20" value="8">
+                            </label>
+                        </div>
+                        <div class="control-item">
+                            <label>
+                                リンクの太さ
+                                <input type="range" id="linkWidth" min="1" max="5" value="1.5">
+                            </label>
+                        </div>
+                    </div>
+                    <button id="startAnimation" class="control-button">アニメーション開始</button>
+                </div>
+            </div>
+            <div id="graph-container"></div>
+        </section>
     </main>
+    <footer>
+        // ... existing footer code ...
+    </footer>
+    <script src="../js/knowledge-graph.js"></script>
 </body>
-<script src="../js/index.js"></script>
 </html>
