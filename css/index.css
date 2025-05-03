@@ -76,9 +76,14 @@ nav ul li a:hover::after {
     opacity: 1;
 }
 
-nav ul li a.active {
+nav ul li a.active,
+nav ul li a:visited.active {
     color: #00ffff;
     text-shadow: 0 0 5px #00ffff;
+}
+
+nav ul li a:visited {
+    color: #ffffff;
 }
 
 /* メインコンテンツ */
@@ -146,6 +151,30 @@ main::before {
     color: #fff;
     width: 250px;
     box-shadow: 0 0 10px rgba(0, 255, 255, 0.2);
+    transition: all 0.3s ease;
+}
+
+/* トグルボタンのスタイル */
+.control-toggle-button {
+    display: none;
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    width: 100%;
+    padding: 0.5rem;
+    background: rgba(0, 0, 0, 0.9);
+    color: #00ffff;
+    border: none;
+    border-top: 1px solid rgba(0, 255, 255, 0.2);
+    cursor: pointer;
+    z-index: 1001;
+    font-size: 0.8rem;
+    transition: all 0.3s ease;
+}
+
+.control-toggle-button:hover {
+    background: rgba(0, 0, 0, 1);
+    color: #66ffff;
 }
 
 .control-panel {
@@ -229,22 +258,62 @@ main::before {
 
 /* グラフのノードとリンクのスタイル */
 .node circle {
-    fill: #00ffff;
-    stroke: #fff;
-    stroke-width: 2px;
     cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.node circle:hover {
+    r: 12;
+    filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.8));
 }
 
 .node text {
-    fill: #fff;
-    font-size: 12px;
     pointer-events: none;
-    user-select: none;
+    text-shadow: 0 0 3px rgba(0, 0, 0, 0.8);
+    fill: #00ffff;
+    font-weight: bold;
+    font-size: 1.1rem;
+    font-family: inherit;
 }
 
 .link {
-    stroke: rgba(0, 255, 255, 0.3);
-    stroke-width: 1.5px;
+    transition: all 0.3s ease;
+}
+
+.link:hover {
+    stroke-width: 3;
+    stroke: rgba(0, 255, 255, 0.8);
+}
+
+/* PDF資料と関連ページのスタイル */
+.node[data-type="pdf"] circle {
+    stroke: #00ffff;
+    stroke-width: 2;
+    fill: #23263a;
+}
+
+.node[data-type="page"] circle {
+    stroke: #00ffff;
+    stroke-width: 2;
+    fill: #23263a;
+}
+
+.node[data-type="pdf"]:hover circle {
+    filter: drop-shadow(0 0 8px rgba(0, 255, 255, 0.8));
+}
+
+.node[data-type="page"]:hover circle {
+    filter: drop-shadow(0 0 8px rgba(255, 0, 255, 0.8));
+}
+
+/* タグのスタイル */
+.node[data-type="tag"] circle {
+    stroke: #ffffff;
+    stroke-width: 2;
+}
+
+.node[data-type="tag"]:hover circle {
+    filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.8));
 }
 
 /* SVGスタイル */
@@ -252,4 +321,157 @@ main::before {
     width: 100%;
     height: 100%;
     display: block;
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 768px) {
+    .graph-controls {
+        position: fixed;
+        bottom: 0;
+        right: 0;
+        top: auto;
+        width: 100%;
+        border-radius: 0;
+        padding: 0.5rem;
+        transform: translateY(calc(100% - 40px));
+        transition: transform 0.3s ease;
+    }
+
+    .graph-controls:hover,
+    .graph-controls:focus-within {
+        transform: translateY(0);
+    }
+
+    .control-panel {
+        max-height: 300px;
+        overflow-y: auto;
+    }
+
+    .control-group {
+        padding: 0.5rem;
+    }
+
+    .control-item {
+        margin: 0.3rem 0;
+    }
+
+    .control-item label {
+        font-size: 0.7rem;
+    }
+
+    .control-button {
+        width: 100%;
+        margin-top: 0.5rem;
+    }
+
+    .control-toggle-button {
+        display: block;
+    }
+}
+
+.study-path {
+    margin: 2rem auto;
+    padding: 1rem;
+    background: rgba(0, 0, 0, 0.7);
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0,255,255,0.1);
+    max-width: 600px;
+}
+
+.study-path h2 {
+    color: #00ffff;
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+.study-path .accordion-block {
+    background: #23263a;
+    border-radius: 10px;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 2px 12px rgba(0,255,255,0.07);
+    padding: 1rem 1.2rem;
+    border-left: 4px solid #00ffff;
+}
+
+.study-path .accordion-toggle {
+    width: 100%;
+    background: #00ffff;
+    color: #181c2a;
+    border: none;
+    outline: none;
+    padding: 0.8rem 1rem;
+    text-align: left;
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 6px;
+    margin-bottom: 0.5rem;
+    transition: background 0.2s, color 0.2s;
+}
+
+.study-path .accordion-toggle:not(:first-child) {
+    margin-top: 0.8rem;
+}
+
+.study-path .accordion-toggle.active,
+.study-path .accordion-toggle:focus {
+    background: #00bfff;
+    color: #fff;
+}
+
+.study-path .accordion-content {
+    background: #181c2a;
+    color: #fff;
+    padding: 0.7em 1.2em;
+    border-radius: 8px;
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+}
+
+.study-path ul {
+    margin: 0.5em 0 0.5em 1.2em;
+    padding: 0;
+}
+
+.study-path ul ul {
+    margin-left: 1.5em;
+}
+
+#loading-overlay.hide {
+    opacity: 0;
+    pointer-events: none;
+    display: none !important;
+}
+
+.study-path a:visited {
+    color: #ff69b4 !important;
+}
+
+.qft-summary a {
+    color: #00ffff;
+}
+
+.qft-summary a:visited {
+    color: #ff69b4 !important;
+}
+
+.qft-summary ul, .qft-summary li {
+    font-size: 1.15rem;
+    line-height: 1.7;
+}
+
+.qft-summary .accordion-toggle {
+    border: 2px solid #00bfff !important;
+    background: #23263a;
+    color: #00ffff;
+    border-radius: 6px;
+    padding: 0.3em 0.8em;
+    font-weight: bold;
+    font-size: 1.1rem;
+    margin-bottom: 0.3em;
+    cursor: pointer;
+}
+
+.qft-summary .accordion-toggle:active {
+    cursor: pointer;
 }

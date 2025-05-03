@@ -3,23 +3,29 @@ function initializeGraph() {
     // タグの色を定義
     const tagColors = {
         '#physics': '#87CEEB',  // 物理学関連: スカイブルー
-        '#space': '#4B0082',    // 宇宙関連: インディゴ
-        '#anime': '#FF69B4',    // アニメ関連: ホットピンク
-        '#programming': '#32CD32' // プログラミング関連: ライムグリーン
+        '#quantum': '#FF69B4',  // 量子力学関連: ホットピンク
+        '#relativity': '#4B0082', // 相対性理論関連: インディゴ
+        '#cosmology': '#32CD32', // 宇宙論関連: ライムグリーン
+        '#mathematics': '#FFD700', // 数学関連: ゴールド
+        '#quantum-field-theory': '#FF00FF' // PeskinQFT関連: ピンク
     };
 
-    // サンプルデータ（実際のデータに置き換えてください）
+    // 勉強の軌跡のデータ
     const graphData = {
         nodes: [
-            { id: "Black Holes", group: 1, tags: ["#physics", "#space"] },
-            { id: "Dark Matter", group: 1, tags: ["#physics", "#space"] },
+            // PDF資料
+            { id: "PeskinQFT Sec2-1.pdf", group: 1, tags: ["#physics", "#quantum-field-theory"], type: "pdf", url: "../pdf/PeskinQFT_Sec2-1.pdf" },
+            { id: "PeskinQFT Sec2-2.pdf", group: 1, tags: ["#physics", "#quantum-field-theory"], type: "pdf", url: "../pdf/PeskinQFT_Sec2-2.pdf" },
+            // 関連ページ
+            { id: "2.1 The Necessity of the Field Viewpoint", group: 3, tags: ["#physics", "#quantum-field-theory"], type: "page", url: "peskin-qft_sec2-1.html" },
+            { id: "2.2 Elements of Classical Field Theory", group: 3, tags: ["#physics", "#quantum-field-theory"], type: "page", url: "peskin-qft_sec2-2.html" },
+            { id: "PeskinQFTまとめ", group: 3, tags: ["#physics", "#quantum-field-theory"], type: "page", url: "peskin-qft.html" },
+            { id: "勉強の軌跡", group: 3, tags: ["#physics", "#quantum-field-theory"], type: "page", url: "study.html" },
+
+            // タグ
             { id: "#physics", group: 2 },
-            { id: "#space", group: 2 },
-            { id: "#anime", group: 2 },
-            { id: "散逸的な系", group: 1, tags: ["#physics"] },
-            { id: "Python", group: 3, tags: ["#programming"] },
-            { id: "#programming", group: 2 },
-            { id: "透元ノア", group: 4, tags: ["#anime"] }
+            { id: "#quantum", group: 2 },
+            { id: "#quantum-field-theory", group: 2 }
         ]
     };
 
@@ -88,13 +94,14 @@ function initializeGraph() {
     const simulation = d3.forceSimulation(graphData.nodes)
         .force('link', d3.forceLink(graphData.links)
             .id(d => d.id)
-            .distance(d => d.commonTags ? 100 - d.commonTags.length * 20 : 100))
+            .distance(d => d.commonTags ? 180 - d.commonTags.length * 20 : 180)
+            .strength(0.7))
         .force('charge', d3.forceManyBody()
             .strength(d => d.id.startsWith('#') ? -100 : -200))
-        .force('center', d3.forceCenter(width / 2, height / 2).strength(0.5))
+        .force('center', d3.forceCenter(width / 2, height / 2).strength(0.3))
         .force('collision', d3.forceCollide().radius(30))
-        .force('x', d3.forceX(width / 2).strength(0.1))
-        .force('y', d3.forceY(height / 2).strength(0.1))
+        .force('x', d3.forceX(width / 2).strength(0.06))
+        .force('y', d3.forceY(height / 2).strength(0.06))
         .alpha(1)
         .alphaDecay(0.005);
 
@@ -105,7 +112,7 @@ function initializeGraph() {
         .enter()
         .append('line')
         .attr('class', 'link')
-        .style('stroke', 'rgba(0, 255, 255, 0.6)') // シアン色で不透明度を0.6に設定
+        .style('stroke', 'rgba(0, 255, 255, 0.6)')
         .style('stroke-width', d => d.commonTags ? d.commonTags.length * 1.5 : 1);
 
     // ノードの描画
@@ -125,17 +132,21 @@ function initializeGraph() {
         .attr('r', d => d.id.startsWith('#') ? 6 : 8)
         .attr('fill', d => {
             if (d.id.startsWith('#')) {
-                return tagColors[d.id] || '#ffffff'; // タグの色を返す、未定義の場合は白
+                return tagColors[d.id] || '#ffffff';
             }
-            switch(d.group) {
-                case 1: return '#00ffff'; // トピック
-                case 3: return '#ff00ff'; // 技術
-                case 4: return '#00ff00'; // 人物
+            switch(d.type) {
+                case 'pdf': return '#00ffff'; // PDF資料
+                case 'page': return '#ff00ff'; // 関連ページ
                 default: return '#ffffff';
             }
         })
-        .attr('stroke', d => d.id.startsWith('#') ? '#ffffff' : 'none') // タグノードに白い縁取りを追加
-        .attr('stroke-width', d => d.id.startsWith('#') ? 2 : 0);
+        .attr('stroke', d => d.id.startsWith('#') ? '#ffffff' : 'none')
+        .attr('stroke-width', d => d.id.startsWith('#') ? 2 : 0)
+        .on('click', (event, d) => {
+            if (d.url) {
+                window.open(d.url, '_blank');
+            }
+        });
 
     // ノードのラベルを追加
     node.append('text')
@@ -143,7 +154,7 @@ function initializeGraph() {
         .attr('dy', '.35em')
         .text(d => d.id)
         .style('font-size', d => d.id.startsWith('#') ? '10px' : '12px')
-        .style('fill', d => d.id.startsWith('#') ? '#ffffff' : '#ffffff'); // タグのテキストは白で統一
+        .style('fill', d => d.id.startsWith('#') ? '#ffffff' : '#ffffff');
 
     // シミュレーションの更新
     simulation.on('tick', () => {
@@ -305,82 +316,37 @@ function initializeGraph() {
 
     // コントロールの初期化
     function initializeControls() {
+        // トグルボタンの機能
+        const toggleButton = document.getElementById('toggleControls');
+        const controls = document.querySelector('.graph-controls');
+        
+        if (toggleButton && controls) {
+            toggleButton.addEventListener('click', () => {
+                const isVisible = controls.style.transform === 'translateY(0px)';
+                controls.style.transform = isVisible ? 'translateY(calc(100% - 40px))' : 'translateY(0)';
+            });
+        }
+
         // 表示コントロール
         document.getElementById('showTags').addEventListener('change', e => {
             const tagNodes = node.filter(d => d.id.startsWith('#'));
             tagNodes.style('display', e.target.checked ? 'block' : 'none');
-            
             // タグノードが非表示の場合、関連するリンクも非表示にする
             if (!e.target.checked) {
                 const tagNodeIds = new Set(tagNodes.data().map(d => d.id));
-                
-                // タグノードに関連するリンクを非表示にする
                 link.style('display', d => {
                     return (tagNodeIds.has(d.source.id) || tagNodeIds.has(d.target.id)) ? 'none' : 'block';
                 });
-                
-                // シミュレーションからタグノードを一時的に除外
                 simulation.nodes(graphData.nodes.filter(n => !n.id.startsWith('#')));
-                
-                // リンクの更新
                 simulation.force('link').links(graphData.links.filter(l => 
                     !tagNodeIds.has(l.source.id) && !tagNodeIds.has(l.target.id)
                 ));
             } else {
-                // タグノードが表示される場合、リンクも表示する
                 link.style('display', 'block');
-                
-                // シミュレーションにタグノードを再追加
                 simulation.nodes(graphData.nodes);
-                
-                // リンクの更新
                 simulation.force('link').links(graphData.links);
             }
-            
-            // シミュレーションを再起動
             simulation.alpha(0.3).restart();
-            handleInteraction();
-        });
-
-        document.getElementById('showAttachments').addEventListener('change', e => {
-            const attachmentNodes = node.filter(d => d.group === 1);
-            attachmentNodes.style('display', e.target.checked ? 'block' : 'none');
-            
-            // 添付書類ノードが非表示の場合、関連するリンクも非表示にする
-            if (!e.target.checked) {
-                const attachmentNodeIds = new Set(attachmentNodes.data().map(d => d.id));
-                
-                // 添付書類ノードに関連するリンクを非表示にする
-                link.style('display', d => {
-                    return (attachmentNodeIds.has(d.source.id) || attachmentNodeIds.has(d.target.id)) ? 'none' : 'block';
-                });
-                
-                // シミュレーションから添付書類ノードを一時的に除外
-                simulation.nodes(graphData.nodes.filter(n => n.group !== 1));
-                
-                // リンクの更新
-                simulation.force('link').links(graphData.links.filter(l => 
-                    !attachmentNodeIds.has(l.source.id) && !attachmentNodeIds.has(l.target.id)
-                ));
-            } else {
-                // 添付書類ノードが表示される場合、リンクも表示する
-                link.style('display', 'block');
-                
-                // シミュレーションに添付書類ノードを再追加
-                simulation.nodes(graphData.nodes);
-                
-                // リンクの更新
-                simulation.force('link').links(graphData.links);
-            }
-            
-            // シミュレーションを再起動
-            simulation.alpha(0.3).restart();
-            handleInteraction();
-        });
-
-        document.getElementById('showExistingFiles').addEventListener('change', e => {
-            // 実際のファイル存在チェックを実装する場合はここで処理
-            handleInteraction();
         });
 
         document.getElementById('showOrphans').addEventListener('change', e => {
@@ -388,7 +354,6 @@ function initializeGraph() {
                 l => l.source.id === d.id || l.target.id === d.id
             ));
             orphanNodes.style('display', e.target.checked ? 'block' : 'none');
-            handleInteraction();
         });
 
         // 力の強さコントロール
@@ -397,36 +362,21 @@ function initializeGraph() {
             simulation.force('center').strength(strength);
             simulation.force('x').strength(strength * 0.2);
             simulation.force('y').strength(strength * 0.2);
-            
-            // シミュレーションを再起動
             simulation.alpha(0.3).restart();
-            
-            handleInteraction();
         });
 
         document.getElementById('linkForce').addEventListener('input', e => {
             const strength = parseFloat(e.target.value);
             simulation.force('link').strength(strength);
-            
-            // シミュレーションを再起動
             simulation.alpha(0.3).restart();
-            
-            handleInteraction();
         });
 
         document.getElementById('linkDistance').addEventListener('input', e => {
             const distance = parseFloat(e.target.value);
-            
-            // リンクの距離を直接設定
             simulation.force('link').distance(d => {
-                // 共通タグがある場合は、基本距離から調整
                 return d.commonTags ? distance - d.commonTags.length * 10 : distance;
             });
-            
-            // シミュレーションを再起動
             simulation.alpha(0.3).restart();
-            
-            handleInteraction();
         });
 
         // 表示設定コントロール

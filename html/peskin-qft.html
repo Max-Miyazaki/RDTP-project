@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Peskin & Schroeder QFTまとめ</title>
+    <link rel="stylesheet" href="../css/index.css">
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        }
+      };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+    <header>
+        <div class="logo">Academic Gates</div>
+        <nav>
+            <ul>
+                <li><a href="index.html">ホーム</a></li>
+                <li><a href="self-intro.html">自己紹介</a></li>
+                <li><a href="study.html" class="active">勉強の軌跡</a></li>
+                <li><a href="blog.html">ブログ</a></li>
+                <li><a href="sns.html">各種SNS</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <section class="qft-summary">
+            <h1>Peskin & Schroeder『An Introduction to Quantum Field Theory』まとめ</h1>
+            <p>このページではPeskin & Schroederの『Quantum Field Theory』の内容やポイント、補足ノートなどをまとめていきます。</p>
+            <hr>
+            <h2>目次</h2>
+            <ul>
+                <li>第1章 Invitation: Pair Production in $e^+ e^-$ Annihilation</li>
+                <li>
+                  <button class="accordion-toggle">第2章 The Klein-Gordon Field</button>
+                  <ul class="accordion-content" style="display:none;">
+                    <li><a href="peskin-qft_sec2-1.html">2.1 The Necessity of the Field Viewpoint</a></li>
+                    <li><a href="peskin-qft_sec2-2.html">2.2 Elements of Classical Field Theory</a></li>
+                    <li><a href="peskin-qft_sec2-3.html">2.3 The Klein-Gordon Field as Harmonic Oscillators</a></li>
+                    <li><a href="peskin-qft_sec2-4.html">2.4 The Klein-Gordon Field in Space-Time</a></li>
+                  </ul>
+                </li>
+                <li>...（今後追加予定）</li>
+            </ul>
+        </section>
+    </main>
+    <script>
+      if (window.MathJax && window.MathJax.typesetPromise) {
+        window.MathJax.typesetPromise();
+      }
+      // 第2章アコーディオン
+      document.addEventListener('DOMContentLoaded', function() {
+        var toggle = document.querySelector('.accordion-toggle');
+        var content = document.querySelector('.accordion-content');
+        if(toggle && content) {
+          toggle.addEventListener('click', function() {
+            if(content.style.display === 'none' || content.style.display === '') {
+              content.style.display = 'block';
+              if (window.MathJax && window.MathJax.typesetPromise) {
+                window.MathJax.typesetPromise();
+              }
+            } else {
+              content.style.display = 'none';
+            }
+          });
+        }
+      });
+    </script>
+</body>
+</html> 
