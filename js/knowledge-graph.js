@@ -16,9 +16,11 @@ function initializeGraph() {
             // PDF資料
             { id: "PeskinQFT Sec2-1.pdf", group: 1, tags: ["#physics", "#quantum-field-theory"], type: "pdf", url: "../pdf/PeskinQFT_Sec2-1.pdf" },
             { id: "PeskinQFT Sec2-2.pdf", group: 1, tags: ["#physics", "#quantum-field-theory"], type: "pdf", url: "../pdf/PeskinQFT_Sec2-2.pdf" },
+            { id: "PeskinQFT Sec2-3.pdf", group: 1, tags: ["#physics", "#quantum-field-theory"], type: "pdf", url: "../pdf/PeskinQFT_Sec2-3.pdf" },
             // 関連ページ
             { id: "2.1 The Necessity of the Field Viewpoint", group: 3, tags: ["#physics", "#quantum-field-theory"], type: "page", url: "peskin-qft_sec2-1.html" },
             { id: "2.2 Elements of Classical Field Theory", group: 3, tags: ["#physics", "#quantum-field-theory"], type: "page", url: "peskin-qft_sec2-2.html" },
+            { id: "2.3 The Klein-Gordon Field as Harmonic Oscillators", group: 3, tags: ["#physics", "#quantum-field-theory"], type: "page", url: "peskin-qft_sec2-3.html" },
             { id: "PeskinQFTまとめ", group: 3, tags: ["#physics", "#quantum-field-theory"], type: "page", url: "peskin-qft.html" },
             { id: "勉強の軌跡", group: 3, tags: ["#physics", "#quantum-field-theory"], type: "page", url: "study.html" },
 
