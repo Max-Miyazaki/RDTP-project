@@ -443,8 +443,13 @@ main::before {
     display: none !important;
 }
 
+.study-path a, .study-path a:visited, .study-path a:hover, .study-path a:active {
+    color: #00ffff !important;
+    text-decoration: underline;
+}
+
 .study-path a:visited {
-    color: #ff69b4 !important;
+    color: #00ffff !important;
 }
 
 .qft-summary a {
