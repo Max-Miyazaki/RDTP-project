@@ -91,6 +91,9 @@ main {
     margin-top: 80px;
     padding: 2rem;
     position: relative;
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 main::before {
@@ -102,6 +105,266 @@ main::before {
     height: 100%;
     background: radial-gradient(circle at center, transparent, rgba(0, 0, 0, 0.8));
     z-index: -1;
+}
+
+/* Page Headers */
+.page-header {
+    text-align: center;
+    margin-bottom: 3rem;
+    border-bottom: 1px solid rgba(0, 255, 255, 0.1);
+    padding-bottom: 1rem;
+}
+
+.page-header h1 {
+    color: #00ffff;
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+    text-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+}
+
+.page-header p {
+    color: #aaa;
+    font-size: 1.1rem;
+}
+
+/* Hero Section */
+.hero-section {
+    text-align: center;
+    padding: 4rem 0;
+    margin-bottom: 2rem;
+}
+
+.hero-section h1 {
+    font-size: 3rem;
+    color: #00ffff;
+    margin-bottom: 1rem;
+    text-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+}
+
+/* Common Section Styles */
+section {
+    margin-bottom: 4rem;
+}
+
+section h2 {
+    color: #00ffff;
+    border-left: 4px solid #00ffff;
+    padding-left: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.more-link {
+    text-align: right;
+    margin-top: 1rem;
+}
+
+.more-link a {
+    color: #00ffff;
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: all 0.3s;
+}
+
+.more-link a:hover {
+    text-shadow: 0 0 5px #00ffff;
+    letter-spacing: 1px;
+}
+
+/* Blog Grid & Cards */
+.blog-grid, .update-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2rem;
+}
+
+.blog-card, .update-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(0, 255, 255, 0.1);
+    border-radius: 8px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    color: white;
+    display: block;
+}
+
+.blog-card:hover, .update-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0, 255, 255, 0.2);
+    border-color: rgba(0, 255, 255, 0.3);
+}
+
+.blog-image {
+    height: 180px;
+    background: #23263a;
+    position: relative;
+}
+
+.blog-image.placeholder::after {
+    content: 'No Image';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: rgba(255, 255, 255, 0.2);
+}
+
+.blog-content {
+    padding: 1.5rem;
+}
+
+.blog-category, .tag {
+    display: inline-block;
+    background: rgba(0, 255, 255, 0.1);
+    color: #00ffff;
+    padding: 0.2rem 0.6rem;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    margin-bottom: 0.5rem;
+    border: 1px solid rgba(0, 255, 255, 0.2);
+}
+
+.blog-card h3, .update-card h3 {
+    margin: 0.5rem 0;
+    font-size: 1.2rem;
+    line-height: 1.4;
+}
+
+.blog-excerpt {
+    font-size: 0.9rem;
+    color: #ccc;
+    margin-bottom: 1rem;
+    line-height: 1.6;
+}
+
+.blog-meta, .date {
+    font-size: 0.8rem;
+    color: #888;
+}
+
+/* Update Card Specifics (for Index) */
+.update-card {
+    padding: 1.5rem;
+}
+
+/* Video Grid & Cards */
+.video-grid, .video-preview-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2rem;
+}
+
+.video-card, .video-preview {
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 8px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    color: white;
+    display: block;
+}
+
+.video-card:hover, .video-preview:hover {
+    transform: scale(1.02);
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.1);
+}
+
+.video-thumbnail, .preview-thumb {
+    height: 200px;
+    background: #1a1a2e;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.play-icon {
+    font-size: 3rem;
+    color: rgba(0, 255, 255, 0.5);
+    transition: all 0.3s;
+}
+
+.video-card:hover .play-icon, .video-preview:hover .preview-thumb {
+    color: #00ffff;
+    text-shadow: 0 0 20px #00ffff;
+}
+
+.video-info {
+    padding: 1rem;
+}
+
+.video-info h3, .video-preview h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    color: #fff;
+}
+
+.video-preview h3 {
+    padding: 1rem;
+    text-align: center;
+}
+
+.video-info p {
+    font-size: 0.9rem;
+    color: #aaa;
+    margin-top: 0.5rem;
+}
+
+/* SNS Container */
+.sns-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+    justify-content: center;
+    margin-top: 2rem;
+}
+
+.sns-link {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;
+    color: white;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 2rem;
+    border-radius: 12px;
+    width: 200px;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.sns-link:hover {
+    background: rgba(0, 255, 255, 0.1);
+    transform: translateY(-5px);
+    border-color: #00ffff;
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.2);
+}
+
+.sns-icon {
+    width: 60px;
+    height: 60px;
+    background: #23263a;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #00ffff;
+    margin-bottom: 1rem;
+    border: 2px solid #00ffff;
+}
+
+.sns-name {
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+}
+
+.sns-desc {
+    font-size: 0.9rem;
+    color: #aaa;
+    text-align: center;
 }
 
 /* レスポンシブデザイン */
@@ -120,9 +383,17 @@ main::before {
     nav ul li {
         text-align: center;
     }
+    
+    .hero-section h1 {
+        font-size: 2rem;
+    }
+    
+    .page-header h1 {
+        font-size: 2rem;
+    }
 }
 
-/* 知識マップのスタイル */
+/* 知識マップのスタイル (Existing styles preserved) */
 .knowledge-map {
     margin: 2rem auto;
     padding: 1rem;
@@ -323,7 +594,7 @@ main::before {
     display: block;
 }
 
-/* レスポンシブ対応 */
+/* レスポンシブ対応 (Graph specific) */
 @media (max-width: 768px) {
     .graph-controls {
         position: fixed;
