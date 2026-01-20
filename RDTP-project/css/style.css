@@ -1030,6 +1030,10 @@ html {
     color: #66ffff;
 }
 
+.graph-controls.expanded {
+    transform: translateY(0) !important;
+}
+
 .control-panel {
     display: flex;
     flex-direction: column;

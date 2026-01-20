@@ -161,6 +161,33 @@ function initializeGraph() {
     raycaster = new THREE.Raycaster();
     mouse = new THREE.Vector2();
 
+    // コントロールパネルの要素を取得
+    const showTagsCheckbox = document.getElementById('showTags');
+    const showPDFsCheckbox = document.getElementById('showPDFs');
+    const showOrphansCheckbox = document.getElementById('showOrphans');
+    const showArrowsCheckbox = document.getElementById('showArrows');
+    const nodeSizeSlider = document.getElementById('nodeSize');
+    const linkWidthSlider = document.getElementById('linkWidth');
+    const linkDistanceSlider = document.getElementById('linkDistance');
+    const startAnimationButton = document.getElementById('startAnimation');
+    const resetCameraButton = document.getElementById('resetCamera');
+    const toggleControlsButton = document.getElementById('toggleControls');
+
+    // コントロールパネルのトグル機能
+    if (toggleControlsButton) {
+        toggleControlsButton.addEventListener('click', () => {
+            const controlPanel = document.querySelector('.graph-controls');
+            if (controlPanel) {
+                controlPanel.classList.toggle('expanded');
+            }
+        });
+    }
+
+    // ノードとリンクの参照を保持
+    const nodeObjects = [];
+    const linkObjects = [];
+    let animationRunning = false;
+
     // ノードの3Dオブジェクトを作成
     const nodeMap = new Map();
     graphData.nodes.forEach((nodeData, index) => {
@@ -205,7 +232,12 @@ function initializeGraph() {
 
         const sphere = new THREE.Mesh(geometry, material);
         sphere.position.set(x, y, z);
-        sphere.userData = { nodeData: nodeData, originalColor: nodeColor };
+        sphere.userData = { 
+            nodeData: nodeData, 
+            originalColor: nodeColor,
+            originalSize: nodeSize,
+            originalPosition: new THREE.Vector3(x, y, z)
+        };
         scene.add(sphere);
 
         // テキストラベル（スプライト）
@@ -229,11 +261,13 @@ function initializeGraph() {
         sprite.userData = { nodeData: nodeData };
         scene.add(sprite);
 
-        nodeMap.set(nodeData.id, { sphere: sphere, sprite: sprite, nodeData: nodeData });
-        nodes.push({ sphere: sphere, sprite: sprite, nodeData: nodeData });
+        const nodeObj = { sphere: sphere, sprite: sprite, nodeData: nodeData };
+        nodeMap.set(nodeData.id, nodeObj);
+        nodes.push(nodeObj);
+        nodeObjects.push(nodeObj);
     });
 
-    // リンクの3D線を作成
+    // リンクの3D曲線を作成
     graphData.links.forEach(linkData => {
         const sourceNode = nodeMap.get(linkData.source);
         const targetNode = nodeMap.get(linkData.target);
@@ -251,10 +285,33 @@ function initializeGraph() {
             lineColor = 0x00ff00;
         }
 
-        const geometry = new THREE.BufferGeometry().setFromPoints([
-            new THREE.Vector3(sourcePos.x, sourcePos.y, sourcePos.z),
-            new THREE.Vector3(targetPos.x, targetPos.y, targetPos.z)
-        ]);
+        // 曲線の制御点を計算（中間点を追加して緩やかな曲線を作成）
+        const midPoint = new THREE.Vector3().addVectors(sourcePos, targetPos).multiplyScalar(0.5);
+        const direction = new THREE.Vector3().subVectors(targetPos, sourcePos).normalize();
+        const perpendicular = new THREE.Vector3().crossVectors(direction, new THREE.Vector3(0, 1, 0));
+        if (perpendicular.length() < 0.1) {
+            perpendicular = new THREE.Vector3().crossVectors(direction, new THREE.Vector3(1, 0, 0));
+        }
+        perpendicular.normalize();
+        
+        // 曲線の高さを決定（距離に応じて調整）
+        const distance = sourcePos.distanceTo(targetPos);
+        const curveHeight = distance * 0.3; // 距離の30%を曲線の高さとする
+        
+        // 中間制御点を曲線の高さ分だけ上に移動
+        const controlPoint = midPoint.clone().add(perpendicular.multiplyScalar(curveHeight));
+
+        // CatmullRom曲線を作成（3点で緩やかな曲線）
+        const curve = new THREE.CatmullRomCurve3([
+            sourcePos,
+            controlPoint,
+            targetPos
+        ], false); // false = 開いた曲線
+
+        // 曲線に沿って点を生成
+        const points = curve.getPoints(50); // 50個の点で滑らかな曲線を作成
+
+        const geometry = new THREE.BufferGeometry().setFromPoints(points);
 
         const material = new THREE.LineBasicMaterial({
             color: lineColor,
@@ -263,19 +320,176 @@ function initializeGraph() {
         });
 
         const line = new THREE.Line(geometry, material);
-        line.userData = { linkData: linkData, sourceNode: sourceNode, targetNode: targetNode };
+        line.userData = { 
+            linkData: linkData, 
+            sourceNode: sourceNode, 
+            targetNode: targetNode,
+            originalColor: lineColor,
+            originalWidth: 1.5,
+            curve: curve // 曲線オブジェクトを保存（更新時に使用）
+        };
         scene.add(line);
         links.push(line);
+        linkObjects.push(line);
     });
+
+    // ノードの表示/非表示を更新する関数
+    function updateNodeVisibility() {
+        const showTags = showTagsCheckbox ? showTagsCheckbox.checked : true;
+        const showPDFs = showPDFsCheckbox ? showPDFsCheckbox.checked : true;
+        const showOrphans = showOrphansCheckbox ? showOrphansCheckbox.checked : true;
+
+        nodeObjects.forEach(nodeObj => {
+            const nodeData = nodeObj.nodeData;
+            let visible = true;
+
+            // タイプ別の表示/非表示
+            if (nodeData.type === 'tag' && !showTags) {
+                visible = false;
+            } else if (nodeData.type === 'pdf' && !showPDFs) {
+                visible = false;
+            } else {
+                // オーファンチェック（接続されていないノード）
+                const hasConnections = graphData.links.some(link => 
+                    (typeof link.source === 'string' ? link.source : link.source.id) === nodeData.id ||
+                    (typeof link.target === 'string' ? link.target : link.target.id) === nodeData.id
+                );
+                if (!hasConnections && !showOrphans && nodeData.type !== 'tag') {
+                    visible = false;
+                }
+            }
+
+            nodeObj.sphere.visible = visible;
+            nodeObj.sprite.visible = visible;
+        });
+
+        // リンクの表示も更新
+        updateLinkVisibility();
+    }
+
+    // リンクの表示/非表示を更新する関数
+    function updateLinkVisibility() {
+        linkObjects.forEach(line => {
+            const sourceNode = line.userData.sourceNode;
+            const targetNode = line.userData.targetNode;
+            
+            line.visible = sourceNode.sphere.visible && targetNode.sphere.visible;
+        });
+    }
+
+    // ノードサイズを更新する関数
+    function updateNodeSizes() {
+        const sizeMultiplier = nodeSizeSlider ? parseFloat(nodeSizeSlider.value) / 8 : 1;
+
+        nodeObjects.forEach(nodeObj => {
+            const originalSize = nodeObj.sphere.userData.originalSize;
+            const newSize = originalSize * sizeMultiplier;
+            
+            // 新しいジオメトリを作成
+            const newGeometry = new THREE.SphereGeometry(newSize, 16, 16);
+            nodeObj.sphere.geometry.dispose();
+            nodeObj.sphere.geometry = newGeometry;
+
+            // スプライトの位置も調整
+            const offset = newSize + 1;
+            nodeObj.sprite.position.y = nodeObj.sphere.position.y + offset;
+        });
+    }
+
+    // リンクの太さを更新する関数
+    function updateLinkWidths() {
+        const widthValue = linkWidthSlider ? parseFloat(linkWidthSlider.value) : 1.5;
+        const widthMultiplier = widthValue / 1.5;
+
+        linkObjects.forEach(line => {
+            // Three.jsではlinewidthはWebGLの制限があるため、代わりにマテリアルの不透明度と色の強度で表現
+            const originalOpacity = 0.5;
+            line.material.opacity = Math.min(originalOpacity * widthMultiplier, 1.0);
+            
+            // 色の強度も調整
+            const color = line.material.color.clone();
+            color.multiplyScalar(Math.min(widthMultiplier, 1.5));
+            line.material.color = color;
+            line.material.needsUpdate = true;
+        });
+    }
+
+    // 矢印の表示/非表示を更新する関数
+    function updateArrows() {
+        const showArrows = showArrowsCheckbox ? showArrowsCheckbox.checked : false;
+        
+        // Three.jsで矢印を実装する場合は、ここで矢印オブジェクトを追加/削除
+        // 現在は実装していないので、将来の拡張用にプレースホルダー
+    }
+
+    // コントロールパネルのイベントリスナーを設定
+    if (showTagsCheckbox) {
+        showTagsCheckbox.addEventListener('change', updateNodeVisibility);
+    }
+    if (showPDFsCheckbox) {
+        showPDFsCheckbox.addEventListener('change', updateNodeVisibility);
+    }
+    if (showOrphansCheckbox) {
+        showOrphansCheckbox.addEventListener('change', updateNodeVisibility);
+    }
+    if (showArrowsCheckbox) {
+        showArrowsCheckbox.addEventListener('change', updateArrows);
+    }
+    if (nodeSizeSlider) {
+        nodeSizeSlider.addEventListener('input', updateNodeSizes);
+    }
+    if (linkWidthSlider) {
+        linkWidthSlider.addEventListener('input', updateLinkWidths);
+    }
+    if (linkDistanceSlider) {
+        // リンクの距離変更時にアニメーション中のノード位置を更新
+        linkDistanceSlider.addEventListener('input', () => {
+            // アニメーション中の場合、即座に反映される
+        });
+    }
+
+    // アニメーション機能
+    if (startAnimationButton) {
+        startAnimationButton.addEventListener('click', () => {
+            animationRunning = !animationRunning;
+            startAnimationButton.textContent = animationRunning ? 'アニメーション停止' : 'アニメーション開始';
+        });
+    }
+
+    // カメラリセット機能
+    if (resetCameraButton) {
+        resetCameraButton.addEventListener('click', () => {
+            // 回転角度をリセット
+            targetRotationX = 0;
+            targetRotationY = 0;
+            currentRotationX = 0;
+            currentRotationY = 0;
+            
+            // パンオフセットをリセット
+            panOffset.set(0, 0, 0);
+            
+            // カメラの距離をリセット
+            cameraRadius = 50;
+        });
+    }
+
+    // 初期状態でノードの表示を更新
+    updateNodeVisibility();
+    updateNodeSizes();
+    updateLinkWidths();
 
     // マウスイベント
     let isMouseDown = false;
+    let isPanning = false;
     let mouseX = 0;
     let mouseY = 0;
     let targetRotationX = 0;
     let targetRotationY = 0;
     let currentRotationX = 0;
     let currentRotationY = 0;
+    let cameraRadius = 50; // カメラの基準距離を保持
+    let panStart = new THREE.Vector2();
+    let panOffset = new THREE.Vector3();
     let dragPlane = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0);
     let dragOffset = new THREE.Vector3();
     let clickStartTime = 0;
@@ -288,6 +502,14 @@ function initializeGraph() {
         clickStartTime = Date.now();
         clickStartPos.x = event.clientX;
         clickStartPos.y = event.clientY;
+
+        // 右クリックまたは中ボタン、またはShiftキーを押しながらの場合はパン操作
+        if (event.button === 2 || event.button === 1 || event.shiftKey) {
+            isPanning = true;
+            panStart.set(event.clientX, event.clientY);
+            // パンオフセットは累積するため、リセットしない
+            return;
+        }
 
         // レイキャスターでノードを選択
         mouse.x = (event.clientX / width) * 2 - 1;
@@ -309,7 +531,7 @@ function initializeGraph() {
                     camera.getWorldDirection(new THREE.Vector3()),
                     worldPosition
                 );
-                
+
                 // ドラッグオフセットを計算
                 const intersectPoint = new THREE.Vector3();
                 raycaster.ray.intersectPlane(dragPlane, intersectPoint);
@@ -321,7 +543,29 @@ function initializeGraph() {
     });
 
     renderer.domElement.addEventListener('mousemove', (event) => {
-        if (isDragging && selectedNode) {
+        if (isPanning) {
+            // パン操作：カメラを並行移動
+            const deltaX = event.clientX - panStart.x;
+            const deltaY = event.clientY - panStart.y;
+            
+            // カメラの向きに基づいて移動方向を計算
+            const cameraDirection = new THREE.Vector3();
+            camera.getWorldDirection(cameraDirection);
+            
+            // カメラの右方向と上方向を取得
+            const cameraRight = new THREE.Vector3();
+            cameraRight.crossVectors(cameraDirection, camera.up).normalize();
+            const cameraUp = camera.up.clone();
+
+            // 移動量を計算（距離に応じてスケール調整）
+            const panSpeed = cameraRadius * 0.001;
+            
+            // パンオフセットを更新
+            panOffset.add(cameraRight.multiplyScalar(-deltaX * panSpeed));
+            panOffset.add(cameraUp.multiplyScalar(deltaY * panSpeed));
+            
+            panStart.set(event.clientX, event.clientY);
+        } else if (isDragging && selectedNode) {
             // ノードを移動
             mouse.x = (event.clientX / width) * 2 - 1;
             mouse.y = -(event.clientY / height) * 2 + 1;
@@ -350,27 +594,63 @@ function initializeGraph() {
                 updateLinks();
             }
         } else if (isMouseDown && !isDragging) {
-            // カメラを回転
-            const deltaX = event.clientX - mouseX;
-            const deltaY = event.clientY - mouseY;
+            // Shiftキーを押しながらの場合はパン操作
+            if (event.shiftKey) {
+                if (!isPanning) {
+                    isPanning = true;
+                    panStart.set(event.clientX, event.clientY);
+                }
+                
+                const deltaX = event.clientX - panStart.x;
+                const deltaY = event.clientY - panStart.y;
+                
+                const cameraDirection = new THREE.Vector3();
+                camera.getWorldDirection(cameraDirection);
+                
+                const cameraRight = new THREE.Vector3();
+                cameraRight.crossVectors(cameraDirection, camera.up).normalize();
+                const cameraUp = camera.up.clone();
+                
+                const panSpeed = cameraRadius * 0.001;
+                
+                // パンオフセットを累積的に更新
+                panOffset.add(cameraRight.multiplyScalar(-deltaX * panSpeed));
+                panOffset.add(cameraUp.multiplyScalar(deltaY * panSpeed));
+                
+                // パン開始位置を更新（連続的な操作のため）
+                panStart.set(event.clientX, event.clientY);
+            } else {
+                // カメラを回転
+                const deltaX = event.clientX - mouseX;
+                const deltaY = event.clientY - mouseY;
 
-            targetRotationY += deltaX * 0.01;
-            targetRotationX += deltaY * 0.01;
-            
-            mouseX = event.clientX;
-            mouseY = event.clientY;
+                targetRotationY += deltaX * 0.01;
+                // 下にドラッグしたら下回転、上にドラッグしたら上回転（符号を反転）
+                targetRotationX -= deltaY * 0.01;
+                
+                // 上下の回転を0からπの範囲に制限
+                const maxRotationX = Math.PI - 0.01;
+                const minRotationX = 0.01;
+                if (targetRotationX > maxRotationX) targetRotationX = maxRotationX;
+                if (targetRotationX < minRotationX) targetRotationX = minRotationX;
+                
+                mouseX = event.clientX;
+                mouseY = event.clientY;
+            }
         }
     });
 
     renderer.domElement.addEventListener('mouseup', (event) => {
         // ドラッグが終了したことを記録
         const wasDragging = isDragging;
+        const wasPanning = isPanning;
         isMouseDown = false;
         isDragging = false;
+        isPanning = false;
         selectedNode = null;
         
         // ドラッグしていた場合は、クリックイベントを無効化するためのフラグを設定
-        if (wasDragging) {
+        if (wasDragging || wasPanning) {
             clickStartTime = 0; // クリックイベントを無効化
         }
     });
@@ -378,7 +658,13 @@ function initializeGraph() {
     renderer.domElement.addEventListener('mouseleave', () => {
         isMouseDown = false;
         isDragging = false;
+        isPanning = false;
         selectedNode = null;
+    });
+
+    // 右クリックメニューを無効化
+    renderer.domElement.addEventListener('contextmenu', (event) => {
+        event.preventDefault();
     });
 
     // スクロールでズーム
@@ -386,12 +672,13 @@ function initializeGraph() {
         event.preventDefault();
         const zoomSpeed = 0.1;
         const zoom = event.deltaY > 0 ? 1 + zoomSpeed : 1 - zoomSpeed;
-        camera.position.multiplyScalar(zoom);
+        
+        // 基準距離を更新
+        cameraRadius *= zoom;
         
         // 最小・最大距離の制限
-        const distance = camera.position.length();
-        if (distance < 10) camera.position.normalize().multiplyScalar(10);
-        if (distance > 200) camera.position.normalize().multiplyScalar(200);
+        if (cameraRadius < 10) cameraRadius = 10;
+        if (cameraRadius > 200) cameraRadius = 200;
     });
 
     // クリックでノードを開く（ドラッグしていない場合のみ）
@@ -421,17 +708,42 @@ function initializeGraph() {
         }
     });
 
-    // リンクを更新する関数
+    // リンクを更新する関数（曲線を再計算）
     function updateLinks() {
         links.forEach(line => {
             const sourcePos = line.userData.sourceNode.sphere.position;
             const targetPos = line.userData.targetNode.sphere.position;
 
-            line.geometry.setFromPoints([
-                new THREE.Vector3(sourcePos.x, sourcePos.y, sourcePos.z),
-                new THREE.Vector3(targetPos.x, targetPos.y, targetPos.z)
-            ]);
-            line.geometry.attributes.position.needsUpdate = true;
+            // 曲線の制御点を再計算
+            const midPoint = new THREE.Vector3().addVectors(sourcePos, targetPos).multiplyScalar(0.5);
+            const direction = new THREE.Vector3().subVectors(targetPos, sourcePos).normalize();
+            const perpendicular = new THREE.Vector3().crossVectors(direction, new THREE.Vector3(0, 1, 0));
+            if (perpendicular.length() < 0.1) {
+                perpendicular = new THREE.Vector3().crossVectors(direction, new THREE.Vector3(1, 0, 0));
+            }
+            perpendicular.normalize();
+            
+            // 曲線の高さを決定（距離に応じて調整）
+            const distance = sourcePos.distanceTo(targetPos);
+            const curveHeight = distance * 0.3; // 距離の30%を曲線の高さとする
+            
+            // 中間制御点を曲線の高さ分だけ上に移動
+            const controlPoint = midPoint.clone().add(perpendicular.multiplyScalar(curveHeight));
+
+            // CatmullRom曲線を作成
+            const curve = new THREE.CatmullRomCurve3([
+                sourcePos,
+                controlPoint,
+                targetPos
+            ], false);
+
+            // 曲線に沿って点を生成
+            const points = curve.getPoints(50);
+
+            // ジオメトリを更新
+            line.geometry.dispose();
+            line.geometry = new THREE.BufferGeometry().setFromPoints(points);
+            line.userData.curve = curve; // 曲線オブジェクトを更新
         });
     }
 
@@ -439,25 +751,115 @@ function initializeGraph() {
     function animate() {
         requestAnimationFrame(animate);
 
-        // カメラの回転をスムーズに
-        currentRotationX += (targetRotationX - currentRotationX) * 0.05;
-        currentRotationY += (targetRotationY - currentRotationY) * 0.05;
+        // カメラの回転をスムーズに（上下の回転をより滑らかに）
+        const rotationSmoothingX = 0.08; // 上下の回転をより滑らかに
+        const rotationSmoothingY = 0.05; // 横の回転
+        currentRotationX += (targetRotationX - currentRotationX) * rotationSmoothingX;
+        currentRotationY += (targetRotationY - currentRotationY) * rotationSmoothingY;
 
-        if (!isDragging) {
-            const radius = camera.position.length();
-            camera.position.x = Math.sin(currentRotationY) * Math.cos(currentRotationX) * radius;
-            camera.position.y = Math.sin(currentRotationX) * radius;
-            camera.position.z = Math.cos(currentRotationY) * Math.cos(currentRotationX) * radius;
-            camera.lookAt(0, 0, 0);
+        // カメラの位置を更新（基準距離を使用して半径を維持）
+        // 3次元球座標系でカメラの位置を計算
+        // 極角（polar angle）φ: 0からπまで（上下の回転）
+        // 方位角（azimuth）θ: 0から2πまで（横の回転）
+        // 球座標から直交座標への変換:
+        // x = r * sin(φ) * cos(θ)
+        // y = r * cos(φ)
+        // z = r * sin(φ) * sin(θ)
+        
+        // 上下の回転を0からπの範囲に制限
+        const maxRotationX = Math.PI - 0.01;
+        const minRotationX = 0.01;
+        if (currentRotationX > maxRotationX) currentRotationX = maxRotationX;
+        if (currentRotationX < minRotationX) currentRotationX = minRotationX;
+        
+        // 3次元球座標系でカメラの位置を計算
+        // 極角（polar angle）φ: 0からπまで（上下の回転）
+        // 方位角（azimuth）θ: 0から2πまで（横の回転）
+        const phi = currentRotationX; // 極角（上下の回転、0からπの範囲）
+        let theta = currentRotationY % (2 * Math.PI); // 方位角（横の回転）
+        if (theta < 0) theta += 2 * Math.PI;
+        
+        // 球座標から直交座標への変換
+        const basePosition = new THREE.Vector3(
+            Math.sin(phi) * Math.cos(theta) * cameraRadius,
+            Math.cos(phi) * cameraRadius,
+            Math.sin(phi) * Math.sin(theta) * cameraRadius
+        );
+        
+        // パンオフセットを適用
+        camera.position.copy(basePosition).add(panOffset);
+        // カメラはパンオフセット後の中心点（シーンの中心）を見る
+        camera.lookAt(panOffset);
+
+        // ノードのアニメーション
+        if (animationRunning) {
+            const centerForce = 0.5; // 固定値
+            const linkForce = 1; // 固定値
+            const linkDistance = linkDistanceSlider ? parseFloat(linkDistanceSlider.value) : 100;
+
+            // 中心への引力を適用
+            nodeObjects.forEach(nodeObj => {
+                if (nodeObj.sphere === selectedNode || !nodeObj.sphere.visible) return;
+
+                const position = nodeObj.sphere.position;
+                const distanceFromCenter = position.length();
+                
+                if (distanceFromCenter > 0) {
+                    const centerDirection = position.clone().normalize().multiplyScalar(-1);
+                    
+                    // 中心力による移動
+                    const centerPull = centerDirection.multiplyScalar(centerForce * 0.01);
+                    position.add(centerPull);
+                }
+
+                // リンクによる力
+                linkObjects.forEach(line => {
+                    if (!line.visible) return;
+                    
+                    const sourceNode = line.userData.sourceNode;
+                    const targetNode = line.userData.targetNode;
+                    
+                    if (sourceNode === nodeObj || targetNode === nodeObj) {
+                        const otherNode = sourceNode === nodeObj ? targetNode : sourceNode;
+                        if (otherNode.sphere === selectedNode || !otherNode.sphere.visible) return;
+                        
+                        const otherPos = otherNode.sphere.position;
+                        const direction = position.clone().sub(otherPos);
+                        const currentDistance = direction.length();
+                        
+                        if (currentDistance > 0) {
+                            const targetDistance = linkDistance / 10; // スケール調整
+                            const force = (currentDistance - targetDistance) * linkForce * 0.001;
+                            direction.normalize().multiplyScalar(force);
+                            
+                            if (sourceNode === nodeObj) {
+                                position.sub(direction);
+                            } else {
+                                position.add(direction);
+                            }
+                        }
+                    }
+                });
+
+                // スプライトの位置も更新
+                const offset = nodeObj.sphere.geometry.parameters.radius + 1;
+                nodeObj.sprite.position.set(
+                    position.x,
+                    position.y + offset,
+                    position.z
+                );
+            });
+
+            // リンクを更新
+            updateLinks();
+        } else {
+            // 通常の回転アニメーション
+            nodeObjects.forEach(nodeObj => {
+                if (nodeObj.sphere !== selectedNode && nodeObj.sphere.visible) {
+                    nodeObj.sphere.rotation.y += 0.01;
+                }
+            });
         }
-
-        // ノードのアニメーション（ホバー効果など）
-        nodes.forEach(node => {
-            const time = Date.now() * 0.001;
-            if (node.sphere !== selectedNode) {
-                node.sphere.rotation.y += 0.01;
-            }
-        });
 
         renderer.render(scene, camera);
     }

@@ -97,27 +97,6 @@
                         </div>
                     </div>
                     <div class="control-group">
-                        <h3>パラメータ</h3>
-                        <div class="control-item">
-                            <label>
-                                中心力
-                                <input type="range" id="centerForce" min="0" max="1" step="0.1" value="0.5">
-                            </label>
-                        </div>
-                        <div class="control-item">
-                            <label>
-                                リンクする力
-                                <input type="range" id="linkForce" min="0" max="2" step="0.1" value="1">
-                            </label>
-                        </div>
-                        <div class="control-item">
-                            <label>
-                                リンクの距離
-                                <input type="range" id="linkDistance" min="50" max="200" value="100">
-                            </label>
-                        </div>
-                    </div>
-                    <div class="control-group">
                         <h3>表示設定</h3>
                         <div class="control-item">
                             <label>
@@ -137,8 +116,15 @@
                                 <input type="range" id="linkWidth" min="1" max="5" value="1.5">
                             </label>
                         </div>
+                        <div class="control-item">
+                            <label>
+                                リンクの距離
+                                <input type="range" id="linkDistance" min="50" max="200" value="100">
+                            </label>
+                        </div>
                     </div>
                     <button id="startAnimation" class="control-button">アニメーション開始</button>
+                    <button id="resetCamera" class="control-button" style="margin-top: 1rem; background: #ff4500;">カメラリセット</button>
                 </div>
                 <button id="toggleControls" class="control-toggle-button">コントロールパネル</button>
             </div>
