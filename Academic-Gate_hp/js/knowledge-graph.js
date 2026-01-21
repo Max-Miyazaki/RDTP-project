@@ -182,6 +182,7 @@ function initializeGraph() {
     const startAnimationButton = document.getElementById('startAnimation');
     const resetCameraButton = document.getElementById('resetCamera');
     const toggleControlsButton = document.getElementById('toggleControls');
+    const toggleFullscreenButton = document.getElementById('toggleFullscreen');
 
     // コントロールパネルのトグル機能
     if (toggleControlsButton) {
@@ -464,6 +465,77 @@ function initializeGraph() {
             animationRunning = !animationRunning;
             startAnimationButton.textContent = animationRunning ? 'アニメーション停止' : 'アニメーション開始';
         });
+    }
+
+    // 全画面機能
+    if (toggleFullscreenButton) {
+        toggleFullscreenButton.addEventListener('click', () => {
+            const container = document.getElementById('graph-container');
+            if (!container) return;
+
+            // 全画面APIのブラウザ対応を確認
+            const fullscreenElement = document.fullscreenElement || 
+                                     document.webkitFullscreenElement || 
+                                     document.mozFullScreenElement || 
+                                     document.msFullscreenElement;
+
+            if (!fullscreenElement) {
+                // 全画面モードに入る
+                if (container.requestFullscreen) {
+                    container.requestFullscreen();
+                } else if (container.webkitRequestFullscreen) {
+                    container.webkitRequestFullscreen();
+                } else if (container.mozRequestFullScreen) {
+                    container.mozRequestFullScreen();
+                } else if (container.msRequestFullscreen) {
+                    container.msRequestFullscreen();
+                }
+            } else {
+                // 全画面モードから抜ける
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                } else if (document.webkitExitFullscreen) {
+                    document.webkitExitFullscreen();
+                } else if (document.mozCancelFullScreen) {
+                    document.mozCancelFullScreen();
+                } else if (document.msExitFullscreen) {
+                    document.msExitFullscreen();
+                }
+            }
+        });
+
+        // 全画面状態の変更を監視してボタンのテキストを更新
+        const updateFullscreenButton = () => {
+            const fullscreenElement = document.fullscreenElement || 
+                                     document.webkitFullscreenElement || 
+                                     document.mozFullScreenElement || 
+                                     document.msFullscreenElement;
+            
+            if (toggleFullscreenButton) {
+                if (fullscreenElement) {
+                    toggleFullscreenButton.textContent = '通常表示に戻る';
+                    toggleFullscreenButton.style.background = '#ff4500';
+                } else {
+                    toggleFullscreenButton.textContent = '全画面表示';
+                    toggleFullscreenButton.style.background = '#00ff00';
+                }
+            }
+
+            // レンダラーのサイズを更新
+            if (renderer && container) {
+                const newWidth = container.offsetWidth;
+                const newHeight = container.offsetHeight;
+                camera.aspect = newWidth / newHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(newWidth, newHeight);
+            }
+        };
+
+        // 全画面状態の変更イベントを監視
+        document.addEventListener('fullscreenchange', updateFullscreenButton);
+        document.addEventListener('webkitfullscreenchange', updateFullscreenButton);
+        document.addEventListener('mozfullscreenchange', updateFullscreenButton);
+        document.addEventListener('MSFullscreenChange', updateFullscreenButton);
     }
 
     // カメラリセット機能
