@@ -26,6 +26,16 @@ const nodeTypeColors = {
 
 // グラフの初期化と描画を行う関数
 function initializeGraph() {
+    // Three.jsが読み込まれているか確認
+    if (typeof THREE === 'undefined') {
+        console.error('Three.js is not loaded. Please check if the CDN script is properly included.');
+        const container = document.getElementById('graph-container');
+        if (container) {
+            container.innerHTML = '<div style="color: #ff0000; padding: 20px; text-align: center;">エラー: Three.jsライブラリが読み込まれていません。ネットワーク接続を確認してください。</div>';
+        }
+        return;
+    }
+
     // 勉強の軌跡のデータ
     const graphData = {
         nodes: [
@@ -879,4 +889,32 @@ function initializeGraph() {
 }
 
 // DOMの読み込み完了後にグラフを初期化
-document.addEventListener('DOMContentLoaded', initializeGraph);
+// Three.jsが読み込まれるまで待つ
+function waitForThreeJS() {
+    if (typeof THREE !== 'undefined') {
+        initializeGraph();
+    } else {
+        // Three.jsがまだ読み込まれていない場合、少し待ってから再試行
+        setTimeout(waitForThreeJS, 100);
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Three.jsが既に読み込まれているか確認
+    if (typeof THREE !== 'undefined') {
+        initializeGraph();
+    } else {
+        // Three.jsの読み込みを待つ
+        waitForThreeJS();
+        // タイムアウトを設定（10秒後にエラーを表示）
+        setTimeout(function() {
+            if (typeof THREE === 'undefined') {
+                console.error('Three.js failed to load after 10 seconds');
+                const container = document.getElementById('graph-container');
+                if (container) {
+                    container.innerHTML = '<div style="color: #ff0000; padding: 20px; text-align: center;">エラー: Three.jsライブラリの読み込みに失敗しました。ネットワーク接続を確認してください。</div>';
+                }
+            }
+        }, 10000);
+    }
+});
