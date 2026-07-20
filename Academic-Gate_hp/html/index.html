@@ -1,194 +1,247 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Academic Gates</title>
-    <link rel="stylesheet" href="../css/style.css">
+    <meta name="description" content="科学技術の面白さを伝え、研究に挑む学生の声を届けるプラットフォーム。">
+
+    <!-- Fonts: Inter Tight (Latin) + Noto Sans JP (Japanese), light display weights -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;500&family=Noto+Sans+JP:wght@300;400&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet" href="../css/style.css?v=r22">
+    <!-- Three.js is injected non-blocking by js/scroll-scenes.js, and NOT downloaded
+         at all under prefers-reduced-motion. Version pinned to 0.160.0 there. -->
 </head>
-<body>
-    <header>
-        <div class="logo">Academic Gates</div>
-        <nav>
-            <button class="menu-toggle" aria-label="メニューを開く" aria-expanded="false">
-                <span></span>
-                <span></span>
-                <span></span>
-            </button>
-            <ul class="nav-menu">
-                <li><a href="#" class="active">ホーム</a></li>
-                <li><a href="self-intro.html">自己紹介</a></li>
-                <li><a href="study.html">勉強の軌跡</a></li>
-                <li><a href="blog.html">ブログ</a></li>
-                <li><a href="sns.html">各種SNS</a></li>
-            </ul>
-        </nav>
-    </header>
+
+<body data-page="index">
+    <!-- Cosmic layers -->
+    <canvas id="starfield" aria-hidden="true"></canvas>
+    <canvas id="scene-canvas" aria-hidden="true"></canvas>
+
+    <div id="site-nav"><noscript><nav class="noscript-nav" aria-label="メインナビゲーション"><a href="index.html">ホーム</a><a href="self-intro.html">自己紹介</a><a href="study.html">勉強の軌跡</a><a href="videos.html">動画</a><a href="blog.html">ブログ</a><a href="sns.html">各種SNS</a></nav></noscript></div>
 
     <main>
-        <!-- ヒーローセクション -->
-        <section class="hero-section">
-            <h1>研究の世界へ、ひらかれた入口。</h1>
-            <p class="hero-subtitle">科学技術の面白さを伝え、研究に挑む学生の声を届ける</p>
-            <div class="hero-cta">
-                <a href="#latest-videos" class="btn btn-primary">動画を見る</a>
-                <a href="study.html" class="btn btn-secondary">ノートを読む</a>
-            </div>
-        </section>
+        <!-- ======== HERO: cosmic origin → society (particle choreography) ==== -->
+        <!-- Four text-bearing stages. MATTER + THE SOLAR SYSTEM still render as the
+             particle field morphs between these, but carry no text (transitional).
+             Each text block is position:sticky so it holds legibly while the
+             formation morphs underneath. -->
+        <div class="hero">
 
-        <!-- Academic Gateとは -->
-        <section class="mission-section">
-            <h2>Academic Gateとは</h2>
-            <p class="mission-text">
-                自由気ままに学術領域の世界への入口を開くプラットフォームです。科学技術の魅力を分かりやすく伝え、
-                研究に取り組む学生の声を広く届けることで、学術への興味と理解を深めます。
-            </p>
-            <ul class="mission-list">
-                <li>研究内容や学問の面白さを動画・記事で発信</li>
-                <li>学生の勉強ノートや研究の軌跡を共有</li>
-                <li>研究に取り組む学生のインタビューや体験談を紹介</li>
-            </ul>
-        </section>
-
-        <!-- Contents -->
-        <section class="contents-section">
-            <h2>Contents</h2>
-            <div class="contents-grid">
-                <a href="#latest-videos" class="content-card">
-                    <div class="card-icon">🎥</div>
-                    <h3>動画発信</h3>
-                    <p>研究や学問についての動画コンテンツ</p>
-                </a>
-                <a href="study.html" class="content-card">
-                    <div class="card-icon">📚</div>
-                    <h3>勉強の軌跡</h3>
-                    <p>学習ノートや研究の記録を共有</p>
-                </a>
-                <a href="blog.html" class="content-card">
-                    <div class="card-icon">✍️</div>
-                    <h3>ブログ</h3>
-                    <p>研究や学問に関する記事を発信</p>
-                </a>
-                <a href="sns.html" class="content-card">
-                    <div class="card-icon">🔗</div>
-                    <h3>SNS</h3>
-                    <p>各種SNSアカウントへのリンク</p>
-                </a>
-            </div>
-        </section>
-
-        <!-- Picks -->
-        <section class="picks-section">
-            <h2>Picks</h2>
-            
-            <!-- 最新動画 -->
-            <div class="picks-subsection">
-                <h3>最新動画</h3>
-                <div class="video-grid">
-                    <article class="video-item">
-                        <div class="video-thumbnail"></div>
-                        <div class="video-content">
-                            <h4>量子場理論入門 - 第1回</h4>
-                            <p>量子場理論の基礎概念を分かりやすく解説します。</p>
-                            <span class="video-date">2024年1月15日</span>
-                            <a href="#" class="btn btn-small">YouTubeで見る</a>
-                        </div>
-                    </article>
-                    <article class="video-item">
-                        <div class="video-thumbnail"></div>
-                        <div class="video-content">
-                            <h4>研究生活のリアル - 大学院生の1日</h4>
-                            <p>実際の研究生活がどのようなものか紹介します。</p>
-                            <span class="video-date">2024年1月10日</span>
-                            <a href="#" class="btn btn-small">YouTubeで見る</a>
-                        </div>
-                    </article>
-                    <article class="video-item">
-                        <div class="video-thumbnail"></div>
-                        <div class="video-content">
-                            <h4>素粒子物理学の最前線</h4>
-                            <p>最新の研究動向とその意義について解説します。</p>
-                            <span class="video-date">2024年1月5日</span>
-                            <a href="#" class="btn btn-small">YouTubeで見る</a>
-                        </div>
-                    </article>
+            <!-- ① THE BEGINNING — 宇宙の始まり -->
+            <section class="scene scene--center scene-beginning" data-stage="beginning" aria-labelledby="s1">
+                <div class="scene__content hero-scrim">
+                    <p class="eyebrow"><span class="eyebrow__num">01</span> — The Beginning</p>
+                    <h1 class="gate-title" id="s1">Academic Gates</h1>
+                    <p class="gate-subtitle" lang="ja">科学技術の面白さを伝え、研究に挑む学生の声を届ける。<br>宇宙のはじまりから、いまへ。</p>
                 </div>
-            </div>
+                <div class="scroll-hint" aria-hidden="true">
+                    <span>Scroll</span><span class="scroll-hint__arrow">↓</span>
+                </div>
+            </section>
 
-            <!-- 人気ノート -->
-            <div class="picks-subsection">
-                <h3>人気ノート</h3>
+            <!-- ② GALAXIES — 銀河の誕生 → 知識マップ (through MATTER) -->
+            <section class="scene scene--center scene-galaxies" data-stage="galaxies" aria-labelledby="s2">
+                <div class="scene__content hero-scrim">
+                    <p class="eyebrow"><span class="eyebrow__num">02</span> — The Knowledge Map</p>
+                    <h2 id="s2" lang="ja">知識を、<br>一つの銀河に。</h2>
+                    <p lang="ja">ノート・資料・タグが相互に結びつく知識マップ「Archive Sphere」。散らばった学びが、一つの銀河のように立体的な構造を描く。</p>
+                    <div class="cta-row">
+                        <a href="study.html" class="btn btn-primary">知識マップを見る <span class="btn-disc"
+                                aria-hidden="true">→</span></a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ③ EARTH — 地球 → 自分の研究 / 現在地 (through THE SOLAR SYSTEM) -->
+            <section class="scene scene--center scene-earth" data-stage="earth" aria-labelledby="s3">
+                <div class="scene__content hero-scrim">
+                    <p class="eyebrow"><span class="eyebrow__num">03</span> — 現在地</p>
+                    <h2 id="s3" lang="ja">私の研究は、<br>ここに。</h2>
+                    <p lang="ja">標準理論を超えた物理（BSM）を軸に、量子重力や初期宇宙を多面的に考える。いま立っているのは、この惑星のこの地点。</p>
+                    <div class="cta-row">
+                        <a href="self-intro.html" class="btn btn-primary">運営者について <span class="btn-disc"
+                                aria-hidden="true">→</span></a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ④ SOCIETY — 現代社会の分析 → 発信 (cards below) -->
+            <section class="scene scene--center scene-society" data-stage="society" aria-labelledby="s4">
+                <div class="scene__content hero-scrim">
+                    <p class="eyebrow"><span class="eyebrow__num">04</span> — 現代社会</p>
+                    <h2 id="s4" lang="ja">学びを、<br>社会へ。</h2>
+                    <p lang="ja">積み上げた知識は、やがて人と人、分野と分野をつなぐネットワークになる。ノート・ブログ・動画・SNSで、社会へと発信する。</p>
+                </div>
+            </section>
+        </div>
+
+        <!-- ======================= THE INDEX (calm card grids) ============ -->
+        <div class="index-region">
+
+            <!-- 基礎領域 — foundational studies (moved out of the hero so it reads) -->
+            <section class="index-block" aria-labelledby="found-h">
+                <div class="index-block__head reveal">
+                    <p class="eyebrow"><span class="eyebrow__num">05</span> — 基礎領域</p>
+                    <h2 id="found-h" lang="ja">学びの土台</h2>
+                    <p lang="ja">カオスから構造が生まれるように、学びもまた基礎から立ち上がる。まずは土台となる学部レベルの学問を、一つずつ積み上げていく。</p>
+                    <ul class="scene-list" lang="ja">
+                        <li>物理数学</li>
+                        <li>古典力学・解析力学</li>
+                        <li>電磁気学</li>
+                        <li>熱力学・統計力学</li>
+                        <li>量子力学</li>
+                        <li>特殊相対性理論</li>
+                    </ul>
+                    <p style="margin-top: 1.5rem;">
+                        <a href="study.html" class="btn btn-secondary">勉強の軌跡を見る <span class="btn-disc"
+                                aria-hidden="true">→</span></a>
+                    </p>
+                </div>
+            </section>
+
+            <!-- 専門領域 — specialized fields -->
+            <section class="index-block" aria-labelledby="spec-h">
+                <div class="index-block__head reveal">
+                    <p class="eyebrow"><span class="eyebrow__num">06</span> — 専門領域</p>
+                    <h2 id="spec-h" lang="ja">専門という軌道</h2>
+                    <p lang="ja">一つひとつの分野が、恒星をめぐる惑星の軌道のように。基礎の上に、素粒子・重力・宇宙の専門領域を重ねていく。</p>
+                    <ul class="scene-list" lang="ja">
+                        <li>場の量子論</li>
+                        <li>一般相対性理論</li>
+                        <li>宇宙論</li>
+                    </ul>
+                    <p style="margin-top: 1.5rem;">
+                        <a href="study.html" class="btn btn-secondary">ノートを読む <span class="btn-disc"
+                                aria-hidden="true">→</span></a>
+                    </p>
+                </div>
+            </section>
+
+            <!-- Notes -->
+            <section class="index-block" aria-labelledby="notes-h">
+                <div class="index-block__head reveal">
+                    <p class="eyebrow"><span class="eyebrow__num">07</span> — Notes</p>
+                    <h2 id="notes-h" lang="ja">人気ノート</h2>
+                    <p lang="ja">よく読まれている学習ノート。計算過程も詳しく記載しています。</p>
+                </div>
                 <div class="note-grid">
-                    <a href="study.html" class="note-card">
-                        <h4>Peskin QFT 第2章まとめ</h4>
-                        <p>量子場理論の教科書の学習ノートです。計算過程も詳しく記載しています。</p>
+                    <a href="study.html" class="card reveal">
+                        <h4 lang="ja">Peskin QFT 第2章まとめ</h4>
+                        <p lang="ja">量子場理論の教科書の学習ノート。行間を埋める計算とともに。</p>
+                        <span class="meta">Quantum Field Theory</span>
                     </a>
-                    <a href="study.html" class="note-card">
-                        <h4>統計力学の基礎</h4>
-                        <p>統計力学の重要な概念と計算例をまとめました。</p>
+                    <a href="study.html" class="card reveal">
+                        <h4 lang="ja">統計力学の基礎</h4>
+                        <p lang="ja">統計力学の重要な概念と計算例をまとめました。</p>
+                        <span class="meta">Statistical Mechanics</span>
                     </a>
                 </div>
-            </div>
+            </section>
 
-            <!-- 最新ブログ -->
-            <div class="picks-subsection">
-                <h3>最新ブログ</h3>
-                <div class="blog-grid">
-                    <a href="blog.html" class="blog-card">
-                        <h4>研究を始める前に知っておきたいこと</h4>
-                        <span class="blog-date">2024年1月12日</span>
+            <!-- Blog -->
+            <section class="index-block" aria-labelledby="blog-h">
+                <div class="index-block__head reveal">
+                    <p class="eyebrow"><span class="eyebrow__num">08</span> — Blog</p>
+                    <h2 id="blog-h" lang="ja">最新ブログ</h2>
+                    <p lang="ja">研究や学問に関する記事、考察を発信しています。</p>
+                </div>
+                <div class="note-grid">
+                    <a href="blog.html" class="card reveal">
+                        <div class="media-placeholder" aria-hidden="true"></div>
+                        <span class="meta">Physics</span>
+                        <h4 lang="ja">量子コンピュータの現在地</h4>
                     </a>
-                    <a href="blog.html" class="blog-card">
-                        <h4>大学院での学び方</h4>
-                        <span class="blog-date">2024年1月8日</span>
+                    <a href="blog.html" class="card reveal">
+                        <div class="media-placeholder" aria-hidden="true"></div>
+                        <span class="meta">Technology</span>
+                        <h4 lang="ja">AIエージェントと協働する未来</h4>
+                    </a>
+                    <a href="blog.html" class="card reveal">
+                        <div class="media-placeholder" aria-hidden="true"></div>
+                        <span class="meta">Math</span>
+                        <h4 lang="ja">トポロジーとデータ解析</h4>
                     </a>
                 </div>
-            </div>
-        </section>
+            </section>
 
-        <!-- Projects -->
-        <section class="projects-section" id="latest-videos">
-            <h2>Projects</h2>
-            <p class="section-intro">研究に取り組む学生の声を届ける企画</p>
-            <div class="projects-grid">
-                <div class="project-card">
-                    <div class="project-icon">🎤</div>
-                    <h3>学生インタビュー</h3>
-                    <p>実際に研究に取り組む学生へのインタビューを通じて、研究の魅力や苦労を紹介します。</p>
+            <!-- Videos (reachable from the homepage) -->
+            <section class="index-block" aria-labelledby="videos-h">
+                <div class="index-block__head reveal">
+                    <p class="eyebrow"><span class="eyebrow__num">09</span> — Videos</p>
+                    <h2 id="videos-h" lang="ja">最新動画</h2>
+                    <p lang="ja">研究や学問についての動画コンテンツ、シミュレーション映像。</p>
                 </div>
-                <div class="project-card">
-                    <div class="project-icon">🔬</div>
-                    <h3>研究テーマの入門解説</h3>
-                    <p>専門的な研究テーマを分かりやすく解説し、学問への興味を深めます。</p>
+                <div class="note-grid">
+                    <a href="videos.html" class="card reveal">
+                        <div class="media-placeholder" aria-hidden="true"></div>
+                        <h4 lang="ja">量子場理論入門 — 第1回</h4>
+                        <p lang="ja">量子場理論の基礎概念を分かりやすく解説します。</p>
+                    </a>
+                    <a href="videos.html" class="card reveal">
+                        <div class="media-placeholder" aria-hidden="true"></div>
+                        <h4 lang="ja">研究生活のリアル</h4>
+                        <p lang="ja">大学院生の一日。実際の研究生活を紹介します。</p>
+                    </a>
+                    <a href="videos.html" class="card reveal">
+                        <div class="media-placeholder" aria-hidden="true"></div>
+                        <h4 lang="ja">素粒子物理学の最前線</h4>
+                        <p lang="ja">最新の研究動向とその意義について解説します。</p>
+                    </a>
                 </div>
-                <div class="project-card">
-                    <div class="project-icon">📖</div>
-                    <h3>勉強法・研究生活ログ</h3>
-                    <p>効果的な勉強法や研究生活の実態をリアルに記録します。</p>
-                </div>
-            </div>
-            <div class="contact-cta">
-                <p>出演・取材のご相談は <a href="sns.html">こちら</a> または <a href="mailto:contact@example.com">contact@example.com</a> まで</p>
-            </div>
-        </section>
+            </section>
 
-        <!-- 最後のメッセージ -->
-        <section class="final-message">
-            <p>学問の世界へ、あなたも一歩を踏み出してみませんか。</p>
-        </section>
+            <!-- Projects -->
+            <section class="index-block" aria-labelledby="projects-h">
+                <div class="index-block__head reveal">
+                    <p class="eyebrow"><span class="eyebrow__num">10</span> — Projects</p>
+                    <h2 id="projects-h" lang="ja">企画</h2>
+                    <p lang="ja">研究に取り組む学生の声を届ける企画。</p>
+                </div>
+                <div class="note-grid">
+                    <div class="card reveal">
+                        <h4 lang="ja">学生インタビュー</h4>
+                        <p lang="ja">研究に取り組む学生へのインタビューを通じて、研究の魅力や苦労を紹介します。</p>
+                    </div>
+                    <div class="card reveal">
+                        <h4 lang="ja">研究テーマの入門解説</h4>
+                        <p lang="ja">専門的な研究テーマを分かりやすく解説し、学問への興味を深めます。</p>
+                    </div>
+                    <div class="card reveal">
+                        <h4 lang="ja">勉強法・研究生活ログ</h4>
+                        <p lang="ja">効果的な勉強法や研究生活の実態をリアルに記録します。</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Closing -->
+            <section class="final-message reveal">
+                <p lang="ja">学問の世界へ、あなたも一歩を踏み出してみませんか。</p>
+            </section>
+        </div>
     </main>
 
-    <!-- フッター -->
-    <footer>
-        <div class="footer-content">
-            <p>&copy; 2024 Academic Gates. All rights reserved.</p>
-            <div class="footer-links">
-                <a href="sns.html">SNS</a>
-                <a href="#">YouTube</a>
-            </div>
-        </div>
-    </footer>
+    <!-- Unified footer -->
+    <div id="site-footer"><noscript><nav class="noscript-nav" aria-label="フッターナビゲーション"><a href="index.html">ホーム</a><a href="self-intro.html">自己紹介</a><a href="study.html">勉強の軌跡</a><a href="videos.html">動画</a><a href="blog.html">ブログ</a><a href="sns.html">各種SNS</a></nav></noscript></div>
 
-    <script src="../js/main.js"></script>
+    <!-- Bracketed micro-labels along the bottom edge -->
+    <div class="stage-labels" aria-hidden="true">
+        <span>[ 基礎領域 ]</span>
+        <span>[ 専門領域 ]</span>
+        <span>[ ARCHIVE ]</span>
+    </div>
+
+    <!-- Shared behaviour, then the star field, then the scene engine (loads Three.js) -->
+    <script src="../js/layout.js?v=r22"></script>
+    <script src="../js/main.js?v=r22"></script>
+    <script src="../js/starfield.js?v=r22"></script>
+    <script src="../js/scroll-scenes.js?v=r22"></script>
 </body>
+
 </html>
