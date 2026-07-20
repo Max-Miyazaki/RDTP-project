@@ -5,31 +5,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Academic Gates - ブログ</title>
-    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/style.css?v=r22">
 </head>
 
-<body>
-    <header>
-        <div class="logo">Academic Gates</div>
-        <nav>
-            <button class="menu-toggle" aria-label="メニューを開く" aria-expanded="false">
-                <span></span>
-                <span></span>
-                <span></span>
-            </button>
-            <ul class="nav-menu">
-                <li><a href="index.html">ホーム</a></li>
-                <li><a href="self-intro.html">自己紹介</a></li>
-                <li><a href="study.html">勉強の軌跡</a></li>
-                <li><a href="videos.html">動画</a></li>
-                <li><a href="blog.html" class="active">ブログ</a></li>
-                <li><a href="sns.html">各種SNS</a></li>
-            </ul>
-        </nav>
-    </header>
+<body data-page="blog">
+    <canvas id="starfield" aria-hidden="true"></canvas>
+<div id="site-nav"><noscript><nav class="noscript-nav" aria-label="メインナビゲーション"><a href="index.html">ホーム</a><a href="self-intro.html">自己紹介</a><a href="study.html">勉強の軌跡</a><a href="videos.html">動画</a><a href="blog.html">ブログ</a><a href="sns.html">各種SNS</a></nav></noscript></div>
     <main>
         <div class="page-header">
-            <h1>Science & Tech Articles</h1>
+            <p class="eyebrow"><span class="eyebrow__num">01</span> — Blog</p>
+                <h1>Science & Tech Articles</h1>
             <p>科学技術に関する解説や考察</p>
         </div>
 
@@ -68,9 +53,9 @@
             </article>
         </section>
     </main>
-    <footer>
-        <p>&copy; 2025 Academic Gates</p>
-    </footer>
-    <script src="../js/main.js"></script>
+    <div id="site-footer"><noscript><nav class="noscript-nav" aria-label="フッターナビゲーション"><a href="index.html">ホーム</a><a href="self-intro.html">自己紹介</a><a href="study.html">勉強の軌跡</a><a href="videos.html">動画</a><a href="blog.html">ブログ</a><a href="sns.html">各種SNS</a></nav></noscript></div>
+<script src="../js/layout.js?v=r22"></script>
+<script src="../js/main.js?v=r22"></script>
+    <script src="../js/starfield.js?v=r22"></script>
 </body>
 </html>

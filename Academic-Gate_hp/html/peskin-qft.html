@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Peskin & Schroeder QFTまとめ</title>
-    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/style.css?v=r22">
     <script>
       window.MathJax = {
         tex: {
@@ -14,27 +14,13 @@
     </script>
     <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 </head>
-<body>
-    <header>
-        <div class="logo">Academic Gates</div>
-        <nav>
-            <button class="menu-toggle" aria-label="メニューを開く" aria-expanded="false">
-                <span></span>
-                <span></span>
-                <span></span>
-            </button>
-            <ul class="nav-menu">
-                <li><a href="index.html">ホーム</a></li>
-                <li><a href="self-intro.html">自己紹介</a></li>
-                <li><a href="study.html" class="active">勉強の軌跡</a></li>
-                <li><a href="blog.html">ブログ</a></li>
-                <li><a href="sns.html">各種SNS</a></li>
-            </ul>
-        </nav>
-    </header>
+<body data-page="peskin">
+    <canvas id="starfield" aria-hidden="true"></canvas>
+<div id="site-nav"><noscript><nav class="noscript-nav" aria-label="メインナビゲーション"><a href="index.html">ホーム</a><a href="self-intro.html">自己紹介</a><a href="study.html">勉強の軌跡</a><a href="videos.html">動画</a><a href="blog.html">ブログ</a><a href="sns.html">各種SNS</a></nav></noscript></div>
     <main>
         <section class="qft-summary">
-            <h1>Peskin & Schroeder『An Introduction to Quantum Field Theory』まとめ</h1>
+            <p class="eyebrow"><span class="eyebrow__num">01</span> — Contents</p>
+                <h1>Peskin & Schroeder『An Introduction to Quantum Field Theory』まとめ</h1>
             <p>このページではPeskin & Schroederの『Quantum Field Theory』の内容やポイント、補足ノートなどをまとめていきます。</p>
             <hr>
             <h2>目次</h2>
@@ -53,6 +39,7 @@
             </ul>
         </section>
     </main>
+    <div id="site-footer"><noscript><nav class="noscript-nav" aria-label="フッターナビゲーション"><a href="index.html">ホーム</a><a href="self-intro.html">自己紹介</a><a href="study.html">勉強の軌跡</a><a href="videos.html">動画</a><a href="blog.html">ブログ</a><a href="sns.html">各種SNS</a></nav></noscript></div>
     <script>
       if (window.MathJax && window.MathJax.typesetPromise) {
         window.MathJax.typesetPromise();
@@ -75,6 +62,8 @@
         }
       });
     </script>
-    <script src="../js/main.js"></script>
+    <script src="../js/layout.js?v=r22"></script>
+    <script src="../js/main.js?v=r22"></script>
+    <script src="../js/starfield.js?v=r22"></script>
 </body>
 </html> 

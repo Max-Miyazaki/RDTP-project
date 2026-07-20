@@ -5,33 +5,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Academic Gates</title>
-    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/style.css?v=r22">
 </head>
 
-<body>
-    <header>
-        <div class="logo">Academic Gates</div>
-        <nav>
-            <button class="menu-toggle" aria-label="メニューを開く" aria-expanded="false">
-                <span></span>
-                <span></span>
-                <span></span>
-            </button>
-            <ul class="nav-menu">
-                <li><a href="index.html">ホーム</a></li>
-                <li><a href="self-intro.html" class="active">自己紹介</a></li>
-                <li><a href="study.html">勉強の軌跡</a></li>
-                <li><a href="blog.html">ブログ</a></li>
-                <li><a href="sns.html">各種SNS</a></li>
-            </ul>
-        </nav>
-    </header>
+<body data-page="self-intro">
+    <canvas id="starfield" aria-hidden="true"></canvas>
+<div id="site-nav"><noscript><nav class="noscript-nav" aria-label="メインナビゲーション"><a href="index.html">ホーム</a><a href="self-intro.html">自己紹介</a><a href="study.html">勉強の軌跡</a><a href="videos.html">動画</a><a href="blog.html">ブログ</a><a href="sns.html">各種SNS</a></nav></noscript></div>
     <main class="self-intro">
         <div class="profile-container">
             <div class="profile-image">
                 <img src="../image/my-pic.jpg" alt="Max Miyazakiのプロフィール写真">
             </div>
             <div class="profile-content">
+                <p class="eyebrow"><span class="eyebrow__num">01</span> — Profile</p>
                 <h1>Max Miyazaki</h1>
                 <p class="affiliation">東京都立大学大学院理学研究科物理学専攻素粒子理論研究室修士1年</p>
 
@@ -65,7 +51,10 @@
             </div>
         </div>
     </main>
-    <script src="../js/main.js"></script>
+    <div id="site-footer"><noscript><nav class="noscript-nav" aria-label="フッターナビゲーション"><a href="index.html">ホーム</a><a href="self-intro.html">自己紹介</a><a href="study.html">勉強の軌跡</a><a href="videos.html">動画</a><a href="blog.html">ブログ</a><a href="sns.html">各種SNS</a></nav></noscript></div>
+    <script src="../js/layout.js?v=r22"></script>
+    <script src="../js/main.js?v=r22"></script>
+    <script src="../js/starfield.js?v=r22"></script>
     <script src="../js/self-intro.js"></script>
 </body>
 </html>

@@ -5,31 +5,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Academic Gates - SNS</title>
-    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/style.css?v=r22">
 </head>
 
-<body>
-    <header>
-        <div class="logo">Academic Gates</div>
-        <nav>
-            <button class="menu-toggle" aria-label="メニューを開く" aria-expanded="false">
-                <span></span>
-                <span></span>
-                <span></span>
-            </button>
-            <ul class="nav-menu">
-                <li><a href="index.html">ホーム</a></li>
-                <li><a href="self-intro.html">自己紹介</a></li>
-                <li><a href="study.html">勉強の軌跡</a></li>
-                <li><a href="videos.html">動画</a></li>
-                <li><a href="blog.html">ブログ</a></li>
-                <li><a href="sns.html" class="active">各種SNS</a></li>
-            </ul>
-        </nav>
-    </header>
+<body data-page="sns">
+    <canvas id="starfield" aria-hidden="true"></canvas>
+<div id="site-nav"><noscript><nav class="noscript-nav" aria-label="メインナビゲーション"><a href="index.html">ホーム</a><a href="self-intro.html">自己紹介</a><a href="study.html">勉強の軌跡</a><a href="videos.html">動画</a><a href="blog.html">ブログ</a><a href="sns.html">各種SNS</a></nav></noscript></div>
     <main>
         <div class="page-header">
-            <h1>Social Media</h1>
+            <p class="eyebrow"><span class="eyebrow__num">01</span> — Connect</p>
+                <h1>Social Media</h1>
             <p>活動・発信のリンク集</p>
         </div>
 
@@ -59,9 +44,9 @@
             </a>
         </section>
     </main>
-    <footer>
-        <p>&copy; 2025 Academic Gates</p>
-    </footer>
-    <script src="../js/main.js"></script>
+    <div id="site-footer"><noscript><nav class="noscript-nav" aria-label="フッターナビゲーション"><a href="index.html">ホーム</a><a href="self-intro.html">自己紹介</a><a href="study.html">勉強の軌跡</a><a href="videos.html">動画</a><a href="blog.html">ブログ</a><a href="sns.html">各種SNS</a></nav></noscript></div>
+<script src="../js/layout.js?v=r22"></script>
+<script src="../js/main.js?v=r22"></script>
+    <script src="../js/starfield.js?v=r22"></script>
 </body>
 </html>

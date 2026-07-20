@@ -4,31 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Academic Gates - 勉強の軌跡</title>
-    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/style.css?v=r22">
     <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js" 
             onerror="this.onerror=null;this.src='https://unpkg.com/three@0.160.0/build/three.min.js';"></script>
 </head>
-<body>
-    <header>
-        <div class="logo">Academic Gates</div>
-        <nav>
-            <button class="menu-toggle" aria-label="メニューを開く" aria-expanded="false">
-                <span></span>
-                <span></span>
-                <span></span>
-            </button>
-            <ul class="nav-menu">
-                <li><a href="index.html">ホーム</a></li>
-                <li><a href="self-intro.html">自己紹介</a></li>
-                <li><a href="study.html" class="active">勉強の軌跡</a></li>
-                <li><a href="blog.html">ブログ</a></li>
-                <li><a href="sns.html">各種SNS</a></li>
-            </ul>
-        </nav>
-    </header>
+<body data-page="study">
+<div id="site-nav"><noscript><nav class="noscript-nav" aria-label="メインナビゲーション"><a href="index.html">ホーム</a><a href="self-intro.html">自己紹介</a><a href="study.html">勉強の軌跡</a><a href="videos.html">動画</a><a href="blog.html">ブログ</a><a href="sns.html">各種SNS</a></nav></noscript></div>
     <main>
         <section class="study-path">
-            <h2>物理学の勉強</h2>
+            <p class="eyebrow"><span class="eyebrow__num">01</span> — 勉強の軌跡</p>
+                <h2>物理学の勉強</h2>
             <div class="accordion">
                 <div class="accordion-block">
                     <button class="accordion-toggle">基礎領域（学部レベル）</button>
@@ -73,8 +58,10 @@
             </div>
         </section>
         <section class="knowledge-map">
-            <h1>Archive Sphere</h1>
+            <p class="eyebrow"><span class="eyebrow__num">02</span> — The Knowledge Map</p>
+                <h1>Archive Sphere</h1>
             <div class="graph-controls">
+                <button id="toggleControls" class="control-toggle-button">コントロールパネル</button>
                 <div class="control-panel">
                     <div class="control-group">
                         <h3>表示</h3>
@@ -125,14 +112,14 @@
                         </div>
                     </div>
                     <button id="startAnimation" class="control-button">アニメーション開始</button>
-                    <button id="resetCamera" class="control-button" style="margin-top: 1rem; background: #ff4500;">カメラリセット</button>
-                    <button id="toggleFullscreen" class="control-button" style="margin-top: 1rem; background: #00ff00; color: #000;">全画面表示</button>
+                    <button id="resetCamera" class="control-button" style="margin-top: 1rem; background: rgba(255,61,139,0.15); border-color: var(--accent-warm);">カメラリセット</button>
+                    <button id="toggleFullscreen" class="control-button" style="margin-top: 1rem; background: rgba(43,217,196,0.16); border-color: var(--spec-teal);">全画面表示</button>
                 </div>
-                <button id="toggleControls" class="control-toggle-button">コントロールパネル</button>
             </div>
             <div id="graph-container"></div>
         </section>
     </main>
+    <div id="site-footer"><noscript><nav class="noscript-nav" aria-label="フッターナビゲーション"><a href="index.html">ホーム</a><a href="self-intro.html">自己紹介</a><a href="study.html">勉強の軌跡</a><a href="videos.html">動画</a><a href="blog.html">ブログ</a><a href="sns.html">各種SNS</a></nav></noscript></div>
     <script src="../js/knowledge-graph.js"></script>
     <script>
     // アコーディオン動作（複数ブロック対応）
@@ -152,6 +139,8 @@
         });
     });
     </script>
-    <script src="../js/main.js"></script>
+    <script src="../js/layout.js?v=r22"></script>
+    <script src="../js/main.js?v=r22"></script>
+    <script src="../js/starfield.js?v=r22"></script>
 </body>
 </html> 
