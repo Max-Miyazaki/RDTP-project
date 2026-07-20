@@ -9,18 +9,18 @@ let previousMousePosition = { x: 0, y: 0 };
 
 // タグの色を定義
 const tagColors = {
-    '#physics': 0x87CEEB,      // 物理学関連: スカイブルー
-    '#quantum': 0xFF69B4,      // 量子力学関連: ホットピンク
-    '#relativity': 0x4B0082,    // 相対性理論関連: インディゴ
-    '#cosmology': 0x32CD32,     // 宇宙論関連: ライムグリーン
-    '#mathematics': 0xFFD700,   // 数学関連: ゴールド
-    '#quantum-field-theory': 0xFF00FF  // PeskinQFT関連: ピンク
+    '#physics': 0x2bd9c4,      // 物理学関連: ティール
+    '#quantum': 0x5ad1ff,      // 量子力学関連: ライトシアン
+    '#relativity': 0x6a5cff,    // 相対性理論関連: ブルーバイオレット
+    '#cosmology': 0x00c2cb,     // 宇宙論関連: シアン
+    '#mathematics': 0xff3d8b,   // 数学関連: ウォームアクセント
+    '#quantum-field-theory': 0xc45cff  // PeskinQFT関連: バイオレット
 };
 
 // ノードのタイプ別の色
 const nodeTypeColors = {
-    'pdf': 0x00ffff,    // シアン
-    'page': 0xff00ff,   // マゼンタ
+    'pdf': 0x00c2cb,    // シアン
+    'page': 0x2bd9c4,   // ティール
     'tag': 0xffffff     // 白（タグの色はtagColorsから取得）
 };
 
@@ -147,7 +147,7 @@ function initializeGraph() {
     const width = container.offsetWidth;
     const height = container.offsetHeight;
     camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 10000);
-    camera.position.set(0, 0, 50);
+    camera.position.set(0, 0, 34);
 
     // レンダラーの設定
     renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -251,15 +251,23 @@ function initializeGraph() {
         };
         scene.add(sphere);
 
-        // テキストラベル（スプライト）
+        // テキストラベル（スプライト）: キャンバス幅を実測テキスト幅から決めるので、
+        // フォントを大きくしても長いラベルが両端で切れない。スプライトの縦横比も
+        // 実寸に合わせるため文字が歪まない。
+        const LABEL_FONT = 'bold 34px Arial';
+        const LABEL_PAD = 24;               // 左右の余白（px）
+        const LABEL_H = 64;                 // キャンバス高さ（px）
         const canvas = document.createElement('canvas');
         const context = canvas.getContext('2d');
-        canvas.width = 512;
-        canvas.height = 64;
+        context.font = LABEL_FONT;
+        const textW = Math.ceil(context.measureText(nodeData.id).width);
+        canvas.width = textW + LABEL_PAD * 2;   // ← 幅をテキストに合わせる（切れ防止）
+        canvas.height = LABEL_H;
+        // canvas のサイズ変更でコンテキスト状態がリセットされるため、再設定してから描画
+        context.font = LABEL_FONT;
         context.fillStyle = 'rgba(0, 0, 0, 0.7)';
         context.fillRect(0, 0, canvas.width, canvas.height);
-        context.fillStyle = '#00ffff';
-        context.font = '24px Arial';
+        context.fillStyle = '#2bd9c4';
         context.textAlign = 'center';
         context.textBaseline = 'middle';
         context.fillText(nodeData.id, canvas.width / 2, canvas.height / 2);
@@ -268,7 +276,9 @@ function initializeGraph() {
         const spriteMaterial = new THREE.SpriteMaterial({ map: texture });
         const sprite = new THREE.Sprite(spriteMaterial);
         sprite.position.set(x, y + nodeSize + 1, z);
-        sprite.scale.set(5, 0.625, 1);
+        // 縦は一定、横はキャンバスの縦横比に比例 → 歪みなし・切れなし
+        const LABEL_WORLD_H = 1.05;
+        sprite.scale.set(LABEL_WORLD_H * (canvas.width / canvas.height), LABEL_WORLD_H, 1);
         sprite.userData = { nodeData: nodeData };
         scene.add(sprite);
 
@@ -289,17 +299,17 @@ function initializeGraph() {
         const targetPos = targetNode.sphere.position;
 
         // 線の色を決定
-        let lineColor = 0x555555;
+        let lineColor = 0x1c3a3f;        // 既定: くすんだティール系（暗く）
         if (linkData.type === 'tag') {
-            lineColor = 0x00ffff;
+            lineColor = 0x1f8a80;        // タグ: ディム・ティール
         } else if (linkData.type === 'hierarchy') {
-            lineColor = 0x00ff00;
+            lineColor = 0x2a52c8;        // 階層: ディム・ブルー
         }
 
         // 曲線の制御点を計算（中間点を追加して緩やかな曲線を作成）
         const midPoint = new THREE.Vector3().addVectors(sourcePos, targetPos).multiplyScalar(0.5);
         const direction = new THREE.Vector3().subVectors(targetPos, sourcePos).normalize();
-        const perpendicular = new THREE.Vector3().crossVectors(direction, new THREE.Vector3(0, 1, 0));
+        let perpendicular = new THREE.Vector3().crossVectors(direction, new THREE.Vector3(0, 1, 0));
         if (perpendicular.length() < 0.1) {
             perpendicular = new THREE.Vector3().crossVectors(direction, new THREE.Vector3(1, 0, 0));
         }
@@ -514,10 +524,10 @@ function initializeGraph() {
             if (toggleFullscreenButton) {
                 if (fullscreenElement) {
                     toggleFullscreenButton.textContent = '通常表示に戻る';
-                    toggleFullscreenButton.style.background = '#ff4500';
+                    toggleFullscreenButton.style.background = 'rgba(255,61,139,0.3)';
                 } else {
                     toggleFullscreenButton.textContent = '全画面表示';
-                    toggleFullscreenButton.style.background = '#00ff00';
+                    toggleFullscreenButton.style.background = 'rgba(43,217,196,0.16)';
                 }
             }
 
@@ -551,7 +561,7 @@ function initializeGraph() {
             panOffset.set(0, 0, 0);
             
             // カメラの距離をリセット
-            cameraRadius = 50;
+            cameraRadius = 34;
         });
     }
 
@@ -569,7 +579,7 @@ function initializeGraph() {
     let targetRotationY = 0;
     let currentRotationX = 0;
     let currentRotationY = 0;
-    let cameraRadius = 50; // カメラの基準距離を保持
+    let cameraRadius = 34; // カメラの基準距離を保持（コンテナに収まる距離）
     let panStart = new THREE.Vector2();
     let panOffset = new THREE.Vector3();
     let dragPlane = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0);
@@ -799,7 +809,7 @@ function initializeGraph() {
             // 曲線の制御点を再計算
             const midPoint = new THREE.Vector3().addVectors(sourcePos, targetPos).multiplyScalar(0.5);
             const direction = new THREE.Vector3().subVectors(targetPos, sourcePos).normalize();
-            const perpendicular = new THREE.Vector3().crossVectors(direction, new THREE.Vector3(0, 1, 0));
+            let perpendicular = new THREE.Vector3().crossVectors(direction, new THREE.Vector3(0, 1, 0));
             if (perpendicular.length() < 0.1) {
                 perpendicular = new THREE.Vector3().crossVectors(direction, new THREE.Vector3(1, 0, 0));
             }
