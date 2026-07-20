@@ -47,10 +47,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
             if (targetElement) {
                 e.preventDefault();
-                
-                // ヘッダーの高さを考慮したオフセット
-                const headerHeight = document.querySelector('header').offsetHeight;
-                const targetPosition = targetElement.getBoundingClientRect().top + window.pageYOffset - headerHeight - 20;
+
+                // 浮遊するナビピルの高さ + 上部の余白を考慮したオフセット
+                const nav = document.querySelector('header');
+                const navHeight = nav ? nav.offsetHeight : 0;
+                const targetPosition = targetElement.getBoundingClientRect().top + window.pageYOffset - navHeight - 40;
 
                 window.scrollTo({
                     top: targetPosition,
@@ -59,14 +60,4 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
-});
-
-// スクロール時のヘッダー効果（オプション）
-window.addEventListener('scroll', function() {
-    const header = document.querySelector('header');
-    if (window.scrollY > 50) {
-        header.style.boxShadow = '0 2px 10px rgba(0,0,0,0.5)';
-    } else {
-        header.style.boxShadow = '0 2px 10px rgba(0,0,0,0.3)';
-    }
 });
