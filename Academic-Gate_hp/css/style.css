@@ -1,134 +1,468 @@
-/* CSS変数 */
+/* ============================================================================
+   Academic Gates — "The Gate" design system
+   Pure-black cosmic canvas · spectrum particle glow · light geometric type.
+   Token definitions live at the top; everything else is grouped under
+   clearly-labelled section comments.
+   ============================================================================ */
+
+/* ---------------------------------------------------------------------------
+   1. TOKENS
+   --------------------------------------------------------------------------- */
 :root {
-    --bg-dark: #000000;
-    --bg-dark-secondary: #0a0a1a;
-    --bg-dark-tertiary: #000033;
-    --accent-cyan: #00ffff;
-    --text-white: #ffffff;
-    --text-gray: #cccccc;
-    --text-gray-light: #aaaaaa;
-    --glass-bg: rgba(255, 255, 255, 0.05);
-    --glass-border: rgba(0, 255, 255, 0.1);
-    --glass-border-light: rgba(0, 255, 255, 0.2);
-    --glow-cyan: rgba(0, 255, 255, 0.3);
-    --header-bg: rgba(0, 0, 0, 0.8);
-    --profile-bg: rgba(0, 0, 0, 0.5);
-    --shadow-dark: rgba(0, 0, 0, 0.5);
+    /* Base & surfaces */
+    --bg: #000000;
+    --surface: rgba(255, 255, 255, 0.02);
+    --surface-hover: rgba(255, 255, 255, 0.04);
+    --nav-bg: rgba(10, 10, 14, 0.60);
+    --hairline: rgba(255, 255, 255, 0.14);
+    --hairline-strong: rgba(255, 255, 255, 0.24);
+
+    /* Text */
+    --text-primary: #ffffff;
+    --text-secondary: rgba(255, 255, 255, 0.62);
+    --text-tertiary: rgba(255, 255, 255, 0.40);
+
+    /* The spectrum (particles + accents) — teal-dominant, warm at cores only */
+    --spec-blue-deep: #0b3be0;
+    --spec-teal: #2bd9c4;
+    --spec-cyan: #00c2cb;
+    --spec-blue: #3d8bff;
+    --spec-violet: #7b4dff;
+    --spec-magenta: #ff3d8b;
+    --spec-ember: #ff5a3c;
+
+    /* Derived UI accents */
+    --accent: #3d8bff;
+    --accent-warm: #ff3d8b;
+    --glow-cool: rgba(43, 217, 196, 0.22);
+    --glow-warm: rgba(255, 61, 139, 0.20);
+    --spill-teal: rgba(43, 217, 196, 0.10);
+    --spill-cyan: rgba(0, 194, 203, 0.10);
+
+    /* Stars */
+    --star-white: rgba(255, 255, 255, 0.55);
+    --star-blue: rgba(120, 170, 255, 0.45);
+    --star-red: rgba(255, 120, 90, 0.30);
+
+    /* Typography */
+    --font-display: 'Inter Tight', 'Noto Sans JP', system-ui, sans-serif;
+    --font-body: 'Inter Tight', 'Noto Sans JP', system-ui, sans-serif;
+    /* Page-title tier: interior page + section titles. > stage heading (3rem), on-scale. */
+    --fs-page-title: clamp(2rem, 4vw, 3.25rem);
+
+    /* Spacing scale (8px base) */
+    --space-1: 0.5rem;
+    --space-2: 1rem;
+    --space-3: 1.5rem;
+    --space-4: 2rem;
+    --space-6: 3rem;
+    --space-8: 4rem;
+    --space-12: 6rem;
+    --space-16: 8rem;
+    --gutter: clamp(1.25rem, 5vw, 6rem);
+
+    /* Floating-nav clearance: pill offset (20px) + pill height (~52px) + margin (20px).
+       Any content that can land at the top of the viewport reserves this much. */
+    --nav-clearance: 92px;
+
+    /* Radii */
+    --radius-pill: 999px;
+    --radius-lg: 24px;
+    --radius-md: 16px;
+    --radius-sm: 8px;
+
+    /* Motion */
+    --ease: cubic-bezier(0.22, 1, 0.36, 1);
+    --dur: 0.32s;
 }
 
-/* リセット */
-* {
+/* ---------------------------------------------------------------------------
+   2. RESET & BASE
+   --------------------------------------------------------------------------- */
+*,
+*::before,
+*::after {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
-/* 全体のスタイル */
-body {
-    font-family: 'Arial', 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', 'Meiryo', sans-serif;
-    background: linear-gradient(135deg, var(--bg-dark) 0%, var(--bg-dark-secondary) 100%);
-    color: var(--text-white);
-    min-height: 100vh;
-    line-height: 1.6;
-    position: relative;
+html {
+    scroll-behavior: smooth;
+    scroll-padding-top: var(--nav-clearance);
+    -webkit-text-size-adjust: 100%;
 }
 
-/* 背景装飾（グリッド/粒子風） */
+/* Shared floating-nav clearance. Any section or heading that can become the top
+   of the viewport (anchor jump, scroll-to, or a short section resting at top)
+   reserves clearance below the pill so its first line never hides under the nav.
+   Defined once here so it can't regress page by page. */
+main > section,
+.page-header,
+h1, h2, h3,
+.eyebrow {
+    scroll-margin-top: var(--nav-clearance);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html {
+        scroll-behavior: auto;
+    }
+}
+
+body {
+    font-family: var(--font-body);
+    font-weight: 400;
+    font-size: 1rem;
+    line-height: 1.75;
+    color: var(--text-primary);
+    background: var(--bg);
+    min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+}
+
+/* Ambient light spill — large, soft, teal-forward pools that balance the
+   composition (formation upper-right; a big teal spill behind it + a cool one
+   lower-left). Also the JS-disabled / no-WebGL fallback. Nothing repaints. */
 body::before {
     content: '';
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-image: 
-        linear-gradient(rgba(0, 255, 255, 0.08) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(0, 255, 255, 0.08) 1px, transparent 1px);
-    background-size: 50px 50px;
+    inset: 0;
+    z-index: -3;
     pointer-events: none;
-    z-index: 0;
+    background:
+        radial-gradient(70% 70% at 82% 24%, var(--spill-teal), transparent 66%),
+        radial-gradient(85% 75% at 12% 88%, var(--spill-cyan), transparent 70%),
+        radial-gradient(50% 45% at 60% 8%, rgba(255, 61, 139, 0.06), transparent 72%);
 }
 
-/* ヘッダー */
-header {
-    background: rgba(0, 0, 0, 0.8);
-    backdrop-filter: blur(10px);
-    padding: 1rem 2rem;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+/* Bracketed micro-labels along the bottom edge (reference detail) */
+.stage-labels {
     position: fixed;
+    left: var(--gutter);
+    bottom: 16px;
+    z-index: 900;
+    display: flex;
+    gap: 1.1rem;
+    flex-wrap: wrap;
+    font-size: 0.6rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+    pointer-events: none;
+}
+
+/* Live telemetry (particles · frame budget · fps) — reference detail */
+#telemetry {
+    position: fixed;
+    right: var(--gutter);
+    bottom: 16px;
+    z-index: 900;
+    display: flex;
+    gap: 1rem;
+    font-size: 0.6rem;
+    letter-spacing: 0.1em;
+    color: var(--text-tertiary);
+    font-variant-numeric: tabular-nums;
+    pointer-events: none;
+    text-transform: uppercase;
+}
+
+#telemetry b {
+    color: var(--spec-teal);
+    font-weight: 500;
+    margin-right: 0.25em;
+}
+
+@media (max-width: 600px) {
+
+    .stage-labels,
+    #telemetry {
+        display: none;
+    }
+}
+
+img {
+    max-width: 100%;
+    display: block;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+/* Universal visible focus ring */
+:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+    border-radius: 4px;
+}
+
+/* ---------------------------------------------------------------------------
+   3. COSMIC LAYERS (star field + WebGL scene canvas)
+   --------------------------------------------------------------------------- */
+#starfield {
+    position: fixed;
+    inset: 0;
+    z-index: -2;
     width: 100%;
-    top: 0;
+    height: 100%;
+    pointer-events: none;
+}
+
+#scene-canvas {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    /* Fades in only once the first frame has rendered (§G: no blank-then-pop) */
+    opacity: 0;
+    transition: opacity 1.2s ease;
+}
+
+#scene-canvas.is-ready {
+    opacity: 1;
+}
+
+/* Fades out once the hero leaves the viewport so the calm card/footer region
+   settles onto pure black + the star field (motion stops, fully readable). */
+#scene-canvas.is-dormant {
+    opacity: 0;
+}
+
+/* ---------------------------------------------------------------------------
+   4. TYPOGRAPHY
+   --------------------------------------------------------------------------- */
+h1,
+h2,
+h3,
+h4 {
+    font-family: var(--font-display);
+    font-weight: 300;
+    color: var(--text-primary);
+}
+
+/* Page-title tier (interior page + section-title headings). One value, one token —
+   larger than a stage heading (3rem) but on the system, not a one-off page rule. */
+h1 {
+    font-size: var(--fs-page-title);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+}
+
+/* Sub-heading tier. Index stage headings override to 3rem via .scene h2; interior
+   section titles that are h2 opt into the page-title tier explicitly (below). */
+h2 {
+    font-size: clamp(1.4rem, 2.4vw, 1.9rem);
+    line-height: 1.1;
+    letter-spacing: -0.01em;
+}
+
+/* Interior section titles that happen to be h2 */
+.study-path h2 {
+    font-size: var(--fs-page-title);
+    line-height: 1.05;
+}
+
+h3 {
+    font-size: clamp(1.25rem, 2.5vw, 1.75rem);
+    font-weight: 400;
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+}
+
+h4 {
+    font-size: 1.1rem;
+    font-weight: 500;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+}
+
+p {
+    max-width: 62ch;
+    color: var(--text-secondary);
+    line-height: 1.75;
+}
+
+/* Japanese needs more weight and air on pure black. Latin headings stay 300;
+   .jp (or :lang(ja)) headings go 400. Both faces coexist in one heading. */
+.jp,
+:lang(ja) {
+    line-break: strict;
+    word-break: normal;
+}
+
+h1 .jp,
+h2 .jp,
+h3 .jp,
+h1:lang(ja),
+h2:lang(ja),
+h3:lang(ja),
+.heading-jp {
+    font-weight: 400;
+}
+
+p:lang(ja),
+.jp-body {
+    line-height: 1.9;
+    word-break: normal;
+    line-break: strict;
+}
+
+/* Eyebrow labels — signature detail: "01 — LABEL" */
+.eyebrow {
+    display: block;
+    max-width: none;
+    font-size: 0.7rem;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+    margin-bottom: var(--space-3);
+}
+
+.eyebrow__num {
+    color: var(--text-secondary);
+}
+
+/* ---------------------------------------------------------------------------
+   5. FLOATING NAV (pill) — reuses <header>/.menu-toggle/.nav-menu for main.js
+   --------------------------------------------------------------------------- */
+/* JS-disabled fallback nav (rendered from <noscript> inside #site-nav / #site-footer
+   when layout.js can't inject the real header). Plain, always-visible, navigable. */
+.noscript-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem 1.5rem;
+    padding: 1rem var(--gutter);
+    border-bottom: 1px solid var(--hairline);
+}
+.noscript-nav a {
+    color: var(--text-secondary);
+}
+.noscript-nav a:hover {
+    color: var(--text-primary);
+}
+
+header {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
     z-index: 1000;
-    border-bottom: 2px solid var(--glass-border);
+    width: min(1080px, calc(100% - 32px));
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: 0.55rem 0.7rem 0.55rem 1.25rem;
+    background: var(--nav-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius-pill);
 }
 
 .logo {
-    font-size: 1.5rem;
-    font-weight: bold;
-    color: var(--accent-cyan);
-    text-shadow: 0 0 10px var(--accent-cyan), 0 0 20px var(--accent-cyan);
-}
-
-/* ナビゲーション */
-nav {
-    position: relative;
-}
-
-nav ul {
-    list-style: none;
-    display: flex;
-    gap: 1.5rem;
+    display: inline-flex;
     align-items: center;
-}
-
-nav ul li a {
-    color: var(--text-white);
-    text-decoration: none;
-    font-size: 0.9rem;
-    padding: 0.5rem 0.8rem;
-    border-radius: 4px;
-    transition: all 0.3s ease;
+    gap: 0.55rem;
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: 0.95rem;
+    letter-spacing: -0.01em;
+    color: var(--text-primary);
     white-space: nowrap;
 }
 
-nav ul li a:hover,
-nav ul li a:focus {
-    color: var(--accent-cyan);
-    text-shadow: 0 0 5px var(--accent-cyan);
-    outline: 2px solid var(--accent-cyan);
-    outline-offset: 2px;
+/* Small ring glyph echoing THE GATE */
+.logo::before {
+    content: '';
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 2px solid var(--accent);
+    box-shadow: 0 0 8px var(--glow-cool);
+    flex: none;
 }
 
-nav ul li a.active {
-    color: var(--accent-cyan);
-    text-shadow: 0 0 5px var(--accent-cyan);
+header nav {
+    flex: 1;
+    display: flex;
+    justify-content: center;
 }
 
-/* ハンバーガーメニュー */
+.nav-menu {
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.nav-menu a {
+    position: relative;
+    display: inline-block;
+    font-size: 0.8rem;
+    letter-spacing: 0.01em;
+    color: var(--text-secondary);
+    padding: 0.4rem 0.75rem;
+    border-radius: var(--radius-pill);
+    transition: color var(--dur) var(--ease);
+    white-space: nowrap;
+}
+
+.nav-menu a:hover {
+    color: var(--text-primary);
+}
+
+.nav-menu a.active {
+    color: var(--text-primary);
+}
+
+.nav-menu a.active::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    bottom: -2px;
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    background: var(--accent);
+    transform: translateX(-50%);
+}
+
+.btn-nav-cta {
+    flex: none;
+}
+
+/* Hamburger */
 .menu-toggle {
     display: none;
     flex-direction: column;
+    gap: 4px;
     background: transparent;
     border: none;
     cursor: pointer;
     padding: 0.5rem;
-    gap: 4px;
     z-index: 1001;
 }
 
 .menu-toggle span {
-    width: 25px;
+    display: block;
+    width: 22px;
     height: 2px;
-    background: var(--text-white);
-    transition: all 0.3s ease;
+    background: var(--text-primary);
     border-radius: 2px;
+    transition: transform var(--dur) var(--ease), opacity var(--dur) var(--ease);
 }
 
 .menu-toggle[aria-expanded="true"] span:nth-child(1) {
-    transform: rotate(45deg) translate(6px, 6px);
+    transform: translateY(6px) rotate(45deg);
 }
 
 .menu-toggle[aria-expanded="true"] span:nth-child(2) {
@@ -136,1251 +470,1050 @@ nav ul li a.active {
 }
 
 .menu-toggle[aria-expanded="true"] span:nth-child(3) {
-    transform: rotate(-45deg) translate(6px, -6px);
+    transform: translateY(-6px) rotate(-45deg);
 }
 
-/* メインコンテンツ */
-main {
-    margin-top: 80px;
-    padding: 3rem 2rem;
-    max-width: 1200px;
-    margin-left: auto;
-    margin-right: auto;
+/* ---------------------------------------------------------------------------
+   6. BUTTONS
+   --------------------------------------------------------------------------- */
+.btn {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    color: var(--text-secondary);
+    padding: 0.6rem 0.7rem 0.6rem 1.15rem;
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius-pill);
+    background: transparent;
+    cursor: pointer;
+    transition: color var(--dur) var(--ease), border-color var(--dur) var(--ease);
+    white-space: nowrap;
+}
+
+/* Soft colored glow behind, revealed on hover */
+.btn::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    background: radial-gradient(120% 120% at 80% 50%, var(--glow-cool), transparent 70%);
+    opacity: 0;
+    transition: opacity var(--dur) var(--ease);
+    pointer-events: none;
+    z-index: -1;
+}
+
+.btn:hover {
+    color: var(--text-primary);
+    border-color: var(--hairline-strong);
+}
+
+.btn:hover::before {
+    opacity: 1;
+}
+
+/* Small circular icon disc on the right */
+.btn-disc {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    border: 1px solid var(--hairline);
+    font-size: 0.85rem;
+    line-height: 1;
+    flex: none;
+    transition: background var(--dur) var(--ease), color var(--dur) var(--ease);
+}
+
+/* Primary — filled disc, warm glow */
+.btn-primary .btn-disc {
+    background: var(--accent);
+    border-color: transparent;
+    color: #fff;
+}
+
+.btn-primary::before {
+    background: radial-gradient(120% 120% at 80% 50%, var(--glow-warm), transparent 70%);
+}
+
+/* Secondary — no border, label + disc only */
+.btn-secondary {
+    border-color: transparent;
+    padding-left: 0.4rem;
+}
+
+.btn-secondary:hover {
+    border-color: transparent;
+}
+
+/* ---------------------------------------------------------------------------
+   7. CARDS
+   --------------------------------------------------------------------------- */
+.card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    padding: var(--space-4);
+    background: var(--surface);
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    transition: background var(--dur) var(--ease), border-color var(--dur) var(--ease),
+        transform var(--dur) var(--ease);
+    color: inherit;
+}
+
+/* Faint blue→violet gradient bleeding in from one edge on hover */
+.card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, var(--glow-cool), transparent 55%);
+    opacity: 0;
+    transition: opacity var(--dur) var(--ease);
+    pointer-events: none;
+}
+
+a.card:hover,
+.card:hover {
+    background: var(--surface-hover);
+    border-color: var(--hairline-strong);
+}
+
+a.card:hover::before,
+.card:hover::before {
+    opacity: 1;
+}
+
+.card>* {
     position: relative;
     z-index: 1;
 }
 
-section {
-    margin-bottom: 5rem;
+.card h4 {
+    color: var(--text-primary);
 }
 
-h2 {
-    color: var(--accent-cyan);
-    font-size: 2rem;
-    margin-bottom: 2rem;
-    border-left: 4px solid var(--accent-cyan);
-    padding-left: 1rem;
-    text-shadow: 0 0 10px var(--glow-cyan);
-}
-
-h3 {
-    color: var(--accent-cyan);
-    font-size: 1.5rem;
-    margin-bottom: 1rem;
-}
-
-/* ヒーローセクション */
-.hero-section {
-    text-align: center;
-    padding: 4rem 0;
-    margin-bottom: 4rem;
-}
-
-.hero-section h1 {
-    font-size: clamp(2rem, 5vw, 3.5rem);
-    color: var(--accent-cyan);
-    margin-bottom: 1.5rem;
-    text-shadow: 0 0 20px var(--glow-cyan);
-    line-height: 1.3;
-}
-
-.hero-subtitle {
-    font-size: clamp(1rem, 2vw, 1.3rem);
-    color: var(--text-gray);
-    margin-bottom: 2.5rem;
-    line-height: 1.6;
-}
-
-.hero-cta {
-    display: flex;
-    gap: 1.5rem;
-    justify-content: center;
-    flex-wrap: wrap;
-}
-
-/* ボタン */
-.btn {
-    display: inline-block;
-    padding: 0.8rem 2rem;
-    border-radius: 6px;
-    text-decoration: none;
-    font-weight: bold;
-    transition: all 0.3s ease;
-    border: 1px solid transparent;
-    cursor: pointer;
-    font-size: 1rem;
-}
-
-.btn-primary {
-    background: var(--accent-cyan);
-    color: var(--bg-dark);
-    box-shadow: 0 0 15px var(--glow-cyan);
-}
-
-.btn-primary:hover,
-.btn-primary:focus {
-    background: #00cccc;
-    box-shadow: 0 0 25px var(--glow-cyan);
-    transform: translateY(-2px);
-    outline: 2px solid var(--accent-cyan);
-    outline-offset: 2px;
-}
-
-.btn-secondary {
-    background: var(--glass-bg);
-    color: var(--accent-cyan);
-    border-color: var(--glass-border);
-    backdrop-filter: blur(10px);
-}
-
-.btn-secondary:hover,
-.btn-secondary:focus {
-    background: rgba(0, 255, 255, 0.1);
-    border-color: var(--accent-cyan);
-    box-shadow: 0 0 15px var(--glow-cyan);
-    transform: translateY(-2px);
-    outline: 2px solid var(--accent-cyan);
-    outline-offset: 2px;
-}
-
-.btn-small {
-    padding: 0.5rem 1rem;
+.card p {
     font-size: 0.9rem;
+    color: var(--text-secondary);
 }
 
-/* ミッションセクション */
-.mission-section {
-    background: var(--glass-bg);
-    backdrop-filter: blur(10px);
-    border: 2px solid var(--glass-border);
-    border-radius: 12px;
-    padding: 2.5rem;
-    margin-bottom: 4rem;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+.card .meta,
+.card .card-date {
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
 }
 
-.mission-text {
-    font-size: 1.1rem;
-    color: var(--text-gray);
-    margin-bottom: 1.5rem;
-    line-height: 1.8;
+/* Spectrum media placeholder (thumbnails etc.) */
+.media-placeholder {
+    aspect-ratio: 16 / 9;
+    border-radius: var(--radius-md);
+    background:
+        radial-gradient(120% 120% at 20% 20%, var(--spec-blue), transparent 60%),
+        radial-gradient(120% 120% at 85% 80%, var(--spec-magenta), transparent 65%),
+        #05050a;
+    opacity: 0.85;
 }
 
-.mission-list {
-    list-style: none;
-    padding-left: 0;
-}
-
-.mission-list li {
-    padding: 0.8rem 0;
-    padding-left: 1.5rem;
-    color: var(--text-gray);
+/* ---------------------------------------------------------------------------
+   8. LAYOUT HELPERS
+   --------------------------------------------------------------------------- */
+main {
     position: relative;
-    line-height: 1.6;
+    z-index: 1;
 }
 
-.mission-list li::before {
-    content: '▸';
+.section {
+    padding: var(--space-16) var(--gutter);
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.grid {
+    display: grid;
+    gap: var(--space-3);
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+}
+
+/* ---------------------------------------------------------------------------
+   9. REVEAL UTILITIES
+   Content is visible by default. JS opts-in (html.js) to animate; reduced-motion
+   forces it visible with no motion. So the page is fully readable with JS off.
+   --------------------------------------------------------------------------- */
+.reveal {
+    opacity: 1;
+    transform: none;
+}
+
+html.js .reveal {
+    opacity: 0;
+    transform: translateY(22px);
+    transition: opacity 0.7s var(--ease), transform 0.7s var(--ease);
+    will-change: opacity, transform;
+}
+
+html.js .reveal.is-visible {
+    opacity: 1;
+    transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    html.js .reveal,
+    html.js .reveal.is-visible {
+        opacity: 1;
+        transform: none;
+        transition: none;
+    }
+}
+
+/* Progressive enhancement: native scroll-driven fade where supported */
+@supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+        html.js .reveal-scroll {
+            opacity: 1;
+            transform: none;
+            transition: none;
+            animation: reveal-fade linear both;
+            animation-timeline: view();
+            animation-range: entry 5% cover 25%;
+        }
+    }
+}
+
+@keyframes reveal-fade {
+    from {
+        opacity: 0;
+        transform: translateY(22px);
+    }
+
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+/* ---------------------------------------------------------------------------
+   10. INDEX — HERO SCENES (cosmic-origin → society, six-stage choreography)
+   A fixed WebGL canvas morphs behind. Each stage's text is faded in by JS only
+   while its scene is centered (one stage on screen at a time); it is fully
+   visible by default (CSS) so the page reads with JS off. Text-block-local
+   scrims hold ≥4.5:1 as the particles sweep past.
+   Heights: BEGINNING 100vh + five stages × 44vh = 320vh (DESIGN.md §6).
+   --------------------------------------------------------------------------- */
+.hero {
+    position: relative;
+    z-index: 1;
+}
+
+/* Hero copy sits over the particle field, so it uses full white (not the
+   secondary body tint) to hold 4.5:1 against the brightest frame. */
+.hero p {
+    color: var(--text-primary);
+}
+
+/* Four text stages × 80vh = 320vh. Each text block is position:sticky so it
+   holds pinned near centre for the whole stage while the field morphs under it —
+   the reader gets a long, steady read instead of a fast fade band. */
+.scene {
+    position: relative;
+    height: 80vh;
+    padding: 0 var(--gutter);
+}
+
+/* Left-aligned column on the dark left; the formation sits on the right (§comp).
+   .scene prefix raises specificity above .hero-scrim (which also sets position). */
+.scene .scene__content {
+    position: sticky;
+    top: 22vh;
+    z-index: 1;
+    width: 100%;
+    max-width: 30rem;
+    margin: 0 auto 0 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    text-align: left;
+    gap: var(--space-3);
+    /* Visible by default (JS off); JS drives opacity so one block reads at a time. */
+    transition: opacity 0.3s linear;
+}
+
+.scene-list {
+    list-style: none;
+    margin-top: var(--space-3);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.25rem;
+}
+
+.scene-list li {
+    position: relative;
+    padding-left: 1rem;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+.scene-list li::before {
+    content: '';
     position: absolute;
     left: 0;
-    color: var(--accent-cyan);
-    font-weight: bold;
+    top: 0.6em;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--accent);
 }
 
-/* Contentsセクション */
-.contents-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 2rem;
-}
-
-.content-card {
-    background: var(--glass-bg);
-    backdrop-filter: blur(10px);
-    border: 2px solid var(--glass-border);
-    border-radius: 12px;
-    padding: 2rem;
-    text-decoration: none;
-    color: var(--text-white);
-    transition: all 0.3s ease;
-    text-align: center;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-}
-
-.content-card:hover,
-.content-card:focus {
-    transform: translateY(-5px);
-    border-color: var(--accent-cyan);
-    box-shadow: 0 8px 25px var(--glow-cyan);
-    outline: 2px solid var(--accent-cyan);
-    outline-offset: 2px;
-}
-
-.card-icon {
-    font-size: 3rem;
-    margin-bottom: 1rem;
-}
-
-.content-card h3 {
-    color: var(--accent-cyan);
-    margin-bottom: 0.5rem;
-    font-size: 1.3rem;
-}
-
-.content-card p {
-    color: var(--text-gray);
-    font-size: 0.95rem;
-}
-
-/* Picksセクション */
-.picks-subsection {
-    margin-bottom: 3rem;
-}
-
-.picks-subsection h3 {
-    margin-bottom: 1.5rem;
-    font-size: 1.5rem;
-}
-
-.video-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 2rem;
-    margin-bottom: 3rem;
-}
-
-.video-item {
-    background: var(--glass-bg);
-    backdrop-filter: blur(10px);
-    border: 2px solid var(--glass-border);
-    border-radius: 12px;
-    overflow: hidden;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-}
-
-.video-item:hover {
-    transform: translateY(-5px);
-    border-color: var(--accent-cyan);
-    box-shadow: 0 8px 25px var(--glow-cyan);
-}
-
-.video-thumbnail {
-    width: 100%;
-    aspect-ratio: 16 / 9;
-    background: linear-gradient(135deg, rgba(0, 255, 255, 0.1) 0%, rgba(0, 0, 0, 0.3) 100%);
-    position: relative;
+.cta-row {
     display: flex;
-    align-items: center;
-    justify-content: center;
+    gap: var(--space-2);
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    margin-top: var(--space-2);
 }
 
-.video-thumbnail::after {
-    content: '▶';
-    font-size: 3rem;
-    color: rgba(0, 255, 255, 0.5);
-    position: absolute;
+/* Per-glyph contrast comes from a DARK text-shadow (legibility, not glow) so
+   there is no panel behind the text. The local scrim below is only soft ambient
+   support — it feathers smoothly to transparent with no detectable edge. */
+.hero h1,
+.hero h2,
+.hero .gate-subtitle,
+.hero p,
+.hero .eyebrow,
+.hero .scene-list li {
+    text-shadow: 0 0 8px rgba(0, 0, 0, 0.9), 0 0 18px rgba(0, 0, 0, 0.6);
 }
 
-.video-content {
-    padding: 1.5rem;
-}
-
-.video-content h4 {
-    color: var(--text-white);
-    margin-bottom: 0.5rem;
-    font-size: 1.1rem;
-}
-
-.video-content p {
-    color: var(--text-gray);
-    font-size: 0.9rem;
-    margin-bottom: 0.8rem;
+/* The BEGINNING subtitle sits over the bright ring's inner bloom — a tighter
+   stacked shadow fills the gaps between its small glyphs, and a tighter
+   line-height removes the inter-line band a bright particle could show through. */
+.hero .gate-subtitle {
+    text-shadow: 0 0 6px #000, 0 0 14px rgba(0, 0, 0, 0.85), 0 0 24px rgba(0, 0, 0, 0.6);
     line-height: 1.5;
 }
 
-.video-date {
-    display: block;
-    color: var(--text-gray-light);
-    font-size: 0.85rem;
-    margin-bottom: 1rem;
-}
-
-/* Video Cardスタイル（videos.html用） */
-.video-card {
-    background: rgba(0, 0, 0, 0.3);
-    border-radius: 12px;
-    overflow: hidden;
-    transition: all 0.3s ease;
-    text-decoration: none;
-    color: var(--text-white);
-    display: block;
-    border: 2px solid var(--glass-border);
-}
-
-.video-card:hover {
-    transform: scale(1.02);
-    box-shadow: 0 0 20px var(--glow-cyan);
-    border-color: var(--accent-cyan);
-}
-
-.video-card .video-thumbnail {
-    height: 200px;
-    background: rgba(26, 26, 46, 0.8);
-    display: flex;
-    align-items: center;
-    justify-content: center;
+.hero-scrim {
     position: relative;
 }
 
-.play-icon {
-    font-size: 3rem;
-    color: rgba(0, 255, 255, 0.5);
-    transition: all 0.3s;
-}
-
-.video-card:hover .play-icon {
-    color: var(--accent-cyan);
-    text-shadow: 0 0 20px var(--accent-cyan);
-}
-
-.video-info {
-    padding: 1rem;
-}
-
-.video-info h3 {
-    margin: 0;
-    font-size: 1.1rem;
-    color: var(--text-white);
-}
-
-.video-info p {
-    font-size: 0.9rem;
-    color: var(--text-gray);
-    margin-top: 0.5rem;
-}
-
-.note-grid,
-.blog-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 2rem;
-}
-
-.note-card,
-.blog-card {
-    background: var(--glass-bg);
-    backdrop-filter: blur(10px);
-    border: 2px solid var(--glass-border);
-    border-radius: 12px;
-    padding: 1.5rem;
-    text-decoration: none;
-    color: var(--text-white);
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-    overflow: hidden;
-    display: block;
-}
-
-.note-card:hover,
-.note-card:focus,
-.blog-card:hover,
-.blog-card:focus {
-    transform: translateY(-5px);
-    border-color: var(--accent-cyan);
-    box-shadow: 0 8px 25px var(--glow-cyan);
-    outline: 2px solid var(--accent-cyan);
-    outline-offset: 2px;
-}
-
-.note-card h4,
-.blog-card h4 {
-    color: var(--accent-cyan);
-    margin-bottom: 0.8rem;
-    font-size: 1.1rem;
-}
-
-.note-card p {
-    color: var(--text-gray);
-    font-size: 0.9rem;
-    line-height: 1.6;
-}
-
-.blog-date {
-    display: block;
-    color: var(--text-gray-light);
-    font-size: 0.85rem;
-    margin-top: 0.5rem;
-}
-
-/* Blog Card詳細スタイル */
-.blog-image {
-    height: 180px;
-    background: rgba(35, 38, 58, 0.8);
-    position: relative;
-    width: 100%;
-}
-
-.blog-image.placeholder::after {
-    content: 'No Image';
+/* Dark enough over the text for ≥4.5:1, but a CONTINUOUS falloff (no shoulder/
+   plateau) plus a large blur means there is no detectable edge — it reads as a
+   soft vignette, not a panel. */
+.hero-scrim::before {
+    content: '';
     position: absolute;
-    top: 50%;
+    z-index: -1;
+    inset: -1.2rem -2rem;
+    /* Lighter now — left-aligned text sits on the dark left, so this is just a
+       gentle safety pool biased to the text (left), fully feathered, no edge. */
+    background: radial-gradient(ellipse 120% 130% at 35% 50%,
+            rgba(0, 0, 0, 0.70) 0%,
+            rgba(0, 0, 0, 0.42) 52%,
+            rgba(0, 0, 0, 0.14) 78%,
+            transparent 100%);
+    filter: blur(20px);
+    pointer-events: none;
+}
+
+/* Reference-aligned: moderate size, more weight (was oversized + thin at 300). */
+.gate-title {
+    font-size: clamp(2rem, 4.5vw, 3.4rem);
+    font-weight: 400;
+    letter-spacing: -0.02em;
+    line-height: 1.02;
+}
+
+/* Stage headings: moderate + weight 500 (Latin and JP). */
+.scene h2 {
+    font-size: clamp(1.9rem, 3.4vw, 3rem);
+    font-weight: 500;
+    line-height: 1.08;
+    letter-spacing: -0.01em;
+}
+
+.scene h2:lang(ja) {
+    font-weight: 500;
+}
+
+.gate-subtitle {
+    margin: 0;
+    color: var(--text-primary);
+    max-width: 42ch;
+    text-align: left;
+}
+
+/* Persistent scroll affordance — fades out by progress ~0.12 (JS sets --scroll-hint) */
+.scroll-hint {
+    position: absolute;
     left: 50%;
-    transform: translate(-50%, -50%);
-    color: rgba(255, 255, 255, 0.2);
-    font-size: 0.9rem;
-}
-
-.blog-content {
-    padding: 1.5rem;
-}
-
-.blog-category {
-    display: inline-block;
-    background: rgba(0, 255, 255, 0.1);
-    color: var(--accent-cyan);
-    padding: 0.2rem 0.6rem;
-    border-radius: 12px;
-    font-size: 0.8rem;
-    margin-bottom: 0.5rem;
-    border: 1px solid var(--glass-border-light);
-}
-
-.blog-card h3 {
-    color: var(--text-white);
-    margin: 0.5rem 0;
-    font-size: 1.2rem;
-    line-height: 1.4;
-}
-
-.blog-excerpt {
-    font-size: 0.9rem;
-    color: var(--text-gray);
-    margin-bottom: 1rem;
-    line-height: 1.6;
-}
-
-.blog-meta {
-    font-size: 0.8rem;
-    color: var(--text-gray-light);
-}
-
-/* Page Header */
-.page-header {
-    text-align: center;
-    margin-bottom: 3rem;
-    border-bottom: 2px solid var(--glass-border);
-    padding-bottom: 1rem;
-}
-
-.page-header h1 {
-    color: var(--accent-cyan);
-    font-size: 2.5rem;
-    margin-bottom: 0.5rem;
-    text-shadow: 0 0 10px var(--glow-cyan);
-}
-
-.page-header p {
-    color: var(--text-gray);
-    font-size: 1.1rem;
-}
-
-/* SNS Container */
-.sns-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 2rem;
-    justify-content: center;
-    margin-top: 2rem;
-}
-
-.sns-link {
+    bottom: 40px;
+    transform: translateX(-50%);
     display: flex;
     flex-direction: column;
     align-items: center;
-    text-decoration: none;
-    color: var(--text-white);
-    background: var(--glass-bg);
-    backdrop-filter: blur(10px);
-    padding: 2rem;
-    border-radius: 12px;
-    width: 200px;
-    transition: all 0.3s ease;
-    border: 2px solid var(--glass-border);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    gap: 0.4rem;
+    font-size: 0.65rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+    opacity: var(--scroll-hint, 1);
+    transition: opacity 0.4s var(--ease);
+    z-index: 2;
 }
 
-.sns-link:hover,
-.sns-link:focus {
-    background: rgba(0, 255, 255, 0.1);
-    transform: translateY(-5px);
-    border-color: var(--accent-cyan);
-    box-shadow: 0 8px 25px var(--glow-cyan);
-    outline: 2px solid var(--accent-cyan);
-    outline-offset: 2px;
+.scroll-hint__arrow {
+    animation: hint-bob 1.8s var(--ease) infinite;
 }
 
-.sns-icon {
-    width: 60px;
-    height: 60px;
-    background: rgba(35, 38, 58, 0.8);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.5rem;
-    font-weight: bold;
-    color: var(--accent-cyan);
-    margin-bottom: 1rem;
-    border: 2px solid var(--accent-cyan);
+@keyframes hint-bob {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(6px);
+    }
 }
 
-.sns-name {
-    font-size: 1.2rem;
-    font-weight: bold;
-    margin-bottom: 0.5rem;
-    color: var(--text-white);
+@media (prefers-reduced-motion: reduce) {
+    .scroll-hint__arrow {
+        animation: none;
+    }
 }
 
-.sns-desc {
-    font-size: 0.9rem;
-    color: var(--text-gray);
-    text-align: center;
+/* ---------------------------------------------------------------------------
+   11. INDEX — THE INDEX region (calm card grids, motion at rest)
+   --------------------------------------------------------------------------- */
+.index-region {
+    position: relative;
+    z-index: 1;
+    background: linear-gradient(180deg, transparent, rgba(0, 0, 0, 0.55) 18%, #000 45%);
 }
 
-/* Projectsセクション */
-.projects-section {
-    background: var(--glass-bg);
-    backdrop-filter: blur(10px);
-    border: 2px solid var(--glass-border);
-    border-radius: 12px;
-    padding: 2.5rem;
-    margin-bottom: 4rem;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+.index-block {
+    padding: var(--space-12) var(--gutter);
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
-.section-intro {
-    color: var(--text-gray);
-    margin-bottom: 2rem;
-    font-size: 1.1rem;
+.index-block__head {
+    margin-bottom: var(--space-6);
+    max-width: 62ch;
 }
 
-.projects-grid {
+.index-block__head h2 {
+    margin-bottom: var(--space-2);
+}
+
+.note-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 2rem;
-    margin-bottom: 2rem;
+    gap: var(--space-3);
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
 }
 
-.project-card {
-    background: rgba(0, 0, 0, 0.3);
-    border: 2px solid var(--glass-border);
-    border-radius: 12px;
-    padding: 2rem;
-    text-align: center;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-}
-
-.project-card:hover {
-    transform: translateY(-5px);
-    border-color: var(--accent-cyan);
-    box-shadow: 0 8px 25px var(--glow-cyan);
-}
-
-.project-icon {
-    font-size: 3rem;
-    margin-bottom: 1rem;
-}
-
-.project-card h3 {
-    color: var(--accent-cyan);
-    margin-bottom: 1rem;
-    font-size: 1.2rem;
-}
-
-.project-card p {
-    color: var(--text-gray);
-    font-size: 0.95rem;
-    line-height: 1.6;
-}
-
-.contact-cta {
-    text-align: center;
-    margin-top: 2rem;
-    padding-top: 2rem;
-    border-top: 2px solid var(--glass-border);
-}
-
-.contact-cta p {
-    color: var(--text-gray);
-}
-
-.contact-cta a {
-    color: var(--accent-cyan);
-    text-decoration: none;
-    transition: all 0.3s ease;
-}
-
-.contact-cta a:hover,
-.contact-cta a:focus {
-    text-shadow: 0 0 5px var(--accent-cyan);
-    outline: 2px solid var(--accent-cyan);
-    outline-offset: 2px;
-}
-
-/* 最後のメッセージ */
 .final-message {
     text-align: center;
-    padding: 3rem 0;
-    margin-bottom: 2rem;
+    padding: var(--space-16) var(--gutter);
 }
 
 .final-message p {
-    font-size: 1.3rem;
-    color: var(--text-gray);
-    font-style: italic;
-    line-height: 1.8;
+    max-width: none;
+    font-family: var(--font-display);
+    font-weight: 300;
+    font-size: clamp(1.5rem, 3.5vw, 2.5rem);
+    color: var(--text-primary);
+    letter-spacing: -0.01em;
 }
 
-/* フッター */
+/* ---------------------------------------------------------------------------
+   12. FOOTER (unified across all pages)
+   --------------------------------------------------------------------------- */
 footer {
-    background: rgba(0, 0, 0, 0.8);
-    backdrop-filter: blur(10px);
-    border-top: 2px solid var(--glass-border);
-    padding: 2rem;
-    margin-top: 4rem;
+    position: relative;
+    z-index: 1;
+    border-top: 1px solid var(--hairline);
+    padding: var(--space-8) var(--gutter) var(--space-6);
+    background: rgba(0, 0, 0, 0.6);
 }
 
-.footer-content {
+.footer-inner {
     max-width: 1200px;
     margin: 0 auto;
     display: flex;
-    justify-content: space-between;
-    align-items: center;
     flex-wrap: wrap;
-    gap: 1rem;
+    gap: var(--space-6);
+    justify-content: space-between;
+    align-items: flex-start;
 }
 
-.footer-content p {
-    color: var(--text-gray);
-    font-size: 0.9rem;
-}
-
-.footer-links {
+.footer-brand {
     display: flex;
-    gap: 1.5rem;
+    flex-direction: column;
+    gap: var(--space-1);
 }
 
-.footer-links a {
-    color: var(--text-gray);
-    text-decoration: none;
-    transition: all 0.3s ease;
+.footer-brand .logo {
+    font-size: 1rem;
 }
 
-.footer-links a:hover,
-.footer-links a:focus {
-    color: var(--accent-cyan);
-    text-shadow: 0 0 5px var(--accent-cyan);
-    outline: 2px solid var(--accent-cyan);
+.footer-tagline {
+    font-size: 0.8rem;
+    color: var(--text-tertiary);
+    max-width: 32ch;
+}
+
+.footer-nav,
+.footer-social {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.footer-col-label {
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+    margin-bottom: 0.3rem;
+}
+
+footer a {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    transition: color var(--dur) var(--ease);
+}
+
+footer a:hover {
+    color: var(--text-primary);
+}
+
+.footer-copy {
+    max-width: 1200px;
+    margin: var(--space-8) auto 0;
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--hairline);
+    font-size: 0.75rem;
+    color: var(--text-tertiary);
+}
+
+/* ---------------------------------------------------------------------------
+   13. INTERIOR-PAGE BASELINE (refined fully in step 3; kept coherent for now)
+   These selectors belong to the other 10 pages. They are given system-consistent
+   baseline styling here so the shared stylesheet does not leave them unstyled.
+   --------------------------------------------------------------------------- */
+.page-header {
+    padding: calc(var(--space-16) + 40px) var(--gutter) var(--space-8);
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.page-header h1 {
+    margin-bottom: var(--space-2);
+}
+
+.page-header p {
+    color: var(--text-secondary);
+}
+
+/* Generic grids used by blog / videos / sns */
+.blog-grid,
+.video-grid,
+.sns-container {
+    display: grid;
+    gap: var(--space-3);
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 var(--gutter) var(--space-16);
+}
+
+.blog-card,
+.video-card,
+.sns-link,
+.note-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    padding: var(--space-4);
+    background: var(--surface);
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius-lg);
+    color: inherit;
+    overflow: hidden;
+    transition: background var(--dur) var(--ease), border-color var(--dur) var(--ease);
+}
+
+.blog-card:hover,
+.video-card:hover,
+.sns-link:hover,
+.note-card:hover {
+    background: var(--surface-hover);
+    border-color: var(--hairline-strong);
+}
+
+.blog-image.placeholder,
+.video-thumbnail.placeholder,
+.video-thumbnail {
+    aspect-ratio: 16 / 9;
+    border-radius: var(--radius-md);
+    background:
+        radial-gradient(120% 120% at 20% 20%, var(--spec-blue), transparent 60%),
+        radial-gradient(120% 120% at 85% 80%, var(--spec-magenta), transparent 65%),
+        #05050a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.play-icon {
+    font-size: 1.5rem;
+    color: var(--text-primary);
+}
+
+.blog-category {
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent);
+}
+
+.blog-meta,
+.blog-date,
+.video-date {
+    font-size: 0.75rem;
+    color: var(--text-tertiary);
+}
+
+.sns-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 1px solid var(--hairline);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 500;
+}
+
+/* Self-intro */
+.self-intro {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: calc(var(--space-16) + 40px) var(--gutter) var(--space-16);
+}
+
+.profile-container {
+    display: flex;
+    gap: var(--space-8);
+    flex-wrap: wrap;
+}
+
+.profile-image img {
+    width: 220px;
+    height: 220px;
+    object-fit: cover;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--hairline);
+}
+
+.profile-content {
+    flex: 1;
+    min-width: 260px;
+}
+
+.profile-text h2 {
+    font-size: clamp(1.25rem, 2.5vw, 1.75rem);
+    margin: var(--space-6) 0 var(--space-2);
+}
+
+.profile-text ul {
+    margin: var(--space-2) 0 var(--space-2) var(--space-3);
+    color: var(--text-secondary);
+}
+
+.affiliation {
+    color: var(--text-tertiary);
+    margin-top: var(--space-2);
+}
+
+/* Study path accordion + QFT pages */
+.study-path,
+.qft-summary,
+.peskin-qft-sec2-1,
+.peskin-qft-sec2-2,
+.peskin-qft-sec2-3,
+.peskin-qft-sec2-4 {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: calc(var(--space-16) + 40px) var(--gutter) var(--space-8);
+}
+
+.accordion-toggle {
+    display: block;
+    width: 100%;
+    text-align: left;
+    font-family: var(--font-body);
+    font-size: 1rem;
+    color: var(--text-primary);
+    background: var(--surface);
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius-md);
+    padding: var(--space-2) var(--space-3);
+    margin-top: var(--space-2);
+    cursor: pointer;
+    transition: background var(--dur) var(--ease), border-color var(--dur) var(--ease);
+}
+
+.accordion-toggle:hover {
+    background: var(--surface-hover);
+    border-color: var(--hairline-strong);
+}
+
+.accordion-content {
+    padding: var(--space-2) var(--space-3);
+}
+
+.qft-summary a,
+.study-path a {
+    color: var(--accent);
+}
+
+.qft-summary a:hover,
+.study-path a:hover {
+    color: var(--text-primary);
+}
+
+.qft-summary hr {
+    border: none;
+    border-top: 1px solid var(--hairline);
+    margin: var(--space-4) 0;
+}
+
+/* Section-note vertical rhythm: page title → space → body; sub-heads are small
+   eyebrow-style labels, never display-sized (no inverted hierarchy). */
+.peskin-qft-sec2-1 h1,
+.peskin-qft-sec2-2 h1,
+.peskin-qft-sec2-3 h1,
+.peskin-qft-sec2-4 h1,
+.qft-summary h1 {
+    margin-bottom: var(--space-4);
+}
+
+.peskin-qft-sec2-1 p,
+.peskin-qft-sec2-2 p,
+.peskin-qft-sec2-3 p,
+.peskin-qft-sec2-4 p,
+.qft-summary p {
+    margin-bottom: var(--space-4);
+}
+
+.peskin-qft-sec2-1 h2,
+.peskin-qft-sec2-2 h2,
+.peskin-qft-sec2-3 h2,
+.peskin-qft-sec2-4 h2,
+.qft-summary h2 {
+    font-family: var(--font-body);
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+    margin: var(--space-8) 0 var(--space-3);
+}
+
+.peskin-qft-sec2-1 ul,
+.peskin-qft-sec2-2 ul,
+.peskin-qft-sec2-3 ul,
+.peskin-qft-sec2-4 ul,
+.qft-summary ul {
+    color: var(--text-secondary);
+    margin-left: var(--space-3);
+    line-height: 1.9;
+}
+
+/* PDF embed wrapper (§G: never filter the iframe; keep white bg, pad inside frame) */
+/* Reliable PDF access on every browser — iOS Safari renders PDFs in an <iframe>
+   poorly (first page only, no scroll), so a primary "open" link sits above the embed
+   as the guaranteed path; the iframe stays for browsers that handle it inline. */
+.pdf-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    align-items: center;
+    margin-bottom: var(--space-3);
+}
+
+.pdf-frame {
+    padding: 24px;
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius-md);
+    background: var(--surface);
+}
+
+.pdf-frame iframe {
+    display: block;
+    width: 100%;
+    border: 0;
+    border-radius: var(--radius-sm);
+    background: #fff;
+}
+
+/* Knowledge map + control panel (graph logic untouched; restyle only) */
+.knowledge-map {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: var(--space-8) var(--gutter);
+}
+
+.knowledge-map h1 {
+    text-align: left;
+    margin-bottom: var(--space-4);
+}
+
+#graph-container {
+    width: 100%;
+    height: 56vh;
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+}
+
+.control-panel {
+    background: var(--surface);
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius-md);
+    padding: var(--space-3);
+}
+
+.control-panel h3 {
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+    margin-bottom: var(--space-2);
+}
+
+.control-button,
+.control-toggle-button {
+    font-family: var(--font-body);
+    color: var(--text-primary);
+    background: var(--surface);
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius-pill);
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+}
+
+/* Toggle sits above the panel it controls */
+.control-toggle-button {
+    display: block;
+    margin-bottom: var(--space-3);
+}
+
+.control-button:hover,
+.control-toggle-button:hover {
+    border-color: var(--hairline-strong);
+}
+
+/* Control panel labels + custom form controls in the teal system (IDs/handlers
+   untouched — this is styling only). */
+.control-panel label,
+.control-item label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    cursor: pointer;
+}
+
+.control-item {
+    margin: 0.4rem 0;
+}
+
+/* Custom checkbox: hairline box, teal check */
+.control-panel input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 16px;
+    height: 16px;
+    flex: none;
+    border: 1px solid var(--hairline-strong);
+    border-radius: 4px;
+    background: var(--surface);
+    cursor: pointer;
+    position: relative;
+    transition: border-color var(--dur) var(--ease), background var(--dur) var(--ease);
+}
+
+.control-panel input[type="checkbox"]:checked {
+    border-color: var(--spec-teal);
+    background: rgba(43, 217, 196, 0.16);
+}
+
+.control-panel input[type="checkbox"]:checked::after {
+    content: '';
+    position: absolute;
+    left: 4px;
+    top: 1px;
+    width: 5px;
+    height: 9px;
+    border: solid var(--spec-teal);
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+
+.control-panel input[type="checkbox"]:focus-visible {
+    outline: 2px solid var(--spec-teal);
     outline-offset: 2px;
 }
 
-/* スムーズスクロール */
-html {
-    scroll-behavior: smooth;
+/* Teal sliders */
+.control-panel input[type="range"] {
+    accent-color: var(--spec-teal);
 }
 
-/* フォーカス可視化 */
-*:focus-visible {
-    outline: 2px solid var(--accent-cyan);
-    outline-offset: 2px;
+/* Any non-panel checkbox/slider keeps the teal accent too */
+input[type="checkbox"],
+input[type="range"] {
+    accent-color: var(--spec-teal);
 }
 
-/* レスポンシブデザイン */
+/* ---------------------------------------------------------------------------
+   14. RESPONSIVE
+   --------------------------------------------------------------------------- */
 @media (max-width: 768px) {
     header {
-        padding: 1rem;
+        top: 12px;
+        width: calc(100% - 24px);
+        padding: 0.5rem 0.6rem 0.5rem 1rem;
     }
 
     .menu-toggle {
         display: flex;
     }
 
+    header nav {
+        position: static;
+        flex: none;
+    }
+
+    /* Collapsed menu drops into a blurred rounded panel below the pill */
     .nav-menu {
-        position: fixed;
-        top: 70px;
-        right: -100%;
-        width: 100%;
-        height: calc(100vh - 70px);
-        background: rgba(0, 0, 0, 0.95);
-        backdrop-filter: blur(10px);
+        position: absolute;
+        top: calc(100% + 10px);
+        left: 0;
+        right: 0;
         flex-direction: column;
-        padding: 2rem;
-        transition: right 0.3s ease;
-        border-top: 2px solid var(--glass-border);
+        align-items: stretch;
+        gap: 0.25rem;
+        padding: var(--space-2);
+        background: var(--nav-bg);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid var(--hairline);
+        border-radius: var(--radius-md);
+        opacity: 0;
+        transform: translateY(-8px);
+        pointer-events: none;
+        transition: opacity var(--dur) var(--ease), transform var(--dur) var(--ease);
     }
 
     .nav-menu.active {
-        right: 0;
+        opacity: 1;
+        transform: none;
+        pointer-events: auto;
     }
 
-    .nav-menu li {
-        width: 100%;
-    }
-
-    .nav-menu li a {
+    .nav-menu a {
         display: block;
-        padding: 1rem;
-        text-align: center;
-        border-bottom: 2px solid var(--glass-border);
+        padding: 0.7rem 0.9rem;
     }
 
-    main {
-        padding: 2rem 1rem;
-        margin-top: 70px;
+    .btn-nav-cta {
+        display: none;
     }
 
-    .hero-section {
-        padding: 2rem 0;
+    /* Mobile hero: the four text stages at ~55vh each (~220vh). MATTER + SOLAR
+       are skipped entirely (the JS builds only the four formations). */
+    .scene {
+        height: 55vh;
     }
 
-    .hero-cta {
-        flex-direction: column;
-        align-items: stretch;
+    /* Head + tail spacers push the first/last scene centres off the 0/1 ends so the four
+       scene centres land at 12.5 / 37.5 / 62.5 / 87.5% of scroll — i.e. exactly the
+       evenly-spaced sample offsets. Each stage's text-centre then coincides with its
+       formation peak, so an evenly-spaced still rests on one fully-formed stage (not a
+       mid-morph blend), and the last stage gets a real dwell instead of only peaking at
+       the final pixel. Canvas layers are fixed, so padding moves only the flowing scenes. */
+    .hero {
+        padding-block: 51vh;
     }
 
-    .btn {
-        width: 100%;
-        text-align: center;
+    .scene .scene__content {
+        top: 14vh;
     }
 
-    .contents-grid,
-    .video-grid,
-    .note-grid,
-    .blog-grid,
-    .projects-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .page-header h1 {
-        font-size: 2rem;
-    }
-
-    .sns-container {
-        flex-direction: column;
-        align-items: center;
-    }
-
-    .sns-link {
-        width: 100%;
-        max-width: 300px;
-    }
-
-    .mission-section,
-    .projects-section {
-        padding: 1.5rem;
-    }
-
-    h2 {
-        font-size: 1.5rem;
-    }
-
-    .footer-content {
-        flex-direction: column;
-        text-align: center;
+    .profile-container {
+        gap: var(--space-6);
     }
 }
 
+/* Hero text must never clip on narrow phones */
 @media (max-width: 480px) {
-    .hero-section h1 {
-        font-size: 1.8rem;
+    .gate-title {
+        font-size: clamp(1.85rem, 9vw, 2.4rem);
+        letter-spacing: -0.02em;
     }
 
-    .hero-subtitle {
-        font-size: 1rem;
+    .gate-subtitle {
+        font-size: 0.9rem;
+        max-width: 100%;
     }
 
-    .final-message p {
-        font-size: 1.1rem;
-    }
-}
-
-/* Self-intro スタイル */
-.self-intro {
-    margin-top: 80px;
-    padding: 2rem;
-}
-
-.profile-container {
-    max-width: 1200px;
-    width: 90%;
-    margin: 0 auto;
-    display: flex;
-    gap: 3rem;
-    padding: 2rem;
-    background: var(--profile-bg);
-    border-radius: 15px;
-    box-shadow: 0 0 20px var(--glow-cyan);
-}
-
-.profile-image {
-    flex: 0 0 35%;
-    max-width: 400px;
-    min-width: 250px;
-}
-
-.profile-image img {
-    width: 100%;
-    height: auto;
-    object-fit: cover;
-    border-radius: 10px;
-    border: 2px solid var(--accent-cyan);
-    box-shadow: 0 0 15px var(--glow-cyan);
-}
-
-.profile-content {
-    flex: 1;
-    min-width: 0;
-}
-
-.profile-content h1 {
-    font-size: 2.5rem;
-    color: var(--accent-cyan);
-    margin: 0 0 0.5rem 0;
-    text-shadow: 0 0 10px var(--glow-cyan);
-}
-
-.profile-content .affiliation {
-    font-size: 1.2rem;
-    color: var(--text-white);
-    margin-bottom: 2rem;
-}
-
-.profile-content h2 {
-    font-size: 1.5rem;
-    color: var(--accent-cyan);
-    margin: 2rem 0 1rem 0;
-    text-shadow: 0 0 5px var(--glow-cyan);
-}
-
-.profile-text {
-    text-align: justify;
-    line-height: 1.8;
-}
-
-.profile-text p {
-    margin-bottom: 1.5rem;
-}
-
-.bsm {
-    font-family: "Times New Roman", Times, serif;
-}
-
-/* Knowledge Map & Study Path スタイル */
-.knowledge-map {
-    margin: 2rem auto;
-    padding: 1rem;
-    background: rgba(0, 0, 0, 0.8);
-    border-radius: 10px;
-    box-shadow: 0 0 15px var(--glow-cyan);
-    position: relative;
-}
-
-.knowledge-map h1 {
-    color: var(--accent-cyan);
-    text-align: center;
-    margin-bottom: 1rem;
-    font-family: 'Times New Roman', Times, serif;
-}
-
-.graph-controls {
-    position: absolute;
-    right: 20px;
-    top: 20px;
-    z-index: 1000;
-    background: rgba(0, 0, 0, 0.9);
-    border-radius: 8px;
-    padding: 1rem;
-    color: var(--text-white);
-    width: 250px;
-    box-shadow: 0 0 10px var(--glow-cyan);
-    transition: all 0.3s ease;
-}
-
-.control-toggle-button {
-    display: none;
-    position: fixed;
-    bottom: 0;
-    right: 0;
-    width: 100%;
-    padding: 0.5rem;
-    background: rgba(0, 0, 0, 0.9);
-    color: var(--accent-cyan);
-    border: none;
-    border-top: 2px solid var(--glass-border);
-    cursor: pointer;
-    z-index: 1001;
-    font-size: 0.8rem;
-    transition: all 0.3s ease;
-}
-
-.control-toggle-button:hover {
-    background: rgba(0, 0, 0, 1);
-    color: #66ffff;
-}
-
-.graph-controls.expanded {
-    transform: translateY(0) !important;
-}
-
-.control-panel {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-}
-
-.control-group {
-    border-bottom: 1px solid var(--glass-border);
-    padding-bottom: 1rem;
-}
-
-.control-group:last-child {
-    border-bottom: none;
-}
-
-.control-group h3 {
-    color: var(--accent-cyan);
-    font-size: 0.9rem;
-    margin-bottom: 0.5rem;
-}
-
-.control-item {
-    margin: 0.5rem 0;
-}
-
-.control-item label {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    font-size: 0.8rem;
-    color: var(--text-white);
-}
-
-.control-item input[type="checkbox"] {
-    width: 16px;
-    height: 16px;
-    margin-right: 8px;
-    accent-color: var(--accent-cyan);
-}
-
-.control-item input[type="range"] {
-    width: 100%;
-    margin-top: 0.5rem;
-    accent-color: var(--accent-cyan);
-}
-
-.control-button {
-    background: var(--accent-cyan);
-    color: var(--bg-dark);
-    border: none;
-    padding: 0.5rem 1rem;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 0.9rem;
-    transition: all 0.3s ease;
-}
-
-.control-button:hover {
-    background: #66ffff;
-    box-shadow: 0 0 10px var(--glow-cyan);
-}
-
-#graph-container {
-    width: 100%;
-    height: 600px;
-    background: rgba(0, 0, 0, 0.5);
-    border-radius: 8px;
-    overflow: hidden;
-    cursor: grab;
-    position: relative;
-}
-
-#graph-container:active {
-    cursor: grabbing;
-}
-
-.node circle {
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.node circle:hover {
-    r: 12;
-    filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.8));
-}
-
-.node text {
-    pointer-events: none;
-    text-shadow: 0 0 3px rgba(0, 0, 0, 0.8);
-    fill: var(--accent-cyan);
-    font-weight: bold;
-    font-size: 1.1rem;
-    font-family: inherit;
-}
-
-.link {
-    transition: all 0.3s ease;
-}
-
-.link:hover {
-    stroke-width: 3;
-    stroke: rgba(0, 255, 255, 0.8);
-}
-
-.node[data-type="pdf"] circle {
-    stroke: var(--accent-cyan);
-    stroke-width: 2;
-    fill: #23263a;
-}
-
-.node[data-type="page"] circle {
-    stroke: var(--accent-cyan);
-    stroke-width: 2;
-    fill: #23263a;
-}
-
-.node[data-type="pdf"]:hover circle {
-    filter: drop-shadow(0 0 8px rgba(0, 255, 255, 0.8));
-}
-
-.node[data-type="page"]:hover circle {
-    filter: drop-shadow(0 0 8px rgba(255, 0, 255, 0.8));
-}
-
-.node[data-type="tag"] circle {
-    stroke: var(--text-white);
-    stroke-width: 2;
-}
-
-.node[data-type="tag"]:hover circle {
-    filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.8));
-}
-
-#graph-container svg {
-    width: 100%;
-    height: 100%;
-    display: block;
-}
-
-.study-path {
-    margin: 2rem auto;
-    padding: 1rem;
-    background: rgba(0, 0, 0, 0.7);
-    border-radius: 10px;
-    box-shadow: 0 0 10px var(--glow-cyan);
-    max-width: 600px;
-}
-
-.study-path h2 {
-    color: var(--accent-cyan);
-    text-align: center;
-    margin-bottom: 1rem;
-}
-
-.study-path .accordion-block {
-    background: #23263a;
-    border-radius: 10px;
-    margin-bottom: 1.5rem;
-    box-shadow: 0 2px 12px var(--glow-cyan);
-    padding: 1rem 1.2rem;
-    border-left: 4px solid var(--accent-cyan);
-}
-
-.study-path .accordion-toggle {
-    width: 100%;
-    background: var(--accent-cyan);
-    color: #181c2a;
-    border: none;
-    outline: none;
-    padding: 0.8rem 1rem;
-    text-align: left;
-    font-size: 1.1rem;
-    font-weight: bold;
-    cursor: pointer;
-    border-radius: 6px;
-    margin-bottom: 0.5rem;
-    transition: background 0.2s, color 0.2s;
-}
-
-.study-path .accordion-toggle:not(:first-child) {
-    margin-top: 0.8rem;
-}
-
-.study-path .accordion-toggle.active,
-.study-path .accordion-toggle:focus {
-    background: #00bfff;
-    color: var(--text-white);
-}
-
-.study-path .accordion-content {
-    background: #181c2a;
-    color: var(--text-white);
-    padding: 0.7em 1.2em;
-    border-radius: 8px;
-    margin-top: 0.5em;
-    margin-bottom: 0.5em;
-}
-
-.study-path ul {
-    margin: 0.5em 0 0.5em 1.2em;
-    padding: 0;
-}
-
-.study-path ul ul {
-    margin-left: 1.5em;
-}
-
-#loading-overlay.hide {
-    opacity: 0;
-    pointer-events: none;
-    display: none !important;
-}
-
-.study-path a,
-.study-path a:visited,
-.study-path a:hover,
-.study-path a:active {
-    color: var(--accent-cyan) !important;
-    text-decoration: underline;
-}
-
-.qft-summary a {
-    color: var(--accent-cyan);
-}
-
-.qft-summary a:visited {
-    color: #ff69b4 !important;
-}
-
-.qft-summary ul,
-.qft-summary li {
-    font-size: 1.15rem;
-    line-height: 1.7;
-}
-
-.qft-summary .accordion-toggle {
-    border: 2px solid #00bfff !important;
-    background: #23263a;
-    color: var(--accent-cyan);
-    border-radius: 6px;
-    padding: 0.3em 0.8em;
-    font-weight: bold;
-    font-size: 1.1rem;
-    margin-bottom: 0.3em;
-    cursor: pointer;
-}
-
-.qft-summary .accordion-toggle:active {
-    cursor: pointer;
-}
-
-/* Self-intro & Study Path レスポンシブ対応 */
-@media (max-width: 1200px) {
-    .profile-container {
-        width: 95%;
-        gap: 2rem;
+    .scene--split .scene__lead {
+        max-width: none;
     }
 }
 
-@media (max-width: 900px) {
-    .profile-container {
-        flex-direction: column;
-        align-items: center;
-        padding: 1.5rem;
+@media (max-width: 375px) {
+    :root {
+        --gutter: 1.1rem;
     }
 
-    .profile-image {
-        flex: 0 0 auto;
-        width: 50%;
-        min-width: 200px;
-        max-width: 300px;
-    }
-
-    .profile-content {
+    .profile-image img {
         width: 100%;
+        height: auto;
+        aspect-ratio: 1;
     }
 }
 
-@media (max-width: 768px) {
-    .self-intro {
-        margin-top: 140px;
-    }
+/* ---------------------------------------------------------------------------
+   15. REDUCED MOTION (global belt-and-braces)
+   --------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
 
-    .graph-controls {
-        position: fixed;
-        bottom: 0;
-        right: 0;
-        top: auto;
-        width: 100%;
-        border-radius: 0;
-        padding: 0.5rem;
-        transform: translateY(calc(100% - 40px));
-        transition: transform 0.3s ease;
-    }
-
-    .graph-controls:hover,
-    .graph-controls:focus-within {
-        transform: translateY(0);
-    }
-
-    .control-panel {
-        max-height: 300px;
-        overflow-y: auto;
-    }
-
-    .control-group {
-        padding: 0.5rem;
-    }
-
-    .control-item {
-        margin: 0.3rem 0;
-    }
-
-    .control-item label {
-        font-size: 0.7rem;
-    }
-
-    .control-button {
-        width: 100%;
-        margin-top: 0.5rem;
-    }
-
-    .control-toggle-button {
-        display: block;
-    }
-}
-
-@media (max-width: 480px) {
-    .self-intro {
-        padding: 1rem;
-        margin-top: 160px;
-    }
-
-    .profile-container {
-        width: 100%;
-        padding: 1rem;
-    }
-
-    .profile-image {
-        width: 70%;
-    }
-
-    .profile-content h1 {
-        font-size: 2rem;
-    }
-
-    .profile-content .affiliation {
-        font-size: 1rem;
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.001ms !important;
+        scroll-behavior: auto !important;
     }
 }
