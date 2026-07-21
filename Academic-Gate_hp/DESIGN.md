@@ -1160,3 +1160,91 @@ Was coplanar nested ellipses on a tilted disc (read flat). Rebuilt:
 - The "vertical rule" by the ノートを読む CTA was a **field coincidence** (an orbit-ring edge),
   not a CSS element (btn-secondary has a transparent border; the only `.btn::before` is an
   invisible hover glow) — gone with the redesign.
+
+---
+
+# 16. Round 14 — Scroll-snap so each motif settles and holds
+
+Reverses the earlier "never hijack scroll" rule *deliberately*, but only via **native CSS
+scroll-snap** — no JS wheel/touch interception, no animated `scrollTo`. The browser keeps
+ownership of inertia and momentum, and the user can always stop mid-transition. That is the
+non-negotiable method constraint; a JS scroll-jack was explicitly rejected and stays rejected.
+
+## 16.1 Mechanism
+
+- `scroll-snap-type: y proximity` on `html` (the document scroller). **proximity, not
+  mandatory** — mandatory traps the user (can't rest between points, fights find-in-page,
+  keyboard, anchors). proximity settles a *deliberate* scroll onto a motif while leaving an
+  escape. Chrome serialises the computed value as `y` (proximity is the default strictness).
+- `scroll-snap-align: center` on `.hero .scene` **only** (stages 01–04). The index blocks
+  05–10 have card grids and body copy being read — they never opt in, so they stay free-scroll.
+  (Snap points exist only where `scroll-snap-align` is set; type on the container is inert
+  elsewhere.)
+- **Snap target = the motif peak, not the section top.** Each `.scene` is 120vh, so its
+  geometric centre *is* the scroll position where that stage's `w` reaches 1.0
+  (`sceneFor(scrollY + innerHeight/2)` hits an integer stage index at the centre). `align:center`
+  therefore lands the fully-formed motif with no extra marker element.
+
+## 16.2 Dwell plateau (the actual goal)
+
+Snapping alone isn't enough — before this round `w` peaked at a single position and immediately
+declined. Widened the attractor weight from a point to a **band**:
+
+    fc = min(f, 1-f);  w = 1 - smoothstep(0.20, 0.5, fc)   // was smoothstep(0.10, …)
+
+`w` now holds at **1.0 across fc ∈ [0, 0.20]** — a scroll band ~±24vh around each snap point —
+then dissolves to `w = 0` at the midpoint (fc = 0.5) between stages. The form stays fully
+resolved for the whole time the viewer rests, then still fully disperses and reforms between
+stages. **The residual curl is untouched**, so at `w = 1` `amp = resid` (0.022; nature +0.03 per
+the §15.11 exception) — the field keeps breathing, it is never a frozen frame. Applies globally
+(below-hero forms also hold longer), which is consistent and desirable; only the *snap* is
+hero-scoped.
+
+## 16.3 Verification (M5 headless Chrome, 1440×900, measured not eyeballed)
+
+`w` at each of the four hero snap rest positions (`snapRest(i) = centre − (innerHeight+92)/2`,
+the 92px being `--nav-clearance`, which insets the snapport top so the rest sits pad/2 above true
+centre — still deep inside the plateau):
+
+| stage | sceneF at rest | w at rest |
+|-------|---------------|-----------|
+| 01 cosmos | 0.0000 | **1.0000** |
+| 02 nature | 0.9557 | **1.0000** |
+| 03 network | 1.9554 | **1.0000** |
+| 04 infra  | 2.9554 | **1.0000** |
+
+(Non-integer sceneF for 02–04 is the pad/2 ≈ 46px snapport inset → fc ≈ 0.044, well within the
+0.20 plateau.) Stills: `docs/stills/s14-rest-0{1..4}-*.png` — each form fully resolved at rest.
+
+## 16.4 §6 must-not-break — tested, not assumed
+
+- **prefers-reduced-motion: reduce → snap OFF.** The rule is gated
+  `@media (prefers-reduced-motion: no-preference) and (min-width: 601px)`. Emulated reduce →
+  computed `scroll-snap-type: none`. ✓ (Three.js is also already skipped under reduce.)
+- **Mobile (≤600px) → snap OFF** via the same `min-width: 601px` gate. Emulated 390px → `none`.
+  ✓ iOS momentum + scroll-snap is historically janky; free-scroll on mobile is the stated
+  acceptable outcome. **This is provisional pending the device pass** — one media-query edit
+  flips it on if it feels good on the phone.
+- **Anchor links / `scroll-padding-top`.** `scroll-padding-top` still computes 92px; an index
+  anchor (`#found-h`, no snap-align) lands clearing the nav, unchanged from before this round —
+  proximity does not fight it. ✓
+- **Off-screen focus.** Focusing a below-fold hero CTA scrolled it into view (scrollY 0 → 2068,
+  CTA at 496px). ✓
+- **Keyboard / find-in-page.** Not trapped **by construction**: proximity (unlike mandatory)
+  never blocks a scroll from resting where the user/browser put it; it only nudges when a rest
+  already lands near a point. These are interaction behaviours the user will confirm in the
+  device/desktop pass.
+
+## 16.5 §7 stage-height note
+
+Hero stages are 120vh, so adjacent snap centres are 120vh apart — a snap *could* traverse >1
+viewport. proximity mitigates this (it only engages near a point; it does not force a full-stage
+jump from a rest between stages). If the device pass reads it as a *jump* rather than a *settle*,
+the fix is a **decision for Max** — shorten hero stages toward 100vh, or add intermediate rest
+points — not chosen here.
+
+## 16.6 Debug hooks added
+
+`window.__field.wAt(scrollY?)` → the shader's `w` for any viewport-centre scroll position
+(defaults to current); `window.__field.snapRest(i)` → the doc-space scrollY where hero stage `i`
+snaps to rest. Both mirror the shader/CSS exactly and are there for the device pass too.
