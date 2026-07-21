@@ -132,7 +132,13 @@
             if (gj2 < GY - 1) gedges.push([lidx(gi2, gj2, gk2), lidx(gi2, gj2 + 1, gk2)]);
             if (gk2 < GZ - 1) gedges.push([lidx(gi2, gj2, gk2), lidx(gi2, gj2, gk2 + 1)]);
         }
-        var orbR = [S * 0.42, S * 0.72, S * 1.04, S * 1.4, S * 1.75];
+        // ORBITS: each ring in its OWN plane (distinct inclination 15–55° + longitude of node)
+        // so rings visibly cross in 3D; ellipses (eccentric) with the star at the common FOCUS.
+        var NORB = 6, orbEls = [];
+        for (var ob = 0; ob < NORB; ob++) orbEls.push({
+            a: S * (0.5 + ob * 0.26), e: 0.12 + rnd() * 0.3,
+            inc: (15 + rnd() * 40) * Math.PI / 180, node: rnd() * TAU, arg: rnd() * TAU
+        });
 
         /* ---- Per-motif attractor target: [x,y,z, energy, bright, aux] ---
            aux: 1 = infra stream · 2 = stream(x-drift) · 0.x = wave layer phase (nature/waveforms). */
@@ -183,9 +189,22 @@
                     u = rnd() * 2 - 1; th = rnd() * TAU; s = Math.sqrt(1 - u * u); rc = S * 1.15 * Math.cbrt(rnd());
                     return [rc * s * Math.cos(th) * 1.35, rc * u, rc * s * Math.sin(th), 0.2 + 0.22 * rnd(), 0.55, 0];
                 }
-                case 'orbits': { // concentric tilted ellipses
-                    var oi = i % orbR.length; var r0 = orbR[oi] + gauss(0.05); var oa = rnd() * TAU;
-                    return [r0 * Math.cos(oa), r0 * Math.sin(oa) * 0.5, r0 * 0.6 * Math.sin(oa) + gauss(0.03), Math.max(0.24, 0.52 - oi * 0.05), 0.6, 0];
+                case 'orbits': { // ellipses in distinct planes about a shared star at the focus
+                    var oOx = S * 0.55;                                   // shift right so the dense rings clear the left text column
+                    if (rnd() < 0.028) {                                  // the STAR — small, tight, warm, at the common focus
+                        rc = 0.08 * S * Math.cbrt(rnd()); u = rnd() * 2 - 1; th = rnd() * TAU; s = Math.sqrt(1 - u * u);
+                        return [rc * s * Math.cos(th) + oOx, rc * u, rc * s * Math.sin(th), 0.93, 0.85, 0];
+                    }
+                    var el = orbEls[i % NORB];
+                    var ta = rnd() * TAU;                                 // true anomaly
+                    var rr2 = el.a * (1 - el.e * el.e) / (1 + el.e * Math.cos(ta)); // r from FOCUS (star)
+                    var ang = ta + el.arg;
+                    var pfx = rr2 * Math.cos(ang), pfy = rr2 * Math.sin(ang);
+                    var ci = Math.cos(el.inc), si = Math.sin(el.inc);     // tilt the plane (about x)
+                    var ty = pfy * ci, tz = pfy * si;
+                    var cn = Math.cos(el.node), sn = Math.sin(el.node);   // rotate the tilt (about vertical y)
+                    return [pfx * cn + tz * sn + oOx + gauss(0.02), ty + gauss(0.02), -pfx * sn + tz * cn + gauss(0.02),
+                        Math.max(0.22, 0.48 - (i % NORB) * 0.035), 0.6, 0];
                 }
                 case 'strata': { // accumulated horizontal layers
                     la = Math.floor(rnd() * 7); sy = (la / 6 - 0.5) * S * 1.75;
@@ -315,9 +334,13 @@
             '  gl_Position=projectionMatrix*mv;',
             // depth cue: near brighter+bigger, far dimmer+smaller (drives the SPHERE 3D read)
             '  float depth=-mv.z; vNear=clamp((13.0-depth)/7.0,0.0,1.0);',
-            '  float boost=0.5+en*0.8+vNear*0.6;',
+            '  float orbW=1.0-clamp(abs(uSceneF-5.0),0.0,1.0);',           // orbits (stage 06)
+            '  float boost=0.5+en*0.8+vNear*(0.6+orbW*1.35);',            // orbits: near ring points much larger
             '  gl_PointSize=clamp(uSize*boost/max(depth,0.1),0.0,8.0)*uPixelRatio;',
-            '  vE=en; vB=br*mix(1.0,0.62,uCalm)*(0.55+0.45*vNear);',        // calm below hero; far dimmer
+            // orbits carry their 3D read ENTIRELY through the near/far gradient — push it hard
+            // (near much brighter, far much dimmer) while overall staying in the calm register.
+            '  float nearRamp=mix(0.55+0.45*vNear, 0.1+1.65*vNear, orbW);',
+            '  vE=en; vB=br*mix(1.0,0.62,uCalm)*nearRamp;',                // calm below hero; far dimmer
             '}'
         ].join('\n');
 
