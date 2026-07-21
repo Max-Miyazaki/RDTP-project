@@ -632,11 +632,12 @@ a.card:hover::before,
     aspect-ratio: 16 / 9;
     border-radius: var(--radius-md);
     background:
-        radial-gradient(120% 120% at 20% 20%, rgba(43, 217, 196, 0.42), transparent 60%),
-        radial-gradient(120% 120% at 85% 80%, rgba(0, 194, 203, 0.36), transparent 65%),
-        radial-gradient(55% 55% at 62% 42%, rgba(255, 61, 139, 0.09), transparent 70%),
-        #05050a;
-    opacity: 0.85;
+        linear-gradient(135deg, rgba(43, 217, 196, 0.34), rgba(0, 194, 203, 0.12) 55%, transparent 82%),
+        radial-gradient(120% 130% at 22% 18%, rgba(43, 217, 196, 0.62), transparent 60%),
+        radial-gradient(110% 120% at 82% 84%, rgba(0, 194, 203, 0.5), transparent 64%),
+        radial-gradient(50% 50% at 60% 45%, rgba(255, 90, 60, 0.1), transparent 72%),
+        #0a161a;
+    opacity: 0.9;
 }
 
 /* ---------------------------------------------------------------------------
@@ -1099,10 +1100,11 @@ footer a:hover {
     /* Teal/cyan register (calm reading region) with warm only as a faint accent — §2.3 confines
        warm to hot cores. Was a saturated blue+magenta block, the most warm thing on the page. */
     background:
-        radial-gradient(120% 120% at 20% 20%, rgba(43, 217, 196, 0.45), transparent 60%),
-        radial-gradient(120% 120% at 85% 80%, rgba(0, 194, 203, 0.38), transparent 65%),
-        radial-gradient(55% 55% at 62% 42%, rgba(255, 61, 139, 0.10), transparent 70%),
-        #05050a;
+        linear-gradient(135deg, rgba(43, 217, 196, 0.34), rgba(0, 194, 203, 0.12) 55%, transparent 82%),
+        radial-gradient(120% 130% at 22% 18%, rgba(43, 217, 196, 0.62), transparent 60%),
+        radial-gradient(110% 120% at 82% 84%, rgba(0, 194, 203, 0.5), transparent 64%),
+        radial-gradient(50% 50% at 60% 45%, rgba(255, 90, 60, 0.1), transparent 72%),
+        #0a161a;
     display: flex;
     align-items: center;
     justify-content: center;

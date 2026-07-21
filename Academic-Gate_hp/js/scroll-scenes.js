@@ -205,11 +205,14 @@
                     var wty = (wtr / 4 - 0.5) * S * 1.55 + 0.22 * S * Math.sin(wxx * 2.7 + wtr * 1.7);
                     return [wxx, wty + gauss(0.03 * S), (wtr - 2) * S * 0.11, 0.36 + 0.22 * rnd(), 0.72, (wtr + 0.5) / 5];
                 }
-                case 'convergence': { // gather inward to a bright form — OFFSET right+below, clear of the card grid
-                    var ox = S * 0.78, oy = -S * 0.5;
-                    if (rnd() < 0.5) { rc = S * 0.34 * Math.cbrt(rnd()); u = rnd() * 2 - 1; th = rnd() * TAU; s = Math.sqrt(1 - u * u); return [rc * s * Math.cos(th) + ox, rc * u + oy, rc * s * Math.sin(th), 0.5 + 0.35 * (1 - rc / (S * 0.34)), 0.88, 0]; }
-                    var ca = rnd() * TAU, cr = S * (0.5 + 1.0 * rnd());
-                    return [cr * Math.cos(ca) + ox, cr * Math.sin(ca) * 0.7 + oy, gauss(S * 0.4), 0.3 + 0.2 * rnd(), 0.5, 0];
+                case 'convergence': { // gather inward to a bright form — COMPACT, wide+short, placed
+                    // BELOW the Projects card grid (verified: its lit bbox clears every card rect).
+                    var ox = 0, oy = -S * 0.9;
+                    if (rnd() < 0.6) {                                    // tight bright core (wide-short)
+                        return [gauss(S * 0.2) + ox, gauss(S * 0.08) + oy, gauss(S * 0.14), 0.5 + 0.3 * rnd(), 0.85, 0];
+                    }
+                    var ca = rnd() * TAU, cr = S * (0.28 + 0.42 * rnd());
+                    return [cr * Math.cos(ca) + ox, cr * Math.sin(ca) * 0.34 + oy, gauss(S * 0.14), 0.32 + 0.2 * rnd(), 0.5, 0]; // y compressed → clears the card band
                 }
                 default: return [0, 0, 0, 0.3, 1, 0];
             }
