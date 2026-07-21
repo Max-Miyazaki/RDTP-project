@@ -18,6 +18,39 @@ python3 -m http.server 8000
 Any static file server works. Opening the files directly via `file://` mostly works, but the
 Three.js CDN and PDF embeds behave better over `http://`.
 
+## Deploying / pushing
+
+**The git repository root is one level above this folder.** This folder is
+`RDTP-project/Academic-Gate_hp/`; `git` commands run from `RDTP-project/`.
+
+Published with **GitHub Pages** from `main` at `/` (repository root), so the live site is
+served from the repo root, not from this folder. `../index.html` is a meta-refresh redirect
+into `html/index.html`, and `../.nojekyll` disables Jekyll. Live URL:
+<https://max-miyazaki.github.io/RDTP-project/>
+
+**Push auth is HTTPS + a `gh` CLI token — not SSH.** No SSH key is registered for this
+account (`ssh -T git@github.com` returns `Permission denied (publickey)`), so the remote stays
+on `https://` and credentials come from the macOS keychain via the `gh` token.
+
+The trap: `gh` can hold **several accounts at once**, and the keychain hands git whichever one
+is active. If a push fails with
+
+```
+remote: Permission to Max-Miyazaki/RDTP-project.git denied to <other-account>.
+fatal: ... error: 403
+```
+
+it is not a permissions problem on the repo — it is the wrong account being active. Check and
+fix with:
+
+```sh
+gh auth status                          # which account is active?
+gh auth switch --user Max-Miyazaki      # switch before pushing
+```
+
+Note that `git config user.name/user.email` is separate and can be correct while the *token* is
+wrong — commit authorship will look right and the push will still 403.
+
 ## Where things live
 
 | Path | What |
