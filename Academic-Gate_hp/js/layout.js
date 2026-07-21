@@ -62,7 +62,9 @@
                 '</nav>' +
                 '<div class="footer-social">' +
                     '<span class="footer-col-label">Connect</span>' +
-                    '<a href="https://x.com/miya_max_study" target="_blank" rel="noopener">X</a>' +
+                    // X account deleted. Commented out rather than removed so it is trivially
+                    // restorable if a new account is made. Matching card in html/sns.html.
+                    // '<a href="https://x.com/miya_max_study" target="_blank" rel="noopener">X</a>' +
                     '<a href="https://www.instagram.com/daily_life_of_miya/" target="_blank" rel="noopener">Instagram</a>' +
                     '<a href="https://www.youtube.com/@miya-max-active" target="_blank" rel="noopener">YouTube</a>' +
                 '</div>' +
