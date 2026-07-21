@@ -111,6 +111,29 @@ h1, h2, h3, h4,
     }
 }
 
+/* Round 14 — proximity scroll-snap on the hero (stages 01–04) only.
+   Native CSS snap (NOT a JS scroll hijack): the browser keeps ownership of
+   inertia, momentum, and mid-transition stops. `proximity` (never `mandatory`)
+   settles a deliberate scroll onto a motif but always leaves an escape, so
+   find-in-page, anchor jumps, keyboard scrolling, and resting between stages
+   all still work. Only elements with scroll-snap-align become snap points, so
+   the index blocks 05–10 (card grids + body copy people are reading) are left
+   as free scroll by simply never opting in.
+   Gated to (no-preference) so reduced-motion gets plain scrolling — snapping is
+   motion — and to (min-width:601px) so mobile gets the free-scroll version
+   (iOS momentum + snap is historically janky; pending the device pass this is
+   the safe default). Each .scene is 120vh, so its centre is exactly the peak-w
+   position; snap-align:center lands the form fully resolved. */
+@media (prefers-reduced-motion: no-preference) and (min-width: 601px) {
+    html {
+        scroll-snap-type: y proximity;
+    }
+
+    .hero .scene {
+        scroll-snap-align: center;
+    }
+}
+
 body {
     font-family: var(--font-body);
     font-weight: 400;

@@ -315,7 +315,10 @@
             '  float br=mix(floor(ebA)/100.0,floor(ebB)/100.0,f);',
             '  vInfra=(1.0-clamp(abs(uSceneF-3.0),0.0,1.0));',
             // attraction: 1 at a scene centre, dips between. NATURE (index 1) stays looser.
-            '  float fc=min(f,1.0-f); float w=1.0-smoothstep(0.10,0.5,fc);',
+            // Round 14 dwell plateau: w holds at 1.0 across fc in [0,0.20] (a scroll band
+            // ~±24vh around each snap point) so a snapped form stays fully resolved while
+            // the viewer rests, then dissolves to w=0 at the midpoint (fc=0.5) between stages.
+            '  float fc=min(f,1.0-f); float w=1.0-smoothstep(0.20,0.5,fc);',
             '  float natureW=1.0-clamp(abs(uSceneF-1.0),0.0,1.0);',
             '  float wfW=1.0-clamp(abs(uSceneF-8.0),0.0,1.0);',              // waveforms (stage 09, index 8)
             // travelling WAVE surface for nature + waveforms — the SURFACE moves (per-particle
@@ -483,6 +486,17 @@
             count: COUNT, stages: K, attributeBytes: attributeBytes,
             pause: function () { renderOnce(); stop(); }, resume: start,
             sceneF: function () { return uniforms.uSceneF.value; },
+            // Round 14: the shader's attractor weight w for a viewport-centre scroll position
+            // (defaults to current). Mirrors the vertex shader exactly, dwell plateau included.
+            wAt: function (scrollY) {
+                var sf = sceneFor((scrollY == null ? window.scrollY : scrollY) + window.innerHeight / 2);
+                var f = sf - Math.floor(sf), fc = Math.min(f, 1 - f);
+                var t = Math.min(1, Math.max(0, (fc - 0.20) / 0.30));
+                return 1 - t * t * (3 - 2 * t);
+            },
+            // doc-space scrollY where CSS snap rests hero stage i: scene centre aligned to the
+            // snapport centre (viewport inset at top by --nav-clearance, so shifted pad/2 down).
+            snapRest: function (i) { computeCenters(); return centers[i] - (window.innerHeight + 92) / 2; },
             // rotate WITHOUT advancing the curl (frozen uTime) → isolates pure rotation parallax
             spin: function (dy) { points.rotation.y += dy; renderer.render(scene, camera); }
         };
