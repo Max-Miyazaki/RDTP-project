@@ -1141,3 +1141,22 @@ to track** against the dense particle field. A numerically-verifiable rotation c
 higher-contrast banding/filaments, which costs the soft volumetric quality — **this trade was
 offered and declined** (the metric exists to protect the design, not the reverse). No further
 work on the sphere; the 3D read stands on visual + constructional evidence.
+
+## 15.13 Stage 06 orbits — three-dimensional (Round-13 follow-up)
+
+Was coplanar nested ellipses on a tilted disc (read flat). Rebuilt:
+- **Each ring in its own plane** — distinct inclination (15–55°) + longitude of ascending node
+  + eccentricity, so rings **visibly cross** (one in front, then behind). *3D verified by the
+  two-frame spin test — which works here (unlike the sphere) because rings are trackable
+  features:* patches on different rings displaced **(0, 23, 16, 12) px in different directions**
+  under one 0.12-rad rotation.
+- **Depth via a hard near/far ramp** (additive gives no occlusion): near arc brighter + points
+  larger, far arc dimmer + smaller — ramp pushed much harder for this motif only
+  (`nearRamp = mix(…, 0.1+1.65·vNear, orbW)`, size `+orbW·1.35`), overall still calm register.
+- **Star at the common FOCUS** (not centre) — small, tight, warm (magenta/ember, core-only); the
+  ellipses are eccentric with periapsis nearer the star, adding perspective asymmetry.
+- System offset +0.55S right so the dense rings clear the left text column; contrast re-sampled
+  under the glyph boxes: **heading 18.1:1, body 17.8:1** (was 12/14 before the offset).
+- The "vertical rule" by the ノートを読む CTA was a **field coincidence** (an orbit-ring edge),
+  not a CSS element (btn-secondary has a transparent border; the only `.btn::before` is an
+  invisible hover glow) — gone with the redesign.
