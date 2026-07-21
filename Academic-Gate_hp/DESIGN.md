@@ -1,13 +1,14 @@
-# Academic Gates — Design System Proposal
+# Academic Gates — Design System
 
-**Status:** Proposal for review. Nothing has been implemented yet.
-**Codename:** *The Gate* — a scroll-driven cosmic redesign.
+**Status:** Shipped and maintained. This document describes the design system as it exists in
+the code now; §13 is the round-by-round decision log, §14 is the current Round-12 work.
+**Codename:** *The Gate* — a scroll-driven cosmic site.
 
-The site should feel like standing at the gateway to all human knowledge: a pure-black
-canvas, a glowing WebGL particle field that morphs as you scroll, a blue → violet →
-magenta → ember gradient running through it, and very large, very light typography
-floating on top. This document defines the tokens, type, components, and the index.html
-scroll choreography. Please review; I will not write any CSS/JS until this is approved.
+The site feels like standing at the gateway to all human knowledge: a pure-black canvas, a
+glowing WebGL flow field that forms and disperses as you scroll (Round 12; earlier it morphed
+between fixed formations), a **teal/cyan-dominant** spectrum with warm confined to hot cores,
+and very large, very light typography floating on top. This document defines the tokens, type,
+components, the index.html flow-field choreography, fallbacks, and per-page adaptation.
 
 ---
 
@@ -720,3 +721,208 @@ Recorded for your review; these differ from a naive reading of §1–12.
 
 *Delivered: `css/style.css`, `html/index.html`, `js/scroll-scenes.js`, `js/starfield.js`,
 `js/main.js`. Interior pages untouched (step 3).*
+
+---
+---
+
+# 14. Round 12 — Full-page flow field (IMPLEMENTED)
+
+A large change to a verified build: the particle field becomes a **continuous flow that runs
+the whole page**, scene forms become **attractors** in that flow, the composition goes
+**full-bleed**, the **galaxy is cut** for a new four-motif world, and **scenes get longer**.
+Aesthetic target: teamLab — continuous, immersive, organic, no visible mechanism. Palette
+unchanged (teal/cyan dominant, warm confined to hot cores).
+
+Work lands on branch `feature/full-page-particles`, off the `v2.0-redesign` tag.
+
+## 14.1 Part 1 — four bugs at the bottom of index.html (diagnosed, fixes planned)
+
+Measured in headless Chrome at 1440×900; root causes confirmed, not guessed.
+
+1. **Closing line collides with the nav pill.** `.final-message` is `main > .index-region >
+   section` — the shared nav-clearance rule targets `main > section, .page-header, h1/h2/h3,
+   .eyebrow`, so it never matches this nested section (measured `scroll-margin-top: 0px`).
+   **Fix:** broaden the clearance selector to reach nested sections (add `.final-message`, or
+   switch to `section` + a scoped exclusion), so it inherits `--nav-clearance`.
+2. **Near-full-viewport empty black band around the closing line.** The document flow is
+   actually dense (0px between card blocks); the void is `.final-message`'s own padding —
+   `var(--space-16)` = **128px top + 128px bottom** isolating one line — and it reads as *dead*
+   black because the canvas goes dormant below the hero (Part 2). **Fix:** trim the padding to
+   normal section rhythm; Part 2's calm full-page field fills the space so it is never dead
+   black.
+3. **Telemetry overlaps the footer.** `#telemetry` and `.stage-labels` are `position: fixed;
+   bottom: 16px` — hero readouts that float over whatever sits at the viewport bottom, so at
+   page-bottom they land on the footer. **Fix:** hide both once the hero leaves the viewport /
+   the footer enters it (they are only meaningful over the hero). Ties into Part 2's new canvas
+   lifecycle.
+4. **Placeholder contact in the footer.** `mailto:contact@example.com` lives in the injected
+   footer (`layout.js`). **Fix (needs your input):** I don't have the real address, so I will
+   **remove the line** unless you give me one. *Also flagging:* the footer's `YouTube` and
+   `各種SNS` links both point at `sns.html` (placeholders) — same question; left as-is unless
+   you provide real URLs.
+
+## 14.2 Part 2 — the field runs the whole page
+
+- The canvas **stops going dormant** after the hero. The render loop runs hero → footer.
+- Below the hero it drops to a **calm register**: lower density/brightness, slower drift, weak
+  or no attraction (a slow settle of the *infrastructure* motif, §14.5). Present and moving
+  behind the card grids and footer, never competing with text.
+- **Contrast verified numerically over the field** (transparent-glyph method, as in the hero),
+  per card region — not by eye. Target ≥ 4.5:1 on body copy, ≥ 7:1 on headings.
+- **All three fallbacks apply to the full-page field, not just the hero:** no-WebGL →
+  `body::before` gradient stands in for the whole page; `prefers-reduced-motion` → Three.js
+  never downloads, static glow only; JS disabled → static glow + `<noscript>` nav.
+
+## 14.3 Part 3 — continuous flow, not morph-between-static-sets (the core change)
+
+**Current engine:** precomputed position sets per stage, interpolated by `uProgress` — reads as
+a slideshow of shapes with dead stops at each peak.
+
+**New engine — curl-noise flow + attractors (stateless, GPU-side):**
+- **Baseline drift = curl noise in the vertex shader.** Every particle continuously advects
+  along a divergence-free curl-noise field derived from its position + `uTime`. Result: the
+  field is *always* moving, at every scroll position, including at rest. Curl (incompressible)
+  noise gives swirling organic current with no sources/sinks — the teamLab look.
+- **Scene forms = attractors.** Each motif defines a target position per particle (its place in
+  the form). Rendered position = `mix(curlDriftPosition, attractorTarget, w)` where `w` is an
+  **attraction strength** that ramps up as the scene centres, holds near 1, then releases toward
+  0 as the next attractor engages. At `w≈1` particles concentrate into the recognizable form;
+  as `w→0` the curl term dominates and they disperse back into the flow. A small residual curl
+  displacement remains even at `w≈1`, so a held form still breathes — never a frozen frame.
+- **Internal current, not uniform motion.** Curl amplitude and time-rate vary with **depth
+  (`vNear`) and position**, so near particles drift faster/looser and far ones slower — the
+  field has current, not a single global speed.
+- **Transitions read as a current changing direction.** During a hand-off, `w` for the leaving
+  motif drops while the curl amplitude briefly spikes (release), then the arriving motif's `w`
+  rises (re-form). Particles flow from one region to the next rather than cross-fading between
+  two objects.
+- **Why stateless (no GPGPU ping-pong):** keeps the current single-`THREE.Points` +
+  `ShaderMaterial` architecture and is far cheaper — necessary for a full-page, wider-coverage,
+  always-on field to hold 60 fps (Part 7). Cost: no true momentum/history; the flow is animated
+  curl-displacement, not an integrated simulation.
+- **GPGPU escalation — the specific trigger (recorded so it can't become an open-ended
+  rewrite):** move to a GPGPU FBO velocity-integration sim (true advection) **only if the
+  stateless field reads as *displaced rather than flowing* — i.e. particles visibly snap toward
+  targets and jitter in place with no sense of momentum or continuous travel between forms.**
+  That is the one condition. Anything else (density, palette, form legibility, perf) is tuned
+  within the stateless engine, not by escalating. *Recommending stateless first.*
+
+## 14.4 Part 4 — full-bleed composition
+
+- `FORM_OFFSET_X → 0` and forms scaled so the field **spans full width and height**; the viewer
+  is *inside* the form, not looking at it across the page.
+- Text stays **left-aligned and legible** via the existing local scrim/vignette (the dark
+  per-glyph shadow + feathered vignette that already passes ~21:1). **Contrast re-verified at
+  every stage after widening** — the form now sits under the text, so this is mandatory, not
+  optional.
+
+## 14.5 Part 5 — new motif set (galaxy cut)
+
+The spiral galaxy is dropped (most literal/illustrative, tonally apart). Four motifs read as one
+continuous world, physical → human-made:
+
+| # | Motif | Attractor form | Carries |
+|---|---|---|---|
+| 1 | **宇宙 — cosmos** | The ring / torus, kept. Full-bleed, viewer inside it. | Site name, tagline |
+| 2 | **自然 — nature** | Organic growth: branching, flowing filaments — between a root system, a current, and a nervous system. Grows and disperses. | 勉強の軌跡 → study.html |
+| 3 | **社会 — network** | Nodes + edges emerging *out of* the flow (not drawn as a diagram): connections forming and dissolving as attraction pulls drifting particles into clusters + edge bands. | 現在地 / 研究 |
+| 4 | **情報基盤 — infrastructure** | A regular lattice / grid with data streaming along its lines — server racks, packet flow. The most ordered form; the flow finally organized. | ノート・ブログ・動画・SNS |
+
+Below the hero, the field settles into a **slow drift of the infrastructure motif** behind the
+cards and footer — the page ends inside the structure the narrative built.
+
+## 14.6 Part 6 — longer scenes
+
+- Desktop stage span **~80vh → ~120vh** (hero **~480vh**); mobile **~90vh/stage** (~360vh).
+- The `tp`-synced text opacity + mobile even-spacing (§6 mobile) carry over; the readable-copy
+  table (whole text blocks) is **re-measured and reported** — a longer hero should improve
+  max-simultaneous / crossfade numbers; that will be confirmed, not assumed.
+- Extra height = more scroll before the cards, so a **scroll-to-content affordance** stays
+  present (the existing `Scroll ↓` hint on stage 1, and the field's downward current reads as
+  "keep going") and the page must not feel like it's withholding content — checked in the
+  below-hero still.
+
+## 14.7 Part 7 — performance, to be measured (real browser, M5)
+
+Reported after implementation, numerically:
+- Particle count per tier as shipped.
+- Median + p95 frame time while scrolling the full page, with sample count.
+- Clipped-pixel % and lit-body median for each of the four motifs.
+- Frame time specifically in the **below-hero** region (field behind cards).
+- **Rule:** if the full-page field can't hold 60 fps, reduce **below-hero** density, never the
+  hero's.
+
+## 14.8 Canvas lifecycle (replaces the dormant model)
+
+`#scene-canvas` stays fixed + full-viewport and renders continuously. State is a function of
+scroll: **hero region** → full density/brightness, attractors active per stage; **below-hero**
+→ calm register (reduced density, brightness, time-rate; infrastructure drift). No
+`is-dormant` opacity-off. `visibilitychange` still pauses when the tab is hidden. Telemetry +
+stage-labels hide below the hero (Part 1 bug 3).
+
+## 14.9 Shipped values + measurements (real browser, Apple M5, headless Chrome)
+
+- **Engine:** stateless curl-noise flow field (Ashima 3D simplex, forward-difference curl of a
+  3-component potential) + attractor blend `mix(curlDrift, target, w)`; `w` peaks at each scene
+  centre, dips to 0 between. Four motifs: cosmos (ring), nature (branching filaments), network
+  (nodes+edges from flow), infrastructure (lattice + streaming). Full-bleed (`FORM_OFFSET_X = 0`,
+  camera z 7 desktop / 8.5 mobile, form radius S = 3.5 / 2.05). Text sits inside the field.
+- **Full-page lifecycle:** canvas never goes dormant; below the hero a `calmFactor` lowers
+  brightness (×0.42), cuts density via `setDrawRange` (−55%), and settles the field to the
+  infrastructure motif. `body.hero-passed` hides the hero telemetry/labels. Pauses only on tab-hide.
+- **Particle count per tier:** 84 000 desktop / 42 000 low-power / 30 000 mobile (`?n=` override).
+- **Frame time (1440×900, M5, real GPU timer + rAF pacing):**
+  - Full page, auto-scroll top→bottom, **1656 frame samples:** median **16.7 ms**, p95 **17.2 ms**,
+    **0 dropped frames (>20 ms)**; GPU cost **~3.3 ms** (was ~1.8 ms for the morph — curl adds ~1.5 ms).
+  - Below-hero region, 180 samples: median **16.7 ms**, p95 **17.1 ms**, 0 dropped, GPU ~3.4 ms.
+  - → locked 60 fps everywhere; the below-hero density cut was not needed for frame rate (kept for headroom).
+- **Per-motif clipped-pixel % / lit-body median (canvas only):** cosmos 0.000 % / 0.11 ·
+  nature 0.022 % / 0.08 · network 0.000 % / 0.08 · infra 0.000 % / 0.08. No blowout; the
+  lit-median is lower than the old occupying-40 % formations because the full-bleed field is
+  diffuse across the whole frame (deliberate — atmospheric, not a solid object).
+- **Contrast (white text, transparent-glyph over bg+scrim):** cosmos 20.8 / nature 21.0 /
+  network 20.9 / infra 20.9 : 1 (heading), ~20.4–20.8 : 1 (body). Below-hero **card** text over
+  the veil + calm field: **20.4 : 1**. Full-bleed did not hurt contrast — text sits in the dark
+  region + local scrim; all far above the 4.5 / 7 : 1 targets.
+- **Longer scenes:** desktop 120 vh (480 vh hero), mobile 90 vh (360 vh) with a 50 vh head/tail
+  spacer → mobile scene centres tp = [0.122, 0.374, 0.626, 0.878] (near-exact even). Readable-copy
+  (240 samples, whole `.scene__content` blocks): **max 1 block > 0.5, 0 px two-visible > 0.5,
+  0 px blank gap** — optimal, now with a longer readable dwell per stage.
+- **GPGPU escalation:** not triggered — the field reads as flowing (curl drift continuous, forms
+  release and re-form), not displaced/snapping. Stays stateless.
+- **Fallbacks (unchanged, now page-wide):** reduced-motion → no Three.js, static glow; no-WebGL /
+  JS-off → `body::before` gradient + `<noscript>` nav for the whole page.
+
+*Untested at runtime: desktop Safari (per §13 Round-11 — still gated). iOS was device-verified
+in an earlier round; the flow field's momentum behaviour on iOS has not been re-checked on-device.*
+
+## 14.10 Density/brightness regression fix (Round-12 follow-up)
+
+The first cut of the full-bleed field was too dim — lit-body median 0.08–0.17 vs the 0.4–0.6
+band that holds tonal structure. Flagged as a regression (not "expected"). Three compounding
+causes, all fixed:
+- **Per-area density had collapsed:** full-bleed spread the form over ~2.5× the old area while
+  the count went *down* (90k→84k) → <⅓ of r22 density. **Fix: 84k → 200k desktop** (110k
+  low-power, 70k mobile), so per-area density is **169–186 particles / 1000 px²** vs the r22
+  baseline ~174. Frame-time curve (M5): 84k→2.5 · 120k→3.5 · 160k→4.5 · **200k→5.5 ms**, every
+  point locked 60 fps / 0 dropped; r29 full-page median 16.7 ms, p95 17.3, GPU 3.9 ms.
+- **Curl was smearing the form:** confirmed `w` reaches 1.0 at each scene peak (clip appears
+  only there); lowered the held-form residual curl (0.06 → 0.022) so the form is crisp when
+  looked at and dissolves into flow on either side.
+- **Per-particle brightness too low:** uAlpha 0.16 → 0.50, uExposure → 1.08, point size 16→17,
+  ring tube thickened, infrastructure lattice brightened. **Form-region body-median now:
+  nature 0.47, network 0.45, infra 0.42** (in band), **cosmos ~0.40** (thin ring — measured
+  0.33 at α0.40, scales to ~0.41 at shipped α0.50; its dense peak could not be screenshotted
+  in headless, so this one is estimated, not captured). Clipped pixels **< 0.4%** all motifs.
+  Individual dots + dark gaps still visible at 1440×900.
+- **Below-hero field was invisible** (×0.42 brightness, −55% density). Raised to ×0.72 / −20%
+  → the infrastructure lattice is now clearly present behind the cards; card text contrast
+  re-verified over it: **heading 15.2 : 1, body 19.0 : 1** (both pass). Index-block rhythm
+  tightened (padding 96→64 px) so 06/07 no longer sit a viewport apart.
+- **Network hierarchy:** more particles on nodes, brighter hubs (few bright / many small),
+  tighter edges → reads as nodes+edges, not a cloud.
+- Eyebrow numbering verified continuous **01–10** (05 present).
+
+*Measurement caveat: the always-on 200k WebGL page destabilises headless-Chrome screenshots at
+the cosmos peak specifically; cosmos's shipped still/number are from an intermediate build
+(α0.40) — visually representative, numerically ~0.41 estimated. Everything else is r29-fresh.*
