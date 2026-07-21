@@ -1130,3 +1130,14 @@ DENSE — no draw-range cut). Convergence holds behind the footer.
   from a saturated blue+magenta block to a teal/cyan gradient with a faint (0.09–0.10α) warm
   accent — §2.3 (warm confined to cores) now holds in the calm reading region.
 - Frame time after all changes: full-page median **16.7 ms, 0 dropped**, GPU 4.7 ms (60 fps).
+
+## 15.12 Sphere rotation — KNOWN MEASUREMENT LIMITATION (closed, declined)
+
+The cosmos sphere (01) reads as a 3D volume **by construction and visually** (uniform-volume
+sampling, angular clumps + radial shells, a tight warm core glowing through the cool volume).
+Its **rotation is not numerically verified**: both frame-diff and cross-correlation fail to
+quantify near/far displacement because the internal structure is deliberately **too low-contrast
+to track** against the dense particle field. A numerically-verifiable rotation cue would require
+higher-contrast banding/filaments, which costs the soft volumetric quality — **this trade was
+offered and declined** (the metric exists to protect the design, not the reverse). No further
+work on the sphere; the 3D read stands on visual + constructional evidence.
