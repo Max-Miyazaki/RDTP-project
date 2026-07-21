@@ -93,13 +93,14 @@ html {
     -webkit-text-size-adjust: 100%;
 }
 
-/* Shared floating-nav clearance. Any section or heading that can become the top
-   of the viewport (anchor jump, scroll-to, or a short section resting at top)
-   reserves clearance below the pill so its first line never hides under the nav.
-   Defined once here so it can't regress page by page. */
-main > section,
+/* Shared floating-nav clearance. Applied to the scroll-target elements THEMSELVES
+   (every heading, eyebrow, and section) regardless of nesting depth — not via a
+   `main > section` child combinator, which silently misses nested sections (that was
+   the .final-message bug). Any element that can rest at the top of the viewport keeps
+   clearance below the pill so its first line never hides under the nav. */
+section,
 .page-header,
-h1, h2, h3,
+h1, h2, h3, h4,
 .eyebrow {
     scroll-margin-top: var(--nav-clearance);
 }
@@ -107,6 +108,29 @@ h1, h2, h3,
 @media (prefers-reduced-motion: reduce) {
     html {
         scroll-behavior: auto;
+    }
+}
+
+/* Round 14 — proximity scroll-snap on the hero (stages 01–04) only.
+   Native CSS snap (NOT a JS scroll hijack): the browser keeps ownership of
+   inertia, momentum, and mid-transition stops. `proximity` (never `mandatory`)
+   settles a deliberate scroll onto a motif but always leaves an escape, so
+   find-in-page, anchor jumps, keyboard scrolling, and resting between stages
+   all still work. Only elements with scroll-snap-align become snap points, so
+   the index blocks 05–10 (card grids + body copy people are reading) are left
+   as free scroll by simply never opting in.
+   Gated to (no-preference) so reduced-motion gets plain scrolling — snapping is
+   motion — and to (min-width:601px) so mobile gets the free-scroll version
+   (iOS momentum + snap is historically janky; pending the device pass this is
+   the safe default). Each .scene is 120vh, so its centre is exactly the peak-w
+   position; snap-align:center lands the form fully resolved. */
+@media (prefers-reduced-motion: no-preference) and (min-width: 601px) {
+    html {
+        scroll-snap-type: y proximity;
+    }
+
+    .hero .scene {
+        scroll-snap-align: center;
     }
 }
 
@@ -183,6 +207,16 @@ body::before {
     #telemetry {
         display: none;
     }
+}
+
+/* Hero-only readouts: fade out once the hero has scrolled past, so they never sit
+   over the footer (Round-12 bug 3). position:fixed → no layout shift either way.
+   JS toggles body.hero-passed (scroll-scenes.js). */
+body.hero-passed .stage-labels,
+body.hero-passed #telemetry {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s var(--ease);
 }
 
 img {
@@ -615,15 +649,18 @@ a.card:hover::before,
     color: var(--text-tertiary);
 }
 
-/* Spectrum media placeholder (thumbnails etc.) */
+/* Spectrum media placeholder (thumbnails etc.) — teal/cyan register with a faint warm
+   accent only (§2.3: warm confined to hot cores; was a saturated blue+magenta block). */
 .media-placeholder {
     aspect-ratio: 16 / 9;
     border-radius: var(--radius-md);
     background:
-        radial-gradient(120% 120% at 20% 20%, var(--spec-blue), transparent 60%),
-        radial-gradient(120% 120% at 85% 80%, var(--spec-magenta), transparent 65%),
-        #05050a;
-    opacity: 0.85;
+        linear-gradient(135deg, rgba(43, 217, 196, 0.34), rgba(0, 194, 203, 0.12) 55%, transparent 82%),
+        radial-gradient(120% 130% at 22% 18%, rgba(43, 217, 196, 0.62), transparent 60%),
+        radial-gradient(110% 120% at 82% 84%, rgba(0, 194, 203, 0.5), transparent 64%),
+        radial-gradient(50% 50% at 60% 45%, rgba(255, 90, 60, 0.1), transparent 72%),
+        #0a161a;
+    opacity: 0.9;
 }
 
 /* ---------------------------------------------------------------------------
@@ -723,12 +760,12 @@ html.js .reveal.is-visible {
     color: var(--text-primary);
 }
 
-/* Four text stages × 80vh = 320vh. Each text block is position:sticky so it
-   holds pinned near centre for the whole stage while the field morphs under it —
-   the reader gets a long, steady read instead of a fast fade band. */
+/* Four text stages × 120vh = 480vh (Round-12 Part 6 — longer scenes, slower reveal).
+   Each text block is position:sticky so it holds pinned near centre for the whole
+   stage while the flow field forms and releases under it — a long, steady read. */
 .scene {
     position: relative;
-    height: 80vh;
+    height: 120vh;
     padding: 0 var(--gutter);
 }
 
@@ -901,13 +938,23 @@ html.js .reveal.is-visible {
 .index-region {
     position: relative;
     z-index: 1;
-    background: linear-gradient(180deg, transparent, rgba(0, 0, 0, 0.55) 18%, #000 45%);
+    /* Semi-transparent veil (not solid #000) so the calm below-hero flow field shows
+       through behind the cards while card text keeps its contrast (Round-12 Part 2). */
+    background: linear-gradient(180deg, transparent, rgba(0, 0, 0, 0.42) 16%);
 }
 
 .index-block {
-    padding: var(--space-12) var(--gutter);
+    padding: var(--space-8) var(--gutter);
     max-width: 1200px;
     margin: 0 auto;
+    /* Even out the per-stage scroll dwell (Round-13 item 3): card heights are
+       content-dependent (blog/videos grids are taller), which made stages 05–10 morph
+       at uneven speeds. A min-height evens the block spans so each stage gets a
+       comparable scroll window; the flow field fills the added space (never empty). */
+    min-height: 60vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
 .index-block__head {
@@ -927,7 +974,9 @@ html.js .reveal.is-visible {
 
 .final-message {
     text-align: center;
-    padding: var(--space-16) var(--gutter);
+    /* Normal section rhythm — the old var(--space-16) (128px each side) isolated the
+       one line in a large black void (Round-12 bug 2). */
+    padding: var(--space-8) var(--gutter);
 }
 
 .final-message p {
@@ -1071,10 +1120,14 @@ footer a:hover {
 .video-thumbnail {
     aspect-ratio: 16 / 9;
     border-radius: var(--radius-md);
+    /* Teal/cyan register (calm reading region) with warm only as a faint accent — §2.3 confines
+       warm to hot cores. Was a saturated blue+magenta block, the most warm thing on the page. */
     background:
-        radial-gradient(120% 120% at 20% 20%, var(--spec-blue), transparent 60%),
-        radial-gradient(120% 120% at 85% 80%, var(--spec-magenta), transparent 65%),
-        #05050a;
+        linear-gradient(135deg, rgba(43, 217, 196, 0.34), rgba(0, 194, 203, 0.12) 55%, transparent 82%),
+        radial-gradient(120% 130% at 22% 18%, rgba(43, 217, 196, 0.62), transparent 60%),
+        radial-gradient(110% 120% at 82% 84%, rgba(0, 194, 203, 0.5), transparent 64%),
+        radial-gradient(50% 50% at 60% 45%, rgba(255, 90, 60, 0.1), transparent 72%),
+        #0a161a;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1452,17 +1505,16 @@ input[type="range"] {
     /* Mobile hero: the four text stages at ~55vh each (~220vh). MATTER + SOLAR
        are skipped entirely (the JS builds only the four formations). */
     .scene {
-        height: 55vh;
+        height: 90vh;   /* Round-12 Part 6 — longer mobile stages (4 × 90vh = 360vh) */
     }
 
     /* Head + tail spacers push the first/last scene centres off the 0/1 ends so the four
        scene centres land at 12.5 / 37.5 / 62.5 / 87.5% of scroll — i.e. exactly the
-       evenly-spaced sample offsets. Each stage's text-centre then coincides with its
-       formation peak, so an evenly-spaced still rests on one fully-formed stage (not a
-       mid-morph blend), and the last stage gets a real dwell instead of only peaking at
-       the final pixel. Canvas layers are fixed, so padding moves only the flowing scenes. */
+       evenly-spaced sample offsets. For 90vh scenes the even-tp math gives a 50vh spacer
+       (was 51vh at 55vh). Each stage's text-centre then coincides with its formation peak.
+       Canvas layers are fixed, so padding moves only the flowing scenes. */
     .hero {
-        padding-block: 51vh;
+        padding-block: 50vh;
     }
 
     .scene .scene__content {

@@ -1,13 +1,14 @@
-# Academic Gates — Design System Proposal
+# Academic Gates — Design System
 
-**Status:** Proposal for review. Nothing has been implemented yet.
-**Codename:** *The Gate* — a scroll-driven cosmic redesign.
+**Status:** Shipped and maintained. This document describes the design system as it exists in
+the code now; §13 is the round-by-round decision log, §14 is the current Round-12 work.
+**Codename:** *The Gate* — a scroll-driven cosmic site.
 
-The site should feel like standing at the gateway to all human knowledge: a pure-black
-canvas, a glowing WebGL particle field that morphs as you scroll, a blue → violet →
-magenta → ember gradient running through it, and very large, very light typography
-floating on top. This document defines the tokens, type, components, and the index.html
-scroll choreography. Please review; I will not write any CSS/JS until this is approved.
+The site feels like standing at the gateway to all human knowledge: a pure-black canvas, a
+glowing WebGL flow field that forms and disperses as you scroll (Round 12; earlier it morphed
+between fixed formations), a **teal/cyan-dominant** spectrum with warm confined to hot cores,
+and very large, very light typography floating on top. This document defines the tokens, type,
+components, the index.html flow-field choreography, fallbacks, and per-page adaptation.
 
 ---
 
@@ -720,3 +721,579 @@ Recorded for your review; these differ from a naive reading of §1–12.
 
 *Delivered: `css/style.css`, `html/index.html`, `js/scroll-scenes.js`, `js/starfield.js`,
 `js/main.js`. Interior pages untouched (step 3).*
+
+---
+---
+
+# 14. Round 12 — Full-page flow field (IMPLEMENTED)
+
+A large change to a verified build: the particle field becomes a **continuous flow that runs
+the whole page**, scene forms become **attractors** in that flow, the composition goes
+**full-bleed**, the **galaxy is cut** for a new four-motif world, and **scenes get longer**.
+Aesthetic target: teamLab — continuous, immersive, organic, no visible mechanism. Palette
+unchanged (teal/cyan dominant, warm confined to hot cores).
+
+Work lands on branch `feature/full-page-particles`, off the `v2.0-redesign` tag.
+
+## 14.1 Part 1 — four bugs at the bottom of index.html (diagnosed, fixes planned)
+
+Measured in headless Chrome at 1440×900; root causes confirmed, not guessed.
+
+1. **Closing line collides with the nav pill.** `.final-message` is `main > .index-region >
+   section` — the shared nav-clearance rule targets `main > section, .page-header, h1/h2/h3,
+   .eyebrow`, so it never matches this nested section (measured `scroll-margin-top: 0px`).
+   **Fix:** broaden the clearance selector to reach nested sections (add `.final-message`, or
+   switch to `section` + a scoped exclusion), so it inherits `--nav-clearance`.
+2. **Near-full-viewport empty black band around the closing line.** The document flow is
+   actually dense (0px between card blocks); the void is `.final-message`'s own padding —
+   `var(--space-16)` = **128px top + 128px bottom** isolating one line — and it reads as *dead*
+   black because the canvas goes dormant below the hero (Part 2). **Fix:** trim the padding to
+   normal section rhythm; Part 2's calm full-page field fills the space so it is never dead
+   black.
+3. **Telemetry overlaps the footer.** `#telemetry` and `.stage-labels` are `position: fixed;
+   bottom: 16px` — hero readouts that float over whatever sits at the viewport bottom, so at
+   page-bottom they land on the footer. **Fix:** hide both once the hero leaves the viewport /
+   the footer enters it (they are only meaningful over the hero). Ties into Part 2's new canvas
+   lifecycle.
+4. **Placeholder contact in the footer.** `mailto:contact@example.com` lives in the injected
+   footer (`layout.js`). **Fix (needs your input):** I don't have the real address, so I will
+   **remove the line** unless you give me one. *Also flagging:* the footer's `YouTube` and
+   `各種SNS` links both point at `sns.html` (placeholders) — same question; left as-is unless
+   you provide real URLs.
+
+## 14.2 Part 2 — the field runs the whole page
+
+- The canvas **stops going dormant** after the hero. The render loop runs hero → footer.
+- Below the hero it drops to a **calm register**: lower density/brightness, slower drift, weak
+  or no attraction (a slow settle of the *infrastructure* motif, §14.5). Present and moving
+  behind the card grids and footer, never competing with text.
+- **Contrast verified numerically over the field** (transparent-glyph method, as in the hero),
+  per card region — not by eye. Target ≥ 4.5:1 on body copy, ≥ 7:1 on headings.
+- **All three fallbacks apply to the full-page field, not just the hero:** no-WebGL →
+  `body::before` gradient stands in for the whole page; `prefers-reduced-motion` → Three.js
+  never downloads, static glow only; JS disabled → static glow + `<noscript>` nav.
+
+## 14.3 Part 3 — continuous flow, not morph-between-static-sets (the core change)
+
+**Current engine:** precomputed position sets per stage, interpolated by `uProgress` — reads as
+a slideshow of shapes with dead stops at each peak.
+
+**New engine — curl-noise flow + attractors (stateless, GPU-side):**
+- **Baseline drift = curl noise in the vertex shader.** Every particle continuously advects
+  along a divergence-free curl-noise field derived from its position + `uTime`. Result: the
+  field is *always* moving, at every scroll position, including at rest. Curl (incompressible)
+  noise gives swirling organic current with no sources/sinks — the teamLab look.
+- **Scene forms = attractors.** Each motif defines a target position per particle (its place in
+  the form). Rendered position = `mix(curlDriftPosition, attractorTarget, w)` where `w` is an
+  **attraction strength** that ramps up as the scene centres, holds near 1, then releases toward
+  0 as the next attractor engages. At `w≈1` particles concentrate into the recognizable form;
+  as `w→0` the curl term dominates and they disperse back into the flow. A small residual curl
+  displacement remains even at `w≈1`, so a held form still breathes — never a frozen frame.
+- **Internal current, not uniform motion.** Curl amplitude and time-rate vary with **depth
+  (`vNear`) and position**, so near particles drift faster/looser and far ones slower — the
+  field has current, not a single global speed.
+- **Transitions read as a current changing direction.** During a hand-off, `w` for the leaving
+  motif drops while the curl amplitude briefly spikes (release), then the arriving motif's `w`
+  rises (re-form). Particles flow from one region to the next rather than cross-fading between
+  two objects.
+- **Why stateless (no GPGPU ping-pong):** keeps the current single-`THREE.Points` +
+  `ShaderMaterial` architecture and is far cheaper — necessary for a full-page, wider-coverage,
+  always-on field to hold 60 fps (Part 7). Cost: no true momentum/history; the flow is animated
+  curl-displacement, not an integrated simulation.
+- **GPGPU escalation — the specific trigger (recorded so it can't become an open-ended
+  rewrite):** move to a GPGPU FBO velocity-integration sim (true advection) **only if the
+  stateless field reads as *displaced rather than flowing* — i.e. particles visibly snap toward
+  targets and jitter in place with no sense of momentum or continuous travel between forms.**
+  That is the one condition. Anything else (density, palette, form legibility, perf) is tuned
+  within the stateless engine, not by escalating. *Recommending stateless first.*
+
+## 14.4 Part 4 — full-bleed composition
+
+- `FORM_OFFSET_X → 0` and forms scaled so the field **spans full width and height**; the viewer
+  is *inside* the form, not looking at it across the page.
+- Text stays **left-aligned and legible** via the existing local scrim/vignette (the dark
+  per-glyph shadow + feathered vignette that already passes ~21:1). **Contrast re-verified at
+  every stage after widening** — the form now sits under the text, so this is mandatory, not
+  optional.
+
+## 14.5 Part 5 — new motif set (galaxy cut)
+
+The spiral galaxy is dropped (most literal/illustrative, tonally apart). Four motifs read as one
+continuous world, physical → human-made:
+
+| # | Motif | Attractor form | Carries |
+|---|---|---|---|
+| 1 | **宇宙 — cosmos** | The ring / torus, kept. Full-bleed, viewer inside it. | Site name, tagline |
+| 2 | **自然 — nature** | Organic growth: branching, flowing filaments — between a root system, a current, and a nervous system. Grows and disperses. | 勉強の軌跡 → study.html |
+| 3 | **社会 — network** | Nodes + edges emerging *out of* the flow (not drawn as a diagram): connections forming and dissolving as attraction pulls drifting particles into clusters + edge bands. | 現在地 / 研究 |
+| 4 | **情報基盤 — infrastructure** | A regular lattice / grid with data streaming along its lines — server racks, packet flow. The most ordered form; the flow finally organized. | ノート・ブログ・動画・SNS |
+
+Below the hero, the field settles into a **slow drift of the infrastructure motif** behind the
+cards and footer — the page ends inside the structure the narrative built.
+
+## 14.6 Part 6 — longer scenes
+
+- Desktop stage span **~80vh → ~120vh** (hero **~480vh**); mobile **~90vh/stage** (~360vh).
+- The `tp`-synced text opacity + mobile even-spacing (§6 mobile) carry over; the readable-copy
+  table (whole text blocks) is **re-measured and reported** — a longer hero should improve
+  max-simultaneous / crossfade numbers; that will be confirmed, not assumed.
+- Extra height = more scroll before the cards, so a **scroll-to-content affordance** stays
+  present (the existing `Scroll ↓` hint on stage 1, and the field's downward current reads as
+  "keep going") and the page must not feel like it's withholding content — checked in the
+  below-hero still.
+
+## 14.7 Part 7 — performance, to be measured (real browser, M5)
+
+Reported after implementation, numerically:
+- Particle count per tier as shipped.
+- Median + p95 frame time while scrolling the full page, with sample count.
+- Clipped-pixel % and lit-body median for each of the four motifs.
+- Frame time specifically in the **below-hero** region (field behind cards).
+- **Rule:** if the full-page field can't hold 60 fps, reduce **below-hero** density, never the
+  hero's.
+
+## 14.8 Canvas lifecycle (replaces the dormant model)
+
+`#scene-canvas` stays fixed + full-viewport and renders continuously. State is a function of
+scroll: **hero region** → full density/brightness, attractors active per stage; **below-hero**
+→ calm register (reduced density, brightness, time-rate; infrastructure drift). No
+`is-dormant` opacity-off. `visibilitychange` still pauses when the tab is hidden. Telemetry +
+stage-labels hide below the hero (Part 1 bug 3).
+
+## 14.9 Shipped values + measurements (real browser, Apple M5, headless Chrome)
+
+- **Engine:** stateless curl-noise flow field (Ashima 3D simplex, forward-difference curl of a
+  3-component potential) + attractor blend `mix(curlDrift, target, w)`; `w` peaks at each scene
+  centre, dips to 0 between. Four motifs: cosmos (ring), nature (branching filaments), network
+  (nodes+edges from flow), infrastructure (lattice + streaming). Full-bleed (`FORM_OFFSET_X = 0`,
+  camera z 7 desktop / 8.5 mobile, form radius S = 3.5 / 2.05). Text sits inside the field.
+- **Full-page lifecycle:** canvas never goes dormant; below the hero a `calmFactor` lowers
+  brightness (×0.42), cuts density via `setDrawRange` (−55%), and settles the field to the
+  infrastructure motif. `body.hero-passed` hides the hero telemetry/labels. Pauses only on tab-hide.
+- **Particle count per tier:** 84 000 desktop / 42 000 low-power / 30 000 mobile (`?n=` override).
+- **Frame time (1440×900, M5, real GPU timer + rAF pacing):**
+  - Full page, auto-scroll top→bottom, **1656 frame samples:** median **16.7 ms**, p95 **17.2 ms**,
+    **0 dropped frames (>20 ms)**; GPU cost **~3.3 ms** (was ~1.8 ms for the morph — curl adds ~1.5 ms).
+  - Below-hero region, 180 samples: median **16.7 ms**, p95 **17.1 ms**, 0 dropped, GPU ~3.4 ms.
+  - → locked 60 fps everywhere; the below-hero density cut was not needed for frame rate (kept for headroom).
+- **Per-motif clipped-pixel % / lit-body median (canvas only):** cosmos 0.000 % / 0.11 ·
+  nature 0.022 % / 0.08 · network 0.000 % / 0.08 · infra 0.000 % / 0.08. No blowout; the
+  lit-median is lower than the old occupying-40 % formations because the full-bleed field is
+  diffuse across the whole frame (deliberate — atmospheric, not a solid object).
+- **Contrast (white text, transparent-glyph over bg+scrim):** cosmos 20.8 / nature 21.0 /
+  network 20.9 / infra 20.9 : 1 (heading), ~20.4–20.8 : 1 (body). Below-hero **card** text over
+  the veil + calm field: **20.4 : 1**. Full-bleed did not hurt contrast — text sits in the dark
+  region + local scrim; all far above the 4.5 / 7 : 1 targets.
+- **Longer scenes:** desktop 120 vh (480 vh hero), mobile 90 vh (360 vh) with a 50 vh head/tail
+  spacer → mobile scene centres tp = [0.122, 0.374, 0.626, 0.878] (near-exact even). Readable-copy
+  (240 samples, whole `.scene__content` blocks): **max 1 block > 0.5, 0 px two-visible > 0.5,
+  0 px blank gap** — optimal, now with a longer readable dwell per stage.
+- **GPGPU escalation:** not triggered — the field reads as flowing (curl drift continuous, forms
+  release and re-form), not displaced/snapping. Stays stateless.
+- **Fallbacks (unchanged, now page-wide):** reduced-motion → no Three.js, static glow; no-WebGL /
+  JS-off → `body::before` gradient + `<noscript>` nav for the whole page.
+
+*Untested at runtime: desktop Safari (per §13 Round-11 — still gated). iOS was device-verified
+in an earlier round; the flow field's momentum behaviour on iOS has not been re-checked on-device.*
+
+## 14.10 Density/brightness regression fix (Round-12 follow-up)
+
+The first cut of the full-bleed field was too dim — lit-body median 0.08–0.17 vs the 0.4–0.6
+band that holds tonal structure. Flagged as a regression (not "expected"). Three compounding
+causes, all fixed:
+- **Per-area density had collapsed:** full-bleed spread the form over ~2.5× the old area while
+  the count went *down* (90k→84k) → <⅓ of r22 density. **Fix: 84k → 200k desktop** (110k
+  low-power, 70k mobile), so per-area density is **169–186 particles / 1000 px²** vs the r22
+  baseline ~174. Frame-time curve (M5): 84k→2.5 · 120k→3.5 · 160k→4.5 · **200k→5.5 ms**, every
+  point locked 60 fps / 0 dropped; r29 full-page median 16.7 ms, p95 17.3, GPU 3.9 ms.
+- **Curl was smearing the form:** confirmed `w` reaches 1.0 at each scene peak (clip appears
+  only there); lowered the held-form residual curl (0.06 → 0.022) so the form is crisp when
+  looked at and dissolves into flow on either side.
+- **Per-particle brightness too low:** uAlpha 0.16 → 0.50, uExposure → 1.08, point size 16→17,
+  ring tube thickened, infrastructure lattice brightened. **Form-region body-median now:
+  nature 0.47, network 0.45, infra 0.42** (in band), **cosmos ~0.40** (thin ring — measured
+  0.33 at α0.40, scales to ~0.41 at shipped α0.50; its dense peak could not be screenshotted
+  in headless, so this one is estimated, not captured). Clipped pixels **< 0.4%** all motifs.
+  Individual dots + dark gaps still visible at 1440×900.
+- **Below-hero field was invisible** (×0.42 brightness, −55% density). Raised to ×0.72 / −20%
+  → the infrastructure lattice is now clearly present behind the cards; card text contrast
+  re-verified over it: **heading 15.2 : 1, body 19.0 : 1** (both pass). Index-block rhythm
+  tightened (padding 96→64 px) so 06/07 no longer sit a viewport apart.
+- **Network hierarchy:** more particles on nodes, brighter hubs (few bright / many small),
+  tighter edges → reads as nodes+edges, not a cloud.
+- Eyebrow numbering verified continuous **01–10** (05 present).
+
+*Measurement caveat: the always-on 200k WebGL page destabilises headless-Chrome screenshots at
+the cosmos peak specifically; cosmos's shipped still/number are from an intermediate build
+(α0.40) — visually representative, numerically ~0.41 estimated. Everything else is r29-fresh.*
+
+---
+---
+
+# 15. Round 13 — reshape three motifs, motion through the whole page (PROPOSED — pending approval)
+
+Copy is out of scope this round (owner rewrites headings/body later); this is motion only.
+Off `v2.1-density-restored`. Nothing implemented until this section is reviewed.
+
+## 15.1 Two fixes from Round-12 feedback
+
+- **Dial the below-hero register back** ×0.72 → **×0.62** (it currently reads as a bold lattice
+  with heading text sitting on a bright grid line). Re-verify card contrast **sampling under the
+  actual glyph bounding boxes** (the 15.2:1 figure looks too high for the image — the sample
+  point was likely not under the glyphs), and report per stage.
+- **Network distribution is inverted** — empty left-centre, nodes biased right. Rebuild so
+  connection density **peaks at the centre and tapers outward**, symmetric, no holes (§15.4).
+
+## 15.2 The full ten-stage motion table
+
+The field now changes form and motion at **every** stage, hero → footer, as one continuous
+attractor flow (no frozen backdrop below stage 04).
+
+| # | Stage | Region | Form | Motion |
+|---|---|---|---|---|
+| 01 | 宇宙 cosmos | hero | **Volumetric sphere** (was ring) — particles through the volume, warm core glowing through | slow rotation, near/far parallax |
+| 02 | 自然 nature | hero | **Undulating waves** (was branches) — overlapping horizontal bands | continuous ripple 揺らぎ, highest residual motion of any motif |
+| 03 | 社会 network | hero | **Network, rebuilt** — centre-dense, hub hierarchy, symmetric | nodes/edges emerge + dissolve |
+| 04 | 情報基盤 infra | hero | Lattice (kept) | streaming along lines |
+| 05 | 基礎領域 | below | **Dispersal** — the 04 lattice releases into a DENSE unstructured drift (the raw substrate before it is organised); density stays at the calm level, only the structure is removed | slow drift, no attractor form |
+| 06 | 専門領域 | below | **Orbits** — concentric elliptical paths | slow orbital drift |
+| 07 | Notes | below | **Strata** — accumulated horizontal layers | slow stacking |
+| 08 | Blog | below | **Flowing stream** — a directed current across the frame | steady directed drift |
+| 09 | Videos | below | **Waveforms** — oscillating signal-like bands | oscillation |
+| 10 | Projects | below | **Convergence** — particles gather inward to one bright form | inward pull; the page's arrival |
+
+## 15.3 — 01 COSMOS: ring → volumetric sphere (must read as 3D, not a disc)
+
+The old Earth failed as a flat cyan circle; this must not repeat. Depth cues, all applied:
+- Particles distributed through the sphere's **volume** (`r = R·cbrt(rnd)` for uniform-ish
+  volume, then bias slightly outward), **density falling toward the limb** so the silhouette is
+  soft, not a hard circle.
+- **Far side dimmer + smaller** than the near side — brightness and point size scale with the
+  particle's view-space z (front hemisphere brighter), so you see *through* the object.
+- **Continuous slow rotation** so near/far parallax is visible in motion.
+- **Warm core** — ember/magenta at the centre glowing through the cool outer volume (a strong
+  interior depth cue).
+- Full-bleed, viewer close.
+- *Verify 3D numerically:* capture two frames a few seconds apart; confirm near and far
+  particles moved by **different** amounts (parallax), not a rigid disc.
+
+## 15.4 — 02 NATURE: branches → waves (揺らぎ)
+
+- Several **overlapping wave layers** at different depths and speeds → parallax.
+- Wave = a horizontal band whose height is a sum of travelling sines in x/z plus curl; **crests
+  bright, troughs dark** (tonal range, not uniform fill).
+- **Highest residual curl amplitude of any motif even at peak** — this is the motif that most
+  obviously never stops moving. It is the exception to "crisp at peak."
+
+## 15.5 — 03 NETWORK: rebuild the distribution
+
+- **Even coverage, no holes**; fills its area.
+- **Connection density peaks at centre, tapers outward** — sample node positions from a
+  centre-weighted radial distribution (`r = R·rnd^1.6`, dense middle), and bias edge creation
+  toward central nodes so the middle is the most interconnected.
+- **Hierarchy:** a few large bright hubs (high degree), many small dim nodes; edges dimmer +
+  thinner than nodes.
+- **Symmetric-ish**, no side bias (the current right-bias came from an asymmetric sample — fixed
+  by the radial distribution + centred mean).
+- Emerges from / dissolves back into the flow (attractor model).
+
+## 15.6 Stages 05–10 — motion through the whole page
+
+The attractor system extends from the 4 hero scenes to **all 10 stages**: `sceneF` spans 0–9,
+driven by the true centres of the hero scenes (01–04) *and* the index-region blocks (05–10).
+The field morphs through 10 attractors across the full page scroll; transitions use the same
+`mix(curlDrift, target, w)` model, so it stays one continuous flow.
+
+Constraints for 05–10 (all verified numerically before shipping):
+- **Calm register throughout** — brightness/density at the post-dial-back level (§15.1), never
+  the hero's. Motion and form change; the reading environment stays quiet.
+- **Slower than the hero** — lower time-rate on the curl + attractor easing, so the field does
+  not pull the reading eye.
+- **Forms sit clear of the left text column** — dense mass offset right + below; **contrast
+  sampled under the glyph boxes for every stage 05–10** and reported (heading ≥ 7:1, body ≥ 4.5:1).
+- Attractor transitions between all of 05–10 (continuous, not cut).
+
+## 15.7 Performance with ten forms (to be measured)
+
+Ten resident morph targets raise attribute memory and vertex cost. Plan + budget:
+- **Attribute memory** (position 3f + energy/bright/stream 3f = 24 B/particle/target, + 4 B seed):
+  desktop 200k × 10 ≈ **48 MB**, low-power 110k ≈ 26 MB, mobile 70k ≈ **17 MB**. These are static
+  VBOs — fine for M-class GPUs, but confirmed on device before shipping; mobile 17 MB is the one
+  to watch.
+- **Frame time** with all ten targets resident: median + p95 while scrolling the whole page,
+  reported per the usual method. The curl noise dominates cost, not the 10-way target select, so
+  the expectation is ~unchanged from the 4-motif build — but measured, not assumed.
+- **Streaming fallback (only if measurement demands it):** keep just the neighbouring targets
+  (floor/ceil of `sceneF` ± 1) resident and stream the rest via `bufferSubData` on stage change.
+  Not pre-optimised — implemented only if 48 MB or the frame time actually breaks 60 fps.
+
+## 15.8 Capture plan
+
+Re-shoot all ten stages. If headless Chrome still destabilises at the cosmos peak, **hide the
+nav's `backdrop-filter` for that capture** or shoot in a real browser — **no intermediate-build
+still presented as representative**; any substitute is labelled as such.
+
+## 15.9 Round-13 approved adjustments (from review)
+
+- **05 基礎領域 is a DISPERSAL, not a second lattice.** After 04 (the hero's terminal ordered
+  state) the lattice releases into a dense, unstructured drift — a change of state at the
+  hero→reading handoff, and the raw substrate that 06's orbits then organise. **Hard condition:
+  dense, not sparse** — keep particle count at the calm-register level and remove only the
+  attractor structure (`w→0`, particles ride the curl freely). Verify with the per-area density
+  metric: 05 must be comparable to 04/06, not a hole. (This is essentially the field with no
+  attractor — the curl flow made visible.)
+- **Sphere centre clip (01):** `r = R·cbrt(rnd)` gives the longest sight-line chord through the
+  middle → projected density peaks at centre → additive white-out (the Round-6 condition), right
+  where the warm core sits. Mitigation: **deliberately thin the central volume** (carve a soft
+  low-density core, e.g. reject a fraction of small-r particles) and keep the **warm core small
+  and localised**, not a broad bright mass. Report **clipped-pixel % sampled at the sphere centre
+  specifically**, not the whole-frame average.
+- **Network rim holes (03):** `rnd^1.6` is a strong centre bias → sparse rim → gap ring, which
+  fights "no holes." **Tune the exponent** (start ~1.15–1.25) so the centre is clearly densest
+  *and* the rim keeps continuous coverage. Report the **radial density profile** (particles /
+  1000 px² in concentric bands), not an assertion.
+- **05–10 uneven dwell:** `sceneF` is driven by index-block centres, whose heights are
+  content-dependent — the same desync class as the mobile `tp = [0, 0.265, 0.735, 1]` bug.
+  **Measure each block's scroll span + centre first and report;** even out with spacers if any
+  stage is materially compressed.
+- **Waves floor (02):** the higher residual is allowed, but the wave motif must still hold
+  **lit-body median 0.4–0.6, clip < 2%, dots + dark gaps visible at 1440×900.** The undulation
+  comes from the **wave surface travelling** (animate the band's displacement field over time),
+  not from per-particle smear; cap per-particle residual if it threatens the floor.
+- **Below stage 10 / behind the footer:** the **Convergence holds.** Once `sceneF` reaches 10
+  (past the last block), the gathered-inward form stays, breathing slowly at the calm register —
+  the page ends resting inside the arrival, not on a form that drifts apart or goes black.
+
+## 15.10 Round-13 shipped values + measurements (M5, headless Chrome)
+
+Ten resident morph targets (attribute-packed: 10 pos vec3 + 3 packed-eb vec4 + seed = 14 of 16
+attribute slots; aux derived procedurally). `sceneF` spans 0–9 across the 4 hero scene centres +
+6 index-block centres; below the hero a calm register (×0.62 brightness, ½ curl time-rate,
+DENSE — no draw-range cut). Convergence holds behind the footer.
+
+- **Attribute memory:** desktop 200k → **32.8 MB** (packing cut it from 48.8 MB), low-power
+  110k ≈ 18 MB, mobile 70k ≈ 11.5 MB. Well within budget.
+- **Frame time (K=10, all ten targets resident):** full-page median **16.7 ms**, p95 17.4,
+  **0 dropped** (1763 samples), GPU **4.7 ms** (K=4 was 3.9 — the 10-way select cost ~0.8 ms).
+  Below-hero: median 16.7, 0 dropped, GPU 4.4 ms. 60 fps throughout; streaming fallback NOT
+  needed (measured).
+- **Stage dwell (item 3):** hero gaps 1080 px each; below-hero gaps evened with a 60vh block
+  min-height to **540 / 540 / 567 / 610 / 583 px** (was 468–610, ~30% → ~13%). Both field and
+  hero text key off the same centres, so no desync.
+- **Sphere centre-clip (item 1):** whole-frame 0.5%, **centre box 0.45%** (was **28%** before
+  thinning the core/shell centre — the Round-6 white-out, which the whole-frame 1% masked).
+- **Network radial density (item 2):** 127 / 64 / 62 / 31 / 15 lit-px per 1000 px² from centre
+  → rim — centre densest, smooth taper, no gap ring (rim sparse but continuous).
+- **Per-stage contrast 05–10 (sampled UNDER glyph boxes):** heading 13.1–20.5 : 1, body
+  17.2–20.6 : 1 — all far above 7 / 4.5 : 1. The ×0.62 calm field keeps text high-contrast.
+- **Nature waves lit-body (item 4) — DOES NOT meet the floor:** body-median **0.31**
+  (crest-median 0.38, frac≥0.4 = 0.16), clip 0%. The crest/trough tonal range that was
+  requested inherently pulls the whole-body median down (dark troughs by design); the crests
+  reach ~0.38–0.40 but the troughs drag the median to 0.31. Reaching 0.4–0.6 whole-body would
+  mean removing the troughs (a uniform slab), losing the wave. **Flagged for the owner's
+  decision** — keep the wave character (0.31) or trade it for a denser blob that hits the number.
+- **Sphere 3D read:** confirmed by the STATIC cues (volumetric density, warm core glowing
+  through the cool volume, soft limb, front-brighter via `vNear`) — visually a clear orb.
+  *Motion-parallax metric inconclusive:* a two-frame frame-diff can't isolate near/far
+  displacement in a dense symmetric sphere (front/back move equal-magnitude opposite directions;
+  pixel-diff reads uniform, ratio ~1.05). Proper per-particle tracking not done — **marked as a
+  measurement limitation, not a verified pass.**
+- Below-hero dialled back ×0.72 → ×0.62; network distribution rebuilt (centre-dense); eyebrow
+  numbering continuous 01–10.
+
+## 15.11 Round-13 review follow-up (fixes from the second review)
+
+- **Waves — metric exception (PERMANENT, do not "fix"):** the wave motif (02) is judged on
+  **crest-median ≥ 0.4**, not whole-body median. The 0.4–0.6 whole-body band was a proxy for
+  "tonal structure exists"; waves fail it for the *opposite* reason — deliberate dark troughs.
+  Flattening the troughs to hit the number would destroy the structure the number exists to
+  protect. Shipped: **crest-median 0.40, crest/trough ratio 2.7, clip 0%**, dots + dark gaps
+  visible. Every other motif stays on whole-body median 0.4–0.6. *Nobody should later re-flatten
+  the waves into a uniform slab to satisfy the whole-body metric.*
+- **Sphere (01) — internal structure + clip control:** restored the volumetric read with angular
+  CLUMPS + radial shells + a tight warm core (glows through the cool volume). Clip held by
+  **lowering per-particle brightness toward the centre** (`brCtl = 0.13 + 0.72·rn²`) rather than
+  removing particles, so the density survives: **centre-box clip 0.12%** (was 22.7% when the raw
+  chord density returned). *Parallax metric — honest limitation:* neither frame-diff nor
+  cross-correlation cleanly quantifies rotation displacement in a dense stochastic field (the
+  angular clumps are too low-contrast against particle noise to track; ratios ~1.0, correlation
+  inconsistent). The 3D read is evidenced VISUALLY (clumps, shells, warm core in the still) and
+  by construction, **not by a verified parallax number.** A stronger, measurable rotation cue
+  would need high-contrast bands/filaments, trading the soft volumetric look — offered, not taken.
+- **08 stream — legibility:** rebuilt as 9 horizontal flow-lines with a brightness ramp toward
+  the leading edge + a directed +x brightness pulse in the shader → reads as a directed current.
+- **09 waveforms — legibility:** rebuilt as 5 thin, regular, periodic signal traces (higher-freq
+  travelling surface) → reads signal-like and distinct from 02's organic fluid waves.
+- **10 convergence — moved:** offset `(+0.78S, −0.5S)` so the gathered form sits clear of the
+  centre Projects card (was directly behind it).
+- **Card thumbnails on-palette:** `.media-placeholder` + `.blog-image/.video-thumbnail` moved
+  from a saturated blue+magenta block to a teal/cyan gradient with a faint (0.09–0.10α) warm
+  accent — §2.3 (warm confined to cores) now holds in the calm reading region.
+- Frame time after all changes: full-page median **16.7 ms, 0 dropped**, GPU 4.7 ms (60 fps).
+
+## 15.12 Sphere rotation — KNOWN MEASUREMENT LIMITATION (closed, declined)
+
+The cosmos sphere (01) reads as a 3D volume **by construction and visually** (uniform-volume
+sampling, angular clumps + radial shells, a tight warm core glowing through the cool volume).
+Its **rotation is not numerically verified**: both frame-diff and cross-correlation fail to
+quantify near/far displacement because the internal structure is deliberately **too low-contrast
+to track** against the dense particle field. A numerically-verifiable rotation cue would require
+higher-contrast banding/filaments, which costs the soft volumetric quality — **this trade was
+offered and declined** (the metric exists to protect the design, not the reverse). No further
+work on the sphere; the 3D read stands on visual + constructional evidence.
+
+## 15.13 Stage 06 orbits — three-dimensional (Round-13 follow-up)
+
+Was coplanar nested ellipses on a tilted disc (read flat). Rebuilt:
+- **Each ring in its own plane** — distinct inclination (15–55°) + longitude of ascending node
+  + eccentricity, so rings **visibly cross** (one in front, then behind). *3D verified by the
+  two-frame spin test — which works here (unlike the sphere) because rings are trackable
+  features:* patches on different rings displaced **(0, 23, 16, 12) px in different directions**
+  under one 0.12-rad rotation.
+- **Depth via a hard near/far ramp** (additive gives no occlusion): near arc brighter + points
+  larger, far arc dimmer + smaller — ramp pushed much harder for this motif only
+  (`nearRamp = mix(…, 0.1+1.65·vNear, orbW)`, size `+orbW·1.35`), overall still calm register.
+- **Star at the common FOCUS** (not centre) — small, tight, warm (magenta/ember, core-only); the
+  ellipses are eccentric with periapsis nearer the star, adding perspective asymmetry.
+- System offset +0.55S right so the dense rings clear the left text column; contrast re-sampled
+  under the glyph boxes: **heading 18.1:1, body 17.8:1** (was 12/14 before the offset).
+- The "vertical rule" by the ノートを読む CTA was a **field coincidence** (an orbit-ring edge),
+  not a CSS element (btn-secondary has a transparent border; the only `.btn::before` is an
+  invisible hover glow) — gone with the redesign.
+
+---
+
+# 16. Round 14 — Scroll-snap so each motif settles and holds
+
+Reverses the earlier "never hijack scroll" rule *deliberately*, but only via **native CSS
+scroll-snap** — no JS wheel/touch interception, no animated `scrollTo`. The browser keeps
+ownership of inertia and momentum, and the user can always stop mid-transition. That is the
+non-negotiable method constraint; a JS scroll-jack was explicitly rejected and stays rejected.
+
+## 16.1 Mechanism
+
+- `scroll-snap-type: y proximity` on `html` (the document scroller). **proximity, not
+  mandatory** — mandatory traps the user (can't rest between points, fights find-in-page,
+  keyboard, anchors). proximity settles a *deliberate* scroll onto a motif while leaving an
+  escape. Chrome serialises the computed value as `y` (proximity is the default strictness).
+- `scroll-snap-align: center` on `.hero .scene` **only** (stages 01–04). The index blocks
+  05–10 have card grids and body copy being read — they never opt in, so they stay free-scroll.
+  (Snap points exist only where `scroll-snap-align` is set; type on the container is inert
+  elsewhere.)
+- **Snap target = the motif peak, not the section top.** Each `.scene` is 120vh, so its
+  geometric centre *is* the scroll position where that stage's `w` reaches 1.0
+  (`sceneFor(scrollY + innerHeight/2)` hits an integer stage index at the centre). `align:center`
+  therefore lands the fully-formed motif with no extra marker element.
+
+## 16.2 Dwell plateau (the actual goal)
+
+Snapping alone isn't enough — before this round `w` peaked at a single position and immediately
+declined. Widened the attractor weight from a point to a **band**:
+
+    fc = min(f, 1-f);  w = 1 - smoothstep(0.20, 0.5, fc)   // was smoothstep(0.10, …)
+
+`w` now holds at **1.0 across fc ∈ [0, 0.20]** — a scroll band ~±24vh around each snap point —
+then dissolves to `w = 0` at the midpoint (fc = 0.5) between stages. The form stays fully
+resolved for the whole time the viewer rests, then still fully disperses and reforms between
+stages. **The residual curl is untouched**, so at `w = 1` `amp = resid` (0.022; nature +0.03 per
+the §15.11 exception) — the field keeps breathing, it is never a frozen frame. Applies globally
+(below-hero forms also hold longer), which is consistent and desirable; only the *snap* is
+hero-scoped.
+
+## 16.3 Verification (M5 headless Chrome, 1440×900, measured not eyeballed)
+
+`w` at each of the four hero snap rest positions (`snapRest(i) = centre − (innerHeight+92)/2`,
+the 92px being `--nav-clearance`, which insets the snapport top so the rest sits pad/2 above true
+centre — still deep inside the plateau):
+
+| stage | sceneF at rest | w at rest |
+|-------|---------------|-----------|
+| 01 cosmos | 0.0000 | **1.0000** |
+| 02 nature | 0.9557 | **1.0000** |
+| 03 network | ~2.000 | **1.0000** |
+| 04 infra  | ~3.000 | **1.0000** |
+
+Stills: `docs/stills/s14-rest-0{1..4}-*.png` — each form fully resolved at rest. **(Updated in
+§16.7: the engine now references the snapport centre, so sceneF is an exact integer at rest — the
+table above originally read 0.0/0.956/1.955/2.955 before that fix.)**
+
+## 16.4 §6 must-not-break — tested, not assumed
+
+- **prefers-reduced-motion: reduce → snap OFF.** The rule is gated
+  `@media (prefers-reduced-motion: no-preference) and (min-width: 601px)`. Emulated reduce →
+  computed `scroll-snap-type: none`. ✓ (Three.js is also already skipped under reduce.)
+- **Mobile (≤600px) → snap OFF** via the same `min-width: 601px` gate. Emulated 390px → `none`.
+  ✓ iOS momentum + scroll-snap is historically janky; free-scroll on mobile is the stated
+  acceptable outcome. **This is provisional pending the device pass** — one media-query edit
+  flips it on if it feels good on the phone.
+- **Anchor links / `scroll-padding-top`.** `scroll-padding-top` still computes 92px; an index
+  anchor (`#found-h`, no snap-align) lands clearing the nav, unchanged from before this round —
+  proximity does not fight it. ✓
+- **Off-screen focus.** Focusing a below-fold hero CTA scrolled it into view (scrollY 0 → 2068,
+  CTA at 496px). ✓
+- **Keyboard / find-in-page.** Not trapped **by construction**: proximity (unlike mandatory)
+  never blocks a scroll from resting where the user/browser put it; it only nudges when a rest
+  already lands near a point. These are interaction behaviours the user will confirm in the
+  device/desktop pass.
+
+## 16.5 §7 stage-height note
+
+Hero stages are 120vh, so adjacent snap centres are 120vh apart — a snap *could* traverse >1
+viewport. proximity mitigates this (it only engages near a point; it does not force a full-stage
+jump from a rest between stages). If the device pass reads it as a *jump* rather than a *settle*,
+the fix is a **decision for Max** — shorten hero stages toward 100vh, or add intermediate rest
+points — not chosen here.
+
+## 16.6 Debug hooks added
+
+`window.__field.wAt(scrollY?)` → the shader's `w` for any viewport-centre scroll position
+(defaults to current); `window.__field.snapRest(i)` → the doc-space scrollY where hero stage `i`
+snaps to rest. Both mirror the shader/CSS exactly and are there for the device pass too.
+
+## 16.7 Round-14 review follow-up (network edges, interaction tests, rest-position contrast)
+
+**1. Network edges regressed → root-cause was the snap rest, not the geometry.** The `make()`
+network build (nodes + 3-nearest edges) and all render globals were **byte-identical** to
+`v2.2-ten-stages` — the thin edge bands were still in the data. The regression came from *where
+the snap parked the view*: the 92px nav-clearance insets the snapport, so `align:center` rested
+network at **sceneF 1.955**, not 2.0. At 1.955 the target is `mix(nature, network, 0.955)` — a
+4.5% blend toward the nature wave that adds a random per-particle displacement ~0.045·S, enough
+to smear the thin, dim (bright 0.48) edge bands into fuzz while the bright node clusters survive.
+Confirmed empirically: a capture at the *true* peak (sceneF 2.0) showed crisp edges; the snap
+rest did not.
+
+Fix (no network rebuild): reference the **snapport centre** in the engine, not the raw viewport
+centre — `midOf() = scrollY + (innerHeight + SNAP_INSET)/2`, where `SNAP_INSET` is read from the
+computed `scroll-padding-top`. A snap rest now lands on an **exact integer sceneF** → a pure
+motif, no cross-blend. This also makes cosmos/nature/infra purer at rest. `w` stays 1.0000 at all
+four (now with fc = 0 exactly). Edges restored to the R13 look: `docs/stills/s14-rest-03-network.png`.
+
+**2. §6 keyboard + find-in-page — machine-tested (not reasoned).**
+- **Keyboard** (synthetic `Input.dispatchKeyEvent`, `keyDown`, from mid-hero scrollY 1500):
+  PageDown 1500→2248 (+748), Space 1500→2248 (+748), ArrowDown 1500→1540 (+40). Every press
+  advances **forward**; the snap never pulls back against a keypress. (First attempt with
+  `rawKeyDown` drove only PageDown — a headless quirk, not a snap effect: ArrowUp also moved 0, so
+  it wasn't directional. `keyDown` drives all three.)
+- **Find-in-page** (its scroll mechanic = select the match Range + `scrollIntoView`): a match on
+  the stage-04 string 回路 scrolled to top 400px and **stayed at 400px** after the snap settled —
+  landed and held, not dragged away.
+
+**3. Rest-position contrast — re-sampled, and it caught a real defect.** Method: hero text set
+`color:transparent` (shadow **retained** — a transparent glyph still casts its shadow, so the
+pixels under the box are the true effective background), luminance vs white text under the
+heading + body boxes at each rest. Headline = **p95** (the max single pixel is one stray particle;
+the median is mostly dark gaps between strokes):
+
+| stage | heading p95 | body p95 |
+|-------|------------|----------|
+| 01 cosmos | 18.5:1 | 16.3:1 |
+| 02 nature | 10.7:1 | 16.3:1 |
+| 03 network | 20.9:1 | 20.8:1 |
+| 04 infra | **17.1:1** | 18.9:1 |
+
+The infra heading **failed on first measurement (2.17:1)** — the bright horizontal lattice band
+crossed the 学びを、社会へ。 row, exactly as flagged. Fix: dim the infra lattice in the **left
+screen third** via clip-space x (`leftDim = mix(1, 0.15+0.85·smoothstep(-0.55,-0.15, ndcx), vInfra)`)
+— infra-only (`vInfra→0` elsewhere), and consistent with the "formation sits on the right"
+composition. Heading went **2.17 → 17.1:1**; the lattice still fills centre+right. Still:
+`docs/stills/s14-rest-04-infra.png`.

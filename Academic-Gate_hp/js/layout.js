@@ -62,9 +62,9 @@
                 '</nav>' +
                 '<div class="footer-social">' +
                     '<span class="footer-col-label">Connect</span>' +
-                    '<a href="sns.html">各種SNS</a>' +
-                    '<a href="sns.html">YouTube</a>' +
-                    '<a href="mailto:contact@example.com">contact@example.com</a>' +
+                    '<a href="https://x.com/miya_max_study" target="_blank" rel="noopener">X</a>' +
+                    '<a href="https://www.instagram.com/daily_life_of_miya/" target="_blank" rel="noopener">Instagram</a>' +
+                    '<a href="https://www.youtube.com/@miya-max-active" target="_blank" rel="noopener">YouTube</a>' +
                 '</div>' +
             '</div>' +
             '<div class="footer-copy">&copy; 2025 Academic Gates. All rights reserved.</div>' +

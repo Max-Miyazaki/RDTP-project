@@ -1,129 +1,90 @@
 /* ============================================================================
-   scroll-scenes.js — index.html cosmic-origin → society choreography.
+   scroll-scenes.js — index.html full-page flow field (Round 13).
 
-   One THREE.WebGLRenderer + one THREE.Points, built ONCE. The particle set
-   morphs through up to six precomputed formations (BEGINNING → MATTER →
-   GALAXIES → SOLAR → EARTH → SOCIETY) driven by a single `uProgress` uniform.
-   Which formations exist is read from the visible `.scene[data-stage]` elements
-   (6 on desktop, 4 on mobile where MATTER/SOLAR are display:none), so text and
-   particles always agree. Each formation PEAKS at the `uProgress` where its own
-   scene text is centered; scrolling back reverses the morph cleanly.
+   ONE THREE.WebGLRenderer + ONE THREE.Points that runs the WHOLE PAGE. A curl-
+   noise flow field drifts every particle continuously; each stage is an ATTRACTOR
+   the flow concentrates into and releases. TEN stages, hero → footer:
 
-   Crisp, not mushy: particles ride curves/surfaces (arms, orbit ellipses, a
-   lat/long globe, network edges) or sit in tight clusters — never a low-alpha
-   volume fill. Sharp sprite, small size, high brightness, depth size-attenuation.
-   Bloom is core-only (hot particles), no global glow pass.
+     01 宇宙 cosmos      volumetric sphere (warm core through cool volume)
+     02 自然 nature      undulating waves (travelling surface, 揺らぎ)
+     03 社会 network     centre-dense nodes + edges, hub hierarchy
+     04 情報基盤 infra   ordered lattice with streaming
+     05 基礎領域        DISPERSAL — the lattice releases into dense unstructured drift
+     06 専門領域        orbits (concentric ellipses)
+     07 Notes           strata (accumulated horizontal layers)
+     08 Blog            stream (a directed current)
+     09 Videos          waveforms (oscillating signal bands)
+     10 Projects        convergence (gather inward to one bright form — arrival)
 
-   Progressive: Three.js is injected non-blocking and is NOT downloaded at all
-   under prefers-reduced-motion. No THREE / no WebGL → canvas dropped, CSS
-   ambient glow + star field stand in. Content is never gated behind JS.
+   Below the hero the field drops to a CALM register (dimmer, slower) but stays
+   DENSE. Past stage 10 the convergence holds behind the footer.
+
+   Progressive: reduced-motion → no Three.js; no WebGL / JS-off → CSS glow. Content
+   is never gated behind JS.
    ============================================================================ */
 (function () {
     'use strict';
 
     var root = document.documentElement;
     root.classList.add('js');
-
     var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-    /* ---- IntersectionObserver reveals for the card region (not the hero) --- */
     (function initReveals() {
         var els = document.querySelectorAll('.reveal');
         if (!els.length) return;
         if (reduceMotion || !('IntersectionObserver' in window)) {
-            els.forEach(function (el) { el.classList.add('is-visible'); });
-            return;
+            els.forEach(function (el) { el.classList.add('is-visible'); }); return;
         }
         var io = new IntersectionObserver(function (entries) {
-            entries.forEach(function (e) {
-                if (e.isIntersecting) { e.target.classList.add('is-visible'); io.unobserve(e.target); }
-            });
+            entries.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('is-visible'); io.unobserve(e.target); } });
         }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
         els.forEach(function (el) { io.observe(el); });
     })();
 
     var canvas = document.getElementById('scene-canvas');
     if (!canvas) return;
-
     var hero = document.querySelector('.hero');
     var visibleScenes = [];
+    if (reduceMotion) { if (canvas.parentNode) canvas.parentNode.removeChild(canvas); return; }
 
-    /* Reduced motion: skip the Three.js download entirely, drop the canvas, let
-       the CSS ambient glow + star field render the static page. */
-    if (reduceMotion) {
-        if (canvas.parentNode) canvas.parentNode.removeChild(canvas);
-        return;
-    }
-
-    /* ---- Non-blocking Three.js loader (jsdelivr → unpkg fallback) ---------- */
     function loadThree() {
         return new Promise(function (resolve, reject) {
             if (window.THREE) return resolve();
             function attempt(url, next) {
-                var s = document.createElement('script');
-                s.src = url;
-                s.async = true;
+                var s = document.createElement('script'); s.src = url; s.async = true;
                 s.onload = function () { window.THREE ? resolve() : (next ? attempt(next, null) : reject()); };
                 s.onerror = function () { next ? attempt(next, null) : reject(); };
                 document.head.appendChild(s);
             }
-            attempt('https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js',
-                'https://unpkg.com/three@0.160.0/build/three.min.js');
+            attempt('https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js', 'https://unpkg.com/three@0.160.0/build/three.min.js');
         });
     }
-
     function hasWebGL() {
-        try {
-            var c = document.createElement('canvas');
-            return !!(window.WebGLRenderingContext && (c.getContext('webgl') || c.getContext('experimental-webgl')));
-        } catch (e) { return false; }
+        try { var c = document.createElement('canvas'); return !!(window.WebGLRenderingContext && (c.getContext('webgl') || c.getContext('experimental-webgl'))); }
+        catch (e) { return false; }
     }
-
-    loadThree().then(function () {
-        if (!hasWebGL()) { dropCanvas(); return; }
-        try { init(); } catch (e) { dropCanvas(); }
-    }).catch(dropCanvas);
-
+    loadThree().then(function () { if (!hasWebGL()) { dropCanvas(); return; } try { init(); } catch (e) { dropCanvas(); } }).catch(dropCanvas);
     function dropCanvas() { if (canvas.parentNode) canvas.parentNode.removeChild(canvas); }
 
-    /* ======================================================================
-       Scene init
-       ====================================================================== */
+    /* ====================================================================== */
     function init() {
         var isMobile = window.innerWidth <= 768;
-        // Density picked ONCE by device tier ("step down by device, never by frame rate").
-        // ?n=NNNN overrides for the count-vs-frame-time sweep.
         var lowPower = (navigator.hardwareConcurrency || 8) <= 4 || (navigator.deviceMemory || 8) <= 4;
         var urlN = parseInt((location.search.match(/[?&]n=(\d+)/) || [])[1], 10);
-        var COUNT = urlN || (isMobile ? 35000 : lowPower ? 45000 : 90000);
+        var COUNT = urlN || (isMobile ? 70000 : lowPower ? 110000 : 200000);
         var DPR = Math.min(window.devicePixelRatio || 1, 1.5);
 
-        // Text-bearing scenes (4): BEGINNING, GALAXIES, EARTH, SOCIETY.
-        visibleScenes = Array.prototype.filter.call(
-            hero.querySelectorAll('.scene[data-stage]'),
-            function (s) { return s.offsetParent !== null; });
-        var textNames = visibleScenes.map(function (s) { return s.getAttribute('data-stage'); });
+        // Hero text scenes (4) drive the readable-copy opacity.
+        visibleScenes = Array.prototype.filter.call(hero.querySelectorAll('.scene[data-stage]'), function (s) { return s.offsetParent !== null; });
         if (visibleScenes.length < 2) { dropCanvas(); return; }
-
-        // Formations: on desktop, MATTER + SOLAR are inserted as text-less
-        // transitional forms between the text stages (they still render as the
-        // morph passes through them). On mobile they are skipped entirely.
-        var stages = [];
-        if (isMobile) {
-            stages = textNames.slice();
-        } else {
-            textNames.forEach(function (n) {
-                stages.push(n);
-                if (n === 'beginning') stages.push('matter');
-                if (n === 'galaxies') stages.push('solar');
-            });
-        }
+        // Ten stage centre elements: 4 hero scenes + 6 index-region blocks.
+        var indexBlocks = Array.prototype.slice.call(document.querySelectorAll('.index-region .index-block'));
+        var stageEls = visibleScenes.concat(indexBlocks);
+        var stages = ['cosmos', 'nature', 'network', 'infra', 'dispersal', 'orbits', 'strata', 'stream', 'waveforms', 'convergence'].slice(0, stageEls.length);
         var K = stages.length;
+        var HERO_K = visibleScenes.length;   // stages 0..HERO_K-1 are the hero
 
-        /* ---- Shared precomputed structure ------------------------------- */
-        // Seeded PRNG (mulberry32): deterministic layout every load AND well
-        // distributed. A plain LCG (a*b+c) overflows JS's 2^53 integer limit and
-        // clusters particles — using Math.imul keeps the 32-bit math exact.
+        /* ---- Seeded PRNG (mulberry32) ---------------------------------- */
         var seedState = 0x51ed270b;
         function rnd() {
             seedState = seedState + 0x6d2b79f5 | 0;
@@ -132,469 +93,426 @@
             return ((t ^ t >>> 14) >>> 0) / 4294967296;
         }
         function gauss(s) { return (rnd() + rnd() + rnd() - 1.5) * s; }
+        var TAU = Math.PI * 2, S = isMobile ? 2.05 : 3.5;
+        // Reference the SNAPPORT centre, not the raw viewport centre: scroll-padding-top insets
+        // the snapport by --nav-clearance, so `scroll-snap-align: center` rests a scene's centre
+        // pad/2 below the true viewport centre. Matching that here makes a snap rest land on an
+        // exact integer sceneF (a PURE motif, no cross-blend toward the neighbour) — without it
+        // the network rested at sceneF 1.955 and the 4.5% nature blend smeared its thin edges.
+        var SNAP_INSET = parseFloat(getComputedStyle(document.documentElement).scrollPaddingTop) || 0;
+        function midOf() { return window.scrollY + (window.innerHeight + SNAP_INSET) / 2; }
 
-        // MATTER: a regular lattice with some sites left EMPTY (structure emerging),
-        // each surviving cluster a distinct spectrum colour (never grey).
-        var gridPts = [];
-        [-2.4, -1.44, -0.48, 0.48, 1.44, 2.4].forEach(function (x) {   // 6 columns
-            [-1.35, -0.45, 0.45, 1.35].forEach(function (y) { gridPts.push([x, y, 0]); }); // 4 rows, single plane
-        });
-        var lattice = gridPts.filter(function (_, i) { return (i * 7 + 3) % 10 < 7; }); // ~17 of 24 sites filled
-        var vivid = [0.2, 0.42, 0.3, 0.55, 0.48, 0.25, 0.5, 0.35];  // cool: teal → cyan → blue
-        var latticeEnergy = lattice.map(function (_, i) { return vivid[i % vivid.length]; });
-
-        // SOLAR: concentric orbit radii
-        var solarR = [0.9, 1.35, 1.85, 2.4, 3.0, 3.6];
-        var solarPhase = solarR.map(function () { return rnd() * Math.PI; });
-
-        // EARTH: light direction (terminator). Smaller radius → the 90k points pack
-        // denser over the sphere → brighter mid-tone body.
-        var earthR = 1.75;
-        var lats = []; for (var la = -75; la <= 75; la += 15) lats.push(la * Math.PI / 180);
-        var lons = []; for (var lo = 0; lo < 360; lo += 20) lons.push(lo * Math.PI / 180);
-        var Lx = 0.78, Ly = 0.33, Lz = 0.53; var Ln = Math.hypot(Lx, Ly, Lz); Lx /= Ln; Ly /= Ln; Lz /= Ln;
-
-        // SOCIETY: node graph in a flattened disc + nearest-neighbour edges
-        var NN = isMobile ? 46 : 74;
+        /* ---- Precomputed structures for the motifs --------------------- */
+        // NETWORK: centre-dense radial nodes (density peaks in the middle, tapers out).
+        var NN = isMobile ? 46 : 78;
         var nodes = [];
         for (var n = 0; n < NN; n++) {
-            var rr = Math.sqrt(rnd()) * 3.5, aa = rnd() * Math.PI * 2;
-            nodes.push([rr * Math.cos(aa), rr * Math.sin(aa) * 0.82, (rnd() - 0.5) * 0.5]);
+            var rr = Math.pow(rnd(), 1.18) * S * 1.08;   // exponent 1.18 → centre densest, rim still covered
+            var aa = rnd() * TAU;
+            nodes.push([rr * Math.cos(aa), rr * Math.sin(aa) * 0.85, gauss(S * 0.28)]);
         }
         var edges = [];
         for (var a = 0; a < NN; a++) {
-            var d1 = [1e9, -1], d2 = [1e9, -1], d3 = [1e9, -1];
+            var best = [[1e9, -1], [1e9, -1], [1e9, -1]];
             for (var b = 0; b < NN; b++) {
                 if (b === a) continue;
-                var dx = nodes[a][0] - nodes[b][0], dy = nodes[a][1] - nodes[b][1], dz = nodes[a][2] - nodes[b][2];
-                var dd = dx * dx + dy * dy + dz * dz;
-                if (dd < d1[0]) { d3 = d2; d2 = d1; d1 = [dd, b]; }
-                else if (dd < d2[0]) { d3 = d2; d2 = [dd, b]; }
-                else if (dd < d3[0]) { d3 = [dd, b]; }
+                var ex = nodes[a][0] - nodes[b][0], ey = nodes[a][1] - nodes[b][1], ez = nodes[a][2] - nodes[b][2];
+                var dd = ex * ex + ey * ey + ez * ez;
+                if (dd < best[0][0]) { best[2] = best[1]; best[1] = best[0]; best[0] = [dd, b]; }
+                else if (dd < best[1][0]) { best[2] = best[1]; best[1] = [dd, b]; }
+                else if (dd < best[2][0]) { best[2] = [dd, b]; }
             }
-            if (d1[1] >= 0) edges.push([a, d1[1]]);   // 3 nearest neighbours -> denser mesh
-            if (d2[1] >= 0) edges.push([a, d2[1]]);
-            if (d3[1] >= 0) edges.push([a, d3[1]]);
+            for (var e2 = 0; e2 < 3; e2++) if (best[e2][1] >= 0) edges.push([a, best[e2][1]]);
         }
-        // node degree → centrality (nodes[n][3]); high-degree nodes are the bright hubs
         var deg = new Array(NN).fill(0);
         edges.forEach(function (e) { deg[e[0]]++; deg[e[1]]++; });
         var maxDeg = Math.max.apply(null, deg) || 1;
-        for (var nd = 0; nd < NN; nd++) nodes[nd][3] = deg[nd] / maxDeg;
+        for (var ndi = 0; ndi < NN; ndi++) nodes[ndi][3] = deg[ndi] / maxDeg;
 
-        var TAU = Math.PI * 2;
-        /* ---- Per-stage generator: DENSE SAMPLED SURFACES. returns [x,y,z,energy,bright]
-           Energy is cool-dominant (teal→cyan→blue, 0.15–0.62); only nuclei/star/ring-top
-           push to warm (0.9–1.0). See §2.3. --- */
+        // INFRASTRUCTURE lattice
+        var GX = 5, GY = 4, GZ = 3, gnodes = [], gedges = [];
+        var lidx = function (i, j, k) { return (i * GY + j) * GZ + k; };
+        for (var gi = 0; gi < GX; gi++) for (var gj = 0; gj < GY; gj++) for (var gk = 0; gk < GZ; gk++)
+            gnodes.push([(gi / (GX - 1) - 0.5) * 2 * S, (gj / (GY - 1) - 0.5) * 2 * S * 0.8, (gk / (GZ - 1) - 0.5) * 2 * S * 0.6]);
+        for (var gi2 = 0; gi2 < GX; gi2++) for (var gj2 = 0; gj2 < GY; gj2++) for (var gk2 = 0; gk2 < GZ; gk2++) {
+            if (gi2 < GX - 1) gedges.push([lidx(gi2, gj2, gk2), lidx(gi2 + 1, gj2, gk2)]);
+            if (gj2 < GY - 1) gedges.push([lidx(gi2, gj2, gk2), lidx(gi2, gj2 + 1, gk2)]);
+            if (gk2 < GZ - 1) gedges.push([lidx(gi2, gj2, gk2), lidx(gi2, gj2, gk2 + 1)]);
+        }
+        // ORBITS: each ring in its OWN plane so they visibly cross in 3D; ellipses (eccentric)
+        // with the star at the common FOCUS. Plane orientation is a tilt `phi` from face-on
+        // (0 = facing camera, 90 = edge-on) plus an azimuth `psi`. phi is CLAMPED to 24–72° so
+        // no ring is within ~18° of edge-on (an edge-on ring reads as a bar through the frame).
+        var NORB = 6, orbEls = [];
+        for (var ob = 0; ob < NORB; ob++) orbEls.push({
+            a: S * (0.5 + ob * 0.26), e: 0.12 + rnd() * 0.3,
+            phi: (24 + rnd() * 48) * Math.PI / 180, psi: rnd() * TAU, arg: rnd() * TAU
+        });
+
+        /* ---- Per-motif attractor target: [x,y,z, energy, bright, aux] ---
+           aux: 1 = infra stream · 2 = stream(x-drift) · 0.x = wave layer phase (nature/waveforms). */
         function make(stage, i) {
-            var t, r, ang, x, y, z, u, s, th, ph;
+            var u, th, s, x, y, z, t, rc, rn, sy, la, wl;
             switch (stage) {
-                case 'beginning': // thick torus SHELL (dense tube), one hot point at the top
-                    th = rnd() * TAU; ph = rnd() * TAU;
-                    var tubeR = 0.28 * Math.sqrt(rnd());               // fill the tube volume
-                    var Rr = 2.4 + tubeR * Math.cos(ph);               // smaller — clears the right margin
-                    var syb = Math.sin(th);
-                    x = Rr * Math.cos(th); y = Rr * syb; z = tubeR * Math.sin(ph);
-                    // continuous heat toward the top: teal → cyan → blue → violet → magenta → ember
-                    return [x, y, z, 0.15 + Math.pow((syb + 1) * 0.5, 3.0) * 0.85, 1];
-
-                case 'matter': // dense cluster shells on the lattice (cool)
-                    var c = lattice[i % lattice.length];
-                    u = rnd() * 2 - 1; th = rnd() * TAU; s = Math.sqrt(1 - u * u);
-                    r = 0.2 + gauss(0.02);
-                    return [c[0] + r * s * Math.cos(th), c[1] + r * u, c[2] + r * s * Math.sin(th),
-                        latticeEnergy[i % lattice.length], 0.8];
-
-                case 'galaxies': // dense arm bands winding CONTINUOUSLY into a hot nucleus
-                    if (rnd() < 0.06) {                              // dense, bright, SYMMETRIC nucleus at the centre
-                        u = rnd() * 2 - 1; th = rnd() * TAU; var rn = 0.2 * Math.cbrt(rnd()); s = Math.sqrt(1 - u * u);
-                        return [rn * s * Math.cos(th), rn * u, rn * s * Math.sin(th), 0.9 + 0.08 * rnd(), 0.85];
+                case 'cosmos': { // VOLUMETRIC sphere with INTERNAL STRUCTURE (reads as a ball + shows rotation)
+                    if (rnd() < 0.022) {                          // tight warm core — glows through the cool volume in front
+                        rc = 0.16 * S * Math.cbrt(rnd()); u = rnd() * 2 - 1; th = rnd() * TAU; s = Math.sqrt(1 - u * u);
+                        return [rc * s * Math.cos(th), rc * u, rc * s * Math.sin(th), 0.88, 0.4, 0]; // dim per-particle → glows, not blows
                     }
-                    t = Math.pow(rnd(), 0.8);                          // inner concentration (gentler → core doesn't over-clip)
-                    r = 0.1 + t * 2.8;                                // arms reach the centre (wind into the nucleus)
-                    ang = (i % 2) * Math.PI + r * 1.3;               // two arms, PI apart
-                    var band = gauss(0.06 + r * 0.085);             // tight near core, wider outer
-                    var caA = Math.cos(ang), saA = Math.sin(ang);
-                    x = r * caA - band * saA; y = r * saA + band * caA;
-                    z = gauss(0.1 * (1 - r / 3.2));
-                    // continuous heat with proximity to centre:
-                    // teal → cyan → blue → violet → magenta → ember (all seven stops appear along the arm)
-                    return [x, y, z, Math.min(0.96, 0.15 + Math.pow(1.0 - r / 3.0, 3.4) * 0.85), 0.72];
-
-                case 'solar': // central star + orbit BANDS (rings with thickness), cool
-                    if (rnd() < 0.06) {
-                        u = rnd() * 2 - 1; th = rnd() * TAU; r = 0.16 * Math.cbrt(rnd()); s = Math.sqrt(1 - u * u);
-                        return [r * s * Math.cos(th), r * u, r * s * Math.sin(th), 0.92, 1];  // warm star
-                    }
-                    var ri = i % solarR.length; r = solarR[ri] + gauss(0.05); th = rnd() * TAU;
-                    return [r * Math.cos(th + solarPhase[ri]), gauss(0.02), r * 0.62 * Math.sin(th + solarPhase[ri]),
-                        Math.max(0.25, 0.52 - ri * 0.05), 1];          // cyan inner → blue outer
-
-                case 'earth': // DENSE uniformly sampled sphere SURFACE + terminator
-                    // Density is UNIFORM over the whole sphere; the terminator is a
-                    // BRIGHTNESS gradient (not missing particles), so the night side reads
-                    // as a smooth dim hemisphere, not speckle.
-                    u = rnd() * 2 - 1; th = rnd() * TAU; s = Math.sqrt(1 - u * u);
-                    var nx = s * Math.cos(th), nyE = u, nz = s * Math.sin(th);   // unit normal
-                    var nl = Math.max(0, nx * Lx + nyE * Ly + nz * Lz);         // day/night
-                    return [nx * earthR, nyE * earthR, nz * earthR,
-                        0.24 + 0.32 * nl,                              // cool: teal dark → cyan lit
-                        0.55 + 0.45 * Math.pow(nl, 0.6)];              // brighter body; dark side lifted (no speckle)
-
-                case 'society': // HIERARCHY: bright hub nodes, dim small nodes, dimmer thin edges
-                    if (rnd() < 0.34) {                                // node
-                        var nn = nodes[i % NN];
-                        var hub = nn[3] > 0.6;                          // precomputed centrality
-                        var sp = hub ? 0.08 : 0.045;
-                        return [nn[0] + gauss(sp), nn[1] + gauss(sp), nn[2] + gauss(sp),
-                            hub ? 0.5 : 0.32,                          // hub → bigger point (via energy)
-                            hub ? 0.75 : 0.55];                        // brighter than the dim round, but no clip
+                    // UNIFORM VOLUME (r = R·cbrt) → the line-of-sight chord makes the centre projected-densest
+                    // (the volume cue). Clip is held by LOWERING per-particle brightness toward the centre — the
+                    // dense centre × dim particles ≈ a soft gradient, no white-out; the density gradient survives.
+                    var vr = Math.cbrt(rnd());
+                    rn = vr > 0.9 ? 0.9 + (vr - 0.9) * 0.5 : vr;  // soften the limb
+                    u = rnd() * 2 - 1; th = rnd() * TAU; s = Math.sqrt(1 - u * u); rc = rn * S;
+                    var dx = s * Math.cos(th), dy = u, dz = s * Math.sin(th);
+                    // angular CLUMPS (bright patches, fixed to the sphere → visibly rotate) + radial shells
+                    var clump = 0.5 + 0.5 * Math.sin(dx * 5.0 + dz * 3.0) * Math.cos(dy * 6.0 + dx * 4.0);
+                    var shell = 0.72 + 0.28 * Math.sin(rn * 17.0);
+                    var brCtl = 0.13 + 0.72 * rn * rn;            // strong centre dimming (rn^2) holds the chord under clip
+                    return [dx * rc, dy * rc, dz * rc,
+                        0.2 + 0.26 * (1 - rn) + 0.16 * clump,     // cyan in clumps, cooler outward
+                        brCtl * shell * (0.7 + 0.55 * clump), 0];
+                }
+                case 'nature': { // undulating WAVE slabs (shader travels the surface + brightens crests)
+                    wl = Math.floor(rnd() * 2);
+                    x = (rnd() * 2 - 1) * S * 1.05;                         // concentrated → higher overlap on the crest bands
+                    z = (rnd() * 2 - 1) * S * 0.45 + (wl - 0.5) * S * 0.6;
+                    y = (wl - 0.5) * S * 0.7 + 0.24 * S * Math.sin(x * 1.1 + wl * 1.3) + gauss(0.12 * S);
+                    return [x, y, z, 0.44 + 0.26 * rnd(), 0.85, (wl + 0.5) / 2]; // brighter cyan energy → higher luminance
+                }
+                case 'network': {
+                    if (rnd() < 0.44) {
+                        var nn = nodes[i % NN]; var hub = nn[3] > 0.55; var sp = hub ? 0.07 : 0.04;
+                        return [nn[0] + gauss(sp), nn[1] + gauss(sp), nn[2] + gauss(sp), hub ? 0.58 : 0.3, hub ? 0.95 : 0.5, 0];
                     }
                     var ed = edges[i % edges.length], A = nodes[ed[0]], B = nodes[ed[1]]; t = rnd();
-                    return [A[0] + (B[0] - A[0]) * t + gauss(0.018),   // thin edge band
-                        A[1] + (B[1] - A[1]) * t + gauss(0.018),
-                        A[2] + (B[2] - A[2]) * t + gauss(0.018), 0.24, 0.58];  // brighter, still less weight than nodes
-
-                default:
-                    return [0, 0, 0, 0.3, 1];
+                    return [A[0] + (B[0] - A[0]) * t + gauss(0.015), A[1] + (B[1] - A[1]) * t + gauss(0.015), A[2] + (B[2] - A[2]) * t + gauss(0.015), 0.24, 0.48, 0];
+                }
+                case 'infra': {
+                    if (rnd() < 0.3) { var gn = gnodes[i % gnodes.length]; return [gn[0] + gauss(0.025), gn[1] + gauss(0.025), gn[2] + gauss(0.025), 0.48, 0.9, 0]; }
+                    var ge = gedges[i % gedges.length], Ga = gnodes[ge[0]], Gb = gnodes[ge[1]]; t = rnd();
+                    return [Ga[0] + (Gb[0] - Ga[0]) * t + gauss(0.01), Ga[1] + (Gb[1] - Ga[1]) * t + gauss(0.01), Ga[2] + (Gb[2] - Ga[2]) * t + gauss(0.01), 0.34, 0.75, 1];
+                }
+                case 'dispersal': { // DENSE unstructured drift (released lattice; the flow made visible)
+                    u = rnd() * 2 - 1; th = rnd() * TAU; s = Math.sqrt(1 - u * u); rc = S * 1.15 * Math.cbrt(rnd());
+                    return [rc * s * Math.cos(th) * 1.35, rc * u, rc * s * Math.sin(th), 0.2 + 0.22 * rnd(), 0.55, 0];
+                }
+                case 'orbits': { // ellipses in distinct planes about a shared star at the focus
+                    var oOx = S * 0.55;                                   // shift right so the dense rings clear the left text column
+                    if (rnd() < 0.028) {                                  // the STAR — small, tight, warm, at the common focus
+                        rc = 0.08 * S * Math.cbrt(rnd()); u = rnd() * 2 - 1; th = rnd() * TAU; s = Math.sqrt(1 - u * u);
+                        return [rc * s * Math.cos(th) + oOx, rc * u, rc * s * Math.sin(th), 0.93, 0.85, 0];
+                    }
+                    var el = orbEls[i % NORB];
+                    var ta = rnd() * TAU;                                 // true anomaly
+                    var rr2 = el.a * (1 - el.e * el.e) / (1 + el.e * Math.cos(ta)); // r from FOCUS (star)
+                    var ang = ta + el.arg;
+                    // plane basis from the normal n(phi,psi); build the ellipse in that plane
+                    var nx = Math.sin(el.phi) * Math.cos(el.psi), ny = Math.sin(el.phi) * Math.sin(el.psi), nz = Math.cos(el.phi);
+                    var ux = -nz, uy = 0, uz = nx, ul = Math.hypot(ux, uy, uz) || 1; ux /= ul; uz /= ul; // u = n × up
+                    var vx = ny * uz - nz * uy, vy = nz * ux - nx * uz, vz = nx * uy - ny * ux;            // v = n × u
+                    var cc = Math.cos(ang), ss = Math.sin(ang), tb = 0.013; // thin tube → particle texture, not a filled stroke
+                    return [rr2 * (cc * ux + ss * vx) + oOx + gauss(tb), rr2 * (cc * uy + ss * vy) + gauss(tb), rr2 * (cc * uz + ss * vz) + gauss(tb),
+                        Math.max(0.22, 0.48 - (i % NORB) * 0.035), 0.6, 0];
+                }
+                case 'strata': { // accumulated horizontal layers
+                    la = Math.floor(rnd() * 7); sy = (la / 6 - 0.5) * S * 1.75;
+                    return [(rnd() * 2 - 1) * S * 1.6, sy + gauss(0.04), (rnd() * 2 - 1) * S * 0.65, 0.24 + 0.3 * (la / 6), 0.55, 0];
+                }
+                case 'stream': { // DIRECTED current: horizontal flow-lines, brighter leading edge (+x)
+                    var sline = Math.floor(rnd() * 9);                    // 9 distinct streamlines
+                    var sxr = rnd();                                      // 0 trailing (left) → 1 leading (right)
+                    var sx = -S * 1.7 + sxr * S * 3.1;
+                    var sly = (sline / 8 - 0.5) * S * 1.45;
+                    return [sx, sly + 0.1 * S * Math.sin(sx * 0.5 + sline) + gauss(0.05 * S), (sline - 4) * S * 0.09 + gauss(0.04 * S),
+                        0.26 + 0.2 * rnd(), (0.35 + 0.6 * sxr) * 0.85, 0]; // brightness ramps toward the leading edge
+                }
+                case 'waveforms': { // SIGNAL traces: thin, regular, periodic (distinct from nature's organic slabs)
+                    var wtr = Math.floor(rnd() * 5);                      // 5 thin signal lines
+                    var wxx = -S * 1.7 + rnd() * S * 3.4;
+                    var wty = (wtr / 4 - 0.5) * S * 1.55 + 0.22 * S * Math.sin(wxx * 2.7 + wtr * 1.7);
+                    return [wxx, wty + gauss(0.03 * S), (wtr - 2) * S * 0.11, 0.36 + 0.22 * rnd(), 0.72, (wtr + 0.5) / 5];
+                }
+                case 'convergence': { // gather inward to a bright form — COMPACT, wide+short, placed
+                    // BELOW the Projects card grid (verified: its lit bbox clears every card rect).
+                    var ox = 0, oy = -S * 0.9;
+                    if (rnd() < 0.6) {                                    // tight bright core (wide-short)
+                        return [gauss(S * 0.2) + ox, gauss(S * 0.08) + oy, gauss(S * 0.14), 0.5 + 0.3 * rnd(), 0.85, 0];
+                    }
+                    var ca = rnd() * TAU, cr = S * (0.28 + 0.42 * rnd());
+                    return [cr * Math.cos(ca) + ox, cr * Math.sin(ca) * 0.34 + oy, gauss(S * 0.14), 0.32 + 0.2 * rnd(), 0.5, 0]; // y compressed → clears the card band
+                }
+                default: return [0, 0, 0, 0.3, 1, 0];
             }
         }
 
-        /* ---- Fill attribute buffers (one position/energy/bright set per stage) */
-        // energy+brightness packed into a vec2 per stage (aM) to stay within the
-        // 16-attribute GPU limit: position + (K-1) aP + K aM + aSeed.
-        var pos = [], mrg = [];
-        for (var k = 0; k < K; k++) { pos.push(new Float32Array(COUNT * 3)); mrg.push(new Float32Array(COUNT * 2)); }
+        /* ---- Fill attribute buffers ------------------------------------
+           16-attribute GPU limit: 10 pos vec3s would need 10 mrg vec3s too (21 slots).
+           Pack each stage's (energy, bright) into ONE float — packed = floor(bright*100) +
+           energy — and hold all K in ceil(K/4) vec4 attributes. Aux (wave/stream) is derived
+           procedurally in the shader from position + seed, not stored. → 10 pos + 3 eb + seed
+           = 14 slots. */
+        var EBV = Math.ceil(K / 4);                       // vec4 attributes to hold K packed floats
+        var pos = [], eb = [];
+        for (var k = 0; k < K; k++) pos.push(new Float32Array(COUNT * 3));
+        for (var q = 0; q < EBV; q++) eb.push(new Float32Array(COUNT * 4));
         var seed = new Float32Array(COUNT);
         for (var i = 0; i < COUNT; i++) {
             seed[i] = rnd();
             for (var kk = 0; kk < K; kk++) {
                 var v = make(stages[kk], i);
                 pos[kk][i * 3] = v[0]; pos[kk][i * 3 + 1] = v[1]; pos[kk][i * 3 + 2] = v[2];
-                mrg[kk][i * 2] = v[3]; mrg[kk][i * 2 + 1] = v[4];
+                eb[Math.floor(kk / 4)][i * 4 + (kk % 4)] = Math.floor(Math.min(1, Math.max(0, v[4])) * 100) + Math.min(0.999, Math.max(0, v[3]));
             }
         }
-
         var geo = new THREE.BufferGeometry();
-        geo.setAttribute('position', new THREE.BufferAttribute(pos[0], 3)); // stage 0 = position
+        geo.setAttribute('position', new THREE.BufferAttribute(pos[0], 3));
         for (var kA = 1; kA < K; kA++) geo.setAttribute('aP' + kA, new THREE.BufferAttribute(pos[kA], 3));
-        for (var kE = 0; kE < K; kE++) geo.setAttribute('aM' + kE, new THREE.BufferAttribute(mrg[kE], 2));
+        for (var kq = 0; kq < EBV; kq++) geo.setAttribute('aEB' + kq, new THREE.BufferAttribute(eb[kq], 4));
         geo.setAttribute('aSeed', new THREE.BufferAttribute(seed, 1));
 
-        /* ---- Shaders (unrolled morph across K stages) -------------------- */
-        var nameOf = function (idx) { return idx === 0 ? 'position' : 'aP' + idx; };
-        var morph = '  vec3 pos; float en; float br; float t;\n';
-        for (var m = 0; m < K - 1; m++) {
-            var head = m === 0 ? '  if' : '  else if';
-            var last = m === K - 2;
-            morph += (last ? '  else {\n' : head + '(p < uPeaks[' + (m + 1) + ']) {\n');
-            morph += '    t = smoothstep(uPeaks[' + m + '], uPeaks[' + (m + 1) + '], p);\n';
-            morph += '    pos = mix(' + nameOf(m) + ', ' + nameOf(m + 1) + ', t);\n';
-            morph += '    en = mix(aM' + m + '.x, aM' + (m + 1) + '.x, t); br = mix(aM' + m + '.y, aM' + (m + 1) + '.y, t);\n';
-            morph += '  }\n';
-        }
+        var attributeBytes = (K * 3 + EBV * 4 + 1) * 4 * COUNT;   // pos + packed eb + seed
 
+        /* ---- Shader: curl flow + attractor blend, 10-way target select -- */
         var attrDecl = '';
         for (var d1 = 1; d1 < K; d1++) attrDecl += 'attribute vec3 aP' + d1 + ';\n';
-        for (var d2 = 0; d2 < K; d2++) attrDecl += 'attribute vec2 aM' + d2 + ';\n';
+        for (var d3 = 0; d3 < EBV; d3++) attrDecl += 'attribute vec4 aEB' + d3 + ';\n';
+        var posName = function (idx2) { return idx2 === 0 ? 'position' : 'aP' + idx2; };
+        var pickPos = '  if(idx<=0) return position;\n';
+        for (var pk = 1; pk < K; pk++) pickPos += '  ' + (pk === K - 1 ? 'return ' + posName(pk) + ';' : 'if(idx<=' + pk + ') return ' + posName(pk) + ';') + '\n';
+        // ebOf(idx): the packed energy/bright float for stage idx (component of an aEB vec4)
+        var pickEB = '';
+        for (var pe = 0; pe < K; pe++) {
+            var comp = ['x', 'y', 'z', 'w'][pe % 4];
+            pickEB += '  ' + (pe === K - 1 ? 'return aEB' + Math.floor(pe / 4) + '.' + comp + ';' : 'if(idx<=' + pe + ') return aEB' + Math.floor(pe / 4) + '.' + comp + ';') + '\n';
+        }
 
-        var vertexShader =
-            'uniform float uProgress, uTime, uSize, uPixelRatio;\n' +
-            'uniform float uPeaks[' + K + '];\n' + attrDecl + 'attribute float aSeed;\n' +
-            'varying float vE; varying float vB; varying float vNear;\n' +
-            'void main(){\n  float p = uProgress;\n' + morph +
-            '  pos += 0.013 * vec3(sin(uTime*0.5 + aSeed*6.2831), cos(uTime*0.42 + aSeed*6.2831), sin(uTime*0.33 + aSeed*6.2831));\n' +
-            '  vec4 mv = modelViewMatrix * vec4(pos, 1.0);\n' +
-            '  gl_Position = projectionMatrix * mv;\n' +
-            // Depth of field: 0 = far, 1 = near. Near particles a touch larger + softer.
-            '  float depth = -mv.z;\n' +
-            '  vNear = clamp((11.0 - depth) / 6.0, 0.0, 1.0);\n' +
-            '  float boost = 0.5 + en * 0.8 + vNear * 0.5;\n' +
-            // small points so individual dots + dark gaps stay visible (moiré, not a fill)
-            '  gl_PointSize = clamp(uSize * boost / max(depth, 0.1), 0.0, 8.0) * uPixelRatio;\n' +
-            '  vE = en; vB = br;\n}';
+        var vertexShader = [
+            'precision highp float;',
+            'uniform float uSceneF, uCalm, uTime, uSize, uPixelRatio, uDisperse, uResidual, uNoiseFreq, uWaveAmp;',
+            attrDecl, 'attribute float aSeed;',
+            'varying float vE; varying float vB; varying float vNear; varying float vInfra;',
+            'vec3 mod289(vec3 x){return x-floor(x*(1.0/289.0))*289.0;}',
+            'vec4 mod289(vec4 x){return x-floor(x*(1.0/289.0))*289.0;}',
+            'vec4 permute(vec4 x){return mod289(((x*34.0)+1.0)*x);}',
+            'vec4 taylorInvSqrt(vec4 r){return 1.79284291400159-0.85373472095314*r;}',
+            'float snoise(vec3 v){const vec2 C=vec2(1.0/6.0,1.0/3.0);const vec4 D=vec4(0.0,0.5,1.0,2.0);',
+            '  vec3 i=floor(v+dot(v,C.yyy));vec3 x0=v-i+dot(i,C.xxx);vec3 g=step(x0.yzx,x0.xyz);vec3 l=1.0-g;vec3 i1=min(g.xyz,l.zxy);vec3 i2=max(g.xyz,l.zxy);',
+            '  vec3 x1=x0-i1+C.xxx;vec3 x2=x0-i2+C.yyy;vec3 x3=x0-D.yyy;i=mod289(i);',
+            '  vec4 p=permute(permute(permute(i.z+vec4(0.0,i1.z,i2.z,1.0))+i.y+vec4(0.0,i1.y,i2.y,1.0))+i.x+vec4(0.0,i1.x,i2.x,1.0));',
+            '  float ns_=0.142857142857;vec3 ns=ns_*D.wyz-D.xzx;vec4 j=p-49.0*floor(p*ns.z*ns.z);vec4 x_=floor(j*ns.z);vec4 y_=floor(j-7.0*x_);',
+            '  vec4 x=x_*ns.x+ns.yyyy;vec4 y=y_*ns.x+ns.yyyy;vec4 h=1.0-abs(x)-abs(y);vec4 b0=vec4(x.xy,y.xy);vec4 b1=vec4(x.zw,y.zw);',
+            '  vec4 s0=floor(b0)*2.0+1.0;vec4 s1=floor(b1)*2.0+1.0;vec4 sh=-step(h,vec4(0.0));vec4 a0=b0.xzyw+s0.xzyw*sh.xxyy;vec4 a1=b1.xzyw+s1.xzyw*sh.zzww;',
+            '  vec3 p0=vec3(a0.xy,h.x);vec3 p1=vec3(a0.zw,h.y);vec3 p2=vec3(a1.xy,h.z);vec3 p3=vec3(a1.zw,h.w);',
+            '  vec4 norm=taylorInvSqrt(vec4(dot(p0,p0),dot(p1,p1),dot(p2,p2),dot(p3,p3)));p0*=norm.x;p1*=norm.y;p2*=norm.z;p3*=norm.w;',
+            '  vec4 m=max(0.6-vec4(dot(x0,x0),dot(x1,x1),dot(x2,x2),dot(x3,x3)),0.0);m=m*m;return 42.0*dot(m*m,vec4(dot(p0,x0),dot(p1,x1),dot(p2,x2),dot(p3,x3)));}',
+            'vec3 snoiseVec3(vec3 p){return vec3(snoise(p),snoise(p+17.1),snoise(p-43.7));}',
+            'vec3 curl(vec3 p){const float e=0.6;vec3 p0=snoiseVec3(p);vec3 px=snoiseVec3(p+vec3(e,0.,0.));vec3 py=snoiseVec3(p+vec3(0.,e,0.));vec3 pz=snoiseVec3(p+vec3(0.,0.,e));',
+            '  return vec3((py.z-p0.z)-(pz.y-p0.y),(pz.x-p0.x)-(px.z-p0.z),(px.y-p0.y)-(py.x-p0.x))/e;}',
+            'vec3 targetPos(int idx){\n' + pickPos + '}',
+            'float ebOf(int idx){\n' + pickEB + '}',
+            'void main(){',
+            '  int iA=int(floor(uSceneF)); int iB=iA+1; if(iB>' + (K - 1) + ') iB=' + (K - 1) + ';',
+            '  float f=uSceneF-floor(uSceneF);',
+            '  vec3 target=mix(targetPos(iA),targetPos(iB),f);',
+            // unpack energy/bright per stage THEN mix (packed floats are not linearly mixable)
+            '  float ebA=ebOf(iA), ebB=ebOf(iB);',
+            '  float en=mix(fract(ebA),fract(ebB),f);',
+            '  float br=mix(floor(ebA)/100.0,floor(ebB)/100.0,f);',
+            '  vInfra=(1.0-clamp(abs(uSceneF-3.0),0.0,1.0));',
+            // attraction: 1 at a scene centre, dips between. NATURE (index 1) stays looser.
+            // Round 14 dwell plateau: w holds at 1.0 across fc in [0,0.20] (a scroll band
+            // ~±24vh around each snap point) so a snapped form stays fully resolved while
+            // the viewer rests, then dissolves to w=0 at the midpoint (fc=0.5) between stages.
+            '  float fc=min(f,1.0-f); float w=1.0-smoothstep(0.20,0.5,fc);',
+            '  float natureW=1.0-clamp(abs(uSceneF-1.0),0.0,1.0);',
+            '  float wfW=1.0-clamp(abs(uSceneF-8.0),0.0,1.0);',              // waveforms (stage 09, index 8)
+            // travelling WAVE surface for nature + waveforms — the SURFACE moves (per-particle
+            // phase from aSeed), not per-particle smear, so lit-body holds.
+            '  float waveW=max(natureW,wfW); float waveFq=mix(1.1,2.4,wfW);',
+            '  float ph = target.x*waveFq - uTime*0.9 + aSeed*6.2831;',
+            '  target.y += uWaveAmp*waveW*sin(ph);',
+            '  br *= mix(1.0, 0.6+1.05*sin(ph), waveW);',                   // crests bright (up to 1.65x), troughs dark
+            '  float streamW=1.0-clamp(abs(uSceneF-7.0),0.0,1.0);',        // stage 08 stream: directed +x flow pulse
+            '  br *= mix(1.0, 0.65+0.55*sin(target.x*1.5 - uTime*1.8), streamW);',
+            // curl drift; residual kept tiny at peak so forms are crisp — except nature (揺らぎ).
+            '  float resid = mix(uResidual, uResidual+0.03, natureW);',   // waves: undulation from the surface, not per-particle smear (keeps lit-body up)
+            '  float spd=0.9+aSeed*0.6;',
+            '  float tRate = mix(1.0, 0.5, uCalm);',                        // below-hero: slower ambient motion
+            '  vec3 cn=curl(target*uNoiseFreq + vec3(0.0,0.0,uTime*0.15*spd*tRate) + aSeed*7.0);',
+            '  float amp=mix(resid,uDisperse,1.0-w);',
+            '  vec3 p=target + cn*amp;',
+            '  vec4 mv=modelViewMatrix*vec4(p,1.0);',
+            '  gl_Position=projectionMatrix*mv;',
+            // depth cue: near brighter+bigger, far dimmer+smaller (drives the SPHERE 3D read)
+            '  float depth=-mv.z; vNear=clamp((13.0-depth)/7.0,0.0,1.0);',
+            '  float orbW=1.0-clamp(abs(uSceneF-5.0),0.0,1.0);',           // orbits (stage 06)
+            '  float boost=0.5+en*0.8+vNear*(0.6+orbW*0.4);',             // orbits: modest near/far size (dots stay distinct, not a filled tube)
+            '  gl_PointSize=clamp(uSize*boost/max(depth,0.1),0.0,8.0)*uPixelRatio;',
+            // orbits carry their 3D read ENTIRELY through the near/far gradient — push it hard
+            // (near much brighter, far much dimmer) while overall staying in the calm register.
+            '  float nearRamp=mix(0.55+0.45*vNear, 0.1+1.65*vNear, orbW);',
+            // INFRA only: dim the left screen third (clip-space x) so the bright lattice band never
+            // crosses the left text column — the heading 学びを、社会へ。 rests there and a bright
+            // additive band under it dropped its contrast to ~2:1. Form still fills centre+right
+            // (matches the "formation sits on the right" composition). vInfra→0 elsewhere = no-op.
+            '  float ndcx=gl_Position.x/gl_Position.w;',
+            '  float leftDim=mix(1.0, 0.15+0.85*smoothstep(-0.55,-0.15,ndcx), vInfra);',
+            '  vE=en; vB=br*mix(1.0,0.62,uCalm)*nearRamp*leftDim;',        // calm below hero; far dimmer; infra left column protected
+            '}'
+        ].join('\n');
 
         var fragmentShader = [
-            'uniform vec3 uBlueDeep, uTeal, uCyan, uBlue, uViolet, uMagenta, uEmber;',
-            'uniform float uAlpha, uExposure;',
-            'varying float vE; varying float vB; varying float vNear;',
-            // Teal-dominant ramp: cool (teal→cyan→blue) fills 0.0–0.62; warm only above 0.8.
-            'vec3 spectrum(float x){ x = clamp(x,0.0,1.0);',
-            '  if(x<0.22) return mix(uBlueDeep,uTeal,x/0.22);',
-            '  else if(x<0.40) return mix(uTeal,uCyan,(x-0.22)/0.18);',
-            '  else if(x<0.62) return mix(uCyan,uBlue,(x-0.40)/0.22);',
-            '  else if(x<0.80) return mix(uBlue,uViolet,(x-0.62)/0.18);',
-            '  else if(x<0.90) return mix(uViolet,uMagenta,(x-0.80)/0.10);',
-            '  return mix(uMagenta,uEmber,(x-0.90)/0.10); }',
-            // ACES filmic rolloff — hot cores read hot, not clipped white.
-            'vec3 aces(vec3 x){ return clamp((x*(2.51*x+0.03))/(x*(2.43*x+0.59)+0.14), 0.0, 1.0); }',
+            'precision highp float;',
+            'uniform vec3 uBlueDeep,uTeal,uCyan,uBlue,uViolet,uMagenta,uEmber;',
+            'uniform float uAlpha,uExposure,uTime;',
+            'varying float vE; varying float vB; varying float vNear; varying float vInfra;',
+            'vec3 spectrum(float x){x=clamp(x,0.0,1.0);',
+            '  if(x<0.22)return mix(uBlueDeep,uTeal,x/0.22);else if(x<0.40)return mix(uTeal,uCyan,(x-0.22)/0.18);',
+            '  else if(x<0.62)return mix(uCyan,uBlue,(x-0.40)/0.22);else if(x<0.80)return mix(uBlue,uViolet,(x-0.62)/0.18);',
+            '  else if(x<0.90)return mix(uViolet,uMagenta,(x-0.80)/0.10);return mix(uMagenta,uEmber,(x-0.90)/0.10);}',
+            'vec3 aces(vec3 x){return clamp((x*(2.51*x+0.03))/(x*(2.43*x+0.59)+0.14),0.0,1.0);}',
             'void main(){',
-            '  vec2 uv = gl_PointCoord - 0.5;',
-            '  float d = length(uv);',
-            '  if(d > 0.5) discard;',
-            // DoF: far particles crisp (tight inner edge), near particles softer (wide falloff)
-            '  float inner = mix(0.35, 0.05, vNear);',
-            '  float core = smoothstep(0.5, inner, d);',
-            '  float hot = smoothstep(0.7, 1.0, vE);',             // only hot (core) particles bloom
-            '  float halo = smoothstep(0.5, 0.0, d) * hot;',
-            '  float a = max(core, halo * 0.5);',
-            '  vec3 col = aces(spectrum(vE) * uExposure);',
-            // LOW per-particle contribution: at 90k, brightness accumulates from many faint
-            // points, giving tonal range (dark gaps → bright dense) instead of a clipped fill.
-            '  gl_FragColor = vec4(col, a * vB * uAlpha);',
+            '  vec2 uv=gl_PointCoord-0.5; float d=length(uv); if(d>0.5) discard;',
+            '  float inner=mix(0.35,0.05,vNear); float core=smoothstep(0.5,inner,d);',
+            '  float hot=smoothstep(0.7,1.0,vE); float halo=smoothstep(0.5,0.0,d)*hot; float aa=max(core,halo*0.5);',
+            '  float stream=1.0 + vInfra*0.7*sin(gl_FragCoord.x*0.012 - uTime*2.2 + vE*28.0);',
+            '  vec3 col=aces(spectrum(vE)*uExposure);',
+            '  gl_FragColor=vec4(col, aa*vB*uAlpha*stream);',
             '}'
         ].join('\n');
 
         var uniforms = {
-            uProgress: { value: 0 }, uTime: { value: 0 }, uSize: { value: isMobile ? 17 : 16 },
-            uAlpha: { value: 0.16 }, uExposure: { value: 0.95 },
-            uPixelRatio: { value: DPR }, uPeaks: { value: new Array(K).fill(0).map(function (_, ix) { return ix / (K - 1); }) },
-            uBlueDeep: { value: new THREE.Color(0x0b3be0) }, uTeal: { value: new THREE.Color(0x2bd9c4) },
-            uCyan: { value: new THREE.Color(0x00c2cb) }, uBlue: { value: new THREE.Color(0x3d8bff) },
-            uViolet: { value: new THREE.Color(0x7b4dff) }, uMagenta: { value: new THREE.Color(0xff3d8b) },
-            uEmber: { value: new THREE.Color(0xff5a3c) }
+            uSceneF: { value: 0 }, uCalm: { value: 0 }, uTime: { value: 0 }, uSize: { value: isMobile ? 18 : 17 },
+            uAlpha: { value: 0.5 }, uExposure: { value: 1.08 }, uPixelRatio: { value: DPR },
+            uDisperse: { value: isMobile ? 0.9 : 1.15 }, uResidual: { value: 0.022 }, uNoiseFreq: { value: 0.22 }, uWaveAmp: { value: 0.7 },
+            uBlueDeep: { value: new THREE.Color(0x0b3be0) }, uTeal: { value: new THREE.Color(0x2bd9c4) }, uCyan: { value: new THREE.Color(0x00c2cb) },
+            uBlue: { value: new THREE.Color(0x3d8bff) }, uViolet: { value: new THREE.Color(0x7b4dff) }, uMagenta: { value: new THREE.Color(0xff3d8b) }, uEmber: { value: new THREE.Color(0xff5a3c) }
         };
+        var material = new THREE.ShaderMaterial({ uniforms: uniforms, vertexShader: vertexShader, fragmentShader: fragmentShader, transparent: true, depthWrite: false, depthTest: false, blending: THREE.AdditiveBlending });
 
-        var material = new THREE.ShaderMaterial({
-            uniforms: uniforms, vertexShader: vertexShader, fragmentShader: fragmentShader,
-            transparent: true, depthWrite: false, depthTest: false, blending: THREE.AdditiveBlending
-        });
-
-        /* ---- Renderer / scene / camera ---------------------------------- */
         var renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: false, alpha: true, powerPreference: 'high-performance' });
-        renderer.setPixelRatio(DPR);
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.setClearColor(0x000000, 0);
-
+        renderer.setPixelRatio(DPR); renderer.setSize(window.innerWidth, window.innerHeight); renderer.setClearColor(0x000000, 0);
         var scene = new THREE.Scene();
-        var camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 0.1, 100);
-        camera.position.set(0, 0, 9);
+        var camera = new THREE.PerspectiveCamera(58, window.innerWidth / window.innerHeight, 0.1, 100);
+        camera.position.set(0, 0, isMobile ? 8.5 : 7.0);
+        var points = new THREE.Points(geo, material); points.frustumCulled = false; scene.add(points);
 
-        var points = new THREE.Points(geo, material);
-        points.frustumCulled = false;   // positions expand well beyond stage-0 bounds
-        scene.add(points);
-
-        /* ---- Live telemetry (particles · GPU frame budget ms · fps) -------- */
+        /* ---- Telemetry -------------------------------------------------- */
         var gl = renderer.getContext();
         var timerExt = (function () { try { return gl.getExtension('EXT_disjoint_timer_query_webgl2'); } catch (e) { return null; } })();
-        var telEl = document.createElement('div');
-        telEl.id = 'telemetry';
-        telEl.setAttribute('aria-hidden', 'true');
-        telEl.innerHTML = '<span><b>' + Math.round(COUNT / 1000) + 'k</b>particles</span>' +
-            '<span><b class="t-ms">–</b> frame ms</span><span><b class="t-fps">–</b>fps</span>';
+        var telEl = document.createElement('div'); telEl.id = 'telemetry'; telEl.setAttribute('aria-hidden', 'true');
+        telEl.innerHTML = '<span><b>' + Math.round(COUNT / 1000) + 'k</b>particles</span><span><b class="t-ms">–</b> frame ms</span><span><b class="t-fps">–</b>fps</span>';
         document.body.appendChild(telEl);
         var tMs = telEl.querySelector('.t-ms'), tFps = telEl.querySelector('.t-fps');
         var gpuQuery = null, gpuMs = 0, fpsAcc = 0, fpsN = 0, telClock = 0;
-
-        function telemetryBeginFrame() {
-            if (!timerExt || gpuQuery) return;
-            try { gpuQuery = gl.createQuery(); gl.beginQuery(timerExt.TIME_ELAPSED_EXT, gpuQuery); } catch (e) { gpuQuery = null; }
-        }
-        function telemetryEndFrame(dt) {
+        function telBegin() { if (!timerExt || gpuQuery) return; try { gpuQuery = gl.createQuery(); gl.beginQuery(timerExt.TIME_ELAPSED_EXT, gpuQuery); } catch (e) { gpuQuery = null; } }
+        function telEnd(dt) {
             if (timerExt && gpuQuery) { try { gl.endQuery(timerExt.TIME_ELAPSED_EXT); } catch (e) { } }
-            if (timerExt && gpuQuery) {
-                try {
-                    if (gl.getQueryParameter(gpuQuery, gl.QUERY_RESULT_AVAILABLE)) {
-                        if (!gl.getParameter(timerExt.GPU_DISJOINT_EXT))
-                            gpuMs = gpuMs ? gpuMs * 0.85 + (gl.getQueryParameter(gpuQuery, gl.QUERY_RESULT) / 1e6) * 0.15 : gl.getQueryParameter(gpuQuery, gl.QUERY_RESULT) / 1e6;
-                        gl.deleteQuery(gpuQuery); gpuQuery = null;
-                    }
-                } catch (e) { gpuQuery = null; }
-            }
+            if (timerExt && gpuQuery) { try { if (gl.getQueryParameter(gpuQuery, gl.QUERY_RESULT_AVAILABLE)) { if (!gl.getParameter(timerExt.GPU_DISJOINT_EXT)) gpuMs = gpuMs ? gpuMs * 0.85 + (gl.getQueryParameter(gpuQuery, gl.QUERY_RESULT) / 1e6) * 0.15 : gl.getQueryParameter(gpuQuery, gl.QUERY_RESULT) / 1e6; gl.deleteQuery(gpuQuery); gpuQuery = null; } } catch (e) { gpuQuery = null; } }
             fpsAcc += dt; fpsN++; telClock += dt;
-            if (telClock > 0.5 && fpsAcc > 0) {
-                tFps.textContent = Math.round(fpsN / fpsAcc);
-                tMs.textContent = (timerExt && gpuMs ? gpuMs : 1000 * fpsAcc / fpsN).toFixed(1);
-                fpsAcc = 0; fpsN = 0; telClock = 0;
+            if (telClock > 0.5 && fpsAcc > 0) { tFps.textContent = Math.round(fpsN / fpsAcc); tMs.textContent = (timerExt && gpuMs ? gpuMs : 1000 * fpsAcc / fpsN).toFixed(1); fpsAcc = 0; fpsN = 0; telClock = 0; }
+        }
+
+        /* ---- Whole-page stage centres → sceneF (0..K-1) ----------------- */
+        var centers = [];   // doc-space centre of each stage
+        function computeCenters() {
+            centers = stageEls.map(function (el) { var r = el.getBoundingClientRect(); return r.top + window.scrollY + r.height / 2; });
+        }
+        computeCenters();
+        function sceneFor(scrollMid) {   // scrollMid = viewport centre in doc coords
+            if (!centers.length) return 0;
+            if (scrollMid <= centers[0]) return 0;
+            for (var i2 = 0; i2 < centers.length - 1; i2++) {
+                if (scrollMid < centers[i2 + 1]) { var d = centers[i2 + 1] - centers[i2]; return d > 0 ? i2 + (scrollMid - centers[i2]) / d : i2; }
             }
+            return centers.length - 1;
         }
-
-        /* ---- Rotation keyframes per stage ------------------------------- */
-        var ROT = {
-            beginning: [0.0, 0.0], matter: [0.1, 0.08], galaxies: [-0.28, 0.12],
-            solar: [-0.62, 0.10], earth: [0.16, 0.0], society: [-0.30, 0.0]
-        };
-        var rotKeys = stages.map(function (s) { return ROT[s] || [0, 0]; });
-        var earthIndex = stages.indexOf('earth');
-        // Composition.
-        //   Desktop: formation offset RIGHT of centre, headings left on the dark left.
-        //   Mobile:  single column — text pins in the UPPER portion, and the formation
-        //            drops into the LOWER portion, centred and scaled down so the whole
-        //            form stays inside the narrow viewport (half-width is only ~2.16
-        //            world units at fov 55°/z9, less than a ring's 2.4 radius → it would
-        //            otherwise clip at the sides). Scale is applied once below.
-        var FORM_OFFSET_X = isMobile ? 0.0 : 2.2;
-        var FORM_OFFSET_Y = isMobile ? -2.05 : 0.0;   // dropped a touch further so the form
-                                                       // clears the CTA pill in the text column
-        var FORM_SCALE = isMobile ? 0.58 : 1.0;
-        points.scale.setScalar(FORM_SCALE);
-
-        /* ---- Peaks from visible scene centers --------------------------- */
-        var peaks = uniforms.uPeaks.value;
-        var textPeaks = [];   // progress at which each TEXT scene is centred (hoisted:
-                              // the text opacity keys off the SAME values as the formation
-                              // morph, so text and its formation peak together — no desync)
-        function computePeaks() {
-            var span = hero.offsetHeight - window.innerHeight;
-            if (span <= 0) return;
-            var heroTopDoc = hero.getBoundingClientRect().top + window.scrollY;
-            // progress at which each TEXT scene is centered. The mobile hero adds head/tail
-            // spacers (§CSS) so these land near-evenly instead of clamping to 0/1 — that is
-            // what lets evenly-spaced scroll offsets each land on a single stage.
-            textPeaks = visibleScenes.map(function (s) {
-                var r = s.getBoundingClientRect();
-                var c = r.top + window.scrollY + r.height / 2;
-                return Math.min(1, Math.max(0, (c - heroTopDoc - window.innerHeight / 2) / span));
-            });
-            var tp = textPeaks;
-            // map every formation to a peak: text forms → their scene; MATTER/SOLAR
-            // → the midpoint between the text stages they bridge.
-            for (var i2 = 0; i2 < K; i2++) {
-                var name = stages[i2];
-                var ti = textNames.indexOf(name);
-                if (ti >= 0) peaks[i2] = tp[ti];
-                else if (name === 'matter') peaks[i2] = (tp[0] + tp[1]) / 2;
-                else if (name === 'solar') peaks[i2] = (tp[1] + tp[2]) / 2;
-                else peaks[i2] = 0.5;
-            }
-            for (var j = 1; j < K; j++) if (peaks[j] <= peaks[j - 1]) peaks[j] = peaks[j - 1] + 0.001;
-        }
-        computePeaks();
-
-        // Fractional TEXT-stage index for a scroll progress, interpolated through the true
-        // scene centres (textPeaks). At progress = textPeaks[i] this returns exactly i, so
-        // stage i is fully lit precisely when formation i peaks.
-        function stageIndex(pr) {
-            var t = textPeaks;
-            if (!t.length) return 0;
-            if (pr <= t[0]) return 0;
-            for (var k = 0; k < t.length - 1; k++) {
-                if (pr < t[k + 1]) {
-                    var d = t[k + 1] - t[k];
-                    return d > 0 ? k + (pr - t[k]) / d : k;
-                }
-            }
-            return t.length - 1;
-        }
-
-        function progress() {
-            var rect = hero.getBoundingClientRect();
-            var span = rect.height - window.innerHeight;
-            if (span <= 0) return 0;
-            return Math.min(1, Math.max(0, -rect.top / span));
-        }
-
         function lerp(a, b, t) { return a + (b - a) * t; }
         function smooth(a, b, x) { var t = Math.min(1, Math.max(0, (x - a) / (b - a))); return t * t * (3 - 2 * t); }
 
-        function rotationFor(p) {
-            var seg = 0;
-            while (seg < K - 2 && p >= peaks[seg + 1]) seg++;
-            var t = smooth(peaks[seg], peaks[seg + 1], p);
-            return [lerp(rotKeys[seg][0], rotKeys[seg + 1][0], t), lerp(rotKeys[seg][1], rotKeys[seg + 1][1], t)];
-        }
+        var ROT = [[0, 0], [0.05, 0.04], [-0.18, 0.1], [0.12, -0.16], [0.0, 0.05], [-0.1, 0.12], [0.06, -0.04], [0.0, 0.08], [0.0, 0.03], [0.0, 0.0]];
+        function rotationFor(sf) { var seg = Math.min(K - 2, Math.floor(sf)); var t = sf - seg; return [lerp(ROT[seg][0], ROT[seg + 1][0], t), lerp(ROT[seg][1], ROT[seg + 1][1], t)]; }
 
-        /* ---- One-at-a-time text opacity --------------------------------- */
-        function updateText() {
-            var n = visibleScenes.length;
+        /* ---- Hero text opacity (whole block, one at a time) ------------- */
+        function updateText(sf) {
             var vc = window.innerHeight / 2;
-            // The WHOLE block fades as a unit: opacity is set on `.scene__content`, so its
-            // eyebrow + heading + body + CTA all composite at one value (no child overrides).
-            // Mobile keys that value to a tp-synced fractional stage index so text and its
-            // formation peak together; the sharp plateau keeps at most one block readable.
-            var span = hero.offsetHeight - window.innerHeight;
-            var aF = span > 0 ? stageIndex(Math.min(1, Math.max(0, -hero.getBoundingClientRect().top / span))) : 0;
-            for (var i3 = 0; i3 < n; i3++) {
-                var content = visibleScenes[i3].querySelector('.scene__content');
-                if (!content) continue;
+            for (var i3 = 0; i3 < visibleScenes.length; i3++) {
+                var content = visibleScenes[i3].querySelector('.scene__content'); if (!content) continue;
                 var op;
-                if (isMobile) {
-                    // Plateau at 1 for |i-aF| < 0.42 (full stage read), cross-fade in a thin
-                    // band to the midpoint (both = 0.5 at |i-aF| = 0.5 → no blank flash); a
-                    // block ≥0.58 stages away is exactly 0 — the leaving block vanishes.
-                    op = 1 - smooth(0.42, 0.58, Math.abs(i3 - aF));
-                } else {
-                    // Desktop has horizontal separation (text left, form right); the
-                    // block's own centre vs viewport centre gives a long, steady read.
-                    var r3 = content.getBoundingClientRect();
-                    var c = r3.top + r3.height / 2;
-                    op = 1 - smooth(0.5, 0.95, Math.abs(c - vc) / (window.innerHeight * 0.5));
-                }
+                if (isMobile) { op = 1 - smooth(0.42, 0.58, Math.abs(i3 - sf)); }
+                else { var r3 = content.getBoundingClientRect(); var c = r3.top + r3.height / 2; op = 1 - smooth(0.5, 0.95, Math.abs(c - vc) / (window.innerHeight * 0.5)); }
                 content.style.opacity = op.toFixed(3);
             }
         }
 
         /* ---- Render loop ------------------------------------------------ */
-        var current = 0, clock = 0, lastT = null, running = false, rafId = null;
+        var sfEased = 0, clock = 0, lastT = null, running = false, rafId = null, heroPassed = false;
         var gateScene = visibleScenes[0];
-
         function frame(now) {
-            rafId = null;
-            if (!running) return;
-            if (lastT == null) lastT = now;
-            var dt = Math.min(0.05, (now - lastT) / 1000); lastT = now; clock += dt;
-
-            current += (progress() - current) * 0.09;
-            uniforms.uProgress.value = current;
-            uniforms.uTime.value = clock;
-
-            var rot = rotationFor(current);
-            var earthW = earthIndex >= 0 ? Math.max(0, 1 - Math.abs(current - peaks[earthIndex]) / 0.16) : 0;
-            points.rotation.x = rot[0];
-            points.rotation.y = rot[1] + clock * (0.03 + 0.14 * earthW); // slow globe spin near EARTH
-            // Composition: desktop → formation RIGHT of the left-aligned type; mobile →
-            // formation dropped into the lower portion under the upper-column text.
-            points.position.x = FORM_OFFSET_X;
-            points.position.y = FORM_OFFSET_Y;
-
-            updateText();
-            if (gateScene) gateScene.style.setProperty('--scroll-hint', (1 - smooth(0.0, 0.12, current)).toFixed(3));
-
-            telemetryBeginFrame();
-            renderer.render(scene, camera);
-            telemetryEndFrame(dt);
+            rafId = null; if (!running) return;
+            if (lastT == null) lastT = now; var dt = Math.min(0.05, (now - lastT) / 1000); lastT = now; clock += dt;
+            var mid = midOf();
+            var sfT = sceneFor(mid);
+            sfEased += (sfT - sfEased) * 0.09;
+            // calm register once past the hero (stage index >= HERO_K-1 → ramp)
+            var calm = smooth(HERO_K - 1.5, HERO_K - 0.5, sfEased);
+            uniforms.uSceneF.value = sfEased; uniforms.uCalm.value = calm; uniforms.uTime.value = clock;
+            var rot = rotationFor(Math.min(K - 1, sfEased));
+            // faster spin AT the cosmos sphere so near/far parallax is visible (reads as 3D volume)
+            var cosW = 1 - Math.min(1, Math.abs(sfEased));
+            points.rotation.x = rot[0]; points.rotation.y = rot[1] + clock * (0.02 + 0.055 * cosW);
+            updateText(Math.min(HERO_K - 1, sfEased));
+            var hp = smooth(centers[0] - window.innerHeight * 0.5, centers[0], mid);
+            if (gateScene) gateScene.style.setProperty('--scroll-hint', (1 - hp).toFixed(3));
+            var passed = calm > 0.02; if (passed !== heroPassed) { heroPassed = passed; document.body.classList.toggle('hero-passed', passed); }
+            telBegin(); renderer.render(scene, camera); telEnd(dt);
             rafId = requestAnimationFrame(frame);
         }
         function start() { if (running) return; running = true; lastT = null; rafId = requestAnimationFrame(frame); }
         function stop() { running = false; if (rafId) { cancelAnimationFrame(rafId); rafId = null; } }
-
         function renderOnce() {
-            current = progress(); uniforms.uProgress.value = current;
-            var rot = rotationFor(current); points.rotation.x = rot[0]; points.rotation.y = rot[1];
-            points.position.x = FORM_OFFSET_X; points.position.y = FORM_OFFSET_Y;
-            updateText(); renderer.render(scene, camera);
+            computeCenters(); var mid = midOf(); sfEased = sceneFor(mid);
+            uniforms.uSceneF.value = sfEased; uniforms.uCalm.value = smooth(HERO_K - 1.5, HERO_K - 0.5, sfEased);
+            var rot = rotationFor(Math.min(K - 1, sfEased)); points.rotation.x = rot[0]; points.rotation.y = rot[1];
+            updateText(Math.min(HERO_K - 1, sfEased)); renderer.render(scene, camera);
         }
 
-        /* ---- Resize ----------------------------------------------------- */
         var resizeTimer = null;
         window.addEventListener('resize', function () {
             if (resizeTimer) clearTimeout(resizeTimer);
             resizeTimer = setTimeout(function () {
-                DPR = Math.min(window.devicePixelRatio || 1, 1.5);
-                renderer.setPixelRatio(DPR);
-                renderer.setSize(window.innerWidth, window.innerHeight);
-                camera.aspect = window.innerWidth / window.innerHeight; camera.updateProjectionMatrix();
-                uniforms.uPixelRatio.value = DPR;
-                computePeaks();
+                DPR = Math.min(window.devicePixelRatio || 1, 1.5); renderer.setPixelRatio(DPR); renderer.setSize(window.innerWidth, window.innerHeight);
+                camera.aspect = window.innerWidth / window.innerHeight; camera.updateProjectionMatrix(); uniforms.uPixelRatio.value = DPR; computeCenters();
                 if (!running) renderOnce();
             }, 200);
         });
 
-        /* ---- First paint + fade-in (§G) --------------------------------- */
-        renderOnce();
-        canvas.classList.add('is-ready');
+        renderOnce(); canvas.classList.add('is-ready');
+        start();
+        document.addEventListener('visibilitychange', function () { if (document.hidden) stop(); else start(); });
 
-        /* ---- Pause + go dormant when the hero leaves the viewport -------- */
-        if ('IntersectionObserver' in window) {
-            new IntersectionObserver(function (entries) {
-                if (entries[0].isIntersecting) { canvas.classList.remove('is-dormant'); start(); }
-                else { canvas.classList.add('is-dormant'); stop(); }
-            }, { threshold: 0 }).observe(hero);
-        } else { start(); }
-
-        document.addEventListener('visibilitychange', function () {
-            if (document.hidden) stop();
-            else { var r = hero.getBoundingClientRect(); if (r.bottom > 0 && r.top < window.innerHeight) start(); }
-        });
+        // expose a tiny hook for measurement + capture (freeze a frame so a heavy always-on
+        // field doesn't starve the screenshot compositor)
+        window.__field = {
+            count: COUNT, stages: K, attributeBytes: attributeBytes,
+            pause: function () { renderOnce(); stop(); }, resume: start,
+            sceneF: function () { return uniforms.uSceneF.value; },
+            // Round 14: the shader's attractor weight w for a viewport-centre scroll position
+            // (defaults to current). Mirrors the vertex shader exactly, dwell plateau included.
+            wAt: function (scrollY) {
+                var sf = sceneFor((scrollY == null ? window.scrollY : scrollY) + (window.innerHeight + SNAP_INSET) / 2);
+                var f = sf - Math.floor(sf), fc = Math.min(f, 1 - f);
+                var t = Math.min(1, Math.max(0, (fc - 0.20) / 0.30));
+                return 1 - t * t * (3 - 2 * t);
+            },
+            // doc-space scrollY where CSS snap rests hero stage i: scene centre aligned to the
+            // snapport centre (viewport inset at top by --nav-clearance). midOf() then returns the
+            // scene centre exactly, so sceneF is an integer there → pure motif at rest.
+            snapRest: function (i) { computeCenters(); return centers[i] - (window.innerHeight + SNAP_INSET) / 2; },
+            // rotate WITHOUT advancing the curl (frozen uTime) → isolates pure rotation parallax
+            spin: function (dy) { points.rotation.y += dy; renderer.render(scene, camera); }
+        };
     }
 })();
