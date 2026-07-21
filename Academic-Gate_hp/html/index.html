@@ -14,7 +14,7 @@
         href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;500&family=Noto+Sans+JP:wght@300;400&display=swap"
         rel="stylesheet">
 
-    <link rel="stylesheet" href="../css/style.css?v=r22">
+    <link rel="stylesheet" href="../css/style.css?v=r29">
     <!-- Three.js is injected non-blocking by js/scroll-scenes.js, and NOT downloaded
          at all under prefers-reduced-motion. Version pinned to 0.160.0 there. -->
 </head>
@@ -27,17 +27,17 @@
     <div id="site-nav"><noscript><nav class="noscript-nav" aria-label="メインナビゲーション"><a href="index.html">ホーム</a><a href="self-intro.html">自己紹介</a><a href="study.html">勉強の軌跡</a><a href="videos.html">動画</a><a href="blog.html">ブログ</a><a href="sns.html">各種SNS</a></nav></noscript></div>
 
     <main>
-        <!-- ======== HERO: cosmic origin → society (particle choreography) ==== -->
-        <!-- Four text-bearing stages. MATTER + THE SOLAR SYSTEM still render as the
-             particle field morphs between these, but carry no text (transitional).
-             Each text block is position:sticky so it holds legibly while the
-             formation morphs underneath. -->
+        <!-- ======== HERO: continuous flow field, four motifs (Round 12) ====== -->
+        <!-- 宇宙 cosmos → 自然 nature → 社会 network → 情報基盤 infrastructure.
+             A curl-noise flow field runs the whole page; each motif is an attractor
+             the flow concentrates into and releases. Each text block is position:sticky
+             so it holds legibly while the field forms and disperses under it. -->
         <div class="hero">
 
-            <!-- ① THE BEGINNING — 宇宙の始まり -->
-            <section class="scene scene--center scene-beginning" data-stage="beginning" aria-labelledby="s1">
+            <!-- ① 宇宙 COSMOS — the ring, viewer inside it -->
+            <section class="scene scene--center scene-cosmos" data-stage="cosmos" aria-labelledby="s1">
                 <div class="scene__content hero-scrim">
-                    <p class="eyebrow"><span class="eyebrow__num">01</span> — The Beginning</p>
+                    <p class="eyebrow"><span class="eyebrow__num">01</span> — 宇宙 / Cosmos</p>
                     <h1 class="gate-title" id="s1">Academic Gates</h1>
                     <p class="gate-subtitle" lang="ja">科学技術の面白さを伝え、研究に挑む学生の声を届ける。<br>宇宙のはじまりから、いまへ。</p>
                 </div>
@@ -46,25 +46,25 @@
                 </div>
             </section>
 
-            <!-- ② GALAXIES — 銀河の誕生 → 知識マップ (through MATTER) -->
-            <section class="scene scene--center scene-galaxies" data-stage="galaxies" aria-labelledby="s2">
+            <!-- ② 自然 NATURE — branching filaments; 勉強の軌跡 -->
+            <section class="scene scene--center scene-nature" data-stage="nature" aria-labelledby="s2">
                 <div class="scene__content hero-scrim">
-                    <p class="eyebrow"><span class="eyebrow__num">02</span> — The Knowledge Map</p>
-                    <h2 id="s2" lang="ja">知識を、<br>一つの銀河に。</h2>
-                    <p lang="ja">ノート・資料・タグが相互に結びつく知識マップ「Archive Sphere」。散らばった学びが、一つの銀河のように立体的な構造を描く。</p>
+                    <p class="eyebrow"><span class="eyebrow__num">02</span> — 自然 / Nature</p>
+                    <h2 id="s2" lang="ja">学びは、<br>根を張る。</h2>
+                    <p lang="ja">一つの問いが枝分かれし、つながりながら伸びていく。基礎から専門へ——根から枝先へと広がる、知の成長。</p>
                     <div class="cta-row">
-                        <a href="study.html" class="btn btn-primary">知識マップを見る <span class="btn-disc"
+                        <a href="study.html" class="btn btn-primary">勉強の軌跡を見る <span class="btn-disc"
                                 aria-hidden="true">→</span></a>
                     </div>
                 </div>
             </section>
 
-            <!-- ③ EARTH — 地球 → 自分の研究 / 現在地 (through THE SOLAR SYSTEM) -->
-            <section class="scene scene--center scene-earth" data-stage="earth" aria-labelledby="s3">
+            <!-- ③ 社会 NETWORK — nodes + edges; 現在地 / 研究 -->
+            <section class="scene scene--center scene-network" data-stage="network" aria-labelledby="s3">
                 <div class="scene__content hero-scrim">
                     <p class="eyebrow"><span class="eyebrow__num">03</span> — 現在地</p>
                     <h2 id="s3" lang="ja">私の研究は、<br>ここに。</h2>
-                    <p lang="ja">標準理論を超えた物理（BSM）を軸に、量子重力や初期宇宙を多面的に考える。いま立っているのは、この惑星のこの地点。</p>
+                    <p lang="ja">標準理論を超えた物理（BSM）を軸に、量子重力や初期宇宙を多面的に考える。分野と分野が結び合う、その結節点に立っている。</p>
                     <div class="cta-row">
                         <a href="self-intro.html" class="btn btn-primary">運営者について <span class="btn-disc"
                                 aria-hidden="true">→</span></a>
@@ -72,12 +72,12 @@
                 </div>
             </section>
 
-            <!-- ④ SOCIETY — 現代社会の分析 → 発信 (cards below) -->
-            <section class="scene scene--center scene-society" data-stage="society" aria-labelledby="s4">
+            <!-- ④ 情報基盤 INFRASTRUCTURE — lattice + streaming; 発信 (cards below) -->
+            <section class="scene scene--center scene-infra" data-stage="infra" aria-labelledby="s4">
                 <div class="scene__content hero-scrim">
-                    <p class="eyebrow"><span class="eyebrow__num">04</span> — 現代社会</p>
+                    <p class="eyebrow"><span class="eyebrow__num">04</span> — 情報基盤</p>
                     <h2 id="s4" lang="ja">学びを、<br>社会へ。</h2>
-                    <p lang="ja">積み上げた知識は、やがて人と人、分野と分野をつなぐネットワークになる。ノート・ブログ・動画・SNSで、社会へと発信する。</p>
+                    <p lang="ja">積み上げた知識は、ノート・ブログ・動画・SNSという回路を流れ、構造化されて社会へと届いていく。</p>
                 </div>
             </section>
         </div>
@@ -238,10 +238,10 @@
     </div>
 
     <!-- Shared behaviour, then the star field, then the scene engine (loads Three.js) -->
-    <script src="../js/layout.js?v=r22"></script>
-    <script src="../js/main.js?v=r22"></script>
-    <script src="../js/starfield.js?v=r22"></script>
-    <script src="../js/scroll-scenes.js?v=r22"></script>
+    <script src="../js/layout.js?v=r29"></script>
+    <script src="../js/main.js?v=r29"></script>
+    <script src="../js/starfield.js?v=r29"></script>
+    <script src="../js/scroll-scenes.js?v=r29"></script>
 </body>
 
 </html>
