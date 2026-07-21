@@ -1210,11 +1210,12 @@ centre — still deep inside the plateau):
 |-------|---------------|-----------|
 | 01 cosmos | 0.0000 | **1.0000** |
 | 02 nature | 0.9557 | **1.0000** |
-| 03 network | 1.9554 | **1.0000** |
-| 04 infra  | 2.9554 | **1.0000** |
+| 03 network | ~2.000 | **1.0000** |
+| 04 infra  | ~3.000 | **1.0000** |
 
-(Non-integer sceneF for 02–04 is the pad/2 ≈ 46px snapport inset → fc ≈ 0.044, well within the
-0.20 plateau.) Stills: `docs/stills/s14-rest-0{1..4}-*.png` — each form fully resolved at rest.
+Stills: `docs/stills/s14-rest-0{1..4}-*.png` — each form fully resolved at rest. **(Updated in
+§16.7: the engine now references the snapport centre, so sceneF is an exact integer at rest — the
+table above originally read 0.0/0.956/1.955/2.955 before that fix.)**
 
 ## 16.4 §6 must-not-break — tested, not assumed
 
@@ -1248,3 +1249,51 @@ points — not chosen here.
 `window.__field.wAt(scrollY?)` → the shader's `w` for any viewport-centre scroll position
 (defaults to current); `window.__field.snapRest(i)` → the doc-space scrollY where hero stage `i`
 snaps to rest. Both mirror the shader/CSS exactly and are there for the device pass too.
+
+## 16.7 Round-14 review follow-up (network edges, interaction tests, rest-position contrast)
+
+**1. Network edges regressed → root-cause was the snap rest, not the geometry.** The `make()`
+network build (nodes + 3-nearest edges) and all render globals were **byte-identical** to
+`v2.2-ten-stages` — the thin edge bands were still in the data. The regression came from *where
+the snap parked the view*: the 92px nav-clearance insets the snapport, so `align:center` rested
+network at **sceneF 1.955**, not 2.0. At 1.955 the target is `mix(nature, network, 0.955)` — a
+4.5% blend toward the nature wave that adds a random per-particle displacement ~0.045·S, enough
+to smear the thin, dim (bright 0.48) edge bands into fuzz while the bright node clusters survive.
+Confirmed empirically: a capture at the *true* peak (sceneF 2.0) showed crisp edges; the snap
+rest did not.
+
+Fix (no network rebuild): reference the **snapport centre** in the engine, not the raw viewport
+centre — `midOf() = scrollY + (innerHeight + SNAP_INSET)/2`, where `SNAP_INSET` is read from the
+computed `scroll-padding-top`. A snap rest now lands on an **exact integer sceneF** → a pure
+motif, no cross-blend. This also makes cosmos/nature/infra purer at rest. `w` stays 1.0000 at all
+four (now with fc = 0 exactly). Edges restored to the R13 look: `docs/stills/s14-rest-03-network.png`.
+
+**2. §6 keyboard + find-in-page — machine-tested (not reasoned).**
+- **Keyboard** (synthetic `Input.dispatchKeyEvent`, `keyDown`, from mid-hero scrollY 1500):
+  PageDown 1500→2248 (+748), Space 1500→2248 (+748), ArrowDown 1500→1540 (+40). Every press
+  advances **forward**; the snap never pulls back against a keypress. (First attempt with
+  `rawKeyDown` drove only PageDown — a headless quirk, not a snap effect: ArrowUp also moved 0, so
+  it wasn't directional. `keyDown` drives all three.)
+- **Find-in-page** (its scroll mechanic = select the match Range + `scrollIntoView`): a match on
+  the stage-04 string 回路 scrolled to top 400px and **stayed at 400px** after the snap settled —
+  landed and held, not dragged away.
+
+**3. Rest-position contrast — re-sampled, and it caught a real defect.** Method: hero text set
+`color:transparent` (shadow **retained** — a transparent glyph still casts its shadow, so the
+pixels under the box are the true effective background), luminance vs white text under the
+heading + body boxes at each rest. Headline = **p95** (the max single pixel is one stray particle;
+the median is mostly dark gaps between strokes):
+
+| stage | heading p95 | body p95 |
+|-------|------------|----------|
+| 01 cosmos | 18.5:1 | 16.3:1 |
+| 02 nature | 10.7:1 | 16.3:1 |
+| 03 network | 20.9:1 | 20.8:1 |
+| 04 infra | **17.1:1** | 18.9:1 |
+
+The infra heading **failed on first measurement (2.17:1)** — the bright horizontal lattice band
+crossed the 学びを、社会へ。 row, exactly as flagged. Fix: dim the infra lattice in the **left
+screen third** via clip-space x (`leftDim = mix(1, 0.15+0.85·smoothstep(-0.55,-0.15, ndcx), vInfra)`)
+— infra-only (`vInfra→0` elsewhere), and consistent with the "formation sits on the right"
+composition. Heading went **2.17 → 17.1:1**; the lattice still fills centre+right. Still:
+`docs/stills/s14-rest-04-infra.png`.
