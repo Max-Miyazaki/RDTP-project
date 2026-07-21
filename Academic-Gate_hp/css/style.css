@@ -626,13 +626,15 @@ a.card:hover::before,
     color: var(--text-tertiary);
 }
 
-/* Spectrum media placeholder (thumbnails etc.) */
+/* Spectrum media placeholder (thumbnails etc.) — teal/cyan register with a faint warm
+   accent only (§2.3: warm confined to hot cores; was a saturated blue+magenta block). */
 .media-placeholder {
     aspect-ratio: 16 / 9;
     border-radius: var(--radius-md);
     background:
-        radial-gradient(120% 120% at 20% 20%, var(--spec-blue), transparent 60%),
-        radial-gradient(120% 120% at 85% 80%, var(--spec-magenta), transparent 65%),
+        radial-gradient(120% 120% at 20% 20%, rgba(43, 217, 196, 0.42), transparent 60%),
+        radial-gradient(120% 120% at 85% 80%, rgba(0, 194, 203, 0.36), transparent 65%),
+        radial-gradient(55% 55% at 62% 42%, rgba(255, 61, 139, 0.09), transparent 70%),
         #05050a;
     opacity: 0.85;
 }
@@ -918,11 +920,17 @@ html.js .reveal.is-visible {
 }
 
 .index-block {
-    /* Tighter vertical rhythm (Round-12) — was var(--space-12)=96px each side, which left
-       more than a viewport of near-empty space between blocks. */
     padding: var(--space-8) var(--gutter);
     max-width: 1200px;
     margin: 0 auto;
+    /* Even out the per-stage scroll dwell (Round-13 item 3): card heights are
+       content-dependent (blog/videos grids are taller), which made stages 05–10 morph
+       at uneven speeds. A min-height evens the block spans so each stage gets a
+       comparable scroll window; the flow field fills the added space (never empty). */
+    min-height: 60vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
 .index-block__head {
@@ -1088,9 +1096,12 @@ footer a:hover {
 .video-thumbnail {
     aspect-ratio: 16 / 9;
     border-radius: var(--radius-md);
+    /* Teal/cyan register (calm reading region) with warm only as a faint accent — §2.3 confines
+       warm to hot cores. Was a saturated blue+magenta block, the most warm thing on the page. */
     background:
-        radial-gradient(120% 120% at 20% 20%, var(--spec-blue), transparent 60%),
-        radial-gradient(120% 120% at 85% 80%, var(--spec-magenta), transparent 65%),
+        radial-gradient(120% 120% at 20% 20%, rgba(43, 217, 196, 0.45), transparent 60%),
+        radial-gradient(120% 120% at 85% 80%, rgba(0, 194, 203, 0.38), transparent 65%),
+        radial-gradient(55% 55% at 62% 42%, rgba(255, 61, 139, 0.10), transparent 70%),
         #05050a;
     display: flex;
     align-items: center;
