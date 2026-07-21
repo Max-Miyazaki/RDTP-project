@@ -94,6 +94,13 @@
         }
         function gauss(s) { return (rnd() + rnd() + rnd() - 1.5) * s; }
         var TAU = Math.PI * 2, S = isMobile ? 2.05 : 3.5;
+        // Reference the SNAPPORT centre, not the raw viewport centre: scroll-padding-top insets
+        // the snapport by --nav-clearance, so `scroll-snap-align: center` rests a scene's centre
+        // pad/2 below the true viewport centre. Matching that here makes a snap rest land on an
+        // exact integer sceneF (a PURE motif, no cross-blend toward the neighbour) — without it
+        // the network rested at sceneF 1.955 and the 4.5% nature blend smeared its thin edges.
+        var SNAP_INSET = parseFloat(getComputedStyle(document.documentElement).scrollPaddingTop) || 0;
+        function midOf() { return window.scrollY + (window.innerHeight + SNAP_INSET) / 2; }
 
         /* ---- Precomputed structures for the motifs --------------------- */
         // NETWORK: centre-dense radial nodes (density peaks in the middle, tapers out).
@@ -346,7 +353,13 @@
             // orbits carry their 3D read ENTIRELY through the near/far gradient — push it hard
             // (near much brighter, far much dimmer) while overall staying in the calm register.
             '  float nearRamp=mix(0.55+0.45*vNear, 0.1+1.65*vNear, orbW);',
-            '  vE=en; vB=br*mix(1.0,0.62,uCalm)*nearRamp;',                // calm below hero; far dimmer
+            // INFRA only: dim the left screen third (clip-space x) so the bright lattice band never
+            // crosses the left text column — the heading 学びを、社会へ。 rests there and a bright
+            // additive band under it dropped its contrast to ~2:1. Form still fills centre+right
+            // (matches the "formation sits on the right" composition). vInfra→0 elsewhere = no-op.
+            '  float ndcx=gl_Position.x/gl_Position.w;',
+            '  float leftDim=mix(1.0, 0.15+0.85*smoothstep(-0.55,-0.15,ndcx), vInfra);',
+            '  vE=en; vB=br*mix(1.0,0.62,uCalm)*nearRamp*leftDim;',        // calm below hero; far dimmer; infra left column protected
             '}'
         ].join('\n');
 
@@ -440,7 +453,7 @@
         function frame(now) {
             rafId = null; if (!running) return;
             if (lastT == null) lastT = now; var dt = Math.min(0.05, (now - lastT) / 1000); lastT = now; clock += dt;
-            var mid = window.scrollY + window.innerHeight / 2;
+            var mid = midOf();
             var sfT = sceneFor(mid);
             sfEased += (sfT - sfEased) * 0.09;
             // calm register once past the hero (stage index >= HERO_K-1 → ramp)
@@ -460,7 +473,7 @@
         function start() { if (running) return; running = true; lastT = null; rafId = requestAnimationFrame(frame); }
         function stop() { running = false; if (rafId) { cancelAnimationFrame(rafId); rafId = null; } }
         function renderOnce() {
-            computeCenters(); var mid = window.scrollY + window.innerHeight / 2; sfEased = sceneFor(mid);
+            computeCenters(); var mid = midOf(); sfEased = sceneFor(mid);
             uniforms.uSceneF.value = sfEased; uniforms.uCalm.value = smooth(HERO_K - 1.5, HERO_K - 0.5, sfEased);
             var rot = rotationFor(Math.min(K - 1, sfEased)); points.rotation.x = rot[0]; points.rotation.y = rot[1];
             updateText(Math.min(HERO_K - 1, sfEased)); renderer.render(scene, camera);
@@ -489,14 +502,15 @@
             // Round 14: the shader's attractor weight w for a viewport-centre scroll position
             // (defaults to current). Mirrors the vertex shader exactly, dwell plateau included.
             wAt: function (scrollY) {
-                var sf = sceneFor((scrollY == null ? window.scrollY : scrollY) + window.innerHeight / 2);
+                var sf = sceneFor((scrollY == null ? window.scrollY : scrollY) + (window.innerHeight + SNAP_INSET) / 2);
                 var f = sf - Math.floor(sf), fc = Math.min(f, 1 - f);
                 var t = Math.min(1, Math.max(0, (fc - 0.20) / 0.30));
                 return 1 - t * t * (3 - 2 * t);
             },
             // doc-space scrollY where CSS snap rests hero stage i: scene centre aligned to the
-            // snapport centre (viewport inset at top by --nav-clearance, so shifted pad/2 down).
-            snapRest: function (i) { computeCenters(); return centers[i] - (window.innerHeight + 92) / 2; },
+            // snapport centre (viewport inset at top by --nav-clearance). midOf() then returns the
+            // scene centre exactly, so sceneF is an integer there → pure motif at rest.
+            snapRest: function (i) { computeCenters(); return centers[i] - (window.innerHeight + SNAP_INSET) / 2; },
             // rotate WITHOUT advancing the curl (frozen uTime) → isolates pure rotation parallax
             spin: function (dy) { points.rotation.y += dy; renderer.render(scene, camera); }
         };
