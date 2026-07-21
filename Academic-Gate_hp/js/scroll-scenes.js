@@ -132,12 +132,14 @@
             if (gj2 < GY - 1) gedges.push([lidx(gi2, gj2, gk2), lidx(gi2, gj2 + 1, gk2)]);
             if (gk2 < GZ - 1) gedges.push([lidx(gi2, gj2, gk2), lidx(gi2, gj2, gk2 + 1)]);
         }
-        // ORBITS: each ring in its OWN plane (distinct inclination 15–55° + longitude of node)
-        // so rings visibly cross in 3D; ellipses (eccentric) with the star at the common FOCUS.
+        // ORBITS: each ring in its OWN plane so they visibly cross in 3D; ellipses (eccentric)
+        // with the star at the common FOCUS. Plane orientation is a tilt `phi` from face-on
+        // (0 = facing camera, 90 = edge-on) plus an azimuth `psi`. phi is CLAMPED to 24–72° so
+        // no ring is within ~18° of edge-on (an edge-on ring reads as a bar through the frame).
         var NORB = 6, orbEls = [];
         for (var ob = 0; ob < NORB; ob++) orbEls.push({
             a: S * (0.5 + ob * 0.26), e: 0.12 + rnd() * 0.3,
-            inc: (15 + rnd() * 40) * Math.PI / 180, node: rnd() * TAU, arg: rnd() * TAU
+            phi: (24 + rnd() * 48) * Math.PI / 180, psi: rnd() * TAU, arg: rnd() * TAU
         });
 
         /* ---- Per-motif attractor target: [x,y,z, energy, bright, aux] ---
@@ -199,11 +201,12 @@
                     var ta = rnd() * TAU;                                 // true anomaly
                     var rr2 = el.a * (1 - el.e * el.e) / (1 + el.e * Math.cos(ta)); // r from FOCUS (star)
                     var ang = ta + el.arg;
-                    var pfx = rr2 * Math.cos(ang), pfy = rr2 * Math.sin(ang);
-                    var ci = Math.cos(el.inc), si = Math.sin(el.inc);     // tilt the plane (about x)
-                    var ty = pfy * ci, tz = pfy * si;
-                    var cn = Math.cos(el.node), sn = Math.sin(el.node);   // rotate the tilt (about vertical y)
-                    return [pfx * cn + tz * sn + oOx + gauss(0.02), ty + gauss(0.02), -pfx * sn + tz * cn + gauss(0.02),
+                    // plane basis from the normal n(phi,psi); build the ellipse in that plane
+                    var nx = Math.sin(el.phi) * Math.cos(el.psi), ny = Math.sin(el.phi) * Math.sin(el.psi), nz = Math.cos(el.phi);
+                    var ux = -nz, uy = 0, uz = nx, ul = Math.hypot(ux, uy, uz) || 1; ux /= ul; uz /= ul; // u = n × up
+                    var vx = ny * uz - nz * uy, vy = nz * ux - nx * uz, vz = nx * uy - ny * ux;            // v = n × u
+                    var cc = Math.cos(ang), ss = Math.sin(ang), tb = 0.013; // thin tube → particle texture, not a filled stroke
+                    return [rr2 * (cc * ux + ss * vx) + oOx + gauss(tb), rr2 * (cc * uy + ss * vy) + gauss(tb), rr2 * (cc * uz + ss * vz) + gauss(tb),
                         Math.max(0.22, 0.48 - (i % NORB) * 0.035), 0.6, 0];
                 }
                 case 'strata': { // accumulated horizontal layers
@@ -335,7 +338,7 @@
             // depth cue: near brighter+bigger, far dimmer+smaller (drives the SPHERE 3D read)
             '  float depth=-mv.z; vNear=clamp((13.0-depth)/7.0,0.0,1.0);',
             '  float orbW=1.0-clamp(abs(uSceneF-5.0),0.0,1.0);',           // orbits (stage 06)
-            '  float boost=0.5+en*0.8+vNear*(0.6+orbW*1.35);',            // orbits: near ring points much larger
+            '  float boost=0.5+en*0.8+vNear*(0.6+orbW*0.4);',             // orbits: modest near/far size (dots stay distinct, not a filled tube)
             '  gl_PointSize=clamp(uSize*boost/max(depth,0.1),0.0,8.0)*uPixelRatio;',
             // orbits carry their 3D read ENTIRELY through the near/far gradient — push it hard
             // (near much brighter, far much dimmer) while overall staying in the calm register.
