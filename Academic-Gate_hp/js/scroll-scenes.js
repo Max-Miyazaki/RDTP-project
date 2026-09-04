@@ -3,21 +3,20 @@
 
    ONE THREE.WebGLRenderer + ONE THREE.Points that runs the WHOLE PAGE. A curl-
    noise flow field drifts every particle continuously; each stage is an ATTRACTOR
-   the flow concentrates into and releases. TEN stages, hero → footer:
+   the flow concentrates into and releases. SEVEN stages (Round-17; was ten —
+   network, orbits(専門), strata(Notes), and the Projects section were removed and
+   基礎+専門 merged into one block), hero → footer:
 
-     01 宇宙 cosmos      volumetric sphere (warm core through cool volume)
-     02 自然 nature      undulating waves (travelling surface, 揺らぎ)
-     03 社会 network     centre-dense nodes + edges, hub hierarchy
-     04 情報基盤 infra   ordered lattice with streaming
-     05 基礎領域        DISPERSAL — the lattice releases into dense unstructured drift
-     06 専門領域        orbits (concentric ellipses)
-     07 Notes           strata (accumulated horizontal layers)
-     08 Blog            stream (a directed current)
-     09 Videos          waveforms (oscillating signal bands)
-     10 Projects        convergence (gather inward to one bright form — arrival)
+     0 宇宙 cosmos       volumetric sphere (warm core through cool volume)
+     1 自然 nature       undulating waves (travelling surface, 揺らぎ)
+     2 情報基盤 infra    ordered lattice with streaming
+     3 基礎/専門 merged  DISPERSAL — the lattice releases into dense unstructured drift
+     4 Blog             stream (a directed current)
+     5 Videos           waveforms (oscillating signal bands)
+     6 convergence      gather inward to one bright form — arrival (final-message)
 
    Below the hero the field drops to a CALM register (dimmer, slower) but stays
-   DENSE. Past stage 10 the convergence holds behind the footer.
+   DENSE. Past the last stage the convergence holds behind the footer.
 
    Progressive: reduced-motion → no Three.js; no WebGL / JS-off → CSS glow. Content
    is never gated behind JS.
@@ -77,10 +76,13 @@
         // Hero text scenes (4) drive the readable-copy opacity.
         visibleScenes = Array.prototype.filter.call(hero.querySelectorAll('.scene[data-stage]'), function (s) { return s.offsetParent !== null; });
         if (visibleScenes.length < 2) { dropCanvas(); return; }
-        // Ten stage centre elements: 4 hero scenes + 6 index-region blocks.
-        var indexBlocks = Array.prototype.slice.call(document.querySelectorAll('.index-region .index-block'));
+        // Seven stage centre elements (Round-17, was ten): 3 hero scenes (network removed) +
+        // 4 index-region blocks — the merged 基礎/専門 block, blog, videos, and the closing
+        // .final-message promoted to the convergence stage.
+        var indexBlocks = Array.prototype.slice.call(document.querySelectorAll('.index-region .index-block, .index-region .final-message'));
         var stageEls = visibleScenes.concat(indexBlocks);
-        var stages = ['cosmos', 'nature', 'network', 'infra', 'dispersal', 'orbits', 'strata', 'stream', 'waveforms', 'convergence'].slice(0, stageEls.length);
+        // Motif per surviving stage, in DOM order. Dropped motifs: network, orbits, strata.
+        var stages = ['cosmos', 'nature', 'infra', 'dispersal', 'stream', 'waveforms', 'convergence'].slice(0, stageEls.length);
         var K = stages.length;
         var HERO_K = visibleScenes.length;   // stages 0..HERO_K-1 are the hero
 
@@ -248,11 +250,10 @@
         }
 
         /* ---- Fill attribute buffers ------------------------------------
-           16-attribute GPU limit: 10 pos vec3s would need 10 mrg vec3s too (21 slots).
-           Pack each stage's (energy, bright) into ONE float — packed = floor(bright*100) +
-           energy — and hold all K in ceil(K/4) vec4 attributes. Aux (wave/stream) is derived
-           procedurally in the shader from position + seed, not stored. → 10 pos + 3 eb + seed
-           = 14 slots. */
+           16-attribute GPU limit. Pack each stage's (energy, bright) into ONE float — packed =
+           floor(bright*100) + energy — and hold all K in ceil(K/4) vec4 attributes. Aux
+           (wave/stream) is derived procedurally in the shader from position + seed, not stored.
+           Round-17 at K=7: 7 pos + ceil(7/4)=2 eb + seed = 10 attribute slots (was 14 at K=10). */
         var EBV = Math.ceil(K / 4);                       // vec4 attributes to hold K packed floats
         var pos = [], eb = [];
         for (var k = 0; k < K; k++) pos.push(new Float32Array(COUNT * 3));
@@ -274,7 +275,7 @@
 
         var attributeBytes = (K * 3 + EBV * 4 + 1) * 4 * COUNT;   // pos + packed eb + seed
 
-        /* ---- Shader: curl flow + attractor blend, 10-way target select -- */
+        /* ---- Shader: curl flow + attractor blend, 7-way target select --- */
         var attrDecl = '';
         for (var d1 = 1; d1 < K; d1++) attrDecl += 'attribute vec3 aP' + d1 + ';\n';
         for (var d3 = 0; d3 < EBV; d3++) attrDecl += 'attribute vec4 aEB' + d3 + ';\n';
@@ -320,21 +321,21 @@
             '  float ebA=ebOf(iA), ebB=ebOf(iB);',
             '  float en=mix(fract(ebA),fract(ebB),f);',
             '  float br=mix(floor(ebA)/100.0,floor(ebB)/100.0,f);',
-            '  vInfra=(1.0-clamp(abs(uSceneF-3.0),0.0,1.0));',
+            '  vInfra=(1.0-clamp(abs(uSceneF-2.0),0.0,1.0));',   // infra: stage 3 -> 2 (network removed)
             // attraction: 1 at a scene centre, dips between. NATURE (index 1) stays looser.
             // Round 14 dwell plateau: w holds at 1.0 across fc in [0,0.20] (a scroll band
             // ~±24vh around each snap point) so a snapped form stays fully resolved while
             // the viewer rests, then dissolves to w=0 at the midpoint (fc=0.5) between stages.
             '  float fc=min(f,1.0-f); float w=1.0-smoothstep(0.20,0.5,fc);',
             '  float natureW=1.0-clamp(abs(uSceneF-1.0),0.0,1.0);',
-            '  float wfW=1.0-clamp(abs(uSceneF-8.0),0.0,1.0);',              // waveforms (stage 09, index 8)
+            '  float wfW=1.0-clamp(abs(uSceneF-5.0),0.0,1.0);',              // waveforms: stage 8 -> 5 (videos block)
             // travelling WAVE surface for nature + waveforms — the SURFACE moves (per-particle
             // phase from aSeed), not per-particle smear, so lit-body holds.
             '  float waveW=max(natureW,wfW); float waveFq=mix(1.1,2.4,wfW);',
             '  float ph = target.x*waveFq - uTime*0.9 + aSeed*6.2831;',
             '  target.y += uWaveAmp*waveW*sin(ph);',
             '  br *= mix(1.0, 0.6+1.05*sin(ph), waveW);',                   // crests bright (up to 1.65x), troughs dark
-            '  float streamW=1.0-clamp(abs(uSceneF-7.0),0.0,1.0);',        // stage 08 stream: directed +x flow pulse
+            '  float streamW=1.0-clamp(abs(uSceneF-4.0),0.0,1.0);',        // stream: stage 7 -> 4 (blog block): directed +x flow pulse
             '  br *= mix(1.0, 0.65+0.55*sin(target.x*1.5 - uTime*1.8), streamW);',
             // curl drift; residual kept tiny at peak so forms are crisp — except nature (揺らぎ).
             '  float resid = mix(uResidual, uResidual+0.03, natureW);',   // waves: undulation from the surface, not per-particle smear (keeps lit-body up)
@@ -347,7 +348,7 @@
             '  gl_Position=projectionMatrix*mv;',
             // depth cue: near brighter+bigger, far dimmer+smaller (drives the SPHERE 3D read)
             '  float depth=-mv.z; vNear=clamp((13.0-depth)/7.0,0.0,1.0);',
-            '  float orbW=1.0-clamp(abs(uSceneF-5.0),0.0,1.0);',           // orbits (stage 06)
+            '  float orbW=0.0;',                                           // orbits motif removed (Round-17); was 1.0-clamp(abs(uSceneF-5.0)) — stage 5 is now videos, so pinned to 0
             '  float boost=0.5+en*0.8+vNear*(0.6+orbW*0.4);',             // orbits: modest near/far size (dots stay distinct, not a filled tube)
             '  gl_PointSize=clamp(uSize*boost/max(depth,0.1),0.0,8.0)*uPixelRatio;',
             // orbits carry their 3D read ENTIRELY through the near/far gradient — push it hard
@@ -432,7 +433,10 @@
         function lerp(a, b, t) { return a + (b - a) * t; }
         function smooth(a, b, x) { var t = Math.min(1, Math.max(0, (x - a) / (b - a))); return t * t * (3 - 2 * t); }
 
-        var ROT = [[0, 0], [0.05, 0.04], [-0.18, 0.1], [0.12, -0.16], [0.0, 0.05], [-0.1, 0.12], [0.06, -0.04], [0.0, 0.08], [0.0, 0.03], [0.0, 0.0]];
+        // Round-17: remapped from 10 to 7 entries, each surviving stage keeping its old rotation.
+        // new<-old index: 0<-0 cosmos, 1<-1 nature, 2<-3 infra, 3<-4 dispersal(merged),
+        // 4<-7 stream(blog), 5<-8 waveforms(videos), 6<-9 convergence(final-message).
+        var ROT = [[0, 0], [0.05, 0.04], [0.12, -0.16], [0.0, 0.05], [0.0, 0.08], [0.0, 0.03], [0.0, 0.0]];
         function rotationFor(sf) { var seg = Math.min(K - 2, Math.floor(sf)); var t = sf - seg; return [lerp(ROT[seg][0], ROT[seg + 1][0], t), lerp(ROT[seg][1], ROT[seg + 1][1], t)]; }
 
         /* ---- Hero text opacity (whole block, one at a time) ------------- */

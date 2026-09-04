@@ -1297,3 +1297,192 @@ screen third** via clip-space x (`leftDim = mix(1, 0.15+0.85·smoothstep(-0.55,-
 — infra-only (`vInfra→0` elsewhere), and consistent with the "formation sits on the right"
 composition. Heading went **2.17 → 17.1:1**; the lattice still fills centre+right. Still:
 `docs/stills/s14-rest-04-infra.png`.
+
+# 17. Round 17 — Stage reduction 10 → 7 (IMPLEMENTED)
+
+Structural reduction of the index page. No copy was rewritten; surviving headings, eyebrows,
+intro paragraphs, list items and CTA labels are unchanged. Eyebrow numbers were left as-is per
+the copy freeze, so they are now non-sequential (01, 02, 04, 05, 08, 09).
+
+## 17.1 What changed (DOM)
+
+Removed whole `<section>`s (removed from the DOM, not hidden):
+- **03 network** (`scene-network`) — the hero scene + its 運営者について CTA. self-intro stays
+  reachable via the injected nav/footer.
+- **07 Notes** (`notes-h`) — head + its two study.html cards.
+- **10 企画** (`projects-h`) — head + its three non-clickable `<div>` placeholder cards.
+
+Merged **05 基礎領域 + 06 専門領域** into one `.index-block`:
+- **Kept:** the `found-h` section and its `.index-block__head`; eyebrow `05 — 基礎領域`; heading
+  `学びの土台`; found-h's intro paragraph; **spec-h's intro paragraph `一つひとつの分野が…`**
+  (restored verbatim between the found-h intro and the first list); found-h's 6-item `<ul>`;
+  spec-h's 3-item `<ul>` (relocated in as a second list, order preserved); one CTA
+  `勉強の軌跡を見る` → study.html.
+- **Dropped:** the `spec-h` section wrapper; eyebrow `06 — 専門領域`; heading `専門という軌道`;
+  the duplicate CTA `ノートを読む` → study.html.
+
+(The spec-h intro was briefly dropped in the first pass — it lived inside the dropped head
+wrapper — then restored verbatim on review; only the eyebrow, heading and duplicate CTA are gone.
+So the merged block carries **two intro paragraphs** and two lists under one head.)
+
+**convergence** now anchors on the existing closing `.final-message` section (its 学問の世界へ…
+copy is unchanged); the scene engine treats it as a stage centre. This keeps the stage count at 7
+without inventing a section — it replaces `projects-h` as the final "gather inward" stage.
+
+Final 7 stages (sceneF 0..6): `cosmos · nature · infra · merged(基礎/専門) · blog · videos ·
+convergence(final-message)`. Motifs: cosmos, nature, infra, dispersal, stream, waveforms,
+convergence. Dropped motifs: **network, orbits, strata**.
+
+## 17.2 sceneF remap (js/scroll-scenes.js) — every site
+
+The engine is mostly parameterized by `K = stages.length`, so the sceneF **range** follows the
+stage count automatically. Sites that follow K and were **not edited** (emit the new value on
+their own): the vertex-shader clamp `if(iB>(K-1)) iB=(K-1)` (now emits 6, was 9); `sceneFor()`'s
+piecewise map (`centers.length`, now 7); `EBV=ceil(K/4)` (now 2, was 3); `pickPos`/`pickEB`
+codegen; `rotationFor`'s `Math.min(K-2, …)`; `HERO_K`-based calm ramp (now 3, was 4).
+
+Sites that are hardcoded to a stage index and **were edited**:
+
+| site | before | after | reason |
+|------|--------|-------|--------|
+| `stages` array | 10 motif names | `['cosmos','nature','infra','dispersal','stream','waveforms','convergence']` | surviving motifs, DOM order |
+| `indexBlocks` selector | `.index-region .index-block` | `+ , .index-region .final-message` | promote final-message to a stage |
+| `vInfra` key | `abs(uSceneF-3.0)` | `abs(uSceneF-2.0)` | infra 3 → 2 (network removed) |
+| `streamW` key | `abs(uSceneF-7.0)` | `abs(uSceneF-4.0)` | stream 7 → 4 (blog block) |
+| `wfW` key | `abs(uSceneF-8.0)` | `abs(uSceneF-5.0)` | waveforms 8 → 5 (videos block) |
+| `orbW` | `1.0-clamp(abs(uSceneF-5.0),0,1)` | `0.0` | orbits removed; stage 5 is now videos — pin off |
+| `ROT` array | 10 entries | 7 entries, remapped 0←0,1←1,2←3,3←4,4←7,5←8,6←9 | each survivor keeps its rotation |
+| header + slot comments | "TEN"/"10-way"/14 slots | "SEVEN"/"7-way"/10 slots | accuracy |
+
+`natureW` key `abs(uSceneF-1.0)` was **deliberately not changed** (nature stays stage 1).
+
+**Intentional dead branches (not oversights).** Two pieces of orbit/removed-stage code are left
+in the file on purpose; a future reader should read them as residue of a stage removal, not as
+forgotten cleanup:
+
+- **`orbW` pinned to `0.0` rather than deleting the branch.** `orbW` still feeds two live
+  expressions — `boost = 0.5+en*0.8+vNear*(0.6+orbW*0.4)` and
+  `nearRamp = mix(0.55+0.45*vNear, 0.1+1.65*vNear, orbW)`. Setting `orbW = 0.0` collapses both
+  `mix(...)`/`+orbW*...` to exactly their no-orbit branch, which is the correct behaviour now that
+  no stage renders orbits. Deleting `orbW` outright would force rewriting those two expressions
+  (and re-deriving the no-orbit forms by hand) for no functional gain and more diff risk. The
+  constant is the minimal, provably-equivalent edit. **Leaving the old `abs(uSceneF-5.0)` key
+  would be a bug** — stage 5 is now videos, so the orbit near/far push would wrongly fire under
+  the videos motif; that is exactly why it had to be neutralised, not just re-indexed.
+- **Unused `make()` cases + precompute** (`network`, `orbits`, `strata`; and their precomputed
+  `nodes`/`edges`, `orbEls`, and the network/orbit constants) are left in place. They are inert:
+  the `stages` array no longer names those motifs, so `make()` is never called with them and the
+  precompute results are never read. They were kept deliberately to keep this change surgical and
+  reversible — restoring a motif is then just re-adding its name to `stages` (+ its shader key and
+  a `ROT` entry), with no need to reconstruct the generator logic. Removing them is safe cleanup
+  but is out of scope for a structural stage-count change.
+
+## 17.3 Attribute memory
+
+Particle **count is unchanged** (desktop 200 000 / mobile 70 000). Per-particle attribute floats
+= `K*3 + ceil(K/4)*4 + 1`: **43 → 30** floats (172 → 120 bytes). Target count per particle
+= K: **10 → 7**.
+
+| | before (K=10) | after (K=7) | Δ |
+|---|---|---|---|
+| desktop attribute bytes | 34.40 MB | 24.00 MB | −10.40 MB (−30.2%) |
+| mobile attribute bytes | 12.04 MB | 8.40 MB | −3.64 MB (−30.2%) |
+| desktop total targets | 2.00 M | 1.40 M | −0.60 M |
+| mobile total targets | 0.70 M | 0.49 M | −0.21 M |
+
+(CPU-side Float32 vertex buffers uploaded as attributes; GPU VRAM tracks this plus driver
+overhead. Measured `__field.attributeBytes` = 24 000 000 desktop, confirming the calc.)
+
+## 17.4 Jump navigation — scrollIntoView, measured reason
+
+Round-16 measured that a bare hash-fragment jump lands the **heading** at the viewport top, which
+leaves short index blocks outside the ±0.20-fc dwell plateau and settles the motif weight w at
+**0.02–0.83**. `scrollIntoView()` on the whole `<section>` lands block-start and resolves
+**w = 1.0**.
+
+So each retained index title (merged/`stage-study`, `stage-blog`, `stage-videos`) is an
+`<a class="stage-jump" href="#<section-id>">` wrapping the (unchanged) heading text. `main.js`
+intercepts `.stage-jump` clicks: `preventDefault()` + `closest('section').scrollIntoView()`; the
+generic `a[href^="#"]` handler is excluded via `:not(.stage-jump)`. The `href="#<section-id>"`
+is the no-JS fallback — and because it targets the **section id** (not the heading id as the old
+hash did), the fallback also lands within the plateau. No new scroll/animation dependency.
+
+Hero titles were **not** wired: Round-16 showed hero hash-jumps already resolve w = 1.0 (the
+plateau absorbs their 0.126-fc landing), so they have no problem to fix. convergence has no title,
+so it has no jump anchor — reached by scroll only.
+
+## 17.5 Verification (M-series, headless Chrome + SwiftShader, measured)
+
+Local harness, Three.js served from a pinned local copy, HTTP cache disabled. Before = the
+10-stage build; after = this build. Full tables live in the Round-17 work log; summary:
+
+- **w (E.1):** after build, the **wired scrollIntoView path resolves w_ss = 1.0 at all 7 stages,
+  both 1440×900 and 390×844.** The no-JS `#section-id` fallback also resolves 1.0 at all stages
+  (convergence has no anchor). No stage fails.
+- **Dwell plateau (E.2):** hero spacing unchanged at 1080 px → plateau ±216 px; the hero landing
+  held at **fc = 0.126** (identical to Round-16) → **that margin survived**. Index spacing is
+  denser with fewer stages, so the last index plateaus tightened (videos next-spacing 372 px →
+  ±74 px; landing fc 0.113, ~32 px slack) but every landing stayed inside the plateau (w = 1.0).
+- **Snap (E.3):** after = `snapType: y`, `heroSnapAlign: center`, `blockSnapAlign: none`,
+  `finalSnapAlign: none` (desktop); `snapType: none` (mobile). Snap remains hero-only and off on
+  mobile; removing scene-network did not change which sections are snap targets, and
+  final-message is **not** a snap target.
+- **Heights / scrollHeight (E.4):** hero 1080 (desktop) / 760 (mobile) unchanged; final-message
+  204/219. **scrollHeight: desktop 8210 → 5565 (−2645), mobile 8289 → 5614 (−2675).** (The raw
+  section removals net network(1080)+notes(540)+projects(540)+one-merged(540) = −2700/−2766; the
+  restored spec-h intro then adds the merged block back up by +55 desktop / +91 mobile — see
+  below — giving the final −2645/−2675.)
+- **Merged-block intro restore (review follow-up):** spec-h's intro `一つひとつの分野が…` was
+  restored verbatim between the found-h intro and the first list, so the merged block now carries
+  two intro paragraphs. Measured effect: **merged block height 540 → 595 (desktop, Δ+55) / 589 →
+  680 (mobile, Δ+91)** — on desktop it now exceeds the 540 px (60vh) min-height and is
+  content-driven. Landing still **w_ss = 1.0** (scrollIntoView fc 0.025 desktop / 0.049 mobile,
+  well inside the ±0.20 plateau). Contrast under the merged title's glyph boxes unchanged (median
+  ≈ 19.5:1; worst-case actually improved 6.82 → 6.04 desktop as the taller block spreads text over
+  more of the calm field; ~14 700 samples). No clipping (0%).
+- **Contrast under title glyph boxes (E.5):** median ≈ 18–21:1 (light text on near-black),
+  stable before→after. Worst-case per title is the recorded exception — **nature ≈ 1.25:1 over
+  the bright wave crests (intentional, outside the 0.4–0.6 lit band)** — plus cosmos ≈ 1.4–1.7
+  over the sphere core; both unchanged from before. Sampled under every text run of each title
+  block (heading+eyebrow+intro+list+CTA), thousands of samples per block.
+- **Clipped-pixel % (E.6, centre-sampled):** cosmos ≈ 0.01–0.05, nature ≈ 7.5–8 (wave crests),
+  infra ≈ 2.6–5 (slightly lower after), calm index blocks 0, convergence ≈ 0.3–0.6. No regression.
+- **Frame time (E.7):** UNCHANGED before→after (particle count unchanged). Headless SwiftShader
+  pins desktop at median 50 ms / p95 66.7 ms and mobile at 16.7 ms / 16.8 ms — **not
+  device-representative; untested on real GPU.**
+
+## 17.6 Constraint for future edits — index-block plateau margin is now thin
+
+Reducing to 7 stages moved the stage centres closer together in the index region, so the pixel
+width of the ±0.20-fc dwell plateau (the band where a landing still resolves to w = 1.0) shrank
+there. Measured half-widths (0.20 × local centre spacing), after:
+
+| region | spacing | plateau half-width | worst measured landing slack |
+|--------|---------|--------------------|------------------------------|
+| hero (cosmos/nature/infra) | 1080 px | **±216 px** | fc 0.126 → ~80 px |
+| index → convergence tail | 540→372 px | as low as **±74 px** (videos) | fc 0.113 → **~32 px** |
+
+Every stage currently lands inside its plateau (all w_ss = 1.0), but the tail margin is now as
+small as **~32 px**. **Constraint:** any future change to index-block height, spacing, or the
+number of index stages — including editing an index block's content enough to change its height,
+adding/removing a block, or changing `--nav-clearance` / `scroll-padding-top` — can move a centre
+far enough to push a landing past fc = 0.20 and drop that motif below w = 1.0 on a jump. After any
+such change, re-run the Round-17 w-harness and confirm every stage still lands w_ss = 1.0; do not
+raise the `0.20` plateau constant to paper over a regression without re-measuring the visual cost.
+(The merged-block intro restore in §17.5 is a worked example: it grew the block +55/+91 px and
+was re-measured — fc stayed 0.025/0.049, safely inside — precisely because of this constraint.)
+
+## 17.7 Stills
+
+Regenerated (desktop 1440×900, at rest): `docs/stills/r17-0-cosmos.png`, `r17-1-nature.png`,
+`r17-2-infra.png`, `r17-3-merged-study.png`, `r17-4-blog.png`, `r17-5-videos.png`,
+`r17-6-convergence.png`.
+
+**Deleted** (depicted removed stages that no longer exist): `s03-network.png`, `s06-orbits.png`,
+`s07-strata.png`, `14-network.png`, `s14-rest-03-network.png`.
+
+**Regenerated against the new below-hero structure** (still a live region, so kept not deleted):
+`16-belowhero-cards.png`, `s-cards.png`, `s-belowhero.png`.
+
+The remaining stills (interior pages, cosmos/nature/infra motif stills `s01/s02/s04`, mobile-*)
+still represent the current build.

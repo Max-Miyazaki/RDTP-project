@@ -59,19 +59,6 @@
                 </div>
             </section>
 
-            <!-- ③ 社会 NETWORK — nodes + edges; 現在地 / 研究 -->
-            <section class="scene scene--center scene-network" data-stage="network" aria-labelledby="s3">
-                <div class="scene__content hero-scrim">
-                    <p class="eyebrow"><span class="eyebrow__num">03</span> — 現在地</p>
-                    <h2 id="s3" lang="ja">私の研究は、<br>ここに。</h2>
-                    <p lang="ja">標準理論を超えた物理（BSM）を軸に、量子重力や初期宇宙を多面的に考える。分野と分野が結び合う、その結節点に立っている。</p>
-                    <div class="cta-row">
-                        <a href="self-intro.html" class="btn btn-primary">運営者について <span class="btn-disc"
-                                aria-hidden="true">→</span></a>
-                    </div>
-                </div>
-            </section>
-
             <!-- ④ 情報基盤 INFRASTRUCTURE — lattice + streaming; 発信 (cards below) -->
             <section class="scene scene--center scene-infra" data-stage="infra" aria-labelledby="s4">
                 <div class="scene__content hero-scrim">
@@ -85,12 +72,16 @@
         <!-- ======================= THE INDEX (calm card grids) ============ -->
         <div class="index-region">
 
-            <!-- 基礎領域 — foundational studies (moved out of the hero so it reads) -->
-            <section class="index-block" aria-labelledby="found-h">
+            <!-- 基礎領域 + 専門領域 — merged (Round-17): found-h is the surviving head; spec-h's
+                 head wrapper (eyebrow 06, heading 専門という軌道) and its duplicate study.html CTA
+                 were dropped. Both <ul> lists kept intact, in order. Both intro paragraphs kept:
+                 found-h's, then spec-h's (restored verbatim between the found intro and list 1). -->
+            <section class="index-block" id="stage-study" aria-labelledby="found-h">
                 <div class="index-block__head reveal">
                     <p class="eyebrow"><span class="eyebrow__num">05</span> — 基礎領域</p>
-                    <h2 id="found-h" lang="ja">学びの土台</h2>
+                    <h2 id="found-h" lang="ja"><a class="stage-jump" href="#stage-study">学びの土台</a></h2>
                     <p lang="ja">カオスから構造が生まれるように、学びもまた基礎から立ち上がる。まずは土台となる学部レベルの学問を、一つずつ積み上げていく。</p>
+                    <p lang="ja">一つひとつの分野が、恒星をめぐる惑星の軌道のように。基礎の上に、素粒子・重力・宇宙の専門領域を重ねていく。</p>
                     <ul class="scene-list" lang="ja">
                         <li>物理数学</li>
                         <li>古典力学・解析力学</li>
@@ -99,6 +90,11 @@
                         <li>量子力学</li>
                         <li>特殊相対性理論</li>
                     </ul>
+                    <ul class="scene-list" lang="ja">
+                        <li>場の量子論</li>
+                        <li>一般相対性理論</li>
+                        <li>宇宙論</li>
+                    </ul>
                     <p style="margin-top: 1.5rem;">
                         <a href="study.html" class="btn btn-secondary">勉強の軌跡を見る <span class="btn-disc"
                                 aria-hidden="true">→</span></a>
@@ -106,50 +102,11 @@
                 </div>
             </section>
 
-            <!-- 専門領域 — specialized fields -->
-            <section class="index-block" aria-labelledby="spec-h">
-                <div class="index-block__head reveal">
-                    <p class="eyebrow"><span class="eyebrow__num">06</span> — 専門領域</p>
-                    <h2 id="spec-h" lang="ja">専門という軌道</h2>
-                    <p lang="ja">一つひとつの分野が、恒星をめぐる惑星の軌道のように。基礎の上に、素粒子・重力・宇宙の専門領域を重ねていく。</p>
-                    <ul class="scene-list" lang="ja">
-                        <li>場の量子論</li>
-                        <li>一般相対性理論</li>
-                        <li>宇宙論</li>
-                    </ul>
-                    <p style="margin-top: 1.5rem;">
-                        <a href="study.html" class="btn btn-secondary">ノートを読む <span class="btn-disc"
-                                aria-hidden="true">→</span></a>
-                    </p>
-                </div>
-            </section>
-
-            <!-- Notes -->
-            <section class="index-block" aria-labelledby="notes-h">
-                <div class="index-block__head reveal">
-                    <p class="eyebrow"><span class="eyebrow__num">07</span> — Notes</p>
-                    <h2 id="notes-h" lang="ja">人気ノート</h2>
-                    <p lang="ja">よく読まれている学習ノート。計算過程も詳しく記載しています。</p>
-                </div>
-                <div class="note-grid">
-                    <a href="study.html" class="card reveal">
-                        <h4 lang="ja">Peskin QFT 第2章まとめ</h4>
-                        <p lang="ja">量子場理論の教科書の学習ノート。行間を埋める計算とともに。</p>
-                        <span class="meta">Quantum Field Theory</span>
-                    </a>
-                    <a href="study.html" class="card reveal">
-                        <h4 lang="ja">統計力学の基礎</h4>
-                        <p lang="ja">統計力学の重要な概念と計算例をまとめました。</p>
-                        <span class="meta">Statistical Mechanics</span>
-                    </a>
-                </div>
-            </section>
-
             <!-- Blog -->
-            <section class="index-block" aria-labelledby="blog-h">
+            <section class="index-block" id="stage-blog" aria-labelledby="blog-h">
                 <div class="index-block__head reveal">
                     <p class="eyebrow"><span class="eyebrow__num">08</span> — Blog</p>
-                    <h2 id="blog-h" lang="ja">最新ブログ</h2>
+                    <h2 id="blog-h" lang="ja"><a class="stage-jump" href="#stage-blog">最新ブログ</a></h2>
                     <p lang="ja">研究や学問に関する記事、考察を発信しています。</p>
                 </div>
                 <!-- Cards hidden until there are real articles to link. The three below were
@@ -181,10 +138,10 @@
             </section>
 
             <!-- Videos (reachable from the homepage) -->
-            <section class="index-block" aria-labelledby="videos-h">
+            <section class="index-block" id="stage-videos" aria-labelledby="videos-h">
                 <div class="index-block__head reveal">
                     <p class="eyebrow"><span class="eyebrow__num">09</span> — Videos</p>
-                    <h2 id="videos-h" lang="ja">最新動画</h2>
+                    <h2 id="videos-h" lang="ja"><a class="stage-jump" href="#stage-videos">最新動画</a></h2>
                     <p lang="ja">研究や学問についての動画コンテンツ、シミュレーション映像。</p>
                 </div>
                 <!-- Cards hidden until there are real videos to link. The three below were
@@ -215,30 +172,9 @@
                 </p>
             </section>
 
-            <!-- Projects -->
-            <section class="index-block" aria-labelledby="projects-h">
-                <div class="index-block__head reveal">
-                    <p class="eyebrow"><span class="eyebrow__num">10</span> — Projects</p>
-                    <h2 id="projects-h" lang="ja">企画</h2>
-                    <p lang="ja">研究に取り組む学生の声を届ける企画。</p>
-                </div>
-                <div class="note-grid">
-                    <div class="card reveal">
-                        <h4 lang="ja">学生インタビュー</h4>
-                        <p lang="ja">研究に取り組む学生へのインタビューを通じて、研究の魅力や苦労を紹介します。</p>
-                    </div>
-                    <div class="card reveal">
-                        <h4 lang="ja">研究テーマの入門解説</h4>
-                        <p lang="ja">専門的な研究テーマを分かりやすく解説し、学問への興味を深めます。</p>
-                    </div>
-                    <div class="card reveal">
-                        <h4 lang="ja">勉強法・研究生活ログ</h4>
-                        <p lang="ja">効果的な勉強法や研究生活の実態をリアルに記録します。</p>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Closing -->
+            <!-- Closing — Round-17: promoted to the convergence stage (stage 6). The scene engine
+                 now treats this section as a stage centre (see js/scroll-scenes.js indexBlocks
+                 selector); its copy is unchanged. -->
             <section class="final-message reveal">
                 <p lang="ja">学問の世界へ、あなたも一歩を踏み出してみませんか。</p>
             </section>

@@ -29,9 +29,9 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-// スムーズスクロール（アンカーリンク用）
+// スムーズスクロール（アンカーリンク用） — stage-jump links are handled separately below.
 document.addEventListener('DOMContentLoaded', function() {
-    const anchorLinks = document.querySelectorAll('a[href^="#"]');
+    const anchorLinks = document.querySelectorAll('a[href^="#"]:not(.stage-jump)');
     
     anchorLinks.forEach(link => {
         link.addEventListener('click', function(e) {
@@ -58,6 +58,23 @@ document.addEventListener('DOMContentLoaded', function() {
                     behavior: 'smooth'
                 });
             }
+        });
+    });
+});
+
+// Round-17: stage-title jump links. A bare hash jump lands the heading at the top
+// of the viewport, which leaves short index blocks outside the dwell plateau and
+// settles the motif weight w at 0.02–0.83 (measured). scrollIntoView() on the whole
+// <section> resolves w = 1.0 at every stage. With JS active we preventDefault and
+// scrollIntoView the section; the href="#id" stays as the no-JS fallback.
+document.addEventListener('DOMContentLoaded', function () {
+    var jumpLinks = document.querySelectorAll('a.stage-jump');
+    jumpLinks.forEach(function (link) {
+        link.addEventListener('click', function (e) {
+            var section = this.closest('section');
+            if (!section) return;
+            e.preventDefault();
+            section.scrollIntoView();
         });
     });
 });
