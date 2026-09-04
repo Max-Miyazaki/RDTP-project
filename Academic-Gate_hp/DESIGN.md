@@ -520,6 +520,67 @@ as-is). The rebuild should inherit what this round learned:
   (`crossVectors(direction, (0,1,0))` degenerates when the edge is vertical → recompute against
   `(1,0,0)`). `const` threw on that branch. Any recompute-on-degenerate path must use `let`.
 
+### Three.js is pinned at the r160 removal boundary (do not bump without migrating)
+
+The site is pinned to **`three@0.160.0`**, loaded via the entry point **`build/three.min.js`** (the
+UMD/global build that sets `window.THREE`). r150+ deprecated that entry point with the console
+warning *"Scripts build/three.js and build/three.min.js are deprecated with r150+, and will be
+removed with r160"*; **0.160.0 is the last version that still ships it** (verified: it loads 200
+and reports `THREE.REVISION = 160`). We are sitting exactly on that boundary.
+
+**Loaded by two places** (grep-verified — `build/three.min.js`, `three@0.160.0`):
+- `html/study.html` (lines 8–9) — a direct `<script src="…jsdelivr…/three.min.js"
+  onerror="…unpkg…">` in `<head>`. Drives `js/knowledge-graph.js` (a *consumer* — it calls
+  `new THREE.*` and `console.error`s if `typeof THREE === 'undefined'`; it does **not** load Three
+  itself).
+- `js/scroll-scenes.js` (line 58) — the `loadThree()` dynamic-injection loader
+  `attempt('…jsdelivr…', '…unpkg…')`. This is how **`index.html`** gets Three.js (transitively;
+  index.html has no Three `<script>` of its own — see its line-18 comment).
+
+**A version bump breaks both files together, and the unpkg fallback cannot help.** Both CDNs serve
+the *same npm package* `three@0.160.0`, so both hold byte-identical files; the jsdelivr→unpkg
+fallback is a **CDN-availability** fallback (one host down → try the other), not a version/path
+fallback. Any bump to a version where the package no longer ships `build/three.min.js` removes the
+file from **both** CDNs simultaneously, so `index.html` (via scroll-scenes.js) and `study.html`
+(and therefore the Archive Sphere) all break at once, with the fallback offering no rescue.
+
+**Deliberately not migrating now.** Moving off the UMD build means ES-module imports
+(`import * as THREE from 'three'` via an import-map or a bundler) across both the scroll-field and
+the knowledge-graph rebuild — out of scope here. Until then, **hold the pin at exactly
+0.160.0**; treat any change to the version number in those two locations as a breaking change that
+must be co-migrated, not a routine dependency bump. (The knowledge-graph rebuild noted above is
+the natural time to do the ES-module migration.)
+
+### CDN fallback pattern — always create a new `<script>`, never reassign `.src`
+
+**All three jsdelivr→unpkg fallbacks in the repo now use the same createElement mechanism:** on
+load error, **create a new `<script>` element** pointing at unpkg and append it to `<head>`.
+- `js/scroll-scenes.js` (`loadThree()`, drives `index.html`) — the original working form.
+- `html/study.html`'s Three.js tag — `onerror="this.onerror=null; var
+  s=document.createElement('script'); s.src='…unpkg…'; document.head.appendChild(s);"`.
+- the `peskin-qft*.html` MathJax tags — same onerror, `es5/tex-mml-chtml.js`.
+
+**Do NOT reintroduce the inline `this.src='…'` form anywhere** — it is known broken. **Spec
+reason (one line):** reassigning `.src` on an already-run/failed parser-inserted `<script>` is a
+no-op because its "already started" flag is set, so the browser never re-fetches.
+
+Measured, jsdelivr blocked at the network layer: **study.html** recovers Three.js from unpkg
+(200, `THREE.REVISION 160`) and `knowledge-graph.js` initializes with no `Three.js` console error;
+**index.html** recovers via `scroll-scenes.js` (unpkg 200, unaffected by the study.html edit);
+**peskin-qft.html** recovers MathJax from unpkg (`3.2.2`, `$e^+ e^-$` renders). Normal loads use
+jsdelivr and the fallbacks do not fire. Both CDNs serve byte-identical `three@0.160.0` and
+`mathjax@3 = 3.2.2`, so these are host-availability fallbacks, not version ones — the versions,
+pinned URLs and entry points are unchanged.
+
+(Before this pass, study.html's fallback used the inline `this.src=` form and was latently broken
+— it only ever mattered when jsdelivr was unreachable, which is why it went unnoticed.)
+
+One remaining pre-existing quirk, **not fixed** (out of scope; do not touch the config object):
+`peskin-qft_sec2-1..4.html` set `window.MathJax` config *after* the loader `<script>`, which
+overwrites the loaded runtime object — harmless today only because those four pages embed PDFs and
+carry **no inline HTML math** (only `peskin-qft.html` does, and it orders config before the loader,
+correctly).
+
 ---
 
 ## 12. Rollout order (unchanged from your process)
@@ -1486,3 +1547,40 @@ Regenerated (desktop 1440×900, at rest): `docs/stills/r17-0-cosmos.png`, `r17-1
 
 The remaining stills (interior pages, cosmos/nature/infra motif stills `s01/s02/s04`, mobile-*)
 still represent the current build.
+
+# 18. Favicon
+
+The site previously 404'd on the favicon (the browser's default `/favicon.ico` at the origin
+root). Added a favicon **derived from the nav logo mark**, reusing the existing token/geometry
+definitions rather than re-deriving by eye:
+
+- Geometry from **`css/style.css` `.logo::before`**: a hollow ring, 14px content + 2px border =
+  **18px outer / 2px stroke (outer:stroke ≈ 9:1)**, `border-radius:50%`. The SVG uses `r=9.8,
+  stroke-width=2.4` on a 32-unit viewBox to hold that 9:1 ratio.
+- Colours from `:root` tokens: stroke **`--accent` `#3d8bff`**, glow **`--glow-cool`
+  `rgba(43,217,196,0.22)`** (teal `feGaussianBlur` halo), field **`--bg` `#000000`**. Only the
+  glow *blur radius* is a proportional reproduction of `box-shadow 0 0 8px` (SVG blur ≠ CSS
+  box-shadow exactly); the ratios and colours are exact.
+
+**Files** (at the **git root**, one level above the site dir, next to the redirect `index.html`
+and `.nojekyll`):
+- `favicon.svg` — vector, primary (`rel="icon" type="image/svg+xml"`); crisp at every size.
+- `favicon.ico` — 16+16 & 32×32 (PNG-in-ICO); the conventional `/favicon.ico` path and the
+  fallback for engines without SVG-favicon support.
+- `apple-touch-icon.png` — 180×180, iOS home-screen (`rel="apple-touch-icon"`).
+
+(An SVG + a 16/32 `.ico` + the 180 apple-touch PNG cover every engine; no extra standalone PNG
+is referenced, so none is shipped.)
+
+**Paths & the two-level nesting.** Git root is served at `…/RDTP-project/`; the site pages live
+under `…/RDTP-project/Academic-Gate_hp/html/`. So the 11 site pages link with `../../favicon.*`
+(up two levels to the git root) and the root redirect `index.html` links with `favicon.*`
+(same dir). Every page carries all three `<link>` tags.
+
+**404 status (measured).** All declared icon paths return **200** with correct content-types
+(`image/svg+xml`, `image/x-icon`, `image/png`), verified both by direct fetch and by loading a
+page in Chrome and fetching each `<link rel~=icon>` href. Because every page now declares its
+icon, browsers fetch the declared (200) icon instead of probing the origin-root `/favicon.ico`,
+so the 404 no longer occurs in normal browsing. **Caveat:** the bare origin-root
+`https://max-miyazaki.github.io/favicon.ico` is the GitHub *user-site* root, not this project
+repo — it cannot be served from here and is untouched; it is simply no longer requested.

@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32" role="img" aria-label="Academic Gates">
+  <!-- Favicon reproducing the nav logo mark (css/style.css .logo::before):
+       an 18px-outer / 2px-stroke ring (outer:stroke = 9:1), border-radius 50%, hollow,
+       stroke = var(--accent) #3d8bff, teal glow = var(--glow-cool) rgba(43,217,196,0.22),
+       on var(--bg) #000000. Ratios and colours are taken from the tokens, not eyeballed;
+       only the glow BLUR is a proportional reproduction of box-shadow 0 0 8px (see DESIGN.md). -->
+  <defs>
+    <filter id="glow" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="2.1"/>
+    </filter>
+  </defs>
+  <rect width="32" height="32" fill="#000000"/>
+  <!-- teal glow halo (var(--glow-cool)) -->
+  <circle cx="16" cy="16" r="9.8" fill="none" stroke="rgb(43,217,196)" stroke-width="2.4" opacity="0.22" filter="url(#glow)"/>
+  <!-- accent ring (var(--accent)) -->
+  <circle cx="16" cy="16" r="9.8" fill="none" stroke="#3d8bff" stroke-width="2.4"/>
+</svg>
