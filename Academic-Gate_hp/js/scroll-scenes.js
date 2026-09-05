@@ -242,8 +242,22 @@
                     var sxr = rnd();                                      // 0 trailing (left) → 1 leading (right)
                     var sx = -S * 1.7 + sxr * S * 3.1;
                     var sly = (sline / 8 - 0.5) * S * 1.45;
+                    // Round-19c: energy runs blue (0.62) at the TRAILING edge -> teal (0.22) at the LEADING edge:
+                    // a cool spectrum spread across the frame, with the dim blue END sitting on the LEFT where the
+                    // title rests. Capped at 0.62 (below the violet threshold) so the palette stays cool-only. This
+                    // direction was chosen because it keeps the distinct-blue hue on the DIM side (it recedes) instead
+                    // of coinciding with the bright side; measured hue×luminance correlation -0.82 vs the teal→blue
+                    // direction's +0.68 (a bright blue patch). See DESIGN.md §22.
+                    // Brightness is NOT flat: it compensates the stream's inherent left→right luminance lean.
+                    // L(sxr) = 6.51 + 6.29·sxr is the measured frame-averaged per-column luminance of THIS spectrum
+                    // at flat 0.55 (rises 6.9→12.4 across the frame: geometry + the teal end being brighter than blue).
+                    // brightness ∝ 1/L(sxr) cancels that lean. Anchored to the DIM LEFT level (3.795 = 6.9·0.55) so the
+                    // compensation FLATTENS BY DIMMING THE BRIGHT RIGHT, never by lifting the dark title-side left —
+                    // brightening the left pushed the blog title below AA on 1/24 frames. This anchor holds every
+                    // sampled frame above AA. Full flatness is capped by that title constraint; see DESIGN.md §22.
+                    var scomp = 3.795 / (6.51 + 6.29 * sxr);              // ≈0.58 (left) → ≈0.30 (right)
                     return [sx, sly + 0.1 * S * Math.sin(sx * 0.5 + sline) + gauss(0.05 * S), (sline - 4) * S * 0.09 + gauss(0.04 * S),
-                        0.26 + 0.2 * rnd(), 0.635, 0]; // Round-19: FLAT brightness = mean(dispersal 0.55, waveforms 0.72). The old left→right ramp (0.30→0.81) made the stage read as split; density is uniform, so the ramp was the only cause. Direction is now carried ONLY by the traveling streamW pulse below (a moving cue, not visible in a still). See DESIGN.md §21.
+                        0.62 - 0.40 * sxr, scomp, 0];
                 }
                 case 'waveforms': { // SIGNAL traces: thin, regular, periodic (distinct from nature's organic slabs)
                     var wtr = Math.floor(rnd() * 5);                      // 5 thin signal lines

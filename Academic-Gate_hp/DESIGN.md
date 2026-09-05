@@ -1712,7 +1712,7 @@ background — **below the WCAG AA 4.5:1 floor** for normal-size text.
   every footer element and the closing line on both viewports against `body::before`), then adjust
   the tagline treatment to ≥ 4.5:1 without regressing the other pages.
 
-# 21. Round 19 — stream (stage 4) brightness flattened
+# 21. Round 19 — stream (stage 4): brightness flattened, then a narrow cool spectrum
 
 `make('stream')`'s brightness was a left→right ramp `(0.35 + 0.6·sxr)·0.85` = **0.30 (left) →
 0.81 (right), ~2.7×**. Measurement showed stream's particle **density is horizontally uniform**
@@ -1722,6 +1722,20 @@ cause of the stage reading as "text left / motif right, empty middle." Flattened
 mean of dispersal (0.55) and waveforms (0.72)** — the two flat-brightness below-hero motifs that
 bracket stream (stages 3 and 5). Measured after: per-column mean luminance right/left ratio
 **1.53× → 0.96×** (dispersal 1.01×, waveforms 0.87×); density unchanged; clipping 0→0.
+
+**Round-19b — value moved 0.635 → 0.55 when a narrow spectrum was adopted (not drift).** Stream's
+colour was then widened to a **narrow teal→cyan→blue spectrum** (energy `0.22 + 0.40·sxr`, capped
+at 0.62 so it stays **below the violet threshold — cool-only, no violet/magenta/ember**;
+grep-verified 0 violet pixels of ~76 000 lit). At the flat-teal brightness 0.635 the spectrum dips
+below AA on ~8% of sampled frames; at **0.55** it is above AA on **every** sampled frame. **Both
+values are derived from the same two references:** 0.635 = the *mean* of dispersal (0.55) and
+waveforms (0.72), correct for flat teal; 0.55 = dispersal's value, the *low end* of that same
+[0.55, 0.72] range, needed because a spectrum spans hues of differing luminance (teal is more
+luminant than blue) and so needs the lower reference to keep every frame above AA. The move is a
+principled step within the reference range, not an eyeballed nudge. Cost of the hue gradient: the
+per-column luminance ratio is now **0.65×** (mildly *left*-leaning — teal brighter than blue),
+the opposite of the old right-heavy split, so it does not recreate the "empty middle." Frame time
+unchanged (headless 33.3 / 33.4 ms).
 
 ## 21.1 Direction is now a motion-only cue — matters for docs/stills
 
@@ -1736,13 +1750,128 @@ left/right sense. That is expected. Do not "fix" it by reintroducing a static gr
 was taken out on purpose. If a still-frame directional cue is ever wanted, it must come from
 something other than brightness (e.g. particle-shape or position asymmetry), decided separately.
 
-## 21.2 Reduced legibility margin at stage 4 — spend it knowingly
+## 21.2 Reduced legibility margin at stage 4 — stated in distribution terms
 
-Flattening moved the previously-**dim** left end (where the blog title 最新ブログ sits) up to full
-brightness, so the blog-title worst-case contrast dropped **9.22:1 → 5.21:1**. Still above the AA
-4.5:1 floor, **but the margin roughly halved** (from ~4.7 above AA to ~0.7 above). **Constraint:**
-any future change that adds brightness, saturation, or a wider spectrum at stage 4 is spending a
-**reduced** margin — 0.7 above AA, not 4.7. Re-measure the blog-title glyph contrast (median *and*
-worst, across a run of frames — worst-case is frame-noisy, not a single frozen frame) after any such change, and
-treat a drop below 4.5 as a blocker. (This is why the Round-19 spectrum experiments, which pushed
-worst-case to 3.74–4.11, stayed throwaway.)
+Flattening moved the previously-**dim** left end (where the blog title 最新ブログ sits) up toward
+full brightness, so the blog title now sits over a brighter motif. **State this as a distribution,
+not a single frozen number** (an earlier draft recorded a "5.21:1 worst-case" — that was one
+frozen frame, and frozen worst-case is noise, see §21.3). **Superseded by §22 (Round-19c):** the narrow teal→blue spectrum below was
+rendered and rejected; what ships is the *reversed* blue→teal spectrum with luminance compensation.
+Over a 24-frame sampled run, the
+then-committed **narrow-spectrum-@0.55** stream measured blog-title worst-case: **min 5.26, median 6.6,
+max 10.8 — 0 frames below AA**; median contrast ~19.8 throughout. The flat-teal step (Round-19)
+measured min 4.62, 0 below AA. **Constraint for future stage-4 changes:** the margin is now thin —
+the *minimum-frame* worst-case sits only ~0.8 above the AA 4.5 floor, not the ~4.7 the old dim-left
+ramp gave. Any change adding brightness, saturation, or wider colour at stage 4 spends that reduced
+margin; re-run the frame-distribution check (§21.3) and treat *any frame below 4.5* as a blocker.
+(This is why the full-spectrum experiment, which put 2/24 frames below AA even at 0.55, and every
+variant at 0.635, stayed throwaway.)
+
+## 21.3 Standing verification standard — frame distribution, not a frozen frame
+
+**Generalises beyond this stage.** Worst-case glyph contrast on a *single frozen frame* of an
+animated particle field is **not a usable target**: the field drifts, so the single brightest
+pixel under the text moves frame to frame. Measured spread of the blog-title worst-case across a
+sampled run: **~5–7 contrast points** (e.g. 4.62 → 9.65 for flat teal; 3.71 → 10.51 for
+spectrum@0.635) — **more than ten times** the ~0.4 gap a frozen-frame reading tempted us to tune
+against. Tuning geometry/brightness to move a frozen number is tuning against noise.
+
+**The correct test, now standard for all contrast verification** (alongside the Round-18
+footer-glyph check, §19.4): sample the glyph contrast across a **run of ≥24 animating frames** and
+require **no frame below AA 4.5:1** — report the distribution (min / median / max, and the count of
+frames below AA), not one number. The median contrast (~19.8 here) confirms the text body is fine;
+the **min-frame worst-case** is the figure that gates AA. Frozen-frame worst-case may be recorded
+as context but must never be the pass/fail criterion. This applies to title glyphs, footer glyphs,
+and the closing line alike.
+
+# 22. Round 19c — stream (stage 4): reversed spectrum + luminance compensation; the colour-cluster metric
+
+Supersedes §21's Round-19b narrow spectrum. `make('stream')` now runs energy **`0.62 − 0.40·sxr`**
+(blue at the trailing/left edge → teal at the leading/right edge) with a **per-particle brightness
+compensation `3.795 / (6.51 + 6.29·sxr)`** (≈0.58 left → ≈0.30 right), still capped at 0.62 so the
+palette stays **cool-only** (measured 0 violet pixels of ~43 000 lit).
+
+## 22.1 Why teal→blue (Round-19b) was rejected — and why the luminance ratio didn't catch it
+
+The Round-19b **narrow teal→blue** spectrum (energy `0.22 + 0.40·sxr`, flat brightness 0.55) was
+committed, then rejected on visual review: the distinct **blue hue piled at the right edge**, away
+from the left-aligned blog title, and read as "something over there" rather than a colour spread.
+
+The metric we had been gating on — **per-column luminance right/left ratio** — *did not capture
+this failure.* Measured frame-averaged (pulse cancelled over 8 uTimes; single-frame ratios are
+noise, cf. §21.3), the narrow teal→blue variant scored **R/L 1.05** — the *most balanced of every
+variant* (flat teal 1.23, reversed 1.42, dispersal 1.28, waveforms 1.02). By luminance it was the
+best. The blue-on-right cluster is a **hue** effect at *balanced luminance*: the ratio measures
+brightness, so it is blind to a patch of distinct colour that is not also a patch of brightness.
+**Recorded lesson:** the luminance ratio is a diagnostic, not a gate — it cannot adjudicate a
+colour-clustering complaint.
+
+## 22.2 The replacement metric — hue × luminance correlation
+
+Colour clustering is now measurable. Compute the **per-column mean hue** (8 columns) and the
+**per-column mean luminance**, then their **Pearson correlation**, *qualified by hue range* (only
+meaningful when a hue gradient exists — hue range ≳ 10°; a flat-teal field has range ~3° and the
+correlation is noise). Interpretation:
+
+- **positive** correlation over a real hue range = the distinct (blue) hue coincides with the
+  **bright** region = a **bright colour patch** that grabs the eye — the failure mode.
+- **negative** = the distinct hue sits on the **dim** side and **recedes** = good.
+- **~0** with small hue range = no colour variation (the flat motifs).
+
+Measured (hue range in brackets): **teal→blue narrow +0.68 [23°]** — the only positive, i.e. bright
+blue patch; **reversed blue→teal −0.96 [29°]**; **flat teal −0.72 but [3°] → noise, no gradient**;
+dispersal +0.00 [2°], waveforms −0.00 [3°]. The +0.68 is the numeric signature of the cluster the
+eye caught; the reversed direction moves the blue onto the dim side (−).
+
+**Standing check (generalises beyond stage 4).** For any motif that carries a **colour gradient**,
+a **positive hue×luminance correlation over a real hue range is the failure signature** — a distinct
+hue sitting on the bright side, reading as a stray patch. It **must be qualified by hue range**: a
+correlation over a near-flat hue profile is meaningless (flat teal's −0.72 over **3°** is noise, not
+a pass — do not read it as one); treat the correlation as informative only when the hue range is
+**≳ 10°**. This now stands as a required check for colour-gradient motifs **alongside** the
+frame-distribution contrast standard (§21.3) and the footer-glyph contrast check (§19.4). A motif
+with no colour gradient (a single-hue field) is exempt — there is no distinct hue to cluster.
+
+## 22.3 Reversed spectrum reintroduces a luminance lean — compensated, not by eye
+
+Putting teal (the more-luminant hue) on the right *adds* to the stream's **inherent geometric
+right-lean** (flat uniform teal already measures R/L **1.23**, from particle overlap density, not
+colour), so the raw reversed variant measured **R/L 1.42 (c6/c1 1.58)** — the most right-heavy of
+all. The fix is a brightness term that cancels the lean, **derived from measurement, not tuned:**
+
+- `L(sxr) = 6.51 + 6.29·sxr` is the linear fit of the reversed variant's measured frame-averaged
+  per-column luminance at flat 0.55 (6.9 → 12.4 across the frame).
+- brightness ∝ **1/L(sxr)** cancels the combined (geometry + hue-luminance) lean.
+- **Anchor.** The numerator sets the target flat level. Two were measured:
+  - **mean anchor** (5.459 = 9.925·0.55, flatten to the mean level 9.9): flattened well —
+    **R/L 1.42 → 1.09** — but brightening the dim *left* raised the background under the title and
+    put **1 of 24 frames below AA** (min 3.74). **Rejected:** breaks the §21.3 standard.
+  - **left anchor** (3.795 = 6.9·0.55, flatten toward the *dim left* level, i.e. dim the bright
+    right and leave the title-side alone): **title-safe — 0/24 frames below AA, min 6.01, median
+    9.04**; **R/L 1.42 → 1.24** (= flat-teal 1.23, better than dispersal 1.28). **Shipped.**
+
+**Tradeoff, recorded (this is the boundary that stopped further flattening):** rendered luminance is
+**sublinear in brightness** on the overlap-dense right (dimming brightness 0.55→0.30 there moved
+render only 12.4→10, not proportionally), so the left-anchor flattens to flat-teal parity (1.24),
+not fully to 1.0. Pushing to full flatness needs *either* brightening the left (breaks title AA) *or*
+dimming the right down toward the left's dim level (a uniformly faint motif — dimmer than flat-teal
+and far dimmer than waveforms ~16–18). Both were **rejected deliberately**, so the compensation
+stops at the **title-safe partial flatten**. The colour cluster (the actual objection) is fully
+fixed independently — the hue direction, not the brightness, carries that.
+
+**R/L 1.24 is the finished state, not unfinished work.** It is parity with flat teal (1.23) and
+better than dispersal (1.28); it is the flattest luminance reachable at stage 4 without breaking the
+title-AA standard (§21.3) or sinking the whole motif. A future round must **not** read 1.24 as a
+loose end to drive toward 1.0 — the residual lean is bounded by the two hard constraints above, both
+of which the numbers veto. If the constraints themselves change (e.g. the title moves, or the motif
+is intended to sit brighter), re-derive; otherwise 1.24 is correct and closed.
+
+## 22.4 Measured, shipped variant (comp-left), 1440×900, headless SwiftShader
+
+Blog-title contrast (24-frame): **min 6.01 / median 9.04 / max 12.23 / 0 below AA.** Palette
+cool-only: **0 violet, 0 magenta** (warm 3 px = noise). Density grid **identical** to every other
+variant (positions untouched — compensation is brightness-only). Clipped 0%; lit-median 0.006.
+Frame time median 33.4 ms / p95 50.1 ms (n=140). Per-column luminance
+`[6.7, 7.6, 7.3, 7.3, 7.6, 8.4, 9.8, 10]` (R/L 1.24). Stills `r17-4-blog.png`, `s-cards.png`
+regenerated. Direction is still a **motion-only** cue in stills (§21.1 stands — the reversed
+*static* hue gradient is a colour spread, not a directional arrow).
