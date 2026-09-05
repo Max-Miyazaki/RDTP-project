@@ -1711,3 +1711,38 @@ background — **below the WCAG AA 4.5:1 floor** for normal-size text.
   Schedule a dedicated CSS/accessibility round: re-measure the tagline (and, while there, sweep
   every footer element and the closing line on both viewports against `body::before`), then adjust
   the tagline treatment to ≥ 4.5:1 without regressing the other pages.
+
+# 21. Round 19 — stream (stage 4) brightness flattened
+
+`make('stream')`'s brightness was a left→right ramp `(0.35 + 0.6·sxr)·0.85` = **0.30 (left) →
+0.81 (right), ~2.7×**. Measurement showed stream's particle **density is horizontally uniform**
+(8×6 grid, left-third 25% ≈ uniform), and stream was the **only** below-hero motif with a
+brightness gradient — dispersal (0.55) and waveforms (0.72) are flat. So the ramp was the sole
+cause of the stage reading as "text left / motif right, empty middle." Flattened to **0.635 = the
+mean of dispersal (0.55) and waveforms (0.72)** — the two flat-brightness below-hero motifs that
+bracket stream (stages 3 and 5). Measured after: per-column mean luminance right/left ratio
+**1.53× → 0.96×** (dispersal 1.01×, waveforms 0.87×); density unchanged; clipping 0→0.
+
+## 21.1 Direction is now a motion-only cue — matters for docs/stills
+
+Stream's flow **direction is not encoded in particle positions** (the 9 streamlines are
+horizontally symmetric). It was carried by two brightness mechanisms: the static left→right ramp
+(**removed deliberately** here) and the shader's **traveling brightness pulse** (`streamW`:
+`sin(target.x·1.5 − uTime·1.8)`, a bright wave that animates in **+x**). The static ramp was
+**redundant** with the pulse, so direction still reads **in motion**. **Known property, not a
+defect:** in a *still frame* — including every `docs/stills/` capture — stream's flow direction is
+**not visible**; anyone comparing stills will see an evenly-lit horizontal current with no
+left/right sense. That is expected. Do not "fix" it by reintroducing a static gradient; the ramp
+was taken out on purpose. If a still-frame directional cue is ever wanted, it must come from
+something other than brightness (e.g. particle-shape or position asymmetry), decided separately.
+
+## 21.2 Reduced legibility margin at stage 4 — spend it knowingly
+
+Flattening moved the previously-**dim** left end (where the blog title 最新ブログ sits) up to full
+brightness, so the blog-title worst-case contrast dropped **9.22:1 → 5.21:1**. Still above the AA
+4.5:1 floor, **but the margin roughly halved** (from ~4.7 above AA to ~0.7 above). **Constraint:**
+any future change that adds brightness, saturation, or a wider spectrum at stage 4 is spending a
+**reduced** margin — 0.7 above AA, not 4.7. Re-measure the blog-title glyph contrast (median *and*
+worst, across a run of frames — worst-case is frame-noisy, not a single frozen frame) after any such change, and
+treat a drop below 4.5 as a blocker. (This is why the Round-19 spectrum experiments, which pushed
+worst-case to 3.74–4.11, stayed throwaway.)

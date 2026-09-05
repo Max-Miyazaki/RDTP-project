@@ -243,7 +243,7 @@
                     var sx = -S * 1.7 + sxr * S * 3.1;
                     var sly = (sline / 8 - 0.5) * S * 1.45;
                     return [sx, sly + 0.1 * S * Math.sin(sx * 0.5 + sline) + gauss(0.05 * S), (sline - 4) * S * 0.09 + gauss(0.04 * S),
-                        0.26 + 0.2 * rnd(), (0.35 + 0.6 * sxr) * 0.85, 0]; // brightness ramps toward the leading edge
+                        0.26 + 0.2 * rnd(), 0.635, 0]; // Round-19: FLAT brightness = mean(dispersal 0.55, waveforms 0.72). The old left→right ramp (0.30→0.81) made the stage read as split; density is uniform, so the ramp was the only cause. Direction is now carried ONLY by the traveling streamW pulse below (a moving cue, not visible in a still). See DESIGN.md §21.
                 }
                 case 'waveforms': { // SIGNAL traces: thin, regular, periodic (distinct from nature's organic slabs)
                     var wtr = Math.floor(rnd() * 5);                      // 5 thin signal lines
