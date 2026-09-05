@@ -3,7 +3,7 @@
 
    ONE THREE.WebGLRenderer + ONE THREE.Points that runs the WHOLE PAGE. A curl-
    noise flow field drifts every particle continuously; each stage is an ATTRACTOR
-   the flow concentrates into and releases. SEVEN stages (Round-17; was ten —
+   the flow concentrates into and releases. EIGHT stages (Round-20; 7→8, the 専門 split; was ten at Round-17 —
    network, orbits(専門), strata(Notes), and the Projects section were removed and
    基礎+専門 merged into one block), hero → footer:
 
@@ -82,7 +82,7 @@
         var indexBlocks = Array.prototype.slice.call(document.querySelectorAll('.index-region .index-block, .index-region .final-message'));
         var stageEls = visibleScenes.concat(indexBlocks);
         // Motif per surviving stage, in DOM order. Dropped motifs: network, orbits, strata.
-        var stages = ['cosmos', 'nature', 'infra', 'dispersal', 'stream', 'waveforms', 'orbits'].slice(0, stageEls.length);
+        var stages = ['cosmos', 'nature', 'infra', 'foundation', 'specialty', 'stream', 'waveforms', 'orbits'].slice(0, stageEls.length);
         var K = stages.length;
         var HERO_K = visibleScenes.length;   // stages 0..HERO_K-1 are the hero
 
@@ -196,9 +196,41 @@
                     var ge = gedges[i % gedges.length], Ga = gnodes[ge[0]], Gb = gnodes[ge[1]]; t = rnd();
                     return [Ga[0] + (Gb[0] - Ga[0]) * t + gauss(0.01), Ga[1] + (Gb[1] - Ga[1]) * t + gauss(0.01), Ga[2] + (Gb[2] - Ga[2]) * t + gauss(0.01), 0.34, 0.75, 1];
                 }
-                case 'dispersal': { // DENSE unstructured drift (released lattice; the flow made visible)
+                case 'dispersal': { // RETIRED Round-20 (stage 3 is now 'foundation'); kept as dead code per §17.2.
                     u = rnd() * 2 - 1; th = rnd() * TAU; s = Math.sqrt(1 - u * u); rc = S * 1.15 * Math.cbrt(rnd());
                     return [rc * s * Math.cos(th) * 1.35, rc * u, rc * s * Math.sin(th), 0.2 + 0.22 * rnd(), 0.55, 0];
+                }
+                case 'foundation': { // 基礎領域 (Round-20): stacked cool discs tapering upward, a small HOT CORE at the BASE.
+                    // Warm membership is by particle INDEX (i%72 ≈ 1.39%) so the SAME particles form the hot core at
+                    // the base here and at the apex in 'specialty' — that shared identity is what lets the warm
+                    // migrate across 3→4 (the coherence attribute carries it; see DESIGN.md §23). Core sized to
+                    // ≈ cosmos's warm share: rCore = 0.174·S (= 0.29·base radius) → measured ~1.0% warm pixels.
+                    if (i % 72 === 0) {
+                        var fwr = 0.174 * S * Math.sqrt(rnd()), fwa = rnd() * TAU;
+                        var fwpx = fwr * Math.cos(fwa) + 0.45 * S, fwpy = (0 - 0.5) * 1.35 * S + gauss(0.03 * S) - 0.05 * S, fwpz = fwr * Math.sin(fwa);
+                        var fwld = 0.30 + 0.70 * Math.min(1, Math.max(0, (fwpx / S + 0.10) / 0.5));
+                        return [fwpx, fwpy, fwpz, 0.88, 0.60 * fwld, 0];       // warm magenta (0.88 = cosmos's core energy)
+                    }
+                    var fL = Math.floor(rnd() * 6), ff = fL / 5;               // 6 layers, base(0) → top(1)
+                    var fR = 0.60 * S * (1.0 - ff);                            // linear taper, widest at the base
+                    var fa = rnd() * TAU, frad = fR * Math.sqrt(rnd());        // solid disc (uniform area density)
+                    var fpx = frad * Math.cos(fa) + 0.45 * S, fpy = (ff - 0.5) * 1.35 * S + gauss(0.02 * S) - 0.05 * S, fpz = frad * Math.sin(fa);
+                    var fld = 0.30 + 0.70 * Math.min(1, Math.max(0, (fpx / S + 0.10) / 0.5)); // left-dim keeps the 基礎 text legible
+                    return [fpx, fpy, fpz, 0.24 + 0.20 * ff, 0.64 * fld, 0];   // cool teal→cyan up the stack
+                }
+                case 'specialty': { // 専門領域 (Round-20): the SAME disc stack, hot core at the APEX (the warm migrates here).
+                    if (i % 72 === 0) {
+                        var pwr = 0.174 * S * Math.sqrt(rnd()), pwa = rnd() * TAU;
+                        var pwpx = pwr * Math.cos(pwa) + 0.45 * S, pwpy = (1 - 0.5) * 1.35 * S + gauss(0.03 * S) - 0.05 * S, pwpz = pwr * Math.sin(pwa);
+                        var pwld = 0.30 + 0.70 * Math.min(1, Math.max(0, (pwpx / S + 0.10) / 0.5));
+                        return [pwpx, pwpy, pwpz, 0.88, 0.60 * pwld, 0];
+                    }
+                    var pL = Math.floor(rnd() * 6), pf = pL / 5;
+                    var pR = 0.60 * S * (1.0 - pf);
+                    var pa = rnd() * TAU, prad = pR * Math.sqrt(rnd());
+                    var ppx = prad * Math.cos(pa) + 0.45 * S, ppy = (pf - 0.5) * 1.35 * S + gauss(0.02 * S) - 0.05 * S, ppz = prad * Math.sin(pa);
+                    var pld = 0.30 + 0.70 * Math.min(1, Math.max(0, (ppx / S + 0.10) / 0.5));
+                    return [ppx, ppy, ppz, 0.24 + 0.20 * pf, 0.64 * pld, 0];
                 }
                 case 'orbits': { // ellipses in distinct planes about a shared star at the focus
                     // Round-18: orbits took the stage-6 (final-message) slot. That slot's viewport
@@ -286,7 +318,8 @@
            16-attribute GPU limit. Pack each stage's (energy, bright) into ONE float — packed =
            floor(bright*100) + energy — and hold all K in ceil(K/4) vec4 attributes. Aux
            (wave/stream) is derived procedurally in the shader from position + seed, not stored.
-           Round-17 at K=7: 7 pos + ceil(7/4)=2 eb + seed = 10 attribute slots (was 14 at K=10). */
+           Round-20 at K=8: 8 pos + ceil(8/4)=2 eb + seed + aCoh (migration coherence) = 12 attribute
+           slots (was 10 at K=7, 14 at K=10). Desktop +aCoh = +0.8 MB; mobile +0.28 MB. */
         var EBV = Math.ceil(K / 4);                       // vec4 attributes to hold K packed floats
         var pos = [], eb = [];
         for (var k = 0; k < K; k++) pos.push(new Float32Array(COUNT * 3));
@@ -305,10 +338,19 @@
         for (var kA = 1; kA < K; kA++) geo.setAttribute('aP' + kA, new THREE.BufferAttribute(pos[kA], 3));
         for (var kq = 0; kq < EBV; kq++) geo.setAttribute('aEB' + kq, new THREE.BufferAttribute(eb[kq], 4));
         geo.setAttribute('aSeed', new THREE.BufferAttribute(seed, 1));
+        // Round-20 migration coherence: 1 for the warm-core particles (i%72, the SAME set the
+        // foundation/specialty make() cases place at the base/apex), 0 otherwise. In the vertex
+        // shader this suppresses the mid-transition dispersal for those particles ONLY across the
+        // 3→4 (基礎→専門) traverse, so the hot core stays legible and rises instead of dissolving.
+        // Full coherence (1.0) is required — measurement showed partial (0.70) does not hold the
+        // core (the |curl| estimate underpredicted the scatter). See DESIGN.md §23.
+        var aCohArr = new Float32Array(COUNT);
+        for (var _c = 0; _c < COUNT; _c++) aCohArr[_c] = (_c % 72 === 0) ? 1.0 : 0.0;
+        geo.setAttribute('aCoh', new THREE.BufferAttribute(aCohArr, 1));
 
-        var attributeBytes = (K * 3 + EBV * 4 + 1) * 4 * COUNT;   // pos + packed eb + seed
+        var attributeBytes = (K * 3 + EBV * 4 + 1 + 1) * 4 * COUNT;   // pos + packed eb + seed + aCoh (migration coherence)
 
-        /* ---- Shader: curl flow + attractor blend, 7-way target select --- */
+        /* ---- Shader: curl flow + attractor blend, 8-way target select --- */
         var attrDecl = '';
         for (var d1 = 1; d1 < K; d1++) attrDecl += 'attribute vec3 aP' + d1 + ';\n';
         for (var d3 = 0; d3 < EBV; d3++) attrDecl += 'attribute vec4 aEB' + d3 + ';\n';
@@ -325,7 +367,7 @@
         var vertexShader = [
             'precision highp float;',
             'uniform float uSceneF, uCalm, uTime, uSize, uPixelRatio, uDisperse, uResidual, uNoiseFreq, uWaveAmp;',
-            attrDecl, 'attribute float aSeed;',
+            attrDecl, 'attribute float aSeed;', 'attribute float aCoh;',
             'varying float vE; varying float vB; varying float vNear; varying float vInfra;',
             'vec3 mod289(vec3 x){return x-floor(x*(1.0/289.0))*289.0;}',
             'vec4 mod289(vec4 x){return x-floor(x*(1.0/289.0))*289.0;}',
@@ -361,27 +403,32 @@
             // the viewer rests, then dissolves to w=0 at the midpoint (fc=0.5) between stages.
             '  float fc=min(f,1.0-f); float w=1.0-smoothstep(0.20,0.5,fc);',
             '  float natureW=1.0-clamp(abs(uSceneF-1.0),0.0,1.0);',
-            '  float wfW=1.0-clamp(abs(uSceneF-5.0),0.0,1.0);',              // waveforms: stage 8 -> 5 (videos block)
+            '  float wfW=1.0-clamp(abs(uSceneF-6.0),0.0,1.0);',              // waveforms: stage 8 -> 6 (videos block; Round-20 +1 for the 専門 split)
             // travelling WAVE surface for nature + waveforms — the SURFACE moves (per-particle
             // phase from aSeed), not per-particle smear, so lit-body holds.
             '  float waveW=max(natureW,wfW); float waveFq=mix(1.1,2.4,wfW);',
             '  float ph = target.x*waveFq - uTime*0.9 + aSeed*6.2831;',
             '  target.y += uWaveAmp*waveW*sin(ph);',
             '  br *= mix(1.0, 0.6+1.05*sin(ph), waveW);',                   // crests bright (up to 1.65x), troughs dark
-            '  float streamW=1.0-clamp(abs(uSceneF-4.0),0.0,1.0);',        // stream: stage 7 -> 4 (blog block): directed +x flow pulse
+            '  float streamW=1.0-clamp(abs(uSceneF-5.0),0.0,1.0);',        // stream: stage 7 -> 5 (blog block; Round-20 +1 for the 専門 split): directed +x flow pulse
             '  br *= mix(1.0, 0.65+0.55*sin(target.x*1.5 - uTime*1.8), streamW);',
             // curl drift; residual kept tiny at peak so forms are crisp — except nature (揺らぎ).
             '  float resid = mix(uResidual, uResidual+0.03, natureW);',   // waves: undulation from the surface, not per-particle smear (keeps lit-body up)
             '  float spd=0.9+aSeed*0.6;',
             '  float tRate = mix(1.0, 0.5, uCalm);',                        // below-hero: slower ambient motion
             '  vec3 cn=curl(target*uNoiseFreq + vec3(0.0,0.0,uTime*0.15*spd*tRate) + aSeed*7.0);',
-            '  float amp=mix(resid,uDisperse,1.0-w);',
+            // Round-20 migration: warm-core particles (aCoh=1) resist the mid-transition dispersal,
+            // but ONLY across the 3→4 (基礎→専門) traverse — cohA is 0 at every other sceneF, so all
+            // other stages and all cool particles are unchanged. Keeps the hot core coherent so it
+            // rises base→apex instead of dissolving at the midpoint. See DESIGN.md §23.
+            '  float cohA=aCoh*(1.0-clamp(abs(uSceneF-3.5)*2.0,0.0,1.0));',
+            '  float amp=mix(resid,uDisperse,(1.0-w)*(1.0-cohA));',
             '  vec3 p=target + cn*amp;',
             '  vec4 mv=modelViewMatrix*vec4(p,1.0);',
             '  gl_Position=projectionMatrix*mv;',
             // depth cue: near brighter+bigger, far dimmer+smaller (drives the SPHERE 3D read)
             '  float depth=-mv.z; vNear=clamp((13.0-depth)/7.0,0.0,1.0);',
-            '  float orbW=1.0-clamp(abs(uSceneF-6.0),0.0,1.0);',           // orbits: stage 6 (final-message / convergence slot, Round-18)
+            '  float orbW=1.0-clamp(abs(uSceneF-7.0),0.0,1.0);',           // orbits: stage 6 -> 7 (final-message slot; Round-20 +1 for the 専門 split)
             '  float boost=0.5+en*0.8+vNear*(0.6+orbW*0.4);',             // orbits: modest near/far size (dots stay distinct, not a filled tube)
             '  gl_PointSize=clamp(uSize*boost/max(depth,0.1),0.0,8.0)*uPixelRatio;',
             // orbits carry their 3D read ENTIRELY through the near/far gradient — push it hard
@@ -469,7 +516,11 @@
         // Round-17: remapped from 10 to 7 entries, each surviving stage keeping its old rotation.
         // new<-old index: 0<-0 cosmos, 1<-1 nature, 2<-3 infra, 3<-4 dispersal(merged),
         // 4<-7 stream(blog), 5<-8 waveforms(videos), 6 orbits(final-message, Round-18; was convergence).
-        var ROT = [[0, 0], [0.05, 0.04], [0.12, -0.16], [0.0, 0.05], [0.0, 0.08], [0.0, 0.03], [-0.1, 0.12]];
+        // Round-20 (K 7->8): 0 cosmos,1 nature,2 infra,3 foundation(基礎 stack),4 specialty(専門 stack),
+        // 5 stream(Blog),6 waveforms(Videos),7 orbits. foundation keeps the old dispersal-slot rotation
+        // [0,0.05] and specialty takes [0,0.08] — the values the stack rest states were prototyped under;
+        // stream/waveforms/orbits keep their own rotations, shifted one slot right.
+        var ROT = [[0, 0], [0.05, 0.04], [0.12, -0.16], [0.0, 0.05], [0.0, 0.08], [0.0, 0.08], [0.0, 0.03], [-0.1, 0.12]];
         function rotationFor(sf) { var seg = Math.min(K - 2, Math.floor(sf)); var t = sf - seg; return [lerp(ROT[seg][0], ROT[seg + 1][0], t), lerp(ROT[seg][1], ROT[seg + 1][1], t)]; }
 
         /* ---- Hero text opacity (whole block, one at a time) ------------- */

@@ -1875,3 +1875,145 @@ Frame time median 33.4 ms / p95 50.1 ms (n=140). Per-column luminance
 `[6.7, 7.6, 7.3, 7.3, 7.6, 8.4, 9.8, 10]` (R/L 1.24). Stills `r17-4-blog.png`, `s-cards.png`
 regenerated. Direction is still a **motion-only** cue in stills (§21.1 stands — the reversed
 *static* hue gradient is a colour spread, not a directional arrow).
+
+# 23. Round 20 — 7→8: split 基礎/専門, and a warm element that migrates between them
+
+The merged study block (§17.1) was split back into two index-blocks — **基礎領域** (stage 3) and
+**専門領域** (stage 4) — and stage 3/4 became a **stacked-disc motif** whose hot core **migrates**
+from the base (基礎) to the apex (専門) as the viewer scrolls between them. Stages are now:
+`cosmos, nature, infra, foundation(基礎), specialty(専門), stream(Blog), waveforms(Videos), orbits`.
+
+## 23.1 DOM split — copy restored verbatim
+
+`#stage-study` keeps 学びの土台 (found-h), its intro paragraph, the **6-item** list, and the
+勉強の軌跡を見る button → study.html. A new `#stage-specialty` block was added with **copy restored
+verbatim from pre-merge commit `4c64a53`**: eyebrow `06 — 専門領域`, `<h2 id="spec-h">専門という軌道`,
+the 一つひとつの分野が… paragraph, the **3-item** list, and the 「ノートを読む」 button → study.html.
+The structural wrapper (id, `index-block__head reveal`, stage-jump self-link) mirrors the sibling
+index-blocks; only the wrapper is new, no copy was written or altered. Eyebrow numbers stay vestigial
+(05, 06, then 08 Blog — 07 was the removed Notes), unchanged by decision.
+
+## 23.2 sceneF remap (js/scroll-scenes.js, K 7→8) — §17.2 format
+
+| site | before (7) | after (8) | reason |
+|------|-----------|-----------|--------|
+| `stages` array | `…,'infra','dispersal','stream','waveforms','orbits'` | `…,'infra','foundation','specialty','stream','waveforms','orbits'` | stage 3 = 基礎 stack, 4 = 専門 stack; `dispersal` retired to dead code (§17.2 convention) |
+| `streamW` key | `abs(uSceneF-4.0)` | `abs(uSceneF-5.0)` | Blog 4 → 5 |
+| `wfW` key | `abs(uSceneF-5.0)` | `abs(uSceneF-6.0)` | Videos 5 → 6 |
+| `orbW` key | `abs(uSceneF-6.0)` | `abs(uSceneF-7.0)` | orbits 6 → 7 |
+| `ROT` array | 7 entries | 8 entries; foundation keeps the old dispersal slot `[0,0.05]`, specialty takes `[0,0.08]` (the values the stack was prototyped under); stream/waveforms/orbits keep theirs, shifted +1 | survivors keep their rotation |
+| **new** `aCoh` attribute + `cohA`/`amp` | — | migration coherence (§23.4) | carry the warm core across 3→4 |
+| header/slot comments | "SEVEN"/10 slots | "EIGHT"/12 slots | 8 pos + 2 eb + seed + aCoh |
+
+`vInfra` (2.0), `natureW` (1.0), `EBV=ceil(8/4)=2`, `iB` clamp (→7), `pickPos`/`pickEB`,
+`rotationFor`, `HERO_K=3`, and the `indexBlocks` selector all follow K / auto-pick the new block.
+`abs(uSceneF-3.5)` in `cohA` is already correct for the new 3→4. Attribute slots 12/16.
+
+**Layout (1440×900):** docH 5565→6050. New centres 基礎 3510, 専門 4050; spacings infra→基礎 810,
+**基礎→専門 540**, 専門→Blog 540 (the split blocks came out 540px each — the index-block natural
+height — not shorter, so nothing tightened). Every stage lands **fc 0.08–0.10, w=1.0** — inside its
+plateau with ~50px slack (more than the old tail's 32px). No two headings share a viewport at rest.
+
+## 23.3 The stack motif (foundation/specialty) and warm-core sizing
+
+`make('foundation'|'specialty')`: **6 solid discs** in the xz-plane stacked in y, **linear taper**
+(radius `0.60·S·(1−f)`, widest at the base), head-on (no tilt), centred at `ox = 0.45·S` (right of
+the text column), stack height `1.35·S`. Cool discs run teal→cyan up the stack; the same world-x
+**left-dim** as infra keeps the study text legible. Structure comes from **density concentration**
+(discs = particles piled onto thin layers with void gaps): measured **lumCV32 3.09 (基礎) / 2.59
+(専門)**, densCV 3.55 / 3.80 — above the infra (2.22) / nature (1.93) targets (see §22-era metric).
+
+**Warm-core sizing (derived, not by eye).** The whole base layer warm measured 10.7% warm pixels;
+cosmos's core is ~0.90%. So the core is a fraction φ = 0.90/10.7 = **0.084** of the base disc — radius
+√0.084 = **0.29·base = 0.174·S**, and count 0.084·(1/6) = **1.4% of particles**, selected by index
+`i % 72` (1.39%). Membership by **index, not `rnd()`**, so the SAME particles are the core at the base
+(foundation) and the apex (specialty) — the precondition for migration. Energy 0.88 (= cosmos's core,
+no new colour). Measured warm pixel share **1.01% (基礎) / 1.66% (専門)** vs cosmos 0.90 (specialty is a
+higher *fraction* only because the stage-4 form has less cool material, not a bigger core). §22 hue×lum:
+the small core **barely registers as a cluster** — hue range 11° (near the meaningfulness floor),
+warmVsField ~1.0 (neutral, not a bright patch). 0 violet — cool-dominant, warm only at the hot core.
+
+## 23.4 The migration — coherence attribute, full-only
+
+The default morph is `p = target + curl·amp`, `amp = mix(uResidual, uDisperse, 1−w)`; at the midpoint
+`w=0` → `amp=uDisperse=1.15`, so every form dissolves into curl drift and re-condenses. A warm core
+placed at base→apex by `mix(targetPos)` therefore **disappears at the midpoint and reappears** — a
+crossfade, not a rise (rendered and confirmed). Fix: **one float attribute `aCoh`** (1 for the
+`i%72` core particles, 0 otherwise) gates the dispersal, but ONLY across 3→4:
+
+```
+cohA = aCoh * (1 - clamp(abs(uSceneF-3.5)*2, 0, 1));   // 0 at every other sceneF
+amp  = mix(uResidual', uDisperse, (1-w) * (1-cohA));    // core keeps amp≈uResidual mid-transition
+```
+
+The core then holds its travelling target and **rises base→apex, staying legible** through the
+midpoint (confirmed on the real files; the magenta core is a distinct blob at sceneF 3.48 where the
+free version was blank).
+
+**Full coherence (1.0) is required — partial does not work.** Derivation predicted `c ≥ 0.665` would
+hold the core (`amp ≤ rCore/|curl| ≈ 0.61/1.5 = 0.40`), but **measurement showed c=0.70 does not hold
+it** — the core mostly dissolved. The `|curl|≈1.5` estimate underpredicted the scatter; a core this
+small needs `amp` near `uResidual`, i.e. full-or-nothing. **Recorded so the optimistic 0.665 is not
+re-derived.**
+
+**Cost:** one float/particle — **+0.8 MB desktop (200k), +0.28 MB mobile (70k)**, independent of K
+(K=8: 24.0→24.8 MB desktop). Frame time **unchanged** (before/after both median 33.4 / p95 50.0 ms,
+n=180, headless SwiftShader). Coherence is **inert at rest** (`w=1` → `amp=uResidual` regardless), so
+the §23.3 rest metrics are undisturbed — confirmed identical with and without the attribute.
+
+## 23.5 Colour-wash at re-condense — investigated, left as-is
+
+At ~sceneF 3.73 (re-condensing, `w≈0.86`) the reforming cool discs additively overlap the rising core
+and the magenta washes toward white. **Investigated and rejected a fix:** offsetting the apex endpoint
+in x (+0.15S, +0.25S) does **not** clear the 3.73 wash (the cone is dense wherever the core is at 86%
+reformed) and it **disturbs the locked apex rest** (warm px 782→1748 as the core separates from the
+cap). Left as-is: a brief wash on one transient frame, acceptable; the alternatives cost a locked rest
+state for no real gain. **Recorded so the offset is not re-attempted.**
+
+## 23.6 Standing lesson — contrast at a landing is contrast against a *blend*
+
+**Generalises to every index-block stage.** Index blocks land **~0.09 fc off-centre** by construction
+(§17.6), so at a rest the *previous* stage is **10–20% mixed in**, with its own dims only partly
+active. **Contrast measured at a landing is contrast against that blend, not against the stage's own
+motif.** Worked example — 基礎's body-text worst contrast:
+
+| position | sceneF | body min |
+|---|---|---|
+| **landing (rest)** | ~2.9 | **4.88** |
+| pure foundation | 3.0 | **11.53** |
+| deeper | 3.148 | 9.73 |
+
+The 4.88 is **infra bleeding under 基礎's left text at the off-centre landing**, *not* the foundation
+stack. Deepening the stack's own left-dim (floor 0.30→0.18, derived from the worst field-lum 0.165) had
+**no effect** — the bright particles are infra's, not the stack's; that was tried and measured, and is
+recorded here so it is not re-attempted. **Before editing a motif to fix a landing contrast, check
+whether the number is the motif or the blend** (measure at pure sceneF = the stage index).
+
+## 23.7 Standing caveat on §21.3 — frame-distribution needs an *animating* motif
+
+§21.3 ("no frame below AA in a ≥24-frame sample; a thin margin is a dip risk") **applies where the
+motif animates** — e.g. stream's traveling pulse, which spreads worst-case contrast 5–7 points and
+genuinely dips. For a form that **rests static** (the stack at `w=1` drifts only by `uResidual`),
+`min = median = max` — zero spread — so a thin margin is **not** a dip risk. 基礎's 4.88 has zero
+variance and clears AA on every frame; it was **accepted** (Option 1). State which regime a value is in
+before applying the standard: a static rest with 0 spread and a pulsing motif with 5–7 spread are not
+the same problem.
+
+## 23.8 infra's left-dim — known property, not a defect
+
+The only real lever on §23.6's 4.88 is **infra's own `leftDim`** (strengthen it, or keep it active
+later into the transition). It is **left alone deliberately**: stage 2's heading 学びを、社会へ。 sits
+on the same left column, so any change needs stage-2 re-verification, and the cost of that outweighs
+~6 points of margin on a value that already passes with zero variance. Recorded as a **known property
+with the option noted**, not an open defect.
+
+## 23.9 Stills
+
+Regenerated (desktop 1440×900, at rest): **`docs/stills/r20-3-foundation.png`** (基礎, hot core at
+base) and **`docs/stills/r20-4-specialty.png`** (専門, hot core at apex). The migration is a
+scroll-only read (like §21.1's motion-only direction) — a still shows only the two endpoints, not the
+rise. **Stale after this round:** `r17-3-merged-study.png` (the merged block no longer exists —
+superseded by the two above); `r17-4-blog.png`, `r17-5-videos.png`, `r18-6-orbits.png` (content
+unchanged but the stage numbers in the names are now +1: Blog 5, Videos 6, orbits 7);
+`s05-dispersal.png`, `s-belowhero.png` (dispersal retired). Not regenerated this round — flagged for a
+future stills pass.

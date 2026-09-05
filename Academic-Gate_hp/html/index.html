@@ -75,16 +75,15 @@
         <!-- ======================= THE INDEX (calm card grids) ============ -->
         <div class="index-region">
 
-            <!-- 基礎領域 + 専門領域 — merged (Round-17): found-h is the surviving head; spec-h's
-                 head wrapper (eyebrow 06, heading 専門という軌道) and its duplicate study.html CTA
-                 were dropped. Both <ul> lists kept intact, in order. Both intro paragraphs kept:
-                 found-h's, then spec-h's (restored verbatim between the found intro and list 1). -->
+            <!-- 基礎領域 — foundational studies. Round-20: split back out of the merged study block
+                 (the 専門領域 block follows). Keeps its intro paragraph and the 6-item list; the
+                 second paragraph + 3-item list moved to #stage-specialty. Motif: foundation stack
+                 (stage 3), hot core at the base; the core migrates to 専門's apex (see DESIGN.md §23). -->
             <section class="index-block" id="stage-study" aria-labelledby="found-h">
                 <div class="index-block__head reveal">
                     <p class="eyebrow"><span class="eyebrow__num">05</span> — 基礎領域</p>
                     <h2 id="found-h" lang="ja"><a class="stage-jump" href="#stage-study">学びの土台</a></h2>
                     <p lang="ja">カオスから構造が生まれるように、学びもまた基礎から立ち上がる。まずは土台となる学部レベルの学問を、一つずつ積み上げていく。</p>
-                    <p lang="ja">一つひとつの分野が、恒星をめぐる惑星の軌道のように。基礎の上に、素粒子・重力・宇宙の専門領域を重ねていく。</p>
                     <ul class="scene-list" lang="ja">
                         <li>物理数学</li>
                         <li>古典力学・解析力学</li>
@@ -93,13 +92,29 @@
                         <li>量子力学</li>
                         <li>特殊相対性理論</li>
                     </ul>
+                    <p style="margin-top: 1.5rem;">
+                        <a href="study.html" class="btn btn-secondary">勉強の軌跡を見る <span class="btn-disc"
+                                aria-hidden="true">→</span></a>
+                    </p>
+                </div>
+            </section>
+
+            <!-- 専門領域 — specialized fields. Round-20: split back out of the merged study block.
+                 Copy (eyebrow, heading 専門という軌道, paragraph, 3-item list, button ノートを読む)
+                 restored VERBATIM from pre-merge commit 4c64a53. Structural wrapper (id, index-block__head
+                 reveal, stage-jump self-link) mirrors the sibling index-blocks for parity. -->
+            <section class="index-block" id="stage-specialty" aria-labelledby="spec-h">
+                <div class="index-block__head reveal">
+                    <p class="eyebrow"><span class="eyebrow__num">06</span> — 専門領域</p>
+                    <h2 id="spec-h" lang="ja"><a class="stage-jump" href="#stage-specialty">専門という軌道</a></h2>
+                    <p lang="ja">一つひとつの分野が、恒星をめぐる惑星の軌道のように。基礎の上に、素粒子・重力・宇宙の専門領域を重ねていく。</p>
                     <ul class="scene-list" lang="ja">
                         <li>場の量子論</li>
                         <li>一般相対性理論</li>
                         <li>宇宙論</li>
                     </ul>
                     <p style="margin-top: 1.5rem;">
-                        <a href="study.html" class="btn btn-secondary">勉強の軌跡を見る <span class="btn-disc"
+                        <a href="study.html" class="btn btn-secondary">ノートを読む <span class="btn-disc"
                                 aria-hidden="true">→</span></a>
                     </p>
                 </div>
