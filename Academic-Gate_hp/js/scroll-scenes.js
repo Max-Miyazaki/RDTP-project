@@ -82,7 +82,7 @@
         var indexBlocks = Array.prototype.slice.call(document.querySelectorAll('.index-region .index-block, .index-region .final-message'));
         var stageEls = visibleScenes.concat(indexBlocks);
         // Motif per surviving stage, in DOM order. Dropped motifs: network, orbits, strata.
-        var stages = ['cosmos', 'nature', 'infra', 'dispersal', 'stream', 'waveforms', 'convergence'].slice(0, stageEls.length);
+        var stages = ['cosmos', 'nature', 'infra', 'dispersal', 'stream', 'waveforms', 'orbits'].slice(0, stageEls.length);
         var K = stages.length;
         var HERO_K = visibleScenes.length;   // stages 0..HERO_K-1 are the hero
 
@@ -201,10 +201,25 @@
                     return [rc * s * Math.cos(th) * 1.35, rc * u, rc * s * Math.sin(th), 0.2 + 0.22 * rnd(), 0.55, 0];
                 }
                 case 'orbits': { // ellipses in distinct planes about a shared star at the focus
-                    var oOx = S * 0.55;                                   // shift right so the dense rings clear the left text column
+                    // Round-18: orbits took the stage-6 (final-message) slot. That slot's viewport
+                    // is crowded (final-message text above, full-width footer below), so the whole
+                    // system is SCALED DOWN and LIFTED so its lit region clears the footer text
+                    // union. oScale/oOy are tuned by measurement (see DESIGN.md §19), per viewport.
+                    // Round-18 (PROVISIONAL, option 2): full orbits on desktop; SUPPRESSED on mobile.
+                    // Mobile's stage-6 viewport has only ~65px clear between the closing line and the
+                    // full-height footer — too little for a visible orbit system without landing on
+                    // text. So on mobile the motif is pushed off-screen at zero brightness (renders
+                    // nothing over the footer/closing line). See DESIGN.md §19; revisit when the
+                    // heading/section restructure gives stage 6 a real slot.
+                    if (isMobile) return [gauss(0.05), 12.0 + gauss(0.05), gauss(0.05), 0.3, 0.0, 0];
+                    // Desktop placement, tuned by measurement to clear the footer union (top y519) AND
+                    // the closing-line glyphs (y327–376), sitting in the band below the nav pill (y87).
+                    var oScale = 0.116;                                   // compact, fits the ~240px clear band
+                    var oOy = 1.88;                                       // lift into the clear band
+                    var oOx = S * 0.15;
                     if (rnd() < 0.028) {                                  // the STAR — small, tight, warm, at the common focus
-                        rc = 0.08 * S * Math.cbrt(rnd()); u = rnd() * 2 - 1; th = rnd() * TAU; s = Math.sqrt(1 - u * u);
-                        return [rc * s * Math.cos(th) + oOx, rc * u, rc * s * Math.sin(th), 0.93, 0.85, 0];
+                        rc = 0.08 * S * oScale * Math.cbrt(rnd()); u = rnd() * 2 - 1; th = rnd() * TAU; s = Math.sqrt(1 - u * u);
+                        return [rc * s * Math.cos(th) + oOx, rc * u + oOy, rc * s * Math.sin(th), 0.93, 0.85, 0];
                     }
                     var el = orbEls[i % NORB];
                     var ta = rnd() * TAU;                                 // true anomaly
@@ -215,7 +230,7 @@
                     var ux = -nz, uy = 0, uz = nx, ul = Math.hypot(ux, uy, uz) || 1; ux /= ul; uz /= ul; // u = n × up
                     var vx = ny * uz - nz * uy, vy = nz * ux - nx * uz, vz = nx * uy - ny * ux;            // v = n × u
                     var cc = Math.cos(ang), ss = Math.sin(ang), tb = 0.013; // thin tube → particle texture, not a filled stroke
-                    return [rr2 * (cc * ux + ss * vx) + oOx + gauss(tb), rr2 * (cc * uy + ss * vy) + gauss(tb), rr2 * (cc * uz + ss * vz) + gauss(tb),
+                    return [rr2 * (cc * ux + ss * vx) * oScale + oOx + gauss(tb), rr2 * (cc * uy + ss * vy) * oScale + oOy + gauss(tb), rr2 * (cc * uz + ss * vz) * oScale + gauss(tb),
                         Math.max(0.22, 0.48 - (i % NORB) * 0.035), 0.6, 0];
                 }
                 case 'strata': { // accumulated horizontal layers
@@ -236,8 +251,12 @@
                     var wty = (wtr / 4 - 0.5) * S * 1.55 + 0.22 * S * Math.sin(wxx * 2.7 + wtr * 1.7);
                     return [wxx, wty + gauss(0.03 * S), (wtr - 2) * S * 0.11, 0.36 + 0.22 * rnd(), 0.72, (wtr + 0.5) / 5];
                 }
-                case 'convergence': { // gather inward to a bright form — COMPACT, wide+short, placed
-                    // BELOW the Projects card grid (verified: its lit bbox clears every card rect).
+                case 'convergence': { // INERT dead code as of Round-18 (orbits took stage 6). Kept
+                    // for cheap reversibility, mirroring how orbits was kept when convergence
+                    // replaced it. Never reached — 'convergence' is no longer in the stages array.
+                    // (What it did: gather inward to a COMPACT wide+short bright form. NOTE its
+                    // oy=-S*0.9 offset was tuned to sit below the old Projects card grid, which no
+                    // longer exists; the offset is stale and must be re-derived if ever re-enabled.)
                     var ox = 0, oy = -S * 0.9;
                     if (rnd() < 0.6) {                                    // tight bright core (wide-short)
                         return [gauss(S * 0.2) + ox, gauss(S * 0.08) + oy, gauss(S * 0.14), 0.5 + 0.3 * rnd(), 0.85, 0];
@@ -348,7 +367,7 @@
             '  gl_Position=projectionMatrix*mv;',
             // depth cue: near brighter+bigger, far dimmer+smaller (drives the SPHERE 3D read)
             '  float depth=-mv.z; vNear=clamp((13.0-depth)/7.0,0.0,1.0);',
-            '  float orbW=0.0;',                                           // orbits motif removed (Round-17); was 1.0-clamp(abs(uSceneF-5.0)) — stage 5 is now videos, so pinned to 0
+            '  float orbW=1.0-clamp(abs(uSceneF-6.0),0.0,1.0);',           // orbits: stage 6 (final-message / convergence slot, Round-18)
             '  float boost=0.5+en*0.8+vNear*(0.6+orbW*0.4);',             // orbits: modest near/far size (dots stay distinct, not a filled tube)
             '  gl_PointSize=clamp(uSize*boost/max(depth,0.1),0.0,8.0)*uPixelRatio;',
             // orbits carry their 3D read ENTIRELY through the near/far gradient — push it hard
@@ -435,8 +454,8 @@
 
         // Round-17: remapped from 10 to 7 entries, each surviving stage keeping its old rotation.
         // new<-old index: 0<-0 cosmos, 1<-1 nature, 2<-3 infra, 3<-4 dispersal(merged),
-        // 4<-7 stream(blog), 5<-8 waveforms(videos), 6<-9 convergence(final-message).
-        var ROT = [[0, 0], [0.05, 0.04], [0.12, -0.16], [0.0, 0.05], [0.0, 0.08], [0.0, 0.03], [0.0, 0.0]];
+        // 4<-7 stream(blog), 5<-8 waveforms(videos), 6 orbits(final-message, Round-18; was convergence).
+        var ROT = [[0, 0], [0.05, 0.04], [0.12, -0.16], [0.0, 0.05], [0.0, 0.08], [0.0, 0.03], [-0.1, 0.12]];
         function rotationFor(sf) { var seg = Math.min(K - 2, Math.floor(sf)); var t = sf - seg; return [lerp(ROT[seg][0], ROT[seg + 1][0], t), lerp(ROT[seg][1], ROT[seg + 1][1], t)]; }
 
         /* ---- Hero text opacity (whole block, one at a time) ------------- */

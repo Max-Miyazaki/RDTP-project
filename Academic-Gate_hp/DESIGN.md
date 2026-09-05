@@ -1584,3 +1584,130 @@ icon, browsers fetch the declared (200) icon instead of probing the origin-root 
 so the 404 no longer occurs in normal browsing. **Caveat:** the bare origin-root
 `https://max-miyazaki.github.io/favicon.ico` is the GitHub *user-site* root, not this project
 repo — it cannot be served from here and is untouched; it is simply no longer requested.
+
+# 19. Round 18 — orbits for convergence at stage 6 (motif swap + provisional placement)
+
+Convergence was replaced by **orbits** at stage 6. Convergence had been badly placed (its dense
+grey-white core sat behind the footer, dropping 各種SNS to 4.8:1 and the mobile closing line
+below AA) and off-palette (a blue-violet fringe from core energy reaching the 0.62–0.80 spectrum
+band). Orbits is measurably the better motif: **teal-dominant rings + a confined warm star, no
+grey core (0.08% vs 7.9%), no blue-violet body** — its only warm is the star (energy 0.93 →
+magenta/ember), a hot core, which is on-palette.
+
+## 19.1 The swap (js/scroll-scenes.js) — every hardcoded site
+
+| site | before | after |
+|------|--------|-------|
+| `stages[6]` | `'convergence'` | `'orbits'` |
+| `orbW` shader key | `0.0` (pinned) | `1.0-clamp(abs(uSceneF-6.0),0.0,1.0)` |
+| `ROT[6]` | `[0.0, 0.0]` | `[-0.1, 0.12]` (orbits' tumble) |
+| `make('convergence')` | live | **inert dead code**, kept for reversibility; its comment now says so and flags its stale `oy=-S*0.9` |
+
+Memory is unchanged (K=7): confirmed `__field.attributeBytes` = **24,000,000 desktop /
+8,400,000 (8.40 MB) mobile**. The swap changes no DOM, so heights, scrollHeight, w_ss, plateau
+and snap are all identical to Round-17.
+
+## 19.2 Placement — OPTION 2, PROVISIONAL (desktop full, mobile suppressed)
+
+**This is a provisional decision, not a preference.** Stage 6 anchors on `.final-message`, whose
+rest viewport is crowded: the closing line and a full-height footer leave only a **65 px** clear
+band on mobile (measured: mobile closing-line bottom y265, footer union top y330). No visible
+orbit system fits 65 px without landing on text. So:
+
+- **Desktop:** full orbits, tuned by measurement to the current layout — `oScale = 0.116`,
+  `oOy = 1.88`, `oOx = S*0.15`. It sits in the clear band **below the nav pill (y87) and above the
+  closing-line glyphs (y327)**: measured orb bbox **y[123, 312]**, which intersects *no* glyph
+  rect, so the warm star (at the orb centre) is provably clear of every glyph.
+- **Mobile:** orbits **suppressed** — pushed off-screen at zero brightness
+  (`if (isMobile) return […, 12.0+…, …, 0.3, 0.0, 0]`). Stage 6 renders **nothing** over the
+  content (measured: 0 lit orb pixels).
+
+Revisit when the planned heading/section restructure gives stage 6 a real slot. **The desktop
+`oScale`/`oOy` are tuned to the *current* footer/closing-line geometry and a restructure
+invalidates them** (see §19.4).
+
+## 19.3 Verification (headless Chrome + SwiftShader, measured; nature-wave exception stands)
+
+- **w_ss:** all 7 stages = **1.000** via the wired path at 1440×900 and 390×844. Landing fc
+  unchanged from Round-17 (geometry untouched).
+- **Snap:** desktop `y`/`center`; mobile `none`. Unchanged.
+- **Heights / scrollHeight:** identical to Round-17 (desktop 5565, mobile 5614) — the swap is
+  DOM-neutral.
+- **Footer-glyph contrast (the new standing check, §19.4):**
+  - Desktop: **every footer element ≥ 4.5:1** — nav links / labels ~20:1, Instagram/YouTube
+    ~20:1, copyright 7.29:1 (ambient); orbits contributes nothing to the footer (it's up in the
+    clear band).
+  - Mobile: orbits contributes **0 lit pixels**; closing line 12–18:1. **Footer-tagline measures
+    3.6:1 with the orb fully suppressed** — a **pre-existing** ambient (`body::before`) condition,
+    present in the convergence build too, *not* introduced by this change and not fixable without
+    touching `css/style.css`. **Flagged for a future CSS round.**
+- **Closing line (final-message):** 12.06:1 desktop (ambient-limited; orb never touches it — a
+  measurement note: the harness must hide the final-message text before sampling its own glyph
+  boxes, or it reads white-text-on-white-text and reports a false 1:1).
+- **Title-glyph contrast:** medians ~18–21:1, unchanged from Round-17 (orbits doesn't touch the
+  other stages). Worst-cases vary frame-to-frame on a frozen field; **nature ≈ 1.25:1 is the
+  recorded wave exception, not a regression.**
+- **Clipped-pixel %:** cosmos ~0.02–0.05, nature ~7.5–7.8 (wave crests), infra ~3, calm blocks 0,
+  stage-6 centre ~0.4–0.6 — unchanged.
+- **Frame time:** desktop median 33.3 / p95 50 ms, mobile 16.7 / 16.7 ms — within headless
+  SwiftShader run-to-run variance of Round-17 (particle count unchanged); **untested on device.**
+
+## 19.4 Standing check — footer-glyph contrast is now required
+
+Our contrast sampling had been title-only, which is exactly why the convergence-on-footer
+regression hid for two rounds. **From now on, footer-glyph contrast is part of the standard
+verification set.** Any change that touches **motif geometry, placement, or stage assignment**
+must measure contrast under the actual glyph bounding boxes of **every footer element** — the
+Explore column (ホーム / 自己紹介 / 勉強の軌跡 / 動画 / ブログ / 各種SNS), Connect
+(Instagram / YouTube), the brand logo + tagline, and the copyright line — plus the
+final-message closing line, and **nothing may sit below 4.5:1** except a documented, pre-existing
+non-motif condition. **Baseline established this round (Round-18):** desktop footer worst-case
+**7.29:1** (all elements ≥ 4.5); mobile footer worst-case **3.6:1 (the tagline, pre-existing
+ambient — the one known exception, to be fixed in CSS later)**; desktop closing line **12.06:1**.
+When measuring an element's own glyph boxes, hide that text first and sample the background behind
+it — never the text pixels.
+
+## 19.5 Standing rule — motif placement offsets are tuned to specific page elements
+
+A motif's placement offsets (`oOy`, `oScale`, `oOx`, etc.) are **calibrated against the measured
+positions of specific page elements** — a footer union, a closing line, a nav pill, a card grid.
+**Removing or moving those elements silently invalidates the offsets.** The worked example:
+convergence's `oy = -S*0.9` was tuned to clear the *Projects card grid*; when Round-17 removed
+Projects and re-anchored convergence onto `.final-message`, that offset went stale and dropped the
+orb straight onto the footer — undetected until footer contrast was finally measured. Orbits'
+Round-18 `oScale = 0.116 / oOy = 1.88` are likewise pinned to the *current* footer/closing-line
+layout. **After any change to the stage-6 region's structure or heights, re-derive these offsets
+and re-run the footer-glyph check (§19.4) — do not assume a placement survives a layout change.**
+
+## 19.6 Stills
+
+Regenerated: **`docs/stills/r18-6-orbits.png`** (desktop stage-6, the fitted orbit system above the
+closing line, footer clear). **`r17-6-convergence.png` is retained deliberately as the pre-swap
+reference** — it is the matching visual record for `make('convergence')`, which stays in the tree
+as reversible dead code (§19.1); it is *not* being kept merely because it is stale. When the
+heading/section restructure gives stage 6 a real slot and convergence is reconsidered, this still
+is the before-image to compare against. The other stage stills (`r17-0`…`r17-5`) are unaffected
+(those motifs are unchanged); mobile stage-6 renders nothing, so there is no mobile still to
+regenerate.
+
+# 20. Open items (outstanding)
+
+## 20.1 Mobile footer-tagline contrast — 3.6:1 (accessibility gap, needs a CSS round)
+
+**Status: open, unfixed.** At 390×844, the footer tagline
+「学術領域の世界への入口を開くプラットフォーム。」 measures a worst-case **3.6:1** against its
+background — **below the WCAG AA 4.5:1 floor** for normal-size text.
+
+- **It is not motif-related.** Measured with the stage-6 motif contributing **0 lit pixels**
+  (orbits is suppressed on mobile), so this is entirely the **ambient glow from `body::before`**
+  (the fixed radial teal/warm pools behind everything), not the particle field. It was present in
+  the convergence build too — it **predates Round-18** and the orbits work; the new footer-glyph
+  check (§19.4) is simply what finally surfaced it.
+- **Fixing it touches `css/style.css`,** which is the single global stylesheet, so any change to
+  the tagline colour, a scrim/backing behind `.footer-tagline`, or the `body::before` glow
+  **propagates to all 11 pages** — it is not a homepage-local fix and must be verified across the
+  interior pages (self-intro, study, sns, the 5 peskin pages, blog, videos) as well.
+- **Out of scope for the motif rounds** (which are barred from touching `css/style.css`).
+  Schedule a dedicated CSS/accessibility round: re-measure the tagline (and, while there, sweep
+  every footer element and the closing line on both viewports against `body::before`), then adjust
+  the tagline treatment to ≥ 4.5:1 without regressing the other pages.
