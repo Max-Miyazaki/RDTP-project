@@ -1712,6 +1712,19 @@ background — **below the WCAG AA 4.5:1 floor** for normal-size text.
   every footer element and the closing line on both viewports against `body::before`), then adjust
   the tagline treatment to ≥ 4.5:1 without regressing the other pages.
 
+## 20.2 Videos heading over waveforms — 3.7:1 (index-block heading, pre-existing)
+
+**Status: open, unfixed.** At 1440×900 the Videos heading 最新動画 (`#stage-videos h2`) over the
+waveforms field (stage 6) measures a 24-frame worst-case **3.7:1 (16/24 frames below AA)**. Surfaced
+by the Round-21 verification; **pre-existing and not motif-work-of-this-round**: waveforms is untouched
+and `streamW = 0` at stage 6, so the Round-21 Blog change did not cause it. The cause is structural —
+**index-block headings have no `hero-scrim`** (the scrim is hero-only), so a full-bleed bright motif
+(the waveforms mesh) sits directly under the left heading. This is the **same class of gap as §20.1**
+(a heading/label below AA over a background it can't be read against) and waits on the **same kind of
+round: one that can look at index-block headings properly** — either a per-index-block scrim/backing
+(CSS) or dimming the motif under the heading column (like infra's `leftDim`). Both the footer tagline
+(§20.1, 3.6:1) and this (3.7:1) are parked for that round; do not fold either into a motif commit.
+
 # 21. Round 19 — stream (stage 4): brightness flattened, then a narrow cool spectrum
 
 `make('stream')`'s brightness was a left→right ramp `(0.35 + 0.6·sxr)·0.85` = **0.30 (left) →
@@ -2017,3 +2030,104 @@ superseded by the two above); `r17-4-blog.png`, `r17-5-videos.png`, `r18-6-orbit
 unchanged but the stage numbers in the names are now +1: Blog 5, Videos 6, orbits 7);
 `s05-dispersal.png`, `s-belowhero.png` (dispersal retired). Not regenerated this round — flagged for a
 future stills pass.
+
+# 24. Round 21 — Blog (stage 5) becomes a radiating source; and a metric limit
+
+## 24.1 The motif — a source broadcasting (radial), by density concentration
+
+`make('stream')` (the Blog motif, stage 5) is no longer a directed horizontal flow — it is a **warm
+hot core emitting cool filaments that radiate outward** (a source broadcasting). Structure comes from
+**density concentration** (§23): **16 tapered filaments with dark voids between**, centred at 0.55·S
+(right of the blog text), with the same world-x left-dim as the stack keeping the heading legible.
+Each filament **tapers** — thick near the core (jitter 0.055), thinning outward (`·(1−0.6·rf)`) and
+dimming (0.72→0.27) — so energy concentrates at the source and dissipates at the rim (the emitting
+read, not a solid bar).
+
+**Filament count chosen OVER the metric — see §24.3.** Measured 1440×900 lumCV32 across counts (kept
+palette/core/breathe): **16 → 1.61 · 16-tapered → 1.69 · 12 → 1.70 · 10 → 1.78 · 8 → 2.02**. Only 8
+clears nature (1.93), and **8 reads as a hard geometric asterisk, not an emitter** — because fewer
+filaments are denser per ray, and density-per-ray is exactly what both lifts lumCV *and* destroys the
+soft radiating character. **16-tapered (lumCV 1.69, below nature) was chosen deliberately** for the
+right read; the metric here points *away* from the goal. lumCV is a floor check for static structure,
+not a quality score.
+
+**The Round-19 reversed spectrum + `scomp` compensation were dropped, not carried over.** They were
+geometry-specific to the left→right flow (a function of `sxr`); a radial form has no left→right lean
+to compensate. Instead the filaments are **flat teal-cyan (energy 0.30, no radial hue gradient)**:
+measured hue×luminance range collapses to **5–7° (wide) / 2–4° (tall)** — below §22's 10°
+meaningfulness floor, so the correlation is noise and **there is no distinct hue to cluster**. Warm is
+confined to the **hot core** (`rnd()<0.006` → measured **1.17% warm pixels**, ≈ cosmos 0.90 / stack
+1.01); 0 violet — cool-only. The `streamW` shader pulse (a horizontal sweep, a mismatch for a radial
+form) was replaced with a **uniform time breathe** (`0.82+0.18*sin(uTime*1.4)`); its peak is 1.0×
+(was 1.2×), so it can only improve the blog-title AA.
+
+## 24.2 Verification (1440×900, 8 stages, wired path)
+
+| | figure |
+|---|---|
+| w_ss (all 8) | **1.0** (fc 0–0.03) |
+| scrollHeight / heights | 6050 / [1080,1080,1080,540,540,540,540,204] — **identical to Round-20** (make-only change) |
+| attribute memory | **27.2 MB** (unchanged; no new attribute) |
+| frame time | median **33.3 ms** / p95 50.0 ms, n=180 (unchanged) |
+| lumCV32 | cosmos 0.75 · nature 1.72 · infra 2.18 · 基礎 3.09 · 専門 2.60 · **blog 2.02** · waveforms 1.32 · orbits 0.86 |
+| blog | warm 1.17% · 0 violet · hue×lum noise (range 7) · clip 0% · lit-median 0.233 |
+| title contrast (24-frame min / below AA) | cosmos 5.75/0 · nature 5.88/0 · infra 7.29/0 · 基礎 16.4/0 · 専門 18.1/0 · **blog 13.3/0** · closing-line 16.3/0 |
+| footer glyph contrast (24-frame, §19.4) | min **15.1 / 0 below** |
+
+**Measurement note:** hero title contrast must be sampled by hiding *only* the heading text, **not
+`.scene__content`** — the latter hides the `hero-scrim` that protects those titles, and sampling the
+raw field then reports a false ~1.2:1. With the scrim kept, cosmos/nature/infra are 5.75–7.29:1.
+
+**Pre-existing issue surfaced (not this round):** the **Videos heading (最新動画) over the waveforms
+field measures 3.7:1, 16/24 frames below AA.** Waveforms (stage 6) is untouched by this round and
+`streamW=0` there, so this is long-standing (index-block headings have no scrim, and the full-bleed
+waveforms mesh is bright under the left heading). Flagged for a separate round.
+
+## 24.3 Standing metric limit — lumCV is aspect-dependent for directional/radial forms
+
+A limit of the local-structure metric (§23) we had not seen: for a **directional or radial** form,
+**lumCV32 depends on viewport aspect.** The Blog burst measures **2.02 at 1440×900 but 2.9 on a tall
+viewport (1280×1800)** — the same geometry, because on a wide viewport the rays foreshorten and
+spread (lower per-cell contrast) while on a tall one they read denser. (The stack's discs, §23, are
+far less aspect-sensitive because they concentrate density in 2D area, not along 1D rays.) So a single
+lumCV figure is not aspect-invariant for ray/flow motifs: **quote the aspect, and tune to the aspect
+most viewers use** (here 1440×900) rather than to whichever aspect flatters the number.
+
+**Sharper form of the same limit — on a radial form the metric points *away* from the goal.** The
+Blog filament-count choice made this unmistakable. lumCV rises as filaments *decrease* (16→1.61,
+12→1.70, 10→1.78, 8→2.02) because each ray gets denser — but **density-per-ray is exactly what turns
+the soft emitter into a hard geometric asterisk.** So the single lever that maximises the metric is
+the same lever that destroys the thing the metric is standing in for. We shipped **16-tapered (lumCV
+1.69, below nature 1.93)** over 8 (2.02) on the images, deliberately. **Rule: lumCV is a floor check
+that static structure exists at all, not a quality score — when a higher lumCV comes from a change
+that degrades the read, take the lower number.** (Cf. the same failure mode in §22: the luminance
+ratio rating the narrow spectrum "most balanced" while the eye saw a colour split.)
+
+## 24.4 Orbits (stage 7) — the clear band did NOT grow; the §19 constraint stands
+
+Investigated for a scale-up and **rejected on the trace.** An intermediate measurement had suggested
+the band widened to 362px (from §19's 240px), implying orbits could finally read as a system. The
+trace overturned it:
+
+- **Scroll-snap is `proximity` and hero-only** (stages 01–04, per the CSS). The index blocks and the
+  final-message **have no snap point**, so there is **no fixed rest** — the closing line's viewport
+  position varies *continuously* with scroll (measured: scroll 4528 → closing-line 949; 5028 → 449;
+  5150 → 327).
+- A user scrolling to the Blog/closing region **stops at the page bottom** (maxScroll), where the
+  closing line is **highest (327px at 1440×900)** and the band is **smallest — 240px, unchanged from
+  §19.** The 362px was an artifact of measuring at scroll 5028, which is **not a rest**.
+- So the §19 constraint holds at 1440×900: a readable orbit system needs ~248px and the binding band
+  is 240px. **Orbits was not scaled up.** (On a tall viewport the band is ~1160px even at the page
+  bottom, but a scale keyed to tall would collide with the closing line at wide.)
+
+**For any future work on stage 7 (orbits): the usable clear band at 1440×900 is 240px, measured at the
+page-bottom rest — NOT 362px.** The 362px was a non-rest artifact (scroll 5028, where no one stops);
+do not carry it forward from this or any earlier note. A readable orbit system needs ~248px, so at
+1440×900 orbits cannot be enlarged past the current `oScale 0.116` without the system crossing the
+closing line at the page bottom. Only a **viewport-conditional** scale (tall viewports have a ~1160px
+band) could enlarge it, and only if it leaves 1440×900 at 0.116.
+
+**Lesson (generalises):** contrast/clearance for an index-block or the closing region must be measured
+at the **page-bottom rest** (where the previous content is highest in the viewport), because those
+blocks do not snap — an intermediate scroll position is not a rest and its clearances are not real.
+Mobile keeps orbits suppressed (unchanged).

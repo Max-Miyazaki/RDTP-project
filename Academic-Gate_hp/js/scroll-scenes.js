@@ -269,27 +269,33 @@
                     la = Math.floor(rnd() * 7); sy = (la / 6 - 0.5) * S * 1.75;
                     return [(rnd() * 2 - 1) * S * 1.6, sy + gauss(0.04), (rnd() * 2 - 1) * S * 0.65, 0.24 + 0.3 * (la / 6), 0.55, 0];
                 }
-                case 'stream': { // DIRECTED current: horizontal flow-lines, brighter leading edge (+x)
-                    var sline = Math.floor(rnd() * 9);                    // 9 distinct streamlines
-                    var sxr = rnd();                                      // 0 trailing (left) → 1 leading (right)
-                    var sx = -S * 1.7 + sxr * S * 3.1;
-                    var sly = (sline / 8 - 0.5) * S * 1.45;
-                    // Round-19c: energy runs blue (0.62) at the TRAILING edge -> teal (0.22) at the LEADING edge:
-                    // a cool spectrum spread across the frame, with the dim blue END sitting on the LEFT where the
-                    // title rests. Capped at 0.62 (below the violet threshold) so the palette stays cool-only. This
-                    // direction was chosen because it keeps the distinct-blue hue on the DIM side (it recedes) instead
-                    // of coinciding with the bright side; measured hue×luminance correlation -0.82 vs the teal→blue
-                    // direction's +0.68 (a bright blue patch). See DESIGN.md §22.
-                    // Brightness is NOT flat: it compensates the stream's inherent left→right luminance lean.
-                    // L(sxr) = 6.51 + 6.29·sxr is the measured frame-averaged per-column luminance of THIS spectrum
-                    // at flat 0.55 (rises 6.9→12.4 across the frame: geometry + the teal end being brighter than blue).
-                    // brightness ∝ 1/L(sxr) cancels that lean. Anchored to the DIM LEFT level (3.795 = 6.9·0.55) so the
-                    // compensation FLATTENS BY DIMMING THE BRIGHT RIGHT, never by lifting the dark title-side left —
-                    // brightening the left pushed the blog title below AA on 1/24 frames. This anchor holds every
-                    // sampled frame above AA. Full flatness is capped by that title constraint; see DESIGN.md §22.
-                    var scomp = 3.795 / (6.51 + 6.29 * sxr);              // ≈0.58 (left) → ≈0.30 (right)
-                    return [sx, sly + 0.1 * S * Math.sin(sx * 0.5 + sline) + gauss(0.05 * S), (sline - 4) * S * 0.09 + gauss(0.04 * S),
-                        0.62 - 0.40 * sxr, scomp, 0];
+                case 'stream': { // Round-21 (Blog): a SOURCE broadcasting — a warm hot core emitting cool filaments
+                    // that RADIATE outward (replaces the Round-19 directed flow-lines). Structure comes from DENSITY
+                    // CONCENTRATION — 16 filaments with dark voids between (per §23's finding that brightness
+                    // modulation over uniform positions gives no local structure). Each filament TAPERS: thick near
+                    // the core, thinning outward (jitter 0.055·(1−0.6·rf)) and dimming (0.72→0.27), so energy
+                    // concentrates at the source and dissipates at the rim — the emitting read. 16-tapered was chosen
+                    // OVER the metric: lumCV 1.69 < nature 1.93, because on THIS form density-per-ray is exactly what
+                    // lifts lumCV AND destroys the emitter character (8 filaments → 2.02 but reads as a hard asterisk).
+                    // The metric points away from the goal here; see DESIGN.md §24.3.
+                    // The Round-19 reversed spectrum + scomp were geometry-specific to the left→right flow and are
+                    // DROPPED — a radial form has no left→right lean to compensate. Centred at 0.55·S (right of the
+                    // blog text); world-x left-dim keeps the heading legible. Cool-only: filaments FLAT teal-cyan
+                    // (energy 0.30, NO radial hue gradient, so hue range → noise and there is no distinct hue to
+                    // cluster, cf. §22); warm confined to the hot core (~cosmos's share). See DESIGN.md §24.
+                    if (rnd() < 0.009) {                                  // the hot CORE — small, warm, the "source" (~cosmos's warm share)
+                        var srca = rnd() * TAU, srcr = 0.05 * S * Math.cbrt(rnd());
+                        var srcx = srcr * Math.cos(srca) + 0.55 * S;
+                        var srcld = 0.25 + 0.75 * Math.min(1, Math.max(0, (srcx / S - 0.05) / 0.5));
+                        return [srcx, srcr * Math.sin(srca) - 0.05 * S, gauss(0.03 * S), 0.88, 0.5 * srcld, 0];
+                    }
+                    var fil = Math.floor(rnd() * 16);                     // 16 filaments radiating from the core
+                    var frr = 0.05 * S + 0.58 * S * Math.pow(rnd(), 0.95); // density falls outward from the core
+                    var frf = Math.min(1, frr / (0.58 * S));
+                    var frang = fil * TAU / 16 + gauss(0.055 * (1.0 - 0.6 * frf)); // filament TAPERS: thick core → thin rim
+                    var frx = frr * Math.cos(frang) + 0.55 * S, fry = frr * Math.sin(frang) - 0.05 * S, frz = gauss(0.03 * S);
+                    var frld = 0.25 + 0.75 * Math.min(1, Math.max(0, (frx / S - 0.05) / 0.5)); // left-dim protects the blog text
+                    return [frx, fry, frz, 0.30 + gauss(0.012), (0.72 - 0.45 * frf) * frld, 0]; // flat teal-cyan, brighter+thicker near core
                 }
                 case 'waveforms': { // SIGNAL traces: thin, regular, periodic (distinct from nature's organic slabs)
                     var wtr = Math.floor(rnd() * 5);                      // 5 thin signal lines
@@ -410,8 +416,11 @@
             '  float ph = target.x*waveFq - uTime*0.9 + aSeed*6.2831;',
             '  target.y += uWaveAmp*waveW*sin(ph);',
             '  br *= mix(1.0, 0.6+1.05*sin(ph), waveW);',                   // crests bright (up to 1.65x), troughs dark
-            '  float streamW=1.0-clamp(abs(uSceneF-5.0),0.0,1.0);',        // stream: stage 7 -> 5 (blog block; Round-20 +1 for the 専門 split): directed +x flow pulse
-            '  br *= mix(1.0, 0.65+0.55*sin(target.x*1.5 - uTime*1.8), streamW);',
+            '  float streamW=1.0-clamp(abs(uSceneF-5.0),0.0,1.0);',        // Blog (stage 5): the radiating source
+            // Round-21: the Blog motif is now a RADIAL burst, not a directed flow, so the old horizontal
+            // sweep (sin(target.x…)) was a mismatch. Replaced with a uniform TIME breathe — the whole source
+            // gently pulses as it emits. Peak is 1.0× (was 1.2×), so it can only improve the blog-title AA.
+            '  br *= mix(1.0, 0.82+0.18*sin(uTime*1.4), streamW);',
             // curl drift; residual kept tiny at peak so forms are crisp — except nature (揺らぎ).
             '  float resid = mix(uResidual, uResidual+0.03, natureW);',   // waves: undulation from the surface, not per-particle smear (keeps lit-body up)
             '  float spd=0.9+aSeed*0.6;',
