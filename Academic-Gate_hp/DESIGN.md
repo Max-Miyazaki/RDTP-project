@@ -2131,3 +2131,127 @@ band) could enlarge it, and only if it leaves 1440×900 at 0.116.
 at the **page-bottom rest** (where the previous content is highest in the viewport), because those
 blocks do not snap — an intermediate scroll position is not a rest and its clearances are not real.
 Mobile keeps orbits suppressed (unchanged).
+
+# §25 — The motif tiers, the offscreen metric, and the stack's frame ceiling (Round-22)
+
+Round-22 raised Blog (stage 5) to **Scale A** (filament reach ×1.22, `0.58·S → 0.7076·S`; the hot core
+held **absolute** at `0.05·S`, warm fraction `rnd()<0.009` untouched). The stack (foundation/specialty)
+was left exactly as Round-20 shipped. The reasoning below is what made that split the right call rather
+than raising all three index motifs by a common multiplier.
+
+## 25.1 The motifs are tiers — measured extents at both aspects
+
+This is the first time the eight motifs are described as **tiers** rather than one at a time. It is what
+makes "read at a consistent scale" a *decidable* question: consistency is a within-tier claim, not a
+whole-page one. Extent = lit-bbox area (% viewport), central 98% of projected particles, density grid,
+no blend — measured at each stage's rest on the wired build.
+
+| # | stage | wide area (w×h) | tall area (w×h) | tier |
+|---|-------|-----------------|-----------------|------|
+| 2 | infra | 83.3% (83×100) | 92.7% (97×95) | **full-field** — ambient lattice/signal, edge-to-edge |
+| 6 | waveforms | 85.6% (92×93) | 89.8% (99×91) | **full-field** |
+| 0 | cosmos | 47.7% (55×87) | 84.1% (96×87) | **hero identity** |
+| 1 | nature | 50.0% (75×67) | 66.7% (98×68) | **hero identity** |
+| 3 | 基礎 foundation | 19.4% (28×71) | 35.6% (51×69) | **index motif** |
+| 4 | 専門 specialty | 19.1% (28×69) | 35.0% (51×68) | **index motif** |
+| 5 | blog (Scale A) | **22.5%** (37×61) | **36.3%** (60×61) | **index motif** |
+| 7 | orbits | 2.0% (10×20) | 4.3% (22×19) | **focal** — closing convergence, deliberately tiny |
+
+**Tier boundaries (wide):** focal ≈2% ≪ index ≈19–22% ≪ hero ≈48–50% ≪ full-field ≈83–86%. The gaps
+are large and hold at both aspects (tall compresses everything upward but preserves the ordering:
+index ≈35–36% ≪ hero 67–84 ≪ full-field 90–93). So the tiers are real, not an artifact of one viewport.
+
+**The consistency question was entirely within the index tier.** Before Round-22, blog sat at **14.4%**
+— the odd one *below* 基礎 19.4 / 専門 19.1, i.e. falling out of its own tier. Scale A lifts it to
+**22.5% ≈ the stack**, clustering the three index motifs at ~19–22%. The tier reads *more* consistent
+after moving blog **alone**, not less — the naive worry ("raising blog alone makes the stack look
+small") is backwards: the stack was already the tier anchor, and blog was the outlier that needed to
+rise **to** it. This is why a common multiplier across all three was the wrong instrument (see §25.3 —
+the stack cannot take one anyway).
+
+## 25.2 Offscreen fraction — the metric lit-bbox area could not provide
+
+**Offscreen fraction** = % of a stage's projected particles landing outside NDC `[-1,1]²` (off-frame),
+per edge, computed from the stage's target attribute (`aP{k}`) through the live view-projection at the
+stage's rest. **"The form is fully visible" ⇔ offscreen ≈ 0%.**
+
+**Why lit-bbox area (§25.1) cannot catch clipping.** Lit-bbox measures the extent of the particles that
+*remain on screen*. When the widest layer of a form leaves the frame, the on-screen remainder is what
+gets measured — so **area can grow while the form is being cut**. On the stack this is exactly wrong:
+the taper only reads when the whole form is visible (wide base narrowing upward); clip the widest disc
+and you remove the layer that *carries the meaning*, yet lit-bbox counts the surviving inner discs as
+growth. **Same failure shape as the lumCV case (§24.3) and the lumCV-over-off-frame-growth case** — a
+floor/coverage metric rewarding the thing that breaks the read. Offscreen fraction is the complement:
+it counts what *left*.
+
+**Standing check.** Offscreen fraction now joins **lumCV32** (structure floor, §23/§24) and the
+**hue×luminance cluster correlation** (§22) as a required check for **any change to a motif's scale or
+placement.** A scale-up is not verified until offscreen ≈ 0% at both aspects (or the residual is
+explicitly accepted as a parked item, cf. §25.4).
+
+**Blog at Scale A — offscreen and the rest of the set (measured, wired build):**
+- Offscreen: **wide 0%** (fits fully at 1440×900, both before and after Scale A); tall 15.6% → **18.6%**
+  (all off the **right** edge — see §25.4).
+- Warm: the core is **absolute and unchanged** — warm particle share ~0.9% (the `rnd()<0.009` core),
+  and as a *pixel* share it is 0.09% (a tiny magenta core inside a wider cool spread). "Warm confined to
+  a hot core" holds; the scaled-core alternative was rejected earlier for washing warm out. Cool pixels
+  99.3% (teal band). hue range 170–300° but **hue×lum Pearson 0.15** (negligible — the palette is flat
+  teal with a bimodal magenta core, no radial hue gradient; cf. §22, correlation near zero = no
+  hue-luminance structure, as intended).
+- Contrast (24-frame min, wired, field-under-glyph): heading **13.3 wide / 20.7 tall**, body **18 wide /
+  20.5 tall**, **0 frames below AA 4.5** at either aspect. Verified old-reach vs new-reach directly:
+  identical (18/18 wide) — **Scale A does not regress the body text.** This confirms the eyeball read
+  that "A keeps the spacing" (Scale B's tips crowded the left body text; Scale A does not).
+- lumCV32 1.92 (up from 1.69 shipped — the wider form exposes more density structure; still below infra
+  2.05, above nature 1.74; retains the 16-filament emitter character, not the hard 8-ray asterisk).
+
+## 25.3 The stack is at its frame ceiling — do not re-attempt a scale-up
+
+The stack (foundation/specialty) **cannot be enlarged.** Offscreen sweep, stage 3, both aspects:
+
+| stack scale (×base) | wide 1440×900 | tall 1280×1800 |
+|---|---|---|
+| **1.00 (shipped)** | **0%** | 4.6% (right) |
+| 1.05 | 0% | 5.3% |
+| 1.10 | 0.2% (bottom) | 6.1% |
+| 1.15 | 0.9% | 7.1% |
+| 1.22 (= blog Scale A) | 2.1% (bottom) | 8.7% |
+| 1.30 | 3.5% | 10.4% |
+| 1.40 | 5.3% | 12.5% |
+
+- On **wide** the shipped stack fits exactly (0%) and begins clipping its **base (bottom)** disc from
+  **~SF 1.10**. There is essentially no headroom.
+- On **tall** the shipped stack **already clips 4.6% off the right** at SF 1.00 (the narrower 1280px
+  viewport; the form is centred right of centre, so its widest discs reach the right edge). Any
+  enlargement worsens **both** aspects at once.
+- So the largest scale that fits fully at both aspects is **≈ the current one (SF 1.00)**, and even that
+  is not fully clean on tall. **The stack is maxed; the widest disc is the part that carries the taper,
+  so clipping it is the one thing a scale-up must not do.** Recorded here so no future round re-attempts
+  it: the taper form + right-of-centre placement + the 1280px tall viewport together fix the ceiling.
+
+This is *why* the index tier was unified by raising **blog** to the stack rather than the reverse (§25.1):
+the stack had no room to move.
+
+## 25.4 Open item — both motifs clip the right edge on tall viewports (parked)
+
+Not fixed this round; recorded as a known, **pre-existing** condition:
+
+- On tall (1280×1800) the shipped **stack** clips **4.6% off the right** (spec 4.0%) and **blog** clips
+  **15.6% off the right** — both because they are centred **right of centre** and a tall viewport is
+  narrower than 1440, so the right side of each form runs past the frame.
+- **Scale A adds ~3% to blog** (15.6% → 18.6%, all right-edge). This is the price of the tier fix; it was
+  accepted because (a) wide is 0% at both scales, (b) the clip is a thin right-edge sliver of the outer
+  cool filaments, not the core or the body-text side, and (c) contrast stays 20.5:1 with 0 AA failures on
+  tall (§25.2).
+- **Park for a dedicated tall-viewport treatment round**, alongside the index-block-heading work
+  (§20.1 footer tagline 3.6:1, §20.2 Videos heading 3.7:1). A recentre or a viewport-conditional center-x
+  for the right-of-centre motifs would address stack, spec, and blog together; it is out of scope for a
+  scale decision and is not attempted here.
+
+## 25.5 Stills
+
+- **Regenerated:** `docs/stills/r22-5-blog.png` (blog at Scale A, 1440×900). Supersedes `r21-5-blog.png`.
+- **Stale but not re-shot** (blog was the only changed motif; the rest are untouched, their stills stay
+  current): `r21-5-blog.png` is the only stale still — kept for round history. `r20-3-foundation.png`
+  and `r20-4-specialty.png` remain current (the stack did not change, §25.3); cosmos/nature/infra/
+  waveforms/orbits stills are unaffected.

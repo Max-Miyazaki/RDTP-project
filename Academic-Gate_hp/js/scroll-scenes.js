@@ -283,15 +283,20 @@
                     // blog text); world-x left-dim keeps the heading legible. Cool-only: filaments FLAT teal-cyan
                     // (energy 0.30, NO radial hue gradient, so hue range → noise and there is no distinct hue to
                     // cluster, cf. §22); warm confined to the hot core (~cosmos's share). See DESIGN.md §24.
-                    if (rnd() < 0.009) {                                  // the hot CORE — small, warm, the "source" (~cosmos's warm share)
+                    // Round-22: reach scaled to Scale A (×1.22, 0.58→0.7076·S) so the index tier clusters at ~20%
+                    // lit-bbox area (blog 14.4→22.5, ≈ 基礎 19.4 / 専門 19) rather than blog falling out of it. The
+                    // stack is at its frame ceiling (see §25.3) so the tier is unified by raising blog to the stack,
+                    // not the reverse. The CORE stays ABSOLUTE (radius unscaled): scaling it with the form dilutes
+                    // warm to 0.13–0.46%; held absolute it keeps warm ≈ cosmos's share (see §25.2).
+                    if (rnd() < 0.009) {                                  // the hot CORE — ABSOLUTE radius, warm ~cosmos share
                         var srca = rnd() * TAU, srcr = 0.05 * S * Math.cbrt(rnd());
                         var srcx = srcr * Math.cos(srca) + 0.55 * S;
                         var srcld = 0.25 + 0.75 * Math.min(1, Math.max(0, (srcx / S - 0.05) / 0.5));
                         return [srcx, srcr * Math.sin(srca) - 0.05 * S, gauss(0.03 * S), 0.88, 0.5 * srcld, 0];
                     }
                     var fil = Math.floor(rnd() * 16);                     // 16 filaments radiating from the core
-                    var frr = 0.05 * S + 0.58 * S * Math.pow(rnd(), 0.95); // density falls outward from the core
-                    var frf = Math.min(1, frr / (0.58 * S));
+                    var frr = 0.05 * S + 0.7076 * S * Math.pow(rnd(), 0.95); // Scale A reach; density falls outward
+                    var frf = Math.min(1, frr / (0.7076 * S));
                     var frang = fil * TAU / 16 + gauss(0.055 * (1.0 - 0.6 * frf)); // filament TAPERS: thick core → thin rim
                     var frx = frr * Math.cos(frang) + 0.55 * S, fry = frr * Math.sin(frang) - 0.05 * S, frz = gauss(0.03 * S);
                     var frld = 0.25 + 0.75 * Math.min(1, Math.max(0, (frx / S - 0.05) / 0.5)); // left-dim protects the blog text
