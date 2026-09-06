@@ -1845,6 +1845,13 @@ a pass — do not read it as one); treat the correlation as informative only whe
 frame-distribution contrast standard (§21.3) and the footer-glyph contrast check (§19.4). A motif
 with no colour gradient (a single-hue field) is exempt — there is no distinct hue to cluster.
 
+**The "hue range" in this rule is always the per-column-mean range defined above — never a raw
+per-pixel min-to-max.** On a field with a deliberate second-hue element (e.g. Blog's magenta core in a
+teal field), a per-pixel min-max is *bimodal* and balloons to >100°, which would falsely satisfy the
+≥10° gate though no gradient exists; the per-column mean washes the small core out and reports the true
+spread (~3–5° for a flat field). See §25.2 for the worked case (Blog: column-mean 4.8° vs per-pixel
+170–300° on the same frame).
+
 ## 22.3 Reversed spectrum reintroduces a luminance lean — compensated, not by eye
 
 Putting teal (the more-luminant hue) on the right *adds* to the stream's **inherent geometric
@@ -2192,12 +2199,27 @@ explicitly accepted as a parked item, cf. §25.4).
 **Blog at Scale A — offscreen and the rest of the set (measured, wired build):**
 - Offscreen: **wide 0%** (fits fully at 1440×900, both before and after Scale A); tall 15.6% → **18.6%**
   (all off the **right** edge — see §25.4).
-- Warm: the core is **absolute and unchanged** — warm particle share ~0.9% (the `rnd()<0.009` core),
-  and as a *pixel* share it is 0.09% (a tiny magenta core inside a wider cool spread). "Warm confined to
-  a hot core" holds; the scaled-core alternative was rejected earlier for washing warm out. Cool pixels
-  99.3% (teal band). hue range 170–300° but **hue×lum Pearson 0.15** (negligible — the palette is flat
-  teal with a bimodal magenta core, no radial hue gradient; cf. §22, correlation near zero = no
-  hue-luminance structure, as intended).
+- Warm / core: the core is **absolute and unchanged** — warm particle share ~0.9% (the `rnd()<0.009`
+  core). By the **warm-pixel detector** (isWarm: hue ≥288° or ≤24°, max≥70 — the same one used for
+  cosmos and the stack), warm is **0.62% of lit pixels**, confined to a tight **34×35px central cluster**
+  (bbox x913–947, y452–487 at 1440×900 — dead centre of the form), hue ~300–317°. "Warm confined to a
+  hot core" holds. **This is the core figure to report going forward** — not a "teal-band complement":
+  of the ~2% of lit pixels outside the 150–220° teal band, only ~0.6% is the magenta core; the rest is
+  teal→blue filament-edge transition (blue 220–288° ≈0.6%) and antialiased boundary pixels. The older
+  "violet" detector (b>150 ∧ r>85 ∧ g<110) reads **0** here — the core is *magenta* (red-dominant,
+  hue ~300–317°), not blue-violet, so violet is the wrong detector for this core; warm share is the
+  right one.
+- hue × luminance (the §22 metric): **hue range 4.8°, correlation gated to noise** — flat teal,
+  no gradient, as intended. **Method note (read before comparing to Round 21):** §22.2 *defines* hue
+  range as the spread of **per-column mean hues** (8 columns); measured that way the current build is
+  **4.8°** (column means 177–182°), squarely comparable to Round 21's 5–7° and §22's "~3° flat teal."
+  Round-22's first pass (`verifyfull.mjs`) instead printed a **raw per-pixel min-to-max (170–300°)**,
+  which is **not the §22 figure** — a raw min-max over a field with a deliberate second-hue core is
+  *bimodal* (a narrow teal cluster + a tiny magenta cluster), so it balloons to ~160° and would
+  falsely trip §22's ≥10° "gradient exists" gate. Do not compare the 170–300° number to Round 21 or
+  run it through §22's rule; the **column-mean range (4.8°) is the standard**. The correlation itself
+  (column-mean Pearson 0.86 over the 4 populated columns) is meaningless at a 4.8° range — exactly what
+  the gate is for.
 - Contrast (24-frame min, wired, field-under-glyph): heading **13.3 wide / 20.7 tall**, body **18 wide /
   20.5 tall**, **0 frames below AA 4.5** at either aspect. Verified old-reach vs new-reach directly:
   identical (18/18 wide) — **Scale A does not regress the body text.** This confirms the eyeball read
