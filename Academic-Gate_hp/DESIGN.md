@@ -2139,7 +2139,8 @@ at the **page-bottom rest** (where the previous content is highest in the viewpo
 blocks do not snap — an intermediate scroll position is not a rest and its clearances are not real.
 Mobile keeps orbits suppressed (unchanged). **See §26** for the reachability mechanism behind this
 (sceneF 7 was unreachable at rest above a 1188px viewport height until Round-23); the 240px band here is
-the same footer-bound wide band §26.3 records as *not* grown by the reachability fix.
+the footer-bound wide band. **➜ The 240px figure is SUPERSEDED for wide by §27 (Round-24): the wide band
+is now 362px** after the centred-composition change; carry 362, not 240, for the wide page-bottom rest.
 
 # §25 — The motif tiers, the offscreen metric, and the stack's frame ceiling (Round-22)
 
@@ -2336,14 +2337,74 @@ care as §20.1/§20.2.
 
 ## 26.3 Two standing facts to carry forward
 
-- **Wide's clear band is 240px and footer-bound — this fix does NOT grow it.** On a 900px viewport the
-  footer (446px) eats half the frame at the page-bottom rest, leaving nav(87)→closing(327) = 240px (the
-  same band §24.4 measured for orbits). Reaching stage 7 was never wide's problem; the band just is small.
-  Opening it needs a composition change (rest at the FM-centre with a tall section so the footer leaves
-  the fold), not a reachability fix. **Nobody should expect the wide band to have grown.** Tall, once
-  reached, has a ~1140px band.
+- **Wide's clear band is 240px and footer-bound — the *reachability* fix does NOT grow it.** On a 900px
+  viewport the footer (446px) eats half the frame at the page-bottom rest, leaving nav(87)→closing(327) =
+  240px. Reaching stage 7 was never wide's problem; the band just is small. Opening it needs a composition
+  change (rest at the FM-centre with a tall section so the footer leaves the fold), not a reachability fix.
+  Tall, once reached, has a ~1140px band. **➜ SUPERSEDED for the wide case by §27 (Round-24):** the
+  composition change was made — **wide's band is now 362px**, not 240px. Do not carry the 240px figure
+  forward for wide; it survives only as the pre-Round-24 measurement.
 - **Reading sceneF requires a settle long enough to converge.** `sfEased` approaches its target at
   0.09/frame; in a low-fps headless capture ~1.2s reads *mid-convergence*. The sea round reported wide
   "6.911" for what is actually **7.0** (it climbs 6.54→6.85→6.99→7.00 over ~4s). This is the second time a
   short settle produced a wrong number — **always settle ≥ ~5s (or poll to a plateau) before reading
   sceneF.**
+
+# §27 — Stage-7 wide composition: centred, footer kept (Round-24)
+
+§26 made stage 7 *reachable* on tall but left **wide's band at 240px, footer-bound** (§26.3). Round-24
+opens it. The change: on short viewports the closing line is **centred** (not bottom-anchored) in a 70vh
+section, and a **snap point** holds the rest at the final-message centre — lifting the footer off the
+fold's pressure and opening the band to **~362px** while keeping **motif → message → footer** in one
+frame. `css/style.css`, `@media (min-width:769px) and (max-height:1100px)`, overriding §26's
+`min-height`/`justify-content` only on short viewports (display/flex-direction carry over).
+
+## 27.1 Why Option 1 (header) was rejected — and why no-snap was rejected
+
+Three compositions were built and **rendered** (the geometry alone did not settle it):
+- **Option 1 (header — 100vh, top-anchored, +snap):** the closing line becomes a title under the nav and
+  the footer goes off the fold. Rejected on the renders: (a) the closing line sits **directly on top of
+  the motif** — they touch under the nav; (b) the message and the footer are **never on screen together**
+  — at the snap rest the footer is off-fold, and scrolling past to the absolute bottom drops the closing
+  off the top (motif + footer, no message). A ~750px band isn't worth losing the closing-plus-footer
+  ending. **This is a composition failure the geometry (band size) doesn't show — only the renders did.**
+- **Option 2 without snap:** also **rendered and rejected.** Without a snap point the natural rest is the
+  **absolute bottom**, where the footer is pinned ~446px from the viewport bottom and the *centred*
+  message rides to the **top and touches the motif** — reproducing exactly the Option-1 collision, with
+  the order flipped to **message → motif → footer**. So **the snap point is LOAD-BEARING**, not
+  decorative: it is the only thing that holds the rest at the FM-centre, where the message sits clear of
+  the motif and the approved order survives. *If a future round sees a lone snap point on stage 7 and
+  thinks it arbitrary: it is not. Removing it returns the message-on-motif collision.* (Stage 7 is thus
+  the one index-region block with a snap point; §23.6's "index blocks land off-centre" still holds for
+  3–6, which stay unsnapped.)
+- **Option 2 with snap (shipped):** motif top → message centre → footer bottom, all three visible.
+
+## 27.2 Why the boundary is a MAX-HEIGHT, not a width
+
+The constraint is that the footer is a **fixed ~446px** and eats half of a **short** viewport at the
+page-bottom rest — so it is a **height** problem, not a width one. The `min-width:769px` in the rule is
+only the desktop/motif-active gate (inherited from §26, the `isMobile` boundary); the `max-height:1100px`
+is what actually scopes the composition. **Someone reading a `min-width`/`max-height` pair should not
+assume both conditions describe the same thing** — the width keeps it off phones, the height is the real
+trigger. **Boundary = 1100px** by measurement: Option-2's centred band beats the §26 bottom-anchor band
+up to the **~1150px crossover**, above which the bottom-anchor already gives ≥440px (growing to 1140px on
+tall). 1100 sits inside the beneficial range and cleanly separates landscape laptops (≤1100) from
+portrait/tall (≥1200). Either-side check: 1050 → Option 2 (band 455, sf 7.0, both visible); 1150 → §26
+bottom-anchor (Δ0, sf 7.0, band 490) — a smooth ~455→490 step, both endings valid, nothing falls between.
+
+## 27.3 Verification (settle 6s; rest = FM-centre snap where Option 2 active, else absolute bottom)
+
+- **Converged sceneF:** wide 7.0, h1050 6.999, h1150 7.0, tall 7.0, mobile 7.0. **w_ss / landing fc: no
+  change at any viewport** (all stages w=1, fc 0). **Per-stage heights / scrollHeight: only stage 7
+  shrinks on short viewports** (wide 900→630, Δscroll −270; 1050→735, −315); **h1150, tall (1800), mobile:
+  all Δ0 — §26 kept exactly** (the Q4 requirement: fix wide without regressing tall).
+- **Closing / footer contrast (24-frame):** wide **16.3 / 19.3**, h1050 11.1 / 19.3, tall 15.1 / 10.1,
+  mobile 8.8 / 8.9 — **0 frames below AA everywhere.** Band: wide **240→362px**, h1050 455px, tall 1140px
+  (unchanged), mobile 57px (motif suppressed, moot).
+- **11-page diff (measured):** only index.html changes; the other 10 are identical (no `.final-message`).
+  **CSS blast radius:** `.final-message`-only, index-only visual; `scroll-snap-type` already ships
+  globally on `<html>`. Reduced-motion removes the field entirely, so there is no collision to guard there.
+
+**Wide's band is now 362px** — this supersedes the 240px figure in §24.4 and §26.3 for the wide case
+(both cross-referenced). Still: `docs/stills/r24-7-orbits-wide.png` (the wide ending, motif → message →
+footer). Tall's still (`r23-7-orbits-tall.png`) is unaffected.
