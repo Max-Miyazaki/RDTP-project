@@ -2137,7 +2137,9 @@ band) could enlarge it, and only if it leaves 1440×900 at 0.116.
 **Lesson (generalises):** contrast/clearance for an index-block or the closing region must be measured
 at the **page-bottom rest** (where the previous content is highest in the viewport), because those
 blocks do not snap — an intermediate scroll position is not a rest and its clearances are not real.
-Mobile keeps orbits suppressed (unchanged).
+Mobile keeps orbits suppressed (unchanged). **See §26** for the reachability mechanism behind this
+(sceneF 7 was unreachable at rest above a 1188px viewport height until Round-23); the 240px band here is
+the same footer-bound wide band §26.3 records as *not* grown by the reachability fix.
 
 # §25 — The motif tiers, the offscreen metric, and the stack's frame ceiling (Round-22)
 
@@ -2277,3 +2279,71 @@ Not fixed this round; recorded as a known, **pre-existing** condition:
   current): `r21-5-blog.png` is the only stale still — kept for round history. `r20-3-foundation.png`
   and `r20-4-specialty.png` remain current (the stack did not change, §25.3); cosmos/nature/infra/
   waveforms/orbits stills are unaffected.
+
+# §26 — Stage-7 reachability: the layout mechanism (Round-23)
+
+This is the shared cause of three things we hit at different times — **orbits stuck at oScale 0.116
+(§24.4)**, the **tall page-bottom resting on a dissolved videos↔orbits blend**, and the **sea
+investigation's "tall never reaches the stage."** It lives here, not in a round note, because it is one
+mechanism.
+
+## 26.1 The mechanism and the formula
+
+`sceneF = sceneFor(scrollMid)`, where `scrollMid = scrollY + (innerH + 92)/2` is the snapport centre
+(the 92 is `scroll-padding-top: var(--nav-clearance)`). sceneF reaches the last stage's value **7.0 only
+when the viewport centre can reach the final-message centre `center7`**. The furthest the viewport centre
+can travel is `scrollMax + (innerH+92)/2 = scrollH − innerH/2 + 46`. With `scrollH = FM_top + FM_height +
+footer` and `center7 = FM_top + FM_height/2`, the reach condition `scrollMid_max ≥ center7` reduces to:
+
+> **sceneF 7 is reachable ⇔ `FM_height + 2·footer + 92 ≥ viewport_height`.**
+> Equivalently the shortfall is `deficit = innerH/2 − FM_height/2 − footer − 46`; reachable when ≤ 0.
+
+The footer carries coefficient 2 (it sits below the FM centre *and* it is the only term raising
+`scrollH`), the FM height coefficient 1/2. **The cause is document height below the final-message centre**
+— on a tall viewport there isn't enough of it (the FM's own lower half + the footer) for the viewport
+centre to reach the FM centre. Before Round-23, `FM_height 204 + 2·446 + 92 = 1188px`, so:
+
+| viewport | 1188 vs height | converged sceneF (before) | stage-7 landing |
+|---|---|---|---|
+| wide 1440×**900** | 1188 ≥ 900 ✅ | **7.000** | fc 0, w=1 (resolved) |
+| mobile 390×**844** | 1188 ≥ 844 ✅ | **7.000** | fc 0 (motif suppressed anyway) |
+| tall 1280×**1800** | 1188 < 1800 ❌ | **6.52** (306px short) | fc 0.49, **w≈0.02 (dissolved)** |
+
+Any viewport **taller than 1188px** fails — not just the 1800 test case. At the tall shortfall, landing fc
+0.49 is essentially the dissolve midpoint, which is why the tall page-bottom showed a scattered
+videos↔orbits blend rather than a resolved motif.
+
+## 26.2 The fix (Round-23) and why vh, bottom-anchored, min-width-gated
+
+`.final-message { min-height: 100vh; display:flex; flex-direction:column; justify-content:flex-end }`,
+gated to `@media (min-width: 769px)`. Setting `FM_height = 100vh = innerH` makes `FM_height + 2·footer +
+92 ≥ innerH` hold at **every** height (verified reaching 7.0 at 900/1188/1200/1400/1800/**2400**px — vh
+scales, a fixed spacer would not). **Bottom-anchored** so the closing line stays exactly where it was on
+short viewports (wide closing y327 unchanged) — the particle field fills the space above it, so this is
+NOT the Round-12 bug-2 void. **Gated to min-width:769px** (the `isMobile` boundary): phones suppress the
+stage-7 motif and already reach 7.0 via their short layout, so a full-height section there would only add
+an empty region above the line. It is pure document height — **not** a snap point (a snap can't pull the
+viewport centre past `scrollMax`, so it adds no reach on its own) and **not** `scroll-padding-top`.
+
+**Measured effect (before → after), settle 6s:** tall stage-7 **w 0.02 → 1.0, fc 0.49 → 0**; wide and
+mobile **unchanged** (all 8 stages' w and fc identical); stages 0–6 untouched at every aspect (their
+centres are above the FM). Only the stage-7 element height + `scrollHeight` change (index +696px wide /
++1596px tall). The other 10 pages that share style.css were **measured identical** (they carry no
+`.final-message` element). Closing/footer contrast at the resolved rest: wide 12.1 / 7.3, tall **15.1** /
+10.1, mobile 8.8 / 8.9 — 0 frames below AA at all three (24-frame). This is a **css/style.css** edit;
+`.final-message` markup is index-only so the visual effect is index-only, but the file is shared — same
+care as §20.1/§20.2.
+
+## 26.3 Two standing facts to carry forward
+
+- **Wide's clear band is 240px and footer-bound — this fix does NOT grow it.** On a 900px viewport the
+  footer (446px) eats half the frame at the page-bottom rest, leaving nav(87)→closing(327) = 240px (the
+  same band §24.4 measured for orbits). Reaching stage 7 was never wide's problem; the band just is small.
+  Opening it needs a composition change (rest at the FM-centre with a tall section so the footer leaves
+  the fold), not a reachability fix. **Nobody should expect the wide band to have grown.** Tall, once
+  reached, has a ~1140px band.
+- **Reading sceneF requires a settle long enough to converge.** `sfEased` approaches its target at
+  0.09/frame; in a low-fps headless capture ~1.2s reads *mid-convergence*. The sea round reported wide
+  "6.911" for what is actually **7.0** (it climbs 6.54→6.85→6.99→7.00 over ~4s). This is the second time a
+  short settle produced a wrong number — **always settle ≥ ~5s (or poll to a plateau) before reading
+  sceneF.**

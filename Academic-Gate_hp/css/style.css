@@ -979,6 +979,25 @@ html.js .reveal.is-visible {
     padding: var(--space-8) var(--gutter);
 }
 
+/* Round-23: give stage 7 a viewport-tall section so sceneF can REACH 7.0 at a true rest
+   on tall viewports. Reachability needs  FM_height + 2·footer + 92 ≥ viewport_height
+   (see DESIGN.md §26); at the old ~204px height that failed above 1188px tall, leaving the
+   closing region resting at a dissolved videos↔orbits blend (fc 0.477, w≈0.02). 100vh makes
+   the condition hold at every height. The text is BOTTOM-anchored (flex column, justify-end)
+   so the closing line stays exactly where it was on short viewports — the particle field fills
+   the space above it, so this is NOT the Round-12 bug-2 void (a lone line centred in black).
+   Gated to min-width:769px (the isMobile boundary): phones suppress the stage-7 motif and
+   already reach 7.0 via their short layout, so a full-height section there would only add an
+   empty region above the line. Not a snap point and not scroll-padding — pure document height. */
+@media (min-width: 769px) {
+    .final-message {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+    }
+}
+
 .final-message p {
     max-width: none;
     font-family: var(--font-display);
