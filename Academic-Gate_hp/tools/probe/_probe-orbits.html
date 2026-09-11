@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Academic Gates</title>
+    <meta name="description" content="科学技術の面白さを伝え、研究に挑む学生の声を届けるプラットフォーム。">
+
+    <!-- Fonts: Inter Tight (Latin) + Noto Sans JP (Japanese), light display weights -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;500&family=Noto+Sans+JP:wght@300;400&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet" href="../../css/style.css?v=r48">
+    <link rel="icon" href="../../../favicon.ico" sizes="32x32">
+    <link rel="icon" href="../../../favicon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="../../../apple-touch-icon.png">
+    <!-- Three.js is injected non-blocking by js/scroll-scenes.js, and NOT downloaded
+         at all under prefers-reduced-motion. Version pinned to 0.160.0 there. -->
+</head>
+
+<body data-page="index">
+    <!-- Cosmic layers -->
+    <canvas id="starfield" aria-hidden="true"></canvas>
+    <canvas id="scene-canvas" aria-hidden="true"></canvas>
+
+    <div id="site-nav"><noscript><nav class="noscript-nav" aria-label="メインナビゲーション"><a href="index.html">ホーム</a><a href="self-intro.html">自己紹介</a><a href="study.html">勉強の軌跡</a><a href="videos.html">動画</a><a href="blog.html">ブログ</a><a href="sns.html">各種SNS</a></nav></noscript></div>
+
+    <main>
+        <!-- ======== HERO: continuous flow field, four motifs (Round 12) ====== -->
+        <!-- 宇宙 cosmos → 自然 nature → 社会 network → 情報基盤 infrastructure.
+             A curl-noise flow field runs the whole page; each motif is an attractor
+             the flow concentrates into and releases. Each text block is position:sticky
+             so it holds legibly while the field forms and disperses under it. -->
+        <div class="hero">
+
+            <!-- ① 宇宙 COSMOS — the ring, viewer inside it -->
+            <section class="scene scene--center scene-cosmos" data-stage="cosmos" aria-labelledby="s1">
+                <div class="scene__content hero-scrim">
+                    <p class="eyebrow"><span class="eyebrow__num">01</span> — 宇宙 / Cosmos</p>
+                    <h1 class="gate-title" id="s1">Academic Gates</h1>
+                    <p class="gate-subtitle" lang="ja">科学技術の面白さを伝え、研究に挑む学生の声を届ける。<br>宇宙のはじまりから、いまへ。</p>
+                </div>
+                <div class="scroll-hint" aria-hidden="true">
+                    <span>Scroll</span><span class="scroll-hint__arrow">↓</span>
+                </div>
+            </section>
+
+            <!-- ② 自然 NATURE — branching filaments; 勉強の軌跡 -->
+            <section class="scene scene--center scene-nature" data-stage="nature" aria-labelledby="s2">
+                <div class="scene__content hero-scrim">
+                    <p class="eyebrow"><span class="eyebrow__num">02</span> — 自然 / Nature</p>
+                    <h2 id="s2" lang="ja">学びは、<br>根を張る。</h2>
+                    <p lang="ja">一つの問いが枝分かれし、つながりながら伸びていく。基礎から専門へ——根から枝先へと広がる、知の成長。</p>
+                    <div class="cta-row">
+                        <a href="study.html" class="btn btn-primary">勉強の軌跡を見る <span class="btn-disc"
+                                aria-hidden="true">→</span></a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ④ 情報基盤 INFRASTRUCTURE — lattice + streaming; 発信 (cards below) -->
+            <section class="scene scene--center scene-infra" data-stage="infra" aria-labelledby="s4">
+                <div class="scene__content hero-scrim">
+                    <p class="eyebrow"><span class="eyebrow__num">04</span> — 情報基盤</p>
+                    <h2 id="s4" lang="ja">学びを、<br>社会へ。</h2>
+                    <p lang="ja">積み上げた知識は、ノート・ブログ・動画・SNSという回路を流れ、構造化されて社会へと届いていく。</p>
+                </div>
+            </section>
+        </div>
+
+        <!-- ======================= THE INDEX (calm card grids) ============ -->
+        <div class="index-region">
+
+            <!-- 基礎領域 — foundational studies. Round-20: split back out of the merged study block
+                 (the 専門領域 block follows). Keeps its intro paragraph and the 6-item list; the
+                 second paragraph + 3-item list moved to #stage-specialty. Motif: foundation stack
+                 (stage 3), hot core at the base; the core migrates to 専門's apex (see DESIGN.md §23). -->
+            <section class="index-block" id="stage-study" aria-labelledby="found-h">
+                <div class="index-block__head reveal">
+                    <p class="eyebrow"><span class="eyebrow__num">05</span> — 基礎領域</p>
+                    <h2 id="found-h" lang="ja"><a class="stage-jump" href="#stage-study">学びの土台</a></h2>
+                    <p lang="ja">カオスから構造が生まれるように、学びもまた基礎から立ち上がる。まずは土台となる学部レベルの学問を、一つずつ積み上げていく。</p>
+                    <ul class="scene-list" lang="ja">
+                        <li>物理数学</li>
+                        <li>古典力学・解析力学</li>
+                        <li>電磁気学</li>
+                        <li>熱力学・統計力学</li>
+                        <li>量子力学</li>
+                        <li>特殊相対性理論</li>
+                    </ul>
+                    <p style="margin-top: 1.5rem;">
+                        <a href="study.html" class="btn btn-secondary">勉強の軌跡を見る <span class="btn-disc"
+                                aria-hidden="true">→</span></a>
+                    </p>
+                </div>
+            </section>
+
+            <!-- 専門領域 — specialized fields. Round-20: split back out of the merged study block.
+                 Copy (eyebrow, heading 専門という軌道, paragraph, 3-item list, button ノートを読む)
+                 restored VERBATIM from pre-merge commit 4c64a53. Structural wrapper (id, index-block__head
+                 reveal, stage-jump self-link) mirrors the sibling index-blocks for parity. -->
+            <section class="index-block" id="stage-specialty" aria-labelledby="spec-h">
+                <div class="index-block__head reveal">
+                    <p class="eyebrow"><span class="eyebrow__num">06</span> — 専門領域</p>
+                    <h2 id="spec-h" lang="ja"><a class="stage-jump" href="#stage-specialty">専門という軌道</a></h2>
+                    <p lang="ja">一つひとつの分野が、恒星をめぐる惑星の軌道のように。基礎の上に、素粒子・重力・宇宙の専門領域を重ねていく。</p>
+                    <ul class="scene-list" lang="ja">
+                        <li>場の量子論</li>
+                        <li>一般相対性理論</li>
+                        <li>宇宙論</li>
+                    </ul>
+                    <p style="margin-top: 1.5rem;">
+                        <a href="study.html" class="btn btn-secondary">ノートを読む <span class="btn-disc"
+                                aria-hidden="true">→</span></a>
+                    </p>
+                </div>
+            </section>
+
+            <!-- Blog -->
+            <section class="index-block" id="stage-blog" aria-labelledby="blog-h">
+                <div class="index-block__head reveal">
+                    <p class="eyebrow"><span class="eyebrow__num">08</span> — Blog</p>
+                    <h2 id="blog-h" lang="ja"><a class="stage-jump" href="#stage-blog">最新ブログ</a></h2>
+                    <p lang="ja">研究や学問に関する記事、考察を発信しています。</p>
+                </div>
+                <!-- Cards hidden until there are real articles to link. The three below were
+                     sample content (fabricated titles); restore/replace them when blog.html has
+                     actual posts. See also the matching block in blog.html. -->
+                <!--
+                <div class="note-grid">
+                    <a href="blog.html" class="card reveal">
+                        <div class="media-placeholder" aria-hidden="true"></div>
+                        <span class="meta">Physics</span>
+                        <h4 lang="ja">量子コンピュータの現在地</h4>
+                    </a>
+                    <a href="blog.html" class="card reveal">
+                        <div class="media-placeholder" aria-hidden="true"></div>
+                        <span class="meta">Technology</span>
+                        <h4 lang="ja">AIエージェントと協働する未来</h4>
+                    </a>
+                    <a href="blog.html" class="card reveal">
+                        <div class="media-placeholder" aria-hidden="true"></div>
+                        <span class="meta">Math</span>
+                        <h4 lang="ja">トポロジーとデータ解析</h4>
+                    </a>
+                </div>
+                -->
+                <p class="reveal" style="margin-top: 1.5rem;">
+                    <a href="blog.html" class="btn btn-secondary">ブログへ <span class="btn-disc"
+                            aria-hidden="true">→</span></a>
+                </p>
+            </section>
+
+            <!-- Videos (reachable from the homepage) -->
+            <section class="index-block" id="stage-videos" aria-labelledby="videos-h">
+                <div class="index-block__head reveal">
+                    <p class="eyebrow"><span class="eyebrow__num">09</span> — Videos</p>
+                    <h2 id="videos-h" lang="ja"><a class="stage-jump" href="#stage-videos">最新動画</a></h2>
+                    <p lang="ja">研究や学問についての動画コンテンツ、シミュレーション映像。</p>
+                </div>
+                <!-- Cards hidden until there are real videos to link. The three below were
+                     sample content (fabricated titles); restore/replace them when videos.html has
+                     actual videos. See also the matching block in videos.html. -->
+                <!--
+                <div class="note-grid">
+                    <a href="videos.html" class="card reveal">
+                        <div class="media-placeholder" aria-hidden="true"></div>
+                        <h4 lang="ja">量子場理論入門 — 第1回</h4>
+                        <p lang="ja">量子場理論の基礎概念を分かりやすく解説します。</p>
+                    </a>
+                    <a href="videos.html" class="card reveal">
+                        <div class="media-placeholder" aria-hidden="true"></div>
+                        <h4 lang="ja">研究生活のリアル</h4>
+                        <p lang="ja">大学院生の一日。実際の研究生活を紹介します。</p>
+                    </a>
+                    <a href="videos.html" class="card reveal">
+                        <div class="media-placeholder" aria-hidden="true"></div>
+                        <h4 lang="ja">素粒子物理学の最前線</h4>
+                        <p lang="ja">最新の研究動向とその意義について解説します。</p>
+                    </a>
+                </div>
+                -->
+                <p class="reveal" style="margin-top: 1.5rem;">
+                    <a href="videos.html" class="btn btn-secondary">動画一覧へ <span class="btn-disc"
+                            aria-hidden="true">→</span></a>
+                </p>
+            </section>
+
+            <!-- Closing — Round-17: promoted to the convergence stage (stage 6). The scene engine
+                 now treats this section as a stage centre (see js/scroll-scenes.js indexBlocks
+                 selector); its copy is unchanged. -->
+            <section class="final-message reveal">
+                <p lang="ja">学問の世界へ、あなたも一歩を踏み出してみませんか。</p>
+            </section>
+        </div>
+    </main>
+
+    <!-- Unified footer -->
+    <div id="site-footer"><noscript><nav class="noscript-nav" aria-label="フッターナビゲーション"><a href="index.html">ホーム</a><a href="self-intro.html">自己紹介</a><a href="study.html">勉強の軌跡</a><a href="videos.html">動画</a><a href="blog.html">ブログ</a><a href="sns.html">各種SNS</a></nav></noscript></div>
+
+    <!-- Bracketed micro-labels along the bottom edge -->
+    <div class="stage-labels" aria-hidden="true">
+        <span>[ 基礎領域 ]</span>
+        <span>[ 専門領域 ]</span>
+        <span>[ ARCHIVE ]</span>
+    </div>
+
+    <!-- Shared behaviour, then the star field, then the scene engine (loads Three.js) -->
+    <script src="../../js/layout.js?v=r48"></script>
+    <script src="../../js/main.js?v=r48"></script>
+    <script src="../../js/starfield.js?v=r48"></script>
+    <script src="_probe-orbits.js?v=orb"></script>
+</body>
+
+</html>

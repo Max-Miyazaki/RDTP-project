@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Stage-7 GPU Probe</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+  :root{
+    --bg:#07100f; --panel:#0d1a19; --panel-2:#102422; --hair:rgba(43,217,196,.16);
+    --teal:#2bd9c4; --cyan:#00c2cb; --text:#d6ece7; --dim:#7b968f; --faint:#4f6b66;
+    --warn:#f2b04a; --crit:#ff6a6a; --good:#2bd9c4;
+    --mono:'IBM Plex Mono',ui-monospace,Menlo,monospace; --sans:'IBM Plex Sans',system-ui,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh;
+    background-image:radial-gradient(1100px 500px at 72% -10%, rgba(43,217,196,.05), transparent 60%);-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1040px;margin:0 auto;padding:22px 18px 44px}
+  header{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;border-bottom:1px solid var(--hair);padding-bottom:14px}
+  h1{font-size:19px;font-weight:600;letter-spacing:-.01em;margin:0}
+  h1 .jp{color:var(--teal)}
+  .sub{font-family:var(--mono);font-size:12px;color:var(--dim)}
+
+  .verdict{margin-top:18px;display:grid;grid-template-columns:auto 1fr;gap:18px;align-items:center;
+    background:linear-gradient(180deg,var(--panel-2),var(--panel));border:1px solid var(--hair);border-radius:14px;padding:16px 18px}
+  @media(max-width:640px){.verdict{grid-template-columns:1fr}}
+  .pill{font-family:var(--mono);font-weight:600;font-size:13px;letter-spacing:.12em;text-transform:uppercase;
+    padding:8px 14px;border-radius:999px;border:1px solid currentColor;white-space:nowrap;justify-self:start}
+  .pill.wait{color:var(--dim)} .pill.ship{color:var(--good)} .pill.marginal{color:var(--warn)} .pill.hold{color:var(--crit)}
+  .delta{font-family:var(--mono);font-size:24px;font-weight:600;color:var(--text);font-variant-numeric:tabular-nums}
+  .read{font-family:var(--mono);font-size:12.5px;color:var(--dim);line-height:1.5;margin-top:4px}
+  .read b{color:var(--text);font-weight:500}
+
+  main{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:18px;margin-top:18px}
+  @media(max-width:820px){main{grid-template-columns:1fr}}
+  .scope{background:#04100e;border:1px solid var(--hair);border-radius:14px;overflow:hidden;position:relative}
+  .scope .framewrap{position:relative;width:100%;overflow:hidden}
+  .scope iframe{border:0;display:block;background:#000}
+  .scope .badge{position:absolute;top:10px;left:12px;font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;
+    background:rgba(4,16,14,.82);border:1px solid var(--hair);border-radius:8px;padding:5px 9px;z-index:2}
+  .scope .badge b{color:var(--teal)}
+
+  .side{display:flex;flex-direction:column;gap:14px}
+  .table{background:var(--panel);border:1px solid var(--hair);border-radius:14px;padding:14px 16px}
+  .table h2{margin:0 0 12px;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);font-weight:600}
+  .grid{display:grid;grid-template-columns:auto 1fr 1fr;gap:9px 12px;font-family:var(--mono);font-variant-numeric:tabular-nums;align-items:center}
+  .grid .h{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint)}
+  .grid .k{font-size:12px;color:var(--dim)}
+  .grid .v{font-size:18px;text-align:right;color:var(--text)}
+  .grid .v.crit{color:var(--crit)} .grid .v.warn{color:var(--warn)} .grid .v.good{color:var(--good)}
+  .grid .v small{font-size:10px;color:var(--faint)}
+  .pathrow{margin-top:12px;font-family:var(--mono);font-size:11px;color:var(--dim);display:flex;justify-content:space-between;gap:8px}
+  .pathrow .p{color:var(--text)} .pathrow .p.fb{color:var(--warn)}
+
+  .controls{display:flex;flex-wrap:wrap;gap:8px;font-family:var(--mono);font-size:12px}
+  .controls .grp{display:flex;gap:6px;align-items:center;background:var(--panel);border:1px solid var(--hair);border-radius:10px;padding:6px 8px}
+  .controls label{color:var(--dim)}
+  button{font-family:var(--mono);font-size:12px;color:var(--text);background:transparent;border:1px solid var(--hair);padding:7px 12px;border-radius:8px;cursor:pointer}
+  button:hover{border-color:rgba(43,217,196,.5)}
+  button.on{background:rgba(43,217,196,.14);border-color:var(--teal);color:var(--teal)}
+  button:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
+  .measure{display:flex;gap:8px}
+  .measure button{flex:1;padding:12px;font-size:14px;font-weight:500}
+
+  .note{margin-top:20px;border-top:1px solid var(--hair);padding-top:14px;font-family:var(--mono);font-size:12px;color:var(--dim);line-height:1.7;max-width:74ch}
+  .note b{color:var(--text)} .note .g{color:var(--good)} .note .w{color:var(--warn)} .note .c{color:var(--crit)}
+  .note h3{font-family:var(--sans);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);margin:14px 0 6px}
+  code{color:var(--teal)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Stage-7 GPU Probe <span class="jp">流</span></h1>
+    <span class="sub">real engine · working tree vs baseline · same machine · desktop (the stage-7 motif is suppressed on mobile)</span>
+  </header>
+
+  <div class="verdict">
+    <div class="pill wait" id="pill">no data yet</div>
+    <div>
+      <div class="delta" id="deltaLine">Measure both to get a verdict</div>
+      <div class="read" id="readLine">Each button loads the <b>real page</b> in the scope below (the working-tree motif from <code>html/index.html</code>, or the frozen baseline) and scrolls it to the closing section. Let each run ≥60s; the readout is the page's own telemetry.</div>
+    </div>
+  </div>
+
+  <div class="controls" style="margin-top:16px">
+    <div class="grp measure" style="flex:1;min-width:240px">
+      <button id="mWt" class="on">▶ Measure WORKING TREE</button>
+      <button id="mBase">▶ Measure BASELINE</button>
+    </div>
+    <div class="grp"><label>particles</label>
+      <button data-n="200000" class="on">200k</button>
+      <button data-n="110000">110k</button>
+      <button data-n="">auto</button>
+    </div>
+    <div class="grp"><button id="mReset">reset stats</button></div>
+  </div>
+
+  <main>
+    <div class="scope">
+      <div class="badge">now: <b id="nowMode">WORKING TREE</b> · <span id="nowN">200k</span></div>
+      <div class="framewrap" id="framewrap"></div>
+    </div>
+    <div class="side">
+      <div class="table">
+        <h2>Readout — live</h2>
+        <div class="grid">
+          <div class="h"></div><div class="h" style="text-align:right">WORKING&nbsp;TREE</div><div class="h" style="text-align:right">BASELINE</div>
+          <div class="k">frame ms</div><div class="v" id="wtMs">—</div><div class="v" id="baseMs">—</div>
+          <div class="k">FPS</div><div class="v" id="wtFps">—</div><div class="v" id="baseFps">—</div>
+          <div class="k">FPS min</div><div class="v" id="wtMin">—</div><div class="v" id="baseMin">—</div>
+          <div class="k">samples</div><div class="v" id="wtN"><small>0</small></div><div class="v" id="baseN"><small>0</small></div>
+        </div>
+        <div class="pathrow"><span>baseline</span><span class="p">orbits · frozen @3e942e0</span></div>
+        <div class="pathrow"><span>measurement path</span><span class="p" id="pathTxt">—</span></div>
+      </div>
+    </div>
+  </main>
+
+  <div class="note">
+    <h3>What to read off it</h3>
+    <b>FPS min</b> decides it — the lowest FPS since the last reset, so it catches thermal throttling a first-paint reading misses. Leave the tab focused and let each side run <b>≥60s</b>.
+    <b>Measurement path</b> tells you whether <b>frame ms</b> is a real GPU-timer number (<code>EXT_disjoint_timer_query_webgl2</code>) or a frame-time estimate (<span class="w">fallback</span>) — the page's telemetry uses the GPU timer where the browser exposes it. It'll be the same path for both sides on one machine.
+    <h3>The two sides</h3>
+    <b>WORKING TREE</b> is whatever <code>html/index.html</code> currently ships (the live stage-7 motif — today the drift 流). <b>BASELINE</b> is the frozen orbits engine (<code>_probe-orbits.js</code>, the git-HEAD engine at <b>3e942e0</b>, Round-24) — the thing the current motif replaced. Absolute FPS varies by machine; the <b>delta</b> between the two is the test.
+    <h3>Ship / don't-ship — the delta vs baseline is the test</h3>
+    <span class="g">SHIP</span> — working tree's FPS-min matches baseline's (within ~5) and its frame-ms is within ~1.5 ms.<br>
+    <span class="w">MARGINAL</span> — working tree trails by 5–12 FPS-min, or +1.5–4 ms. Judge by feel.<br>
+    <span class="c">HOLD</span> — working tree &gt;12 FPS-min below baseline, or &gt;4 ms more, or can't hold ~55 FPS.
+    <br>The baseline is what the current motif replaced, so "working tree ≈ baseline" is the pass.
+    <h3>Mobile</h3>
+    The stage-7 motif is <b>suppressed on phones</b>, so it ships at zero cost there and there's nothing to measure — this gate is the <b>laptop</b>. Run at <b>200k</b> (desktop's real count). Record the six numbers (ms/FPS/FPS-min × working-tree/baseline) and the path in DESIGN.md.
+  </div>
+</div>
+
+<script>
+(function(){
+  // WORKING TREE = the real, currently-shipping engine (html/index.html loads js/scroll-scenes.js).
+  // BASELINE = the frozen orbits engine (_probe-orbits.html loads _probe-orbits.js, git HEAD @3e942e0).
+  var WT_SRC='../../html/index.html', BASE_SRC='_probe-orbits.html';
+  var LABEL={wt:'WORKING TREE', base:'BASELINE'};
+  var wrap=document.getElementById('framewrap');
+  var LOGICAL_W=1000, LOGICAL_H=620;   // desktop-mode iframe (innerWidth>768 so the motif is NOT mobile-suppressed)
+  var iframe, scale=1;
+  var side='wt', count='200000';
+  var stat={wt:s(),base:s()};
+  function s(){return{ms:[],fps:[],min:1e9,n:0};}
+  var path='—', pathFallback=false;
+
+  function layout(){
+    var colW=wrap.clientWidth||900; scale=Math.min(1,colW/LOGICAL_W);
+    wrap.style.height=(LOGICAL_H*scale)+'px';
+    if(iframe){ iframe.style.width=LOGICAL_W+'px'; iframe.style.height=LOGICAL_H+'px';
+      iframe.style.transformOrigin='top left'; iframe.style.transform='scale('+scale+')'; }
+  }
+  window.addEventListener('resize',layout);
+
+  function load(){
+    if(iframe){ iframe.remove(); }
+    iframe=document.createElement('iframe');
+    var src=(side==='wt'?WT_SRC:BASE_SRC)+(count?('?n='+count):'');
+    iframe.src=src; wrap.appendChild(iframe); layout();
+    document.getElementById('nowMode').textContent=LABEL[side];
+    document.getElementById('nowN').textContent=(count?(count/1000+'k'):'auto');
+    waitReady();
+  }
+  var readyTimer;
+  function waitReady(){
+    clearInterval(readyTimer); var tries=0;
+    readyTimer=setInterval(function(){
+      tries++;
+      try{
+        var w=iframe.contentWindow, d=iframe.contentDocument;
+        if(w && w.__field && w.__field.snapRest && d.querySelector('.t-fps')){
+          clearInterval(readyTimer);
+          // scroll to the stage-7 (closing) rest
+          var rest=w.__field.snapRest(w.__field.stages-1);
+          var maxS=d.documentElement.scrollHeight - w.innerHeight;
+          w.scrollTo(0, Math.max(0, Math.min(rest, maxS)));
+          detectPath(d);
+        }
+      }catch(e){}
+      if(tries>120)clearInterval(readyTimer);
+    },200);
+  }
+  function detectPath(d){
+    try{ var cvs=d.querySelector('#scene-canvas'); var gl2=cvs&&cvs.getContext('webgl2');
+      var ok=gl2&&gl2.getExtension('EXT_disjoint_timer_query_webgl2');
+      pathFallback=!ok; path= ok ? 'GPU timer (EXT_disjoint_timer_query_webgl2)' : 'FPS fallback — frame-time estimate';
+    }catch(e){ pathFallback=true; path='FPS fallback (context not readable)'; }
+    var pt=document.getElementById('pathTxt'); pt.textContent=path; pt.className='p'+(pathFallback?' fb':'');
+  }
+
+  // sample the active iframe's real telemetry
+  var warm=0;
+  setInterval(function(){
+    try{
+      var d=iframe&&iframe.contentDocument; if(!d)return;
+      var fpsT=d.querySelector('.t-fps'), msT=d.querySelector('.t-ms'); if(!fpsT||!msT)return;
+      var fps=parseFloat(fpsT.textContent), ms=parseFloat(msT.textContent);
+      if(!isFinite(fps)||fps<=0)return;
+      warm++; if(warm<6)return;                 // ~1.5s warmup after (re)load
+      var st=stat[side]; st.fps.push(fps); if(isFinite(ms))st.ms.push(ms);
+      if(st.fps.length>400)st.fps.shift(); if(st.ms.length>400)st.ms.shift();
+      st.n++; if(st.n>10 && fps<st.min)st.min=fps;
+      hud();
+    }catch(e){}
+  },250);
+  function med(a){ if(!a.length)return null; var b=a.slice(-160).sort(function(x,y){return x-y}); return b[b.length>>1]; }
+
+  function hud(){
+    var W=stat.wt,B=stat.base;
+    set('wtMs',fmt(med(W.ms),' ms')); set('baseMs',fmt(med(B.ms),' ms'));
+    set('wtFps',fmt(med(W.fps),'')); set('baseFps',fmt(med(B.fps),''));
+    set('wtMin', W.min<1e9?Math.round(W.min):null,''); set('baseMin', B.min<1e9?Math.round(B.min):null,'');
+    small('wtN',W.n); small('baseN',B.n);
+    if(W.min<1e9&&B.min<1e9){ var dm=B.min-W.min; cls('wtMin', dm>12?'crit':dm>5?'warn':'good'); }
+    // verdict
+    if(W.n<60||B.n<60){
+      document.getElementById('pill').className='pill wait';
+      document.getElementById('pill').textContent = (W.n<60&&B.n<60)?'measure both':(W.n<60?'measure working tree':'measure baseline');
+      document.getElementById('deltaLine').textContent='Δ — need ≥60 samples each (working tree '+W.n+', baseline '+B.n+')'; return; }
+    var wMs=med(W.ms),bMs=med(B.ms); var msD=(wMs!=null&&bMs!=null)?(wMs-bMs):null; var minD=B.min-W.min;
+    var v,cl; var hard=(W.min<55&&B.min>=55);
+    if(hard||minD>12||(msD!=null&&msD>4)){v='HOLD';cl='hold';}
+    else if(minD>5||(msD!=null&&msD>1.5)){v='MARGINAL';cl='marginal';}
+    else {v='SHIP';cl='ship';}
+    document.getElementById('pill').className='pill '+cl; document.getElementById('pill').textContent=v;
+    var parts=[]; if(msD!=null)parts.push('working tree '+(msD>=0?'+':'')+msD.toFixed(2)+' ms');
+    parts.push('wt min '+(minD>=0?'−':'+')+Math.abs(Math.round(minD))+' fps vs baseline');
+    document.getElementById('deltaLine').textContent='Δ  '+parts.join('   ·   ');
+    document.getElementById('readLine').innerHTML='working tree sustained <b>'+Math.round(W.min)+'</b> fps · baseline <b>'+Math.round(B.min)+'</b> fps · path: '+(pathFallback?'<span style="color:var(--warn)">FPS fallback</span>':'GPU timer')+' · keep running to expose throttling.';
+  }
+  function set(id,v,suf){ var el=document.getElementById(id); if(!el)return; el.textContent=(v==null?'—':(typeof v==='number'?Math.round(v):v)+(suf||'')); }
+  function fmt(v,suf){ return v==null?'—':(v).toFixed(suf===' ms'?2:0)+suf; }
+  function small(id,n){ document.getElementById(id).innerHTML='<small>'+n+'</small>'; }
+  function cls(id,c){ var el=document.getElementById(id); el.className='v'+(c?' '+c:''); }
+
+  function pick(m){ side=m; warm=0;
+    document.getElementById('mWt').classList.toggle('on',m==='wt');
+    document.getElementById('mBase').classList.toggle('on',m==='base');
+    load(); }
+  document.getElementById('mWt').onclick=function(){pick('wt');};
+  document.getElementById('mBase').onclick=function(){pick('base');};
+  document.querySelectorAll('[data-n]').forEach(function(b){ b.onclick=function(){
+    document.querySelectorAll('[data-n]').forEach(function(x){x.classList.remove('on')}); b.classList.add('on');
+    count=b.dataset.n; stat={wt:s(),base:s()}; hud(); load(); }; });
+  document.getElementById('mReset').onclick=function(){ stat={wt:s(),base:s()}; warm=0; hud(); };
+
+  load();
+})();
+</script>
+</body>
+</html>
