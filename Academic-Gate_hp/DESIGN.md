@@ -2408,3 +2408,82 @@ bottom-anchor (Δ0, sf 7.0, band 490) — a smooth ~455→490 step, both endings
 **Wide's band is now 362px** — this supersedes the 240px figure in §24.4 and §26.3 for the wide case
 (both cross-referenced). Still: `docs/stills/r24-7-orbits-wide.png` (the wide ending, motif → message →
 footer). Tall's still (`r23-7-orbits-tall.png`) is unaffected.
+
+# §28 — Stage 7: the sea, built and measured, NOT adopted (Round-25)
+
+Stage 7 was prototyped as **学問の海 — a living water surface** (rests in ripples, scattered splashes leap,
+burst, fall back). It was **fully built, wired, and measured** — it passed every gate including the
+frame-time gate — and then **rejected on the read**: at this stage's geometry it renders as a **thick teal
+band with splashes, not a sea.** Stage 7 **stays orbits.** `make('sea')` is kept as **inert dead code** (the
+surface sheet, callable, not in the stages array — like `make('convergence')`/`make('orbits')`); the shader
+block and `uSeaY` uniform are **not** in the live shader (they would corrupt orbits, gated by `seaW` at
+stage 7). This section is the record of the mechanics so the motif can be revived from it.
+
+## 28.1 The mechanics — worth keeping (all attribute-free)
+
+- **Rest-state cycle.** The whole motif lives in stage 7's rest state, driven by `uTime`, gated by
+  `seaW = 1−clamp(|uSceneF−7|)` — it plays wherever the user stops (no traverse dependency; unlike Round-20's
+  migration it needs no coherence attribute, because at a rest `w=1` and nothing disperses).
+- **Message-relative placement (`uSeaY` uniform).** The surface is baked at nominal `y≈0`; the shader adds
+  `uSeaY`, a world-y set **0.75 world above the closing `<p>`** by tracking its **live on-screen position**
+  near stage 7 (`updateSeaY` = `worldYAtScreen(<p>.top) + 0.75`, called when `sfEased>6.4`). This sits the
+  surface just above the caption in **both** compositions (message centred on wide, bottom on tall) and
+  slides it in with the message — *predicting* the rest scroll instead was fragile (mis-placed the tall sea
+  to `uSeaY −2.7`, off the bottom). A world margin of **0.3 failed on wide** (≈33 screen-px there, the
+  additive bloom reached the message → 3.7:1, 20/24 below AA) before **0.75** cleared both — the standing
+  lesson: *a fixed world margin is far fewer screen-px on a short viewport.*
+- **Fixed WORLD splash amplitude → auto-scales by aspect.** A given world rise projects to ~2× the
+  screen-pixels on the 1800px viewport as on the 900px one, so the *same* cycle reads modest on wide and
+  taller on tall with no per-aspect code. Plus a **lateral burst** at the apex so the read survives wide's
+  short clearance.
+- **A POPULATION of splashes (no fixed spot, no visible repeat).** The surface is split into **cells** of
+  width `CW` along x; each cell is an **independent oscillator** with per-cell **phase** `hash(cell)` and
+  **incommensurate per-cell period** `PERIOD·(0.72+0.56·hash(cell))` — so there is **no global beat** (the
+  combined pattern's repeat is effectively unbounded; a 2.6-period contact sheet showed no two frames alike).
+  Per **(cell, cycle)** hashes independently pick whether it **fires**, its **x-jitter**, **size**, and
+  **start time** — splashes scatter in position (no clustering), stagger in time, and vary in height, ~1–3
+  active at once. **All procedural** from `target.x` + the existing `aSeed`; **no stored attribute** (slots
+  stay 12/16; memory 27.2 MB @200k desktop / 9.52 MB @70k mobile, unchanged — `uSeaY` is a uniform).
+- The first build used **one fixed `SPX`** — the event happened at the same x, same phase, every period
+  (it ran an animation on a loop). The cell-oscillator population above is what made it read as *alive*.
+
+## 28.2 Verification — it passed every gate (settle ≥6s, loop paused; both aspects)
+
+- **Message-glyph contrast**, 24-frame, field-under-text: **16.6 wide / 15.06 tall, 0 frames below AA**
+  (the surface lands at exactly the 0.75 world margin, 0.806 above the glyph top; splashes rise *away* from
+  the message — it sits below the waterline — so no splash-position exclusion is needed, confirmed with
+  splashes running full-width). Footer glyphs not sampled on wide (below the fold at the FM-centre rest, per
+  §27); on tall the footer is clear.
+- **Offscreen, decomposed per §25.2:** wide 0%; tall **T 0 · B 0 · L 16.7 · R 15.9** — *purely horizontal*
+  (the full-width surface's ends leave the frame; nothing off top or bottom), cleaner vertically than infra
+  (T 2.3 B 3.5) or waveforms (T 1.5 B 0). Splash peak reaches screen-y 679 (592 px clear of the nav) — no
+  vertical clip, no lost meaning (unlike the stack taper, §25.2).
+- **lumCV32** (floor check only, §24.3): 1.78 wide / 1.64 tall. **hue×lum** (per-column-mean, §22.2): flat
+  teal, range ≤2° — below the 10° floor, no cluster. **warm share (isWarm):** 0% (cool-only). **clip%** 0;
+  **lit-median** ~0.02–0.08. Waterline thinning when several splashes fire: 1.3% wide / 9–14% tall — surface
+  holds. **scrollHeight / heights** identical to Round-24 (JS particle change, Δ0). **attribute memory**
+  unchanged.
+- **Frame time — the gate PASSED.** On the real GPU path (`EXT_disjoint_timer_query_webgl2`, laptop, 200k,
+  309 samples): **sea 5.10 ms vs orbits 5.40 ms** — the sea is *not* more expensive than the motif it would
+  replace (the rest-state animation's per-vertex cost is real but sits under orbits' baseline here). This
+  retired the open frame-time gate from the prototype rounds. (Earlier headless figures were SwiftShader,
+  which clamps ~50 ms and cannot distinguish the two — labelled as such and superseded by this real-GPU
+  number.)
+
+## 28.3 Why it was NOT adopted
+
+**It reads as a thick teal band plus splashes, not a sea.** The cause is layout, not tuning: the closing
+message sits **directly under the waterline**, so there is **no vertical room for a body of water below the
+surface** (wide: ~65 px of footer below a centred message; tall: the message + footer own the bottom). A sea
+needs depth under its surface; this stage gives it none, so the motif collapses to a bright horizontal
+surface line with splashes rising off it — legible and cheap, but not the thing. This is a **geometry
+verdict** the contrast/offscreen/cost numbers can't see (they all passed) — recorded so a future round does
+not re-derive it: *at stage 7's message-under-waterline geometry, a "sea" cannot get a body; do not rebuild
+the sea here expecting a different read without first changing where the message sits.*
+
+## 28.4 Parked state
+
+`make('sea')` inert dead code (surface sheet, callable, not in `stages`); stage 7 = `'orbits'` (unchanged
+from Round-24); `make('orbits')` and `make('convergence')` remain the other inert cases. No `uSeaY`
+uniform, `updateSeaY`, sea shader block, or `ROT[7]` change in the live engine. The `_probe*` measurement
+files (the real-engine sea-vs-orbits GPU probe) are left untracked. Mobile stays suppressed (as orbits).

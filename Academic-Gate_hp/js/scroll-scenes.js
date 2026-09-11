@@ -321,6 +321,26 @@
                     var ca = rnd() * TAU, cr = S * (0.28 + 0.42 * rnd());
                     return [cr * Math.cos(ca) + ox, cr * Math.sin(ca) * 0.34 + oy, gauss(S * 0.14), 0.32 + 0.2 * rnd(), 0.5, 0]; // y compressed → clears the card band
                 }
+                case 'sea': { // 学問の海 — INERT dead code (Round-25: built, measured, NOT adopted). Kept callable for
+                    // cheap reversibility, like 'convergence'/'orbits' above. Never reached — 'sea' is not in the
+                    // stages array; stage 7 stays 'orbits'. This case is only the resting SURFACE sheet; the full
+                    // motif also needed a shader block + a uSeaY uniform, which are NOT in the live shader. To revive,
+                    // re-add per DESIGN.md §28 (the record of the mechanics, all attribute-free):
+                    //   • uSeaY uniform, set live from the .final-message rect (updateSeaY: worldYAtScreen(<p> top)+0.75
+                    //     world) so the surface sits just above the closing message in BOTH compositions.
+                    //   • a fixed WORLD splash amplitude (auto-scales screen-px by aspect), lateral burst.
+                    //   • ripples + a POPULATION of splashes: the surface split into cells along x, each an independent
+                    //     oscillator with per-cell phase + incommensurate per-cell period (no global beat); per-(cell,cycle)
+                    //     hashes pick fire/x-jitter/size/start — scattered, staggered, non-repeating. No attribute.
+                    // Verified (§28.4): message 16.6 wide / 15.06 tall (0 below AA), offscreen T0 B0 L16.7 R15.9,
+                    //   lumCV 1.78/1.64, GPU 5.10 ms vs orbits 5.40 ms @200k (passed the frame-time gate). Rejected on the
+                    //   READ: a thick teal band + splashes, not a sea — the message sits under the waterline, no room for a body.
+                    if (isMobile) return [gauss(0.05), 12.0 + gauss(0.05), gauss(0.05), 0.3, 0.0, 0];
+                    var seax = (rnd() * 2 - 1) * 4.1;              // surface spread across the width
+                    var seay = Math.abs(gauss(0.05)) * 0.9;       // thin surface, nominal y≈0 (shader would add uSeaY)
+                    var seaz = (rnd() * 2 - 1) * 0.55;
+                    return [seax, seay, seaz, 0.30, 0.42, 0];     // flat cool teal
+                }
                 default: return [0, 0, 0, 0.3, 1, 0];
             }
         }
