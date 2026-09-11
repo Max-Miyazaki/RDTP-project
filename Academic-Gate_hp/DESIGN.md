@@ -2809,3 +2809,35 @@ the fitted scale). Mobile suppressed (brightness-0 base + uDriftAdvect=0). Stati
 GPU gate PASSED on real hardware (§30.11a: drift 4.4–4.6 ms vs orbits 5.5–5.6 ms, WebGL2 confirmed).
 orbits/convergence/sea inert. No CSS/HTML/copy change; scrollHeight Δ0. `_probe*`/SURVEY_* untracked.
 Open: real-GPU frame time (probe) + laptop WebGL2 confirmation.
+
+---
+
+## 30.13 docs/stills index (Round-30) — and the 7→8 numbering caveat
+
+The canonical current still per stage (8-stage engine: cosmos 0 … drift 7). Only STAGE 7 changed by
+content this round (orbits → drift); every other stage's motif is unchanged, so its latest still stands.
+
+  | stage | motif | current still(s) |
+  |-------|-------|------------------|
+  | 0 | cosmos      | r17-0-cosmos.png |
+  | 1 | nature      | r17-1-nature.png |
+  | 2 | infra       | r17-2-infra.png |
+  | 3 | foundation  | r20-3-foundation.png |
+  | 4 | specialty   | r20-4-specialty.png |
+  | 5 | stream/blog | r22-5-blog.png |
+  | 6 | waveforms/videos | r17-5-videos.png  ← filename "5" is the OLD 7-stage index; it is stage **6** now |
+  | 7 | **drift 流** | **r30-7-drift-wide.png (1440×900), r30-7-drift-tall.png (1280×1800)** |
+
+**Stage-7 refresh.** `r30-7-drift-*` are captured from the committed drift build (3907501), settled ≥6 s at
+the stage-7 rest, at the same viewports the orbits stills used. They SUPERSEDE `r24-7-orbits-wide.png` and
+`r23-7-orbits-tall.png`, which are kept as the round-24 historical record (accurate for their round — not
+deleted, mirroring how orbits/sea stay inert in the engine).
+
+**Stale / historical — do not read their numbers as current stages.** These predate the Round-20 7→8 split
+(foundation+specialty) and the stage-7 changes; they are archives of their rounds, not re-captured (that
+would falsify them): `01-beginning / 02-galaxies / 03-earth / 04-society` (the old 4-motif naming); the
+`r17-3-merged-study` (now split into stages 3+4), `r17-4-blog` (now stage 5), `r17-6-convergence` (stage-7
+motif before orbits, removed); `s05-dispersal / s08-stream / s09-waveforms / s10-convergence` and
+`r18-6-orbits` (orbits at the old index 6, before it moved to stage 7). The remaining July stills (12/13/15,
+s01/s02/s04, s14-rest-*, interior-*, mobile-*) are older captures of unchanged stages/pages — still
+representative, lower priority to refresh.
