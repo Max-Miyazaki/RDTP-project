@@ -1852,6 +1852,19 @@ teal field), a per-pixel min-max is *bimodal* and balloons to >100°, which woul
 spread (~3–5° for a flat field). See §25.2 for the worked case (Blog: column-mean 4.8° vs per-pixel
 170–300° on the same frame).
 
+**Amendment (2026-09-11, from the Round-28/29 drift, §30).** The per-column-mean range must be computed
+over pixels **above a field-luminance floor** (exclude the static `body::before` scrim AND the star field
+— both are lit, both carry their own position-dependent hue), and **only over columns with ≥ N such field
+pixels** (N stated per measurement; 40 has worked). Reason: a *sparse, wide-spread* motif (the advected
+drift covers the frame thinly) leaves many columns dominated by dim scrim/star pixels whose hue varies by
+position — so a range computed at the old lum>0.05 floor reports **noise, not the motif**. Worked case: the
+drift's column-range was **36° at floor 0.05** but **0.9–1.0° at floor 0.15** (field only), and the
+robust **stdev over lit field pixels was 2.5°** (flat teal, n≈16k) — the two field measures agree, the
+0.05 figure was scrim. Tell: the range **fell as motif density rose** (the opposite of a real gradient).
+**Report both** the field-floored column-range (with N and the floor) AND the stdev-over-lit-pixels; when
+the field is too sparse for ≥2 qualifying columns (the drift on tall), the stdev is the usable statistic.
+This amends, not replaces, the metric above — the column-mean method and the ≥10° "matters" bar stand.
+
 ## 22.3 Reversed spectrum reintroduces a luminance lean — compensated, not by eye
 
 Putting teal (the more-luminant hue) on the right *adds* to the stream's **inherent geometric
@@ -2487,3 +2500,312 @@ the sea here expecting a different read without first changing where the message
 from Round-24); `make('orbits')` and `make('convergence')` remain the other inert cases. No `uSeaY`
 uniform, `updateSeaY`, sea shader block, or `ROT[7]` change in the live engine. The `_probe*` measurement
 files (the real-engine sea-vs-orbits GPU probe) are left untracked. Mobile stays suppressed (as orbits).
+
+---
+
+## 29. Stage 7: the drift (流) — the current motif (Round-26/27)
+
+Supersedes §28.4's "stage 7 = 'orbits'": after parking the sea (§28), stage 7 was redesigned. The
+`stages` array now ends in `'drift'`; `orbits`/`convergence`/`sea` remain inert dead cases.
+
+## 29.0 The three concepts considered
+Drift (流) — a vortical woven current; Lattice (格) — a settling crystal of grid-nodes; Aurora (極光) —
+swaying vertical light-curtains. Pick: **Drift**. Aurora was rejected on an engine limit — the morph is
+`p = target + curl()·amp`, a BOUNDED offset (not an integration), so the engine can shimmer a form in
+place but cannot *stream*; a curtain would only quiver. Lattice was rejected as redundant with the
+foundation stages (3–4) already reading as settling structure. (Mid-session an earlier list said
+Drift/Aurora/Constellation; the deliberated three are Drift/Lattice/Aurora — this line is canonical.)
+
+## 29.1 Mechanics (attribute-free)
+90 streamlines are traced once (CPU) through the divergence-free field of ψ = sin(0.8x)·cos(1.1y): each
+line follows a ψ-contour and curls into a soft eddy. Particle i is placed along `driftLines[i % 90]`
+(thin σ0.028 jitter → voids between lines), lifted `doy = 1.72` world above the closing message so it
+clears the caption at both aspects. Flat cool teal (energy 0.30), no warm core. The shader raises the
+curl amplitude at stage 7 only (`driftW`), so the whole form flows/folds; bounded, so it never drifts
+away. No attribute (12/16 slots unchanged; the streamlines are a JS-side array, not per-particle data).
+
+## 29.2 Round-27 measurement — the swirl was smearing the weave (verified, not adopted-blind)
+The shipped Round-26 amplitude (driftW·0.28) read as two soft blobs, not a woven current. Measured over
+the matrix driftW ∈ {0, 0.04, 0.08, 0.14, 0.28}, field-only, both aspects, with a 48×20-cell luminance
+CV over the lit bbox (large-scale weave proxy — finer than lumCV32, credits voids in both axes):
+  • cellCV falls MONOTONICALLY with amplitude — wide 2.38→2.14 (−10%), tall 1.79→1.32 (−26%).
+  • Visually (matrix montage): wide amp-0 = two eddy RINGS with hollow centres; the swirl fills the
+    centres → rings→blobs by 0.28. Tall amp-0 = two visible SPIRAL eddies; 0.28 = a formless dim haze.
+  • Cause confirmed: the isotropic curl offset ±0.28·1.0 ≈ ±0.29 world ≈ the streamline spacing (~0.30),
+    so it displaces particles ACROSS neighbouring lines and erases the voids. The user's hypothesis held.
+  • SECONDARY (wide only): even static (amp 0), the 90 lines don't resolve into discrete streamlines —
+    litFrac ~9% saturates them (200k additive) into two filled eddies. Density, independent of the swirl.
+Fix applied (Round-27): driftW·0.28 → **0.08** — the largest amplitude at which the eddy voids survive
+AND the flow still reads. cellCV recovers (wide →2.34, tall →1.64); the 24-frame contact sheets at 0.08
+(both aspects, >1 period) show the eddies keeping hollow centres while the lobes churn and centres
+migrate. One-line change, attribute-free, no CSS/scrollHeight change.
+
+## 29.3 Gates (measured; what is not, is labelled)
+  • MESSAGE field-under-text: on tall the glyph bbox sits low in-viewport (y≈1697/1800); field mean
+    luminance under the glyphs ≈ 0.001 (near-black) → mean-contrast ≈ 20.6. The worst single pixel
+    reaches 0.086 → worst-case contrast 7.72 — but that pixel is IDENTICAL with the canvas hidden, i.e.
+    it is the STATIC body::before teal/cyan scrim, NOT the drift field. So the tall "7.72, zero spread"
+    is text-against-scrim (the page's own dark gradient), not field-under-text, and it is amplitude-
+    independent. Wide: glyph mid-viewport (y≈495), field max 0.061 > scrim 0.039 → some field present →
+    min contrast 11.02, spread 11.02–13.81 (the field animates there). Both ≥ AA 4.5, 0 frames below.
+    (Message/offscreen were fully measured at driftW·0.28, the MORE energetic case; 0.08 spreads the
+    field less, so it is an equal-or-better upper bound. Offscreen at 0.28: wide T0 B0 L0 R0; tall
+    T0 B0 L12.8 R8.6 — horizontal full-width spill only, no vertical.)
+  • FOOTER: at the stage-7 rest the footer shows only its top padding (65px wide / 0px tall visible) and
+    ZERO text glyphs are on-screen (text is below the fold) — the earlier n=0 was correct, not a sampler
+    miss. Measured at the page-bottom scroll where the footer text IS visible: min contrast 15.86 wide /
+    17.41 tall, 0 below AA (white text on the rgba(0,0,0,0.6) footer panel). Not a field-under-text case.
+  • lumCV32 (floor, aspect-dependent): 1.63 wide / 1.16 tall @0.28. Hue×lum col-mean range 2.8°/1.1°
+    (< 10° → flat teal, exempt per §22.2). Warm 0%, clipped 0%.
+  • scrollHeight Δ0 (6476 wide / 13046 tall, = orbits). Memory 27.20 MB @200k (measured, attribute-free);
+    @70k mobile DERIVED ≈9.52 MB by proportion, NOT directly measured. Mobile suppressed.
+  • FRAME TIME: SwiftShader only (~50 ms, clamped — cannot distinguish motif cost). Real-GPU UNTESTED;
+    run html/_probe.html on the laptop GPU (EXT_disjoint_timer_query_webgl2), as the sea was (5.10 ms).
+
+## 29.4 Proposed (NOT built — awaiting approval): a true flowing woven current
+0.08 mitigates the wrong mechanism. The isotropic curl is directionally wrong: it should move particles
+ALONG their streamline, not across neighbours. Two options:
+  (A) Along-streamline advection — animate each particle's arc-length position s = (s0 + uTime·speed +
+      aSeed) mod L, sampling the streamline geometry in the shader (upload the 90×26 points as a small
+      data texture; store lineId+s0 per particle via aSeed). Particles slide along their own line →
+      voids persist at all times → the current genuinely flows (the teamLab "river" read). Attribute-free.
+  (B) Tangent-projected offset — store the local streamline tangent in the spare aux attribute (→13/16)
+      and displace ALONG it only. Cheaper; motion stays a bounded along-line shimmer, not true advection.
+Either should pair with a DENSITY reduction (90→~40 lines, and/or lower per-particle brightness / wider
+spacing) so individual streamlines resolve on wide instead of saturating into two eddy masses.
+
+## 29.5 State at end of Round-27 (SUPERSEDED by §30)
+stage 7 = 'drift'; driftW·0.08 isotropic-curl shimmer on a symmetric sin/cos eddy-pair field. §29.4
+proposed along-streamline advection + a non-symmetric field + lower density — all three were then BUILT
+in Round-28; see §30. orbits/convergence/sea remain inert. No CSS/HTML/copy change.
+
+---
+
+## 30. Stage 7 drift: the flowing woven current — advection build (Round-28)
+
+Built §29.4's three coupled changes together (the amplitude was never the only problem). stage 7 = 'drift',
+now an ADVECTED asymmetric current. All JS-only; no CSS/HTML/copy change; scrollHeight Δ0.
+
+## 30.1 The non-symmetric field (breaks the eddy-pair)
+ψ = sin(0.8x)·cos(1.1y) fit exactly two cells into the band → a symmetric eddy PAIR (a pair of eyes).
+Bake-off of three divergence-free candidates, static weave, both aspects, scored by mirror-asymmetry
+(mean|L(x)−L(mirror)|/2ΣL over the lit bbox) + cellCV + the stills:
+  • C1 multi-term incommensurate sin/cos — asym 0.50/0.71; rejected (a convergence "stem" artifact on wide,
+    reads as a tree; most mirror-ish).
+  • C2 curl-noise (ψ = fbm value-noise) — asym 0.55/0.75 (highest both aspects), cellCV 2.40/1.99; PICKED —
+    eddies of varied size at irregular positions, no mirror, reads as an irregular turbulent current.
+  • C3 two anisotropic incommensurate terms — asym 0.57/0.67; rejected (reads as a single sparse diagonal
+    stroke / broad band; thinner, less woven).
+Shipped: ψ = fbm(value-noise) over (0.9x+3.1, 1.4y−2.2), 4 octaves; a LOCAL mulberry32 (noise perm seed
+1337, line-seed 42) so the field is stable across reloads and independent of the particle rnd().
+
+## 30.2 Density (individual streamlines resolve on wide)
+Static wide saturated 90 lines into filled masses (litFrac ~9%). Fix: NLINES 90→48 AND park a fraction to
+brightness 0 (DRIFT_PARK 0.5 — the mobile "off at zero brightness" trick, in-band: fewer LIT particles
+share the band, all 200k kept, cost unchanged). Wide litFrac → 3.98% and the current resolves into
+filaments with voids. Tall is the opposite risk — it goes thin (litFrac 0.48%); it reads as a delicate
+high current, and its PRESENCE is deferred to the §30.5 composition proposal, not brightened (raising
+brightness pushed the dense wide cores toward additive clip → a cool cyan-white hue shift; kept BR 0.5).
+
+## 30.3 Advection (A) — the shader carries the flow
+Streamlines baked into a float DATA TEXTURE (DPTS=26 cols × NLINES=48 rows, RG = band-space xy, NEAREST +
+manual lerp along the line so there is no bleed between rows). The vertex shader, gated to stage 7,
+advects each particle ALONG its own line: s = fract(s0 + uTime·spd_line + phase_line); target is REPLACED
+(mixed by driftW7) with sampleLine(li,s)·(1.05,0.80)+doy, + a ±0.025 aSeed jitter for line width. Per-line
+speed spd = uDriftSpeed·(0.55+0.9·hash(li)) is INCOMMENSURATE → no global beat (contact sheet over >55 s,
+the slowest-line period, shows no repeat). uTime is elapsed seconds; uDriftSpeed 0.035 → line traversal
+~21–55 s (a calm current). Open lines WRAP s→0 with a brightness edge-fade (smoothstep at both ends) so the
+wrap is invisible. li and s0 derive from aSeed IN-SHADER (attribute-free; no gl_VertexID — the engine runs
+a WebGL2 context, confirmed, but the shaders stay GLSL1 / texture2D). driftW·uDriftAmp is now only a small
+RESIDUAL curl (0.06) for fine life atop the advection (well below the 0.30 line spacing, so it does not
+smear). doy 1.72→2.05: the C2 current spreads more than the old motif and dipped UNDER the message on wide
+(msgMin 4.4); 2.05 lifts the band clear of the message while still clearing the fixed nav.
+REVERSIBILITY: uDriftAdvect=0 freezes the advection → the static C2 weave (the make() base); the old
+orbits/convergence/sea cases stay inert. Attribute-free means the static fallback needs no attribute either.
+
+## 30.4 Measured at the shipped setting (NLINES 48, PARK 0.5, BR 0.5, doy 2.05, uDriftAmp 0.06, uDriftSpeed 0.035)
+WebGL2 confirmed (headless). w_ss all 8 = 1 both aspects. rest sceneF 6.959 fc 0.041 (wide) / 7.0 fc 0 (tall).
+  • MESSAGE 24-frame field-under-text: WIDE min=median=max 13.81, 0 below AA — the band is lifted clear, so
+    this is the STATIC scrim floor (scrim max-lum 0.026 → 13.82), field ≈ 0 under the glyphs. TALL 7.72
+    (scrim, per §29.3 — field far above). 0 frames below AA either aspect.
+  • NAV text (introduced risk — the lifted band touches the fixed nav): with nav hidden, field fills 1.94%
+    of the nav band on wide (0.01% tall); nav text min contrast 7.46 wide / 10.8 tall — both ≥ AA (the nav
+    panel backdrop protects it).
+  • FOOTER (page-bottom, bg isolated via transparent text): min 15.86 wide / 17.41 tall, 0 below AA.
+  • OFFSCREEN per-edge (field-only rest): wide T0 B0 L0 R0 (fully contained); tall T0 B0 L0 R0.2.
+  • HUE: robust stdev over bright (lum>0.15) field pixels = 2.5° around 179° (wide, n=16369) — FLAT teal-cyan.
+    The per-column-mean range (§22.2 method) reads 36° but is sparse-column NOISE here (it DECREASES as
+    density rises — the opposite of a real gradient — and the field is visually flat teal). warm 0%, clip 0.31%.
+  • cellCV 2.525 wide / 1.415 tall; lumCV32 0.86 / 0.27 (floors).
+  • scrollHeight 6476 / 13046 (Δ0 vs orbits). ATTRIBUTE memory 27,200,000 B = 27.20 MB @200k (UNCHANGED —
+    attribute-free; the earlier "25.94" was the same bytes in MiB). DATA TEXTURE adds 48·26·4·4 = 19,968 B
+    ≈ 0.02 MB (a uniform sampler, not an attribute). @70k mobile: attributes ≈9.52 MB derived (untested).
+  • FRAME TIME real-GPU UNTESTED (SwiftShader ~50 ms clamped). Probe via html/_probe.html. What the probe is
+    comparing vs orbits: + one vertex texture fetch (two texel taps + lerp) and a handful of ALU (hashes,
+    fract, smoothstep) per vertex, gated to stage 7; elsewhere driftW7=0 skips the whole block.
+
+## 30.5 PROPOSED, NOT built — tall composition
+Numbers at 1280×1800: the reachable band between the fixed nav (~87 px) and the closing message is the whole
+column; at the drift rest the lit weave sits in the TOP ~third (screen y ≈ 130–880) and the message glyph
+sits at y ≈ 1697 — a ~820 px void between them, and the tall weave is faint (litFrac 0.48%). Option (one,
+to keep it simple): MESSAGE-RELATIVE placement of the band via a uniform like the sea's uSeaY — set doy
+live from the .final-message rect (worldYAtScreen(<p> top) + a fixed clearance) so the current sits a fixed
+distance above the caption at BOTH aspects instead of a fixed world height, closing the tall void and
+letting a modest brightness lift read without a wide penalty (wide is already composed). This is a JS-only
+uniform + a scroll/resize handler; no CSS change. Not built pending direction.
+
+## 30.6 Current state (Round-28, working tree — uncommitted, not pushed)
+stage 7 = 'drift' (advected C2 current). DRIFT_NLINES 48, DRIFT_PARK 0.5, DRIFT_BR 0.5, DRIFT_DOY 2.05;
+uDriftAdvect 1, uDriftAmp 0.06, uDriftSpeed 0.035. Static fallback: uDriftAdvect=0. orbits/convergence/sea
+inert. No CSS/HTML/copy change; scrollHeight Δ0. `_probe*` and SURVEY_* untracked. §30.5 is the open proposal.
+
+---
+
+## 30.7 Round-29 corrections + band-fit build (supersedes §30.4 placement / §30.5 "not built")
+
+Four corrections then §30.5 built as band-fit. All JS-only; no CSS/HTML/copy; scrollHeight Δ0.
+
+**Mobile suppression — verified, and how it survives the shader override.** The §30.3 shader REPLACES
+`target` with the advected line point when driftW7>0, which ignores make()'s POSITIONAL parking (mobile
+returns y=12 off-view). But BRIGHTNESS is read from the eb attribute, which the shader does NOT override —
+mobile make('drift') returns brightness 0, so the advected particles render black regardless of position.
+Verified on a 390×844 mobile UA/viewport: at the bottom rest the visible stage is 動画 (videos), NO teal
+drift (litFrac 0.81% is the videos tail + stars, unchanged whether the gate is on or off; stage 7 is also
+unreachable at 844<1188px, §Round-23). Belt-and-suspenders gate added anyway: `uDriftAdvect = isMobile ? 0
+: 1`, so the whole advection/placement block is skipped on mobile and make()'s parked base is used.
+
+**Field clamp (fixes the wide nav spill, §2).** The C2 streamlines wandered widely (ly −2.84..+2.09) so
+band-fitting the p01–p99 core still let 1–2 outlier lines spill above the nav. Fix: reflect the flow at
+±1.5 (LYC) during generation (flip vy at the edge, clamp ly) so no streamline leaves the band; p01–p99 ≈
+full extent and the fit contains everything. Keeps the asymmetric C2 character (measured after).
+
+**Band-fit placement (§4, built).** Uniforms uDriftCY (world centre) + uDriftSY (vertical scale) replace
+the baked doy/SY. A handler updateDriftBand() (scroll+resize, JS-only, runs only while |sceneF−7|<1.05, and
+never on mobile) reads the FIXED `<header>` bottom and the `.final-message <p>` top, converts to world via
+worldYAtScreen (= tan(fov/2)·camZ·(1−2·screenY/H), the sea's uSeaY math), and sets uDriftSY = min(SYCAP,
+bandHalf/coreHalf), uDriftCY = bandCentre − coreMid·SY — i.e. FIT the streamlines' robust core (p01–p99 of
+ly, computed once at init) into [nav+24px, message−44px], centred, scale capped at SYCAP=1.3 (≈ isotropic
+1.05·SX; measured — beyond this the lines visibly stretch). make() uses defaults CY0=1.0/SY0=0.8 for the
+initial pre-advection frame; the live uniforms take over near stage 7. uDriftAdvect=0 still freezes the
+static C2 weave (now at whatever CY/SY are live). RESULT: wide SY≈0.94 (≈ unchanged), tall SY=1.3 (capped)
+centred → the tall current moves from the top-third to the vertical middle, closing the ~820px void.
+
+**Hue metric correction → the §22.2 amendment (see there).** clip% denominator: it is the fraction of LIT
+pixels (lum>0.05), not of the frame; stable across 24 frames (wide 0.28–0.29%, tall 1.53–1.68%).
+
+## 30.8 Final measured — band-fit shipped (NLINES 48, PARK 0.5, BR 0.5, SYCAP 1.3, LYC 1.5, uDriftAmp 0.06, uDriftSpeed 0.035, uDriftAdvect isMobile?0:1)
+WebGL2 confirmed headless. w_ss all 8 = 1. rest sceneF 6.959 fc 0.041 (wide) / 7.0 fc 0 (tall), ≥6 s settle.
+  • BAND (luminance-mass 1–99% of the field rows, nav+message hidden): WIDE 109–453 px — 22 px below the
+    nav bottom (87), 41 px above the message top (494): CONTAINED with margins (fixes §2). TALL 410–1364 px
+    — 323 px below nav, 320 px above the message (1684): CENTRED in the tall band (fixes the §4 void).
+  • MESSAGE 24-frame field-under-text: WIDE 13.81 (min=med=max; band lifted clear → static scrim floor,
+    scrim max-lum 0.026); TALL 7.72 (scrim). 0 below AA either aspect.
+  • NAV text (band sits just below the fixed nav): min contrast 7.46 wide / 10.8 tall — ≥ AA (nav panel
+    backdrop; field is 1.9% of the nav band wide, ~0 tall).
+  • FOOTER (page-bottom, bg isolated via transparent text): min 15.41 wide / 15.41 tall, 0 below AA.
+  • OFFSCREEN per-edge: wide T0 B0 L0 R0; tall T0 B0 L0 R0.2 (contained).
+  • HUE (amended §22.2): field-floored (lum>0.15) column-range 0.9° wide (23 cols) / n/a tall (too sparse,
+    <2 cols); stdev over lit field pixels 2.4° wide (n≈17k) / 15.4° tall (n=313, small sample) — FLAT teal.
+    warm 0%. clip% (of lit) 0.28–0.29% wide / 1.53–1.68% tall, stable across frames.
+  • cellCV 2.38 wide / 1.23 tall; lumCV32 0.84 / 0.25. litPct 4.27% / 0.40% (tall delicate but now centred
+    and spread across the mid-viewport). motion (mean |ΔL| between two advected frames) 0.0052 / 0.0023.
+  • scrollHeight 6476 / 13046 (Δ0). ATTRIBUTE memory 27,200,000 B = 27.20 MB @200k (UNCHANGED, attribute-
+    free). DATA TEXTURE 19,968 B ≈ 0.02 MB (uniform). @70k mobile ≈9.52 MB derived (untested).
+  • CONTACT SHEETS both aspects, 24 frames uTime 2→64 s (> the slowest line's ~55 s period): flow migrates
+    and reforms, no repeat.
+  • FRAME TIME real-GPU UNTESTED (SwiftShader ~50 ms). Every vertex-shader change since orbits, for the
+    probe: (1) one vertex texture fetch of uLineTex — two texel taps + a lerp (sampleLine); (2) the drift
+    advection block — ~6 dhash (sin/fract), a fract, two smoothstep, a mix, gated by driftW7 (0 elsewhere);
+    (3) uDriftCY/uDriftSY applied to the sampled point; (4) driftW·uDriftAmp residual curl on `amp`. Nothing
+    outside stage 7 changed. gl_VertexID NOT used.
+
+## 30.9 Current state (Round-29, working tree — uncommitted, not pushed)
+stage 7 = 'drift', advected C2 current, band-fit placed (uDriftCY/uDriftSY live from nav+message), field
+clamped ±1.5, SYCAP 1.3. Mobile suppressed (brightness-0 base + uDriftAdvect=0). Static fallback
+uDriftAdvect=0. orbits/convergence/sea inert. No CSS/HTML/copy change; scrollHeight Δ0. `_probe*` and
+SURVEY_* untracked. Open: real-GPU frame time (probe), and the laptop WebGL2/context confirmation.
+
+---
+
+## 30.10 Tall presence — the drift gain (Round-30)
+
+Band-fit (§30.7) spread the same ~100k lit particles over a taller, centred band on tall, so tall went
+faint (litPct 0.40% — nearly invisible) while wide stayed dense (4.27%). Fix: a uniform **uDriftGain**
+multiplied into the drift's brightness INSIDE the advection block only (`vDrift=mix(1.0, edgeFade·uDriftGain,
+driftW7)`) — a no-op at every other stage (driftW7=0) and on mobile (block skipped, uDriftAdvect=0). Driven
+live by updateDriftBand() from the fitted vertical scale: **gain = 1 + (GAIN_CAP−1)·clamp((sy−SY_REF)/
+(SYCAP−SY_REF), 0, 1)**, SY_REF 1.05 (above the wide fitted sy's settle range 0.94–0.98 → wide is EXACTLY
+1.0), so tall (sy always = SYCAP 1.3) gets exactly GAIN_CAP.
+
+**Two measured findings changed the plan (both contradicted the brief's assumption):**
+1. The brief's plain **SY-ratio** gain (`uDriftSY/SY_wide` ≈ 1.3/0.94 = **1.37**) is far too weak — at gain
+   1.37 tall litPct is only 1.16% (still faint). The presence loss (~10× density, wide 4.27 vs tall 0.40)
+   is much larger than the 1.37× vertical stretch, because the tall band-fit also spreads particles over
+   more screen area per world-unit. So the gain is driven to a measured target, not the raw ratio.
+2. The brief expected clip%/hue-stdev to **degrade** as gain rises (as BR did on dense WIDE cores) — they
+   do the OPPOSITE on sparse tall. Sweep at 1280×1800 (rebuilt sealib, field-only):
+
+   | gain | litPct | clip%(of lit) | cellCV | hue stdev (n) | col-range@0.15 (cols) |
+   |------|--------|---------------|--------|---------------|-----------------------|
+   | 1.0  | 0.40   | 1.70          | 1.228  | 15.2 (n=324)  | 37.5 (3)  |
+   | 1.3  | 0.97   | 0.71          | 1.279  | 7.6  (1544)   | 36.0 (11) |
+   | 1.38 | 1.16   | 0.59          | 1.297  | 6.5  (2203)   | 34.8 (14) |
+   | 1.6  | 1.84   | 0.37          | 1.344  | 4.5  (4726)   | 30.4 (29) |
+   | 2.0  | 3.02   | 0.00          | 1.451  | 1.0  (12647)  | 0.9  (32) |
+   | 2.5  | 4.57   | 0.15          | 1.423  | 2.1  (27688)  | 7.5  (32) |
+
+   clip% FALLS (tall is sparse, not dense — brightening crosses more pixels above the lit floor, growing the
+   denominator faster than any near-white count). And the **hue stdev of 15° at gain 1.0 was NOISE from
+   n=324** — as gain lifts n above ~12k it converges to **~1–2°** (flat teal, = wide's 2.4°). So there is no
+   degradation point to "back off" from; chose **GAIN_CAP = 2.0** — clearly present (litPct 3.0, ≈ wide's
+   density but a touch more delicate), clip 0%, and enough field pixels to MEASURE hue. 2.5 reaches wide's
+   density; 2.0 keeps tall reading as the delicate current it is.
+
+**Run-to-run spread (don't read "stable" as bit-exact).** Gain 2.0 was measured twice: the sweep gave
+clip 0.22% / hue stdev 2.9° (n=12670), the final run 0.00% / 1.0° (n=12647). Both pass with margin; the
+difference is measurement noise, not a real change — each metric is read from a SINGLE captured frame, and
+the advected field is a different phase at that instant (a handful of near-white pixels present in one
+frame, absent in the other → clip 0.22 vs 0.00), on top of a slightly different band-fit settle (the eased
+rest lands at sceneF 6.93–6.96, shifting the band a few px). So the honest tolerance at gain 2.0 is roughly
+clip ≲ 0.3% and hue stdev ~1–3° — comfortably inside the gates, but not a fixed value.
+
+**Tall hue, finally measurable and stated (the §30.8 caveat resolved).** At gain 2.0 the field carries
+n=12,647 pixels > 0.15: **field-floored column-range 0.9° (32 qualifying columns), hue stdev 1.0° around
+178.6°** — flat teal, a clear **PASS** of the §22.2 ≥10° bar. The earlier tall "15.4° at n=313" was
+below the measurable threshold (too few field pixels), i.e. NOT-MEASURABLE, never a silent pass.
+
+## 30.11 Final measured — tall gain shipped (adds uDriftGain to §30.8; unchanged params otherwise)
+Rebuilt sealib for every metric. WebGL2 confirmed. w_ss all 8 = 1. rest sceneF 6.959 fc 0.041 (wide) /
+7.0 fc 0 (tall), ≥6 s settle. **WIDE gain = 1.0 EXACTLY** (uniform read back; the drift brightness path is
+bit-identical to the pre-gain build) — litPct 4.14, cellCV 2.56, hue 1.1°/stdev 0.9° (n17310), message
+13.81 (0 below), footer 15.88, offscreen T0 B0 L0 R0, band 100–444 (nav+13/msg−38): matches §30.8 within
+band-fit settle noise. **TALL gain = 2.0 EXACTLY** — litPct 3.02 (was 0.40), cellCV 1.451, hue col-range
+0.9°/stdev 1.0° (n12647) FLAT-TEAL PASS, warm 0%, clip 0% (stable), message 7.72 (0 below, scrim floor),
+footer 17.41 (0 below), band 415–1355 (nav+328/msg−329, centred), offscreen T0 B0 **L1.7 R1.8** (the
+brighter full-width current now touches the side edges — horizontal spill only, vertically contained).
+attribute memory 27.20 MB @200k (unchanged; texture 0.02 MB). scrollHeight 6476/13046 (Δ0). Contact sheets
+both aspects, 24 frames uTime 2→64 s (> the ~55 s slowest-line period): flow migrates, no repeat.
+The gain adds one scalar multiply in the drift-gated brightness path — negligible, and only at stage 7.
+
+## 30.11a GPU frame-time gate — MEASURED on real hardware (replaces the SwiftShader UNTESTED label)
+Run on the laptop GPU via `html/_probe.html`, WebGL2 confirmed (`EXT_disjoint_timer_query_webgl2` present),
+200k particles, iframe ~1250–1330 px wide (wide-class composition). **Note:** the probe's "SEA" column loads
+the WORKING TREE, so the label is stale — it measured the DRIFT. Same table form as the sea's §28.4:
+
+  | run | DRIFT (working tree) | ORBITS (git baseline) | verdict |
+  |-----|----------------------|-----------------------|---------|
+  | 1   | **4.40 ms** (60 fps, min 58, n=131) | 5.60 ms (60 fps, min 60, n=100) | drift −1.20 ms |
+  | 2   | **4.60 ms** (60 fps, min 58, n=216) | 5.50 ms (60 fps, min 56, n=327) | drift −0.90 ms |
+
+Drift is **~1 ms CHEAPER than orbits** on both runs (advection is a texture fetch + a little ALU, gated to
+stage 7; orbits ran a heavier per-vertex path) — passes the frame-time gate with margin. TALL was NOT
+measured on the real GPU → **derived**: all drift changes are vertex-side and all 200k particles are
+processed every frame regardless of composition, so this wide-class number is an UPPER BOUND for tall (whose
+lit fraction 3.0% is below wide's 4.1%). cf. the sea's §28.4 (5.10 ms vs orbits 5.40).
+
+## 30.12 Current state (Round-30, working tree — uncommitted, not pushed)
+stage 7 = 'drift', advected C2 current, band-fit placed, tall gain (uDriftGain 1.0 wide / 2.0 tall, live from
+the fitted scale). Mobile suppressed (brightness-0 base + uDriftAdvect=0). Static fallback uDriftAdvect=0.
+GPU gate PASSED on real hardware (§30.11a: drift 4.4–4.6 ms vs orbits 5.5–5.6 ms, WebGL2 confirmed).
+orbits/convergence/sea inert. No CSS/HTML/copy change; scrollHeight Δ0. `_probe*`/SURVEY_* untracked.
+Open: real-GPU frame time (probe) + laptop WebGL2 confirmation.

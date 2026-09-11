@@ -82,7 +82,7 @@
         var indexBlocks = Array.prototype.slice.call(document.querySelectorAll('.index-region .index-block, .index-region .final-message'));
         var stageEls = visibleScenes.concat(indexBlocks);
         // Motif per surviving stage, in DOM order. Dropped motifs: network, orbits, strata.
-        var stages = ['cosmos', 'nature', 'infra', 'foundation', 'specialty', 'stream', 'waveforms', 'orbits'].slice(0, stageEls.length);
+        var stages = ['cosmos', 'nature', 'infra', 'foundation', 'specialty', 'stream', 'waveforms', 'drift'].slice(0, stageEls.length);   // Round-26: stage 7 orbits -> drift (流). orbits/convergence/sea kept as inert dead code below.
         var K = stages.length;
         var HERO_K = visibleScenes.length;   // stages 0..HERO_K-1 are the hero
 
@@ -151,9 +151,64 @@
             phi: (24 + rnd() * 48) * Math.PI / 180, psi: rnd() * TAU, arg: rnd() * TAU
         });
 
+        // DRIFT (流, stage 7): an asymmetric VORTICAL CURRENT. Streamlines walk v = ∇⊥ψ of a curl-noise
+        // streamfunction ψ = fbm(value-noise) — eddies of varied size at irregular positions, NO left/right
+        // mirror (Round-28 field bake-off "C2"; the old ψ=sin(0.8x)cos(1.1y) read as a symmetric eddy PAIR — see
+        // §29/§30). The lines are baked into a data texture; the vertex shader ADVECTS each particle ALONG its own
+        // line (s = s0 + uTime·speed_line, speeds incommensurate per line → no global beat), so the current
+        // genuinely FLOWS rather than shimmering in place. Deterministic: a LOCAL prng (mulberry32) seeds the line
+        // starts AND the noise permutation, so the field is stable across reloads and independent of particle rnd().
+        var DRIFT_NLINES = 48, DRIFT_DPTS = 26, DRIFT_SX = 1.05, DRIFT_PARK = 0.5, DRIFT_BR = 0.5;
+        var DRIFT_SYCAP = 1.3, DRIFT_SY0 = 0.80, DRIFT_CY0 = 1.0;   // SYCAP: max vertical stretch (near isotropic 1.05·SX); SY0/CY0: make()'s static-base defaults, the live shader uniforms (§30.5 band-fit) take over
+        var DRIFT_SY_REF = 1.05, DRIFT_GAIN_CAP = 2.0;   // §30.10 tall gain: ramp gain 1.0→CAP as the fitted uDriftSY goes SY_REF→SYCAP. SY_REF above the wide fitted scale's settle range (~0.94–0.98) so wide is EXACTLY 1.0; tall's sy always = SYCAP so tall = CAP = 2.0 (measured, sweep §30.10: presence with no clip/hue cost). The plain SY-RATIO gave only 1.37 (too faint) — see §30.10.
+        var driftLines = (function () {
+            function mb(a) { return function () { a |= 0; a = a + 0x6D2B79F5 | 0; var t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+            var pr = mb(1337), perm = new Uint8Array(512), ord = [];
+            for (var pi = 0; pi < 256; pi++) ord[pi] = pi;
+            for (var pj = 255; pj > 0; pj--) { var pk = (pr() * (pj + 1)) | 0, tmp = ord[pj]; ord[pj] = ord[pk]; ord[pk] = tmp; }
+            for (var pl = 0; pl < 512; pl++) perm[pl] = ord[pl & 255];
+            function fade(t) { return t * t * t * (t * (t * 6 - 15) + 10); }
+            function grad(h, x, y) { var u = (h & 1) ? x : -x, v = (h & 2) ? y : -y; return u + v; }
+            function vnoise(x, y) { var X = Math.floor(x) & 255, Y = Math.floor(y) & 255; x -= Math.floor(x); y -= Math.floor(y); var u = fade(x), v = fade(y), A = perm[X] + Y, B = perm[X + 1] + Y;
+                function lp(a, b, t) { return a + t * (b - a); }
+                return lp(lp(grad(perm[A], x, y), grad(perm[B], x - 1, y), u), lp(grad(perm[A + 1], x, y - 1), grad(perm[B + 1], x - 1, y - 1), u), v); }
+            function fbm(x, y) { var s = 0, a = 0.5, f = 1; for (var o = 0; o < 4; o++) { s += a * vnoise(x * f, y * f); f *= 2.03; a *= 0.5; } return s; }
+            function psi(x, y) { return fbm(x * 0.9 + 3.1, y * 1.4 - 2.2); }        // the streamfunction; v = ∇⊥ψ (finite diff)
+            var e = 0.06, sp = mb(42), lines = [], LYC = 1.5;   // LYC: reflect the flow at ±LYC so no streamline wanders
+            for (var dl = 0; dl < DRIFT_NLINES; dl++) {          // out of the band (else the band-fit §30.5 can't contain the tails)
+                var lx = (sp() * 2 - 1) * 2.4, ly = (sp() * 2 - 1) * 0.85, line = [];
+                for (var dpi = 0; dpi < DRIFT_DPTS; dpi++) {
+                    line.push([lx, ly]);
+                    var vx = (psi(lx, ly + e) - psi(lx, ly - e)) / (2 * e) * 1.8, vy = -(psi(lx + e, ly) - psi(lx - e, ly)) / (2 * e) * 1.8;
+                    if ((ly > LYC && vy > 0) || (ly < -LYC && vy < 0)) vy = -vy;   // reflect at the band edges
+                    var vln = Math.hypot(vx, vy) || 1; lx += (vx / vln) * 0.16; ly += (vy / vln) * 0.16;
+                    if (ly > LYC) ly = LYC; else if (ly < -LYC) ly = -LYC;
+                }
+                lines.push(line);
+            }
+            return lines;
+        })();
+        // robust vertical extent of the streamlines (p01..p99 of ly, excluding a stray excursion) — the band-fit
+        // (§30.5) scales+centres THIS core to fit between the nav and the closing message at either aspect.
+        var driftAllY = [];
+        for (var er = 0; er < DRIFT_NLINES; er++) for (var ec = 0; ec < DRIFT_DPTS; ec++) driftAllY.push(driftLines[er][ec][1]);
+        driftAllY.sort(function (a, b) { return a - b; });
+        var DRIFT_CORE_LO = driftAllY[Math.floor(0.01 * (driftAllY.length - 1))], DRIFT_CORE_HI = driftAllY[Math.floor(0.99 * (driftAllY.length - 1))];
+        var DRIFT_CORE_HALF = (DRIFT_CORE_HI - DRIFT_CORE_LO) / 2, DRIFT_CORE_MID = (DRIFT_CORE_HI + DRIFT_CORE_LO) / 2;
+        // pack the streamlines into a float data texture (column = point along line, row = line) for the vertex shader
+        var driftTexData = new Float32Array(DRIFT_DPTS * DRIFT_NLINES * 4);
+        for (var dr = 0; dr < DRIFT_NLINES; dr++) for (var dc = 0; dc < DRIFT_DPTS; dc++) {
+            var dti = (dr * DRIFT_DPTS + dc) * 4; driftTexData[dti] = driftLines[dr][dc][0]; driftTexData[dti + 1] = driftLines[dr][dc][1];
+        }
+        var driftTex = new THREE.DataTexture(driftTexData, DRIFT_DPTS, DRIFT_NLINES, THREE.RGBAFormat, THREE.FloatType);
+        driftTex.minFilter = THREE.NearestFilter; driftTex.magFilter = THREE.NearestFilter; driftTex.needsUpdate = true;
+        // deterministic small-arg hash (mirrors the shader's dhash) for the drift static base + parking
+        function dfrac(x) { return x - Math.floor(x); }
+        function dhashJS(a, b) { return dfrac(Math.sin(a * b) * 43758.5453); }
+
         /* ---- Per-motif attractor target: [x,y,z, energy, bright, aux] ---
            aux: 1 = infra stream · 2 = stream(x-drift) · 0.x = wave layer phase (nature/waveforms). */
-        function make(stage, i) {
+        function make(stage, i, sd) {
             var u, th, s, x, y, z, t, rc, rn, sy, la, wl;
             switch (stage) {
                 case 'cosmos': { // VOLUMETRIC sphere with INTERNAL STRUCTURE (reads as a ball + shows rotation)
@@ -232,7 +287,9 @@
                     var pld = 0.30 + 0.70 * Math.min(1, Math.max(0, (ppx / S + 0.10) / 0.5));
                     return [ppx, ppy, ppz, 0.24 + 0.20 * pf, 0.64 * pld, 0];
                 }
-                case 'orbits': { // ellipses in distinct planes about a shared star at the focus
+                case 'orbits': { // INERT dead code as of Round-26 (drift 流 took stage 7). Kept callable for
+                    // reversibility, like convergence/sea. Never reached — 'orbits' is not in the stages array.
+                    // ellipses in distinct planes about a shared star at the focus
                     // Round-18: orbits took the stage-6 (final-message) slot. That slot's viewport
                     // is crowded (final-message text above, full-width footer below), so the whole
                     // system is SCALED DOWN and LIFTED so its lit region clears the footer text
@@ -308,6 +365,24 @@
                     var wty = (wtr / 4 - 0.5) * S * 1.55 + 0.22 * S * Math.sin(wxx * 2.7 + wtr * 1.7);
                     return [wxx, wty + gauss(0.03 * S), (wtr - 2) * S * 0.11, 0.36 + 0.22 * rnd(), 0.72, (wtr + 0.5) / 5];
                 }
+                case 'drift': { // 流 (Round-28): an asymmetric vortical CURRENT, ADVECTED along its streamlines in the
+                    // shader (§30). make() only places the STATIC base — this particle's point at s0 on its own C2
+                    // streamline (derived from its seed by the same hashes the shader uses); the shader then advects
+                    // s = s0 + uTime·speed_line along that line so the current flows. doy 1.72 lifts the band clear of
+                    // the closing message at both aspects. A fraction (DRIFT_PARK) is PARKED to brightness 0 so fewer
+                    // lit particles share the band and the flow resolves on wide (density, §30.2). Static-weave
+                    // fallback: uDriftAdvect=0 freezes this base = the frozen C2 weave. Cool teal. Mobile suppressed.
+                    if (isMobile) return [gauss(0.05), 12.0 + gauss(0.05), gauss(0.05), 0.3, 0.0, 0];
+                    var dsd = (sd == null ? rnd() : sd);
+                    var dLi = Math.floor(dhashJS(dsd, 127.1) * DRIFT_NLINES) % DRIFT_NLINES;   // this particle's line
+                    var dS0 = dhashJS(dsd, 311.7);                                             // arc-length start s0
+                    var dcol = dS0 * (DRIFT_DPTS - 1), dc0 = Math.floor(dcol), dfr = dcol - dc0, dc1 = Math.min(dc0 + 1, DRIFT_DPTS - 1);
+                    var dln = driftLines[dLi];
+                    var dbx = dln[dc0][0] + (dln[dc1][0] - dln[dc0][0]) * dfr;                 // point at s0 (band-space)
+                    var dby = dln[dc0][1] + (dln[dc1][1] - dln[dc0][1]) * dfr;
+                    var dpark = dhashJS(dsd, 53.3) < DRIFT_PARK ? 0.0 : DRIFT_BR;               // park a fraction dark
+                    return [dbx * DRIFT_SX + gauss(0.02), dby * DRIFT_SY0 + DRIFT_CY0 + gauss(0.02), gauss(0.30), 0.30, dpark, 0];
+                }
                 case 'convergence': { // INERT dead code as of Round-18 (orbits took stage 6). Kept
                     // for cheap reversibility, mirroring how orbits was kept when convergence
                     // replaced it. Never reached — 'convergence' is no longer in the stages array.
@@ -323,7 +398,7 @@
                 }
                 case 'sea': { // 学問の海 — INERT dead code (Round-25: built, measured, NOT adopted). Kept callable for
                     // cheap reversibility, like 'convergence'/'orbits' above. Never reached — 'sea' is not in the
-                    // stages array; stage 7 stays 'orbits'. This case is only the resting SURFACE sheet; the full
+                    // stages array; stage 7 is 'drift' (Round-26→30, §30). This case is only the resting SURFACE sheet; the full
                     // motif also needed a shader block + a uSeaY uniform, which are NOT in the live shader. To revive,
                     // re-add per DESIGN.md §28 (the record of the mechanics, all attribute-free):
                     //   • uSeaY uniform, set live from the .final-message rect (updateSeaY: worldYAtScreen(<p> top)+0.75
@@ -359,7 +434,7 @@
         for (var i = 0; i < COUNT; i++) {
             seed[i] = rnd();
             for (var kk = 0; kk < K; kk++) {
-                var v = make(stages[kk], i);
+                var v = make(stages[kk], i, seed[i]);
                 pos[kk][i * 3] = v[0]; pos[kk][i * 3 + 1] = v[1]; pos[kk][i * 3 + 2] = v[2];
                 eb[Math.floor(kk / 4)][i * 4 + (kk % 4)] = Math.floor(Math.min(1, Math.max(0, v[4])) * 100) + Math.min(0.999, Math.max(0, v[3]));
             }
@@ -398,6 +473,8 @@
         var vertexShader = [
             'precision highp float;',
             'uniform float uSceneF, uCalm, uTime, uSize, uPixelRatio, uDisperse, uResidual, uNoiseFreq, uWaveAmp;',
+            'uniform float uDriftAmp, uDriftAdvect, uDriftSpeed, uLineN, uLineDpts, uDriftCY, uDriftSY, uDriftGain;',
+            'uniform sampler2D uLineTex;',
             attrDecl, 'attribute float aSeed;', 'attribute float aCoh;',
             'varying float vE; varying float vB; varying float vNear; varying float vInfra;',
             'vec3 mod289(vec3 x){return x-floor(x*(1.0/289.0))*289.0;}',
@@ -417,6 +494,15 @@
             'vec3 snoiseVec3(vec3 p){return vec3(snoise(p),snoise(p+17.1),snoise(p-43.7));}',
             'vec3 curl(vec3 p){const float e=0.6;vec3 p0=snoiseVec3(p);vec3 px=snoiseVec3(p+vec3(e,0.,0.));vec3 py=snoiseVec3(p+vec3(0.,e,0.));vec3 pz=snoiseVec3(p+vec3(0.,0.,e));',
             '  return vec3((py.z-p0.z)-(pz.y-p0.y),(pz.x-p0.x)-(px.z-p0.z),(px.y-p0.y)-(py.x-p0.x))/e;}',
+            // drift (§30): stable small-arg hash + streamline sampler (NEAREST texel + manual lerp along the line,
+            // exact row centre in v so there is no bleed between lines).
+            'float dhash(float a, float b){return fract(sin(a*b)*43758.5453);}',
+            'vec2 sampleLine(float li, float s){',
+            '  float col=s*(uLineDpts-1.0); float c0=floor(col); float fr=col-c0;',
+            '  float vv=(li+0.5)/uLineN;',
+            '  vec2 a=texture2D(uLineTex, vec2((c0+0.5)/uLineDpts, vv)).xy;',
+            '  vec2 b=texture2D(uLineTex, vec2((min(c0+1.0,uLineDpts-1.0)+0.5)/uLineDpts, vv)).xy;',
+            '  return mix(a,b,fr);}',
             'vec3 targetPos(int idx){\n' + pickPos + '}',
             'float ebOf(int idx){\n' + pickEB + '}',
             'void main(){',
@@ -441,6 +527,24 @@
             '  float ph = target.x*waveFq - uTime*0.9 + aSeed*6.2831;',
             '  target.y += uWaveAmp*waveW*sin(ph);',
             '  br *= mix(1.0, 0.6+1.05*sin(ph), waveW);',                   // crests bright (up to 1.65x), troughs dark
+            // Round-28 drift (流, §30): ADVECT each particle ALONG its own streamline (baked in uLineTex), gated to
+            // stage 7. li/s0 from aSeed; per-line speed is incommensurate → no global beat. target is REPLACED (mixed
+            // by driftW7) with the advected line point, so the current flows instead of shimmering. Open lines wrap
+            // s→0 with a brightness edge-fade so the wrap is invisible. uDriftAdvect=0 freezes it (static C2 weave).
+            '  float vDrift=1.0;',
+            '  float driftW7=1.0-clamp(abs(uSceneF-7.0),0.0,1.0);',
+            '  if(driftW7>0.001 && uDriftAdvect>0.5){',
+            '    float li=min(floor(dhash(aSeed,127.1)*uLineN), uLineN-1.0);',
+            '    float s0=dhash(aSeed,311.7);',
+            '    float spd=uDriftSpeed*(0.55+0.9*dhash(li,0.7));',
+            '    float phl=dhash(li,1.7)*6.2831;',
+            '    float s=fract(s0 + uTime*spd + phl);',
+            '    vec2 lp=sampleLine(li,s);',
+            '    vec2 wp=vec2(lp.x*' + DRIFT_SX.toFixed(2) + ', lp.y*uDriftSY + uDriftCY);',   // §30.5 band-fit: live vertical scale+centre
+            '    wp += (vec2(dhash(aSeed,53.7),dhash(aSeed,97.3))-0.5)*0.05;',   // give the line width
+            '    target=mix(target, vec3(wp, target.z), driftW7);',
+            '    vDrift=mix(1.0, smoothstep(0.0,0.06,s)*smoothstep(1.0,0.94,s)*uDriftGain, driftW7);',   // fade the wrap at line ends; uDriftGain lifts brightness in the drift band ONLY (no-op elsewhere: driftW7=0; and on mobile: block skipped)
+            '  }',
             '  float streamW=1.0-clamp(abs(uSceneF-5.0),0.0,1.0);',        // Blog (stage 5): the radiating source
             // Round-21: the Blog motif is now a RADIAL burst, not a directed flow, so the old horizontal
             // sweep (sin(target.x…)) was a mismatch. Replaced with a uniform TIME breathe — the whole source
@@ -457,6 +561,11 @@
             // rises base→apex instead of dissolving at the midpoint. See DESIGN.md §23.
             '  float cohA=aCoh*(1.0-clamp(abs(uSceneF-3.5)*2.0,0.0,1.0));',
             '  float amp=mix(resid,uDisperse,(1.0-w)*(1.0-cohA));',
+            // Round-26 drift (流, stage 7): raise the curl amplitude so the cloud FLOWS and folds continuously.
+            // cn is a bounded curl offset (not integrated), so this wanders each particle ~±0.3 world coherently
+            // around its target and never drifts away. Gated to stage 7 (driftW); 0 elsewhere = no-op.
+            '  float driftW=1.0-clamp(abs(uSceneF-7.0),0.0,1.0);',
+            '  amp += driftW*uDriftAmp;',   // Round-28 (§30): now a SMALL RESIDUAL curl on top of the along-streamline advection — life, not locomotion. driftW·0.28 (Round-26) smeared the weave (isotropic offset ±0.29 ≈ streamline spacing 0.30 → filled the eddy voids); advection carries the flow instead, so this drops to a small uDriftAmp (measured 0 vs small — see §30).
             '  vec3 p=target + cn*amp;',
             '  vec4 mv=modelViewMatrix*vec4(p,1.0);',
             '  gl_Position=projectionMatrix*mv;',
@@ -474,7 +583,7 @@
             // (matches the "formation sits on the right" composition). vInfra→0 elsewhere = no-op.
             '  float ndcx=gl_Position.x/gl_Position.w;',
             '  float leftDim=mix(1.0, 0.15+0.85*smoothstep(-0.55,-0.15,ndcx), vInfra);',
-            '  vE=en; vB=br*mix(1.0,0.62,uCalm)*nearRamp*leftDim;',        // calm below hero; far dimmer; infra left column protected
+            '  vE=en; vB=br*mix(1.0,0.62,uCalm)*nearRamp*leftDim*vDrift;',        // calm below hero; far dimmer; infra left column protected; vDrift fades drift line-ends
             '}'
         ].join('\n');
 
@@ -502,6 +611,8 @@
             uSceneF: { value: 0 }, uCalm: { value: 0 }, uTime: { value: 0 }, uSize: { value: isMobile ? 18 : 17 },
             uAlpha: { value: 0.5 }, uExposure: { value: 1.08 }, uPixelRatio: { value: DPR },
             uDisperse: { value: isMobile ? 0.9 : 1.15 }, uResidual: { value: 0.022 }, uNoiseFreq: { value: 0.22 }, uWaveAmp: { value: 0.7 },
+            uDriftAmp: { value: 0.06 }, uDriftAdvect: { value: isMobile ? 0 : 1 }, uDriftSpeed: { value: 0.035 }, uLineN: { value: DRIFT_NLINES }, uLineDpts: { value: DRIFT_DPTS }, uLineTex: { value: driftTex },
+            uDriftCY: { value: DRIFT_CY0 }, uDriftSY: { value: DRIFT_SY0 }, uDriftGain: { value: 1.0 },   // §30.5 band-fit + §30.10 tall gain, driven live by updateDriftBand(); uDriftAdvect=0 on mobile → shader keeps make()'s parked base (stage 7 suppressed)
             uBlueDeep: { value: new THREE.Color(0x0b3be0) }, uTeal: { value: new THREE.Color(0x2bd9c4) }, uCyan: { value: new THREE.Color(0x00c2cb) },
             uBlue: { value: new THREE.Color(0x3d8bff) }, uViolet: { value: new THREE.Color(0x7b4dff) }, uMagenta: { value: new THREE.Color(0xff3d8b) }, uEmber: { value: new THREE.Color(0xff5a3c) }
         };
@@ -578,6 +689,7 @@
             var mid = midOf();
             var sfT = sceneFor(mid);
             sfEased += (sfT - sfEased) * 0.09;
+            if (!isMobile && Math.abs(sfEased - 7.0) < 1.05) updateDriftBand();   // §30.5 band-fit, only near stage 7
             // calm register once past the hero (stage index >= HERO_K-1 → ramp)
             var calm = smooth(HERO_K - 1.5, HERO_K - 0.5, sfEased);
             uniforms.uSceneF.value = sfEased; uniforms.uCalm.value = calm; uniforms.uTime.value = clock;
@@ -601,13 +713,35 @@
             updateText(Math.min(HERO_K - 1, sfEased)); renderer.render(scene, camera);
         }
 
+        // §30.5 band-fit: place the drift so its lit CORE fits between the fixed nav and the closing message at
+        // BOTH aspects. Runs only while near stage 7 (so the getBoundingClientRect layout read is not per-frame
+        // work elsewhere), and never on mobile (stage 7 suppressed there). worldYAtScreen mirrors the sea's uSeaY.
+        function worldYAtScreen(sy) { return Math.tan(camera.fov * Math.PI / 360) * camera.position.z * (1 - 2 * sy / window.innerHeight); }
+        function updateDriftBand() {
+            if (isMobile) return;
+            var hdr = document.querySelector('header'), msgP = document.querySelector('.final-message p');
+            var msgT = msgP ? msgP.getBoundingClientRect().top : window.innerHeight;
+            if (msgT > window.innerHeight * 1.15) return;                     // message far below → not near stage 7, hold last
+            var navB = hdr ? hdr.getBoundingClientRect().bottom : 87;
+            var topS = navB + 24, botS = msgT - 44;                           // band: below the nav, above the message (px margins)
+            if (botS - topS < 40) return;
+            var wTop = worldYAtScreen(topS), wBot = worldYAtScreen(botS);
+            var sy = Math.min(DRIFT_SYCAP, (wTop - wBot) / 2 / DRIFT_CORE_HALF); // fit the core to the band, capped (centre when capped)
+            uniforms.uDriftSY.value = sy;
+            uniforms.uDriftCY.value = (wTop + wBot) / 2 - DRIFT_CORE_MID * sy;
+            // §30.10 tall gain: brightness lift proportional to how much MORE this aspect stretched vs wide, so the
+            // same lit-particle count spread over a taller band stays visible. Wide (sy≈SY_REF) → 1.0; tall (sy=SYCAP)
+            // → the ratio, capped. Applied to the drift-gated brightness only (no-op at other stages and on mobile).
+            uniforms.uDriftGain.value = 1.0 + (DRIFT_GAIN_CAP - 1.0) * Math.max(0, Math.min(1, (sy - DRIFT_SY_REF) / (DRIFT_SYCAP - DRIFT_SY_REF)));
+        }
+
         var resizeTimer = null;
         window.addEventListener('resize', function () {
             if (resizeTimer) clearTimeout(resizeTimer);
             resizeTimer = setTimeout(function () {
                 DPR = Math.min(window.devicePixelRatio || 1, 1.5); renderer.setPixelRatio(DPR); renderer.setSize(window.innerWidth, window.innerHeight);
                 camera.aspect = window.innerWidth / window.innerHeight; camera.updateProjectionMatrix(); uniforms.uPixelRatio.value = DPR; computeCenters();
-                if (!running) renderOnce();
+                updateDriftBand(); if (!running) renderOnce();
             }, 200);
         });
 
