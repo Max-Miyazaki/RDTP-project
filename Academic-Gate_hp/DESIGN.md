@@ -2909,6 +2909,22 @@ unchanged with the scrim on) — it only dims the moderate field directly under 
 videos AA under soft40: **wide 6.24 / tall 9.87 / mobile 9.1 (0 below AA)**; it lifts the passing blocks too
 (wide: blog 13.3→16.3, 基礎 16.2→17.8) — no regression (§31.2b).
 
+**Reading the isolated-layer captures (a note on the images).** In the scrim-isolated stills the head box
+shows as a rectangle and parts of its interior read lighter/darker than the surround — which a pure
+black-alpha gradient cannot do. That is the ISOLATION HARNESS, not the scrim: the capture composites a
+white backdrop `<div>` (z-index -2) behind the scrim `::before` (z-index -1), with the WebGL canvas hidden
+and the heading text set `color:transparent`; the apparent light/dark banding is that backdrop + the fixed
+`body::before` ambient + the screenshot's own compositing + residual transparent-text anti-alias. It is NOT
+a page background: `.index-block` and `.index-block__head` have no `background`, and the button's background
+AND border are transparent (measured `rgba(0,0,0,0)`), so there is no pre-existing lighter box behind the
+heads. CONFIRMED on the real page: diff the composite before vs after this round's CSS (field frozen, text
+hidden) inside the head rectangle — **no pixel got brighter**: videos 0 brighter / 2927 darker (max −0.117),
+基礎 0 brighter / 37 darker (max −0.095). So the only thing this round adds inside that rectangle is the
+darkening gradient. **The automated whole-crop edge-step metric was unreliable here** (contaminated by the
+transparent-text anti-alias and the isolation compositing) and is NOT used — the scrim's softness rests on
+the analytic gradient profile (outer edge 0.06→transparent over ~27px ≈ 0.002 alpha/px, no shoulder) and
+the AA frame-distribution (§31.2b).
+
 ## 31.2b Complete after-table (soft40) — all headings + bodies, wide/tall/mobile, 0 below AA
 24-frame field-under-glyph (opaque headings/bodies), min contrast / below-AA count; every value is ABOVE
 its §31.1 baseline (the scrim can only lift):
