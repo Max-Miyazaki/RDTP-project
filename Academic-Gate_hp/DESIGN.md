@@ -2841,3 +2841,133 @@ motif before orbits, removed); `s05-dispersal / s08-stream / s09-waveforms / s10
 `r18-6-orbits` (orbits at the old index 6, before it moved to stage 7). The remaining July stills (12/13/15,
 s01/s02/s04, s14-rest-*, interior-*, mobile-*) are older captures of unchanged stages/pages — still
 representative, lower priority to refresh.
+
+---
+
+# 31. Round-31 — the accessibility round: index-block headings (§20.2) + footer tagline (§20.1)
+
+Tooling+docs was Round-30's tail; this round is the parked §20 items. Measure → propose → implement
+reversibly → verify every page by loading. Touches `css/style.css` (propagates to all 11 pages), so the
+whole point is the cross-page verification (§31.4). All numbers from the rebuilt sealib (§30 helper).
+
+## 31.1 Baseline (Phase A) — measured at f3e5780, before any change
+Index blocks don't CSS-snap, but the scene engine centres each at `snapRest(stageIndex)`; at that scroll
+the field settles to the INTEGER sceneF (3/4/5/6), so **landing == pure motif here** (no §23.6 blend — the
+0.09-off landing did not appear; recorded both, they matched). 24-frame field-under-glyph, opaque-white
+glyphs (all index headings/bodies are textL 1.0), min/below-AA:
+
+  | block (stage) | heading WIDE 1440×900 | heading TALL 1280×1800 | body min (wide) |
+  |---|---|---|---|
+  | 基礎 foundation (3) | 16.18 (0 below) | 20.61 | 18.92 |
+  | 専門 specialty (4) | 18.12 | 20.79 | 20.90 |
+  | blog/stream (5) | 13.28 | 20.70 | 18.00 |
+  | **videos/waveforms (6)** | **3.71 — min 3.71 / med 4.05 / max 5.54, 19-of-24 below AA** | 6.25 (0 below) | 9.23 (0 below) |
+
+Only the **videos heading 最新動画 over waveforms, WIDE**, fails — reproduces §20.2's 3.7:1 exactly. Canvas
+hidden it is 20.6:1, so the 3.71 is entirely the waveforms field (§20.2's diagnosis: no hero-scrim on
+index headings). Waveforms animates → §21.3 regime (spread 3.71→5.54). Tall passes (6.25); the fail is
+wide-specific. Every other heading and body clears AA with margin.
+
+## 31.1a §20.1 footer tagline — MEASUREMENT CONTRADICTS the recorded framing
+§20.1 recorded 3.6:1 as a MOBILE gap from `body::before` ambient. The tagline is `rgba(255,255,255,0.40)`
+(--text-tertiary), 40% opacity, so opaque-white sampling is wrong; measured with the composited-glyph
+method (full-coverage rendered luminance vs the background behind it):
+  • **WIDE 3.68 · TALL 3.71 · MOBILE 3.66** — below AA on **ALL three viewports, not just mobile**.
+  • The background behind the tagline is ~0.001 (near-black footer panel) on every viewport — `body::before`
+    ambient barely reaches. So the cause is the **40% text opacity over the dark footer panel**, NOT the
+    ambient. The footer is identical on all 11 pages → this is below AA on all 11 pages, everywhere.
+  §20.1's number (3.6) is reproduced; its attribution (mobile-only, ambient-driven) is corrected here.
+
+## 31.2 §20.2 fix — two options prototyped, CSS scrim chosen
+Both fix the videos heading; the shader option costs the motif. Measured at 1440×900:
+
+  | option | videos heading | waveforms motif cost | scope |
+  |---|---|---|---|
+  | baseline | 3.71 (19/24 below) | — | — |
+  | **CSS scrim `.index-block__head::before` (rgba 0,0,0,.52)** | **8.51 (0 below)** | **none** (overlay, field untouched) | index.html ONLY |
+  | shader `leftDim` gated to stage 6 (max(vInfra,wfW)) | 17.36 (0 below) | **lumCV32 0.175→0.472, litPct 0.77→0.48** (kills 38% of the field on the left; re-creates the left-dark/right-bright imbalance §21/§21.2 removed from stream) | JS |
+PICK = CSS. It fixes the heading with zero motif cost (it is an overlay, not a field edit), is the
+hero-scrim precedent (a soft feathered vignette), and is SCOPED to `.index-block__head`, which exists ONLY
+in index.html (grep: 10 matches on index, 0 on the other 10 pages) — so it cannot touch any other page
+(proven §31.4). The shader option over-corrects and reintroduces exactly the horizontal-imbalance failure
+mode §21 fought out of stream (lumCV32 nearly triples) while dimming 38% of the waveforms. CSS chosen.
+
+## 31.2a Scrim profile — the first version read as a BOX, softened to soft40
+The first CSS scrim (rgba(0,0,0,0.52), `ellipse 115% 135%`, `transparent 100%`, `inset -1rem/-1.6rem`) lifted
+videos to 8.51 but, isolated over white, read as a **hard-edged box**: the `transparent 100%` stop lands at
+115%/135% of the SMALL heading box — i.e. OUTSIDE it — so the box edge clipped a still-visible gradient (a
+crisp rectangular edge, visible in the isolated layer). Fixed by fading the gradient fully to transparent
+INSIDE the box: **`ellipse 80% 95% at 26% 40%`, rgba(0,0,0,0.40)→0.22(42%)→0.06(70%)→transparent(88%),
+`inset -1.6rem/-2.6rem`** ("soft40"). Isolated over white it is a smooth feathered vignette (no box); the
+outer edge fades 0.06→transparent over ~27px ≈ **0.002 alpha/px**, no shoulder — the hero-scrim regime.
+(An automated whole-crop pixel metric was unreliable here — contaminated by the transparent heading text's
+anti-alias and the button box's fill — so the read rests on the isolated image + the analytic gradient +
+the AA distribution.) Peak 0.40 (was 0.52); extent = head box + inset (≈114% of the ~574px head width),
+peak anchored upper-left (26%/40%) over the heading. HOT-CORE: the scrim does NOT overlap the blog emitter
+core or the stack warm core (both `coreUnderScrim=false`; max lit luminance under the scrim region 1.0→1.0
+unchanged with the scrim on) — it only dims the moderate field directly under the heading glyphs.
+videos AA under soft40: **wide 6.24 / tall 9.87 / mobile 9.1 (0 below AA)**; it lifts the passing blocks too
+(wide: blog 13.3→16.3, 基礎 16.2→17.8) — no regression (§31.2b).
+
+## 31.2b Complete after-table (soft40) — all headings + bodies, wide/tall/mobile, 0 below AA
+24-frame field-under-glyph (opaque headings/bodies), min contrast / below-AA count; every value is ABOVE
+its §31.1 baseline (the scrim can only lift):
+
+  | | 基礎 (3) | 専門 (4) | blog (5) | videos (6) |
+  |---|---|---|---|---|
+  | heading wide | 17.83 | 19.05 | 16.33 | 6.24 |
+  | heading tall | 20.7 | 20.89 | 20.8 | 9.87 |
+  | heading mobile(70k) | 16.33 | 20.87 | 20.8 | 9.1 |
+  | body wide | 19.57 | 20.9 | 18.94 | 13.0 |
+  | body mobile | 21.0 | 20.9 | 20.9 | 7.38 |
+All 0 below AA on all three viewports. Mobile field is 70k (confirmed) and the index blocks reflow, so this
+was measured, not inferred. (Waveforms animates → §21.3 regime, videos spread e.g. wide 6.24→8.x; the stacks
+rest static → §23.7 zero spread.)
+
+## 31.3 §20.1 fix — footer tagline opacity, smallest scoped change
+`.footer-tagline` color `var(--text-tertiary)` (0.40) → `rgba(255,255,255,0.55)` — scoped to the tagline
+element, NOT the shared token (which has ~18 other uses). Composited contrast after, on index: WIDE 6.26 ·
+TALL 6.23 · MOBILE 6.25 (from ~3.7). Measured across **all 11 pages at mobile** (the footer is identical
+everywhere): index **6.21**, the ten interior pages **4.99** each — the interior pages sit at a slightly
+brighter footer background than index. **Min 4.99, all ≥ AA 4.5.** The tagline is static (footer panel, no
+motif — mobile suppresses the field), so this is a zero-spread rest (§23.7): no dip risk, like §23.6's 4.88.
+Reversible: restore `color: var(--text-tertiary)`.
+
+## 31.4 Phase D — every page verified by loading (before f3e5780 css vs after)
+Deterministic full-page diff at 1440×900 (all `canvas` + `iframe` hidden so the animated field / knowledge
+graph / PDF viewers don't add noise; `.reveal` forced visible), masking the intended regions (tagline all
+pages; `.index-block__head`±40px on index). `scrollHeight` Δ measured separately (the scrim is absolute /
+z-index -1, the colour change is layout-free → Δ must be 0).
+
+  | page | scrollHeight Δ | changed px OUTSIDE mask | note |
+  |---|---|---|---|
+  | index | 0 | 116 | < the same-CSS **self-diff floor of 149** → CJK font-hinting jitter at the footer row, NOT the CSS |
+  | study | 0 | 0 | (83k before excluding `#graph-container`, the knowledge-graph canvas — non-deterministic, not CSS) |
+  | blog, videos, self-intro, sns, peskin-qft, peskin-qft_sec2-1..4 | 0 | **0** | clean |
+All 11: scrollHeight Δ0; 0 real changed pixels outside the tagline+scrim regions (index's 116 is below the
+149 rendering-nondeterminism floor). `git diff --stat`: **only css/style.css** changed (28 ins, 1 del) →
+the MathJax / Three.js / PDF `createElement` loaders (all in JS/HTML) are byte-identical, so those pages
+render identically by construction. The `.index-block__head` scrim matched nothing on the 10 non-index
+pages (their diff is 0 outside the tagline). (Phase D was run with the 0.52 profile; its conclusions —
+index-only selector, absolute/layout-free, nothing changed outside the mask — are PROFILE-independent and
+hold for soft40, which is the same selector at the same z-index with a larger absolute inset.)
+
+## 31.5 §25.4 tall right-edge clipping — PROPOSAL ONLY (not built)
+Approach: an **aspect-gated world-x shift** `uTallShiftX`, driven live from the viewport like the §30 band-
+fit uniforms — 0 at aspect ≥ 1 (wide stays 0% clip, untouched), ramping to ≈ −0.5…−0.75 world at aspect
+≤ 0.71 (tall), applied to the RIGHT-OF-CENTRE motifs (foundation, specialty, stream/blog) via their stage
+gates. **Translation only, no scale** — respects §25.3 (the stack is at its frame ceiling and must not be
+enlarged). A throwaway prototype (uDX offset, tall) confirmed the DIRECTION: a left shift moves lit mass
+off the right edge onto the left (stack right-edge-lit 0.8%→0.2% at −1.0 world; specialty 1.3→0.6; left
+edge grows), and the stack has left headroom. CAVEAT: the prototype's 1px edge-lit metric ≠ §25.4's per-
+form offscreen (my stack baseline 0.8% vs §25.4's 4.6%), and forcing sceneF at a fixed scroll does not
+reproduce each stage's true landing — so the ABSOLUTE numbers are not comparable; the build round must
+re-measure with §25.2/§25.4's offscreen metric at each stage's real landing, and tune ΔX and the aspect
+ramp to drive tall right-clip → 0 for stack/spec/blog while holding wide at 0%. Not built this round.
+
+## 31.6 State (Round-31)
+`css/style.css`: `.index-block__head::before` scrim (§20.2, soft40 profile — §31.2a) + `.footer-tagline`
+0.55 (§20.1). Both reversible (delete the ::before rule; restore the tagline token). No JS/HTML change;
+scrollHeight Δ0 all 11 pages; verified page-by-page (§31.4). §25.4 remains a proposal (§31.5).
+`_probe*`/SURVEY_* untracked. Committed as "Round-31: index-block heading scrim + footer tagline opacity —
+§20.1/§20.2 AA on all viewports" (not pushed).

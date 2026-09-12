@@ -960,6 +960,30 @@ html.js .reveal.is-visible {
 .index-block__head {
     margin-bottom: var(--space-6);
     max-width: 62ch;
+    position: relative;
+}
+
+/* §20.2 (Round-31): a soft scrim behind the index-block heading column — a feathered
+   radial like .hero-scrim::before, lighter. Index-block headings had no scrim, so a
+   full-bleed bright motif (waveforms under 最新動画) dropped to 3.71:1 / 19-of-24 frames
+   below AA at 1440×900. This lifts it to 6.2:1 (0 below, all viewports) with no motif
+   change (an overlay, not a field edit). z-index -1 sits above the fixed canvas, below
+   the text. The gradient fades fully to transparent at 88% (INSIDE the -1.6rem/-2.6rem
+   inset box), so the box edge is transparent and it reads as a vignette, not a panel —
+   the earlier 0.52/transparent-at-100% version clipped a still-visible gradient at the
+   small box edge and read as a box (§31.2a). Scoped to .index-block__head — which exists
+   ONLY on index.html (0 matches on the other 10 pages). Reversible: delete this rule. */
+.index-block__head::before {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    inset: -1.6rem -2.6rem;
+    pointer-events: none;
+    background: radial-gradient(ellipse 80% 95% at 26% 40%,
+            rgba(0, 0, 0, 0.40) 0%,
+            rgba(0, 0, 0, 0.22) 42%,
+            rgba(0, 0, 0, 0.06) 70%,
+            transparent 88%);
 }
 
 .index-block__head h2 {
@@ -1060,7 +1084,13 @@ footer {
 
 .footer-tagline {
     font-size: 0.8rem;
-    color: var(--text-tertiary);
+    /* §20.1 (Round-31): --text-tertiary is rgba(255,255,255,0.40); at ~40% opacity over
+       the near-black footer panel the tagline composites to ~3.7:1 on EVERY viewport (not
+       just mobile — measured wide 3.68 / tall 3.71 / mobile 3.66; the cause is the text
+       opacity, not body::before ambient, which barely reaches: bg ~0.001). Raised to 0.55
+       here (scoped to the tagline, not the shared token) → ~6:1, clearing AA on all pages.
+       Reversible: restore `color: var(--text-tertiary)`. */
+    color: rgba(255, 255, 255, 0.55);
     max-width: 32ch;
 }
 
