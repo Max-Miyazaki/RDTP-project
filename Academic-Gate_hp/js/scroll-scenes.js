@@ -154,6 +154,23 @@
             phi: (24 + rnd() * 48) * Math.PI / 180, psi: rnd() * TAU, arg: rnd() * TAU
         });
 
+        // STAGE 5 (Blog, 最新ブログ) — rhombicuboctahedron wireframe (Round-33). 24 vertices / 48 edges, a
+        // volumetric polyhedron seen in perspective (replaces the coplanar radial emitter, kept inert as
+        // 'radialemitter' below). Circumradius LARGER on mobile so the 48 edges separate rather than merging
+        // into a fuzzy ball at 70k (§33 legibility). Verts = permutations of (±1,±1,±(1+√2)); edges = the min-
+        // distance vertex pairs; a fixed tilt is baked so the rest pose already reads 3-D (not axis-aligned).
+        var RCO_R = (isMobile ? 0.72 : 0.62) * S;
+        var rcoV0 = [], rcoSg = [1, -1], rcoG = 1 + Math.SQRT2;
+        for (var rax = 0; rax < 3; rax++) for (var rp = 0; rp < 2; rp++) for (var rq = 0; rq < 2; rq++) for (var rr = 0; rr < 2; rr++) {
+            var rvv = [0, 0, 0]; rvv[rax] = rcoSg[rp] * rcoG; rvv[(rax + 1) % 3] = rcoSg[rq]; rvv[(rax + 2) % 3] = rcoSg[rr]; rcoV0.push(rvv);
+        }
+        var rcoMx = 0; for (var rmi = 0; rmi < rcoV0.length; rmi++) { var rmd = Math.hypot(rcoV0[rmi][0], rcoV0[rmi][1], rcoV0[rmi][2]); if (rmd > rcoMx) rcoMx = rmd; }
+        var rcoCX = Math.cos(0.5), rcoSX = Math.sin(0.5), rcoCZ = Math.cos(0.32), rcoSZ = Math.sin(0.32);
+        var rcoV = rcoV0.map(function (v) { var s = RCO_R / rcoMx, x = v[0] * s, y = v[1] * s, z = v[2] * s; var y2 = y * rcoCX - z * rcoSX, z2 = y * rcoSX + z * rcoCX; return [x * rcoCZ - y2 * rcoSZ, x * rcoSZ + y2 * rcoCZ, z2]; });
+        var rcoE = [], rcoDmin = 1e9, rea, reb, red;
+        for (rea = 0; rea < rcoV.length; rea++) for (reb = rea + 1; reb < rcoV.length; reb++) { red = Math.hypot(rcoV[rea][0] - rcoV[reb][0], rcoV[rea][1] - rcoV[reb][1], rcoV[rea][2] - rcoV[reb][2]); if (red < rcoDmin) rcoDmin = red; }
+        for (rea = 0; rea < rcoV.length; rea++) for (reb = rea + 1; reb < rcoV.length; reb++) { red = Math.hypot(rcoV[rea][0] - rcoV[reb][0], rcoV[rea][1] - rcoV[reb][1], rcoV[rea][2] - rcoV[reb][2]); if (red < rcoDmin * 1.02) rcoE.push([rea, reb]); }
+
         // DRIFT (流, stage 7): an asymmetric VORTICAL CURRENT. Streamlines walk v = ∇⊥ψ of a curl-noise
         // streamfunction ψ = fbm(value-noise) — eddies of varied size at irregular positions, NO left/right
         // mirror (Round-28 field bake-off "C2"; the old ψ=sin(0.8x)cos(1.1y) read as a symmetric eddy PAIR — see
@@ -329,25 +346,28 @@
                     la = Math.floor(rnd() * 7); sy = (la / 6 - 0.5) * S * 1.75;
                     return [(rnd() * 2 - 1) * S * 1.6, sy + gauss(0.04), (rnd() * 2 - 1) * S * 0.65, 0.24 + 0.3 * (la / 6), 0.55, 0];
                 }
-                case 'stream': { // Round-21 (Blog): a SOURCE broadcasting — a warm hot core emitting cool filaments
-                    // that RADIATE outward (replaces the Round-19 directed flow-lines). Structure comes from DENSITY
-                    // CONCENTRATION — 16 filaments with dark voids between (per §23's finding that brightness
-                    // modulation over uniform positions gives no local structure). Each filament TAPERS: thick near
-                    // the core, thinning outward (jitter 0.055·(1−0.6·rf)) and dimming (0.72→0.27), so energy
-                    // concentrates at the source and dissipates at the rim — the emitting read. 16-tapered was chosen
-                    // OVER the metric: lumCV 1.69 < nature 1.93, because on THIS form density-per-ray is exactly what
-                    // lifts lumCV AND destroys the emitter character (8 filaments → 2.02 but reads as a hard asterisk).
-                    // The metric points away from the goal here; see DESIGN.md §24.3.
-                    // The Round-19 reversed spectrum + scomp were geometry-specific to the left→right flow and are
-                    // DROPPED — a radial form has no left→right lean to compensate. Centred at 0.55·S (right of the
-                    // blog text); world-x left-dim keeps the heading legible. Cool-only: filaments FLAT teal-cyan
-                    // (energy 0.30, NO radial hue gradient, so hue range → noise and there is no distinct hue to
-                    // cluster, cf. §22); warm confined to the hot core (~cosmos's share). See DESIGN.md §24.
-                    // Round-22: reach scaled to Scale A (×1.22, 0.58→0.7076·S) so the index tier clusters at ~20%
-                    // lit-bbox area (blog 14.4→22.5, ≈ 基礎 19.4 / 専門 19) rather than blog falling out of it. The
-                    // stack is at its frame ceiling (see §25.3) so the tier is unified by raising blog to the stack,
-                    // not the reverse. The CORE stays ABSOLUTE (radius unscaled): scaling it with the form dilutes
-                    // warm to 0.13–0.46%; held absolute it keeps warm ≈ cosmos's share (see §25.2).
+                case 'stream': { // 最新ブログ (Blog) — Round-33: RHOMBICUBOCTAHEDRON wireframe. A volumetric polyhedron
+                    // in perspective (near edges larger/brighter via the shader's size attenuation), replacing the
+                    // Round-21→22 coplanar radial emitter (which read as a flat 2-D asterisk collapsing to a line at
+                    // edge-on; kept inert as 'radialemitter' below). Edges-as-particles, attribute-free from aSeed.
+                    // CENTRED at origin → the 0.55·S emitter's 20.8% tall right-spill (§25.2 projected metric) → ~0.
+                    // Warm CORE at the centroid, absolute radius, full coherence (§23 full-or-nothing). Legibility at
+                    // 70k mobile (§33): even allocation i%nE (no lucky-thin edges) + a TIGHT jitter (crisp lines, not
+                    // fuzzy tubes) + a larger mobile circumradius (RCO_R above) so the 48 edges separate.
+                    if (rnd() < 0.009) {                                  // warm CORE at centroid — ABSOLUTE radius, full, ~cosmos share
+                        var koph = Math.acos(2 * rnd() - 1), koth = rnd() * TAU, kor = 0.05 * S * Math.cbrt(rnd());
+                        return [kor * Math.sin(koph) * Math.cos(koth), kor * Math.cos(koph), kor * Math.sin(koph) * Math.sin(koth), 0.88, 0.5, 0];
+                    }
+                    var re5 = rcoE[i % rcoE.length];                      // even allocation across the 48 edges
+                    var rv5a = rcoV[re5[0]], rv5b = rcoV[re5[1]], rt5 = rnd();
+                    var rj5 = (isMobile ? 0.006 : 0.008) * S;             // tight tube → crisp line (proto 0.012 read fuzzy at 70k)
+                    return [rv5a[0] + (rv5b[0] - rv5a[0]) * rt5 + gauss(rj5), rv5a[1] + (rv5b[1] - rv5a[1]) * rt5 + gauss(rj5), rv5a[2] + (rv5b[2] - rv5a[2]) * rt5 + gauss(rj5), 0.30, 0.6, 0];
+                }
+                case 'radialemitter': { // RETIRED Round-33 (stage 5 is now the rhombicuboctahedron above). Kept as INERT
+                    // dead code per the project pattern (cf. orbits/convergence/sea, and §32's amp-0 flat sheet) —
+                    // 'radialemitter' is not in the stages[] array, so this never runs; reachable via make('radialemitter').
+                    // Round-21→22 (Blog): a SOURCE broadcasting — a warm hot core emitting 16 cool filaments that RADIATE
+                    // outward in a plane, tapering thick-core→thin-rim, centred at 0.55·S. See DESIGN.md §24/§25.
                     if (rnd() < 0.009) {                                  // the hot CORE — ABSOLUTE radius, warm ~cosmos share
                         var srca = rnd() * TAU, srcr = 0.05 * S * Math.cbrt(rnd());
                         var srcx = srcr * Math.cos(srca) + 0.55 * S;

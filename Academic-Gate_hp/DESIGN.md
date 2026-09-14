@@ -3127,3 +3127,175 @@ delta UNTESTED). Caustic accepted as intended (§32.5). `SURVEY_*` untracked (th
 items: (a) **tall faintness** — a separate density arm; (b) **Correction 8** endQuery warning diagnosis;
 (c) §25.4 tall right-edge clip still a proposal (§31.5). docs/stills + probe: see the Step-8 proposals (stage-6
 still is stale; no probe refreeze needed — stage 7 unchanged).
+
+---
+
+# 33. Round-33 — Stage 5 (Blog / 最新ブログ): the rhombicuboctahedron (replaces the radial emitter)
+
+Stage 5's radial emitter read as a flat, planar burst — the same class of defect §32 fixed at stage 6. This
+round replaces it with a **volumetric polyhedron in perspective** (the user's brief, referencing stage 2's
+lattice). Propose-then-build: characterise → calibrate on the current form → bake off candidate polyhedra by
+eye → build the chosen one. One functional line changed (`js/scroll-scenes.js` stage-5 `make()` case + a
+module-scope precompute); no CSS/HTML/copy; stages 2, 6, 7 untouched. Numbers headless (rebuilt sealib, §30
+helper) unless marked real-GPU.
+
+## 33.1 The defect (characterised, Step 1)
+The Round-21→22 emitter was **coplanar by construction**: filament and core z = `gauss(0.03·S)` against an
+in-plane reach of `0.7076·S` — a depth:in-plane ratio ≈ **1:47 by std** (~1:16 by 3σ range). At rest it read
+as a 2-D pinwheel with no near/far parallax; over a full y-rotation it **collapsed to a vertical line** (wide
+massH 1068→**625**, worst-phase `maxEmptyRect` 14.6%, top-10% concentration 86%). Worse than the stage-6 slab
+(a plane→line, not a slab→sheet). **Median `maxEmptyRect` failed the <10% collapse gate on every aspect: 12.5
+(wide) / 20.8 (tall) / 16.2 (mobile)** — voids at most phases, not only edge-on.
+
+## 33.2 The fix — rhombicuboctahedron wireframe, attribute-free
+`js/scroll-scenes.js`, stage-5 `stream` case: a **rhombicuboctahedron** (24 vertices / 48 edges) rendered as
+**edges-as-particles** — a hollow polyhedral shell seen in perspective (near edges larger via the shader's
+size attenuation). Vertices = permutations of `(±1,±1,±(1+√2))`, edges = the min-distance vertex pairs, a
+fixed tilt baked so the rest pose already reads 3-D. Particle placement is **attribute-free from `aSeed`**:
+edge = `i % 48` (even allocation), param `t = rnd()` along the edge, tight perpendicular jitter.
+- **Centred at the origin** (kills the tall right-spill, §33.4). Circumradius `0.62·S` wide/tall, **`0.72·S`
+  mobile** (§33.3).
+- **Warm core at the centroid**, absolute radius `0.05·S`, full coherence (§23 full-or-nothing).
+- **No new `setAttribute`** → **slots 12/16, memory 27.20 MB @200k — both unchanged.**
+
+## 33.3 Mobile legibility — needed, and fixed without a brightness boost
+The prototype (Step 2) read as a **fuzzy ball at 70k** (1458 particles/edge, 48 edges merging at small scale).
+Three changes fixed it: **even allocation** `i%48` (no lucky-thin edges), **tighter jitter** `0.006·S` mobile /
+`0.008·S` desktop (was 0.012 in the proto — crisp lines, not fuzzy tubes), and a **larger mobile circumradius**
+`0.72·S` (was 0.62 — separates the 48 edges). **Brightness was deliberately left alone** (energy 0.30, br 0.6)
+to protect the thin mobile heading (§33.7). Result: a crisp wireframe with a visible core at 70k.
+**Untried levers, recorded for a future round if more crispness is wanted:** fewer parked particles, or
+near-edge brightening (both risk the heading and were not needed).
+
+## 33.4 §25.4 — stage 5's share resolved (centring), and a metric caveat
+Centring took stage 5's tall right-edge spill from the emitter's **20.8% → 0 on every edge, all three aspects**,
+measured with **§25.2's projected-particle metric** (share of a stage's target particles projecting outside
+NDC). **The screen-edge-lit metric is unreliable for a dim-rimmed form** — it read the old emitter's spill at
+**0.1%** (the rim is faint, so few edge pixels clear the floor) versus the true 20.8%; §25.2's projected metric
+is canonical, validated this round against §25.3's stage-3 stack (projected 4.85% vs recorded 4.6%). **§25.4
+remains open for the stage-3 stack (4.6% tall); stage 5's share is closed.**
+
+## 33.5 Result table (field-only; landings, settle 6 s, sceneF confirmed)
+Landings: wide **scrollY 4094 / sceneF 5.0000**, tall **8234 / 5.0000**, mobile **3930 / 4.9995**.
+
+| metric | wide | tall | mobile |
+|---|---|---|---|
+| **RIE** (min/max massH over full y-rot; gate **≥0.73**) | **0.978** | **0.961** | **0.972** |
+| massH min/med/max | 756/769/773 | 1004/1031/1045 | 311/318/320 |
+| rawX min→max | 1037→1037 | 1045→1074 | 333→333 |
+| **§25.2 offscreen** L/R/T/B | 0/0/0/0 | **0/0/0/0** | 0/0/0/0 |
+| litPct med | 4.22 | 1.02 | 3.38 |
+| cellCV med (32×16) | 1.567 | 1.633 | 1.641 |
+| lumCV32 med (**floor check only**) | 0.544 | 0.375 | 0.274 |
+| concTopK med (**descriptive**) | 34.3 | 41.8 | 25.1 |
+| clipPct med (**denom = lit px**) | 0.88 | 2.07 | 4.92 |
+| warmPct | **0.597%** | **not measurable** | **not measurable** |
+| hue colRange (§22, **form-only**, N) | 0.9° (N 50303) | 1.3° (N 21716) | 1.2° (N 10379) |
+
+The RIE gate is **stage 2's measured 0.729** (a real volume's rotation-invariance); all three clear it with
+margin, and **no phase collapses toward a line** (min massH 756 wide vs the emitter's 625). Warm core is
+**0.597% on wide** (≈ cosmos share); on tall/mobile it is **not measurable** — the core is ~0.9% of particles
+and too few warm pixels clear floor 0.15 on the fainter aspects (visible in the wide/mobile stills, faint on
+tall), stated as not-measurable rather than a silent pass. Hue is **flat teal on all three aspects, form-only**
+(see §33.11 correction 9c for why "form-only" matters). `lumCV32` recorded as a floor check only; `concTopK`
+descriptive (no streak — the wireframe has no bright caustic).
+
+## 33.6 Edge weight across viewports (Step 4 A) — identical geometry; the difference was montage scale
+Point size (`gl_PointSize = clamp(uSize·boost/depth,0,8)·uPixelRatio`, uSize 17 desktop / 18 mobile) and
+jitter (`0.008·S` desktop = 0.028 world; `0.006·S` mobile = 0.0123 world) are **device-dependent but NOT
+aspect-dependent — wide and tall are the same geometry.** The contact-sheet impression that tall edges are
+thicker/brighter is a **montage-scale artifact**, confirmed by measurement (form-only): median single-edge
+run-width **wide 7 / tall 2 / mobile 3 px**; lit-px per projected-edge-length **wide 7.65 / tall 1.73 / mobile
+2.95**; mean lit luminance **0.180 / 0.168 / 0.210** (equal). Both thickness measures show tall edges are *not*
+thicker — the tall viewport projects the form **2× larger** (bbox 986 vs 495 px), separating the edges, while
+the wide form's 48 edges overlap into a denser mesh (which inflates wide's run-width). **Recorded so a future
+round does not re-litigate it:** edges are thin (1–3 px) and consistent; pixel edge-weight varying with canvas
+height is ordinary projection behaviour every stage has, not a bug and not a side-effect of the mobile change.
+
+## 33.7 Heading contrast (最新ブログ) + the scrim dependency (Step 4 C)
+8×8 rotation×breathe grid, scrim vs field decomposed, glyph textL 1.0:
+
+| | scrim ON min | below AA | scrim OFF min | below AA |
+|---|---|---|---|---|
+| wide | 16.33 | **0/64** | 13.28 | 0/64 |
+| tall | 6.25 | **0/64** | 3.71 | 28/64 |
+| mobile | 7.39 | **0/64** | 3.71 | 63/64 |
+
+**Scrim-ON holds AA at 0/64 on all three aspects** (tightest tall 6.25) — not a blocker. **STANDING DEPENDENCY:**
+centring the form makes 最新ブログ **the most scrim-dependent heading on the site** — scrim-off below-AA jumps
+from the old right-placed form's 24/64 to **63/64 (mobile)** and 8/64 to **28/64 (tall)**. Any future change to
+`.index-block__head::before` (the §31 scrim) puts this heading at risk first and must re-verify stage-5
+mobile/tall.
+
+## 33.8 The bake-off, the user's override, and the RIE lesson
+Three edge-as-particle prototypes were built and measured (Step 2): **P1 octahedron (12 edges), P2 stella
+octangula (12 edges), P3 rhombicuboctahedron (48 edges)**, all centred, identical circumradius, warm core at
+centroid. **P1 and P2 cleared every gate** (RIE, spill→0, heading scrim-ON 0/64) and I **ranked P3 last on
+perceptual grounds**: it reads **ball-ish** (26 faces approach a sphere → fails distinctness from stage 0's
+volumetric sphere), it is the **most stage-2-adjacent in character** (18 square faces, many right angles), and
+it was **weakest at 70k** (4× sparser per edge). **The user overrode the ranking on taste and adopted P3**,
+accepting the wireframe/line-drawn look as intended — their call. Recorded straight, ranking not rewritten to
+match the outcome.
+- **The RIE lesson (record it):** P3 posted the **BEST RIE (0.976)** while reading **worst by eye**. RIE
+  rewards *roundness* — a near-spherical form has the most rotation-invariant extent — so **RIE gates collapse
+  but must never be read as a quality score.** Same class of finding as §32's concentration metric: a number
+  that tracks one property (here, non-collapse) can move opposite to the perceptual goal.
+
+## 33.9 Stage-0 distinctness + the scroll transition
+- **Stage 0 vs stage 5 (made decidable by eye, Step 3):** stage 0 is a **dense filled sphere** + magenta core;
+  stage 5 is a **hollow wireframe** + magenta core. **No collision** — filled-vs-wireframe is decisive; the
+  **magenta core is the only shared element**, and it is the available lever (drop / recolour / shrink on stage
+  5) if more separation is ever wanted. Nothing changed unilaterally.
+- **Scroll transition (the user's "if it becomes this shape as you scroll, it's fine"):** the form **assembles**
+  from the dispersing specialty stack and **dissolves** into the waveforms rather than popping in. scrollY
+  3554→4634, sceneF **3.998 → 4.25 → 4.5 → 4.75 → 5.000 (assembled rhombicuboctahedron) → 5.25 → 5.5 → 5.75 →
+  6.000**.
+
+## 33.10 Frame time — absolute MEASURED (real GPU); incremental UNTESTED
+Stage 5, working-tree build, real laptop browser, hardware GL, 1440-wide, landed via `snapRest(5)`, **sceneF
+4.999626 confirmed at stage 5 before sampling**:
+- **200k particles; frame ms = 30 one-second samples, range 3.2–4.5, most 3.3–3.6; SUSTAINED 60 fps** over
+  ~30 s, no drop.
+- **GPU-timer path:** `EXT_disjoint_timer_query_webgl2` confirmed present; HUD value, exponentially smoothed.
+  No fps-min field → this is **SUSTAINED fps, not a true minimum.**
+- **No before/after delta exists.** The retired radial emitter was not measured. **Absolute cost MEASURED; the
+  incremental cost versus the old form is UNTESTED** (same stance as §32.7 — not derived, estimated, or
+  inferred).
+- **Reasoning (explicitly not a measurement):** stage 5 is not heavier than the §32 stage-6 reading (3.8–4.7 ms)
+  despite a much higher litPct (wide 4.22% vs the corrugated sheet's 1.16%). The likely reason is that a hollow
+  wireframe concentrates particles onto thin edges instead of spreading additive overdraw across a filled area.
+- **Methodological note (§26.3 earning its place — a worked example):** the FIRST reading was taken at **sceneF
+  4.84** — mid-transition between the stage-4 stack and the assembled polyhedron, not the rest pose — and was
+  **discarded once sceneF was checked**. It gave similar numbers, so only the sceneF check caught that it was
+  not measuring the adopted form. Settle, then verify sceneF, *then* read.
+- Stage 7 untouched → no `tools/probe/` run applies and **no refreeze needed**.
+
+## 33.11 Corrections (Round-33) — recorded as corrections
+- **9a — the stella's "natural core anchoring" advantage does not exist.** *Believed* (Step 1): the
+  interpenetrating tetrahedra anchor the warm core more naturally than the octahedron. *Measured*: for an
+  **edges-only** shell all arms have an empty centre; the core is placed at the centroid identically. *Now*: no
+  arm has a core-anchoring advantage.
+- **9b — stella octangula edge count.** *Believed* (Step 1): 24 edges. *Measured*: two tetrahedra = 6+6.
+  *Now*: **12 edges.**
+- **9c — the Step-3 tall hue of 30.8° was DOM-text contamination, and the core explanation was also wrong.**
+  *Believed* (Step 3): tall hue colRange 30.8°, caused by the magenta core making per-column means bimodal.
+  *Measured*: **form-only** (all DOM hidden but the canvas), colRange **1.3°** at floor 0.15, stdev 0.8, N
+  21716, **0 warm pixels excluded** — the core was never in the measurement; the 30.8° came from the bright
+  white nav/heading/body pixels and their antialiased fringes entering the mass-band bbox on the faint tall
+  form (a §22-class wrong-pixels error, the very thing §22 exists to prevent). *Now*: **the field is flat teal
+  (~1.3°) on all three aspects; no gradient, and not the core.**
+
+## 33.12 State (Round-33, working tree — staged for commit, not yet committed/pushed)
+stage 5 = rhombicuboctahedron wireframe, attribute-free (`i%48`, `t=rnd()`), centred, `0.62·S` wide/tall /
+`0.72·S` mobile, warm core at centroid absolute `0.05·S` full. Retired Round-21→22 radial emitter kept as
+**inert dead code** under `case 'radialemitter':` (not in `stages[]`, reachable via `make('radialemitter')`),
+matching the orbits/convergence/sea/§32-amp-0 pattern. Slots 12/16, 27.20 MB @200k unchanged. **Only
+`js/scroll-scenes.js` changed** — no CSS/HTML/copy; scrollHeight Δ0; stages 2/6/7 unchanged (confirmed by the
+transition frames). Collapse gate `maxEmptyRect<10%` met at every phase/aspect via RIE ≥0.96; spill 0; heading
+AA holds with the scrim; hue flat teal; frame time measured (§33.10, absolute; incremental UNTESTED). `SURVEY_*`
+untracked (the user's, never staged).
+**Open items after this round:** (a) **stage-6 tall faintness** — unchanged, still its own density arm; (b)
+**Correction 8** (§32) endQuery-warning diagnosis; (c) **stale stills for BOTH stage 5 and stage 6** (proposed:
+`r33-5-blog-{wide,tall,mobile}`, `r32-6-videos-{wide,tall}`, superseding `r22-5-blog`/`r17-5-videos`; §30.13
+rows to update — not regenerated this round); (d) **§25.4 for the stage-3 stack** (4.6% tall; stage 5's share
+closed this round).
