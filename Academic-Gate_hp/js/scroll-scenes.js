@@ -96,6 +96,9 @@
         }
         function gauss(s) { return (rnd() + rnd() + rnd() - 1.5) * s; }
         var TAU = Math.PI * 2, S = isMobile ? 2.05 : 3.5;
+        // ARM-2 (Round-32 prototype): corrugate the waveforms sheet in z so it is never fully edge-on.
+        // WAVE_CORR_AMP = 0 → the current flat sheet (toggle; current form stays reachable/intact). Attribute-free.
+        var WAVE_CORR_AMP = 0.6, WAVE_CORR_FREQ = 0.8;
         // Reference the SNAPPORT centre, not the raw viewport centre: scroll-padding-top insets
         // the snapport by --nav-clearance, so `scroll-snap-align: center` rests a scene's centre
         // pad/2 below the true viewport centre. Matching that here makes a snap rest land on an
@@ -363,7 +366,8 @@
                     var wtr = Math.floor(rnd() * 5);                      // 5 thin signal lines
                     var wxx = -S * 1.7 + rnd() * S * 3.4;
                     var wty = (wtr / 4 - 0.5) * S * 1.55 + 0.22 * S * Math.sin(wxx * 2.7 + wtr * 1.7);
-                    return [wxx, wty + gauss(0.03 * S), (wtr - 2) * S * 0.11, 0.36 + 0.22 * rnd(), 0.72, (wtr + 0.5) / 5];
+                    var wzz = (wtr - 2) * S * 0.11 + WAVE_CORR_AMP * S * Math.sin(wxx * WAVE_CORR_FREQ);   // ARM-2: z corrugation (0 amp = flat)
+                    return [wxx, wty + gauss(0.03 * S), wzz, 0.36 + 0.22 * rnd(), 0.72, (wtr + 0.5) / 5];
                 }
                 case 'drift': { // 流 (Round-28): an asymmetric vortical CURRENT, ADVECTED along its streamlines in the
                     // shader (§30). make() only places the STATIC base — this particle's point at s0 on its own C2

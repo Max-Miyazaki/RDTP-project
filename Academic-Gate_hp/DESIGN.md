@@ -2987,3 +2987,143 @@ ramp to drive tall right-clip → 0 for stack/spec/blog while holding wide at 0%
 scrollHeight Δ0 all 11 pages; verified page-by-page (§31.4). §25.4 remains a proposal (§31.5).
 `_probe*`/SURVEY_* untracked. Committed as "Round-31: index-block heading scrim + footer tagline opacity —
 §20.1/§20.2 AA on all viewports" (not pushed).
+
+---
+
+# 32. Round-32 — Stage 6 (waveforms / 最新動画 / videos): the corrugated wave membrane (ARM 2)
+
+The waveforms slab read as a rotating *plane*, not a volume. This round corrugates it in z so it occupies
+the space at every rotation phase. One functional line changed (`js/scroll-scenes.js` waveforms `make()`);
+no CSS/HTML/copy. Method throughout: characterise → calibrate the metric on the *current* build before
+building → prototype behind a toggle → measure wide/tall/mobile field-only → decide. All numbers headless
+(rebuilt sealib, §30 helper) unless marked real-GPU. Eight self-corrections are recorded as corrections in
+§32.8 — several overturn my own earlier claims in this round.
+
+## 32.1 The defect (characterised, Step 1)
+Stage 6 = 5 thin signal lines on a slab: wide-x `±1.7·S`, thin-z `0.22·S` (x:z ≈ 7.7:1). It rotates about y
+at `ROT[6]=[0,0.03]` + `clock·(0.02+…)` ≈ 0.02 rad/s (period ~314 s). At rotY ≈ π/2 (≈ every 157 s, ~14 s
+window) it turns near edge-on: the projected extent collapses to a narrow vertical band right of centre with
+voids left/right — this is the "hard to see" the user reported. **Perspective bounds the collapse to a
+worst-phase extent ~684 px** (camera z = 7; the near-particle fan keeps it far from an orthographic
+`0.129×` band) — measured, not derived (Correction 1). It is a projection defect, not the starfield
+(Correction 2).
+
+## 32.2 The fix — attribute-free z-corrugation (shipped amp 0.6 / freq 0.8)
+`js/scroll-scenes.js`, waveforms `make()`:
+`wzz = (wtr-2)·S·0.11  +  WAVE_CORR_AMP·S·sin(wxx·WAVE_CORR_FREQ)`  — shipped `WAVE_CORR_AMP=0.6`,
+`WAVE_CORR_FREQ=0.8`. The sheet folds in z, so no rotation phase is a flat plane; it reads as a woven
+membrane occupying the space. Derived from the existing `wxx` — **no `rnd()` draw, no new `setAttribute`**.
+- **Toggle / dead code:** `WAVE_CORR_AMP=0` makes the added term `0·S·sin(...)` = exactly 0 (IEEE754 `x+0=x`)
+  and consumes no random draws, so it reproduces the pre-round flat sheet **bit-for-bit**. Kept as inert
+  dead code (the flat form stays reachable/intact).
+- **Cost is structural-zero:** attribute-free → **slots 12/16 unchanged**, **memory 27.20 MB @200k
+  unchanged** (K=8, EBV=⌈8/4⌉=2, `attributeBytes = (K·3+EBV·4+1+1)·4·COUNT = 34·4·COUNT`).
+
+## 32.3 Metric calibration (Step 3, calibrated on the current build BEFORE building)
+- **2-D occupancy** (broadside target bbox gridded 48×24): **`maxEmptyRect` (largest empty rectangle, % of
+  bbox) is the decisive metric.** COF and cell-occupancy do NOT discriminate — both sit ~1.0 / 0.44–0.73 for
+  the good broadside AND the collapsed edge-on states (scattered particles keep cells nominally occupied
+  while a large void persists). Only the empty-rectangle search sees the void.
+- **Collapse GATE: `maxEmptyRect < 10%`.** Set from the known-bad reference: current build worst edge-on
+  **12.5% (wide) / 28.0% (tall)** — clearly failing; good broadside 1.4–6.9% — clearly passing.
+- **Faint/fog:** `litPct < 0.5%` flags faintness. The `AND cellOcc_abs<0.45` form I first proposed is too
+  lenient (its τ self-scales), so it must be `litPct`-driven (Correction 5).
+
+## 32.4 The amplitude decision — amp 0.6 (Steps 4–5), field-only
+| metric (wide) | current (amp 0) | **amp 0.6 (shipped)** | amp 0.9 |
+|---|---|---|---|
+| broadside litPct % | 0.747 | **1.161** | 1.522 |
+| broadside massH / rawX px | 1268 / 1439 | **1033 / 1280** | 1075 / 1280 |
+| worst edge-on `maxEmptyRect` % | **12.5 ✗** | **7.0 ✓** | 5.6 ✓ |
+| worst edge-on massH px | 688 | **982** | 1101 |
+| tall worst edge-on `maxEmptyRect` % | 28.0 ✗ | **3.0 ✓** | 1.7 ✓ |
+| mobile broadside / edge clip % | 10.71 / 3.14 | **10.89 / 5.50** | 10.96 / 7.36 |
+
+amp 0.6 chosen: clears the collapse gate at every phase and aspect, adds a wide density gain (0.747→1.161),
+and costs less mobile edge-on clip than amp 0.9. Notes:
+- **Broadside extent contracts (a stated trade, not a bug):** rawX 1439→1280, and **1280 for BOTH amps**
+  (the fold envelope, not its depth, sets the projected x-extreme, so it saturates). ARM 2 **buys edge-on
+  extent (worst-phase 688→982) by giving up peak broadside width** — the pre-fold broadside was overshooting
+  the frame edge anyway (Correction 3). The non-monotone *massH* (1033 < 1075) is a mass-band-tail artifact,
+  not geometry: rawX is identical (1280/1280); the brighter amp 0.9 (litPct 1.52 vs 1.16) pushes its 99%-mass
+  boundary ~42 px further out.
+- **Mobile clip is baseline, not ARM-2-introduced:** the current flat build already clips **10.71%** at
+  mobile broadside; ARM 2 adds ~0.2% there (Correction 4). The real ARM-2 mobile cost is at edge-on
+  (3.14→5.50 at amp 0.6).
+- **Tall faintness UNCHANGED** (broadside litPct 0.172 / 0.169 / 0.167, re-measured separately per amplitude
+  — Step 5 C, distinct captures proven by monotone rawX 1271/1205/1136). Corrugation is geometry, not
+  density; this is the **dominant remaining defect on tall** and a **separate density arm — NOT addressed
+  this round** (open item).
+
+## 32.5 The fold-crest caustic — descriptive, NOT gated
+The fold introduces a **bright vertical crest line** (a caustic where a corrugation crest runs tangent to the
+view). It is in the same screen region and has a similar character to the original defect, so it is measured,
+not waved away. **Concentration metric:** share of total field luminance in the brightest 10% of columns.
+Current collapsed edge-on = **66–73%** (streak reference). Over a full 0→π rotation the caustic (top-10% ≥
+55%) appears in **7/18 frames at amp 0.6** and **5/18 at amp 0.9**, vs current **2/18** — materially more than
+the "some phases" I first wrote (Correction 7). **Acceptance:** the user reviewed the amp-0.6 broadside still
+and reads the bright crest as *the wave converging* — accepted as intended appearance. Therefore
+**concentration is recorded as DESCRIPTIVE, not a gate**; **`maxEmptyRect < 10%` remains the real collapse
+check** (§32.3).
+
+## 32.6 Heading contrast (最新動画) — holds with the existing §31 scrim, no change
+8×8 rotation×wave grid (64 frames), amp 0.6, full-page with the shipped `.index-block__head::before` scrim:
+**scrim ON 0/64 below AA on all three aspects** (min 6.33 wide / 6.16 tall / 6.78 mobile). Scrim off drops
+frames below AA (13/64 wide, 16/64 mobile), so the §31 scrim stays load-bearing — but it fully covers ARM 2.
+No heading change needed. (The glyph rect the grid measured under was valid — `{x192, y417.1, w120.4, h36}`,
+white textL 1.0; the heading was present all along — Correction 6.)
+
+## 32.7 Frame time — absolute MEASURED (real GPU); incremental UNTESTED
+Stage 6, working tree at `WAVE_CORR_AMP=0.6`, real laptop browser, hardware GL, 1440-wide, landed via
+`window.__field.snapRest(6)`, **sceneF 6.000180** (settled; confirmed at stage 6, not stage 7):
+- **200k particles; frame ms = 13 one-second samples, range 3.8–4.7, typical ~4.1–4.2; SUSTAINED 60 fps** over
+  the ~30 s window, no drop observed.
+- **GPU-timer path:** `EXT_disjoint_timer_query_webgl2` confirmed present; the HUD's `frame ms` is the GPU-timer
+  value, exponentially smoothed. The HUD has **no fps-min field → this is SUSTAINED fps, not a true minimum.**
+- **The amp-0 comparison was NOT run.** The absolute cost of the shipped motif is measured; the **incremental
+  cost of the corrugation vs the flat sheet is UNTESTED.** Reasoning it was judged unnecessary — **explicitly
+  not a measurement:** the corrugation is one extra `sin` per stage-6 vertex in `make()`, CPU-side at build,
+  adding nothing per frame in the shader, and 4.1 ms at 200k sits comfortably under the Round-30 drift figures
+  (4.40/4.60 ms, §30.11a) with 60 fps never dropping.
+- **Stage 7 non-regression** (`tools/probe/`, same machine, 200k, GPU-timer path): working tree **4.80 ms** vs
+  frozen orbits baseline **4.60 ms**, **Δ +0.20 ms**, both sustained 60 fps (working-tree fps min − 0 vs
+  baseline), samples 101 / 88, baseline orbits frozen @3e942e0. **No regression from Round-32** — as expected,
+  the change is confined to stage 6's `make()`. The +0.20 ms is the **drift-vs-orbits** difference, **NOT** an
+  amp-0.6-vs-amp-0 difference (`tools/probe/` is a stage-7 harness and cannot measure stage 6).
+
+## 32.8 Corrections (Round-32) — recorded as corrections
+1. **Orthographic estimate wrong.** The edge-on collapse is perspective-limited (worst-phase ~684 px), not
+   orthographic (~0.129× band). Measured, not derived.
+2. **"Star pollution" wrong.** The stray lit pixels at edge-on are perspective fan-out + luminance clipping,
+   not the starfield.
+3. **"Pure mass redistribution, x-geometry unchanged" wrong (Step 3 C).** Raw x-extent also contracts
+   (1439→1280); it is a real perspective-mediated projected change from the z-fold. ARM 2 buys edge-on extent
+   by giving up broadside extent.
+4. **"ARM 2 over-clips / blows out mobile" overstated (Step 3).** The current flat build already clips 10.71%
+   at mobile broadside (baseline); ARM 2 adds ~0.2% there. The real ARM-2 mobile cost is at edge-on
+   (3.14→5.50 at amp 0.6).
+5. **Fog test too lenient (Step 3 1b).** `cellOcc_abs<0.45 AND litPct<0.5%` passes the visibly-faint
+   tall-broadside because `cellOcc_abs`'s τ self-scales; the faint check must be `litPct`-driven.
+6. **Heading hidden in Step-4 captures (Step 4).** From Step 4 on I hid `#stage-videos h2` in the
+   still/contact-sheet generators, not just the contrast-measurement pass, so 最新動画 was absent from every
+   Step-4 image. It renders correctly (DOM: visible, white, 30.4 px, in viewport); the contrast rect used was
+   valid and the §32.6 result is not void. Stills must show the heading; only the contrast pass hides it (to
+   sample the background behind the glyphs).
+7. **Caustic prevalence understated (Step 4 E).** I wrote "at some broadside phases." Measured: top-10%
+   concentration ≥55% in 7/18 rotation frames at amp 0.6 (5/18 at amp 0.9) vs current 2/18 — ~a third to
+   ~40%, materially more frequent than "some."
+8. **endQuery/ReadPixels warning misclassified as a headless SwiftShader artifact.** In a real desktop
+   browser with hardware GL, `INVALID_OPERATION: endQuery: target query is not active` fired 256× at the
+   stage-6 landing, alongside a working GPU timer and plausible values; no functional impact observed. The
+   warning is **not headless-specific.** Diagnosing it is left as a separate open item — not investigated or
+   fixed this round.
+
+## 32.9 State (Round-32, working tree — staged for commit, not yet committed/pushed)
+stage 6 = corrugated wave membrane, `WAVE_CORR_AMP=0.6` / `WAVE_CORR_FREQ=0.8`, attribute-free; `WAVE_CORR_AMP=0`
+is inert dead code reproducing the pre-round flat sheet bit-for-bit. Slots 12/16 and 27.20 MB @200k unchanged.
+**Only `js/scroll-scenes.js` changed** — no CSS/HTML/copy; scrollHeight Δ0. Collapse gate `maxEmptyRect<10%`
+met at every phase/aspect; heading AA holds with the §31 scrim; frame time measured (§32.7, absolute; amp-0
+delta UNTESTED). Caustic accepted as intended (§32.5). `SURVEY_*` untracked (the user's, never staged). Open
+items: (a) **tall faintness** — a separate density arm; (b) **Correction 8** endQuery warning diagnosis;
+(c) §25.4 tall right-edge clip still a proposal (§31.5). docs/stills + probe: see the Step-8 proposals (stage-6
+still is stale; no probe refreeze needed — stage 7 unchanged).
