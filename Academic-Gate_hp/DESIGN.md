@@ -3299,3 +3299,154 @@ untracked (the user's, never staged).
 `r33-5-blog-{wide,tall,mobile}`, `r32-6-videos-{wide,tall}`, superseding `r22-5-blog`/`r17-5-videos`; §30.13
 rows to update — not regenerated this round); (d) **§25.4 for the stage-3 stack** (4.6% tall; stage 5's share
 closed this round).
+
+# §34 — Stage 7 (closing motif): the frozen 43° accretion disc
+
+## 34.1 The arc of the round — drift → gas → orbital → accretion disc → freeze
+Stage 7 is the closing section (final message centred, footer below; §27 snap point LOAD-BEARING). Round 34
+replaced the shipped orbital rings through a sequence of **intent changes by the user**, each requiring a
+metric re-aim:
+- **Steps 1–4 — gas.** A viewport-filling continuous medium (large soft sprites, `uGasSize`/`uGasSoft`, CDF
+  density grid). Finding: large soft sprites blend neighbours into a continuous medium. **RETIRED** to
+  `case 'gascloud':` (inert dead code, matching the orbits/convergence/sea/radialemitter pattern).
+- **Step 5 (user override) — "particles orbiting a black hole; the centre is invisible, only its effect is
+  drawn."** Fill-vs-concentrate resolved as **CONCENTRATE** (bounded object, empty corners intended).
+- **Steps 6–7 — the inclined accretion disc.** Built, then three defects fixed in order: (1) solid slab →
+  particles (small tight sprites, §34.2); (2) invisible rotation → measurable Ω via discrete clumps; (3) top
+  overflow → shrink `DISC_ROUT` 3.2→2.7.
+- **Step 8 — granular clumps** (§34.3): the clumps were themselves solid beads; fixed by sprite footprint, not
+  brightness.
+- **Steps 9–11 — the orientation defect** (§34.4): the disc's tilt drifted over time, so its interior swung
+  between granular and slab. **Adopted: a frozen 43° disc** (§34.5). This is the shipped form.
+
+## 34.2 Disc geometry
+Keplerian differential orbit advanced **shader-side** as a target override: `θ = θ0 + uTime·ω(r)`,
+`ω(r) = DISC_W0·(DISC_RIN/r)^1.5` (`DISC_W0 0.20`), density falling outward `r = RIN+(ROUT−RIN)·h^PWR`
+(`PWR 1.7`), central void inside `DISC_RIN 0.9`, `DISC_ROUT 2.7`, thin in z (`DISC_THICK 0.18`), tilted by
+`DISC_INC` about its own axis, centred on the fixed world point `(0, 1.5, 0)` (**on the Y axis → spin-invariant
+in position**, only its orientation is affected by the global spin — see §34.4). Gated to stage 7
+(`driftW7`) **and** `uDiscOn` (mobile off, §30.7 belt-and-suspenders: uniform gate + attribute brightness 0 in
+`make()`). Attribute-free from `aSeed` hashes; `dhash` in the shader mirrors `dhashJS` in `make()`; clump
+centres baked via `clumpAt`.
+
+## 34.3 Granular clumps — a sprite-footprint problem, not brightness (Step 8)
+The clumps read as **solid saturated beads** (interior litFrac 98.6 / spread 0.31 = slab). The lever was NOT
+particle count (dropping `DISC_CLUMPFRAC` 0.40→0.14 left the interior ~100% filled) and NOT brightness. **A
+clump is denser than the body, so at the body's sprite footprint its grains overlap into a smooth fill.** Fixed
+the way the body slab was fixed — a **smaller sprite for clump grains** (`DISC_CLUMPSZK 0.50`, ~3 px vs the
+body's 6), so black shows between grains at high density. Also switched the clump r/θ jitter from
+centre-weighted (sum-of-two, which piles grains at one point) to **box/uniform** (`dhash·2−1`), which does not
+pile and gives each clump a spread of radii so differential rotation **shears it into an arc**. Params:
+`DISC_CLUMPFRAC 0.42`, `DISC_CLUMPR 0.55`, `DISC_CLUMPT 0.30`, 8 clumps, sizes varied 0.55–1.75, random θ.
+Result at the time (**phase-specific — see §34.6**): body granular, whole-disc spread back on the stage-0
+benchmark.
+
+## 34.4 The orientation defect and its fix (Step 11) — first-class
+**Defect.** The user opened the live page and the disc interior looked markedly denser — near the Step-7 slab —
+than in the Step-8 stills. Cause, confirmed from the code: the shared global spin
+`points.rotation.y = rot[1] + clock·(0.02 + 0.055·cosW)` (**line 779**); at stage 7 `cosW = 1−min(1,|sfEased|) =
+0`, so the disc spins about world-Y at **0.02 rad/s → 314 s period**. Spinning a **tilted** disc about Y holds
+the normal's polar angle but sweeps its **azimuth**, so the angle to the camera oscillates **face-on↔edge-on**,
+and the edge-on phases compress the grains along the view axis into a dense slab — **the same mechanism as the
+§32 stage-6 corrugation defect.**
+- **Empirical confirmation:** forcing `rotation.y` toward edge-on drove the interior to **litFrac 100 / spread 0
+  — a solid slab.**
+**Fix.** Ease `rotation.x`/`rotation.y` to a fixed, deterministic **0 / 0** via
+`discFreeze = smooth(6.3, 6.8, sfEased)`, gated to stage 7, mirrored in `renderOnce()`. The disc then sits at a
+constant tilt = `DISC_INC`; particles still ORBIT (shader θ advance, `uTime` untouched). **Only the orientation
+is frozen, not the motion within it.**
+- **Stages 0–6 untouched — by measurement, not assertion:** the gate is 0 for `sfEased ≤ 6.3` (stage 6 rests at
+  6.0); at **stage 3, `rotation.y` still advances 0.2969 → 0.3237 (Δ0.0268)** — spin fully intact; at the disc
+  rest, `rotation.y = 0.0000` and is still **0.0000 after 9 s (Δ0)** — frozen.
+
+## 34.5 The inclination sweep — 43° chosen over 58°
+Swept `DISC_INC` at the frozen tilt, real rest (sf 6.924), 1440-wide, field-only:
+
+| INC | rim lit / spread | body lit / spread | whole spread | void | MSG min |
+|-----|------------------|-------------------|--------------|------|---------|
+| 0.55 (32°) | 74.1 / 1.88 | 12.0 / 5.96 | 4.02 | 0.011 | 7.09 |
+| **0.75 (43°) ADOPTED** | **76.5 / 1.54** | **13.5 / 6.67** | **4.13** | **0.010** | **12.83** |
+| 0.95 (54°) | 87.0 / 1.03 | 15.7 / 8.76 | 4.37 | 0.010 | 18.55 |
+| 1.15 (66°) | 94.5 / 0.59 | 18.3 / 13.8 | 5.52 | 0.023 | 18.47 |
+| 1.35 (77°) | 100 / 0.12 | 20.0 / 34.4 | 7.78 | **0.193** | 18.47 |
+
+Ω is identical across rows (the orbital law is viewing-independent). **Chose 0.75 (43°) over the earlier 1.02
+(58°):** more granular rim (spread 1.54 vs 1.03), body 13.5/6.67 near stage-0's 12.6/4.43, a clean round void,
+comfortable message contrast, and **still reads as an inclined disc** rather than a flat ring (0.55 is too
+face-on; MSG also drops to 7.09 there). **Trade, in the user's terms:** gave up the steeper disc's dramatic tilt
+for a more granular interior and a clearer void — the two things asked for — and a more open disc shows the
+circulation better, not worse. 1.35 rejected: void closing to 0.193, rim → slab (100 / 0.12).
+- **Interaction confirmed, not assumed:** freezing did most of the work (a favourable fixed angle never
+  compresses), but 0.95 frozen would have been dense *all the time*, so the lower angle was chosen deliberately.
+
+## 34.6 Phase-dependence correction — Step-7/8 numbers superseded
+Step-7 and Step-8 measurements were taken **without the freeze**, at whatever `clock` phase the harness paused
+on, so they described **one phase of the oscillation**, not the motif. Specifically the **Step-8 clump figure
+87.2 / 1.02 is superseded by the stable 76.5 / 1.54** (43°, frozen); the honest whole-disc spread is 4.13
+(stage-0 4.43), body 13.5 / 6.67.
+- **General lesson (attached):** on a motif whose orientation drifts, a **single-phase measurement is not a
+  description of the motif** — it is a sample of an oscillation. This is the **same class of error as §32's
+  "judge motion from frame sequences, not stills."** The methodological fix is the one already in §26.3, extended:
+  settle, confirm sceneF, **and confirm the motif is not mid-oscillation** before reading; on a rotating form,
+  measure a range across phase, not a point.
+
+## 34.7 Stability evidence — the thing the user actually asked for
+Interior litFrac across a **full inner orbital period** (~31 s, 8 frames) at the frozen tilt:
+**[92.7, 93.4, 83.8, 80.6, 79.5, 78.3, 81.3, 84.6], range 15.1, never reaching the edge-on slab (100 / 0).**
+The old behaviour swung ~4 → 36 and, forced edge-on, hit 100 / 0. The residual 15-point variation is **the
+density arcs orbiting through the brightest window — i.e. the rotation, not instability**; the disc outline,
+tilt, and void stay fixed. The **stability contact sheet** (one fixed inclined disc + fixed void across a full
+period, only the arcs moving) is what decided adoption — visible in the picture, not only the numbers.
+Ω (face-on, freeze on, in[82,128] out[131,146], dt 2): **wIn −0.1309, wOut −0.0873 → Ω 1.5** (Kepler 1.51) —
+differential, inner faster, intact.
+
+## 34.8 The landing discrepancy — record BOTH, and why (a future round WILL hit this)
+The disc rest was measured at **two different scrollY on two viewports for the same sceneF phase**:
+- User's laptop: **scrollY 4597 / sceneF 6.911**; `snapRest(7)` there = 4643.
+- This session, 1440×900: **scrollY 5195 / sceneF 6.914**; `snapRest(7)` there = 5241.
+**The invariant is the sceneF phase (~6.91); the scrollY is viewport-height dependent.** Crucially,
+**`snapRest(7)` is a computed ideal the browser does NOT honour at this stage** — the native CSS scroll-snap
+holds the rest **~46–68 px short** of it while the page still has room below (max scroll exceeds the rest). So a
+scroll *target* of `snapRest(7)` lands short, at sceneF ~6.91 (disc **91 %** morphed, `driftW7 0.911`), **not**
+7.0. **Measurements must confirm sceneF, never trust the scroll target** (§26.3). Landing via
+`scrollTo(snapRest(7))` and letting snap settle reproduces the real rest on any viewport; record the actual
+scrollY + sfNow each time.
+
+## 34.9 Frame time — MEASURED pre-freeze; re-measure judged unnecessary (reasoning, marked as such)
+Measured on the **pre-freeze** build (laptop browser, hardware GL, 200k, sceneF 6.911, GPU-timer path):
+- **Run 1:** ~30 samples, **4.1–7.3 ms**, sustained 60 fps except a **single 45 fps reading that did not
+  reproduce.**
+- **Run 2:** ~25 samples, **5.0–6.2 ms**, sustained 60 fps.
+- No fps-min field → these are **SUSTAINED fps, not a true minimum** (same instrument caveat as §33.10).
+- **NOT re-taken after the tilt freeze.**
+- **Reasoning (explicitly reasoning, not a measurement):** freezing orientation adds **no per-frame work** and
+  **removes the edge-on compressed phase** (the heaviest additive-overdraw configuration), so the worst case
+  should if anything be **lighter**; the pre-freeze 4.1–7.3 range spanned tilt phases including near-edge-on that
+  the frozen 43° no longer visits. **Concur with not re-measuring** — but record that **stage 7 is the heaviest
+  motif on the page and is the first probe target** if any frame-time concern arises.
+- **Comparison, honestly:** heavier than **stage 5 (3.2–4.5)** and **stage 6 (3.8–4.7)** measured on the same
+  machine this week; heavier than **drift's 4.40 / 4.60** from Round 30's probe run — but that drift figure is a
+  **different session, a reference point, not a controlled A/B.**
+
+## 34.10 Constraint ledger (Round-34, frozen 43°)
+- **Contrast (decomposed, scrim hidden, 16 orbital-phase frames per block):** wide MSG 11.95 · NAV 18.43 · FOOT
+  18.83; tall MSG 7.72 · NAV 19.62 · FOOT 17.41. **Nothing below 5.5 on any block, either aspect (0/16 each).**
+- **Void:** rest 0.010, page-bottom 0.011 (gate <0.3); no bottom sliver (offBottom {0,0,0,0}).
+- **Offscreen per edge:** wide {T:0.1,B:0,L:0,R:0}, tall {R:0.1} — negligible. **clipPct 7.05 % (2654 / 37639 lit
+  px).**
+- **Mobile:** `uDiscOn = 0`, field-only litPct 2.07 (stage-6 waveform bleed at the blended mobile landing, NOT
+  the disc — disc gated off; §30.7 verified by measurement).
+- **Slots 12/16** (6 `setAttribute`); the whole Round-34 disc + freeze is **shader/render-loop side, no new
+  attribute**. `css/style.css`, HTML, copy all unchanged; scrollHeight Δ0.
+
+## 34.11 State (Round-34, working tree — NOT committed/pushed)
+Stage 7 = **frozen 43° Keplerian accretion disc** around an invisible centre at `(0,1.5,0)`: granular body +
+box-jitter granular clumps (smaller clump sprite, §34.3), differential rotation (Ω 1.5) with the **orientation
+frozen** (`discFreeze`, §34.4). `DISC_INC 0.75`, `DISC_ROUT 2.7`, `DISC_CLUMPFRAC 0.42`, `DISC_CLUMPR 0.55`,
+`DISC_CLUMPT 0.30`, `DISC_CLUMPSZK 0.50`. Retired Round-34 prototypes kept as **inert dead code**: `case
+'gascloud':` (Steps 1–4 gas) and `case 'driftcurrent':` (the pre-gas drift current), matching the
+orbits/convergence/sea/radialemitter pattern. **Only `js/scroll-scenes.js` changed** — confirmed by
+`git status --short` (css/style.css untouched); `SURVEY_*` untracked (the user's, never staged). Stills NOT
+regenerated. **Open items:** (a) stage-7 stills for the frozen disc (wide/tall rest + bottom exist in scratch,
+not promoted to `assets/`); (b) frame time not re-taken post-freeze (§34.9 — judged unnecessary); (c) the
+Round-33 open items (§33.12) still stand.

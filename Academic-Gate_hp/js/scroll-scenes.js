@@ -181,6 +181,45 @@
         var DRIFT_NLINES = 48, DRIFT_DPTS = 26, DRIFT_SX = 1.05, DRIFT_PARK = 0.5, DRIFT_BR = 0.5;
         var DRIFT_SYCAP = 1.3, DRIFT_SY0 = 0.80, DRIFT_CY0 = 1.0;   // SYCAP: max vertical stretch (near isotropic 1.05·SX); SY0/CY0: make()'s static-base defaults, the live shader uniforms (§30.5 band-fit) take over
         var DRIFT_SY_REF = 1.05, DRIFT_GAIN_CAP = 2.0;   // §30.10 tall gain: ramp gain 1.0→CAP as the fitted uDriftSY goes SY_REF→SYCAP. SY_REF above the wide fitted scale's settle range (~0.94–0.98) so wide is EXACTLY 1.0; tall's sy always = SYCAP so tall = CAP = 2.0 (measured, sweep §30.10: presence with no clip/hue cost). The plain SY-RATIO gave only 1.37 (too faint) — see §30.10.
+        // STAGE 7 GAS (Round-34, §34): the drift current → a DIFFUSE everywhere-field, "like the gas stars are born
+        // from." World half-extents cover the wide viewport (x≈±6.2) and tall (y≈±3.88) with margin so it fills edge-
+        // to-edge at BOTH aspects; brightness dim (message/footer contrast); GAS_VAR = gentle large-scale density
+        // variation (0 = flat/static, higher = more nebula-like), GAS_VF its (low) spatial frequency.
+        var GAS_EX = 6.8, GAS_EY = 4.3, GAS_EZ = 0.6, GAS_BR = 0.11, GAS_VAR = 0.5;   // §34 Step-3: thin z (flat depth), density-variation (below), brightness into the contrast budget with ≥5.5 margin, + aspect uGasGain lifts tall
+        // Density variation (Round-34 Step-3): a coarse low-frequency weight grid modulates HOW MANY particles land in
+        // each region (not per-particle brightness), so denser regions glow more and thinner regions stay present but
+        // dimmer — a gas, never an empty patch. Weight floor (1-GAS_VAR > 0) guarantees no cell is ever empty. Particles
+        // are allocated across cells by the CDF (make() below), then placed uniformly WITHIN their cell → within-cell is
+        // pure Poisson (cellCV(64) ≈ baseline, no clumping), variation is large-scale only (cellCV(8) lifts). Attribute-free.
+        var GAS_NGX = 16, GAS_NGY = 10, gasCDF = [], gasTot = 0;
+        for (var gcy = 0; gcy < GAS_NGY; gcy++) for (var gcx = 0; gcx < GAS_NGX; gcx++) {
+            var gwx = (gcx + 0.5) / GAS_NGX * 2 - 1, gwy = (gcy + 0.5) / GAS_NGY * 2 - 1;
+            var gnz = 0.5 + 0.1667 * (Math.sin(gwx * 3.1 + 1.3) + Math.sin(gwy * 2.7 - 0.7) + Math.sin((gwx + gwy) * 2.0 + 2.1));
+            gasTot += 1 - GAS_VAR + GAS_VAR * Math.max(0, Math.min(1, gnz)); gasCDF.push(gasTot);
+        }
+        // STAGE 7 = ACCRETION DISC (Round-34 Step-6, §34): particles on near-circular orbits around an INVISIBLE mass.
+        // Thin disc tilted DISC_INC from face-on; radius r∈[RIN,ROUT], density falling outward (r = RIN+(ROUT-RIN)·h^PWR,
+        // PWR>1 → inner-dense), central VOID inside RIN. Keplerian ω(r)=W0·(RIN/r)^1.5 (inner laps the rim). r/θ0/thickness
+        // per-particle from aSeed hashes; the ANGLE is advanced shader-side (target override, §30.7 → uDiscOn gate + mobile
+        // brightness 0). Centred at (CX,CY,CZ) — a FIXED world point (NOT the message rect), so no page-bottom sliver.
+        // Reuses the Step-4 large-soft-sprite path (uGasSize/uGasSoft, vGas=stage-7 weight) so the band reads continuous.
+        var DISC_RIN = 0.9, DISC_ROUT = 2.7, DISC_INC = 0.75, DISC_W0 = 0.20, DISC_PWR = 1.7, DISC_THICK = 0.18;   // §34 Step-11: INC frozen at 43° (chosen by sweep) — more granular interior + clearer void than the old 58°, still reads as an inclined disc; the orientation no longer swings over time (freeze at line ~779)
+        var DISC_CX = 0.0, DISC_CY = 1.5, DISC_CZ = 0.0, DISC_BR = 0.42;   // lifted into the upper band (§27 motif-top / message-below); void sits above the closing message
+        // §34 Step-7 Defect-2: a fraction (DISC_CLUMPFRAC) of particles cluster into DISC_NCLUMP over-dense CLUMPS at
+        // narrow radii. Each clump orbits rigidly at its own ω(r) (no self-shear), so inner clumps visibly LAP outer
+        // ones → Keplerian differential rotation READS (brightness arcs by θ0 wound into uniformity — see §34). The
+        // clump centres are baked into the shader (clumpAt) so make() and the shader agree.
+        // Step-8: clumps are DIFFUSE, GRANULAR denser regions (centre-weighted spread, varied size) — not solid beads.
+        // Each holds a spread of grains (r/θ jitter × its size), so it reads as more particles packed together; the
+        // r-extent lets the differential rotation SHEAR it into an arc. Varied sizes + random θ = irregular, not decorative.
+        var DISC_NCLUMP = 8, DISC_CLUMPFRAC = 0.42, DISC_CLUMPR = 0.55, DISC_CLUMPT = 0.30, DISC_CLUMPSZK = 0.50, discClumps = [];
+        // §34 Step-8: clump grains use a SMALLER sprite (×DISC_CLUMPSZK) than the disc body. A clump is denser, so at the body's
+        // sprite footprint its grains would overlap into a smooth solid bead; the smaller footprint keeps black between grains →
+        // the clump reads granular (a denser knot of the SAME particles), not a saturated blob. Box (uniform) r/θ jitter — not
+        // centre-weighted — so grains don't pile at one point, and the r-spread lets differential rotation shear it into an arc.
+        (function () { var a = 9271; function pr() { a |= 0; a = a + 0x6D2B79F5 | 0; var t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; } for (var i = 0; i < DISC_NCLUMP; i++) discClumps.push([DISC_RIN + (DISC_ROUT - DISC_RIN) * Math.pow(pr(), 0.6), pr() * TAU, 0.55 + pr() * 1.2]); })();
+        var dF = function (n) { return (+n).toFixed(4); };   // shader float literal helper
+        var discClumpGLSL = 'vec3 clumpAt(float i){' + discClumps.map(function (c, k) { return (k < DISC_NCLUMP - 1 ? 'if(i<' + (k + 0.5) + ') return vec3(' + dF(c[0]) + ',' + dF(c[1]) + ',' + dF(c[2]) + ');' : 'return vec3(' + dF(c[0]) + ',' + dF(c[1]) + ',' + dF(c[2]) + ');'); }).join('') + '}';
         var driftLines = (function () {
             function mb(a) { return function () { a |= 0; a = a + 0x6D2B79F5 | 0; var t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
             var pr = mb(1337), perm = new Uint8Array(512), ord = [];
@@ -208,20 +247,9 @@
             }
             return lines;
         })();
-        // robust vertical extent of the streamlines (p01..p99 of ly, excluding a stray excursion) — the band-fit
-        // (§30.5) scales+centres THIS core to fit between the nav and the closing message at either aspect.
-        var driftAllY = [];
-        for (var er = 0; er < DRIFT_NLINES; er++) for (var ec = 0; ec < DRIFT_DPTS; ec++) driftAllY.push(driftLines[er][ec][1]);
-        driftAllY.sort(function (a, b) { return a - b; });
-        var DRIFT_CORE_LO = driftAllY[Math.floor(0.01 * (driftAllY.length - 1))], DRIFT_CORE_HI = driftAllY[Math.floor(0.99 * (driftAllY.length - 1))];
-        var DRIFT_CORE_HALF = (DRIFT_CORE_HI - DRIFT_CORE_LO) / 2, DRIFT_CORE_MID = (DRIFT_CORE_HI + DRIFT_CORE_LO) / 2;
-        // pack the streamlines into a float data texture (column = point along line, row = line) for the vertex shader
-        var driftTexData = new Float32Array(DRIFT_DPTS * DRIFT_NLINES * 4);
-        for (var dr = 0; dr < DRIFT_NLINES; dr++) for (var dc = 0; dc < DRIFT_DPTS; dc++) {
-            var dti = (dr * DRIFT_DPTS + dc) * 4; driftTexData[dti] = driftLines[dr][dc][0]; driftTexData[dti + 1] = driftLines[dr][dc][1];
-        }
-        var driftTex = new THREE.DataTexture(driftTexData, DRIFT_DPTS, DRIFT_NLINES, THREE.RGBAFormat, THREE.FloatType);
-        driftTex.minFilter = THREE.NearestFilter; driftTex.magFilter = THREE.NearestFilter; driftTex.needsUpdate = true;
+        // Round-34 (§34): the drift's line DataTexture, its band-fit core-extent precompute, and the shader
+        // advection are DROPPED (stage 7 is now the diffuse gas). `driftLines` above is kept only for the inert
+        // 'driftcurrent' dead-code make() case below (the static C2 weave base), matching orbits/convergence/sea.
         // deterministic small-arg hash (mirrors the shader's dhash) for the drift static base + parking
         function dfrac(x) { return x - Math.floor(x); }
         function dhashJS(a, b) { return dfrac(Math.sin(a * b) * 43758.5453); }
@@ -389,22 +417,50 @@
                     var wzz = (wtr - 2) * S * 0.11 + WAVE_CORR_AMP * S * Math.sin(wxx * WAVE_CORR_FREQ);   // ARM-2: z corrugation (0 amp = flat)
                     return [wxx, wty + gauss(0.03 * S), wzz, 0.36 + 0.22 * rnd(), 0.72, (wtr + 0.5) / 5];
                 }
-                case 'drift': { // 流 (Round-28): an asymmetric vortical CURRENT, ADVECTED along its streamlines in the
-                    // shader (§30). make() only places the STATIC base — this particle's point at s0 on its own C2
-                    // streamline (derived from its seed by the same hashes the shader uses); the shader then advects
-                    // s = s0 + uTime·speed_line along that line so the current flows. doy 1.72 lifts the band clear of
-                    // the closing message at both aspects. A fraction (DRIFT_PARK) is PARKED to brightness 0 so fewer
-                    // lit particles share the band and the flow resolves on wide (density, §30.2). Static-weave
-                    // fallback: uDriftAdvect=0 freezes this base = the frozen C2 weave. Cool teal. Mobile suppressed.
+                case 'drift': { // ACCRETION DISC (Round-34 Step-6, §34): orbits around an INVISIBLE mass. make() places the
+                    // STATIC base at θ0 (t=0); the shader advances θ = θ0 + uTime·ω(r) (Keplerian) — a target override,
+                    // so mobile is suppressed by BOTH brightness 0 AND uDiscOn=0 (§30.7 belt-and-suspenders). r/θ0/thickness
+                    // from aSeed hashes (attribute-free); density falls outward via r=RIN+(ROUT-RIN)·h^PWR; void inside RIN.
                     if (isMobile) return [gauss(0.05), 12.0 + gauss(0.05), gauss(0.05), 0.3, 0.0, 0];
                     var dsd = (sd == null ? rnd() : sd);
-                    var dLi = Math.floor(dhashJS(dsd, 127.1) * DRIFT_NLINES) % DRIFT_NLINES;   // this particle's line
-                    var dS0 = dhashJS(dsd, 311.7);                                             // arc-length start s0
+                    var dh3 = dhashJS(dsd, 37.7), dr, dth;
+                    if (dhashJS(dsd, 91.7) < DISC_CLUMPFRAC) {                        // clump particle: narrow radius → rigid orbit
+                        var cc = discClumps[Math.floor(dhashJS(dsd, 5.3) * DISC_NCLUMP) % DISC_NCLUMP];   // cc = [r,θ,size]
+                        dr = cc[0] + (dhashJS(dsd, 7.1) * 2 - 1) * DISC_CLUMPR * cc[2];   // box (uniform) jitter, size-scaled r-extent → shears into an arc
+                        dth = cc[1] + (dhashJS(dsd, 8.3) * 2 - 1) * DISC_CLUMPT * cc[2];
+                    } else {                                                          // smooth disc background
+                        dr = DISC_RIN + (DISC_ROUT - DISC_RIN) * Math.pow(dhashJS(dsd, 12.9), DISC_PWR); dth = dhashJS(dsd, 78.2) * TAU;
+                    }
+                    var dtz = (dh3 - 0.5) * DISC_THICK, dpx = dr * Math.cos(dth), dpy = dr * Math.sin(dth);
+                    var dci = Math.cos(DISC_INC), dsi = Math.sin(DISC_INC);          // tilt about x by DISC_INC
+                    return [dpx + DISC_CX, dpy * dci - dtz * dsi + DISC_CY, dpy * dsi + dtz * dci + DISC_CZ, 0.30, DISC_BR, 0];
+                }
+                case 'gascloud': { // RETIRED Round-34 Step-6 (stage 7 is now the accretion disc). INERT dead code, matching
+                    // orbits/convergence/sea/radialemitter/driftcurrent. The Step-1→4 diffuse GAS: uniform-random density-
+                    // varied field filling the viewport, with the Step-4 large-soft-sprite finding (reusable — see §34).
+                    // Reachable via make('gascloud'); not in stages[]. Cool teal, dim.
+                    if (isMobile) return [gauss(0.05), 12.0 + gauss(0.05), gauss(0.05), 0.3, 0.0, 0];
+                    var gh = rnd() * gasTot, glo = 0, ghi = gasCDF.length - 1;
+                    while (glo < ghi) { var gm = (glo + ghi) >> 1; if (gasCDF[gm] < gh) glo = gm + 1; else ghi = gm; }
+                    var ggx = ((glo % GAS_NGX + rnd()) / GAS_NGX * 2 - 1) * GAS_EX;
+                    var ggy = (((glo / GAS_NGX | 0) + rnd()) / GAS_NGY * 2 - 1) * GAS_EY;
+                    var ggz = (rnd() * 2 - 1) * GAS_EZ;
+                    return [ggx, ggy, ggz, 0.30, GAS_BR, 0];
+                }
+                case 'driftcurrent': { // RETIRED Round-34 (stage 7 is now the gas above). INERT dead code, matching
+                    // orbits/convergence/sea: 'driftcurrent' is not in stages[], so it never runs; reachable via
+                    // make('driftcurrent'). The Round-28→30 drift (流) STATIC C2-weave base — the shader advection +
+                    // band-fit that made it FLOW and fit the nav→message band were removed this round (§34); to revive,
+                    // re-add the uLineTex/sampleLine advection block + updateDriftBand per §30.
+                    if (isMobile) return [gauss(0.05), 12.0 + gauss(0.05), gauss(0.05), 0.3, 0.0, 0];
+                    var dsd = (sd == null ? rnd() : sd);
+                    var dLi = Math.floor(dhashJS(dsd, 127.1) * DRIFT_NLINES) % DRIFT_NLINES;
+                    var dS0 = dhashJS(dsd, 311.7);
                     var dcol = dS0 * (DRIFT_DPTS - 1), dc0 = Math.floor(dcol), dfr = dcol - dc0, dc1 = Math.min(dc0 + 1, DRIFT_DPTS - 1);
                     var dln = driftLines[dLi];
-                    var dbx = dln[dc0][0] + (dln[dc1][0] - dln[dc0][0]) * dfr;                 // point at s0 (band-space)
+                    var dbx = dln[dc0][0] + (dln[dc1][0] - dln[dc0][0]) * dfr;
                     var dby = dln[dc0][1] + (dln[dc1][1] - dln[dc0][1]) * dfr;
-                    var dpark = dhashJS(dsd, 53.3) < DRIFT_PARK ? 0.0 : DRIFT_BR;               // park a fraction dark
+                    var dpark = dhashJS(dsd, 53.3) < DRIFT_PARK ? 0.0 : DRIFT_BR;
                     return [dbx * DRIFT_SX + gauss(0.02), dby * DRIFT_SY0 + DRIFT_CY0 + gauss(0.02), gauss(0.30), 0.30, dpark, 0];
                 }
                 case 'convergence': { // INERT dead code as of Round-18 (orbits took stage 6). Kept
@@ -497,10 +553,9 @@
         var vertexShader = [
             'precision highp float;',
             'uniform float uSceneF, uCalm, uTime, uSize, uPixelRatio, uDisperse, uResidual, uNoiseFreq, uWaveAmp;',
-            'uniform float uDriftAmp, uDriftAdvect, uDriftSpeed, uLineN, uLineDpts, uDriftCY, uDriftSY, uDriftGain;',
-            'uniform sampler2D uLineTex;',
+            'uniform float uDriftAmp, uGasGain, uGasSize, uDiscOn;',   // Round-34 (§34): curl shimmer; aspect brightness lift; stage-7 sprite size (Step-4 large soft sprites, reused for the disc band); uDiscOn = accretion-disc gate (0 on mobile → suppressed, §30.7)
             attrDecl, 'attribute float aSeed;', 'attribute float aCoh;',
-            'varying float vE; varying float vB; varying float vNear; varying float vInfra;',
+            'varying float vE; varying float vB; varying float vNear; varying float vInfra; varying float vGas;',
             'vec3 mod289(vec3 x){return x-floor(x*(1.0/289.0))*289.0;}',
             'vec4 mod289(vec4 x){return x-floor(x*(1.0/289.0))*289.0;}',
             'vec4 permute(vec4 x){return mod289(((x*34.0)+1.0)*x);}',
@@ -518,15 +573,9 @@
             'vec3 snoiseVec3(vec3 p){return vec3(snoise(p),snoise(p+17.1),snoise(p-43.7));}',
             'vec3 curl(vec3 p){const float e=0.6;vec3 p0=snoiseVec3(p);vec3 px=snoiseVec3(p+vec3(e,0.,0.));vec3 py=snoiseVec3(p+vec3(0.,e,0.));vec3 pz=snoiseVec3(p+vec3(0.,0.,e));',
             '  return vec3((py.z-p0.z)-(pz.y-p0.y),(pz.x-p0.x)-(px.z-p0.z),(px.y-p0.y)-(py.x-p0.x))/e;}',
-            // drift (§30): stable small-arg hash + streamline sampler (NEAREST texel + manual lerp along the line,
-            // exact row centre in v so there is no bleed between lines).
+            // Round-34 Step-6 (§34): small hash for the accretion disc (r/θ0/thickness from aSeed, mirrors dhashJS).
             'float dhash(float a, float b){return fract(sin(a*b)*43758.5453);}',
-            'vec2 sampleLine(float li, float s){',
-            '  float col=s*(uLineDpts-1.0); float c0=floor(col); float fr=col-c0;',
-            '  float vv=(li+0.5)/uLineN;',
-            '  vec2 a=texture2D(uLineTex, vec2((c0+0.5)/uLineDpts, vv)).xy;',
-            '  vec2 b=texture2D(uLineTex, vec2((min(c0+1.0,uLineDpts-1.0)+0.5)/uLineDpts, vv)).xy;',
-            '  return mix(a,b,fr);}',
+            discClumpGLSL,   // §34 Step-7: baked clump centres for the accretion disc (mirrors discClumps)
             'vec3 targetPos(int idx){\n' + pickPos + '}',
             'float ebOf(int idx){\n' + pickEB + '}',
             'void main(){',
@@ -551,23 +600,25 @@
             '  float ph = target.x*waveFq - uTime*0.9 + aSeed*6.2831;',
             '  target.y += uWaveAmp*waveW*sin(ph);',
             '  br *= mix(1.0, 0.6+1.05*sin(ph), waveW);',                   // crests bright (up to 1.65x), troughs dark
-            // Round-28 drift (流, §30): ADVECT each particle ALONG its own streamline (baked in uLineTex), gated to
-            // stage 7. li/s0 from aSeed; per-line speed is incommensurate → no global beat. target is REPLACED (mixed
-            // by driftW7) with the advected line point, so the current flows instead of shimmering. Open lines wrap
-            // s→0 with a brightness edge-fade so the wrap is invisible. uDriftAdvect=0 freezes it (static C2 weave).
+            // Round-34 (§34): the drift advection block (streamline sampling + §30.5 band-fit target override) is
+            // REMOVED. Stage 7 is now the diffuse gas placed entirely in the attribute (make 'drift'); the shader
+            // leaves target untouched here and only adds the gentle stage-7 curl shimmer below (driftW·uDriftAmp).
             '  float vDrift=1.0;',
+            // Round-34 Step-6 (§34): ACCRETION DISC — advance each particle's orbit angle θ = θ0 + uTime·ω(r), ω Keplerian
+            // (∝ r^-1.5, inner laps the rim). Gated to stage 7 (driftW7) AND uDiscOn (mobile off → make()'s parked base shows,
+            // §30.7). target is REPLACED with the tilted-disc position around the invisible centre.
             '  float driftW7=1.0-clamp(abs(uSceneF-7.0),0.0,1.0);',
-            '  if(driftW7>0.001 && uDriftAdvect>0.5){',
-            '    float li=min(floor(dhash(aSeed,127.1)*uLineN), uLineN-1.0);',
-            '    float s0=dhash(aSeed,311.7);',
-            '    float spd=uDriftSpeed*(0.55+0.9*dhash(li,0.7));',
-            '    float phl=dhash(li,1.7)*6.2831;',
-            '    float s=fract(s0 + uTime*spd + phl);',
-            '    vec2 lp=sampleLine(li,s);',
-            '    vec2 wp=vec2(lp.x*' + DRIFT_SX.toFixed(2) + ', lp.y*uDriftSY + uDriftCY);',   // §30.5 band-fit: live vertical scale+centre
-            '    wp += (vec2(dhash(aSeed,53.7),dhash(aSeed,97.3))-0.5)*0.05;',   // give the line width
-            '    target=mix(target, vec3(wp, target.z), driftW7);',
-            '    vDrift=mix(1.0, smoothstep(0.0,0.06,s)*smoothstep(1.0,0.94,s)*uDriftGain, driftW7);',   // fade the wrap at line ends; uDriftGain lifts brightness in the drift band ONLY (no-op elsewhere: driftW7=0; and on mobile: block skipped)
+            '  if(driftW7>0.001 && uDiscOn>0.5){',
+            '    float h3=dhash(aSeed,37.7); float r, th0;',
+            '    if(dhash(aSeed,91.7) < ' + dF(DISC_CLUMPFRAC) + '){ vec3 cc=clumpAt(floor(dhash(aSeed,5.3)*' + dF(DISC_NCLUMP) + ')); r=cc.x+(dhash(aSeed,7.1)*2.0-1.0)*' + dF(DISC_CLUMPR) + '*cc.z; th0=cc.y+(dhash(aSeed,8.3)*2.0-1.0)*' + dF(DISC_CLUMPT) + '*cc.z; }',   // clump: box-jitter granular denser knot, size-scaled, shears into an arc (grains use a smaller sprite, see ps line)
+            '    else { r=' + dF(DISC_RIN) + '+' + dF(DISC_ROUT - DISC_RIN) + '*pow(dhash(aSeed,12.9),' + dF(DISC_PWR) + '); th0=dhash(aSeed,78.2)*6.2831; }',
+            '    float w2=' + dF(DISC_W0) + '*pow(' + dF(DISC_RIN) + '/r,1.5);',
+            '    float th=th0 + uTime*w2;',
+            '    float tz=(h3-0.5)*' + dF(DISC_THICK) + ';',
+            '    vec3 dp=vec3(r*cos(th), r*sin(th), tz);',
+            '    float ci=' + dF(Math.cos(DISC_INC)) + ', si=' + dF(Math.sin(DISC_INC)) + ';',
+            '    vec3 wp=vec3(dp.x+' + dF(DISC_CX) + ', dp.y*ci-dp.z*si+' + dF(DISC_CY) + ', dp.y*si+dp.z*ci+' + dF(DISC_CZ) + ');',
+            '    target=mix(target, wp, driftW7);',
             '  }',
             '  float streamW=1.0-clamp(abs(uSceneF-5.0),0.0,1.0);',        // Blog (stage 5): the radiating source
             // Round-21: the Blog motif is now a RADIAL burst, not a directed flow, so the old horizontal
@@ -596,17 +647,22 @@
             // depth cue: near brighter+bigger, far dimmer+smaller (drives the SPHERE 3D read)
             '  float depth=-mv.z; vNear=clamp((13.0-depth)/7.0,0.0,1.0);',
             '  float orbW=1.0-clamp(abs(uSceneF-7.0),0.0,1.0);',           // orbits: stage 6 -> 7 (final-message slot; Round-20 +1 for the 専門 split)
-            '  float boost=0.5+en*0.8+vNear*(0.6+orbW*0.4);',             // orbits: modest near/far size (dots stay distinct, not a filled tube)
-            '  gl_PointSize=clamp(uSize*boost/max(depth,0.1),0.0,8.0)*uPixelRatio;',
+            '  float boost=0.5+en*0.8+vNear*0.6;',                        // §34: stage-7 gas wants flat depth → drop the orbW near/far size boost (orbits inert)
+            '  float ps=clamp(uSize*boost/max(depth,0.1),0.0,8.0);',
+            '  float isC=step(dhash(aSeed,91.7), ' + dF(DISC_CLUMPFRAC) + ')*(1.0-clamp(abs(uSceneF-7.0),0.0,1.0));',   // §34 Step-8: clump-grain flag (stage-7 only)
+            '  float dsz=mix(uGasSize, uGasSize*' + dF(DISC_CLUMPSZK) + ', isC);',   // clump grains get a smaller footprint → stay granular despite higher density
+            '  ps=mix(ps, dsz, driftW); vGas=driftW;',   // §34 Step-4: stage-7 disc → soft sprites (uGasSize) so the body reads as a medium; driftW=0 elsewhere → other stages unchanged
+            '  gl_PointSize=ps*uPixelRatio;',
             // orbits carry their 3D read ENTIRELY through the near/far gradient — push it hard
             // (near much brighter, far much dimmer) while overall staying in the calm register.
-            '  float nearRamp=mix(0.55+0.45*vNear, 0.1+1.65*vNear, orbW);',
+            '  float nearRamp=mix(0.55+0.45*vNear, 0.9+0.15*vNear, orbW);',   // §34: stage-7 gas → nearly-flat depth brightness (was the orbits near/far ramp 0.1+1.65)
             // INFRA only: dim the left screen third (clip-space x) so the bright lattice band never
             // crosses the left text column — the heading 学びを、社会へ。 rests there and a bright
             // additive band under it dropped its contrast to ~2:1. Form still fills centre+right
             // (matches the "formation sits on the right" composition). vInfra→0 elsewhere = no-op.
             '  float ndcx=gl_Position.x/gl_Position.w;',
             '  float leftDim=mix(1.0, 0.15+0.85*smoothstep(-0.55,-0.15,ndcx), vInfra);',
+            '  br *= mix(1.0, uGasGain, driftW);',   // §34: aspect brightness lift, stage-7 gas only (driftW=0 elsewhere) — tall wastes x off-screen, so lift it
             '  vE=en; vB=br*mix(1.0,0.62,uCalm)*nearRamp*leftDim*vDrift;',        // calm below hero; far dimmer; infra left column protected; vDrift fades drift line-ends
             '}'
         ].join('\n');
@@ -614,8 +670,8 @@
         var fragmentShader = [
             'precision highp float;',
             'uniform vec3 uBlueDeep,uTeal,uCyan,uBlue,uViolet,uMagenta,uEmber;',
-            'uniform float uAlpha,uExposure,uTime;',
-            'varying float vE; varying float vB; varying float vNear; varying float vInfra;',
+            'uniform float uAlpha,uExposure,uTime,uGasSoft;',
+            'varying float vE; varying float vB; varying float vNear; varying float vInfra; varying float vGas;',
             'vec3 spectrum(float x){x=clamp(x,0.0,1.0);',
             '  if(x<0.22)return mix(uBlueDeep,uTeal,x/0.22);else if(x<0.40)return mix(uTeal,uCyan,(x-0.22)/0.18);',
             '  else if(x<0.62)return mix(uCyan,uBlue,(x-0.40)/0.22);else if(x<0.80)return mix(uBlue,uViolet,(x-0.62)/0.18);',
@@ -625,6 +681,7 @@
             '  vec2 uv=gl_PointCoord-0.5; float d=length(uv); if(d>0.5) discard;',
             '  float inner=mix(0.35,0.05,vNear); float core=smoothstep(0.5,inner,d);',
             '  float hot=smoothstep(0.7,1.0,vE); float halo=smoothstep(0.5,0.0,d)*hot; float aa=max(core,halo*0.5);',
+            '  aa=mix(aa, pow(smoothstep(0.5,0.0,d), uGasSoft), vGas);',   // §34 Step-4: stage-7 gas → soft radial falloff (uGasSoft; lower = broader/softer) so large sprites blend continuously',
             '  float stream=1.0 + vInfra*0.7*sin(gl_FragCoord.x*0.012 - uTime*2.2 + vE*28.0);',
             '  vec3 col=aces(spectrum(vE)*uExposure);',
             '  gl_FragColor=vec4(col, aa*vB*uAlpha*stream);',
@@ -635,8 +692,7 @@
             uSceneF: { value: 0 }, uCalm: { value: 0 }, uTime: { value: 0 }, uSize: { value: isMobile ? 18 : 17 },
             uAlpha: { value: 0.5 }, uExposure: { value: 1.08 }, uPixelRatio: { value: DPR },
             uDisperse: { value: isMobile ? 0.9 : 1.15 }, uResidual: { value: 0.022 }, uNoiseFreq: { value: 0.22 }, uWaveAmp: { value: 0.7 },
-            uDriftAmp: { value: 0.06 }, uDriftAdvect: { value: isMobile ? 0 : 1 }, uDriftSpeed: { value: 0.035 }, uLineN: { value: DRIFT_NLINES }, uLineDpts: { value: DRIFT_DPTS }, uLineTex: { value: driftTex },
-            uDriftCY: { value: DRIFT_CY0 }, uDriftSY: { value: DRIFT_SY0 }, uDriftGain: { value: 1.0 },   // §30.5 band-fit + §30.10 tall gain, driven live by updateDriftBand(); uDriftAdvect=0 on mobile → shader keeps make()'s parked base (stage 7 suppressed)
+            uDriftAmp: { value: 0.06 }, uGasGain: { value: 1.0 }, uGasSize: { value: 6.0 }, uGasSoft: { value: 2.0 }, uDiscOn: { value: isMobile ? 0 : 1 },   // Round-34 (§34): curl shimmer + aspect lift + large soft sprites (11px for the disc band) + accretion-disc gate (mobile off, §30.7).
             uBlueDeep: { value: new THREE.Color(0x0b3be0) }, uTeal: { value: new THREE.Color(0x2bd9c4) }, uCyan: { value: new THREE.Color(0x00c2cb) },
             uBlue: { value: new THREE.Color(0x3d8bff) }, uViolet: { value: new THREE.Color(0x7b4dff) }, uMagenta: { value: new THREE.Color(0xff3d8b) }, uEmber: { value: new THREE.Color(0xff5a3c) }
         };
@@ -713,14 +769,22 @@
             var mid = midOf();
             var sfT = sceneFor(mid);
             sfEased += (sfT - sfEased) * 0.09;
-            if (!isMobile && Math.abs(sfEased - 7.0) < 1.05) updateDriftBand();   // §30.5 band-fit, only near stage 7
+            // Round-34 (§34): band-fit removed — the gas fills the whole viewport independent of the message position.
             // calm register once past the hero (stage index >= HERO_K-1 → ramp)
             var calm = smooth(HERO_K - 1.5, HERO_K - 0.5, sfEased);
             uniforms.uSceneF.value = sfEased; uniforms.uCalm.value = calm; uniforms.uTime.value = clock;
             var rot = rotationFor(Math.min(K - 1, sfEased));
             // faster spin AT the cosmos sphere so near/far parallax is visible (reads as 3D volume)
             var cosW = 1 - Math.min(1, Math.abs(sfEased));
-            points.rotation.x = rot[0]; points.rotation.y = rot[1] + clock * (0.02 + 0.055 * cosW);
+            // §34 Step-11: FREEZE the accretion-disc orientation at stage 7. The shared world-Y spin (clock term) was
+            // rotating the tilted disc, so its apparent inclination swung face-on↔edge-on over the 314s period; the
+            // edge-on phases compressed the grains into a dense slab (the same mechanism §32 fixed for stage 6). w7 gates
+            // ONLY stage 7 (0 for sfEased<=6.3 → stages 0-6 identical): as the disc lands, rotation.x/y ease to a fixed
+            // deterministic 0/0, so the disc sits at a constant tilt = DISC_INC. Particles still ORBIT (shader θ advance,
+            // uTime) — only the disc's own orientation is frozen, not the motion within it.
+            var discFreeze = smooth(6.3, 6.8, sfEased);
+            points.rotation.x = rot[0] * (1 - discFreeze);
+            points.rotation.y = (rot[1] + clock * (0.02 + 0.055 * cosW)) * (1 - discFreeze);
             updateText(Math.min(HERO_K - 1, sfEased));
             var hp = smooth(centers[0] - window.innerHeight * 0.5, centers[0], mid);
             if (gateScene) gateScene.style.setProperty('--scroll-hint', (1 - hp).toFixed(3));
@@ -733,31 +797,17 @@
         function renderOnce() {
             computeCenters(); var mid = midOf(); sfEased = sceneFor(mid);
             uniforms.uSceneF.value = sfEased; uniforms.uCalm.value = smooth(HERO_K - 1.5, HERO_K - 0.5, sfEased);
-            var rot = rotationFor(Math.min(K - 1, sfEased)); points.rotation.x = rot[0]; points.rotation.y = rot[1];
+            var rot = rotationFor(Math.min(K - 1, sfEased)); var dF7 = smooth(6.3, 6.8, sfEased);   // §34 Step-11: match the frame-loop disc freeze
+            points.rotation.x = rot[0] * (1 - dF7); points.rotation.y = rot[1] * (1 - dF7);
             updateText(Math.min(HERO_K - 1, sfEased)); renderer.render(scene, camera);
         }
 
-        // §30.5 band-fit: place the drift so its lit CORE fits between the fixed nav and the closing message at
-        // BOTH aspects. Runs only while near stage 7 (so the getBoundingClientRect layout read is not per-frame
-        // work elsewhere), and never on mobile (stage 7 suppressed there). worldYAtScreen mirrors the sea's uSeaY.
-        function worldYAtScreen(sy) { return Math.tan(camera.fov * Math.PI / 360) * camera.position.z * (1 - 2 * sy / window.innerHeight); }
-        function updateDriftBand() {
-            if (isMobile) return;
-            var hdr = document.querySelector('header'), msgP = document.querySelector('.final-message p');
-            var msgT = msgP ? msgP.getBoundingClientRect().top : window.innerHeight;
-            if (msgT > window.innerHeight * 1.15) return;                     // message far below → not near stage 7, hold last
-            var navB = hdr ? hdr.getBoundingClientRect().bottom : 87;
-            var topS = navB + 24, botS = msgT - 44;                           // band: below the nav, above the message (px margins)
-            if (botS - topS < 40) return;
-            var wTop = worldYAtScreen(topS), wBot = worldYAtScreen(botS);
-            var sy = Math.min(DRIFT_SYCAP, (wTop - wBot) / 2 / DRIFT_CORE_HALF); // fit the core to the band, capped (centre when capped)
-            uniforms.uDriftSY.value = sy;
-            uniforms.uDriftCY.value = (wTop + wBot) / 2 - DRIFT_CORE_MID * sy;
-            // §30.10 tall gain: brightness lift proportional to how much MORE this aspect stretched vs wide, so the
-            // same lit-particle count spread over a taller band stays visible. Wide (sy≈SY_REF) → 1.0; tall (sy=SYCAP)
-            // → the ratio, capped. Applied to the drift-gated brightness only (no-op at other stages and on mobile).
-            uniforms.uDriftGain.value = 1.0 + (DRIFT_GAIN_CAP - 1.0) * Math.max(0, Math.min(1, (sy - DRIFT_SY_REF) / (DRIFT_SYCAP - DRIFT_SY_REF)));
-        }
+        // Round-34 (§34): updateDriftBand (§30.5 band-fit) + worldYAtScreen REMOVED — the gas fills the whole viewport
+        // at every scroll position and does not depend on the nav/message rects, so no per-frame layout read is needed.
+        // Aspect gas lift: tall wastes ~half the x-extent off-screen, so the same 200k particles are sparser on tall →
+        // ramp brightness up as aspect narrows (position-INDEPENDENT, so no sliver defect like the old band-fit). Wide ≈ 1.
+        function setGasGain() { var a = window.innerWidth / window.innerHeight; uniforms.uGasGain.value = 1.0 + 0.25 * Math.max(0, Math.min(1, (0.85 - a) / (0.85 - 0.62))); }   // tall lift capped so tall message stays ≥5.5 (§34 Step-3)
+        setGasGain();
 
         var resizeTimer = null;
         window.addEventListener('resize', function () {
@@ -765,7 +815,7 @@
             resizeTimer = setTimeout(function () {
                 DPR = Math.min(window.devicePixelRatio || 1, 1.5); renderer.setPixelRatio(DPR); renderer.setSize(window.innerWidth, window.innerHeight);
                 camera.aspect = window.innerWidth / window.innerHeight; camera.updateProjectionMatrix(); uniforms.uPixelRatio.value = DPR; computeCenters();
-                updateDriftBand(); if (!running) renderOnce();
+                setGasGain(); if (!running) renderOnce();
             }, 200);
         });
 
