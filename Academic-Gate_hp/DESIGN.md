@@ -81,21 +81,31 @@ Derived UI accents (interactive UI stays blue for familiarity; glows lean teal):
 |---|---|---|
 | `--accent` | `#3D8BFF` | Primary interactive accent, focus ring |
 | `--accent-warm` | `#FF3D8B` | Secondary accent, CTA hover glow (core-hot only) |
-| `--glow-cool` | `rgba(43,217,196,0.22)` | Card/button teal halo |
+| `--glow-cool` | `rgba(61,139,255,.26)` | Logo dot glow; card/button cool halo |
 | `--glow-warm` | `rgba(255,61,139,0.20)` | CTA warm halo |
-| `--spill-teal` | `rgba(43,217,196,0.10)` | Per-stage ambient light-spill (§ composition) |
-| `--spill-cyan` | `rgba(0,194,203,0.10)` | Per-stage ambient light-spill |
+| `--spill-blue` | `rgba(61,139,255,.13)` (216°) | Ambient light-spill, upper-right |
+| `--spill-blue-deep` | `rgba(34,78,190,.13)` (223°) | Ambient light-spill, lower-left |
+| `--spill-violet` | `rgba(120,90,255,.07)` (251°) | Ambient light-spill, top-centre |
 
 ### 2.4 Stars
 
-Tiny 1–2px dots at very low density across the whole viewport (CSS layer, behind content,
-above canvas clear). Three tints, 0.2–0.6 opacity:
+Plain white dots, r 0.25–1.35px, opacity 0.15–0.60, at `min(200, w*h/11000)` across the
+whole viewport (canvas layer, behind content, above the ambient spill). Static — no
+twinkle. The blue and red tints the field used to mix in were dropped so the site matches
+the lesson pages; white is the only star colour:
 
 | Token | Value |
 |---|---|
 | `--star-white` | `rgba(255,255,255,0.55)` |
-| `--star-blue` | `rgba(120,170,255,0.45)` |
-| `--star-red` | `rgba(255,120,90,0.30)` |
+
+**Reading pages** (`body.is-article` — the Peskin教材 and any future article page) step the
+sky back so it never sits behind body copy or MathJax. Two halves, and they have to move
+together: `style.css` blurs and dims the whole canvas (`filter: blur(1.2px); opacity:.6`),
+and `starfield.js` masks the reading column — `main > section`'s rect padded 24px each
+side, 80% of the stars inside it dropped, the survivors at 0.4× opacity, and every star
+on the page grown +0.3px so the blur does not erase it. The column is re-measured on each
+paint, so a resize re-masks. Non-article pages take none of this: the masking `rand()`
+call is skipped entirely, so their PRNG stream — and therefore their sky — is untouched.
 
 ---
 
@@ -367,8 +377,10 @@ density onto land, remains a drop-in upgrade if you want literal Earth geography
   JP Noto 500). The brand wordmark ("Academic Gates") stays a touch larger at weight 400.
 - **Bracketed micro-labels** along the bottom edge, small/tracked/tertiary:
   `[ 基礎領域 ] · [ 専門領域 ] · [ ARCHIVE ]`.
-- **Ambient light-spill:** one large, very-low-opacity radial per stage (`--spill-teal/cyan`),
-  positioned to balance the composition (opposite the formation), not pure black + stars.
+- **Ambient light-spill:** three large, very-low-opacity radials (`--spill-blue`,
+  `--spill-blue-deep`, `--spill-violet`) over the black canvas, positioned to balance the
+  composition (opposite the formation), not pure black + stars. Value-for-value identical
+  to the lesson pages so the marketing site and the教材 read as one surface.
 - **Live telemetry** (particles · **FRAME MS** · fps), corner, tertiary. The ms figure is
   labelled `FRAME MS` because on this GPU it is dominated by fixed per-frame overhead, not
   point cost (the count-vs-time curve is flat) — it is not a "budget headroom" claim. It

@@ -34,15 +34,21 @@
     /* Derived UI accents */
     --accent: #3d8bff;
     --accent-warm: #ff3d8b;
-    --glow-cool: rgba(43, 217, 196, 0.22);
+    --glow-cool: rgba(61, 139, 255, .26);
     --glow-warm: rgba(255, 61, 139, 0.20);
-    --spill-teal: rgba(43, 217, 196, 0.10);
-    --spill-cyan: rgba(0, 194, 203, 0.10);
+    /* Ambient background pools (body::before) — matched to the lesson pages
+       ("1-1 微分の基礎") so the site and the教材 read as one surface. Every page loads
+       this file, so these three tokens are the single place the background is tinted. */
+    --spill-blue: rgba(61, 139, 255, .13);
+    /* 216° — upper right */
+    --spill-blue-deep: rgba(34, 78, 190, .13);
+    /* 223° — lower left */
+    --spill-violet: rgba(120, 90, 255, .07);
+    /* 251° — top centre */
 
-    /* Stars */
+    /* Stars — white only, static (see starfield.js). The blue/red tints the field
+       used to mix in are gone; the lesson pages paint a plain white sky. */
     --star-white: rgba(255, 255, 255, 0.55);
-    --star-blue: rgba(120, 170, 255, 0.45);
-    --star-red: rgba(255, 120, 90, 0.30);
 
     /* Typography */
     --font-display: 'Inter Tight', 'Noto Sans JP', system-ui, sans-serif;
@@ -148,9 +154,11 @@ body {
     text-rendering: optimizeLegibility;
 }
 
-/* Ambient light spill — large, soft, teal-forward pools that balance the
-   composition (formation upper-right; a big teal spill behind it + a cool one
-   lower-left). Also the JS-disabled / no-WebGL fallback. Nothing repaints. */
+/* Ambient light spill — matched value-for-value to the lesson pages so the two
+   surfaces line up: three large, very-low-opacity radials over the black canvas
+   (blue upper-right, deeper blue lower-left, a violet breath up top). Also the
+   JS-disabled / no-WebGL fallback. Sits BELOW the star canvas (z-index -3 vs
+   #starfield's -2), so it can never cover the stars. Nothing repaints. */
 body::before {
     content: '';
     position: fixed;
@@ -158,9 +166,9 @@ body::before {
     z-index: -3;
     pointer-events: none;
     background:
-        radial-gradient(70% 70% at 82% 24%, var(--spill-teal), transparent 66%),
-        radial-gradient(85% 75% at 12% 88%, var(--spill-cyan), transparent 70%),
-        radial-gradient(50% 45% at 60% 8%, rgba(255, 61, 139, 0.06), transparent 72%);
+        radial-gradient(70% 70% at 80% 22%, var(--spill-blue), transparent 66%),
+        radial-gradient(85% 75% at 10% 86%, var(--spill-blue-deep), transparent 70%),
+        radial-gradient(55% 50% at 55% 6%, var(--spill-violet), transparent 74%);
 }
 
 /* Bracketed micro-labels along the bottom edge (reference detail) */
@@ -246,6 +254,16 @@ a {
     width: 100%;
     height: 100%;
     pointer-events: none;
+}
+
+/* Reading pages (教材 / 記事, body.is-article) — the sky steps back so it never
+   competes with body copy or MathJax. Two halves that have to stay in sync:
+   this rule softens and dims the whole canvas, and starfield.js separately thins
+   the stars that would land behind the text column (COLUMN_* there). Everything
+   outside the column keeps a faint sky, so the page still reads as the same site. */
+body.is-article #starfield {
+    filter: blur(1.2px);
+    opacity: .6;
 }
 
 #scene-canvas {
