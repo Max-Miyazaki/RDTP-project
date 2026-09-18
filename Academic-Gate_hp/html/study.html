@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Academic Gates - 勉強の軌跡</title>
-    <link rel="stylesheet" href="../css/style.css?v=r50">
+    <link rel="stylesheet" href="../css/style.css?v=r51">
     <link rel="icon" href="../../favicon.ico" sizes="32x32">
     <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="../../apple-touch-icon.png">
@@ -13,95 +13,47 @@
     <canvas id="starfield" aria-hidden="true"></canvas>
 <div id="site-nav"><noscript><nav class="noscript-nav" aria-label="メインナビゲーション"><a href="index.html">ホーム</a><a href="self-intro.html">自己紹介</a><a href="study.html">勉強の軌跡</a><a href="videos.html">動画</a><a href="blog.html">ブログ</a><a href="sns.html">各種SNS</a></nav></noscript></div>
     <main>
+        <div class="page-header">
+            <p class="eyebrow"><span class="eyebrow__num">01</span> — Study</p>
+                <h1>勉強の軌跡</h1>
+            <p>分野ごとの学習記録と教材。公式を覚えることではなく、原理から積み上げることを目的にしています。</p>
+        </div>
+
+        <!-- 分野カード。グリッドとカードは blog / videos / sns と同じ共有ルールを
+             そのまま使っている（セレクタ名を足しただけで、値は変えていない）。
+             中身がある分野だけ <a>、無い分野は <div> にしてある。押せない5枚は
+             role を持たないので、支援技術から link / button として読まれない。
+             見た目は「見出しの色（アクセント青 / 白）」と「ホバーの有無」で分かれる。
+             枠線は揃えたまま — 薄くすると disabled に見えるが、記事が無い分野は
+             無効なのではなく中身がないだけなので（§38.3）。 -->
         <section class="study-path">
-            <p class="eyebrow"><span class="eyebrow__num">01</span> — 勉強の軌跡</p>
-                <h2>物理学の勉強</h2>
-            <!-- 分野 → 科目 → 章 → 節 の目次。
-                 ・分野 = 基礎領域 / 専門領域（従来のアコーディオンをそのまま使う）
-                 ・科目 = 物理数学・古典力学 … 記事がある科目だけ入れ子アコーディオンにし、
-                   無い科目は平文のまま置く。開けるかどうかで中身の有無が分かるので、
-                   「準備中」のようなラベルを足さない（DESIGN.md §36）
-                 ・章 = 平文（章が増えたら <button class="accordion-toggle"> に差し替えるだけで
-                   折りたためる。JS は入れ子に対応済み）
-                 ・節 = 記事へのリンク
-                 新しい CSS クラスは足さず、既存の .accordion-* と <ul> の字下げで階層を出す。 -->
-            <div class="accordion">
-                <div class="accordion-block">
-                    <button class="accordion-toggle" aria-expanded="false" aria-controls="ac-foundation">基礎領域（学部レベル）</button>
-                    <div class="accordion-content" id="ac-foundation">
-                        <ul>
-                            <li>
-                                <button class="accordion-toggle" aria-expanded="false" aria-controls="ac-phys-math">物理数学</button>
-                                <div class="accordion-content" id="ac-phys-math">
-                                    <ul>
-                                        <li>1章 微分
-                                            <ul>
-                                                <li><a href="phys-math_1-1.html">1-1 微分の基礎</a></li>
-                                            </ul>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </li>
-                            <li>古典力学</li>
-                            <li>解析力学</li>
-                            <li>電磁気学</li>
-                            <li>熱力学</li>
-                            <li>統計力学</li>
-                            <li>量子力学</li>
-                            <li>特殊相対性理論</li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="accordion-block">
-                    <button class="accordion-toggle" aria-expanded="false" aria-controls="ac-specialty">専門領域（素粒子・重力理論）</button>
-                    <div class="accordion-content" id="ac-specialty">
-                        <ul>
-                            <li>場の量子論</li>
-                            <li>一般相対性理論</li>
-                            <li>宇宙論</li>
-                        </ul>
-                    </div>
-                </div>
-                <!-- 「行間埋めノート」ブロックは、中身だった Peskin のページを §35 で削除した
-                     のに伴って外した。教科書ベースのノート（分野別目次とは別の軸）を再開する
-                     ときは、ここに accordion-block を戻す。
-                <div class="accordion-block">
-                    <button class="accordion-toggle" aria-expanded="false" aria-controls="ac-margin-notes">行間埋めノート</button>
-                    <div class="accordion-content" id="ac-margin-notes">
-                        <ul>
-                            <li>Quantum Field Theory</li>
-                            <li>General Relativity</li>
-                            <li>Cosmology</li>
-                        </ul>
-                    </div>
-                </div>
-                -->
-            </div>
+            <!-- 中身がある分野だけリンクにする。無い分野は平文のまま置く（§37）。
+                 「準備中」のようなラベルは足さない。リンクの無効化（disabled や
+                 グレーアウト）も使わない — 押せそうで押せない要素は支援技術にも
+                 不親切で、平文のほうが状態を正しく表すため。 -->
+            <p class="eyebrow"><span class="eyebrow__num">02</span> — Fields</p>
+                <h2>学問分野</h2>
+            <ul>
+                <li><a href="study_physics.html">物理学</a></li>
+                <li>数学</li>
+                <li>化学</li>
+                <li>生物学</li>
+                <li>歴史学</li>
+            </ul>
+
+            <!-- 能力開発は学問分野と性質が違う（基礎／専門の区分を持たず、
+                 訓練法の平坦なリストになる）。全ページ共通の eyebrow の連番で
+                 区切るだけにして、隠しも混ぜもしない。 -->
+            <p class="eyebrow"><span class="eyebrow__num">03</span> — Training</p>
+                <h2>能力開発</h2>
+            <ul>
+                <li>記憶術</li>
+            </ul>
         </section>
     </main>
     <div id="site-footer"><noscript><nav class="noscript-nav" aria-label="フッターナビゲーション"><a href="index.html">ホーム</a><a href="self-intro.html">自己紹介</a><a href="study.html">勉強の軌跡</a><a href="videos.html">動画</a><a href="blog.html">ブログ</a><a href="sns.html">各種SNS</a></nav></noscript></div>
-    <script>
-    // アコーディオン動作（入れ子対応）。開閉そのものは display の切り替えだが、
-    // 支援技術のために aria-expanded を必ず同期させる。<button> なので Tab で辿れ、
-    // Enter / Space で開閉できる（キーボード操作はブラウザ既定のまま）。
-    document.addEventListener('DOMContentLoaded', function() {
-        const toggles = document.querySelectorAll('.accordion-toggle');
-        toggles.forEach(function(toggle) {
-            const content = toggle.nextElementSibling;
-            if (!content) return;
-            // 初期状態は収納
-            content.style.display = 'none';
-            toggle.setAttribute('aria-expanded', 'false');
-            toggle.addEventListener('click', function() {
-                const open = content.style.display === 'block';
-                content.style.display = open ? 'none' : 'block';
-                toggle.setAttribute('aria-expanded', open ? 'false' : 'true');
-            });
-        });
-    });
-    </script>
-    <script src="../js/layout.js?v=r50"></script>
-    <script src="../js/main.js?v=r50"></script>
-    <script src="../js/starfield.js?v=r50"></script>
+    <script src="../js/layout.js?v=r51"></script>
+    <script src="../js/main.js?v=r51"></script>
+    <script src="../js/starfield.js?v=r51"></script>
 </body>
-</html> 
+</html>
