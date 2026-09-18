@@ -183,9 +183,8 @@ mjx-container[display="true"]{margin:14px 0!important;overflow-x:auto;overflow-y
 <div class="scrim" id="scrim"></div>
 <div class="wrap">
   <nav class="rail" id="rail">
-    <!-- 科目へ戻る導線。#phys-math は分野ページの「物理数学」アコーディオンで、
-         accordion.js がハッシュを見て開いた状態で着地させる。 -->
-    <div class="brand"><a href="study_physics.html#phys-math">物理数学I　1章 微分</a><br>1-1　微分の基礎<small>SECTION 1-1 / DERIVATIVES</small></div>
+    <!-- 科目へ戻る導線（科目ページ）。 -->
+    <div class="brand"><a href="phys-math.html">物理数学I　1章 微分</a><br>1-1　微分の基礎<small>SECTION 1-1 / DERIVATIVES</small></div>
     <div class="progress-wrap"><div class="progress-bar" id="pbar"></div></div>
     <ul class="toc" id="toc">
       <li class="part">導入</li>
@@ -214,7 +213,7 @@ mjx-container[display="true"]{margin:14px 0!important;overflow-x:auto;overflow-y
       <!-- パンくず。ヘッダーのナビは最上位（勉強の軌跡）にしか戻れないので、
            中間層への導線はこれが担う。新しい要素は足さず、もともとここにあった
            .eyebrow をそのままリンク化している（§37）。 -->
-      <nav class="eyebrow" aria-label="パンくず"><a href="study.html">勉強の軌跡</a> ／ <a href="study_physics.html">物理学</a> ／ <a href="study_physics.html#phys-math">物理数学 I</a> ／ 1章 微分 ／ SECTION 1-1</nav>
+      <nav class="eyebrow" aria-label="パンくず"><a href="study.html">勉強の軌跡</a> ／ <a href="study_physics.html">物理学</a> ／ <a href="phys-math.html">物理数学</a> ／ 1章 微分 ／ SECTION 1-1</nav>
       <h1>1-1　微分の基礎<span class="sub">変化する世界を、どうやって調べるか</span></h1>
       <p class="lead">りんごは落ち、大気は循環し、星は回る。物理学が相手にするのは、このような<strong>変化する対象</strong>です。では、変化するものを調べたいとき、何を測ればいいのでしょうか？「いまこうなっている」という値を記録するだけでは足りません。知りたいのは、その値の<strong>変わり方</strong>そのものです。増えているのか減っているのか、急なのか緩やかなのか。この「変わり方」をきちんと定義し、計算する道具が<strong>微分</strong>です。</p>
       <p>この記事は高校数学の復習ですが、公式集を並べ直すのが目的ではありません。<strong>すべての微分公式を、定義（極限）から自分の手で出せる状態</strong>にするのが目的です。公式を覚えている人でも、\((\sin x)'=\cos x\) を定義から導けと言われて手が止まるなら、ここはやる価値があります。物理では「覚えていない関数の微分」が普通に出てくるからです。</p>
