@@ -55,7 +55,14 @@ body{font-size:15.5px;line-height:1.9;line-break:strict;overflow-x:hidden}
    ルールは `body.is-article main > section:not(.rail)`（詳細度 0,2,3）と
    `… ~ section:not(.rail)`（0,3,4）で 900px と 160px パディングをかけてくる。
    こちらは `.main` を噛ませて 0,3,2 / 0,4,3 とし、確実に上回る（§36）。 */
-.wrap{display:flex;max-width:1200px;margin:0 auto;padding-top:var(--nav-clearance)}
+/* max-width を持たせない。1200px で止めると、レールの右端から先が本文領域として
+   見えているのに .wrap はその手前で終わり、余った分が本文領域の「外」に残る。
+   結果、本文は .main の中では中央なのに .main 自体が画面に対して中央でなくなり、
+   1440px で左 95px / 右 215px、1680px で 95 / 335 と右へ寄って見えていた（§40）。
+   全幅にすると本文は 1px も動かないまま、レール右端〜本文と本文〜画面右端が
+   常に等しくなる。左の余白はサイト共通の --gutter（幅に応じて 64〜96px）で、
+   レールが画面端に密着しないようにしている。 */
+.wrap{display:flex;padding-top:var(--nav-clearance);padding-left:var(--gutter)}
 .rail{width:var(--rail-w);flex:0 0 var(--rail-w);position:sticky;top:var(--nav-clearance);height:calc(100vh - var(--nav-clearance));overflow-y:auto;padding:18px 14px 60px 22px;border-right:1px solid var(--line)}
 .main{flex:1 1 auto;min-width:0;padding:0 clamp(20px,4vw,56px) 110px}
 body.is-article .main > .lesson-hero,
@@ -159,6 +166,8 @@ mjx-container[display="true"]{margin:14px 0!important;overflow-x:auto;overflow-y
 .menu-btn{display:none}
 .scrim{display:none}
 @media (max-width:900px){
+  /* レールがオフキャンバスに変わるので、上の左余白は打ち消す（本文幅を削らない） */
+  .wrap{padding-left:0}
   .rail{position:fixed;left:0;top:0;height:100vh;z-index:1100;transform:translateX(-100%);transition:transform .25s var(--ease);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);padding-top:28px}
   body.nav-open .rail{transform:translateX(0)}
   .main{padding:0 20px 90px}
