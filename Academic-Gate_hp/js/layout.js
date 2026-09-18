@@ -16,10 +16,12 @@
 (function () {
     'use strict';
 
-    // data-page → the nav link to mark active. Section notes (peskin) highlight 勉強の軌跡.
+    // data-page → the nav link to mark active. An article page (body.is-article) that
+    // belongs under a nav item maps to that item — e.g. a 教材 page would use
+    // data-page="study" so 勉強の軌跡 stays highlighted while reading it.
     var ACTIVE = {
         index: 'index.html', 'self-intro': 'self-intro.html', study: 'study.html',
-        videos: 'videos.html', blog: 'blog.html', sns: 'sns.html', peskin: 'study.html'
+        videos: 'videos.html', blog: 'blog.html', sns: 'sns.html'
     };
 
     var NAV_ITEMS = [

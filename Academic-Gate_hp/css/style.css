@@ -1291,16 +1291,33 @@ footer a:hover {
     margin-top: var(--space-2);
 }
 
-/* Study path accordion + QFT pages */
-.study-path,
-.qft-summary,
-.peskin-qft-sec2-1,
-.peskin-qft-sec2-2,
-.peskin-qft-sec2-3,
-.peskin-qft-sec2-4 {
+/* Study path accordion (study.html) */
+.study-path {
     max-width: 900px;
     margin: 0 auto;
     padding: calc(var(--space-16) + 40px) var(--gutter) var(--space-8);
+}
+
+/* 記事 / 教材ページ (body.is-article) の本文列。ページ固有のクラスではなく
+   body.is-article に紐づくので、新しい記事は <body class="is-article"> を
+   付けるだけでこの体裁になる（starfield.js の星の間引きも同じ合図を見ている）。
+   `:not(.rail)` — 目次レールなど main 直下に並ぶ非本文要素は 900px の列に
+   閉じ込めない。2カラム構成では main 側が grid/flex を決め、この規則は本文
+   セクションの最大幅だけを担当する。
+   ナビ分の上余白は最初の本文セクションだけが払う（セクションを複数並べる教材で、
+   節ごとに 160px の空白が入らないように）。 */
+body.is-article main > section:not(.rail) {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: calc(var(--space-16) + 40px) var(--gutter) var(--space-8);
+}
+
+/* 2つ目以降の本文セクションはナビ分の余白を払わない。`:first-of-type` ではなく
+   一般兄弟セレクタを使う理由: レールが <section class="rail"> だと、それが
+   :first-of-type を取ってしまい本文が誰もナビ分の余白を払わなくなる。この形なら
+   「自分より前に本文セクションがあるか」で判定するのでレールの有無に左右されない。 */
+body.is-article main > section:not(.rail) ~ section:not(.rail) {
+    padding-top: var(--space-8);
 }
 
 .accordion-toggle {
@@ -1328,45 +1345,36 @@ footer a:hover {
     padding: var(--space-2) var(--space-3);
 }
 
-.qft-summary a,
-.study-path a {
+.study-path a,
+body.is-article main a:not(.btn) {
     color: var(--accent);
 }
 
-.qft-summary a:hover,
-.study-path a:hover {
+.study-path a:hover,
+body.is-article main a:not(.btn):hover {
     color: var(--text-primary);
 }
 
-.qft-summary hr {
+body.is-article main hr {
     border: none;
     border-top: 1px solid var(--hairline);
     margin: var(--space-4) 0;
 }
 
-/* Section-note vertical rhythm: page title → space → body; sub-heads are small
-   eyebrow-style labels, never display-sized (no inverted hierarchy). */
-.peskin-qft-sec2-1 h1,
-.peskin-qft-sec2-2 h1,
-.peskin-qft-sec2-3 h1,
-.peskin-qft-sec2-4 h1,
-.qft-summary h1 {
+/* Article vertical rhythm: page title → space → body; sub-heads are small
+   eyebrow-style labels, never display-sized (no inverted hierarchy).
+   NOTE: h2 here is a label tier, not a section title. A 教材 page that wants
+   display-sized section headings should use h1 for the page title and opt its
+   own heading class out, the way .study-path h2 does. */
+body.is-article main h1 {
     margin-bottom: var(--space-4);
 }
 
-.peskin-qft-sec2-1 p,
-.peskin-qft-sec2-2 p,
-.peskin-qft-sec2-3 p,
-.peskin-qft-sec2-4 p,
-.qft-summary p {
+body.is-article main p {
     margin-bottom: var(--space-4);
 }
 
-.peskin-qft-sec2-1 h2,
-.peskin-qft-sec2-2 h2,
-.peskin-qft-sec2-3 h2,
-.peskin-qft-sec2-4 h2,
-.qft-summary h2 {
+body.is-article main h2 {
     font-family: var(--font-body);
     font-size: 0.72rem;
     font-weight: 500;
@@ -1376,11 +1384,7 @@ footer a:hover {
     margin: var(--space-8) 0 var(--space-3);
 }
 
-.peskin-qft-sec2-1 ul,
-.peskin-qft-sec2-2 ul,
-.peskin-qft-sec2-3 ul,
-.peskin-qft-sec2-4 ul,
-.qft-summary ul {
+body.is-article main ul {
     color: var(--text-secondary);
     margin-left: var(--space-3);
     line-height: 1.9;
@@ -1413,122 +1417,7 @@ footer a:hover {
     background: #fff;
 }
 
-/* Knowledge map + control panel (graph logic untouched; restyle only) */
-.knowledge-map {
-    max-width: 900px;
-    margin: 0 auto;
-    padding: var(--space-8) var(--gutter);
-}
-
-.knowledge-map h1 {
-    text-align: left;
-    margin-bottom: var(--space-4);
-}
-
-#graph-container {
-    width: 100%;
-    height: 56vh;
-    border: 1px solid var(--hairline);
-    border-radius: var(--radius-lg);
-    overflow: hidden;
-}
-
-.control-panel {
-    background: var(--surface);
-    border: 1px solid var(--hairline);
-    border-radius: var(--radius-md);
-    padding: var(--space-3);
-}
-
-.control-panel h3 {
-    font-size: 0.7rem;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: var(--text-tertiary);
-    margin-bottom: var(--space-2);
-}
-
-.control-button,
-.control-toggle-button {
-    font-family: var(--font-body);
-    color: var(--text-primary);
-    background: var(--surface);
-    border: 1px solid var(--hairline);
-    border-radius: var(--radius-pill);
-    padding: 0.5rem 1rem;
-    cursor: pointer;
-}
-
-/* Toggle sits above the panel it controls */
-.control-toggle-button {
-    display: block;
-    margin-bottom: var(--space-3);
-}
-
-.control-button:hover,
-.control-toggle-button:hover {
-    border-color: var(--hairline-strong);
-}
-
-/* Control panel labels + custom form controls in the teal system (IDs/handlers
-   untouched — this is styling only). */
-.control-panel label,
-.control-item label {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-size: 0.85rem;
-    color: var(--text-secondary);
-    cursor: pointer;
-}
-
-.control-item {
-    margin: 0.4rem 0;
-}
-
-/* Custom checkbox: hairline box, teal check */
-.control-panel input[type="checkbox"] {
-    appearance: none;
-    -webkit-appearance: none;
-    width: 16px;
-    height: 16px;
-    flex: none;
-    border: 1px solid var(--hairline-strong);
-    border-radius: 4px;
-    background: var(--surface);
-    cursor: pointer;
-    position: relative;
-    transition: border-color var(--dur) var(--ease), background var(--dur) var(--ease);
-}
-
-.control-panel input[type="checkbox"]:checked {
-    border-color: var(--spec-teal);
-    background: rgba(43, 217, 196, 0.16);
-}
-
-.control-panel input[type="checkbox"]:checked::after {
-    content: '';
-    position: absolute;
-    left: 4px;
-    top: 1px;
-    width: 5px;
-    height: 9px;
-    border: solid var(--spec-teal);
-    border-width: 0 2px 2px 0;
-    transform: rotate(45deg);
-}
-
-.control-panel input[type="checkbox"]:focus-visible {
-    outline: 2px solid var(--spec-teal);
-    outline-offset: 2px;
-}
-
-/* Teal sliders */
-.control-panel input[type="range"] {
-    accent-color: var(--spec-teal);
-}
-
-/* Any non-panel checkbox/slider keeps the teal accent too */
+/* Any checkbox/slider on the site keeps the teal accent */
 input[type="checkbox"],
 input[type="range"] {
     accent-color: var(--spec-teal);

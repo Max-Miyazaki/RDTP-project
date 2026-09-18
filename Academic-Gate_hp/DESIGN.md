@@ -98,7 +98,7 @@ the lesson pages; white is the only star colour:
 |---|---|
 | `--star-white` | `rgba(255,255,255,0.55)` |
 
-**Reading pages** (`body.is-article` — the Peskin教材 and any future article page) step the
+**Reading pages** (`body.is-article` — any 記事 / 教材 page; see §35) step the
 sky back so it never sits behind body copy or MathJax. Two halves, and they have to move
 together: `style.css` blurs and dims the whole canvas (`filter: blur(1.2px); opacity:.6`),
 and `starfield.js` masks the reading column — `main > section`'s rect padded 24px each
@@ -168,7 +168,7 @@ dash, an all-caps label.
 ```
 01 — WELCOME TO THE ARCHIVE
 02 — 勉強の軌跡
-03 — THE KNOWLEDGE MAP
+03 — PROFILE
 ```
 
 Markup: `<p class="eyebrow"><span class="eyebrow-num">01</span> — LABEL</p>`
@@ -251,13 +251,13 @@ A fixed, full-viewport, `pointer-events:none`, `z-index:0` layer of tiny dots vi
 density. Present on **every** page — it is the shared cosmic baseline that interior pages
 lean on instead of the full particle choreography.
 
-### 5.5 Knowledge-graph control panel (study.html) — restyle only
+### 5.5 Knowledge-graph control panel (study.html) — REMOVED (§35)
 
-Re-skin the existing panel to the system: `--surface` / `--radius-md` panel, hairline
-borders, spectrum accents on sliders/checkboxes, pill buttons. **The graph logic, the
-`#graph-container`, and all control IDs/handlers in `knowledge-graph.js` are untouched.**
-The three colored buttons (reset/fullscreen) are re-colored to spectrum tokens but keep
-their IDs.
+~~Re-skin the existing panel to the system.~~ **The Archive Sphere and its control panel
+were removed in §35.** `js/knowledge-graph.js`, the `.knowledge-map` / `.control-*` /
+`#graph-container` CSS, and study.html's Three.js `<script>` are all gone. Nothing on the
+site uses a control panel now; if one returns, build it from the §5 component tokens rather
+than restoring this block.
 
 ---
 
@@ -411,7 +411,7 @@ region (SOCIETY content) sits below the hero on pure black + star field once the
 dormant.
 
 **Content mapping (fixes the orphaned-videos bug):** the SOCIETY card region carries 人気
-ノート (→ study/peskin), 最新ブログ (→ blog.html), 最新動画 (→ **videos.html**), 企画,
+ノート (→ study.html), 最新ブログ (→ blog.html), 最新動画 (→ **videos.html**), 企画,
 and SNS — each a card grid per §5.3.
 
 All of the above lives in a new `js/scroll-scenes.js`. `main.js` is not bloated.
@@ -442,14 +442,13 @@ morph. Each still gets sequential eyebrow labels and the type/component system.
 |---|---|
 | **index.html** | Full six-stage (four on mobile) WebGL choreography (the only page with it). |
 | **self-intro.html** | Calm. Profile: photo in a hairline/`--radius-lg` frame, bio in the type system, spectrum star field. Keep `self-intro.js`. Eyebrows: `01 — PROFILE`, `02 — RESEARCH`, … |
-| **study.html** | **Background particle canvas suppressed** (static gradient only) so it never competes with `knowledge-graph.js`'s WebGL context. Accordion restyled to hairline/surface tokens. Control panel re-skinned per §5.5. Graph logic untouched. |
+| **study.html** | Calm. Accordion restyled to hairline/surface tokens. **One section only** (`01 — 勉強の軌跡`) since §35 removed the Archive Sphere; the page now carries the plain star field like every other interior page. |
 | **blog.html** | Calm. Card grid per §5.3, spectrum placeholders. |
 | **videos.html** | Calm. Video card grid; now linked from index scene ④. |
 | **sns.html** | Calm. SNS links become hairline cards with spectrum hover, disc icons. |
-| **peskin-qft.html** | Calm. TOC + accordion restyled. Eyebrow `01 — CONTENTS`. |
-| **peskin-qft_sec2-1…4.html** | Calm. **MathJax config + the PDF `<iframe>` embeds kept exactly as-is**; iframe wrapped in a hairline/`--radius-md` frame. Eyebrows per section. |
+| *(記事 / 教材ページ)* | Calm, `body.is-article`. The star field steps back (§D); the body column, rhythm and PDF-embed frame come from the `body.is-article` rules in `css/style.css` (§35). The 5 `peskin-qft*.html` pages that used to sit here were removed in §35. |
 
-**Shared nav/footer are unified across all 11 pages** — one canonical 6-item nav
+**Shared nav/footer are unified across all 6 pages** — one canonical 6-item nav
 (ホーム · 自己紹介 · 勉強の軌跡 · 動画 · ブログ · 各種SNS) with the correct `active` per
 page, and one canonical footer (logo + nav links + SNS + copyright). This fixes the
 5-vs-6-item nav inconsistency and the three-way footer inconsistency.
@@ -493,12 +492,13 @@ copy-paste drift.
 - `layout.js` writes the canonical `<header>` + `<footer>` into those placeholders and sets the
   active nav link from `document.body.dataset.page` (map: `index→index.html`,
   `self-intro→self-intro.html`, `study→study.html`, `videos→videos.html`, `blog→blog.html`,
-  `sns→sns.html`, `peskin→study.html` — section notes highlight 勉強の軌跡).
+  `sns→sns.html`). An article page maps to the nav item it belongs under — a 教材 page
+  under 勉強の軌跡 sets `data-page="study"`.
 - **Load order:** `layout.js` is included immediately *before* `main.js` and *after* the body
   placeholders, so the document is already parsed when it runs — it injects **synchronously on
   execution**, before `main.js` registers its `DOMContentLoaded` handlers (which query
   `.menu-toggle` / `.nav-menu` / `header`). No ordering race; `main.js` was not modified.
-- Verified on all 11 pages: correct `active` per page, 6-item nav, byte-identical footer,
+- Verified on all pages: correct `active` per page, 6-item nav, byte-identical footer,
   hamburger open + outside-click close, 0 console errors, and the `<noscript>` path renders
   6 links with scripts disabled.
 
@@ -507,11 +507,13 @@ host. **C (copy-paste + a CI diff lint)** keeps the drift risk and the toil.
 
 ---
 
-## 11b. Knowledge map (Archive Sphere) — constraints for the replacement
+## 11b. Knowledge map (Archive Sphere) — REMOVED (§35); notes kept for a future rebuild
 
-`study.html`'s 3D graph (`js/knowledge-graph.js`) is being **rebuilt from scratch** later. No
-further work is being done on the current one (label overlap from the randomized layout is left
-as-is). The rebuild should inherit what this round learned:
+**The Archive Sphere was deleted in §35** — `js/knowledge-graph.js`, its section in
+`study.html`, and its CSS are gone, and so is the Three.js `<script>` that study.html carried
+for it. The rebuild that this section was written for never happened. The constraints below
+are kept **only as notes for a future map, not as a description of anything in the tree**;
+they cost nothing to keep and they encode real bugs that were paid for once:
 
 - **Palette only.** Use the spectrum tokens — teal/cyan for structure (nodes, edges), violet /
   magenta for accents. **No off-palette colours**: the original shipped **lime-green edges**
@@ -540,58 +542,50 @@ warning *"Scripts build/three.js and build/three.min.js are deprecated with r150
 removed with r160"*; **0.160.0 is the last version that still ships it** (verified: it loads 200
 and reports `THREE.REVISION = 160`). We are sitting exactly on that boundary.
 
-**Loaded by two places** (grep-verified — `build/three.min.js`, `three@0.160.0`):
-- `html/study.html` (lines 8–9) — a direct `<script src="…jsdelivr…/three.min.js"
-  onerror="…unpkg…">` in `<head>`. Drives `js/knowledge-graph.js` (a *consumer* — it calls
-  `new THREE.*` and `console.error`s if `typeof THREE === 'undefined'`; it does **not** load Three
-  itself).
+**Loaded by ONE place since §35** (grep-verified — `build/three.min.js`, `three@0.160.0`):
 - `js/scroll-scenes.js` (line 58) — the `loadThree()` dynamic-injection loader
   `attempt('…jsdelivr…', '…unpkg…')`. This is how **`index.html`** gets Three.js (transitively;
   index.html has no Three `<script>` of its own — see its line-18 comment).
+- ~~`html/study.html`~~ — its direct `<script src="…three.min.js">` went with the Archive
+  Sphere (§35). **study.html no longer loads Three.js at all**, so the pin is now a
+  single-file concern.
 
-**A version bump breaks both files together, and the unpkg fallback cannot help.** Both CDNs serve
-the *same npm package* `three@0.160.0`, so both hold byte-identical files; the jsdelivr→unpkg
-fallback is a **CDN-availability** fallback (one host down → try the other), not a version/path
-fallback. Any bump to a version where the package no longer ships `build/three.min.js` removes the
-file from **both** CDNs simultaneously, so `index.html` (via scroll-scenes.js) and `study.html`
-(and therefore the Archive Sphere) all break at once, with the fallback offering no rescue.
+**The unpkg fallback cannot rescue a version bump.** Both CDNs serve the *same npm package*
+`three@0.160.0`, so both hold byte-identical files; the jsdelivr→unpkg fallback is a
+**CDN-availability** fallback (one host down → try the other), not a version/path fallback. Any
+bump to a version where the package no longer ships `build/three.min.js` removes the file from
+**both** CDNs simultaneously and `index.html` (via scroll-scenes.js) breaks with no rescue.
 
 **Deliberately not migrating now.** Moving off the UMD build means ES-module imports
-(`import * as THREE from 'three'` via an import-map or a bundler) across both the scroll-field and
-the knowledge-graph rebuild — out of scope here. Until then, **hold the pin at exactly
-0.160.0**; treat any change to the version number in those two locations as a breaking change that
-must be co-migrated, not a routine dependency bump. (The knowledge-graph rebuild noted above is
-the natural time to do the ES-module migration.)
+(`import * as THREE from 'three'` via an import-map or a bundler) in the scroll-field. Until
+then, **hold the pin at exactly 0.160.0**; treat any change to that version number as a breaking
+change that must be co-migrated, not a routine dependency bump.
 
 ### CDN fallback pattern — always create a new `<script>`, never reassign `.src`
 
-**All three jsdelivr→unpkg fallbacks in the repo now use the same createElement mechanism:** on
-load error, **create a new `<script>` element** pointing at unpkg and append it to `<head>`.
-- `js/scroll-scenes.js` (`loadThree()`, drives `index.html`) — the original working form.
-- `html/study.html`'s Three.js tag — `onerror="this.onerror=null; var
-  s=document.createElement('script'); s.src='…unpkg…'; document.head.appendChild(s);"`.
-- the `peskin-qft*.html` MathJax tags — same onerror, `es5/tex-mml-chtml.js`.
+**Every jsdelivr→unpkg fallback in the repo uses the same createElement mechanism:** on load
+error, **create a new `<script>` element** pointing at unpkg and append it to `<head>`.
+- `js/scroll-scenes.js` (`loadThree()`, drives `index.html`) — the original working form, and
+  since §35 the only one left in the tree.
+- **Any new 教材 page that loads MathJax must use this same form** — `onerror="this.onerror=null;
+  var s=document.createElement('script'); s.src='…unpkg…/es5/tex-mml-chtml.js';
+  document.head.appendChild(s);"` — which is what the removed `peskin-qft*.html` pages carried.
 
 **Do NOT reintroduce the inline `this.src='…'` form anywhere** — it is known broken. **Spec
 reason (one line):** reassigning `.src` on an already-run/failed parser-inserted `<script>` is a
 no-op because its "already started" flag is set, so the browser never re-fetches.
 
-Measured, jsdelivr blocked at the network layer: **study.html** recovers Three.js from unpkg
-(200, `THREE.REVISION 160`) and `knowledge-graph.js` initializes with no `Three.js` console error;
-**index.html** recovers via `scroll-scenes.js` (unpkg 200, unaffected by the study.html edit);
-**peskin-qft.html** recovers MathJax from unpkg (`3.2.2`, `$e^+ e^-$` renders). Normal loads use
-jsdelivr and the fallbacks do not fire. Both CDNs serve byte-identical `three@0.160.0` and
-`mathjax@3 = 3.2.2`, so these are host-availability fallbacks, not version ones — the versions,
-pinned URLs and entry points are unchanged.
+Measured when this was written, jsdelivr blocked at the network layer: **index.html** recovers
+Three.js via `scroll-scenes.js` (unpkg 200, `THREE.REVISION 160`); the then-present study.html and
+peskin-qft.html tags recovered too (`mathjax@3 = 3.2.2`, `$e^+ e^-$` rendered). Normal loads use
+jsdelivr and the fallback does not fire. Both CDNs serve byte-identical packages, so this is a
+host-availability fallback, not a version one.
 
-(Before this pass, study.html's fallback used the inline `this.src=` form and was latently broken
-— it only ever mattered when jsdelivr was unreachable, which is why it went unnoticed.)
-
-One remaining pre-existing quirk, **not fixed** (out of scope; do not touch the config object):
-`peskin-qft_sec2-1..4.html` set `window.MathJax` config *after* the loader `<script>`, which
-overwrites the loaded runtime object — harmless today only because those four pages embed PDFs and
-carry **no inline HTML math** (only `peskin-qft.html` does, and it orders config before the loader,
-correctly).
+**Carry-forward lesson for the 教材 pages (the bug is easy to repeat):** the removed
+`peskin-qft_sec2-1..4.html` set `window.MathJax` *after* the loader `<script>`, which overwrites
+the loaded runtime object. It was harmless only because those four pages embedded PDFs and carried
+no inline HTML math; `peskin-qft.html` ordered config **before** the loader, which is correct.
+**Always put the `window.MathJax` config block before the MathJax `<script>`.**
 
 ---
 
@@ -3462,3 +3456,118 @@ orbits/convergence/sea/radialemitter pattern. **Only `js/scroll-scenes.js` chang
 regenerated. **Open items:** (a) stage-7 stills for the frozen disc (wide/tall rest + bottom exist in scratch,
 not promoted to `assets/`); (b) frame time not re-taken post-freeze (§34.9 — judged unnecessary); (c) the
 Round-33 open items (§33.12) still stand.
+
+---
+
+# §35 — Removing the Archive Sphere and the Peskin notes (IMPLEMENTED)
+
+The 3D knowledge map (`02 — THE KNOWLEDGE MAP / Archive Sphere`) and the five Peskin QFT pages
+were **deleted**, not deprecated. The map had been parked "to be rebuilt" since §11b and never
+was; its only data was the Peskin set, so the two go together. The 教材 styling stays and is
+**generalized**, because the physics-maths articles that replace these pages will use it.
+
+## 35.1 Deleted
+| Path | Why it could go |
+|---|---|
+| `html/peskin-qft.html`, `html/peskin-qft_sec2-1…4.html` | The pages themselves. |
+| `js/knowledge-graph.js` (1002 lines) | Loaded by `study.html` only; every node in its data was a Peskin page or PDF. |
+| `pdf/PeskinQFT_Sec2-1…4.pdf` (dir now gone) | Referenced only by the deleted pages and the graph. |
+| `css/style.css` — `.knowledge-map`, `#graph-container`, `.control-panel`, `.control-toggle-button`, `.control-button`, `.control-item` | Grep-verified: used by `study.html` alone. |
+| `html/study.html` — the Three.js `<script>` in `<head>` | Existed only to drive the graph. **index.html is unaffected**: it gets Three.js from `scroll-scenes.js`'s own `loadThree()` (§11b). |
+
+## 35.2 Kept deliberately
+- **`body.is-article` in both halves** — the `filter: blur(1.2px); opacity:.6` rule in
+  `css/style.css` and the `COLUMN_*` column masking in `js/starfield.js` (§D). Untouched.
+- **`.accordion-*`**, **`.pdf-actions` / `.pdf-frame`** — the 教材 components.
+- **The generic `input[type=checkbox] / [type=range]` teal accent** — it was never panel-scoped.
+- **`docs/stills/interior-study*.png`** — historical baselines. They now show a page that no
+  longer exists; re-shoot before using them as a regression reference.
+- **§11b's rebuild notes** — kept as lessons (label sizing, the `const` reassignment bug), now
+  explicitly marked as notes rather than a description of the tree.
+
+## 35.3 The 教材 styles are now keyed to `body.is-article`, not to page names
+The rhythm rules hung off `.peskin-qft-sec2-1…4` / `.qft-summary` — selectors that would have
+outlived the pages they were named for. They now read:
+
+```css
+body.is-article main > section:not(.rail)                        /* 900px body column + nav clearance */
+body.is-article main > section:not(.rail) ~ section:not(.rail)   /* 2つ目以降は clearance を払わない */
+body.is-article main h1 / p / h2 / ul / hr                       /* rhythm, rule */
+body.is-article main a:not(.btn)                                 /* link colour — .btn は除外 */
+```
+
+A new article opts in with `<body class="is-article">` — the **same** signal `starfield.js`
+already reads, so the sky treatment and the text column can never disagree about what a
+reading page is. `.study-path` (study.html's accordion section, **not** an article) keeps its
+own identical 900px box; it is not folded in, because study.html is not `is-article`.
+
+**Three hardenings over a plain `main > section` rule**, two of them found by measuring a
+mock 2-column lesson page (`main` as a grid, a `.rail` + two body sections) rather than by
+reasoning:
+- **`:not(.rail)`** — a rail placed as a `main`-level element is never squeezed into the 900px
+  column. `main` owns the grid/flex; this rule only *caps* the body column, it never forces
+  900px: measured in the mock, the body section shrank to its grid track and `scrollWidth`
+  never exceeded the viewport.
+- **`~` instead of `:first-of-type` for the nav clearance.** The first attempt was
+  `section:not(.rail):first-of-type`. **Measured: it matched nothing** when the rail was itself
+  a `<section class="rail">` — the rail took `:first-of-type`, so *no* section paid the
+  clearance and the body started under the floating nav (`padding-top: 64px`, should be 168px).
+  The shipped form asks "is there a body section before me?" (`section:not(.rail) ~
+  section:not(.rail)` → small padding) which is independent of where the rail sits. Re-measured:
+  rail `padding-top: 0`, first body section `168px`, second `64px`.
+- **`a:not(.btn)` for the link colour.** The old `.qft-summary a { color: var(--accent) }` was
+  page-scoped; generalized to `body.is-article main a` it **out-specified `.btn`** (0,1,3 vs
+  0,1,0) and repainted the 「PDFを開く ↗」/「ダウンロード」 pills accent-blue. Caught by diffing
+  computed styles against the pre-deletion build; excluded rather than reverted.
+
+**Known sharp edge:** `body.is-article main h2` is a *small uppercase label* tier (0.72rem),
+inherited verbatim from the section notes. A lesson page that wants display-sized section
+headings must use `h1` for the title and give its own headings a class, the way
+`.study-path h2` opts out. Flagged here so it is a choice, not a surprise.
+
+**Class-name collision check (`css/style.css`, grep):** `.rail`, `.box`, `.drill`, `.attempt`,
+`.step`, `.fig`, `.mod-h`, `.prompt`, `.site-footer` — **0 occurrences each**. The lesson pages
+also ship their own `<style>` on `--ink` / `--line` tokens (with `css/lesson-theme.css` layered
+after for the light theme), whereas `style.css` is on `--text-primary` / `--hairline`; the two
+systems do not currently meet. **If a lesson page ever loads `style.css` as well, re-run that
+collision check first** — the global `h1/h2/p` rules in §3 would apply to it too.
+
+## 35.4 Star masking after the change — unchanged today, one conditional gap
+`starfield.js` measures `main > section` with `getBoundingClientRect()` on every paint, so it
+follows whatever the CSS actually produces. The peskin column was 900px via a page class and is
+900px via `body.is-article` — **measured identical: left 270, right 1170, w 900, and the same
+`blur(1.2px) / opacity .6` canvas treatment**. Nothing about the masking changed.
+- **It depends on the rail's tag, not on the CSS.** Measured on the mock: a rail written as
+  `<section class="rail">` **is** picked up by `columns()` and thinned like any other column
+  (bands `-24–284` for the rail, `629–1103` for the body). A rail written as `<aside>` or
+  `<nav>` is **not** a `main > section`, so the stars behind the TOC would stay full-density
+  under the blur. On a near-opaque rail (`--rail-bg`) that is invisible either way; on a
+  transparent one it will show.
+- **The one-line fix, if that page uses a non-`section` rail:** widen the selector in
+  `columns()` to `main > section, main > .rail`. **Not done here** — no such page exists yet.
+
+## 35.5 Verification
+- **Link integrity:** every `href`/`src` on the 6 remaining pages resolves to a file on disk
+  (or an external CDN) — see the run in this round's report. No reference to `peskin-qft*`,
+  `PeskinQFT_*.pdf`, or `knowledge-graph.js` survives anywhere in the tree.
+- **JS:** `node --check` clean on all five remaining scripts. `study.html` no longer references
+  `THREE`, `#graph-container`, or any `control*` id, so there is nothing left to throw.
+- **Layout (screenshotted, 1440×900 and 390×844):** study.html is a single
+  `01 — 勉強の軌跡` section, `w 900 / left 270`, `scrollHeight 994`. `.study-path`'s own
+  `padding-bottom: var(--space-8)` closes the page and the footer's own top hairline follows —
+  **no orphaned divider, no double gap** (there was never a `<hr>` between the two sections).
+  The accordion still opens/closes all three blocks (`行間埋めノート` now lists Quantum Field
+  Theory / General Relativity / Cosmology as plain text), 0 console errors.
+- **Parity with the deleted pages:** a `body.is-article` page built from the old sec2-1 markup
+  was diffed against that page as served from a `HEAD` worktree. Section box, h1, h2, p, ul, a
+  and the star-field treatment are **byte-identical computed values**. One intended difference:
+  `<hr>` was the *browser default* on the sec2 pages (2px inset grey, margin 0) because only
+  `.qft-summary hr` had ever been styled; it is now the designed hairline (`1px --hairline`,
+  `var(--space-4)` margins) on every article page — the reason `scrollHeight` moves 1987 → 2018.
+
+## 35.6 Not updated on purpose
+The round logs (§13 onward) and the measurement tables — e.g. §20.1's "all 11 pages",
+§31's per-page console table listing `peskin-qft*` — are **historical records of runs that
+happened**. They are left as written; rewriting them would falsify the log. Only the living
+spec sections (§3, §5.5, §8, §11, §11b, §D) were updated.
+
