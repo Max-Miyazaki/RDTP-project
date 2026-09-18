@@ -1361,27 +1361,28 @@ body.is-article main hr {
     margin: var(--space-4) 0;
 }
 
-/* Article vertical rhythm: page title → space → body; sub-heads are small
-   eyebrow-style labels, never display-sized (no inverted hierarchy).
-   NOTE: h2 here is a label tier, not a section title. A 教材 page that wants
-   display-sized section headings should use h1 for the page title and opt its
-   own heading class out, the way .study-path h2 does. */
+/* Article vertical rhythm: h1 記事タイトル → h2 節見出し (§01…) → h3 小見出し.
+   h1/h2 keep the global heading tiers; h3 is pulled down here because the global
+   h3 (28px @1440) sits only 2.4px under h2 (30.4px) — fine on a two-level interior
+   page, but it collapses a three-level article hierarchy. Shipped tiers: 52 / 30.4
+   / 20px.
+   The small uppercase label role is NOT a heading tier: use the `.eyebrow`
+   component, which every page (and the retired section notes) already used. */
 body.is-article main h1 {
     margin-bottom: var(--space-4);
 }
 
-body.is-article main p {
-    margin-bottom: var(--space-4);
+body.is-article main h2 {
+    margin: var(--space-8) 0 var(--space-3);
 }
 
-body.is-article main h2 {
-    font-family: var(--font-body);
-    font-size: 0.72rem;
-    font-weight: 500;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--text-tertiary);
-    margin: var(--space-8) 0 var(--space-3);
+body.is-article main h3 {
+    font-size: clamp(1.05rem, 1.5vw, 1.25rem);
+    margin: var(--space-6) 0 var(--space-2);
+}
+
+body.is-article main p {
+    margin-bottom: var(--space-4);
 }
 
 body.is-article main ul {

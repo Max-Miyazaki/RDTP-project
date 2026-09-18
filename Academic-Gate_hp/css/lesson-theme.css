@@ -1,0 +1,171 @@
+/* Academic Gates — 教材ページ用のテーマ上書き
+ * 各教材の <style> の「後」に読み込むこと。
+ * 教材側の :root にある色トークンを、ライト時だけ差し替える。
+ *
+ * 教材ページ専用。本体6ページには読み込ませない（DESIGN.md §20.4）。
+ * ライト値は「本体のトークン名」で宣言し、教材側の --ink / --line 系は
+ * そこへのエイリアスにしてある。真実の在処が1テーマ1箇所になるので、
+ * layout.js が書き出す共有ヘッダー／フッターもライトで正しく反転する。
+ */
+
+/* ダーク（既定） */
+:root {
+    /* 教材の名前を本体トークンへ向けるエイリアス。ダークでの値が本体と
+       完全一致しているものだけをここに置く（--ink=#fff、--line=.14、
+       --line-strong=.24）。--ink-soft(.68) と --ink-faint(.46) は本体より
+       明るい値を意図的に維持しており、記事の <style> 側が持つ：本体値に
+       寄せると 13.5px の解説文が 4.56:1 → 3.66:1 と AA を割るため（§36）。 */
+    --ink: var(--text-primary);
+    --line: var(--hairline);
+    --line-strong: var(--hairline-strong);
+
+    --on-accent: #001227;   /* アクセント面に載る文字。#3d8bff 上で 5.68:1 */
+    --footer-bg: rgba(0, 0, 0, .6);
+    --rail-bg: rgba(8, 8, 12, .96);
+    color-scheme: dark;
+}
+
+/* ライト */
+:root[data-theme="light"] {
+    color-scheme: light;
+    --bg: #f6f7fa;
+    --surface: #ffffff;
+    --surface-2: #f0f2f6;
+    --nav-bg: rgba(255, 255, 255, .72);
+
+    /* 本体トークン。style.css はダーク専用なので、共有ヘッダー／フッター／
+       ボタンが読む値をここで反転させる。これが無いと --nav-bg だけ明るくなって
+       ロゴとナビ文字が白のまま残り、実質不可視になる（§36）。 */
+    --text-primary: #14161f;                 /* 白地 18.04:1 */
+    --text-secondary: rgba(20, 22, 31, .74); /* 白地  7.69:1 */
+    --text-tertiary: rgba(20, 22, 31, .60);  /* 地    4.62:1（AA） */
+    --hairline: rgba(20, 22, 31, .13);
+    --hairline-strong: rgba(20, 22, 31, .26);
+    --glow-warm: rgba(192, 38, 103, .18);
+
+    /* 教材側の名前。ライトでは本体値と一致するのでエイリアスで足りる。
+       --ink / --line / --line-strong は上のダーク側エイリアスが自動追従する。 */
+    --ink-soft: var(--text-secondary);
+    --ink-faint: var(--text-tertiary);
+    --line-soft: rgba(20, 22, 31, .05);
+
+    /* アクセントはサイト本体と同じ青系。ライト背景では本体の #3d8bff が
+       3.31:1 しか出ず本文リンクとして不合格なので、色相を保ったまま
+       暗い青に置く（#1558d6 は色相 219°、本体 216° とほぼ同じ）。 */
+    --accent: #1558d6;       /* 白地 6.18:1 / 地 5.77:1 */
+    --accent-deep: #103f9e;  /* 白地 9.43:1。hover / active */
+    --accent-tint: rgba(21, 88, 214, .09);
+    --amber: #a35c00;
+    --amber-tint: rgba(214, 130, 20, .09);
+    --amber-line: rgba(214, 130, 20, .35);
+    --good: #16794c;
+    --good-tint: rgba(22, 121, 76, .08);
+    --key: #c02667;
+    --key-tint: rgba(192, 38, 103, .07);
+    --teach: #5b3fd0;
+    --teach-tint: rgba(91, 63, 208, .07);
+    --teach-line: rgba(91, 63, 208, .30);
+    --glow-cool: rgba(21, 88, 214, .18);
+    --on-accent: #ffffff;   /* #1558d6 上で 6.18:1 */
+    --footer-bg: #eceef3;
+    --rail-bg: rgba(250, 251, 253, .97);
+}
+
+:root[data-theme="light"] #starfield {
+    display: none;
+}
+
+:root[data-theme="light"] body::before {
+    opacity: .45;
+}
+
+/* 教材の中でダーク専用の色が直接書かれていた箇所 */
+.mod-h .no,
+.step .sn,
+.drill .qn {
+    color: var(--on-accent);
+}
+
+/* フッターとヘッダーは layout.js が要素として書き出す（.site-footer ではない） */
+footer {
+    background: var(--footer-bg);
+}
+
+.footer-tagline {
+    color: var(--ink-faint);
+}
+
+.prompt {
+    background: var(--surface);
+}
+
+@media (max-width: 900px) {
+    .rail {
+        background: var(--rail-bg);
+    }
+}
+
+/* 惑星画像の枠は宇宙の写真が映えるよう黒のまま（.planet-img .frame は変更しない） */
+
+/* 切り替えボタン */
+.theme-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 1px solid var(--line);
+    background: transparent;
+    color: var(--ink-soft);
+    font-size: 15px;
+    line-height: 1;
+    cursor: pointer;
+    transition: color .3s ease, border-color .3s ease;
+}
+
+.theme-btn:hover {
+    color: var(--ink);
+    border-color: var(--line-strong);
+}
+
+.theme-btn:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+}
+
+.theme-btn--float {
+    position: fixed;
+    left: 18px;
+    bottom: 18px;
+    z-index: 1050;
+    background: var(--nav-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+}
+
+/* 印刷は常に白地に黒 */
+@media print {
+
+    :root,
+    :root[data-theme="light"] {
+        --ink: #000;
+        --ink-soft: #333;
+        --ink-faint: #666;
+        --line: #ccc;
+        --line-soft: #eee;
+        --surface: #fff;
+        --surface-2: #f6f6f6;
+        --accent: #0a7d70;
+        --accent-deep: #075e55;
+        --amber: #a86400;
+        --good: #1c7a52;
+        --key: #b0306a;
+        --teach: #5a3fc0;
+    }
+
+    .theme-btn {
+        display: none !important;
+    }
+}

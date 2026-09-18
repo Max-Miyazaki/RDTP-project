@@ -82,6 +82,12 @@
         var footSlot = document.getElementById('site-footer');
         if (navSlot) navSlot.innerHTML = navHtml(activeHref);
         if (footSlot) footSlot.innerHTML = footerHtml();
+
+        // 教材ページのテーマ切替ボタンを、いま書き出したヘッダーの中へ移設する。
+        // theme.js は <head> で読むので、この inject() より先に DOMContentLoaded
+        // リスナーを登録している。そのままだとボタンがヘッダーを見つけられない。
+        // 読み込んでいないページでは undefined なので何も起きない。
+        if (typeof window.__agMountThemeBtn === 'function') window.__agMountThemeBtn();
     }
 
     if (document.readyState === 'loading') {

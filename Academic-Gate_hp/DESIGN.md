@@ -1731,6 +1731,50 @@ round: one that can look at index-block headings properly** — either a per-ind
 (CSS) or dimming the motif under the heading column (like infra's `leftDim`). Both the footer tagline
 (§20.1, 3.6:1) and this (3.7:1) are parked for that round; do not fold either into a motif commit.
 
+## 20.3 Footer column labels in dark — 3.66:1 (accessibility gap, same family as §20.1/§20.2)
+
+`.footer-col-label`（フッターの EXPLORE / CONNECT 見出し）は `--text-tertiary`（`rgba(255,255,255,.40)`）
+を使っており、**ダーク時 3.66:1** と AA（4.5:1）を割る。**サイト 6 ページ共通の既存値**で、§36 の教材
+取り込みで持ち込んだものではない（測定は §36.6）。ライト時は `lesson-theme.css` が `--text-tertiary` を
+`.60` に上げるため 4.61:1 で合格する。
+
+- **同じ根**を持つ既存ギャップ：§20.1（フッタータグライン）、§20.2（index-block 見出し）。
+- **直すなら**：`--text-tertiary` を `.46` 前後へ上げる（記事の `.eyebrow` が同じ理由で `.46` を使い
+  4.58:1 を確保している、§36.2）。ただし**全 6 ページの見た目が変わり、§31 の台帳を再測定する必要が
+  ある**ので、モチーフ系のコミットに混ぜず、独立した CSS/アクセシビリティのラウンドで扱うこと。
+
+## 20.4 Site-wide light theme — deliberately NOT attempted (scoped out with the 教材 import)
+
+The 教材 pages ship a light/dark switch (`js/theme.js` + `css/lesson-theme.css`, `data-theme` on
+`<html>`, remembered in `localStorage('ag-theme')`). **That switch is 教材-only. The six main pages
+stay dark-fixed** and must NOT load `theme.js` — `css/style.css` has **no light path at all**
+(`data-theme`, `prefers-color-scheme`, `color-scheme`: zero occurrences), so the button would
+appear and change nothing.
+
+**What the token work already buys us.** The 教材 light values are declared with the **site's own
+token names** (`--text-primary`, `--hairline`, …) and the 教材's `--ink` / `--line` names are
+**aliases** onto them, so each theme has exactly one source of truth. A future site-wide light
+theme therefore needs **no token redesign** — it needs the two items below.
+
+**Blocker A — 28 colours are hardcoded outside `:root`** (measured, `css/style.css`). Tokens alone
+will not flip the site:
+
+| Group | Count | Where | Why it resists a token |
+|---|---|---|---|
+| Black scrims / gradient overlays | 14 | `.hero .scene-list li` L851, `.hero .gate-subtitle` L858, `.hero-scrim::before` L877–879, `.index-region` L961, `.index-block__head::before` L1001–1003, `footer` L1080 | They exist to hold text **over the WebGL field**. In light they do not lighten — they invert, and the whole legibility argument (§31) has to be re-measured |
+| Spectrum placeholders | 10 | `.media-placeholder` L676–680, `.video-thumbnail` L1213–1217 | teal/cyan/orange gradients tuned for a black ground |
+| `#fff` | 2 | `.btn-primary .btn-disc` L591, `.pdf-frame iframe` L1418 | The PDF one is deliberate (§G: never filter the iframe) |
+| `rgba(255,255,255,.55)` | 1 | `.footer-tagline` L1111 | Round-31's AA fix — re-derive, don't flip |
+
+**Blocker B — the hero WebGL field.** `index.html`'s particle field is **additively blended on
+pure black**; additive blending on a light ground washes out rather than darkening. A light index
+means either a second palette + blend mode in the shader, or suppressing the field in light — a
+choice, not a port.
+
+**If this is ever picked up:** it is a dedicated round (CSS + accessibility + a shader decision),
+not a follow-on to a content change. Re-measure every contrast in §31 afterwards — a light theme
+invalidates the whole §31 ledger, which was measured against black.
+
 # 21. Round 19 — stream (stage 4): brightness flattened, then a narrow cool spectrum
 
 `make('stream')`'s brightness was a left→right ramp `(0.35 + 0.6·sxr)·0.85` = **0.30 (left) →

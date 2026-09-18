@@ -45,9 +45,13 @@
     // Left/right edges of every reading column, in css px, padded. x only: the
     // canvas is position:fixed and the page never scrolls sideways, so a vertical
     // band is the whole story and stays correct at any scroll offset.
+    // `.rail` is matched WITHOUT a `main >` prefix on purpose: a 教材 page's table-
+    // of-contents rail is a SIBLING of <main>, not a child of it (`.wrap > nav.rail
+    // + main.main`), so `main > .rail` would never match. Its text needs the same
+    // treatment as the body column — see DESIGN.md §36.
     function columns() {
         if (!IS_ARTICLE) return [];
-        var secs = document.querySelectorAll('main > section');
+        var secs = document.querySelectorAll('main > section, .rail');
         var out = [];
         for (var i = 0; i < secs.length; i++) {
             var r = secs[i].getBoundingClientRect();
