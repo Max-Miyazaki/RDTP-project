@@ -1345,6 +1345,13 @@ body.is-article main > section:not(.rail) ~ section:not(.rail) {
     padding: var(--space-2) var(--space-3);
 }
 
+/* 入れ子リストの字下げ。§2 のリセット `*{padding:0}` が ul の既定の字下げを消して
+   いるため、目次の階層（分野 → 科目 → 章 → 節）が段差として見えない。ここで戻す。
+   新しいクラスは足さず、既存の .accordion-content の中でだけ効かせる（§36）。 */
+.accordion-content ul ul {
+    padding-left: var(--space-3);
+}
+
 .study-path a,
 body.is-article main a:not(.btn) {
     color: var(--accent);
