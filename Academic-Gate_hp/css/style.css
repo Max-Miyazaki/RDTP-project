@@ -1171,10 +1171,14 @@ footer a:hover {
     color: var(--text-secondary);
 }
 
-/* Generic grids used by blog / videos / sns */
+/* Generic grids used by blog / videos / sns / study（分野カード）。
+   `auto-fill` のままにしてあるのは意図的：`auto-fit` は「トラック数より要素が
+   少ない」ときに空トラックを潰すため、カードが1枚だけの節（03 — TRAINING）で
+   その1枚が全幅（1056px）に伸びて他と揃わなくなる。実測差は §38.2。 */
 .blog-grid,
 .video-grid,
-.sns-container {
+.sns-container,
+.study-grid {
     display: grid;
     gap: var(--space-3);
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -1186,7 +1190,8 @@ footer a:hover {
 .blog-card,
 .video-card,
 .sns-link,
-.note-card {
+.note-card,
+.study-card {
     position: relative;
     display: flex;
     flex-direction: column;
@@ -1200,12 +1205,37 @@ footer a:hover {
     transition: background var(--dur) var(--ease), border-color var(--dur) var(--ease);
 }
 
+/* ホバーが付くのは a.study-card だけ。div のカードは反応しないことで
+   「行き先がない」と分かる。枠線を薄くする案は採らない — 3つ目のヘアライン値を
+   作ることになり、かつ disabled と同じ記号になってしまうため（§38.3）。 */
 .blog-card:hover,
 .video-card:hover,
 .sns-link:hover,
-.note-card:hover {
+.note-card:hover,
+a.study-card:hover {
     background: var(--surface-hover);
     border-color: var(--hairline-strong);
+}
+
+/* リンクであるカードの見出しだけアクセント色。サイト全体で「行き先がある」を
+   表している既存の合図をそのまま使う。 */
+a.study-card h3 {
+    color: var(--accent);
+}
+
+a.study-card:hover h3 {
+    color: var(--text-primary);
+}
+
+/* 節の見出しはグリッドの中に全幅のアイテムとして置く。グリッド自身の箱
+   （max-width と gutter）に載るので、カードと左端が必ず揃う。 */
+.study-grid > .eyebrow,
+.study-grid > h2 {
+    grid-column: 1 / -1;
+}
+
+.study-grid > .eyebrow {
+    margin-bottom: 0;
 }
 
 .blog-image.placeholder,
@@ -1332,10 +1362,11 @@ body.is-article main > section:not(.rail) ~ section:not(.rail) {
     padding-top: 0;
 }
 
-/* 勉強の軌跡の系列（study.html / study_*.html）は本文が 900px の読み幅なので、
-   .page-header の既定 1200px のままだと見出しだけ左にはみ出す。列を揃える。
-   （blog / videos / sns は 1200px のグリッドなので既定のまま） */
-body[data-page="study"] .page-header {
+/* 見出しは、直後に続く本文ブロックと同じ列幅に合わせる。読み幅 900px の
+   .study-path の前では 900px に、1200px のグリッド（.study-grid など）の前では
+   既定の 1200px のまま。:has() が効かない環境では既定の 1200px に落ちるだけで、
+   崩れはしない。 */
+.page-header:has(+ .study-path) {
     max-width: 900px;
 }
 

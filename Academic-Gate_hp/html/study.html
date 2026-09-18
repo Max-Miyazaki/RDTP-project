@@ -26,29 +26,43 @@
              見た目は「見出しの色（アクセント青 / 白）」と「ホバーの有無」で分かれる。
              枠線は揃えたまま — 薄くすると disabled に見えるが、記事が無い分野は
              無効なのではなく中身がないだけなので（§38.3）。 -->
-        <section class="study-path">
-            <!-- 中身がある分野だけリンクにする。無い分野は平文のまま置く（§37）。
-                 「準備中」のようなラベルは足さない。リンクの無効化（disabled や
-                 グレーアウト）も使わない — 押せそうで押せない要素は支援技術にも
-                 不親切で、平文のほうが状態を正しく表すため。 -->
+        <section class="study-grid">
             <p class="eyebrow"><span class="eyebrow__num">02</span> — Fields</p>
-                <h2>学問分野</h2>
-            <ul>
-                <li><a href="study_physics.html">物理学</a></li>
-                <li>数学</li>
-                <li>化学</li>
-                <li>生物学</li>
-                <li>歴史学</li>
-            </ul>
+            <h2>学問分野</h2>
 
-            <!-- 能力開発は学問分野と性質が違う（基礎／専門の区分を持たず、
-                 訓練法の平坦なリストになる）。全ページ共通の eyebrow の連番で
-                 区切るだけにして、隠しも混ぜもしない。 -->
+            <a class="study-card" href="study_physics.html">
+                <h3>物理学</h3>
+                <p>素粒子から宇宙まで、自然の仕組みを数式で読み解く</p>
+            </a>
+            <div class="study-card">
+                <h3>数学</h3>
+                <p>公理・定義を土台に、論理的な推論で真理を追求する</p>
+            </div>
+            <div class="study-card">
+                <h3>化学</h3>
+                <p>物質の構造や性質、反応や変化の仕組みを知る</p>
+            </div>
+            <div class="study-card">
+                <h3>生物学</h3>
+                <p>分子から生態系まで、生命の神秘を探る</p>
+            </div>
+            <div class="study-card">
+                <h3>歴史学</h3>
+                <p>過去の選択の積み重ねから、人類の軌跡を辿る</p>
+            </div>
+        </section>
+
+        <!-- 能力開発は学問分野と性質が違う（基礎／専門の区分を持たない）ので節を分ける。
+             この節のグループ名はカード名そのものなので h2 は置かない — 置くと
+             「能力開発」が2行続けて並ぶだけになる。blog.html と同じく、見出しブロックの
+             直後にグリッドが来る形（§38.4）。 -->
+        <section class="study-grid">
             <p class="eyebrow"><span class="eyebrow__num">03</span> — Training</p>
-                <h2>能力開発</h2>
-            <ul>
-                <li>記憶術</li>
-            </ul>
+
+            <div class="study-card">
+                <h3>能力開発（自分用）</h3>
+                <p>記憶術や思考法など、学習能力を拡張させる</p>
+            </div>
         </section>
     </main>
     <div id="site-footer"><noscript><nav class="noscript-nav" aria-label="フッターナビゲーション"><a href="index.html">ホーム</a><a href="self-intro.html">自己紹介</a><a href="study.html">勉強の軌跡</a><a href="videos.html">動画</a><a href="blog.html">ブログ</a><a href="sns.html">各種SNS</a></nav></noscript></div>
