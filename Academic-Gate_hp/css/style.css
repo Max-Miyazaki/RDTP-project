@@ -379,7 +379,7 @@ p:lang(ja),
 
 /* パンくず（`<nav class="eyebrow" aria-label="パンくず">`）。グローバルの
    `a{color:inherit}` のままだと、リンクの区間と現在地の区間が同じ色になって
-   区別できない。`.study-path a` と同じ既存のリンク扱いを当てるだけで、
+   区別できない。サイト共通のリンク扱い（アクセント色）を当てるだけで、
    新しい見た目は足していない（§37）。 */
 .eyebrow a {
     color: var(--accent);
@@ -1327,13 +1327,6 @@ a.study-card:hover h3 {
     margin-top: var(--space-2);
 }
 
-/* Study path accordion (study.html / study_*.html) */
-.study-path {
-    max-width: 900px;
-    margin: 0 auto;
-    padding: calc(var(--space-16) + 40px) var(--gutter) var(--space-8);
-}
-
 /* 記事 / 教材ページ (body.is-article) の本文列。ページ固有のクラスではなく
    body.is-article に紐づくので、新しい記事は <body class="is-article"> を
    付けるだけでこの体裁になる（starfield.js の星の間引きも同じ合図を見ている）。
@@ -1356,68 +1349,15 @@ body.is-article main > section:not(.rail) ~ section:not(.rail) {
     padding-top: var(--space-8);
 }
 
-/* `.page-header` を持つページでは、ナビ分のクリアランスをそちらが払うので、
-   続く本文ブロックは上余白を持たない（blog / videos / sns と同じ組み方）。 */
-.page-header + .study-path {
-    padding-top: 0;
-}
+/* 勉強の軌跡の3ページ（study / study_physics / phys-math）はいずれも .study-grid
+   （1200px）で、.page-header の既定と同じ幅。列幅を合わせる規則も、読み幅 900px の
+   .study-path も、アコーディオン一式も、カード化で役目を終えたので削除した（§39.3）。
+   章を折りたたみたくなったら §37.6 の accordion.js ごと git 履歴から戻せる。 */
 
-/* 見出しは、直後に続く本文ブロックと同じ列幅に合わせる。読み幅 900px の
-   .study-path の前では 900px に、1200px のグリッド（.study-grid など）の前では
-   既定の 1200px のまま。:has() が効かない環境では既定の 1200px に落ちるだけで、
-   崩れはしない。 */
-.page-header:has(+ .study-path) {
-    max-width: 900px;
-}
-
-/* グループが続くときの間。§2 のリセットで ul の margin が消えているため、
-   次の eyebrow が前のリストに貼り付いてしまう。見出し直下のリストも同様。 */
-.study-path ul + .eyebrow {
-    margin-top: var(--space-8);
-}
-
-.study-path h2 + ul {
-    margin-top: var(--space-3);
-}
-
-.accordion-toggle {
-    display: block;
-    width: 100%;
-    text-align: left;
-    font-family: var(--font-body);
-    font-size: 1rem;
-    color: var(--text-primary);
-    background: var(--surface);
-    border: 1px solid var(--hairline);
-    border-radius: var(--radius-md);
-    padding: var(--space-2) var(--space-3);
-    margin-top: var(--space-2);
-    cursor: pointer;
-    transition: background var(--dur) var(--ease), border-color var(--dur) var(--ease);
-}
-
-.accordion-toggle:hover {
-    background: var(--surface-hover);
-    border-color: var(--hairline-strong);
-}
-
-.accordion-content {
-    padding: var(--space-2) var(--space-3);
-}
-
-/* 入れ子リストの字下げ。§2 のリセット `*{padding:0}` が ul の既定の字下げを消して
-   いるため、目次の階層（分野 → 科目 → 章 → 節）が段差として見えない。ここで戻す。
-   新しいクラスは足さず、既存の .accordion-content の中でだけ効かせる（§36）。 */
-.accordion-content ul ul {
-    padding-left: var(--space-3);
-}
-
-.study-path a,
 body.is-article main a:not(.btn) {
     color: var(--accent);
 }
 
-.study-path a:hover,
 body.is-article main a:not(.btn):hover {
     color: var(--text-primary);
 }
