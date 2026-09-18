@@ -42,8 +42,8 @@ window.MathJax={tex:{inlineMath:[['\\(','\\)']],displayMath:[['\\[','\\]']],tags
   --accent-deep:#a8c9ff;
   --accent-tint:rgba(77,148,255,.12);
   --amber:#ffb46b;--amber-tint:rgba(255,160,70,.08);--amber-line:rgba(255,160,70,.32);
-  --good:#72e3ad;--good-tint:rgba(114,227,173,.08);
-  --key:#ff6fa5;--key-tint:rgba(255,61,139,.08);
+  --good:#72e3ad;--good-tint:rgba(114,227,173,.08);--good-line:rgba(114,227,173,.28);
+  --key:#ff6fa5;--key-tint:rgba(255,61,139,.08);--key-line:rgba(255,61,139,.28);
   --teach:#a48bff;--teach-tint:rgba(123,77,255,.11);--teach-line:rgba(123,77,255,.38);
   --mono:ui-monospace,'SFMono-Regular',Menlo,Consolas,monospace;
   --rail-w:250px;
@@ -108,8 +108,10 @@ mjx-container[display="true"]{margin:14px 0!important;overflow-x:auto;overflow-y
 .box .lab{font-size:.7rem;letter-spacing:.14em;font-weight:500;display:block;margin-bottom:6px}
 .box p{max-width:none}
 .box p:first-of-type{margin-top:2px}.box p:last-child{margin-bottom:0}
-.box.principle{background:var(--key-tint);border-color:rgba(255,61,139,.28)}.box.principle .lab{color:var(--key)}
-.box.target{background:var(--good-tint);border-color:rgba(114,227,173,.28)}.box.target .lab{color:var(--good)}
+/* 枠線は必ずトークン経由にすること。ここに直書きすると lesson-theme.css の
+   ライト上書きが効かず、暗い背景用の明るい色がライトでパステルになる（§41）。 */
+.box.principle{background:var(--key-tint);border-color:var(--key-line)}.box.principle .lab{color:var(--key)}
+.box.target{background:var(--good-tint);border-color:var(--good-line)}.box.target .lab{color:var(--good)}
 .box.warn{background:var(--amber-tint);border-color:var(--amber-line)}.box.warn .lab{color:var(--amber)}
 .box.teach{background:var(--teach-tint);border-color:var(--teach-line)}.box.teach .lab{color:var(--teach)}
 .box.teach .lab::before{content:"◎ "}
