@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>物理学｜勉強の軌跡 - Academic Gates</title>
     <meta name="description" content="物理学の学習記録。基礎領域（学部レベル）と専門領域（素粒子・重力理論）の科目ごとに、章・節の教材を並べています。">
-    <link rel="stylesheet" href="../css/style.css?v=r51">
+    <link rel="stylesheet" href="../css/style.css?v=r52">
     <link rel="icon" href="../../favicon.ico" sizes="32x32">
     <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="../../apple-touch-icon.png">
@@ -20,53 +20,77 @@
                  既存の .eyebrow をそのまま使っている（§37）。 -->
             <nav class="eyebrow" aria-label="パンくず"><a href="study.html">勉強の軌跡</a> ／ 物理学</nav>
                 <h1>物理学</h1>
-            <p>学部レベルの基礎から、素粒子・重力理論まで。記事がある科目は開けます。</p>
+            <p>学部レベルの基礎から、素粒子・重力理論まで。</p>
         </div>
 
-        <section class="study-path">
+        <!-- 科目カード。グリッドとカードは study.html と同じ共有ルール。
+             記事がある科目だけ <a>（見出しがアクセント色・ホバーで反応）、
+             無い科目は <div> で、支援技術から link / button として読まれない。
+             カードは「行き先がある箱」なので中に木を抱えられない。だから科目の
+             中身は科目ページ（phys-math.html）に移した（§39.1）。 -->
+        <section class="study-grid">
             <p class="eyebrow"><span class="eyebrow__num">01</span> — Foundation</p>
-                <h2>基礎領域（学部レベル）</h2>
-            <!-- 分野専用のページなので科目一覧は畳まない。アコーディオンにするのは
-                 記事がある科目だけで、開けるかどうかが中身の有無を示す（§37）。 -->
-            <ul>
-                <li>
-                    <button class="accordion-toggle" aria-expanded="false" aria-controls="phys-math">物理数学</button>
-                    <div class="accordion-content" id="phys-math">
-                        <ul>
-                            <li>1章 微分
-                                <ul>
-                                    <li><a href="phys-math_1-1.html">1-1 微分の基礎</a></li>
-                                </ul>
-                            </li>
-                        </ul>
-                    </div>
-                </li>
-                <li>古典力学</li>
-                <li>解析力学</li>
-                <li>電磁気学</li>
-                <li>熱力学</li>
-                <li>統計力学</li>
-                <li>量子力学</li>
-                <li>特殊相対性理論</li>
-            </ul>
+            <h2>基礎領域（学部レベル）</h2>
 
-            <p class="eyebrow"><span class="eyebrow__num">02</span> — Specialty</p>
-                <h2>専門領域（素粒子・重力理論）</h2>
-            <ul>
-                <li>場の量子論</li>
-                <li>一般相対性理論</li>
-                <li>宇宙論</li>
-            </ul>
-
-            <!-- 「行間埋めノート」（教科書の行間を埋めるノート。分野別の目次とは
-                 別の軸）は、中身だった Peskin を §35 で削除して空になったため
-                 置いていない。再開するときはここに節を足す。 -->
+            <a class="study-card" href="phys-math.html">
+                <h3>物理数学</h3>
+                <p>物理を記述するための計算道具を一通り揃える</p>
+            </a>
+            <div class="study-card">
+                <h3>古典力学</h3>
+                <p>力と運動の関係から、物体の軌道を決定する</p>
+            </div>
+            <div class="study-card">
+                <h3>解析力学</h3>
+                <p>最小作用の原理から、力学全体を組み直す</p>
+            </div>
+            <div class="study-card">
+                <h3>電磁気学</h3>
+                <p>電場と磁場の振る舞いを、4本の方程式に集約する</p>
+            </div>
+            <div class="study-card">
+                <h3>熱力学</h3>
+                <p>巨視的な量だけで、エネルギーと変化の方向を語る</p>
+            </div>
+            <div class="study-card">
+                <h3>統計力学</h3>
+                <p>膨大な粒子の統計から、巨視的な性質を導く</p>
+            </div>
+            <div class="study-card">
+                <h3>量子力学</h3>
+                <p>確率振幅から、ミクロな世界の振る舞いを導く</p>
+            </div>
+            <div class="study-card">
+                <h3>特殊相対性理論</h3>
+                <p>光速度不変から、時間と空間の常識を書き換える</p>
+            </div>
         </section>
+
+        <section class="study-grid">
+            <p class="eyebrow"><span class="eyebrow__num">02</span> — Specialty</p>
+            <h2>専門領域（素粒子・重力理論）</h2>
+
+            <div class="study-card">
+                <h3>場の量子論</h3>
+                <p>粒子を場の励起として捉え、相互作用を記述する</p>
+            </div>
+            <div class="study-card">
+                <h3>一般相対性理論</h3>
+                <p>重力を時空の曲がりとして理解する</p>
+            </div>
+            <div class="study-card">
+                <h3>宇宙論</h3>
+                <p>宇宙の始まりと進化を、物理法則から追う</p>
+            </div>
+        </section>
+
+        <!-- 「行間埋めノート」（教科書の行間を埋めるノート。分野別の目次とは
+             別の軸）は、中身だった Peskin を §35 で削除して空になったため
+             置いていない。再開するときはここに節を足す。 -->
     </main>
     <div id="site-footer"><noscript><nav class="noscript-nav" aria-label="フッターナビゲーション"><a href="index.html">ホーム</a><a href="self-intro.html">自己紹介</a><a href="study.html">勉強の軌跡</a><a href="videos.html">動画</a><a href="blog.html">ブログ</a><a href="sns.html">各種SNS</a></nav></noscript></div>
-    <script src="../js/accordion.js?v=r51"></script>
-    <script src="../js/layout.js?v=r51"></script>
-    <script src="../js/main.js?v=r51"></script>
-    <script src="../js/starfield.js?v=r51"></script>
+    <script src="../js/layout.js?v=r52"></script>
+    <script src="../js/main.js?v=r52"></script>
+    <script src="../js/starfield.js?v=r52"></script>
 </body>
 </html>
