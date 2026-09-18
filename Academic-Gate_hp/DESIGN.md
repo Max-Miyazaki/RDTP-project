@@ -3615,3 +3615,145 @@ The round logs (§13 onward) and the measurement tables — e.g. §20.1's "all 1
 happened**. They are left as written; rewriting them would falsify the log. Only the living
 spec sections (§3, §5.5, §8, §11, §11b, §D) were updated.
 
+---
+
+# §36 — 教材ページの取り込み（1-1 微分の基礎）と study.html の分野別目次（IMPLEMENTED）
+
+単体で完結していた教材 HTML（`物理数学I 1章 微分 / 1-1 微分の基礎`）を、サイト本体の共通基盤の上に
+載せ替えた。**新規** `html/phys-math_1-1.html`（1,300 行 / 148KB、SVG 図版 9 点、数式 773、演習 25 組）。
+併せて study.html を**分野別目次**に作り替え、§35 で空になった「行間埋めノート」を外した。
+
+## 36.1 命名規則（今後の教材すべてに適用）
+
+```
+<科目スラッグ>_<章>-<節>.html      例: phys-math_1-1.html, phys-math_2-1.html, em_1-1.html
+```
+科目スラッグ：`phys-math` / `mechanics` / `analytical-mechanics` / `em` / `thermo` / `stat-mech` /
+`qm` / `sr` / `qft` / `gr` / `cosmology`。削除した `peskin-qft_sec2-1.html`（`<主題>_<節>`）と同じ骨格。
+
+**サブディレクトリは使えない。** `layout.js` のナビは `index.html` 等の相対リンクで、1 階層深い
+ページからは全リンクが 404 になり、`../css` も破綻する。`html/` 直下フラットが前提。
+
+## 36.2 `<style>` の三分割 — 何を共通に寄せ、何を残したか
+
+読み込み順は **`style.css` → 記事の `<style>` → `lesson-theme.css`**（テーマ上書きが最後。
+`lesson-theme.css` 冒頭の注記どおり）。
+
+| 行き先 | 対象 |
+|---|---|
+| **削除（共通側が持つ）** | リセット、`body`、`body::before`、`#starfield`、`a`、`:focus-visible`、ヘッダー/フッター一式（`.site-header` `.logo` `.nav-menu` `.pill-btn` `.site-footer` `.footer-*`）、`.eyebrow` の本体、星空の IIFE |
+| **`lesson-theme.css` へ** | ライト/ダークのトークン、`.theme-btn`、`@media print` のテーマ部分 |
+| **記事に残す** | `.wrap` `.rail` `.main` `.toc` `.progress-*` `.sec-head` `.box`（4種）`.mini-table` `.fig` `.attempt` `.hint` `.sol` `.step` `.transfer` `.drill` `.foot` `.menu-btn` `.scrim` と、教育用トークン（`--amber` `--good` `--key` `--teach` とその tint、`--mono` `--rail-w` `--surface-2` `--line-soft`） |
+
+**値が完全一致していて共通側に寄せられたトークン**：`--bg` `--surface` `--nav-bg` `--glow-cool`
+`--font`(=`--font-body`) `--nav-clear`(=`--nav-clearance` 92px) `--ease` `--radius-lg/md`、および
+`--ink`=`--text-primary`(#fff) `--line`=`--hairline`(.14) `--line-strong`=`--hairline-strong`(.24)。
+
+**寄せなかったトークンと、その理由（測定値）。** 黒地に白を合成したコントラスト比：
+
+| | 記事 | 本体 | 判定 |
+|---|---|---|---|
+| `--ink-soft` / `--text-secondary` | .68 → **9.36:1** | .62 → 7.84:1 | どちらも AA。本文 15.5px の長文なので記事側を維持 |
+| **`--ink-faint` / `--text-tertiary`** | **.46 → 4.56:1** | **.40 → 3.66:1** | **寄せると AA 割れ**。`.step .why` と解答の 13.5px 補足は教材の中身なので**独立維持** |
+
+`.eyebrow` も同じ理由で色と余白だけ上書きしている（共通の `--text-tertiary` では 11px で 3.66:1）。
+本体側のこの値は既存ギャップとして §20.3 に登録した。
+
+## 36.3 アクセント色の一本化 — ダークは本体値、ライトは色相を保った暗い青
+
+記事は `--accent:#4d94ff`、`--blue:#3d8bff` を持ち、後者は本体 `style.css` の `--accent` と同値だった。
+**ダークは本体の `#3d8bff` を継承**（記事の定義を削除）。その結果 `--blue` は `--accent` と完全に同じ色に
+なったので**削除**し、残っていた 2 用途（`:focus-visible` の輪郭、進捗バーのグラデーション始点）を
+`var(--accent)` に置換した。
+
+**ライトは別の値が要る**：本体の `#3d8bff` は白地で **3.31:1** しか出ず本文リンクとして不合格。色相を
+保ったまま暗くした **`#1558d6`（色相 219°、本体 216°、白地 6.18:1 / 地 5.77:1）** を採用。派生も青へ：
+`--accent-deep #103f9e`（9.43:1）、`--accent-tint rgba(21,88,214,.09)`、`--glow-cool rgba(21,88,214,.18)`、
+`--on-accent` はダーク `#001227`（`#3d8bff` 上で 5.68:1）。
+
+## 36.4 ライト時に共有ヘッダーが読めなくなる問題 — エイリアス方式で解決
+
+`style.css` はダーク専用（`data-theme` / `prefers-color-scheme` の実装ゼロ）。共有ヘッダー・フッター・
+ボタンが読むトークンのうち、`--text-primary` `--text-secondary` `--text-tertiary` `--hairline`
+`--hairline-strong` `--glow-warm` は `lesson-theme.css` のライト側に無く、**`--nav-bg` だけ明るくなって
+ロゴとナビ文字が白のまま＝実質不可視**になっていた。
+
+対処：**ライト値を「本体のトークン名」で宣言し、教材の `--ink` / `--line` 系はそこへのエイリアスにする。**
+真実の在処が 1 テーマ 1 箇所になり、共有ヘッダーと記事本文が同じ色を見ることが構造的に保証される。
+ライト値：`--text-primary #14161f`(18.04:1) / `--text-secondary rgba(20,22,31,.74)`(7.69:1) /
+`--text-tertiary rgba(20,22,31,.60)`(**4.62:1**。既存の `.52` は 3.63:1 で AA 割れだったので引き上げ)。
+
+## 36.5 実装中に見つかった衝突と不具合 6 件（すべて測定で発見、推測ではない）
+
+| # | 症状 | 原因 | 対処 |
+|---|---|---|---|
+| A | 記事タイトルが**画面中央固定の巨大な白いピル**になり本文が柱状に潰れた | `style.css` が**裸の `header`** を浮遊ナビ（`position:fixed`/flex/`border-radius:999px`/`backdrop-filter`）として定義。記事の `<header class="lesson-hero">` が丸ごと浴びた | `<div class="lesson-hero">` に変更 |
+| B | 本文列が 760px にならず 838px、上余白 56→160px | §35 の `body.is-article main > section:not(.rail)`（**0,2,3**）が記事の `.main > section`（0,2,2）に勝っていた | 記事側を `.main` 経由で **0,3,2 / 0,4,3** に |
+| C | 目次のアクティブ表示が約 90px ずれる | `style.css` の `main{position:relative}` で `<main>` が offsetParent になり `offsetTop` が文書基準でなくなる | `getBoundingClientRect().top` 基準へ |
+| D | テーマ切替ボタンがヘッダーに入らず左下に浮く | **`layout.js` も注入を DOMContentLoaded で行う**ため、`<head>` から先にリスナー登録した `theme.js` の `mount()` が先に走る | `inject()` 末尾で `window.__agMountThemeBtn()` を呼ぶ明示フック。`mount()` は冪等化 |
+| E | §06 の \(0<a<1\) が数式にならず生テキストで表示 | `<a` を HTML パーサがアンカー開始と解釈。**元の教材 HTML から引き継いだ不具合** | `&lt;` にエスケープ |
+| F | 目次の章と節が同じ字下げで階層が読めない | §2 のリセット `*{padding:0}` が `ul` の既定字下げを消していた | `.accordion-content ul ul{padding-left:var(--space-3)}`（新クラスなし） |
+
+**A から引ける一般則**：`style.css` は**裸の要素セレクタ**（`header` `footer` `main` `section` `p` `h1`–`h4`
+`a` `img`）を持つ。教材ページを載せるときは、まずこの一覧と記事側の要素の突き合わせを行うこと。
+`header` と `footer` は**サイトのクロム専用**であり、記事の構造には使えない。
+
+**B から引ける一般則**：**共通の記事ルールは「自前レイアウトを持たないページ」向けの既定値である。**
+レールや独自の measure を持つページは、`body.is-article` を含む**同等以上の詳細度**で自分の値を宣言して
+上書きする（今回は `.main` を噛ませた）。共通側を緩めて特例に合わせない。
+
+**E から引ける一般則**：数式中の `<` は、**直後が英字のときだけ** HTML タグ開始として解釈される
+（`0<a` は危険、`0<\theta` や `h<0` は安全）。全数走査したところ、記事内の生の `<` は 9 箇所あるが
+危険なのは 1 箇所だけだった。教材を追加するたび `<`+英字 の走査を行うこと。
+
+## 36.6 検証（すべて headless Chrome で実測）
+
+- **数式**：MathJax tex-svg、コンテナ **773**（ディスプレイ 82）、`mjx-merror` **0**、未処理の生 TeX **0**。
+  設定ブロックはローダーより前、フォールバックは createElement 方式（§11b 準拠）。
+- **図版**：SVG **9 点**すべて描画（幅 656px、`text` 要素 129）。
+- **演習**：ヒントは 1 つずつ開き「次のヒント (1/2)」→「ヒントは以上」+ `disabled`、「ヒントを隠す」で
+  復帰。解答は開閉のたびにラベルが入れ替わり、開いた時だけ `typesetPromise([sol])` が走る。
+- **レイアウト**：レール 250px sticky、導入部と全 10 セクションが **w760 / left465**、横スクロールなし。
+- **目次追従**：`先頭→01` `#d2→03` `#d5→06` `#d7→08` `#howto→10`、最下部で進捗バー **100%**。
+- **モバイル 390px**：横スクロールなし、本文列 350px、目次ボタン→レールが `left:0` に、スクリムで復帰。
+- **印刷**：ヘッダー・レール・星・フッター・目次ボタンが `none`、**ヒントと解答は `block`**、白地に黒。
+- **FOUC なし（実測）**：`data-theme` が付くのは **12.2ms**、first-paint は **440ms**。約 428ms 先行。
+- **コントラスト**：ダーク／ライトとも全項目 AA 以上。唯一の例外はダーク時の `.footer-col-label` 3.66:1 で、
+  これは本体共通の既存値（§20.3）。
+- **星の間引き**：`columns()` を `main > section, .rail` に拡張。**`main > .rail` では一致しない** —
+  教材のレールは `<main>` の子ではなく**兄弟**（`.wrap > nav.rail + main.main`）。帯ごとの密度は
+  左余白 0.0282 / レール 0.0005 / 本文列 0.0036 / 右余白 0.0244。レールが本文列よりさらに空なのは
+  設計ではなく**偶然**（250px の帯に残る星の期待値が 7 個程度しかないため）。実害がないので触らない。
+
+## 36.7 study.html — 分野別目次（統合案 A）
+
+**用語対応**：分野 = 基礎領域 / 専門領域（従来のアコーディオンをそのまま使う）、科目 = 物理数学・
+古典力学…、章、節。従来の 3 ブロックを 1 つの目次に育てる形で、物理数学が 1 箇所にしか出ない。
+
+- **記事がある科目だけ**入れ子アコーディオンにし、無い科目は平文のまま。**開けるかどうかで中身の
+  有無が分かる**ので「準備中」のような新しいラベルを足さない。
+- **章は平文**。章が 1 つのうちに折りたたむとリンクまで 3 クリックかかる。`<button class="accordion-toggle">`
+  に差し替えるだけで折りたためる（JS は入れ子対応済み）。
+- **新しい CSS クラスは追加していない**。階層は `.accordion-*` と `<ul>` の字下げだけで出す
+  （科目 366 → 章 414 → 節 438、モバイルで 44 → 92 → 116）。
+- 「行間埋めノート」は §35 で中身が空になったため**ブロックごと外し、HTML にコメントで残した**。
+  教科書ベースのノート（分野別目次とは別の軸）を再開するときに戻す。
+- **アクセシビリティ**：全トグルに `aria-expanded` と `aria-controls` を付け、JS が開閉と同期させる。
+  実測：Enter / Space で開閉し `aria-expanded` が追従、Tab は「閉じている中身を飛ばす」正しい順序
+  （基礎領域 →(開くと) 物理数学 → 専門領域 → ナビ）、節リンクで Enter すると記事へ遷移。
+  フォーカスリングは 2px `--accent`。
+- **往復**：study.html → `phys-math_1-1.html` → ナビの「勉強の軌跡」→ study.html を確認。記事側は
+  `data-page="study"` でナビがアクティブになるため、記事専用の戻るリンク（`.back-link`）は廃止した。
+
+## 36.8 Stills
+
+撮り直し：`interior-study.png`（目次を開いた状態）、`interior-study-mobile.png`。
+新規：`interior-lesson.png` / `-light.png` / `-mobile.png` / `-solution.png`（ヒント2つ+解答を開いた状態）
+/ `-figure.png`（§02 割線の図）。削除：`interior-study-graph.png`・`interior-pdf-fallback.png`・
+`interior-section.png`（いずれも §35 で消えたページの記録）。
+
+## 36.9 State（working tree — NOT committed/pushed）
+新規 `html/phys-math_1-1.html`。更新 `css/style.css`（記事の見出し階層＋入れ子リストの字下げ）、
+`css/lesson-theme.css`、`js/theme.js`、`js/layout.js`、`js/starfield.js`、`html/study.html`、
+`html/*.html` のキャッシュバスター `r49→r50`。**未着手**：なし。**push していない**。
+
