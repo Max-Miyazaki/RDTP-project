@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>1-2 物理でよく使う関数の微分｜物理数学I 1章 微分 | Academic Gates</title>
+<meta name="description" content="三角関数・指数関数・対数関数の微分を、加法定理・指数法則・逆関数の関係を使って定義から導き、積の微分と連鎖律で組み立てる教材（物理数学I 1章 微分／1-2）。">
+<link rel="icon" href="../../favicon.ico" sizes="32x32">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+<!-- ★ ライト/ダーク切替は停止中（DESIGN.md §44）。サイト全体がダーク基調なので、
+     記事だけテーマが変わるのは一貫性を欠くという判断。**復活させるには次の1行の
+     コメントを外すだけでよい**（js/theme.js も css/lesson-theme.css も残してある）。
+     data-theme を付ける主体がこれしか無いので、外しておけば :root[data-theme="light"]
+     は構造的にマッチしない。逆に読み込んだままボタンだけ消すと、OS がライト設定の
+     端末が勝手にライトになり、戻す手段が無くなる（§44.2）。
+     復活時の挙動: テーマは描画前に同期で決まり（FOUC 防止）、ボタンの設置は
+     layout.js がヘッダーを書き出したあと DOMContentLoaded で行われる。 -->
+<!-- <script src="../js/theme.js?v=r54"></script> -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;500&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+<!-- サイト共通 → 記事固有 → テーマ上書き の順で読む（lesson-theme.css は
+     記事の <style> より後ろに置くこと。css/lesson-theme.css 冒頭の注記どおり） -->
+<link rel="stylesheet" href="../css/style.css?v=r54">
+<!-- MathJax: 設定ブロックはローダーより「前」に置く（DESIGN.md §11b）。
+     フォールバックは this.src= ではなく createElement 方式（同§）。 -->
+<script>
+window.MathJax={tex:{inlineMath:[['\\(','\\)']],displayMath:[['\\[','\\]']],tags:'none'},svg:{fontCache:'global'},options:{skipHtmlTags:['script','noscript','style','textarea','pre','code']}};
+</script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"
+        onerror="this.onerror=null;var s=document.createElement('script');s.async=true;s.src='https://unpkg.com/mathjax@3/es5/tex-svg.js';document.head.appendChild(s);"></script>
+<style>
+/* 1-2 物理でよく使う関数の微分 — 記事固有のスタイルのみ。
+   共通のリセット・背景・星・ヘッダー/フッター・ボタン・見出し階層・本文リズムは
+   css/style.css が持つ（DESIGN.md §35, §36）。ここに残すのは、この教材の
+   構造（レール／演習ブロック／図版）と、教育用の色トークンだけ。 */
+:root{
+  /* 教材固有のトークン。本体と同値のもの（--bg --surface --nav-bg --ink --line
+     --line-strong --glow-cool --font --nav-clear --ease --radius-lg/md）は
+     css/style.css 側に定義があるので、ここでは持たない。
+     --ink-soft / --ink-faint は本体より明るい値を「意図的に」維持している。
+     本体値に寄せると 13.5px の解説文が 4.56:1 → 3.66:1 と AA を割るため（§36）。 */
+  --surface-2:rgba(255,255,255,.045);
+  --ink-soft:rgba(255,255,255,.68);
+  --ink-faint:rgba(255,255,255,.46);
+  --line-soft:rgba(255,255,255,.05);
+  --accent-deep:#a8c9ff;
+  --accent-tint:rgba(77,148,255,.12);
+  --amber:#ffb46b;--amber-tint:rgba(255,160,70,.08);--amber-line:rgba(255,160,70,.32);
+  --good:#72e3ad;--good-tint:rgba(114,227,173,.08);--good-line:rgba(114,227,173,.28);
+  --key:#ff6fa5;--key-tint:rgba(255,61,139,.08);--key-line:rgba(255,61,139,.28);
+  --teach:#a48bff;--teach-tint:rgba(123,77,255,.11);--teach-line:rgba(123,77,255,.38);
+  --mono:ui-monospace,'SFMono-Regular',Menlo,Consolas,monospace;
+  --rail-w:250px;
+}
+body{font-size:15.5px;line-height:1.9;line-break:strict;overflow-x:hidden}
+
+/* --- レイアウト（左に目次レール／右に本文の2カラム） ------------------------
+   本文列 760px は日本語の長文＋数式に合わせた measure。style.css の共通記事
+   ルールは `body.is-article main > section:not(.rail)`（詳細度 0,2,3）と
+   `… ~ section:not(.rail)`（0,3,4）で 900px と 160px パディングをかけてくる。
+   こちらは `.main` を噛ませて 0,3,2 / 0,4,3 とし、確実に上回る（§36）。 */
+/* 全幅。左寄せのレイアウトで、余った幅は右に流す（§43）。
+   §40 で一度 max-width を外して差し戻しているが、あれは「中央寄せのまま左右を
+   対称にする」変更で、本文の位置も幅も変わらなかったため戻した。今回は本文を
+   860px に広げて左揃えにするので、目的も結果も違う。
+   レールの左余白は 1280px → 1440px にかけて 0 → 32px。狭い画面ではまず余白を
+   削って本文幅に回す（レール幅 250px は目次の文字量で決まるので触らない）。 */
+.wrap{display:flex;padding-top:var(--nav-clearance);
+      padding-left:clamp(0px, calc((100vw - 1280px) * .2), 32px)}
+.rail{width:var(--rail-w);flex:0 0 var(--rail-w);position:sticky;top:var(--nav-clearance);height:calc(100vh - var(--nav-clearance));overflow-y:auto;padding:18px 14px 60px 22px;border-right:1px solid var(--line)}
+/* 左パディング＝レールと本文の間隔。1024px → 1280px にかけて 24 → 56px。
+   これも狭い画面では縮めて本文幅に回す。 */
+.main{flex:1 1 auto;min-width:0;
+      padding:0 clamp(24px, calc(24px + (100vw - 1024px) * .125), 56px) 110px}
+/* 本文列 860px。760px では display 数式が 6 本はみ出していた（解答の入れ子
+   パディングで、.sol の中は本文列より 132px 狭い箱になる）。全 82 本が収まる
+   最小幅は実測 853px（§43.2）。中央寄せをやめて左揃えにし、余りは右へ。 */
+body.is-article .main > .lesson-hero,
+body.is-article .main > section:not(.rail),
+body.is-article .main > .foot{max-width:860px;margin-left:0;margin-right:auto;padding-left:0;padding-right:0}
+.rail .brand{font-weight:400;font-size:15px;line-height:1.45;margin:2px 0 4px}
+.rail .brand small{display:block;font-size:10px;font-weight:500;color:var(--ink-faint);letter-spacing:.2em;margin-top:6px}
+.progress-wrap{height:2px;background:var(--line);border-radius:99px;margin:16px 0 18px;overflow:hidden}
+.progress-bar{height:100%;width:0;background:linear-gradient(90deg,var(--accent),#a8c9ff);transition:width .15s linear}
+.toc{list-style:none;margin:0;padding:0;font-size:12.5px}
+.toc .part{font-size:10px;letter-spacing:.2em;color:var(--ink-faint);margin:16px 0 5px;padding-left:2px}
+.toc a{display:block;text-decoration:none;color:var(--ink-soft);padding:4px 10px;border-radius:999px;transition:color var(--dur) var(--ease),background var(--dur) var(--ease)}
+.toc a:hover{color:var(--ink);background:var(--surface-2)}
+.toc a.active{color:var(--ink);background:var(--accent-tint)}
+.toc a .n{font-size:10.5px;color:var(--ink-faint);margin-right:8px;font-variant-numeric:tabular-nums}
+.toc a.active .n{color:var(--accent)}
+
+/* --- 記事の導入部。`.hero` は index.html 専用で、style.css が
+   `.hero h1/.hero p/.hero .eyebrow` に黒い text-shadow をかけるため使えない（§36）。 --- */
+.lesson-hero{padding:64px 0 34px;border-bottom:1px solid var(--line)}
+.lesson-hero h1{font-weight:300;font-size:clamp(28px,4vw,48px);line-height:1.25;letter-spacing:-.02em;margin:0 0 22px}
+.lesson-hero h1 .sub{display:block;font-size:.52em;font-weight:300;color:var(--ink-soft);letter-spacing:0;margin-top:12px}
+.lesson-hero p{color:var(--ink-soft);margin:0 0 12px}
+.lesson-hero .lead{font-size:16.5px;color:var(--ink-soft)}
+/* .eyebrow 本体は style.css の共通コンポーネント。色と余白だけ上書きする
+   （共通の --text-tertiary は 11px の小さな文字で 3.66:1 と AA を割るため） */
+.eyebrow{color:var(--ink-faint);margin-bottom:18px}
+
+section{border-bottom:1px solid var(--line-soft);scroll-margin-top:var(--nav-clearance)}
+/* 縦の余白も共通ルールに勝つ必要がある（先頭セクションも2つ目以降も同じ 56px） */
+body.is-article .main > section:not(.rail),
+body.is-article .main > section:not(.rail) ~ section:not(.rail){padding-top:56px;padding-bottom:12px}
+.sec-head{display:flex;align-items:baseline;gap:14px;margin-bottom:10px}
+.sec-head .idx{font-size:.72rem;font-weight:500;letter-spacing:.2em;color:var(--ink-faint);padding-top:4px;flex:0 0 auto;font-variant-numeric:tabular-nums}
+.sec-head .idx::after{content:' —'}
+body.is-article main h2{font-weight:400;font-size:clamp(21px,2.6vw,28px);line-height:1.3;letter-spacing:-.01em;margin:0}
+body.is-article main h3{font-weight:400;font-size:17px;margin:30px 0 6px;color:var(--ink)}
+body.is-article main h4{font-weight:500;font-size:14.5px;margin:18px 0 4px;color:var(--ink)}
+body.is-article main p{margin:10px 0;color:var(--ink-soft)}
+body.is-article main ul,body.is-article main ol{margin:10px 0;padding-left:1.3em;color:var(--ink-soft)}
+li{margin:4px 0}
+strong{font-weight:500;color:var(--ink)}
+code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);border-radius:6px;padding:1px 6px;color:var(--accent-deep)}
+mjx-container{color:var(--ink)}
+mjx-container[display="true"]{margin:14px 0!important;overflow-x:auto;overflow-y:hidden;padding:2px 0}
+
+/* 別行立て数式だけ、入れ子のパディングの外へ広げる（§46）。
+   解答や色付きボックスの中の数式は、section → .drill(20) → .attempt(22) →
+   .sol(20) と積み上がるパディングで、本文列より最大 132px 狭い箱に入っていた。
+   1024px では 82本中 6本がはみ出し、最大 +127px。**文章の字下げはそのまま**に、
+   数式だけを外へ出す。
+   値は「祖先のパディングの合計 − 8px」。8px 残すのは枠線に重ねないため。
+   全量（合計そのまま）だと .sol 左端の青いアクセントバーの上に分数が乗る。
+   はみ出しが無い幅では見た目が変わらない（箱が左右対称に広がるだけで中身は
+   中央揃えのまま。1440px で適用前後のピクセル差 0 を確認済み）。
+   !important は既存の margin:14px 0!important を上書きするため。
+   新しい入れ子を足すときは、この表に1行足すこと（現在 .hint の中に別行立ては無い）。
+     .box 20 / .drill 20 / .attempt 22 / .sol 20 */
+.box mjx-container[display="true"],
+.drill > mjx-container[display="true"]{margin:14px -12px!important}
+.attempt mjx-container[display="true"]{margin:14px -14px!important}
+.drill .attempt mjx-container[display="true"],
+.attempt .sol mjx-container[display="true"]{margin:14px -34px!important}
+.drill .attempt .sol mjx-container[display="true"]{margin:14px -54px!important}
+
+.box{border-radius:var(--radius-md);padding:16px 20px;margin:18px 0;border:1px solid var(--line);background:var(--surface)}
+.box .lab{font-size:.7rem;letter-spacing:.14em;font-weight:500;display:block;margin-bottom:6px}
+.box p{max-width:none}
+.box p:first-of-type{margin-top:2px}.box p:last-child{margin-bottom:0}
+/* 枠線は必ずトークン経由にすること。ここに直書きすると lesson-theme.css の
+   ライト上書きが効かず、暗い背景用の明るい色がライトでパステルになる（§41）。 */
+.box.principle{background:var(--key-tint);border-color:var(--key-line)}.box.principle .lab{color:var(--key)}
+.box.target{background:var(--good-tint);border-color:var(--good-line)}.box.target .lab{color:var(--good)}
+.box.warn{background:var(--amber-tint);border-color:var(--amber-line)}.box.warn .lab{color:var(--amber)}
+.box.teach{background:var(--teach-tint);border-color:var(--teach-line)}.box.teach .lab{color:var(--teach)}
+.box.teach .lab::before{content:"◎ "}
+
+.table-scroll{overflow-x:auto;margin:14px 0}
+.mini-table{width:100%;border-collapse:collapse;font-size:14px;margin:0;color:var(--ink-soft)}
+.mini-table th,.mini-table td{border:1px solid var(--line);padding:9px 11px;text-align:left;vertical-align:top}
+.mini-table th{background:var(--surface-2);font-weight:500;color:var(--ink)}
+
+.fig{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-lg);padding:18px 18px 12px;margin:20px 0}
+.fig > svg{width:100%;height:auto;display:block}
+.fig svg text{font-family:var(--font-body)}
+.fig figcaption{font-size:13px;color:var(--ink-soft);margin-top:10px;line-height:1.8;max-width:none}
+
+/* --- 演習まわり。`.ctl-btn` は style.css の `.btn`（サイト CTA。
+   `.btn::before` のホバーグローを持つ）と衝突しないよう改名したもの（§36）。 --- */
+.attempt{background:var(--surface);border:1px solid var(--amber-line);border-radius:var(--radius-lg);padding:18px 22px;margin:20px 0}
+.attempt .lab{font-size:.7rem;letter-spacing:.14em;color:var(--amber);font-weight:500;display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.attempt .lab::before{content:"✎"}
+.attempt p{max-width:none}
+.controls{display:flex;flex-wrap:wrap;gap:10px;margin:14px 0 4px}
+.ctl-btn{font-family:var(--font-body);font-size:12.5px;font-weight:500;border:1px solid var(--line);background:transparent;color:var(--ink-soft);padding:7px 16px;border-radius:var(--radius-pill);cursor:pointer;transition:color var(--dur) var(--ease),border-color var(--dur) var(--ease),background var(--dur) var(--ease)}
+.ctl-btn:hover{color:var(--ink);border-color:var(--line-strong);background:var(--surface-2)}
+.ctl-btn.amber{color:var(--amber);border-color:var(--amber-line)}
+.ctl-btn.amber:hover{background:var(--amber-tint)}
+.ctl-btn:disabled{opacity:.4;cursor:default;background:transparent}
+.hint{display:none;border-left:2px solid var(--amber);background:var(--amber-tint);border-radius:0 var(--radius-sm) var(--radius-sm) 0;padding:12px 16px;margin:10px 0}
+.hint .hn{font-size:.68rem;letter-spacing:.14em;color:var(--amber);font-weight:500;display:block;margin-bottom:3px}
+.hint p{max-width:none}.hint p:last-child{margin-bottom:0}.hint p:first-child{margin-top:0}
+.sol{display:none;border:1px solid var(--line);border-left:2px solid var(--accent);border-radius:0 var(--radius-md) var(--radius-md) 0;background:var(--surface-2);padding:8px 20px 16px;margin:12px 0}
+.sol p{max-width:none}
+.step{margin:18px 0}
+.step .sh{display:flex;gap:10px;align-items:baseline;font-weight:500;color:var(--ink);margin-bottom:2px}
+.step .sn{font-size:11px;font-weight:500;color:#06142e;background:var(--accent);border-radius:999px;padding:1px 10px;flex:0 0 auto}
+.step .why{font-size:13.5px;color:var(--ink-faint);border-left:1px solid var(--line);padding-left:12px;margin:5px 0 5px 2px;max-width:none}
+.transfer{background:var(--surface-2);border:1px solid var(--line);border-radius:var(--radius-md);padding:14px 18px;margin:18px 0}
+.transfer .lab{font-size:.7rem;letter-spacing:.14em;color:var(--accent);font-weight:500;display:block;margin-bottom:5px}
+.transfer p{max-width:none}
+.drill{background:var(--surface);border:1px solid var(--line);border-left:2px solid var(--accent);border-radius:0 var(--radius-md) var(--radius-md) 0;padding:14px 20px;margin:16px 0}
+.drill .qn{font-size:11px;font-weight:500;color:#06142e;background:var(--accent);border-radius:999px;padding:2px 11px;margin-right:8px}
+.drill p{max-width:none}
+.drill p:first-child{margin-top:2px}
+.drill .attempt{background:transparent;border-style:dashed}
+.foot{padding:34px 0 0;color:var(--ink-faint);font-size:12.5px}
+.foot p{color:var(--ink-faint);max-width:none}
+
+/* モバイル：レールを引き出しに。`.menu-btn` は位置だけを持ち、見た目は
+   共通コンポーネントの `.btn` を併用する。 */
+.menu-btn{display:none}
+.scrim{display:none}
+@media (max-width:900px){
+  .rail{position:fixed;left:0;top:0;height:100vh;z-index:1100;transform:translateX(-100%);transition:transform .25s var(--ease);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);padding-top:28px}
+  body.nav-open .rail{transform:translateX(0)}
+  .main{padding:0 20px 90px}
+  .menu-btn{display:inline-flex;position:fixed;bottom:18px;right:18px;z-index:1050;background:var(--nav-bg);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);color:var(--ink)}
+  .scrim{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:1090}
+  body.nav-open .scrim{display:block}
+  .lesson-hero{padding-top:40px}
+  /* 案A（§46.1）の負マージンをここで切る。マージンは固定 px なので、箱そのものが
+     狭いこの帯では数式が .sol の枠を大きく飛び出し、点線の .attempt 枠まで越えて
+     見える。390px では 28本が枠を横切っていた。はみ出し本数は 36→42 に増えるが、
+     どれも数式ごとの横スクロールで読める。§46.4 */
+  .box mjx-container[display="true"],
+  .drill > mjx-container[display="true"],
+  .attempt mjx-container[display="true"],
+  .drill .attempt mjx-container[display="true"],
+  .attempt .sol mjx-container[display="true"],
+  .drill .attempt .sol mjx-container[display="true"]{margin:14px 0!important}
+}
+@media print{
+  body{background:#fff;color:#000}
+  header,.rail,.menu-btn,.scrim,#starfield,footer{display:none!important}
+  .wrap{display:block;padding-top:0}
+  .hint,.sol{display:block!important}
+}
+</style>
+<link rel="stylesheet" href="../css/lesson-theme.css?v=r54">
+</head>
+<body data-page="study" class="is-article">
+<canvas id="starfield" aria-hidden="true"></canvas>
+<div id="site-nav"><noscript><nav class="noscript-nav" aria-label="メインナビゲーション"><a href="index.html">ホーム</a><a href="self-intro.html">自己紹介</a><a href="study.html">勉強の軌跡</a><a href="videos.html">動画</a><a href="blog.html">ブログ</a><a href="sns.html">各種SNS</a></nav></noscript></div>
+<button class="menu-btn btn" id="menuBtn" aria-controls="rail" aria-expanded="false">目次 <span class="btn-disc" aria-hidden="true">≡</span></button>
+<div class="scrim" id="scrim"></div>
+<div class="wrap">
+  <nav class="rail" id="rail">
+    <!-- 科目へ戻る導線（科目ページ）。 -->
+    <div class="brand"><a href="phys-math.html">物理数学I　1章 微分</a><br>1-2　物理でよく使う関数の微分<small>SECTION 1-2 / DERIVATIVES</small></div>
+    <div class="progress-wrap"><div class="progress-bar" id="pbar"></div></div>
+    <ul class="toc" id="toc">
+      <li class="part">代表的な関数</li>
+      <li><a href="#d4"><span class="n">01</span>三角関数と弧度法</a></li>
+      <li><a href="#d5"><span class="n">02</span>指数関数と e の正体</a></li>
+      <li><a href="#d6"><span class="n">03</span>対数関数</a></li>
+      <li class="part">組み立てる</li>
+      <li><a href="#d7"><span class="n">04</span>積の微分と連鎖律</a></li>
+      <li class="part">仕上げ</li>
+      <li><a href="#p1"><span class="n">05</span>総合演習</a></li>
+      <li><a href="#howto"><span class="n">06</span>チェックリストと次回予告</a></li>
+    </ul>
+  </nav>
+
+  <main class="main">
+    <!-- <header> ではなく <div>。style.css は裸の `header` を浮遊ナビとして
+         position:fixed / flex / border-radius:999px で組んでおり、記事の導入部が
+         <header> だと丸ごとそれを浴びてしまう（DESIGN.md §36） -->
+    <div class="lesson-hero">
+      <!-- パンくず。ヘッダーのナビは最上位（勉強の軌跡）にしか戻れないので、
+           中間層への導線はこれが担う。新しい要素は足さず、もともとここにあった
+           .eyebrow をそのままリンク化している（§37）。 -->
+      <nav class="eyebrow" aria-label="パンくず"><a href="study.html">勉強の軌跡</a> ／ <a href="study_physics.html">物理学</a> ／ <a href="phys-math.html">物理数学</a> ／ 1章 微分 ／ SECTION 1-2</nav>
+      <h1>1-2　物理でよく使う関数の微分<span class="sub">道具はもう揃っている。あとは当てはめるだけ</span></h1>
+      <p class="lead">1-1 で、微分の定義と<strong>「定義から公式を作る手続き」</strong>を用意しました。差分商を書き、変形して \(h\) を約分し、\(h\to0\) とする——やることは、それだけです。</p>
+      <p>この記事では、その手続きを<strong>物理でよく出てくる関数</strong>に当てはめていきます。三角関数、指数関数、対数関数。そして、それらを組み合わせた関数を微分するための規則（積の微分と連鎖律）まで進みます。</p>
+      <p>関数ごとに違うのは、<strong>\(h\) を引き剥がす一手</strong>だけです。三角関数なら加法定理、指数関数なら指数法則、対数関数なら逆関数の関係が、その役を担います。<strong>骨格はすべて同じ</strong>——それが見えると、公式表は覚えるものではなくなります。</p>
+      <p>前提は 1-1 の内容と、高校で習う三角関数（定義と加法定理）・指数と対数の基本性質です。読み方も 1-1 と同じで、解答は閉じたまま、紙で挑戦してください。</p>
+    </div>
+
+    <!-- §01 -->
+    <section id="d4">
+      <div class="sec-head"><span class="idx">§01</span><h2>三角関数と弧度法</h2></div>
+
+      <p>振動・波・回転を扱う物理にとって、三角関数は主役です。そして \((\sin x)'=\cos x\) という見慣れた公式には、<strong>ある隠れた前提</strong>があります。それを暴くのがこの節の裏テーマです。</p>
+
+      <div class="box teach"><span class="lab">まず：ラジアン（rad）とは何か</span>
+      <p>角度の測り方には、度（°）とラジアン（rad）の2通りがあります。度は「一周を360等分する」という人間の決めごとですが、ラジアンは円の形そのものから決まります。</p>
+      <p><strong>半径 \(r\) の円で、長さ \(s\) の弧を切り取る中心角の大きさを \(\theta=\dfrac{s}{r}\) [rad] と定める。</strong></p>
+      <p style="margin-top:8px">この式を \(s\) について解き直すと</p>
+      \[ s=r\theta \]
+      <p>——<strong>弧の長さが「半径 × 角度」で出る</strong>。これがラジアンの最大の利点です。さらに、半径 \(r\)・中心角 \(\theta\) の扇形の面積を \(A\) とすると</p>
+      \[ A=\frac{\text{弧長 }s\times\text{半径 }r}{2}=\frac{(r\theta)\cdot r}{2}=\frac12 r^2\theta \]
+      <p>と書けます（扇形を、底辺が弧 \(s\)・高さが半径 \(r\) の三角形だと思えば納得できます）。<strong>この簡潔さが、次に使う基本の極限を生みます。</strong></p></div>
+
+      <figure class="fig">
+        <svg viewBox="0 0 640 250" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="ラジアンの定義：弧の長さを半径で割る">
+          <circle cx="190" cy="205" r="105" fill="none" stroke="var(--line)" stroke-width="1.2"/>
+          <line x1="70" y1="205" x2="325" y2="205" stroke="var(--line)" stroke-width="1"/>
+          <path d="M295,205 A105,105 0 0 0 246.7,116.6" fill="none" stroke="var(--key)" stroke-width="4.5"/>
+          <line x1="190" y1="205" x2="295" y2="205" stroke="var(--accent)" stroke-width="2.5"/>
+          <line x1="190" y1="205" x2="246.7" y2="116.6" stroke="var(--accent)" stroke-width="2.5"/>
+          <path d="M226,205 A36,36 0 0 0 209.5,174.7" fill="none" stroke="var(--ink-soft)" stroke-width="1.5"/>
+          <text x="234" y="192" font-size="13" fill="var(--ink)" font-style="italic">θ</text>
+          <circle cx="190" cy="205" r="3.5" fill="var(--ink)"/>
+          <text x="182" y="224" font-size="12" fill="var(--ink-soft)" text-anchor="end">O</text>
+          <text x="299" y="224" font-size="12" fill="var(--ink-soft)">A</text>
+          <text x="252" y="110" font-size="12" fill="var(--ink-soft)">P</text>
+          <text x="244" y="222" font-size="12.5" font-weight="500" fill="var(--accent-deep)" text-anchor="middle">r</text>
+          <text x="202" y="153" font-size="12.5" font-weight="500" fill="var(--accent-deep)" text-anchor="end">r</text>
+          <text x="296" y="148" font-size="12.5" font-weight="500" fill="var(--key)">s</text>
+
+          <text x="374" y="98" font-size="16" font-weight="500" fill="var(--accent-deep)">θ [rad] = s ÷ r</text>
+          <text x="374" y="126" font-size="15" font-weight="500" fill="var(--key)">s = r θ</text>
+          <text x="440" y="126" font-size="11.5" fill="var(--ink-faint)">（弧長 = 半径 × 角度）</text>
+          <line x1="374" y1="142" x2="600" y2="142" stroke="var(--line)" stroke-width="1"/>
+          <text x="374" y="170" font-size="13" fill="var(--ink)">s = r のとき θ = 1 rad</text>
+          <text x="374" y="192" font-size="13" fill="var(--ink-soft)">1 rad ≈ 57.3°</text>
+          <text x="374" y="222" font-size="12.5" fill="var(--ink)">一周は s = 2πr → 2π rad = 360°</text>
+        </svg>
+        <figcaption>ラジアンは<strong>「弧の長さを半径で割った値」</strong>で角度を測る方法です。半径と同じ長さの弧（\(s=r\)）に対応する角が 1 rad で、度に直すと約 57.3°。一周は弧長が \(2\pi r\) なので \(2\pi\) rad ＝ 360° です。長さ÷長さなので<strong>本来は無次元量</strong>で、単位 rad は「この数は角度だ」と示す目印にすぎません。だから \(\sin\theta\) の \(\theta\) にラジアンの値をそのまま入れられます。</figcaption>
+      </figure>
+
+      <div class="box target"><span class="lab">必要な基本の極限</span>
+      \[ \lim_{\theta\to0}\frac{\sin\theta}{\theta}=1 \]
+      <p><strong>ただし \(\theta\) はラジアンで測ったとき</strong>。これさえ認めれば、三角関数の微分はすべて機械的に出ます。まずはこの極限を、上で確認した扇形の面積を使って自分で確かめます。</p></div>
+
+      <figure class="fig">
+        <svg viewBox="0 0 640 250" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="単位円の扇形と2つの三角形の面積比較">
+          <line x1="150" y1="200" x2="530" y2="200" stroke="var(--ink-faint)" stroke-width="1.3"/>
+          <path d="M470,200 A150,150 0 0 0 275,57" fill="none" stroke="var(--key)" stroke-width="2.5"/>
+          <line x1="320" y1="200" x2="443" y2="114" stroke="var(--accent)" stroke-width="2.5"/>
+          <line x1="320" y1="200" x2="470" y2="200" stroke="var(--accent)" stroke-width="2.5"/>
+          <line x1="443" y1="114" x2="443" y2="200" stroke="var(--good)" stroke-width="2" stroke-dasharray="5 4"/>
+          <line x1="470" y1="200" x2="470" y2="95" stroke="var(--amber)" stroke-width="2.5"/>
+          <line x1="320" y1="200" x2="470" y2="95" stroke="var(--amber)" stroke-width="2"/>
+          <path d="M360,200 A40,40 0 0 0 353,178" fill="none" stroke="var(--ink-soft)" stroke-width="1.5"/>
+          <text x="368" y="190" font-size="13" fill="var(--ink)" font-style="italic">θ</text>
+          <circle cx="320" cy="200" r="4.5" fill="var(--ink)"/>
+          <text x="310" y="219" font-size="12.5" fill="var(--ink-soft)">O</text>
+          <circle cx="470" cy="200" r="4.5" fill="var(--ink)"/>
+          <text x="470" y="220" font-size="12.5" fill="var(--ink-soft)" text-anchor="middle">A</text>
+          <circle cx="443" cy="114" r="4.5" fill="var(--accent)" stroke="#000" stroke-width="2"/>
+          <text x="430" y="104" font-size="12.5" fill="var(--accent-deep)" text-anchor="end">P</text>
+          <circle cx="470" cy="95" r="4.5" fill="var(--amber)" stroke="#000" stroke-width="2"/>
+          <text x="480" y="92" font-size="12.5" fill="var(--amber)">T</text>
+          <text x="436" y="164" font-size="12" fill="var(--good)" text-anchor="end">sin θ</text>
+          <text x="482" y="150" font-size="12" fill="var(--amber)">tan θ</text>
+          <text x="392" y="216" font-size="12" fill="var(--ink-faint)" text-anchor="middle">半径 1</text>
+          <text x="60" y="60" font-size="13" font-weight="500" fill="var(--ink)">面積を比べる</text>
+          <text x="60" y="86" font-size="12.5" fill="var(--good)">△OAP = ½ sin θ</text>
+          <text x="60" y="108" font-size="12.5" fill="var(--key)">扇形OAP = ½ θ</text>
+          <text x="60" y="130" font-size="12.5" fill="var(--amber)">△OAT = ½ tan θ</text>
+          <text x="60" y="160" font-size="12.5" font-weight="500" fill="var(--ink)">△OAP &lt; 扇形 &lt; △OAT</text>
+          <text x="60" y="182" font-size="12.5" fill="var(--ink-soft)">→ cos θ &lt; sin θ / θ &lt; 1</text>
+        </svg>
+        <figcaption>半径1の円で、三角形 OAP・扇形 OAP・三角形 OAT は<strong>この順に含まれている</strong>ので、面積にも同じ順の不等式が成り立ちます。半径が1なので扇形の面積は \(A=\frac12r^2\theta=\frac{\theta}{2}\)——<strong>ラジアンで測っているからこそ、角度そのものが面積として式に入ってきます</strong>。</figcaption>
+      </figure>
+
+      <div class="attempt"><span class="lab">まず自力で ①　基本の極限を確かめる</span>
+      <p>上の図の面積比較</p>
+      \[ \frac12\sin\theta<\frac12\theta<\frac12\tan\theta\qquad(0<\theta<\pi/2) \]
+      <p>から \(\cos\theta<\dfrac{\sin\theta}{\theta}<1\) を導き、挟み撃ちの原理で \(\displaystyle\lim_{\theta\to0}\frac{\sin\theta}{\theta}=1\) を示してください。\(\theta<0\) の場合も扱えることを述べること。</p>
+      <div class="controls">
+        <button class="ctl-btn amber" data-hint>ヒントを表示</button>
+        <button class="ctl-btn" data-sol>解答を見る</button>
+      </div>
+      <div class="hint"><span class="hn">HINT 1</span><p>まず各辺を \(\frac12\sin\theta\ (>0)\) で割ってみてください。求めたい \(\dfrac{\sin\theta}{\theta}\) の<strong>逆数</strong>が出てきます。</p></div>
+      <div class="hint"><span class="hn">HINT 2</span><p>逆数をとると不等号の向きが変わります。\(\theta<0\) については、\(\dfrac{\sin\theta}{\theta}\) が偶関数かどうかを調べてください。</p></div>
+      <div class="sol"><p>各辺を \(\frac12\sin\theta\ (>0)\) で割ると</p>
+      \[ 1<\frac{\theta}{\sin\theta}<\frac{1}{\cos\theta} \]
+      <p>逆数をとると不等号の向きが変わり</p>
+      \[ \cos\theta<\frac{\sin\theta}{\theta}<1 \]
+      <p>\(\theta\to+0\) で左辺 \(\to1\)、右辺は 1。よって挟み撃ちの原理から \(\sin\theta/\theta\to1\)。</p>
+      <p><strong>\(\theta<0\)</strong>：\(\dfrac{\sin(-\theta)}{-\theta}=\dfrac{-\sin\theta}{-\theta}=\dfrac{\sin\theta}{\theta}\) と<strong>偶関数</strong>なので、負側からの極限も同じ値。したがって両側極限として 1 ✓。</p>
+      <p style="font-size:13.5px;color:var(--ink-faint)">この結果は「\(\theta\) が小さければ \(\sin\theta\simeq\theta\)」と読めます。単振り子の運動が簡単な形になるのはこの近似のおかげで、3章で近似の話として本格的に扱います。</p></div>
+      </div>
+
+      <div class="attempt"><span class="lab">まず自力で ②　もう一つの極限</span>
+      <p>①の結果だけを使って、次の極限を求めてください。</p>
+      \[ \lim_{h\to0}\frac{\cos h-1}{h} \]
+      <p>この形は、次に \((\sin x)'\) を計算するときに必ず出てきます。先に片付けておきます。</p>
+      <div class="controls">
+        <button class="ctl-btn amber" data-hint>ヒントを表示</button>
+        <button class="ctl-btn" data-sol>解答を見る</button>
+      </div>
+      <div class="hint"><span class="hn">HINT 1</span><p>\(\cos h-1\) のままでは \(\sin\) が出てきません。分子・分母に \(\cos h+1\) を掛けてみてください（平方根の有理化と同じ発想）。</p></div>
+      <div class="hint"><span class="hn">HINT 2</span><p>\(\cos^2h-1=-\sin^2h\) です。これで \(\dfrac{\sin h}{h}\) の形が作れます。</p></div>
+      <div class="sol"><p>分子・分母に \(\cos h+1\) を掛けます。</p>
+      \[ \frac{\cos h-1}{h}=\frac{(\cos h-1)(\cos h+1)}{h(\cos h+1)}=\frac{\cos^2h-1}{h(\cos h+1)}=-\frac{\sin h}{h}\cdot\frac{\sin h}{\cos h+1} \]
+      <p>\(h\to0\) で、①より \(\dfrac{\sin h}{h}\to1\)、また \(\dfrac{\sin h}{\cos h+1}\to\dfrac{0}{2}=0\)。よって</p>
+      \[ \lim_{h\to0}\frac{\cos h-1}{h}=0 \]
+      <p style="font-size:13.5px;color:var(--ink-faint)">\(\sin\theta\simeq\theta\)（1次）に対して、\(\cos\theta\) は \(1\) からのズレが \(\theta^2\) の程度しかない、という意味です。だから \(h\) で割っても 0 に落ちます。この違いは3章で \(\cos\theta\simeq1-\frac{\theta^2}{2}\) として再登場します。</p></div>
+      </div>
+
+      <div class="attempt"><span class="lab">まず自力で ③　\(\sin x\) を微分する</span>
+      <p>①②で用意した2つの極限を道具として、加法定理</p>
+      \[ \sin(x+h)=\sin x\cos h+\cos x\sin h \]
+      <p>を使い、定義から \((\sin x)'\) を導いてください。</p>
+      <div class="controls">
+        <button class="ctl-btn amber" data-hint>ヒントを表示</button>
+        <button class="ctl-btn" data-sol>解答を見る</button>
+      </div>
+      <div class="hint"><span class="hn">HINT 1</span><p>差分商の分子に加法定理を代入し、\(\sin x\) でくくれる部分と \(\cos x\) でくくれる部分に整理してください。①②で求めた極限がそのまま現れます。</p></div>
+      <div class="sol">
+        <div class="step"><div class="sh"><span class="sn">1</span>加法定理で分子をほぐす</div>
+        <div class="why">なぜ：\(\sin(x+h)\) のままでは \(h\) を分離できない。加法定理は「\(x\) の部分と \(h\) の部分を引き剥がす」ための道具です。</div>
+        \[ \frac{\sin(x+h)-\sin x}{h}=\frac{\sin x\cos h+\cos x\sin h-\sin x}{h}
+        =\sin x\cdot\frac{\cos h-1}{h}+\cos x\cdot\frac{\sin h}{h} \]
+        <p style="margin:4px 0">\(\sin x\) と \(\cos x\) は \(h\) を含まないので、極限をとるときは定数として扱えます。</p>
+        </div>
+        <div class="step"><div class="sh"><span class="sn">2</span>用意した極限を入れる</div>
+        <div class="why">なぜ：残った2つの因子は、まさに①②で求めた極限そのものです。</div>
+        \[ (\sin x)'=\sin x\cdot \underbrace{0}_{②}+\cos x\cdot \underbrace{1}_{①}=\boxed{\cos x} \]
+        <p style="margin:4px 0">同じ手順（\(\cos(x+h)=\cos x\cos h-\sin x\sin h\)）で</p>
+        \[ (\cos x)'=-\sin x \]
+        </div>
+        <div class="step"><div class="sh"><span class="sn">3</span>検算する</div>
+        <div class="why">なぜ：グラフと符号が合うか見る。</div>
+        <p style="margin:4px 0">\(x=0\) で \(\sin\) は増加中 → \((\sin)'=\cos 0=1>0\) ✓。\(x=\pi/2\) で \(\sin\) は頂点 → \(\cos(\pi/2)=0\) ✓（頂点では傾きが 0）。</p></div>
+      </div>
+      </div>
+
+      <div class="box warn"><span class="lab">なぜ物理では必ずラジアンなのか</span>
+      <p>ここまでの導出は \(\sin h/h\to1\) に全面的に依存していて、それは扇形の面積が \(\theta/2\) と書けること——つまり<strong>ラジアン</strong>——に依存していました。角度を度で測ると \(\theta^{\circ}=\frac{\pi}{180}\theta_{\rm rad}\) なので</p>
+      \[ \lim_{\theta\to0}\frac{\sin\theta^{\circ}}{\theta^{\circ}}=\frac{\pi}{180},\qquad \frac{d}{d\theta}\sin\theta^{\circ}=\frac{\pi}{180}\cos\theta^{\circ} \]
+      <p>となり、<strong>微分するたびに \(\pi/180\) という係数が湧いてきます</strong>。2回微分すれば \((\pi/180)^2\)、3回なら \((\pi/180)^3\)。式を変形するほど余計な数が積み重なって、まともに扱えません。</p>
+      <p style="margin-top:8px"><strong>ラジアンは「便利だから」採用されているのではなく、微分が最も簡単な形になる唯一の角度の測り方だから採用されています。</strong>「弧長÷半径」という定義が扇形面積 \(\frac12r^2\theta\) の簡潔さを生み、それが \(\sin h/h\to1\) を生み、そこから \((\sin x)'=\cos x\) が出る——この鎖の出発点が、角度の測り方そのものだったわけです。</p></div>
+
+      <h3>計算ドリル（§01・全2問）</h3>
+
+      <div class="drill"><p><span class="qn">問1</span>加法定理</p>
+      \[ \cos(x+h)=\cos x\cos h-\sin x\sin h \]
+      <p>を使って、定義に従って \((\cos x)'=-\sin x\) を自分で導け。使う極限は ①② と同じ2つだけ。</p>
+      <div class="attempt" style="margin:10px 0 4px"><span class="lab">自分の答えを出してから</span>
+      <div class="controls"><button class="ctl-btn" data-sol>解答を見る</button></div>
+      <div class="sol">\[ \frac{\cos(x+h)-\cos x}{h}=\frac{\cos x\cos h-\sin x\sin h-\cos x}{h}=\cos x\cdot\frac{\cos h-1}{h}-\sin x\cdot\frac{\sin h}{h} \]
+      <p>\(h\to0\) で \(\cos x\cdot0-\sin x\cdot1=-\sin x\) ✓。</p>
+      <p style="font-size:13.5px;color:var(--ink-faint)">4回微分すると元に戻ります：\(\sin\to\cos\to-\sin\to-\cos\to\sin\)。<strong>「2回微分すると符号が反転して自分に戻る」</strong>という性質、すなわち \(f''=-f\) こそが、三角関数が振動を記述する理由そのものです（§05 問1）。</p></div></div></div>
+
+      <div class="drill"><p><span class="qn">問2</span>\(\sin\theta\simeq\theta\) の近似は、実用上どこまで許されるか。\(\theta=5^\circ,\,10^\circ,\,30^\circ\) について \(\sin\theta\) と \(\theta_{\rm rad}\) の相対誤差を計算せよ。</p>
+      <div class="attempt" style="margin:10px 0 4px"><span class="lab">自分の答えを出してから</span>
+      <div class="controls"><button class="ctl-btn" data-sol>解答を見る</button></div>
+      <div class="sol">
+      <div class="table-scroll"><table class="mini-table">
+        <tr><th>\(\theta\)</th><th>\(\theta_{\rm rad}\)</th><th>\(\sin\theta\)</th><th>相対誤差</th></tr>
+        <tr><td>\(5^\circ\)</td><td>0.0873</td><td>0.0872</td><td>0.13 %</td></tr>
+        <tr><td>\(10^\circ\)</td><td>0.1745</td><td>0.1736</td><td>0.51 %</td></tr>
+        <tr><td>\(30^\circ\)</td><td>0.5236</td><td>0.5000</td><td>4.7 %</td></tr>
+      </table></div>
+      <p style="font-size:13.5px;color:var(--ink-faint)">誤差はおよそ \(\theta^2/6\) で増えます（\(\sin\theta=\theta-\theta^3/6+\cdots\) だから）。実験で振り子の周期を 1 % の精度で測るなら振幅は \(15^\circ\) 程度まで、といった判断がこの表からできます。<strong>「近似してよいか」を自分で判定できることが、物理で近似を使う資格</strong>です。3章のテーマそのものです。</p></div></div></div>
+    </section>
+
+    <!-- §02 -->
+    <section id="d5">
+      <div class="sec-head"><span class="idx">§02</span><h2>指数関数と \(e\) の正体</h2></div>
+
+      <p>\(e=2.71828\cdots\) を「そういう定数がある」と丸暗記した人は多いと思います。しかし \(e\) は発見された不思議な数ではなく、<strong>ある要求を満たすように逆算して決められた数</strong>です。その要求とは「微分しても形が変わらない関数がほしい」。</p>
+
+      <div class="box teach"><span class="lab">準備：指数関数の「底」と \(\log\)・\(\ln\)</span>
+      <p><strong>底（てい）</strong>とは、\(a^x\) の \(a\) のこと。「1 増えるごとに何倍になるか」を決める数です。\(2^x\) なら \(x\) が 1 増えるたびに 2 倍、\(10^x\) なら 10 倍。肩に乗っている \(x\) を<strong>指数</strong>と呼びます。底は \(a>0\) とします（負の数だと \(a^{1/2}\) が実数にならないため）。</p>
+      <p style="margin-top:8px"><strong>対数</strong>は、この関係を逆から見たものです。</p>
+      \[ a^y=x \quad\Longleftrightarrow\quad y=\log_a x \]
+      <p>つまり \(\log_a x\) は「\(x\) は \(a\) を何乗した数か」を表します。\(\log_2 8=3\)（\(2^3=8\) だから）。</p>
+      <p style="margin-top:8px">底が \(e\) の対数を<strong>自然対数</strong>といい、\(\ln\) と略記します。</p>
+      \[ \ln x\;\equiv\;\log_e x \]
+      <p>本文で \(\ln\) が出てきたら「底が \(e\) の対数」と読んでください。物理や数学では底が \(e\) の場合が圧倒的に多いので、単に \(\log x\) と書いて自然対数を指すこともあります。\(\ln\) が持つ意味は §03 で扱うので、いまは記号として受け取って構いません。</p></div>
+
+      <div class="attempt"><span class="lab">まず自力で</span>
+      <p>この節の山場は2ステップだけです。</p>
+      <p>①定義に従って \(f(x)=a^x\)（\(a>0\)）を微分し、\(a^x\) 自身をくくり出してください。残る極限は \(x\) に依存しないはずです。<br>②その残った極限がちょうど 1 になるように \(a\) を選ぶとしたら、その \(a\) はどんな数になるでしょうか。</p>
+      <div class="controls">
+        <button class="ctl-btn amber" data-hint>ヒントを表示</button>
+        <button class="ctl-btn" data-sol>解答を見る</button>
+      </div>
+      <div class="hint"><span class="hn">HINT 1</span><p>指数法則 \(a^{x+h}=a^x\cdot a^h\)。これで \(a^x\) が分子から丸ごとくくり出せます。</p></div>
+      <div class="hint"><span class="hn">HINT 2</span><p>②残った極限は \(\displaystyle\lim_{h\to0}\frac{a^h-1}{h}\)。これを 1 とおくと、小さい \(h\) に対して \(a^h\simeq1+h\)。両辺を \(1/h\) 乗してみてください。</p></div>
+      <div class="sol">
+        <div class="step"><div class="sh"><span class="sn">1</span>指数法則で \(a^x\) をくくり出す</div>
+        <div class="why">なぜ：指数関数の決定的な性質は「和が積になる」こと。これが \(x\) と \(h\) の分離を可能にします（三角関数における加法定理と同じ役割）。</div>
+        \[ \frac{a^{x+h}-a^x}{h}=\frac{a^x(a^h-1)}{h}=a^x\cdot\frac{a^h-1}{h} \]
+        <p style="margin:4px 0">つまり</p>
+        \[ (a^x)'=a^x\cdot C_a,\qquad C_a\equiv\lim_{h\to0}\frac{a^h-1}{h} \]
+        <p style="font-size:13.5px;color:var(--ink-faint);margin:6px 0 0"><strong>ここが山場です</strong>：\(C_a\) は \(x\) を含まない、\(a\) だけで決まる定数。つまり<strong>どんな底の指数関数も、微分すると自分自身の定数倍になる</strong>。指数関数はこの性質を持つ唯一の関数族です。</p></div>
+
+        <div class="step"><div class="sh"><span class="sn">2</span>\(C_a=1\) となる \(a\) を \(e\) と名づける</div>
+        <div class="why">なぜ：\(C_a\) は余計な係数。これが 1 になる底を選べば、式が最も簡単になります。\(a=1\) なら \(a^h-1=0\) なので \(C_1=0\)。\(a\) を大きくすれば \(a^h-1\) も大きくなるので \(C_a\) は連続に増えていきます。実際に \(a=2\) では 1 より小さく、\(a=3\) では 1 より大きいので、その間に \(C_a=1\) となる \(a\) が必ず存在します。</div>
+        \[ \boxed{\;e\ \equiv\ \Big(\lim_{h\to0}\frac{a^h-1}{h}=1\ \text{となる }a\Big)\quad\Longrightarrow\quad (e^x)'=e^x\;} \]
+        </div>
+
+      </div>
+      </div>
+
+
+      <p>この \(e\) が「点 \((0,1)\) での傾きが 1 になる底」だということは、グラフで見ると分かりやすいです。</p>
+
+      <figure class="fig">
+        <svg viewBox="0 0 640 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="2のx乗・eのx乗・3のx乗のグラフと原点での接線">
+          <line x1="110" y1="255" x2="470" y2="255" stroke="var(--ink-faint)" stroke-width="1.3"/>
+          <polygon points="478,255 464,249 464,261" fill="var(--ink-faint)"/>
+          <line x1="260" y1="275" x2="260" y2="40" stroke="var(--ink-faint)" stroke-width="1.3"/>
+          <polygon points="260,32 254,46 266,46" fill="var(--ink-faint)"/>
+          <text x="474" y="274" font-size="12.5" fill="var(--ink)" font-style="italic">x</text>
+          <text x="242" y="44" font-size="12.5" fill="var(--ink)" font-style="italic">y</text>
+          <line x1="254" y1="231" x2="266" y2="231" stroke="var(--ink-faint)" stroke-width="1"/>
+          <text x="250" y="221" font-size="11.5" fill="var(--ink-faint)" text-anchor="end">1</text>
+          <line x1="330" y1="250" x2="330" y2="260" stroke="var(--ink-faint)" stroke-width="1"/>
+          <text x="330" y="273" font-size="11.5" fill="var(--ink-faint)" text-anchor="middle">1</text>
+
+          <line x1="190" y1="255" x2="400" y2="183" stroke="var(--amber)" stroke-width="1.8" stroke-dasharray="6 4"/>
+          <path d="M120.0,249.0 L125.6,248.7 L131.2,248.3 L136.8,247.9 L142.4,247.5 L148.0,247.1 L153.6,246.6 L159.2,246.2 L164.8,245.7 L170.4,245.1 L176.0,244.6 L181.6,244.0 L187.2,243.3 L192.8,242.7 L198.4,242.0 L204.0,241.2 L209.6,240.4 L215.2,239.6 L220.8,238.7 L226.4,237.8 L232.0,236.8 L237.6,235.8 L243.2,234.7 L248.8,233.5 L254.4,232.3 L260.0,231.0 L265.6,229.6 L271.2,228.2 L276.8,226.7 L282.4,225.0 L288.0,223.3 L293.6,221.5 L299.2,219.6 L304.8,217.6 L310.4,215.5 L316.0,213.2 L321.6,210.8 L327.2,208.3 L332.8,205.7 L338.4,202.8 L344.0,199.9 L349.6,196.7 L355.2,193.4 L360.8,189.9 L366.4,186.2 L372.0,182.2 L377.6,178.1 L383.2,173.7 L388.8,169.1 L394.4,164.2 L400.0,159.0" fill="none" stroke="var(--ink-faint)" stroke-width="2"/>
+          <path d="M120.0,252.3 L125.6,252.1 L131.2,251.8 L136.8,251.5 L142.4,251.2 L148.0,250.9 L153.6,250.5 L159.2,250.1 L164.8,249.6 L170.4,249.1 L176.0,248.6 L181.6,248.0 L187.2,247.3 L192.8,246.6 L198.4,245.9 L204.0,245.0 L209.6,244.1 L215.2,243.1 L220.8,242.0 L226.4,240.8 L232.0,239.5 L237.6,238.1 L243.2,236.6 L248.8,234.9 L254.4,233.0 L260.0,231.0 L265.6,228.8 L271.2,226.4 L276.8,223.8 L282.4,220.9 L288.0,217.8 L293.6,214.3 L299.2,210.6 L304.8,206.5 L310.4,202.1 L316.0,197.2 L321.6,191.9 L327.2,186.1 L332.8,179.8 L338.4,172.9 L344.0,165.3 L349.6,157.1 L355.2,148.1 L360.8,138.2 L366.4,127.5 L372.0,115.8 L377.6,103.0 L383.2,89.1 L388.8,73.8 L394.4,57.2" fill="none" stroke="var(--ink-faint)" stroke-width="2"/>
+          <path d="M120.0,251.8 L125.6,251.5 L131.2,251.2 L136.8,250.9 L142.4,250.5 L148.0,250.2 L153.6,249.8 L159.2,249.3 L164.8,248.8 L170.4,248.3 L176.0,247.8 L181.6,247.2 L187.2,246.5 L192.8,245.8 L198.4,245.0 L204.0,244.2 L209.6,243.3 L215.2,242.3 L220.8,241.3 L226.4,240.1 L232.0,238.9 L237.6,237.6 L243.2,236.1 L248.8,234.5 L254.4,232.8 L260.0,231.0 L265.6,229.0 L271.2,226.8 L276.8,224.5 L282.4,221.9 L288.0,219.2 L293.6,216.2 L299.2,213.0 L304.8,209.5 L310.4,205.7 L316.0,201.6 L321.6,197.1 L327.2,192.3 L332.8,187.1 L338.4,181.4 L344.0,175.3 L349.6,168.7 L355.2,161.5 L360.8,153.7 L366.4,145.3 L372.0,136.1 L377.6,126.2 L383.2,115.5 L388.8,103.9 L394.4,91.3 L400.0,77.7" fill="none" stroke="var(--accent)" stroke-width="3"/>
+          <circle cx="260" cy="231" r="4.5" fill="var(--accent)" stroke="#000" stroke-width="2"/>
+
+          <text x="334" y="56" font-size="12.5" fill="var(--ink-soft)" text-anchor="end">y = 3&#8202;&#7482;</text>
+          <line x1="338" y1="52" x2="382" y2="60" stroke="var(--line-strong)" stroke-width="1"/>
+          <text x="412" y="72" font-size="12.5" font-weight="500" fill="var(--accent-deep)">y = e&#8202;&#7482;</text>
+          <text x="412" y="160" font-size="12.5" fill="var(--ink-soft)">y = 2&#8202;&#7482;</text>
+          <text x="410" y="192" font-size="12" fill="var(--amber)">y = 1 + x</text>
+
+          <text x="70" y="88" font-size="12.5" font-weight="500" fill="var(--ink)">x = 0 での傾き</text>
+          <text x="70" y="112" font-size="12.5" fill="var(--ink-soft)">2&#8202;&#7482; … 1 より小さい</text>
+          <text x="70" y="134" font-size="12.5" font-weight="500" fill="var(--accent-deep)">e&#8202;&#7482; … ちょうど 1</text>
+          <text x="70" y="156" font-size="12.5" fill="var(--ink-soft)">3&#8202;&#7482; … 1 より大きい</text>
+        </svg>
+        <figcaption>底を変えると曲線の立ち上がり方が変わります。どの曲線も \((0,1)\) を通りますが、そこでの<strong>傾き</strong>は底によって違い、\(2^x\) では 1 より小さく、\(3^x\) では 1 より大きい。その境目、つまり<strong>点 \((0,1)\) で傾きがちょうど 1 になる底</strong>が \(e\) です（破線が傾き 1 の直線 \(y=1+x\)）。\((e^x)'=e^x\) は、この図で言えば「どの点でも、接線の傾きがその点の高さと等しい」という意味になります。</figcaption>
+      </figure>
+
+      <h3>数値としての \(e\) を取り出す</h3>
+      <p>\(e\) は「性質」で定義したので、具体的な数値は逆算する必要があります。定義の式 \(\dfrac{e^h-1}{h}\simeq1\) を変形すると \(e^h\simeq1+h\) となり、両辺を \(1/h\) 乗して \(h=1/n\) と置けば</p>
+      \[ e=\lim_{h\to0}(1+h)^{1/h}=\lim_{n\to\infty}\left(1+\frac1n\right)^n=2.71828\cdots \]
+      <p>実際に計算すると、次のように近づいていきます。</p>
+      <div class="table-scroll"><table class="mini-table">
+        <tr><th>\(n\)</th><th>10</th><th>100</th><th>1000</th><th>\(\to\infty\)</th></tr>
+        <tr><td>\(\left(1+\frac1n\right)^n\)</td><td>2.5937</td><td>2.7048</td><td>2.7169</td><td>2.71828…</td></tr>
+      </table></div>
+      <p>収束は意外と遅く、\(n=1000\) でも3桁目までしか合いません。\(e\) は \(\pi\) と同じく<strong>無理数</strong>で、小数で書き切ることはできません。</p>
+      <div class="box warn"><span class="lab">定義の順番に注意</span>
+      <p>高校では \(\left(1+\frac1n\right)^n\) の極限を「\(e\) の定義」として教わることが多いのですが、<strong>論理の順番としてはこちらが結果</strong>です。本質は「微分しても形が変わらない関数を作りたい」という要求のほうにあり、\(2.71828\cdots\) という数値はその要求から逆算して出てきた副産物にすぎません。</p></div>
+
+      <h3>一般の底に戻す — 係数 \(C_a\) の正体</h3>
+      <p>ステップ1で出てきた係数</p>
+      \[ C_a=\lim_{h\to0}\frac{a^h-1}{h} \]
+      <p>は、まだ「底 \(a\) で決まる何かの数」としか言えていません。\(e\) が手に入ったので、ここでその正体を突き止めます。</p>
+      <p>鍵は、<strong>どんな正の数も \(e\) の何乗かで書ける</strong>ことです。「\(a\) は \(e\) を何乗した数か」という問いの答えが、まさに \(\ln a\) でした（節の冒頭の対数の定義）。つまり</p>
+      \[ a=e^{\ln a} \]
+      <p>たとえば \(2=e^{\ln 2}\)、\(10=e^{\ln 10}\)。これを \(a^x\) に代入すると、指数法則 \(\left(e^{p}\right)^{x}=e^{px}\) より</p>
+      \[ a^x=\left(e^{\ln a}\right)^x=e^{x\ln a} \]
+      <p>——<strong>底が何であっても、指数関数は「\(e\) の肩に定数 \(\ln a\) を掛けたもの」に書き換えられる</strong>わけです。あとは \(e^{kx}\) という形（\(k\) は定数）を微分すればよく、その結果は</p>
+      \[ \left(e^{kx}\right)'=k\,e^{kx} \]
+      <p>——肩に乗っていた定数 \(k\) が前に出てきます。この一手は連鎖律なので §04 で正式に扱いますが、\(k=\ln a\) として使えば</p>
+      \[ (a^x)'=\ln a\cdot e^{x\ln a}=a^x\ln a \]
+      <p>ステップ1の結果 \((a^x)'=a^x\cdot C_a\) と見比べれば</p>
+      \[ \boxed{\;C_a=\ln a\;} \]
+      <p><strong>正体不明だった極限は、対数だったのです。</strong></p>
+      <p>検算しておきます。\(a=e\) なら \(\ln e=1\) なので \((e^x)'=e^x\) ✓。\(a=1\) なら \(\ln 1=0\) で微分は 0——定数関数 \(1^x=1\) だから当然 ✓。\(a>1\) なら \(\ln a>0\) で増加関数、\(0&lt;a&lt;1\) なら \(\ln a&lt;0\) で減少関数 ✓。</p>
+      <p style="font-size:13.5px;color:var(--ink-faint)">この結果は裏返すと「\(e\) 以外の底を使うと、微分のたびに \(\ln a\) という余計な係数が付いてまわる」という意味になります。§01 のラジアンにおける \(\pi/180\) とまったく同じ構図で、<strong>\(e\) は余計な係数が出ない唯一の底</strong>。物理で底が \(e\) ばかり出てくる理由がこれです。</p>
+
+      <div class="box teach"><span class="lab">なぜ物理に指数関数があふれているのか</span>
+      <p>自然界には、<strong>「変わる速さが、いまある量に比例する」</strong>という状況が驚くほど多く現れます。</p>
+      <ul style="margin:6px 0 0">
+        <li><strong>放射性崩壊</strong>：一定時間に崩壊する原子核の数は、いま残っている数に比例する。残りが半分になれば、崩壊する数も半分になる</li>
+        <li><strong>コンデンサーの放電</strong>：流れ出る電流は、いま溜まっている電荷に比例する</li>
+        <li><strong>空気抵抗による減速</strong>：抵抗力が速度に比例するとき、減速の勢いは速度に比例する</li>
+        <li><strong>大気の圧力</strong>：少し高く上がったときの圧力の減り方は、その高さでの圧力に比例する</li>
+      </ul>
+      <p style="margin-top:10px">どれも「いま多ければ、その分だけ速く変わる」という同じ構造です。これを式に書き下すと、量を \(f\)、時刻を \(t\) として</p>
+      \[ \frac{df}{dt}=k\,f \]
+      <p>となります。\(k\) は<strong>比例定数</strong>——比例の強さを表す係数で、現象ごとに実験で決まる数です。増えていく現象なら \(k>0\)、減っていく現象なら \(k<0\) です（文献によっては \(k\) 以外の記号で書かれますが、役割は同じです）。</p>
+      <p>この式には未知の関数 \(f\) とその微分が同時に入っています。こういう方程式を<strong>微分方程式</strong>と呼びます。</p>
+      <p>そして \(\left(e^{kt}\right)'=k\,e^{kt}\)、つまり「微分すると自分自身の \(k\) 倍になる」——これはまさに上の方程式が要求している性質そのものです。だから</p>
+      \[ f(t)=f_0\,e^{kt}\qquad(f_0\ \text{は}\ t=0\ \text{での値}) \]
+      <p>が解になります。<strong>指数関数は、この構造に対する唯一の答え</strong>です。微分方程式としてきちんと解く手続きは5章で扱います。</p></div>
+
+      <h3>計算ドリル（§02・全1問）</h3>
+
+      <div class="drill"><p><span class="qn">問1</span>\(y=e^{-\lambda t}\)（\(\lambda\) は正の定数）を \(t\) で微分し、\(\dfrac{dy}{dt}=-\lambda y\) を満たすことを確かめよ。連鎖律（§04）を知らなくても、\(e^{-\lambda t}=(e^{-\lambda})^t\) と見れば導出のステップ4だけで解ける。</p>
+      <div class="attempt" style="margin:10px 0 4px"><span class="lab">自分の答えを出してから</span>
+      <div class="controls"><button class="ctl-btn" data-sol>解答を見る</button></div>
+      <div class="sol"><p>底を \(a=e^{-\lambda}\) と見れば \(y=a^t\) の形です。このとき \(\ln a=\ln e^{-\lambda}=-\lambda\)（\(e\) を \(-\lambda\) 乗した数だから）。よって \((a^t)'=a^t\ln a\) より</p>
+      \[ \frac{dy}{dt}=a^t\ln a=-\lambda e^{-\lambda t}=-\lambda y\quad ✓ \]
+      <p style="font-size:13.5px;color:var(--ink-faint)">これが放射性崩壊 \(\dot N=-\lambda N\)、すなわち「減る速さが、いまある量に比例する」という関係の解です。半減期 \(T_{1/2}\) は \(e^{-\lambda T_{1/2}}=\frac12\) を満たす時刻なので \(T_{1/2}=\dfrac{\ln 2}{\lambda}\)。<strong>半減期の式に \(\ln\) が現れるのは、指数関数の微分と同じ根っこ</strong>です。</p></div></div></div>
+
+</section>
+
+    <!-- §03 -->
+    <section id="d6">
+      <div class="sec-head"><span class="idx">§03</span><h2>対数関数</h2></div>
+
+      <p>対数は指数の逆関数なので、微分も「逆」から出せます。定義に戻る道（\(\lim\frac{\ln(1+h/x)}{h}\)）もありますが、ここでは<strong>逆関数の微分</strong>という、物理でも頻繁に使う筋を採ります。</p>
+
+      <div class="box target"><span class="lab">結果</span>
+      \[ (\ln x)'=\frac1x\qquad(x>0) \]
+      <p>物理・数学では自然対数 \(\ln=\log_e\) が標準です。常用対数（底10）は、測定値の桁を扱うときなどに使います。</p></div>
+
+      <p>まず2つのグラフの関係を見ておきます。ここが分かれば、微分の導出はほとんど終わりです。</p>
+
+      <figure class="fig">
+        <svg viewBox="0 0 640 320" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="指数関数と対数関数はy=xで折り返した関係">
+          <line x1="110" y1="230" x2="410" y2="230" stroke="var(--ink-faint)" stroke-width="1.3"/>
+          <polygon points="418,230 404,224 404,236" fill="var(--ink-faint)"/>
+          <line x1="190" y1="305" x2="190" y2="30" stroke="var(--ink-faint)" stroke-width="1.3"/>
+          <polygon points="190,22 184,36 196,36" fill="var(--ink-faint)"/>
+          <text x="414" y="249" font-size="12.5" fill="var(--ink)" font-style="italic">x</text>
+          <text x="172" y="34" font-size="12.5" fill="var(--ink)" font-style="italic">y</text>
+
+          <line x1="122" y1="298" x2="384" y2="36" stroke="var(--ink-faint)" stroke-width="1.2" stroke-dasharray="5 4"/>
+          <text x="360" y="58" font-size="12" fill="var(--ink-faint)">y = x</text>
+
+          <path d="M118.6,225.8 L120.3,225.6 L122.0,225.4 L123.7,225.2 L125.4,224.9 L127.1,224.7 L128.8,224.4 L130.5,224.1 L132.2,223.8 L133.9,223.5 L135.6,223.1 L137.3,222.8 L139.0,222.4 L140.7,222.0 L142.4,221.6 L144.1,221.2 L145.8,220.7 L147.5,220.3 L149.2,219.8 L150.9,219.2 L152.6,218.7 L154.3,218.1 L156.0,217.5 L157.7,216.9 L159.4,216.2 L161.1,215.5 L162.8,214.7 L164.5,213.9 L166.2,213.1 L167.9,212.3 L169.6,211.3 L171.3,210.4 L173.0,209.4 L174.7,208.3 L176.4,207.2 L178.1,206.0 L179.8,204.8 L181.5,203.5 L183.2,202.2 L184.9,200.7 L186.6,199.2 L188.3,197.7 L190.0,196.0 L191.7,194.3 L193.4,192.4 L195.1,190.5 L196.8,188.5 L198.5,186.3 L200.2,184.1 L201.9,181.8 L203.6,179.3 L205.3,176.7 L207.0,173.9 L208.7,171.1 L210.4,168.0 L212.1,164.9 L213.8,161.5 L215.5,158.0 L217.2,154.3 L218.9,150.5 L220.6,146.4 L222.3,142.1 L224.0,137.6 L225.7,132.8 L227.4,127.9 L229.1,122.6 L230.8,117.1 L232.5,111.3 L234.2,105.2 L235.9,98.8 L237.6,92.1 L239.3,85.1 L241.0,77.6 L242.7,69.8 L244.4,61.6 L246.1,53.0 L247.8,43.9 L249.5,34.3" fill="none" stroke="var(--accent)" stroke-width="2.8"/>
+          <path d="M195.4,292.3 L196.8,284.7 L198.2,278.5 L199.5,273.3 L200.9,268.7 L202.2,264.7 L203.6,261.2 L205.0,257.9 L206.3,255.0 L207.7,252.2 L209.0,249.7 L210.4,247.4 L211.8,245.2 L213.1,243.1 L214.5,241.2 L215.8,239.3 L217.2,237.6 L218.6,235.9 L219.9,234.3 L221.3,232.8 L222.6,231.4 L224.0,230.0 L225.4,228.7 L226.7,227.4 L228.1,226.1 L229.4,225.0 L230.8,223.8 L232.2,222.7 L233.5,221.6 L234.9,220.6 L236.2,219.5 L237.6,218.6 L239.0,217.6 L240.3,216.7 L241.7,215.8 L243.0,214.9 L244.4,214.0 L245.8,213.2 L247.1,212.4 L248.5,211.6 L249.8,210.8 L251.2,210.0 L252.6,209.3 L253.9,208.5 L255.3,207.8 L256.6,207.1 L258.0,206.4 L259.4,205.8 L260.7,205.1 L262.1,204.5 L263.4,203.8 L264.8,203.2 L266.2,202.6 L267.5,202.0 L268.9,201.4 L270.2,200.8 L271.6,200.2 L273.0,199.7 L274.3,199.1 L275.7,198.6 L277.0,198.0 L278.4,197.5 L279.8,197.0 L281.1,196.5 L282.5,196.0 L283.8,195.5 L285.2,195.0 L286.6,194.5 L287.9,194.0 L289.3,193.6 L290.6,193.1 L292.0,192.6 L293.4,192.2 L294.7,191.8 L296.1,191.3 L297.4,190.9 L298.8,190.5 L300.2,190.0 L301.5,189.6 L302.9,189.2 L304.2,188.8 L305.6,188.4 L307.0,188.0 L308.3,187.6 L309.7,187.2 L311.0,186.8 L312.4,186.4 L313.8,186.1 L315.1,185.7 L316.5,185.3 L317.8,185.0 L319.2,184.6 L320.6,184.3 L321.9,183.9 L323.3,183.6 L324.6,183.2 L326.0,182.9 L327.4,182.5 L328.7,182.2 L330.1,181.9 L331.4,181.5 L332.8,181.2 L334.2,180.9 L335.5,180.6 L336.9,180.2 L338.2,179.9 L339.6,179.6 L341.0,179.3 L342.3,179.0 L343.7,178.7 L345.0,178.4 L346.4,178.1 L347.8,177.8 L349.1,177.5 L350.5,177.2 L351.8,177.0 L353.2,176.7 L354.6,176.4 L355.9,176.1 L357.3,175.8 L358.6,175.6 L360.0,175.3 L361.4,175.0 L362.7,174.7 L364.1,174.5 L365.4,174.2 L366.8,173.9 L368.2,173.7 L369.5,173.4 L370.9,173.2 L372.2,172.9 L373.6,172.7 L375.0,172.4 L376.3,172.2 L377.7,171.9 L379.0,171.7 L380.4,171.4 L381.8,171.2 L383.1,170.9 L384.5,170.7 L385.8,170.5 L387.2,170.2 L388.6,170.0 L389.9,169.8 L391.3,169.5 L392.6,169.3 L394.0,169.1" fill="none" stroke="var(--good)" stroke-width="2.8"/>
+
+          <circle cx="190" cy="196" r="4.5" fill="var(--accent)" stroke="#000" stroke-width="2"/>
+          <circle cx="224" cy="230" r="4.5" fill="var(--good)" stroke="#000" stroke-width="2"/>
+          <line x1="190" y1="196" x2="224" y2="230" stroke="var(--ink-faint)" stroke-width="1.1" stroke-dasharray="3 3"/>
+          <text x="180" y="188" font-size="11.5" fill="var(--accent-deep)" text-anchor="end">(0, 1)</text>
+          <text x="236" y="248" font-size="11.5" fill="var(--good)">(1, 0)</text>
+
+          <text x="252" y="70" font-size="12.5" font-weight="500" fill="var(--accent-deep)">y = e&#8202;&#7482;</text>
+          <text x="330" y="148" font-size="12.5" font-weight="500" fill="var(--good)">y = ln x</text>
+
+          <text x="448" y="96" font-size="12.5" font-weight="500" fill="var(--ink)">互いに逆関数</text>
+          <text x="448" y="122" font-size="12.5" fill="var(--ink-soft)">y = x で折り返すと</text>
+          <text x="448" y="144" font-size="12.5" fill="var(--ink-soft)">ぴったり重なる</text>
+          <text x="448" y="176" font-size="12.5" fill="var(--ink-soft)">点も入れ替わる</text>
+          <text x="448" y="198" font-size="12.5" fill="var(--ink-soft)">(0,1) ↔ (1,0)</text>
+          <text x="448" y="230" font-size="12.5" font-weight="500" fill="var(--ink)">→ 傾きは逆数</text>
+        </svg>
+        <figcaption>\(y=e^x\) と \(y=\ln x\) は<strong>互いに逆関数</strong>なので、グラフは直線 \(y=x\) を鏡にして折り返した関係にあります。\(e^x\) 上の点 \((0,1)\) は \(\ln x\) 上の点 \((1,0)\) に移ります。折り返すと縦と横が入れ替わるので、<strong>対応する点での傾きは互いに逆数</strong>になります。\(e^x\) は \((0,1)\) で傾き 1、\(\ln x\) は \((1,0)\) で傾き 1（どちらも 1 で、逆数も 1）。\(x\) が大きいところでは \(e^x\) の傾きが急になるほど、\(\ln x\) の傾きは緩くなります。</figcaption>
+      </figure>
+
+      <div class="attempt"><span class="lab">まず自力で</span>
+      <p>\(y=\ln x\) とおくと \(x=e^y\)。この関係と \((e^y)'=e^y\) だけを使って \(\dfrac{dy}{dx}\) を求めてください。ライプニッツ記法の「分数のような振る舞い」\(\dfrac{dy}{dx}=1\big/\dfrac{dx}{dy}\) を使って構いません。</p>
+      <div class="controls"><button class="ctl-btn" data-sol>解答を見る</button></div>
+      <div class="sol">
+        <div class="step"><div class="sh"><span class="sn">1</span>逆向きに微分する</div>
+        <div class="why">なぜ：\(x=e^y\) は \(y\) で微分できる形。求めたいのは \(dy/dx\) なので、いったん \(dx/dy\) を出して逆数を取ります。</div>
+        \[ \frac{dx}{dy}=e^y=x \]
+        </div>
+        <div class="step"><div class="sh"><span class="sn">2</span>逆数を取る</div>
+        <div class="why">なぜ：グラフ的には、\(y=\ln x\) は \(y=e^x\) を直線 \(y=x\) で折り返したもの。折り返せば接線の傾きは逆数になります。</div>
+        \[ \frac{dy}{dx}=\frac{1}{dx/dy}=\frac1x\qquad\Longrightarrow\qquad \boxed{(\ln x)'=\frac1x} \]
+        </div>
+        <div class="step"><div class="sh"><span class="sn">3</span>検算する</div>
+        <div class="why">なぜ：グラフの形と符号を照合する。</div>
+        <p style="margin:4px 0">\(x>0\) で常に正 → \(\ln x\) は単調増加 ✓。\(x\to\infty\) で傾き \(\to0\) → 増え方がどんどん緩やかになる ✓。\(x\to+0\) で傾き \(\to\infty\) → 原点近くで急降下 ✓。</p>
+        <p style="margin:4px 0">具体的に値を入れると、\(x=1\) で傾き 1、\(x=e\) で \(1/e\simeq0.37\)、\(x=e^2\) で \(1/e^2\simeq0.14\)。<strong>増え続けるが、増え方は際限なく鈍っていく</strong>——上の図の緑の曲線がまさにその形です。</p>
+        <p style="font-size:13.5px;color:var(--ink-faint);margin:6px 0 0"><strong>不思議な事実</strong>：\((x^n)'=nx^{n-1}\) を逆にたどると、微分して \(x^{-1}\) になるべき関数は \(n=0\) すなわち定数になってしまい、存在しません。この「べき関数の表の穴」を埋めているのが \(\ln x\) です。2章で \(\int\frac{dx}{x}=\ln|x|\) として再会します。</p></div>
+      </div>
+      </div>
+
+      <h3>計算ドリル（§03・全1問）</h3>
+
+      <div class="drill"><p><span class="qn">問1</span>\(x\) が 2 倍になったとき、\(\ln x\) はどれだけ増えるか。\(x=1\to2\) の場合と \(x=100\to200\) の場合で比べよ。そこから、対数がどんな性質を持つ関数だと言えるか。</p>
+      <div class="attempt" style="margin:10px 0 4px"><span class="lab">自分の答えを出してから</span>
+      <div class="controls"><button class="ctl-btn" data-sol>解答を見る</button></div>
+      <div class="sol"><p>どちらも同じだけ増えます。</p>
+      \[ \ln 2-\ln 1=\ln\frac21=\ln 2,\qquad \ln 200-\ln 100=\ln\frac{200}{100}=\ln 2 \]
+      <p><strong>元の値がいくつであっても、同じ倍率なら同じだけ増える。</strong>これが対数の本質的な性質です。言い換えれば、対数は<strong>掛け算を足し算に変える</strong>関数（\(\ln(xy)=\ln x+\ln y\)）だということ。</p>
+</div></div></div>
+
+      <div class="box teach"><span class="lab">対数は「桁」を扱う道具</span>
+      <p>「同じ倍率なら同じだけ増える」という性質があるおかげで、対数は<strong>桁を測る目盛り</strong>として使えます。地震のマグニチュード、音の大きさ（デシベル）、酸性度（pH）——どれも、値が何十倍・何千倍と変わる量を、扱いやすい幅に直したものです。</p>
+      <p>物理でも、桁が大きく違うデータを1つのグラフに並べて比べたいときには、軸を対数目盛りにします。たとえば星の明るさを表す「等級」も、対数を使って定められた量です。どれだけ違うかは、同じ関数を両方の目盛りで描いてみると分かります。</p></div>
+
+      <figure class="fig">
+        <svg viewBox="0 0 640 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="y=10のx乗を通常目盛りと対数目盛りで描いた比較">
+          <text x="70" y="28" font-size="12.5" font-weight="500" fill="var(--ink)">通常の目盛り</text>
+          <text x="70" y="46" font-size="11.5" fill="var(--ink-faint)">縦軸を 0〜10,000 で等間隔に</text>
+          <line x1="70" y1="250" x2="300" y2="250" stroke="var(--ink-faint)" stroke-width="1.3"/>
+          <line x1="70" y1="250" x2="70" y2="58" stroke="var(--ink-faint)" stroke-width="1.3"/>
+          <line x1="62" y1="250.0" x2="70" y2="250.0" stroke="var(--ink-faint)" stroke-width="1"/><text x="56" y="254.0" font-size="10.5" fill="var(--ink-faint)" text-anchor="end">0</text><line x1="62" y1="202.5" x2="70" y2="202.5" stroke="var(--ink-faint)" stroke-width="1"/><text x="56" y="206.5" font-size="10.5" fill="var(--ink-faint)" text-anchor="end">2,500</text><line x1="62" y1="155.0" x2="70" y2="155.0" stroke="var(--ink-faint)" stroke-width="1"/><text x="56" y="159.0" font-size="10.5" fill="var(--ink-faint)" text-anchor="end">5,000</text><line x1="62" y1="107.5" x2="70" y2="107.5" stroke="var(--ink-faint)" stroke-width="1"/><text x="56" y="111.5" font-size="10.5" fill="var(--ink-faint)" text-anchor="end">7,500</text><line x1="62" y1="60.0" x2="70" y2="60.0" stroke="var(--ink-faint)" stroke-width="1"/><text x="56" y="64.0" font-size="10.5" fill="var(--ink-faint)" text-anchor="end">10,000</text>
+          <polyline points="70.0,250.0 122.0,249.8 174.0,248.1 226.0,231.0 278.0,60.0" fill="none" stroke="var(--accent)" stroke-width="2" stroke-opacity=".55"/>
+          <circle cx="70.0" cy="250.0" r="4.5" fill="var(--accent)" stroke="#000" stroke-width="1.8"/><circle cx="122.0" cy="249.8" r="4.5" fill="var(--accent)" stroke="#000" stroke-width="1.8"/><circle cx="174.0" cy="248.1" r="4.5" fill="var(--accent)" stroke="#000" stroke-width="1.8"/><circle cx="226.0" cy="231.0" r="4.5" fill="var(--accent)" stroke="#000" stroke-width="1.8"/><circle cx="278.0" cy="60.0" r="4.5" fill="var(--accent)" stroke="#000" stroke-width="1.8"/>
+          <line x1="70.0" y1="250.0" x2="70.0" y2="255.0" stroke="var(--ink-faint)" stroke-width="1"/><text x="70.0" y="270.0" font-size="11.5" fill="var(--ink-soft)" text-anchor="middle">0</text><line x1="122.0" y1="250.0" x2="122.0" y2="255.0" stroke="var(--ink-faint)" stroke-width="1"/><text x="122.0" y="270.0" font-size="11.5" fill="var(--ink-soft)" text-anchor="middle">1</text><line x1="174.0" y1="250.0" x2="174.0" y2="255.0" stroke="var(--ink-faint)" stroke-width="1"/><text x="174.0" y="270.0" font-size="11.5" fill="var(--ink-soft)" text-anchor="middle">2</text><line x1="226.0" y1="250.0" x2="226.0" y2="255.0" stroke="var(--ink-faint)" stroke-width="1"/><text x="226.0" y="270.0" font-size="11.5" fill="var(--ink-soft)" text-anchor="middle">3</text><line x1="278.0" y1="250.0" x2="278.0" y2="255.0" stroke="var(--ink-faint)" stroke-width="1"/><text x="278.0" y="270.0" font-size="11.5" fill="var(--ink-soft)" text-anchor="middle">4</text>
+          <text x="308" y="254" font-size="11.5" fill="var(--ink)" font-style="italic">x</text>
+          <text x="186" y="212" font-size="11.5" fill="var(--amber)" text-anchor="middle">x = 0〜2 が軸に張り付いて</text>
+          <text x="186" y="228" font-size="11.5" fill="var(--amber)" text-anchor="middle">1 と 10 と 100 を区別できない</text>
+
+          <text x="372" y="28" font-size="12.5" font-weight="500" fill="var(--good)">対数目盛り</text>
+          <text x="372" y="46" font-size="11.5" fill="var(--ink-faint)">縦軸を 10 倍ごとに等間隔に</text>
+          <line x1="372" y1="250" x2="602" y2="250" stroke="var(--ink-faint)" stroke-width="1.3"/>
+          <line x1="372" y1="250" x2="372" y2="58" stroke="var(--ink-faint)" stroke-width="1.3"/>
+          <line x1="364" y1="250.0" x2="372" y2="250.0" stroke="var(--ink-faint)" stroke-width="1"/><text x="358" y="254.0" font-size="10.5" fill="var(--ink-faint)" text-anchor="end">1</text><line x1="364" y1="202.5" x2="372" y2="202.5" stroke="var(--ink-faint)" stroke-width="1"/><text x="358" y="206.5" font-size="10.5" fill="var(--ink-faint)" text-anchor="end">10</text><line x1="364" y1="155.0" x2="372" y2="155.0" stroke="var(--ink-faint)" stroke-width="1"/><text x="358" y="159.0" font-size="10.5" fill="var(--ink-faint)" text-anchor="end">100</text><line x1="364" y1="107.5" x2="372" y2="107.5" stroke="var(--ink-faint)" stroke-width="1"/><text x="358" y="111.5" font-size="10.5" fill="var(--ink-faint)" text-anchor="end">1,000</text><line x1="364" y1="60.0" x2="372" y2="60.0" stroke="var(--ink-faint)" stroke-width="1"/><text x="358" y="64.0" font-size="10.5" fill="var(--ink-faint)" text-anchor="end">10,000</text><line x1="368" y1="235.7" x2="372" y2="235.7" stroke="var(--line)" stroke-width="0.8"/><line x1="368" y1="227.3" x2="372" y2="227.3" stroke="var(--line)" stroke-width="0.8"/><line x1="368" y1="221.4" x2="372" y2="221.4" stroke="var(--line)" stroke-width="0.8"/><line x1="368" y1="216.8" x2="372" y2="216.8" stroke="var(--line)" stroke-width="0.8"/><line x1="368" y1="213.0" x2="372" y2="213.0" stroke="var(--line)" stroke-width="0.8"/><line x1="368" y1="209.9" x2="372" y2="209.9" stroke="var(--line)" stroke-width="0.8"/><line x1="368" y1="207.1" x2="372" y2="207.1" stroke="var(--line)" stroke-width="0.8"/><line x1="368" y1="204.7" x2="372" y2="204.7" stroke="var(--line)" stroke-width="0.8"/><line x1="368" y1="188.2" x2="372" y2="188.2" stroke="var(--line)" stroke-width="0.8"/><line x1="368" y1="179.8" x2="372" y2="179.8" stroke="var(--line)" stroke-width="0.8"/><line x1="368" y1="173.9" x2="372" y2="173.9" stroke="var(--line)" stroke-width="0.8"/><line x1="368" y1="169.3" x2="372" y2="169.3" stroke="var(--line)" stroke-width="0.8"/><line x1="368" y1="165.5" x2="372" y2="165.5" stroke="var(--line)" stroke-width="0.8"/><line x1="368" y1="162.4" x2="372" y2="162.4" stroke="var(--line)" stroke-width="0.8"/><line x1="368" y1="159.6" x2="372" y2="159.6" stroke="var(--line)" stroke-width="0.8"/><line x1="368" y1="157.2" x2="372" y2="157.2" stroke="var(--line)" stroke-width="0.8"/><line x1="368" y1="140.7" x2="372" y2="140.7" stroke="var(--line)" stroke-width="0.8"/><line x1="368" y1="132.3" x2="372" y2="132.3" stroke="var(--line)" stroke-width="0.8"/><line x1="368" y1="126.4" x2="372" y2="126.4" stroke="var(--line)" stroke-width="0.8"/><line x1="368" y1="121.8" x2="372" y2="121.8" stroke="var(--line)" stroke-width="0.8"/><line x1="368" y1="118.0" x2="372" y2="118.0" stroke="var(--line)" stroke-width="0.8"/><line x1="368" y1="114.9" x2="372" y2="114.9" stroke="var(--line)" stroke-width="0.8"/><line x1="368" y1="112.1" x2="372" y2="112.1" stroke="var(--line)" stroke-width="0.8"/><line x1="368" y1="109.7" x2="372" y2="109.7" stroke="var(--line)" stroke-width="0.8"/><line x1="368" y1="93.2" x2="372" y2="93.2" stroke="var(--line)" stroke-width="0.8"/><line x1="368" y1="84.8" x2="372" y2="84.8" stroke="var(--line)" stroke-width="0.8"/><line x1="368" y1="78.9" x2="372" y2="78.9" stroke="var(--line)" stroke-width="0.8"/><line x1="368" y1="74.3" x2="372" y2="74.3" stroke="var(--line)" stroke-width="0.8"/><line x1="368" y1="70.5" x2="372" y2="70.5" stroke="var(--line)" stroke-width="0.8"/><line x1="368" y1="67.4" x2="372" y2="67.4" stroke="var(--line)" stroke-width="0.8"/><line x1="368" y1="64.6" x2="372" y2="64.6" stroke="var(--line)" stroke-width="0.8"/><line x1="368" y1="62.2" x2="372" y2="62.2" stroke="var(--line)" stroke-width="0.8"/>
+          <polyline points="372.0,250.0 424.0,202.5 476.0,155.0 528.0,107.5 580.0,60.0" fill="none" stroke="var(--good)" stroke-width="2" stroke-opacity=".55"/>
+          <circle cx="372.0" cy="250.0" r="4.5" fill="var(--good)" stroke="#000" stroke-width="1.8"/><circle cx="424.0" cy="202.5" r="4.5" fill="var(--good)" stroke="#000" stroke-width="1.8"/><circle cx="476.0" cy="155.0" r="4.5" fill="var(--good)" stroke="#000" stroke-width="1.8"/><circle cx="528.0" cy="107.5" r="4.5" fill="var(--good)" stroke="#000" stroke-width="1.8"/><circle cx="580.0" cy="60.0" r="4.5" fill="var(--good)" stroke="#000" stroke-width="1.8"/>
+          <line x1="372.0" y1="250.0" x2="372.0" y2="255.0" stroke="var(--ink-faint)" stroke-width="1"/><text x="372.0" y="270.0" font-size="11.5" fill="var(--ink-soft)" text-anchor="middle">0</text><line x1="424.0" y1="250.0" x2="424.0" y2="255.0" stroke="var(--ink-faint)" stroke-width="1"/><text x="424.0" y="270.0" font-size="11.5" fill="var(--ink-soft)" text-anchor="middle">1</text><line x1="476.0" y1="250.0" x2="476.0" y2="255.0" stroke="var(--ink-faint)" stroke-width="1"/><text x="476.0" y="270.0" font-size="11.5" fill="var(--ink-soft)" text-anchor="middle">2</text><line x1="528.0" y1="250.0" x2="528.0" y2="255.0" stroke="var(--ink-faint)" stroke-width="1"/><text x="528.0" y="270.0" font-size="11.5" fill="var(--ink-soft)" text-anchor="middle">3</text><line x1="580.0" y1="250.0" x2="580.0" y2="255.0" stroke="var(--ink-faint)" stroke-width="1"/><text x="580.0" y="270.0" font-size="11.5" fill="var(--ink-soft)" text-anchor="middle">4</text>
+          <text x="610" y="254" font-size="11.5" fill="var(--ink)" font-style="italic">x</text>
+          <text x="500" y="212" font-size="11.5" fill="var(--good)" text-anchor="middle">指数関数が直線になり、</text>
+          <text x="500" y="228" font-size="11.5" fill="var(--good)" text-anchor="middle">どの値も読み取れる</text>
+        </svg>
+        <figcaption>指数関数 \(y=10^{x}\) を \(x=0,1,2,3,4\) について描いたものです（値は \(1,\,10,\,100,\,1000,\,10000\)）。<strong>左の通常目盛りでは \(x=4\) の 10000 だけが目立ち、1・10・100 はどれも軸に張り付いて区別できません</strong>。右の対数目盛りは縦軸の 1 目盛りを「10 倍」に取ったもので、\(y=10^x\) は<strong>まっすぐな直線</strong>になります。両辺の常用対数をとれば \(\log_{10}y=x\) なので、縦軸に \(\log_{10}y\) を目盛れば直線になるのは当然です。<strong>逆に言えば、実験データを対数目盛りで描いて直線に乗れば「その量は指数関数的に変化している」と判断できます</strong>——対数目盛りが物理でよく使われる理由がこれです。</figcaption>
+        <figcaption style="margin-top:6px"><strong>対数目盛りに 0 はありません。</strong>\(\log_{10}0\) が定義できない（下へ行くほど \(-\infty\) に向かう）ため、縦軸の下端は 1 や \(10^{-3}\) など適当な桁から始めます。各桁の間に入っている細い目盛りは 2, 3, …, 9 の位置で、間隔が詰まっていくのは \(\log_{10}2=0.30,\ \log_{10}3=0.48,\ \ldots\) と間隔が狭まるためです。市販の片対数グラフ用紙もこの目盛りです。</figcaption>
+      </figure>
+
+
+</section>
+
+    <!-- §04 -->
+    <section id="d7">
+      <div class="sec-head"><span class="idx">§04</span><h2>積の微分と連鎖律 — 組み立ての規則</h2></div>
+
+      <p>物理に出てくる関数は、たいてい基本関数の組み合わせです（\(e^{-\gamma t}\sin\omega t\)、\(\frac{1}{\sqrt{x^2+a^2}}\)、…）。部品の微分が分かったので、次は<strong>組み立ての規則</strong>を作ります。</p>
+
+      <div class="box target"><span class="lab">4つの規則</span>
+      \[ (f+g)'=f'+g',\qquad (fg)'=f'g+fg',\qquad \left(\frac fg\right)'=\frac{f'g-fg'}{g^2} \]
+      \[ \frac{dy}{dx}=\frac{dy}{du}\cdot\frac{du}{dx}\qquad(\text{連鎖律}) \]
+      <p style="margin-top:10px">この4つを、上から順に片付けていきます。和は一瞬で終わるのでここで済ませ、積と連鎖律は自力で導いてもらい、商はその2つから作ります。</p></div>
+
+      <h3>① 和の微分 — 分けて足すだけ</h3>
+      <p>これは定義に入れれば自動的に出ます。分子が素直に2つに分かれるからです。</p>
+      \[ \frac{\{f(x+h)+g(x+h)\}-\{f(x)+g(x)\}}{h}
+      =\frac{f(x+h)-f(x)}{h}+\frac{g(x+h)-g(x)}{h}\ \xrightarrow[h\to0]{}\ f'+g' \]
+      <p>同じ計算で、定数倍についても \((cf)'=cf'\)（\(c\) は定数）が出ます。<strong>「足し算とスカラー倍はそのまま通り抜ける」</strong>——この性質を線形性と呼び、微分を扱う上での基本になります。積と商がこんなに素直でないのは、次に見るとおりです。</p>
+
+      <h3>② 積の微分 — 「片方だけ変える」を2回</h3>
+
+
+      <div class="attempt"><span class="lab">まず自力で</span>
+      <p>定義から積の微分公式 \((fg)'=f'g+fg'\) を導いてください。分子 \(f(x+h)g(x+h)-f(x)g(x)\) に<strong>「余計な項を足して引く」</strong>のが鍵です。</p>
+      <div class="controls">
+        <button class="ctl-btn amber" data-hint>ヒントを表示</button>
+        <button class="ctl-btn" data-sol>解答を見る</button>
+      </div>
+      <div class="hint"><span class="hn">HINT 1</span><p>分子に \(-f(x)g(x+h)+f(x)g(x+h)\) を挿入（足して引く）。すると \(g(x+h)\) でくくれる組と \(f(x)\) でくくれる組に分かれます。</p></div>
+      <div class="sol">
+        <div class="step"><div class="sh"><span class="sn">1</span>足して引く</div>
+        <div class="why">なぜ：\(f\) と \(g\) の変化を一度に扱えないので、「まず \(f\) だけ変えて、次に \(g\) だけ変える」と2段階に分けます。</div>
+        <p style="margin:4px 0">まず、分子に \(f(x)g(x+h)\) を足して引きます（足して引くだけなので値は変わりません）。</p>
+        \[ f(x+h)g(x+h)-f(x)g(x)
+        = f(x+h)g(x+h)\underbrace{-f(x)g(x+h)+f(x)g(x+h)}_{\text{足して引いた}}-f(x)g(x) \]
+        <p style="margin:4px 0">前半2項は \(g(x+h)\) でくくれ、後半2項は \(f(x)\) でくくれます。</p>
+        \[ =\{f(x+h)-f(x)\}\,g(x+h)+f(x)\,\{g(x+h)-g(x)\} \]
+        <p style="margin:4px 0">こう並べると、第1項が<strong>\(f\) だけが変わった分</strong>、第2項が<strong>\(g\) だけが変わった分</strong>だと読めます。</p>
+        \[ \underbrace{\{f(x+h)-f(x)\}\,g(x+h)}_{f\text{ の変化}}+\underbrace{f(x)\,\{g(x+h)-g(x)\}}_{g\text{ の変化}} \]
+        </div>
+        <div class="step"><div class="sh"><span class="sn">2</span>\(h\) で割って極限</div>
+        <div class="why">なぜ：それぞれが差分商の形になっています。\(g(x+h)\to g(x)\)（微分可能なら連続）を使います。</div>
+        \[ \frac{f(x+h)-f(x)}{h}g(x+h)+f(x)\frac{g(x+h)-g(x)}{h}\ \xrightarrow[h\to0]{}\ f'g+fg' \]
+        </div>
+      </div>
+      </div>
+
+      <h3>③ 合成関数の微分（連鎖律）</h3>
+      <p>これは自力で導くのが難しいので、意味と使い方を説明します。導出そのものは 1-1 の §03（導関数の定義）に戻れば追えますが、まずは「何をしている規則なのか」を掴むのが先です。</p>
+      <p>相手にしたいのは、\(\sin(\omega t+\varphi)\) や \(\sqrt{x^2+a^2}\) のように<strong>関数の中に別の関数が入っている</strong>形です。こういう関数を<strong>合成関数</strong>と呼び、\(y=f(g(x))\) と書きます。そして合成関数を微分するときに使う公式が<strong>連鎖律（chain rule）</strong>です。「合成関数の微分法」と呼ばれることもありますが、同じものを指しています。</p>
+      <p>まず、外側と内側に名前を付けて分解します。</p>
+      \[ y=f(u),\qquad u=g(x) \]
+      <p>たとえば \(y=\sqrt{x^2+a^2}\) なら、内側が \(u=x^2+a^2\)、外側が \(y=\sqrt u\)。このとき \(x\) が動くと \(u\) が動き、\(u\) が動くと \(y\) が動く——<strong>変化が2段階で伝わる伝言ゲーム</strong>になっています。</p>
+      <div class="box target"><span class="lab">連鎖律</span>
+      \[ \frac{dy}{dx}=\frac{dy}{du}\cdot\frac{du}{dx} \]
+      <p><strong>\(x\) が 1 増えると \(u\) は \(\dfrac{du}{dx}\) 増え、\(u\) が 1 増えると \(y\) は \(\dfrac{dy}{du}\) 増える。だから \(y\) は両者の積だけ増える。</strong>「増幅率の掛け算」と読むのが一番直観的です。</p></div>
+      <p>使い方は機械的です。<strong>外側を微分して、内側の微分を掛ける。</strong>3例を、分解から順に見ていきます。</p>
+
+      <p style="margin-top:14px"><strong>例1：\(\dfrac{d}{dt}e^{-\lambda t}\)</strong>（\(\lambda\) は定数）</p>
+      \[ u=-\lambda t,\qquad y=e^{u} \]
+      \[ \frac{dy}{du}=e^{u}\quad(\text{外側}),\qquad \frac{du}{dt}=-\lambda\quad(\text{内側}) \]
+      \[ \frac{dy}{dt}=\frac{dy}{du}\cdot\frac{du}{dt}=e^{u}\cdot(-\lambda)=-\lambda e^{-\lambda t} \]
+
+      <p style="margin-top:14px"><strong>例2：\(\dfrac{d}{dt}\sin(\omega t+\varphi)\)</strong>（\(\omega,\varphi\) は定数）</p>
+      \[ u=\omega t+\varphi,\qquad y=\sin u \]
+      \[ \frac{dy}{du}=\cos u\quad(\text{外側}),\qquad \frac{du}{dt}=\omega\quad(\text{内側}) \]
+      \[ \frac{dy}{dt}=\cos u\cdot\omega=\omega\cos(\omega t+\varphi) \]
+
+      <p style="margin-top:14px"><strong>例3：\(\dfrac{d}{dx}\sqrt{x^2+a^2}\)</strong>（\(a\) は定数）</p>
+      \[ u=x^2+a^2,\qquad y=\sqrt u=u^{1/2} \]
+      \[ \frac{dy}{du}=\frac{1}{2}u^{-1/2}=\frac{1}{2\sqrt u}\quad(\text{外側}),\qquad \frac{du}{dx}=2x\quad(\text{内側}) \]
+      \[ \frac{dy}{dx}=\frac{1}{2\sqrt u}\cdot 2x=\frac{x}{\sqrt{x^2+a^2}} \]
+
+      <p><strong>「中身の微分を掛ける」のを忘れる</strong>のが最もよくある間違いです。\(\sin(\omega t)\) の微分は \(\cos(\omega t)\) ではなく \(\omega\cos(\omega t)\)。振動の問題で角振動数 \(\omega\) が消えてしまったら、まずここを疑ってください。</p>
+      <div class="box teach"><span class="lab">なぜライプニッツ記法が便利なのか</span>
+      <p>連鎖律をライプニッツ記法で書くと、右辺で分母の \(du\) と分子の \(du\) が<strong>約分されて左辺になるように見えます</strong>。</p>
+      <p>\(\dfrac{dy}{dx}\) は本当は分数ではないので、これは厳密な約分ではありません。しかし<strong>そう見えるように記号が設計されている</strong>ので、変数変換のときに式の形を追いかけやすくなります。物理でこの記法が好まれる理由がこれです。6章の多変数版、7章の変数変換で本格的に威力を発揮します。</p></div>
+
+      <h3>④ 商の微分 — 積と連鎖律から作る</h3>
+
+      <div class="attempt"><span class="lab">まず自力で　商の微分公式を導く</span>
+      <p>4つ目の規則</p>
+      \[ \left(\frac fg\right)'=\frac{f'g-fg'}{g^2} \]
+      <p>は、暗記する必要がありません。積の微分と連鎖律から作れます。\(\dfrac fg=f\cdot g^{-1}\) と見て導いてください。</p>
+      <div class="controls">
+        <button class="ctl-btn amber" data-hint>ヒントを表示</button>
+        <button class="ctl-btn" data-sol>解答を見る</button>
+      </div>
+      <div class="hint"><span class="hn">HINT 1</span><p>まず \(\left(g^{-1}\right)'\) を連鎖律で求めます。\(u=g(x)\)、\(y=u^{-1}\) と置けば \(\dfrac{dy}{du}=-u^{-2}\)。</p></div>
+      <div class="hint"><span class="hn">HINT 2</span><p>それが出たら、あとは \(f\cdot g^{-1}\) に積の微分を当てるだけ。最後に分母を \(g^2\) で通分します。</p></div>
+      <div class="sol">
+        <div class="step"><div class="sh"><span class="sn">1</span>\(1/g\) の微分を連鎖律で出す</div>
+        <div class="why">なぜ：割り算は「\(-1\) 乗を掛ける」ことなので、\(g^{-1}\) の微分が分かれば積の微分に持ち込めます。</div>
+        \[ \left(g^{-1}\right)'=\frac{d}{du}\left(u^{-1}\right)\cdot\frac{du}{dx}=-u^{-2}\cdot g'=-\frac{g'}{g^2} \]
+        </div>
+        <div class="step"><div class="sh"><span class="sn">2</span>積の微分を当てる</div>
+        <div class="why">なぜ：\(\dfrac fg\) は \(f\) と \(g^{-1}\) の積です。</div>
+        \[ \left(f\cdot g^{-1}\right)'=f'\cdot g^{-1}+f\cdot\left(-\frac{g'}{g^2}\right)=\frac{f'}{g}-\frac{fg'}{g^2} \]
+        </div>
+        <div class="step"><div class="sh"><span class="sn">3</span>通分して整える</div>
+        <div class="why">なぜ：分母を \(g^2\) に揃えるだけです。</div>
+        \[ \frac{f'}{g}-\frac{fg'}{g^2}=\frac{f'g-fg'}{g^2}\quad ✓ \]
+        <p style="font-size:13.5px;color:var(--ink-faint);margin:6px 0 0">分子の順番（\(f'g-fg'\)）は符号を間違えやすいところですが、こうして導けば覚える必要がありません。検算するなら \(f=1\) と置いてみてください。\(\left(\frac1g\right)'=\dfrac{0\cdot g-g'}{g^2}=-\dfrac{g'}{g^2}\) でステップ1と一致します ✓。</p></div>
+      </div>
+      </div>
+
+      <h3>計算ドリル（§04・全3問）</h3>
+
+      <div class="drill"><p><span class="qn">問1</span>次を微分せよ。(a) \(x^2e^{-x}\)　(b) \(\dfrac{\sin x}{x}\)　(c) \(e^{-\gamma t}\cos\omega t\)（\(t\) で微分）</p>
+      <div class="attempt" style="margin:10px 0 4px"><span class="lab">自分の答えを出してから</span>
+      <div class="controls"><button class="ctl-btn" data-sol>解答を見る</button></div>
+      <div class="sol"><p>(a)</p>
+      \[ (x^2)'e^{-x}+x^2(e^{-x})'=2xe^{-x}-x^2e^{-x}=x(2-x)e^{-x} \]
+      <p style="margin:4px 0"><span style="font-size:13.5px;color:var(--ink-faint)">\(x=2\) で 0 → ここが極大。マクスウェル分布や黒体輻射のピークを求める計算がこの形です。</span></p>
+      <p>(b)</p>
+      \[ \dfrac{(\sin x)'x-\sin x\cdot(x)'}{x^2}=\dfrac{x\cos x-\sin x}{x^2} \]
+      <p style="margin:4px 0"><span style="font-size:13.5px;color:var(--ink-faint)">これは単スリット回折の強度に現れる関数（sinc関数）。極値の条件 \(x\cos x=\sin x\) すなわち \(\tan x=x\) が、回折の副極大の位置を決めます。</span></p>
+      <p>(c)</p>
+      \[ (e^{-\gamma t})'\cos\omega t+e^{-\gamma t}(\cos\omega t)'=-e^{-\gamma t}(\gamma\cos\omega t+\omega\sin\omega t) \]
+      <p style="margin:4px 0"><span style="font-size:13.5px;color:var(--ink-faint)"><strong>減衰振動</strong>です。5章で、これが \(m\ddot x+\gamma'\dot x+kx=0\) の解であることを確かめます。</span></p></div></div></div>
+
+      <div class="drill"><p><span class="qn">問2</span>連鎖律を使って次を微分せよ。(a) \(\sin(\omega t+\varphi)\)　(b) \(\sqrt{x^2+a^2}\)　(c) \(\dfrac{1}{\sqrt{x^2+a^2}}\)</p>
+      <div class="attempt" style="margin:10px 0 4px"><span class="lab">自分の答えを出してから</span>
+      <div class="controls"><button class="ctl-btn" data-sol>解答を見る</button></div>
+      <div class="sol"><p>(a) \(u=\omega t+\varphi\) として \(\cos u\cdot\omega=\omega\cos(\omega t+\varphi)\)。<strong>中身の微分 \(\omega\) が外に出る</strong>のを忘れないこと。</p>
+      <p>(b) \(u=x^2+a^2\) として \(\dfrac{1}{2\sqrt u}\cdot2x=\dfrac{x}{\sqrt{x^2+a^2}}\)。</p>
+      <p>(c) \(u^{-1/2}\) の微分は \(-\frac12u^{-3/2}\)、これに \(u'=2x\) を掛けて \(-\dfrac{x}{(x^2+a^2)^{3/2}}\)。</p>
+      <p style="font-size:13.5px;color:var(--ink-faint)">(c) の形は電磁気学で必ず出ます：軸上の点電荷のポテンシャルから電場を出す計算がまさにこれで、\((x^2+a^2)^{3/2}\) という分母は<strong>クーロンの法則を成分に分解した痕跡</strong>です。</p></div></div></div>
+
+      <div class="drill"><p><span class="qn">問3</span>連鎖律を使って、任意の実数 \(\alpha\) について \((x^\alpha)'=\alpha x^{\alpha-1}\) を示せ（\(x>0\)）。ヒント：\(x^\alpha=e^{\alpha\ln x}\)。</p>
+      <div class="attempt" style="margin:10px 0 4px"><span class="lab">自分の答えを出してから</span>
+      <div class="controls"><button class="ctl-btn" data-sol>解答を見る</button></div>
+      <div class="sol">\[ (x^\alpha)'=\left(e^{\alpha\ln x}\right)'=e^{\alpha\ln x}\cdot\frac{\alpha}{x}=x^\alpha\cdot\frac{\alpha}{x}=\alpha x^{\alpha-1} \]
+      <p>これで 1-1 の §04 で自然数についてだけ示した公式が、<strong>負の数・分数・無理数を含むすべての実数 \(\alpha\)</strong> に拡張されました。1-1 の §04 問2・問3の結果も自動的に含まれています。</p>
+      <p style="font-size:13.5px;color:var(--ink-faint)">物理では \(r^{-2}\)（クーロン力）、\(r^{-3}\)（双極子）、\(T^{1/2}\)（熱速度）、\(r^{3/2}\)（ケプラーの第3法則）といった非整数のべきが日常的に出てきます。<strong>この1行でそれらすべてが扱えるようになりました。</strong></p></div></div></div>
+
+      <div class="transfer"><span class="lab">転用</span><p>連鎖律は6章で多変数の場合 \(\dfrac{d f(x,y)}{dt}=\dfrac{\partial f}{\partial x}\dfrac{dx}{dt}+\dfrac{\partial f}{\partial y}\dfrac{dy}{dt}\) に拡張され、そこでエネルギー保存則の導出に使われます。また2章の置換積分は、連鎖律を逆向きに読んだものです。<strong>この節の内容は、以後ずっと使い続ける道具</strong>です。</p></div>
+    </section>
+
+    <!-- §05 -->
+    <section id="p1">
+      <div class="sec-head"><span class="idx">§05</span><h2>総合演習：物理の式を微分する</h2></div>
+
+      <div class="box principle"><span class="lab">狙い</span><p>ここまでの道具を、物理の式に対して通しで使います。計算練習であると同時に、<strong>この先の章で何が起きるかの予告編</strong>にもなっています。</p></div>
+
+      <div class="drill"><p><span class="qn">問1</span>振動する物体の位置が \(x(t)=A\sin(\omega t+\varphi)\) で表されている（\(A,\omega,\varphi\) は定数）。速度 \(v=\dfrac{dx}{dt}\) と加速度 \(a=\dfrac{dv}{dt}\) を求めよ。</p>
+      <div class="attempt" style="margin:10px 0 4px"><span class="lab">自分の答えを出してから</span>
+      <div class="controls"><button class="ctl-btn" data-sol>解答を見る</button></div>
+      <div class="sol"><p>どちらも連鎖律を使います。内側 \(u=\omega t+\varphi\) の微分 \(\omega\) が、微分のたびに前に出てきます。</p>
+      \[ v=\frac{dx}{dt}=A\omega\cos(\omega t+\varphi) \]
+      \[ a=\frac{dv}{dt}=-A\omega^{2}\sin(\omega t+\varphi) \]
+      <p>最後の式の \(A\sin(\omega t+\varphi)\) は \(x\) そのものなので、こうも書けます。</p>
+      \[ \boxed{\ a=-\omega^{2}x\ } \]
+      <p style="font-size:13.5px;color:var(--ink-faint)">「加速度が位置に比例し、符号が逆」という関係です。この式が何を意味するか（どんな力が働いているか）は力学のセクションで扱います。また<strong>この問題は論理を逆にも読めます</strong>——「\(a=-\omega^2x\) を満たす関数は何か」と問えば、答えが \(\sin,\cos\) だと分かる。これが5章の微分方程式の考え方です。</p></div></div></div>
+
+      <div class="drill"><p><span class="qn">問2</span><strong>口頭試問形式</strong>：次の3つを、公式を見ずに自分の言葉で説明せよ。<br>①微分とは何を測る操作か、定義式とともに。<br>②なぜ \(e\) という数が選ばれたのか。<br>③ラジアンの定義と、物理で角度をラジアンで測る理由。</p>
+      <div class="attempt" style="margin:10px 0 4px"><span class="lab">自分の答えを出してから</span>
+      <div class="controls"><button class="ctl-btn" data-sol>解答例を見る</button></div>
+      <div class="sol"><p><strong>①</strong> 入力の微小変化に対する出力の変化の割合＝瞬間の変化率。有限区間の平均変化率 \(\frac{f(x+h)-f(x)}{h}\) をつくり、区間を縮める極限 \(h\to0\) として定義する。図形的には接線の傾き。</p>
+            <p><strong>②</strong> どんな底でも \((a^x)'=C_a\,a^x\) と「自分自身の定数倍」になる。その余計な係数 \(C_a\) が 1 になる底を選べば \((e^x)'=e^x\) と最も簡単になる。その底を \(e\) と名づけた。2.718… は結果であって出発点ではない。</p>
+      <p><strong>③</strong> 扇形の面積が \(\frac12r^2\theta\) と書けるのはラジアンのときだけで、そこから \(\sin h/h\to1\) が出る。度を使うと微分のたびに \(\pi/180\) が付き、微分を重ねるほど余計な係数が積み重なる。ラジアンは<strong>微分が最も簡単になる角度の測り方</strong>。</p>
+      <p style="font-size:13.5px;color:var(--ink-faint)">この3つが澱みなく言えれば、この記事は通過です。特に②と③は「公式の暗記」と「原理からの理解」を分ける問いなので、翌日にもう一度、何も見ずに再現してみてください。</p></div></div></div>
+
+      <div class="box target"><span class="lab">到達</span><p>ここまでで「<strong>三角関数（§01）→ 指数関数（§02）→ 対数関数（§03）→ 組み立ての規則（§04）</strong>」という階段を登りました。1-1 で作った定義と合わせれば、<strong>学部物理に出てくる関数はひととおり微分できる</strong>状態です。公式の一覧を覚えているかではなく、<strong>この流れを白紙から再構成できるか</strong>を確認してください。</p></div>
+    </section>
+
+    <!-- howto -->
+    <section id="howto">
+      <div class="sec-head"><span class="idx">§06</span><h2>チェックリストと次回予告</h2></div>
+
+      <h3>この記事で答えられるようになるべき問い</h3>
+      <div class="box principle"><span class="lab">最終チェック</span>
+      <ul style="margin:8px 0 0">
+        <li>ラジアンの定義（弧長÷半径）を言えるか。扇形の面積を \(\tfrac12r^2\theta\) と書けるか（§01）</li>
+        <li>\(\sin\theta/\theta\to1\) を面積の挟み撃ちで示せるか（§01）</li>
+        <li>\((\sin x)'=\cos x\) を加法定理と \(\sin h/h\to1\) から導けるか（§01）</li>
+        <li>物理で角度をラジアンで測る理由を言えるか（§01）</li>
+        <li>\(e\) の定義を「微分しても形が変わらない底」として説明できるか（§02）</li>
+        <li>\((a^x)'=C_aa^x\) の \(C_a\) が \(\ln a\) になる理由を言えるか（§02）</li>
+        <li>\((\ln x)'=1/x\) を逆関数から出せるか（§03）</li>
+        <li>積の微分を「足して引く」で導けるか。長方形の面積の増分として図で説明できるか（§04）</li>
+        <li>入れ子の関数を分解して、連鎖律を当てられるか（§04）</li>
+        <li>\(x=A\sin(\omega t+\varphi)\) を連鎖律で2回微分して、速度と加速度を出せるか（§05）</li>
+      </ul></div>
+
+      <h3>次節（2-1 積分の基礎）への接続</h3>
+      <p>この記事では、「その瞬間の変化」を取り出すために微分という道具を作りました。次に知りたくなるのは、その逆です——<strong>変化のしかたが分かっているとき、元の量はどうなっているのか</strong>。この復元の操作が積分です。</p>
+      <p>たとえば運動方程式が与えるのは加速度、つまり変化率のほうです。そこから速度や位置を知りたければ、微分を逆向きにたどる必要があります。物理では、微分と積分は必ずセットで使うことになります。</p>
+      <div class="box teach"><span class="lab">2-1 で扱う問い（予習用）</span>
+      <ul style="margin:6px 0 0">
+        <li>「細かく切って足す」（区分求積）としての定積分とは何か</li>
+        <li>なぜ「足し算」の答えが「微分の逆」で求まるのか（微積分学の基本定理）</li>
+        <li>置換積分は連鎖律の裏返し、部分積分は積の微分の裏返しであることの確認</li>
+      </ul>
+      <p style="margin-top:8px"><strong>鍵となる一言</strong>：微分と積分は別々の技術ではなく、<strong>同じ関係を逆向きに読んだもの</strong>。この記事で作った公式表は、そのまま積分の公式表として読み直せます。</p></div>
+
+      <h3>学習サイクルの推奨手順</h3>
+      <ol>
+        <li><strong>解答を開かず、紙で挑戦</strong>。詰まっても5分は粘ってください。詰まるのは失敗ではなく、<strong>まだ腑に落ちていない一点が表に出た合図</strong>です。そこを自分の手で越えた経験が、そのまま次に進む力になります。</li>
+        <li><strong>ヒントを1つずつ</strong>開き、詰まりが解けたら閉じて自力で続行。</li>
+        <li>導出の「なぜこの変形をしたか」を自分の言葉で再現する。<strong>計算の再現ではなく論理の再現</strong>を目標に。</li>
+        <li>翌日、何も見ずに <strong>§05 問2（口頭試問）</strong>を再現する。</li>
+        <li>それができたら、教科書や問題集の微分計算を解く。<strong>この記事を終えた人にとって、それはもう作業</strong>です。</li>
+      </ol>
+
+      <div class="box warn"><span class="lab">この教材の立ち位置</span>
+      <p>本章は<strong>物理で使うための微分</strong>に絞っています。厳密性を求める場合に必要な、\(\varepsilon\)-\(\delta\) 論法による極限の定義、連続と微分可能の関係、平均値の定理、一様収束などには踏み込んでいません。それらは数学科向けの解析学の教科書の領域で、<strong>学部物理の計算をする上では、なくても困りません</strong>。</p>
+      <p style="margin-top:8px">ただし「困らない」のは計算をするときの話です。もし将来、場の量子論や一般相対論で「この極限操作は正当か」と問う場面に出会ったら、そのときに戻ってくれば十分です。</p></div>
+
+      <div class="foot"><p>Academic Gate ／ 物理数学I 1章 微分 ／ 1-2「物理でよく使う関数の微分」。演習問題は本教材独自の構成です。続編：2章 積分 ／ 2-1「積分の基礎」。</p></div>
+    </section>
+  </main>
+</div>
+
+<div id="site-footer"><noscript><nav class="noscript-nav" aria-label="フッターナビゲーション"><a href="index.html">ホーム</a><a href="self-intro.html">自己紹介</a><a href="study.html">勉強の軌跡</a><a href="videos.html">動画</a><a href="blog.html">ブログ</a><a href="sns.html">各種SNS</a></nav></noscript></div>
+
+<script>
+/* ヒント／解答トグル */
+document.querySelectorAll('[data-hint]').forEach(function(btn){
+  var box=btn.closest('.attempt');
+  var hints=[].slice.call(box.querySelectorAll('.hint'));
+  if(!hints.length){ btn.style.display='none'; return; }
+  var hideBtn=document.createElement('button');
+  hideBtn.type='button';hideBtn.className='ctl-btn amber';hideBtn.textContent='ヒントを隠す';hideBtn.style.display='none';
+  btn.after(hideBtn);
+  btn.addEventListener('click',function(){
+    var hidden=hints.filter(function(h){return h.style.display!=='block'});
+    if(hidden.length){ hidden[0].style.display='block'; hideBtn.style.display='';
+      if(hidden.length===1){ btn.textContent='ヒントは以上'; btn.disabled=true; }
+      else { btn.textContent='次のヒント ('+(hints.length-hidden.length+1)+'/'+hints.length+')'; }
+    }
+  });
+  hideBtn.addEventListener('click',function(){
+    hints.forEach(function(h){h.style.display='none'});
+    hideBtn.style.display='none';btn.disabled=false;btn.textContent='ヒントを表示';
+  });
+});
+document.querySelectorAll('[data-sol]').forEach(function(btn){
+  btn.addEventListener('click',function(){
+    var sol=btn.closest('.attempt').querySelector('.sol');
+    var open=sol.style.display==='block';
+    sol.style.display=open?'none':'block';
+    if(!btn.dataset.show) btn.dataset.show=btn.textContent;
+    btn.textContent=open?btn.dataset.show:'閉じる';
+    if(!open && window.MathJax && MathJax.typesetPromise) MathJax.typesetPromise([sol]);
+  });
+});
+
+/* 目次の追従 */
+var links=[].slice.call(document.querySelectorAll('.toc a[href^="#"]'));
+var secs=links.map(function(a){return document.querySelector(a.getAttribute('href'))});
+var pbar=document.getElementById('pbar');
+function onScroll(){
+  // getBoundingClientRect を使う（offsetTop ではない）。style.css の
+  // `main{position:relative}` で <main> が offsetParent になり、offsetTop が
+  // 文書基準でなくなるため、scrollY と直接比べると判定がずれる（§36）。
+  var idx=0;
+  secs.forEach(function(s,i){ if(s&&s.getBoundingClientRect().top<=140) idx=i; });
+  links.forEach(function(a){a.classList.remove('active')});
+  if(links[idx]) links[idx].classList.add('active');
+  var h=document.documentElement.scrollHeight-window.innerHeight;
+  pbar.style.width=(h>0?(window.scrollY/h*100):0)+'%';
+}
+window.addEventListener('scroll',onScroll,{passive:true});
+window.addEventListener('resize',onScroll); onScroll();
+var body=document.body,mb=document.getElementById('menuBtn'),scrim=document.getElementById('scrim');
+mb.addEventListener('click',function(){var o=body.classList.toggle('nav-open');mb.setAttribute('aria-expanded',o)});
+scrim.addEventListener('click',function(){body.classList.remove('nav-open')});
+document.getElementById('toc').addEventListener('click',function(e){if(e.target.closest('a'))body.classList.remove('nav-open')});
+</script>
+<script src="../js/layout.js?v=r54"></script>
+<script src="../js/main.js?v=r54"></script>
+<script src="../js/starfield.js?v=r54"></script>
+</body>
+</html>
