@@ -1425,10 +1425,13 @@ body.is-article main ul {
     background: #fff;
 }
 
-/* Any checkbox/slider on the site keeps the teal accent */
+/* Any checkbox/slider on the site takes the site accent (blue). This used to be
+   --spec-teal, the hero palette's teal, which was the last teal left in the UI
+   chrome — the particle field keeps it, the controls do not (§47). Changed while
+   no page shipped a checkbox yet, so nothing visible moved. */
 input[type="checkbox"],
 input[type="range"] {
-    accent-color: var(--spec-teal);
+    accent-color: var(--accent);
 }
 
 /* ---------------------------------------------------------------------------

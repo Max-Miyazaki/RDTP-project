@@ -202,8 +202,16 @@ footer {
         --line-soft: #eee;
         --surface: #fff;
         --surface-2: #f6f6f6;
-        --accent: #0a7d70;
-        --accent-deep: #075e55;
+        /* アクセントは紙でもサイトと同じ青。ここだけティール（#0a7d70）が
+           残っていて、画面が青・印刷が緑という状態だった（§47）。値は
+           lesson-theme のライトと同じ #1558d6 / #103f9e（白地 6.18:1 / 9.43:1）。
+           ★ --on-accent も併せて置くこと。ダーク側の #001227 を継承したままだと
+           `.mod-h .no` / `.step .sn` / `.drill .qn` のバッジ文字が
+           #0a7d70 上で 3.75:1（すでに AA 割れ）、#1558d6 上では 3.05:1 と
+           さらに落ちる。白にして 6.18:1（§47.3）。 */
+        --accent: #1558d6;
+        --accent-deep: #103f9e;
+        --on-accent: #ffffff;
         --amber: #a86400;
         --good: #1c7a52;
         --key: #b0306a;
