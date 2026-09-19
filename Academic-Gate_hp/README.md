@@ -69,7 +69,7 @@ wrong — commit authorship will look right and the push will still 403.
 ## Conventions
 
 - **Assets are cache-busted** with `?v=rNN` query strings in the HTML. Bump the number when
-  editing `css`/`js` so browsers refetch. (Current: **`r52`**.)
+  editing `css`/`js` so browsers refetch. (Current: **`r53`**.)
 - **Verify in a real browser**, not an editor preview. Baselines in `docs/stills/` were shot in
   headless Chrome (Apple GPU) and, for iOS, on a real device.
 - Three.js is pinned to **0.160.0** (jsdelivr → unpkg fallback), loaded from one place only —
