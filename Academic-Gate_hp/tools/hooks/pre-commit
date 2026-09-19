@@ -1,0 +1,5 @@
+#!/bin/sh
+# Academic Gates — コミット前の検査。
+# 有効化（クローンごとに一度）:  git config core.hooksPath Academic-Gate_hp/tools/hooks
+# 一時的に飛ばす:                git commit --no-verify
+exec sh Academic-Gate_hp/tools/check-cachebust.sh
