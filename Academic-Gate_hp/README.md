@@ -55,7 +55,7 @@ wrong — commit authorship will look right and the push will still 403.
 
 | Path | What |
 |---|---|
-| `DESIGN.md` | **The design system + full decision log.** Tokens (§2), type scale (§3), components (§5), the hero scroll choreography + particle parameters (§6), fallbacks (§7), per-page adaptation (§8), shared header/footer (§11), and the round-by-round deviation log (§13). §35 records the Archive Sphere / Peskin removal; **§36 is the 教材 (lesson-page) contract** — naming, what belongs in the shared CSS, the light/dark tokens, and the element-selector traps; **§37 is the 勉強の軌跡 hierarchy** — three levels, when to add a 科目 page, breadcrumbs, and how empty fields are shown; **§38 is the 分野 card grid** — why 3 columns, why `auto-fill`, and how a card without a link is shown; **§39 is the 科目 page** — why cards forced a fourth level, and what was retired with the accordion; **§41–§43 are the light theme** — why borders, not surface steps, made it look flat (§41), the paper ground and the glow that had to be warmed with it (§42), and the variable two-column layout that widens the body to 860px without starving 1024px (§43); **§44 is why the theme switch is off** and how to turn it back on; **§45 is the cache-buster check**; **§46.0 is the maths-on-narrow-screens verdict**, including the one writing rule above. Read this first. |
+| `DESIGN.md` | **The design system + full decision log.** Tokens (§2), type scale (§3), components (§5), the hero scroll choreography + particle parameters (§6), fallbacks (§7), per-page adaptation (§8), shared header/footer (§11), and the round-by-round deviation log (§13). §35 records the Archive Sphere / Peskin removal; **§36 is the 教材 (lesson-page) contract** — naming, what belongs in the shared CSS, the light/dark tokens, and the element-selector traps; **§37 is the 勉強の軌跡 hierarchy** — three levels, when to add a 科目 page, breadcrumbs, and how empty fields are shown; **§38 is the 分野 card grid** — why 3 columns, why `auto-fill`, and how a card without a link is shown; **§39 is the 科目 page** — why cards forced a fourth level, and what was retired with the accordion; **§41–§43 are the light theme** — why borders, not surface steps, made it look flat (§41), the paper ground and the glow that had to be warmed with it (§42), and the variable two-column layout that widens the body to 860px without starving 1024px (§43); **§44 is why the theme switch is off** and how to turn it back on; **§45 is the cache-buster check**; **§46.0 is the maths-on-narrow-screens verdict**, including the one writing rule above; **§47 is the 能力開発 branch** — why it is three levels, not four (§47.1), how a figure's colours must follow mark *size* (§47.5), the `.card` name collision (§47.6), and why `<details>` needs `::details-content` to open in print (§47.7). Read this first. |
 | `css/style.css` | Single global stylesheet. **Design tokens are defined once at the top (`:root`)** — colors, type scale, spacing, radii, `--nav-clearance`. Everything else is grouped under numbered section comments. |
 | `js/layout.js` | Injects the shared `<header>` + `<footer>` into every page from one source (loads before `main.js`; sets active nav from `data-page`; `<noscript>` fallback in each placeholder). |
 | `js/scroll-scenes.js` | The hero engine — Three.js particle field, per-stage morph shader, scroll-driven opacity/formation. index.html only. |
@@ -63,16 +63,18 @@ wrong — commit authorship will look right and the push will still 403.
 | `js/starfield.js` | Paints the static star field to `#starfield` once; repaints on debounced resize. On `body.is-article` it also thins the stars behind the reading columns (`main > section, .rail`). |
 | `js/theme.js` | Light/dark switch — **currently switched off (§44)**: the article's `<script>` tag is commented out, so nothing ever sets `data-theme`. Re-enable by uncommenting that one line. 教材 pages only, never the six main pages (§20.4). |
 | `css/lesson-theme.css` | The 教材 theme layer: light values declared with the **site's own token names**, with the lesson's `--ink` / `--line` names aliased onto them. Loaded **after** the page's own `<style>`. **Not a light-only file** — its dark `:root` is the only definition of `--ink` / `--line` / `--on-accent` / `--footer-bg` / `--rail-bg`, so dropping it breaks dark (§44.1). |
-| `html/` | 9 pages. Every `<body>` carries `data-page` (drives nav active state); a reading page adds `class="is-article"` (§35). **勉強の軌跡 is four levels** — `study.html` (分野一覧) → `study_<field>.html` (分野) → `<subject>.html` (科目) → `<subject>_<chapter>-<section>.html` (記事), e.g. `study_physics.html` → `phys-math.html` → `phys-math_1-1.html` (§37.2, §39.1). Every level after the first is a **card grid** (§38). **Flat only**: a subdirectory breaks every relative nav link — the migration trigger and recipe are in §37.2. |
+| `html/` | 11 pages. Every `<body>` carries `data-page` (drives nav active state); a reading page adds `class="is-article"` (§35). **勉強の軌跡 branches at different depths.** 物理 is four levels — `study.html` (分野一覧) → `study_physics.html` (分野) → `phys-math.html` (科目) → `phys-math_1-1.html` (記事) (§37.2, §39.1). 能力開発 is **three** — `study.html` → `study_skills.html` → `memoryverse_1-1.html`, with no 科目 page, because five articles do not justify two nav pages (§47.1; the promotion recipe is there and does not change the article's URL). Every level after the first is a **card grid** (§38). **Flat only**: a subdirectory breaks every relative nav link — the migration trigger and recipe are in §37.2. |
 | `docs/stills/` | Visual-regression baseline screenshots (current build, desktop + mobile). |
 | `tools/bump.sh` | Bumps the `?v=rNN` cache buster across every page + this README. Use it instead of editing versions by hand. |
 | `tools/check-cachebust.sh` | Refuses a commit that edits `css`/`js` without bumping, or that leaves pages on different versions. Runs standalone too — see **Conventions** (§45). |
 | `tools/hooks/` | Version-controlled git hooks. `git config core.hooksPath Academic-Gate_hp/tools/hooks` to enable. |
+| `tools/fetch-memoryverse-images.sh` | Re-fetches the nine planet images into `image/memoryverse/`. Not needed normally — they are committed. Licences and the no-modification rule are in the script header (§47.8). |
+| `image/` | All site images, one flat folder plus a subfolder per 教材 (`image/memoryverse/`). Pages reference it as `../image/…`. A subfolder here is fine; a subfolder under `html/` is not (§37.2). |
 
 ## Conventions
 
 - **Assets are cache-busted** with `?v=rNN` query strings in the HTML. Bump the number when
-  editing `css`/`js` so browsers refetch. (Current: **`r53`**.) **Do not do this by hand:**
+  editing `css`/`js` so browsers refetch. (Current: **`r54`**.) **Do not do this by hand:**
 
       sh Academic-Gate_hp/tools/bump.sh        # r53 → r54, every page + this README
       sh Academic-Gate_hp/tools/bump.sh 60     # or jump to a specific number
@@ -102,7 +104,9 @@ wrong — commit authorship will look right and the push will still 403.
   the bare `header` / `footer` elements (so a lesson's own `<header>` becomes the floating nav pill);
   the shared `body.is-article` column rules out-specify a page's own layout unless it goes through
   `.main`; and a raw `<` in TeX starts an HTML tag when a letter follows it (`0<a` breaks, `0<\theta`
-  is fine).
+  is fine). **Also grep every class name in the page against `css/style.css` before importing** —
+  `.card` / `.hero` / `.btn` are live site components and a lesson that reuses the name inherits
+  hover glows and flex layout it never asked for (§47.6).
 
 ## Known unknown
 
