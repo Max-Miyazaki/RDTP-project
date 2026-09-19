@@ -55,7 +55,7 @@ wrong — commit authorship will look right and the push will still 403.
 
 | Path | What |
 |---|---|
-| `DESIGN.md` | **The design system + full decision log.** Tokens (§2), type scale (§3), components (§5), the hero scroll choreography + particle parameters (§6), fallbacks (§7), per-page adaptation (§8), shared header/footer (§11), and the round-by-round deviation log (§13). §35 records the Archive Sphere / Peskin removal; **§36 is the 教材 (lesson-page) contract** — naming, what belongs in the shared CSS, the light/dark tokens, and the element-selector traps; **§37 is the 勉強の軌跡 hierarchy** — three levels, when to add a 科目 page, breadcrumbs, and how empty fields are shown; **§38 is the 分野 card grid** — why 3 columns, why `auto-fill`, and how a card without a link is shown; **§39 is the 科目 page** — why cards forced a fourth level, and what was retired with the accordion; **§41–§43 are the light theme** — why borders, not surface steps, made it look flat (§41), the paper ground and the glow that had to be warmed with it (§42), and the variable two-column layout that widens the body to 860px without starving 1024px (§43). Read this first. |
+| `DESIGN.md` | **The design system + full decision log.** Tokens (§2), type scale (§3), components (§5), the hero scroll choreography + particle parameters (§6), fallbacks (§7), per-page adaptation (§8), shared header/footer (§11), and the round-by-round deviation log (§13). §35 records the Archive Sphere / Peskin removal; **§36 is the 教材 (lesson-page) contract** — naming, what belongs in the shared CSS, the light/dark tokens, and the element-selector traps; **§37 is the 勉強の軌跡 hierarchy** — three levels, when to add a 科目 page, breadcrumbs, and how empty fields are shown; **§38 is the 分野 card grid** — why 3 columns, why `auto-fill`, and how a card without a link is shown; **§39 is the 科目 page** — why cards forced a fourth level, and what was retired with the accordion; **§41–§43 are the light theme** — why borders, not surface steps, made it look flat (§41), the paper ground and the glow that had to be warmed with it (§42), and the variable two-column layout that widens the body to 860px without starving 1024px (§43); **§44 is why the theme switch is off** and how to turn it back on; **§45 is the cache-buster check**; **§46.0 is the maths-on-narrow-screens verdict**, including the one writing rule above. Read this first. |
 | `css/style.css` | Single global stylesheet. **Design tokens are defined once at the top (`:root`)** — colors, type scale, spacing, radii, `--nav-clearance`. Everything else is grouped under numbered section comments. |
 | `js/layout.js` | Injects the shared `<header>` + `<footer>` into every page from one source (loads before `main.js`; sets active nav from `data-page`; `<noscript>` fallback in each placeholder). |
 | `js/scroll-scenes.js` | The hero engine — Three.js particle field, per-stage morph shader, scroll-driven opacity/formation. index.html only. |
@@ -93,7 +93,12 @@ wrong — commit authorship will look right and the push will still 403.
   headless Chrome (Apple GPU) and, for iOS, on a real device.
 - Three.js is pinned to **0.160.0** (jsdelivr → unpkg fallback), loaded from one place only —
   `js/scroll-scenes.js`'s `loadThree()`, for `index.html`. See DESIGN.md §11b.
-- **Adding a 教材 page?** Read DESIGN.md §36 first. The three traps that cost time: `style.css` styles
+- **Writing the maths in a 教材 page?** One rule, from DESIGN.md **§46.0 ②**: a chain of two or
+  more `=` goes in `\[ … \]`, never in inline `\( … \)`. Inline maths cannot scroll — `overflow-x`
+  only applies to display containers — so on a phone an inline derivation is simply cut off and
+  unreachable. Single values and symbols (`\(f(5)=25\)`) stay inline. §46.0 has the markup pattern.
+- **Adding a 教材 page?** Read DESIGN.md §36 first (§36.0 lists what to read before writing). The
+  three traps that cost time: `style.css` styles
   the bare `header` / `footer` elements (so a lesson's own `<header>` becomes the floating nav pill);
   the shared `body.is-article` column rules out-specify a page's own layout unless it goes through
   `.main`; and a raw `<` in TeX starts an HTML tag when a letter follows it (`0<a` breaks, `0<\theta`
