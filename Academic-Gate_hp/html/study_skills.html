@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>能力開発｜勉強の軌跡 - Academic Gates</title>
+    <meta name="description" content="能力開発（自分用）の記録。記憶術や思考法など、学習能力そのものを拡張するための教材を並べています。">
+    <link rel="stylesheet" href="../css/style.css?v=r54">
+    <link rel="icon" href="../../favicon.ico" sizes="32x32">
+    <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+</head>
+<body data-page="study">
+    <canvas id="starfield" aria-hidden="true"></canvas>
+<div id="site-nav"><noscript><nav class="noscript-nav" aria-label="メインナビゲーション"><a href="index.html">ホーム</a><a href="self-intro.html">自己紹介</a><a href="study.html">勉強の軌跡</a><a href="videos.html">動画</a><a href="blog.html">ブログ</a><a href="sns.html">各種SNS</a></nav></noscript></div>
+    <main>
+        <div class="page-header">
+            <!-- パンくず。ヘッダーのナビは最上位（勉強の軌跡）にしか戻れないので、
+                 中間層への導線はこれが担う。新しいコンポーネントは足さず、
+                 既存の .eyebrow をそのまま使っている（§37.5）。 -->
+            <nav class="eyebrow" aria-label="パンくず"><a href="study.html">勉強の軌跡</a> ／ 能力開発</nav>
+                <h1>能力開発</h1>
+            <p>記憶術や思考法など、学習能力そのものを拡張する。</p>
+        </div>
+
+        <!-- ★ ここは物理学と違って 3 階層（study → 分野 → 記事）。カードの行き先が
+             科目ページではなく記事そのものになっている。理由は §47.1 — 記事 5 本に
+             ナビ用ページ 2 枚は §37.1 の算術で割に合わないため、科目ページ
+             （memoryverse.html）を挟んでいない。
+             昇格の合図は「記憶術に 2 つめの教材が来たとき」または節が 20〜30 を
+             超えたとき。そのときは memoryverse.html を作り、下のカードの href を
+             差し替えるだけでよい（記事の URL は変わらない）。
+             章立ては §39.2 と同じ形：eyebrow + h2 がグループ（平文）、カードが行き先。 -->
+        <section class="study-grid">
+            <p class="eyebrow"><span class="eyebrow__num">01</span> — Memory</p>
+            <h2>記憶術</h2>
+
+            <a class="study-card" href="memoryverse_1-1.html">
+                <h3>メモリーバース v3　第1回 太陽系の骨格</h3>
+                <p>太陽と8惑星を、頭の中に置く</p>
+            </a>
+        </section>
+
+        <!-- 思考法など別のグループが増えたら、ここに `02 — Thinking` の節を足す。
+             グループが増えるだけならページは増えない（study_physics.html が
+             基礎領域／専門領域の 2 グループを 1 枚で持っているのと同じ）。 -->
+    </main>
+    <div id="site-footer"><noscript><nav class="noscript-nav" aria-label="フッターナビゲーション"><a href="index.html">ホーム</a><a href="self-intro.html">自己紹介</a><a href="study.html">勉強の軌跡</a><a href="videos.html">動画</a><a href="blog.html">ブログ</a><a href="sns.html">各種SNS</a></nav></noscript></div>
+    <script src="../js/layout.js?v=r54"></script>
+    <script src="../js/main.js?v=r54"></script>
+    <script src="../js/starfield.js?v=r54"></script>
+</body>
+</html>
