@@ -29,12 +29,13 @@
 :root[data-theme="light"] {
     color-scheme: light;
     /* 面の階層。ダークの .02 / .14 を反転させるのではなく、ライト用の値を与える。
-       地は青灰色ではなく、わずかに温かいオフホワイト（紙の地）。R−B は −7 → +13。
-       白カードとの ΔL* は +8.2 で、面が浮いて見える（§41 の +5.2 から拡大）。
-       --surface-2 は背景と白の中間層（§42）。 */
-    --bg: #ece7df;
+       地は青灰色でも黄色でもなく、ほぼ無彩のオフホワイト（紙の地）。
+       R−B は −7（§41）→ +13（§42、温かすぎた）→ +4。明度も上げつつ、
+       白カードとの ΔL* は +6.3 を確保して面が浮くようにしている（§43.1）。
+       --surface-2 は背景と白の中間層。 */
+    --bg: #eeedea;
     --surface: #ffffff;
-    --surface-2: #f8f5f0;
+    --surface-2: #f8f8f6;
     --nav-bg: rgba(255, 255, 255, .72);
 
     /* 本体トークン。style.css はダーク専用なので、共有ヘッダー／フッター／
@@ -84,8 +85,8 @@
     --teach-line: rgba(91, 63, 208, .36);
     --glow-cool: rgba(21, 88, 214, .18);
     --on-accent: #ffffff;   /* #1558d6 上で 6.18:1 */
-    --footer-bg: #e4ded4;   /* 地より一段下げて面を分ける（温色に追随） */
-    --rail-bg: rgba(252, 250, 246, .97);   /* 900px 以下のドロワー。温色に追随 */
+    --footer-bg: #e7e6e2;   /* 地より一段下げて面を分ける */
+    --rail-bg: rgba(252, 252, 250, .97);   /* 900px 以下のドロワー */
 }
 
 :root[data-theme="light"] #starfield {
@@ -102,9 +103,9 @@
    （実描画ピクセルで確認。§42.3）。地と同じ暖色系に振って、明度の起伏だけを
    残す。トークンを差し替えるだけなので、style.css の body::before は触らない。 */
 :root[data-theme="light"] {
-    --spill-blue: rgba(163, 92, 0, .07);
-    --spill-blue-deep: rgba(192, 38, 103, .05);
-    --spill-violet: rgba(91, 63, 208, .035);
+    --spill-blue: rgba(163, 92, 0, .05);
+    --spill-blue-deep: rgba(192, 38, 103, .04);
+    --spill-violet: rgba(91, 63, 208, .03);
 }
 
 :root[data-theme="light"] body::before {

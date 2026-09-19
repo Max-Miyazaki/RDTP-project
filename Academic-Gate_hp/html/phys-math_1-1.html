@@ -55,14 +55,25 @@ body{font-size:15.5px;line-height:1.9;line-break:strict;overflow-x:hidden}
    ルールは `body.is-article main > section:not(.rail)`（詳細度 0,2,3）と
    `… ~ section:not(.rail)`（0,3,4）で 900px と 160px パディングをかけてくる。
    こちらは `.main` を噛ませて 0,3,2 / 0,4,3 とし、確実に上回る（§36）。 */
-/* max-width:1200px は意図的。外して左右を対称にする案（§40）を一度実装したが、
-   本文の幅も読み位置もほとんど変わらないため差し戻した。再検討の前に §40 を読むこと。 */
-.wrap{display:flex;max-width:1200px;margin:0 auto;padding-top:var(--nav-clearance)}
+/* 全幅。左寄せのレイアウトで、余った幅は右に流す（§43）。
+   §40 で一度 max-width を外して差し戻しているが、あれは「中央寄せのまま左右を
+   対称にする」変更で、本文の位置も幅も変わらなかったため戻した。今回は本文を
+   860px に広げて左揃えにするので、目的も結果も違う。
+   レールの左余白は 1280px → 1440px にかけて 0 → 32px。狭い画面ではまず余白を
+   削って本文幅に回す（レール幅 250px は目次の文字量で決まるので触らない）。 */
+.wrap{display:flex;padding-top:var(--nav-clearance);
+      padding-left:clamp(0px, calc((100vw - 1280px) * .2), 32px)}
 .rail{width:var(--rail-w);flex:0 0 var(--rail-w);position:sticky;top:var(--nav-clearance);height:calc(100vh - var(--nav-clearance));overflow-y:auto;padding:18px 14px 60px 22px;border-right:1px solid var(--line)}
-.main{flex:1 1 auto;min-width:0;padding:0 clamp(20px,4vw,56px) 110px}
+/* 左パディング＝レールと本文の間隔。1024px → 1280px にかけて 24 → 56px。
+   これも狭い画面では縮めて本文幅に回す。 */
+.main{flex:1 1 auto;min-width:0;
+      padding:0 clamp(24px, calc(24px + (100vw - 1024px) * .125), 56px) 110px}
+/* 本文列 860px。760px では display 数式が 6 本はみ出していた（解答の入れ子
+   パディングで、.sol の中は本文列より 132px 狭い箱になる）。全 82 本が収まる
+   最小幅は実測 853px（§43.2）。中央寄せをやめて左揃えにし、余りは右へ。 */
 body.is-article .main > .lesson-hero,
 body.is-article .main > section:not(.rail),
-body.is-article .main > .foot{max-width:760px;margin-left:auto;margin-right:auto;padding-left:0;padding-right:0}
+body.is-article .main > .foot{max-width:860px;margin-left:0;margin-right:auto;padding-left:0;padding-right:0}
 .rail .brand{font-weight:400;font-size:15px;line-height:1.45;margin:2px 0 4px}
 .rail .brand small{display:block;font-size:10px;font-weight:500;color:var(--ink-faint);letter-spacing:.2em;margin-top:6px}
 .progress-wrap{height:2px;background:var(--line);border-radius:99px;margin:16px 0 18px;overflow:hidden}
