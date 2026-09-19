@@ -206,6 +206,16 @@ mjx-container[display="true"]{margin:14px 0!important;overflow-x:auto;overflow-y
   .scrim{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:1090}
   body.nav-open .scrim{display:block}
   .lesson-hero{padding-top:40px}
+  /* 案A（§46.1）の負マージンをここで切る。マージンは固定 px なので、箱そのものが
+     狭いこの帯では数式が .sol の枠を大きく飛び出し、点線の .attempt 枠まで越えて
+     見える。390px では 28本が枠を横切っていた。はみ出し本数は 36→42 に増えるが、
+     どれも数式ごとの横スクロールで読める。§46.4 */
+  .box mjx-container[display="true"],
+  .drill > mjx-container[display="true"],
+  .attempt mjx-container[display="true"],
+  .drill .attempt mjx-container[display="true"],
+  .attempt .sol mjx-container[display="true"],
+  .drill .attempt .sol mjx-container[display="true"]{margin:14px 0!important}
 }
 @media print{
   body{background:#fff;color:#000}
@@ -456,7 +466,9 @@ mjx-container[display="true"]{margin:14px 0!important;overflow-x:auto;overflow-y
       <div class="attempt" style="margin:10px 0 4px"><span class="lab">自分の答えを出してから</span>
       <div class="controls"><button class="ctl-btn" data-sol>解答を見る</button></div>
       <div class="sol"><p>(a) \(f(5)=25\)、\(f(2a)=(2a)^2=4a^2\)、\(f(x+h)=(x+h)^2\)。</p>
-      <p>(b) \(g(t+h)=3(t+h)+1=3t+3h+1\)。差は</p>
+      <p>(b)</p>
+      \[ g(t+h)=3(t+h)+1=3t+3h+1 \]
+      <p style="margin:4px 0">差は</p>
       \[ g(t+h)-g(t)=(3t+3h+1)-(3t+1)=3h \]
       <p>(c) \(f(x+h)=\dfrac{1}{x+h}\)。　(d) \(f(x+h)=\sin(x+h)\)。</p>
       <p style="font-size:13.5px;color:var(--ink-faint)">(b) に注目してください。差が \(3h\) なので \(h\) で割ると <strong>3</strong>——区間の取り方によらず一定です。1次関数のグラフは直線なので、傾きがどこでも同じ。<strong>この「差をとって \(h\) で割る」動作が、以降ずっと繰り返される基本操作</strong>です。</p></div></div></div>
@@ -465,7 +477,8 @@ mjx-container[display="true"]{margin:14px 0!important;overflow-x:auto;overflow-y
       <div class="drill"><p><span class="qn">問2</span>自由落下する物体の位置は \(y(t)=\frac12gt^2\)（下向き正、\(g=9.8\ \mathrm{m/s^2}\)）。(a) \(t=1\) から \(t=2\) までの平均の速さを求めよ。(b) \(t=1\) から \(t=1+h\) までの平均の速さを \(h\) の式で表せ。(c) (b) で \(h=0.1,\ 0.01,\ 0.001\) としたとき、値は何に近づくか。</p>
       <div class="attempt" style="margin:10px 0 4px"><span class="lab">自分の答えを出してから</span>
       <div class="controls"><button class="ctl-btn" data-sol>解答を見る</button></div>
-      <div class="sol"><p>(a) \(\dfrac{y(2)-y(1)}{2-1}=\dfrac{\frac12g\cdot4-\frac12g\cdot1}{1}=\dfrac{3}{2}g=14.7\ \mathrm{m/s}\)。</p>
+      <div class="sol"><p>(a)</p>
+      \[ \dfrac{y(2)-y(1)}{2-1}=\dfrac{\frac12g\cdot4-\frac12g\cdot1}{1}=\dfrac{3}{2}g=14.7\ \mathrm{m/s} \]
       <p>(b) 分子を展開します。</p>
       \[ \frac{\frac12g(1+h)^2-\frac12g\cdot1^2}{h}=\frac{\frac12g(1+2h+h^2-1)}{h}=\frac{\frac12g(2h+h^2)}{h}=g\left(1+\frac{h}{2}\right) \]
       <p style="margin:4px 0"><strong>途中で \(h\) が約分できた</strong>ことが決定的です。約分前は \(h=0\) を代入すると \(0/0\) ですが、約分後は代入できます。</p>
@@ -1185,9 +1198,15 @@ mjx-container[display="true"]{margin:14px 0!important;overflow-x:auto;overflow-y
       <div class="drill"><p><span class="qn">問1</span>次を微分せよ。(a) \(x^2e^{-x}\)　(b) \(\dfrac{\sin x}{x}\)　(c) \(e^{-\gamma t}\cos\omega t\)（\(t\) で微分）</p>
       <div class="attempt" style="margin:10px 0 4px"><span class="lab">自分の答えを出してから</span>
       <div class="controls"><button class="ctl-btn" data-sol>解答を見る</button></div>
-      <div class="sol"><p>(a) \((x^2)'e^{-x}+x^2(e^{-x})'=2xe^{-x}-x^2e^{-x}=x(2-x)e^{-x}\)。<br><span style="font-size:13.5px;color:var(--ink-faint)">\(x=2\) で 0 → ここが極大。マクスウェル分布や黒体輻射のピークを求める計算がこの形です。</span></p>
-      <p>(b) \(\dfrac{(\sin x)'x-\sin x\cdot(x)'}{x^2}=\dfrac{x\cos x-\sin x}{x^2}\)。<br><span style="font-size:13.5px;color:var(--ink-faint)">これは単スリット回折の強度に現れる関数（sinc関数）。極値の条件 \(x\cos x=\sin x\) すなわち \(\tan x=x\) が、回折の副極大の位置を決めます。</span></p>
-      <p>(c) \((e^{-\gamma t})'\cos\omega t+e^{-\gamma t}(\cos\omega t)'=-e^{-\gamma t}(\gamma\cos\omega t+\omega\sin\omega t)\)。<br><span style="font-size:13.5px;color:var(--ink-faint)"><strong>減衰振動</strong>です。5章で、これが \(m\ddot x+\gamma'\dot x+kx=0\) の解であることを確かめます。</span></p></div></div></div>
+      <div class="sol"><p>(a)</p>
+      \[ (x^2)'e^{-x}+x^2(e^{-x})'=2xe^{-x}-x^2e^{-x}=x(2-x)e^{-x} \]
+      <p style="margin:4px 0"><span style="font-size:13.5px;color:var(--ink-faint)">\(x=2\) で 0 → ここが極大。マクスウェル分布や黒体輻射のピークを求める計算がこの形です。</span></p>
+      <p>(b)</p>
+      \[ \dfrac{(\sin x)'x-\sin x\cdot(x)'}{x^2}=\dfrac{x\cos x-\sin x}{x^2} \]
+      <p style="margin:4px 0"><span style="font-size:13.5px;color:var(--ink-faint)">これは単スリット回折の強度に現れる関数（sinc関数）。極値の条件 \(x\cos x=\sin x\) すなわち \(\tan x=x\) が、回折の副極大の位置を決めます。</span></p>
+      <p>(c)</p>
+      \[ (e^{-\gamma t})'\cos\omega t+e^{-\gamma t}(\cos\omega t)'=-e^{-\gamma t}(\gamma\cos\omega t+\omega\sin\omega t) \]
+      <p style="margin:4px 0"><span style="font-size:13.5px;color:var(--ink-faint)"><strong>減衰振動</strong>です。5章で、これが \(m\ddot x+\gamma'\dot x+kx=0\) の解であることを確かめます。</span></p></div></div></div>
 
       <div class="drill"><p><span class="qn">問2</span>連鎖律を使って次を微分せよ。(a) \(\sin(\omega t+\varphi)\)　(b) \(\sqrt{x^2+a^2}\)　(c) \(\dfrac{1}{\sqrt{x^2+a^2}}\)</p>
       <div class="attempt" style="margin:10px 0 4px"><span class="lab">自分の答えを出してから</span>
