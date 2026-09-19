@@ -2,6 +2,18 @@
  * 各教材の <style> の「後」に読み込むこと。
  * 教材側の :root にある色トークンを、ライト時だけ差し替える。
  *
+ * ★★ 重要: このファイルは「ライト専用」ではない。★★
+ * ライト/ダークの切替自体は停止中（DESIGN.md §44）。html 側で js/theme.js の
+ * 読み込みをコメントアウトしてあるので data-theme が付かず、下の
+ * :root[data-theme="light"] ブロックは現在いっさいマッチしない。
+ * だが **このファイルを外すとダークが壊れる**。ダーク側 :root の
+ *   --ink / --line / --line-strong / --on-accent / --footer-bg / --rail-bg / color-scheme
+ * は記事の <style> にも style.css にも無く、ここにしか定義が無い。特に --line が
+ * 未定義になると border:1px solid var(--line) が currentColor（＝白）に落ちて、
+ * 記事中のヘアラインが全部「不透明な白線」になる。footer / .prompt /
+ * .footer-tagline / 900px 以下の .rail / @media print も、スコープ無しで
+ * ダークに効いている。整理するときは §44.1 の分類表を読むこと。
+ *
  * 教材ページ専用。本体6ページには読み込ませない（DESIGN.md §20.4）。
  * ライト値は「本体のトークン名」で宣言し、教材側の --ink / --line 系は
  * そこへのエイリアスにしてある。真実の在処が1テーマ1箇所になるので、
