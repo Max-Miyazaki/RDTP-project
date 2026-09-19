@@ -23,29 +23,33 @@
             <p>記憶術や思考法など、学習能力そのものを拡張する。</p>
         </div>
 
-        <!-- 物理学と同じ 4 階層（study → 分野 → 科目 → 記事）。§47.1 では 3 階層に
-             していたが、§48 で揃えた（枝ごとに深さを変えない）。
-             ★ グループと章はページを作らない。ここの h2「記憶術」はグループで、
-             カードが指すのは科目ページ。科目は教材シリーズ（メモリーバース）で、
-             記憶術ではない — §36.1 の `<科目スラッグ>_<章>-<節>` に従うと、科目を
-             記憶術にした時点で記事が mnemonics_1-1.html になってしまうため（§48.2）。
-             カードのサブ説明は科目ページのリード文と同じ文にしてある
-             （study_physics.html の「物理数学」カードと phys-math.html の関係と同じ）。 -->
+        <!-- カードは技能。行き先は技能ページで、その下に教材シリーズが並ぶ（§49）。
+             能力開発は物理より 1 段深い（分野 → 技能 → シリーズ → 記事）。
+             ★ 物理の「基礎領域」は中身を持たない分類ラベルだが、技能は複数の
+             シリーズを抱える入れ物なので、分類ではなくページになる（§49.1）。
+             段数が物理と違うのは構わない。揃えるべきは段数ではなく
+             「カードは 1 段だけ下へ降りる」という振る舞いのほう（§49.3）。
+             中身がある技能だけ <a>、無い技能は <div> で平文。「準備中」ラベルは
+             付けない（§37.4）。押せない 2 枚は role を持たないので、支援技術から
+             link / button として読まれない。
+             グループが 1 つしかなく、ページ見出しが既に「能力開発」なので h2 は
+             置かない（§38.4）。技能を種類で分けたくなったら、そこで h2 を足す。 -->
         <section class="study-grid">
-            <p class="eyebrow"><span class="eyebrow__num">01</span> — Memory</p>
-            <h2>記憶術</h2>
+            <p class="eyebrow"><span class="eyebrow__num">01</span> — Skills</p>
 
-            <a class="study-card" href="memoryverse.html">
-                <h3>メモリーバース</h3>
-                <p>宇宙そのものを覚える対象にして、知識を置く場所を作る</p>
+            <a class="study-card" href="skills_mnemonics.html">
+                <h3>記憶術</h3>
+                <p>覚えたいものを、思い出せる場所に置く</p>
             </a>
+            <div class="study-card">
+                <h3>推理・推論</h3>
+                <p>前提から結論へ、筋道を立てて運ぶ</p>
+            </div>
+            <div class="study-card">
+                <h3>暗算法</h3>
+                <p>紙を使わずに計算を組み立てる</p>
+            </div>
         </section>
-
-        <!-- 思考法など別のグループが増えたら、ここに `02 — Thinking` の節を足す。
-             グループが増えるだけならこのページは増えない（study_physics.html が
-             基礎領域／専門領域の 2 グループを 1 枚で持っているのと同じ）。
-             記憶術にもう 1 つ教材シリーズが来た場合は、このグループにカードを
-             1 枚足し、その科目ページを新しく作る。 -->
     </main>
     <div id="site-footer"><noscript><nav class="noscript-nav" aria-label="フッターナビゲーション"><a href="index.html">ホーム</a><a href="self-intro.html">自己紹介</a><a href="study.html">勉強の軌跡</a><a href="videos.html">動画</a><a href="blog.html">ブログ</a><a href="sns.html">各種SNS</a></nav></noscript></div>
     <script src="../js/layout.js?v=r54"></script>
