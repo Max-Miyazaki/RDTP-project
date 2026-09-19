@@ -23,27 +23,29 @@
             <p>記憶術や思考法など、学習能力そのものを拡張する。</p>
         </div>
 
-        <!-- ★ ここは物理学と違って 3 階層（study → 分野 → 記事）。カードの行き先が
-             科目ページではなく記事そのものになっている。理由は §47.1 — 記事 5 本に
-             ナビ用ページ 2 枚は §37.1 の算術で割に合わないため、科目ページ
-             （memoryverse.html）を挟んでいない。
-             昇格の合図は「記憶術に 2 つめの教材が来たとき」または節が 20〜30 を
-             超えたとき。そのときは memoryverse.html を作り、下のカードの href を
-             差し替えるだけでよい（記事の URL は変わらない）。
-             章立ては §39.2 と同じ形：eyebrow + h2 がグループ（平文）、カードが行き先。 -->
+        <!-- 物理学と同じ 4 階層（study → 分野 → 科目 → 記事）。§47.1 では 3 階層に
+             していたが、§48 で揃えた（枝ごとに深さを変えない）。
+             ★ グループと章はページを作らない。ここの h2「記憶術」はグループで、
+             カードが指すのは科目ページ。科目は教材シリーズ（メモリーバース）で、
+             記憶術ではない — §36.1 の `<科目スラッグ>_<章>-<節>` に従うと、科目を
+             記憶術にした時点で記事が mnemonics_1-1.html になってしまうため（§48.2）。
+             カードのサブ説明は科目ページのリード文と同じ文にしてある
+             （study_physics.html の「物理数学」カードと phys-math.html の関係と同じ）。 -->
         <section class="study-grid">
             <p class="eyebrow"><span class="eyebrow__num">01</span> — Memory</p>
             <h2>記憶術</h2>
 
-            <a class="study-card" href="memoryverse_1-1.html">
-                <h3>メモリーバース v3　第1回 太陽系の骨格</h3>
-                <p>太陽と8惑星を、頭の中に置く</p>
+            <a class="study-card" href="memoryverse.html">
+                <h3>メモリーバース</h3>
+                <p>宇宙そのものを覚える対象にして、知識を置く場所を作る</p>
             </a>
         </section>
 
         <!-- 思考法など別のグループが増えたら、ここに `02 — Thinking` の節を足す。
-             グループが増えるだけならページは増えない（study_physics.html が
-             基礎領域／専門領域の 2 グループを 1 枚で持っているのと同じ）。 -->
+             グループが増えるだけならこのページは増えない（study_physics.html が
+             基礎領域／専門領域の 2 グループを 1 枚で持っているのと同じ）。
+             記憶術にもう 1 つ教材シリーズが来た場合は、このグループにカードを
+             1 枚足し、その科目ページを新しく作る。 -->
     </main>
     <div id="site-footer"><noscript><nav class="noscript-nav" aria-label="フッターナビゲーション"><a href="index.html">ホーム</a><a href="self-intro.html">自己紹介</a><a href="study.html">勉強の軌跡</a><a href="videos.html">動画</a><a href="blog.html">ブログ</a><a href="sns.html">各種SNS</a></nav></noscript></div>
     <script src="../js/layout.js?v=r54"></script>
