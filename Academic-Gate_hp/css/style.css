@@ -1557,6 +1557,25 @@ input[type="range"] {
     }
 }
 
+/* --- 一覧ページの「← 一つ上」（§67）。レールのある記事では .rail-up が同じ役目を
+   する。見た目（大きさ・色・矢印）はそちらに合わせてある。h1 の上に置くので
+   余白は控えめに。行き先は layout.js が CRUMBS の親から決める。 */
+.page-up {
+    margin: 0 0 6px;
+    font-size: 12.5px;
+    line-height: 1.6;
+}
+.page-up a {
+    color: var(--ink-faint, var(--text-tertiary));
+    text-decoration: none;
+    transition: color var(--dur) var(--ease);
+}
+.page-up a:hover { color: var(--ink, var(--text-primary)); }
+
+/* ★ この2つの部品は「一覧ページ（style.css だけ）」と「教材ページ（＋lesson-theme.css）」
+   の両方で使う。--ink / --line などは lesson-theme.css にしか無いトークンなので、
+   var() の第2引数に style.css 側の同等トークンを置いてある。これが無いと、一覧
+   ページでは無効値になり、文字が真っ白・罫線が真っ白になる（§67.1）。 */
 /* ===========================================================================
    右側のサイトナビ（§66）。左のレールは「記事内の目次」、こちらは「サイト全体の
    階層」。中身は layout.js の CRUMBS から組み立てる（テーブルに1行足せば出る）。
@@ -1573,17 +1592,17 @@ input[type="range"] {
     font-size: 12px;
     letter-spacing: .18em;
     padding: 18px 8px;
-    color: var(--ink-soft);
+    color: var(--ink-soft, var(--text-secondary));
     background: var(--nav-bg);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    border: 1px solid var(--line);
+    border: 1px solid var(--line, var(--hairline));
     border-right: 0;
     border-radius: 12px 0 0 12px;
     cursor: pointer;
     transition: color var(--dur) var(--ease), border-color var(--dur) var(--ease);
 }
-.sitenav-tab:hover { color: var(--ink); border-color: var(--line-strong); }
+.sitenav-tab:hover { color: var(--ink, var(--text-primary)); border-color: var(--line-strong, var(--hairline-strong)); }
 .sitenav-tab:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
 .sitenav-scrim {
@@ -1609,7 +1628,7 @@ body.sitenav-open .sitenav-scrim { opacity: 1; pointer-events: auto; }
     background: var(--nav-bg);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    border-left: 1px solid var(--line);
+    border-left: 1px solid var(--line, var(--hairline));
     transform: translateX(101%);
     transition: transform var(--dur) var(--ease);
 }
@@ -1620,22 +1639,22 @@ body.sitenav-open .sitenav { transform: none; }
     justify-content: space-between;
     gap: 12px;
     padding: 20px 20px 14px;
-    border-bottom: 1px solid var(--line);
+    border-bottom: 1px solid var(--line, var(--hairline));
     font-size: 11px;
     letter-spacing: .2em;
-    color: var(--ink-faint);
+    color: var(--ink-faint, var(--text-tertiary));
 }
 .sitenav__x {
     background: none;
     border: 0;
-    color: var(--ink-faint);
+    color: var(--ink-faint, var(--text-tertiary));
     font-size: 15px;
     line-height: 1;
     padding: 4px;
     cursor: pointer;
     transition: color var(--dur) var(--ease);
 }
-.sitenav__x:hover { color: var(--ink); }
+.sitenav__x:hover { color: var(--ink, var(--text-primary)); }
 .sitenav__body { overflow-y: auto; padding: 14px 18px 40px; }
 
 /* ツリー。字下げは階層ごとに、開閉は grid-template-rows で滑らかに。 */
@@ -1653,15 +1672,15 @@ body.sitenav-open .sitenav { transform: none; }
     border: 0;
     border-radius: 8px;
     background: none;
-    color: var(--ink-soft);
+    color: var(--ink-soft, var(--text-secondary));
     text-decoration: none;
     cursor: pointer;
     transition: color var(--dur) var(--ease), background var(--dur) var(--ease);
 }
-.sitenav .rw a:hover, .sitenav .rw .hd:hover { color: var(--ink); background: var(--surface-2); }
-.sitenav .rw .hd { color: var(--ink-faint); }
-.sitenav .rw .soon { flex: 1 1 auto; padding: 5px 8px; font-size: 14.5px; line-height: 1.65; color: var(--ink-faint); opacity: .55; }
-.sitenav .rw a.cur { color: var(--accent); background: var(--accent-tint); }
+.sitenav .rw a:hover, .sitenav .rw .hd:hover { color: var(--ink, var(--text-primary)); background: var(--surface-2, var(--surface-hover)); }
+.sitenav .rw .hd { color: var(--ink-faint, var(--text-tertiary)); }
+.sitenav .rw .soon { flex: 1 1 auto; padding: 5px 8px; font-size: 14.5px; line-height: 1.65; color: var(--ink-faint, var(--text-tertiary)); opacity: .55; }
+.sitenav .rw a.cur { color: var(--accent); background: var(--accent-tint, rgba(61, 139, 255, .12)); }
 .sitenav .tw {
     flex: 0 0 auto;
     width: 22px;
@@ -1680,13 +1699,13 @@ body.sitenav-open .sitenav { transform: none; }
     top: 13px;
     width: 6px;
     height: 6px;
-    border-right: 1.5px solid var(--ink-faint);
-    border-bottom: 1.5px solid var(--ink-faint);
+    border-right: 1.5px solid var(--ink-faint, var(--text-tertiary));
+    border-bottom: 1.5px solid var(--ink-faint, var(--text-tertiary));
     transform: rotate(-45deg);
     transition: transform var(--dur) var(--ease), border-color var(--dur) var(--ease);
 }
 .sitenav .nd.open > .rw > .tw::before { transform: rotate(45deg); }
-.sitenav .tw:hover::before { border-color: var(--ink); }
+.sitenav .tw:hover::before { border-color: var(--ink, var(--text-primary)); }
 .sitenav .tw--leaf { cursor: default; }
 .sitenav .tw--leaf::before { display: none; }
 .sitenav .kids { display: grid; grid-template-rows: 0fr; transition: grid-template-rows var(--dur) var(--ease); }

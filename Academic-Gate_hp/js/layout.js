@@ -65,10 +65,13 @@
 
     // レール用：1階層上へ戻る1行だけ。ページを持たない層（章）は飛ばして、
     // いちばん近い「ページのある親」へ返す。全体の階層は右のサイトナビが持つ。
-    function railUpHtml(keys) {
+    /* 行き先は書かない。CRUMBS の親をたどって、最初に href を持つノードを使う
+       （章のような「ページでない階層」は自動で飛ばされる）。cls だけが違うので
+       レール（.rail-up）と一覧ページ（.page-up）で共用する。 */
+    function upHtml(keys, cls) {
         for (var i = keys.length - 2; i >= 0; i--) {
             if (CRUMBS[keys[i]].href) {
-                return '<nav class="rail-up"><a href="' + CRUMBS[keys[i]].href + '">← ' +
+                return '<nav class="' + cls + '"><a href="' + CRUMBS[keys[i]].href + '">← ' +
                        CRUMBS[keys[i]].label + '</a></nav>';
             }
         }
@@ -192,7 +195,13 @@
         mountSiteNav(node);
         mountLessonNav(node);
         if (rail) {
-            if (keys.length > 1) rail.insertAdjacentHTML('afterbegin', railUpHtml(keys));
+            if (keys.length > 1) rail.insertAdjacentHTML('afterbegin', upHtml(keys, 'rail-up'));
+        } else {
+            // レールが無いページ（分野・シリーズの一覧）は、h1 の上に同じ1行を置く。
+            // 最上位（親が無い）なら何も出ない。
+            var head = document.querySelector('.page-header'), h1 = head && head.querySelector('h1');
+            var h = keys.length > 1 ? upHtml(keys, 'page-up') : '';
+            if (h1 && h) h1.insertAdjacentHTML('beforebegin', h);
         }
     }
 
