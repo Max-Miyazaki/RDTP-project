@@ -69,6 +69,9 @@ body.is-article .main > section:not(.rail),
 body.is-article .main > .foot{max-width:860px;margin-left:0;margin-right:auto;padding-left:0;padding-right:0}
 .rail .brand{font-weight:400;font-size:15px;line-height:1.45;margin:2px 0 4px}
 .rail .brand small{display:block;font-size:10px;font-weight:500;color:var(--ink-faint);letter-spacing:.2em;margin-top:6px}
+/* --- 上の階層へ戻る導線（§64.1）。レールは sticky なので、読んでいる途中でも
+   親ページへ戻れる。狭い画面はレールが引き出しになるので .float-nav で補う。 --- */
+  .lesson-nav .next,.lesson-nav .mid{text-align:left}}
 .progress-wrap{height:2px;background:var(--line);border-radius:99px;margin:16px 0 18px;overflow:hidden}
 .progress-bar{height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--accent-deep));transition:width .15s linear}
 .toc{list-style:none;margin:0;padding:0;font-size:12.5px}
@@ -248,6 +251,7 @@ code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border
 /* モバイル：レールを引き出しに。`.menu-btn` は位置だけを持ち、見た目は
    共通コンポーネントの `.btn` を併用する。 */
 .menu-btn{display:none}
+.float-nav{display:none}
 .scrim{display:none}
 @media (max-width:900px){
   .rail{position:fixed;left:0;top:0;height:100vh;z-index:1100;transform:translateX(-100%);transition:transform .25s var(--ease);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);padding-top:28px}
@@ -260,7 +264,10 @@ code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border
   .planet-img figcaption{text-align:center}
   .mod-b .row{flex-direction:column;gap:2px}
   .mod-b .row .k{flex:0 0 auto}
-  .menu-btn{display:inline-flex;position:fixed;bottom:18px;right:18px;z-index:1050;background:var(--nav-bg);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);color:var(--ink)}
+  /* 「戻る」と「目次」を横並びで浮かせる。位置は入れ物が持ち、ボタン自身は
+     見た目だけを持つ（§64.2）。 */
+  .float-nav{display:flex;gap:10px;position:fixed;bottom:18px;right:18px;z-index:1050}
+  .menu-btn,.back-btn{position:static;display:inline-flex;background:var(--nav-bg);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);color:var(--ink);text-decoration:none}
   .scrim{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:1090}
   body.nav-open .scrim{display:block}
   .lesson-hero{padding-top:40px}
@@ -274,7 +281,7 @@ code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border
 }
 @media print{
   body{background:#fff;color:#000}
-  header,.rail,.menu-btn,.scrim,#starfield,footer{display:none!important}
+  header,.rail,.menu-btn,.float-nav,.lesson-nav,.scrim,#starfield,footer{display:none!important}
   .wrap{display:block;padding-top:0}
   /* ★ 解答（<details>）を開く。元の教材にあった `.ex details>*{display:block}` は
      **効かない**（実測：閉じた details の中身は ::details-content の
@@ -290,15 +297,16 @@ code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border
 </style>
 <link rel="stylesheet" href="../css/lesson-theme.css?v=r54">
 </head>
-<body data-page="study" class="is-article">
+<body data-page="study" class="is-article" data-node="memoryverse_1-1">
 <canvas id="starfield" aria-hidden="true"></canvas>
 <div id="site-nav"><noscript><nav class="noscript-nav" aria-label="メインナビゲーション"><a href="index.html">ホーム</a><a href="self-intro.html">自己紹介</a><a href="study.html">勉強の軌跡</a><a href="videos.html">動画</a><a href="blog.html">ブログ</a><a href="sns.html">各種SNS</a></nav></noscript></div>
-<button class="menu-btn btn" id="menuBtn" aria-controls="rail" aria-expanded="false">目次 <span class="btn-disc" aria-hidden="true">≡</span></button>
+<div class="float-nav"><a class="back-btn btn" href="memoryverse.html">戻る <span class="btn-disc" aria-hidden="true">←</span></a><button class="menu-btn btn" id="menuBtn" aria-controls="rail" aria-expanded="false">目次 <span class="btn-disc" aria-hidden="true">≡</span></button></div>
 <div class="scrim" id="scrim"></div>
 <div class="wrap">
   <nav class="rail" id="rail">
     <!-- 科目へ戻る導線（科目ページ）。パンくずと対になる（§37.5）。 -->
-    <div class="brand"><a href="memoryverse.html">メモリーバース　1章 太陽系</a><br>第1回　太陽系の骨格<small>SESSION 01 / SOLAR SYSTEM</small></div>
+    
+    <div class="brand">第1回　太陽系の骨格<small>SESSION 01 / SOLAR SYSTEM</small></div>
     <div class="progress-wrap"><div class="progress-bar" id="pbar"></div></div>
     <ul class="toc" id="toc">
       <li class="part">導入</li>
@@ -327,10 +335,7 @@ code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border
          クラスも .hero ではなく .lesson-hero（.hero は index.html 専用で、
          見出しと本文に黒い text-shadow が掛かる）。 -->
     <div class="lesson-hero">
-      <!-- パンくず。ヘッダーのナビは最上位（勉強の軌跡）にしか戻れないので、
-           中間層への導線はこれが担う。新しい要素は足さず、もともとここにあった
-           .eyebrow をそのままリンク化している（§37.5）。 -->
-      <nav class="eyebrow" aria-label="パンくず"><a href="study.html">勉強の軌跡</a> ／ <a href="study_skills.html">精神の圏域</a> ／ <a href="skills_mnemonics.html">記憶術</a> ／ <a href="memoryverse.html">メモリーバース</a> ／ 1章 太陽系 ／ 第1回</nav>
+      <!-- パンくずは右のサイトナビ（layout.js の CRUMBS）に一本化した（§66）。 -->
       <h1>第1回　太陽系の骨格<span class="sub">太陽と8惑星を、頭の中に置く</span></h1>
       <p class="lead">太陽系そのものを覚える対象にする。太陽と8つの惑星を実際の並びで頭の中に置き、それぞれの天体の前に立ったら、大きさ・重さ・密度・中身・距離・衛星・特徴が思い出せる状態をつくる。</p>
       <p>この回で作る型（天体の前に立つ → 巡る → 思い出す）は、そのまま地球層で国や地域を覚えるときに使う。<strong>2週かけてよい回</strong>。</p>
@@ -421,14 +426,13 @@ code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border
       <div class="mod">
         <div class="mod-h"><span class="no">太陽</span><span class="ttl">太陽系でただ一つの恒星</span><span class="tag">SUN / G2V</span></div>
         <div class="mod-b">
-          <div class="orbit"><svg class="links" aria-hidden="true" preserveAspectRatio="none"></svg><div class="stat c1" data-ang="150" style="grid-area:1/1"><b>質量</b><span class="v">約2.0×10³⁰ kg<br>地球の約33万倍</span></div><div class="stat c2" data-ang="90" style="grid-area:1/2"><b>半径</b><span class="v">約69.6万km<br>地球の約109倍</span></div><div class="stat c3" data-ang="30" style="grid-area:1/3"><b>地球からの距離</b><span class="v">約1億5,000万km＝1AU<br>光で約8分20秒</span></div><div class="stat c1" data-ang="210" style="grid-area:3/1"><b>温度</b><span class="v">表面 約5,500℃<br>中心 約1,500万℃</span></div><div class="stat c2" data-ang="270" style="grid-area:3/2"><b>物質構成（質量比）</b><span class="v">水素 約73%<br>ヘリウム 約25%</span></div><div class="stat c3" data-ang="330" style="grid-area:3/3"><b>平均密度</b><span class="v">約1.41 g/cm³</span></div><div class="core"><button type="button" class="img-btn" aria-expanded="false"><figure class="planet-img"><div class="orb"><span class="ring r1"></span><span class="ring r2"></span><div class="frame"><img src="../image/memoryverse/sun.jpg" data-alt="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b4/The_Sun_by_the_Atmospheric_Imaging_Assembly_of_NASA%27s_Solar_Dynamics_Observatory_-_20100819.jpg/500px-The_Sun_by_the_Atmospheric_Imaging_Assembly_of_NASA%27s_Solar_Dynamics_Observatory_-_20100819.jpg|https://commons.wikimedia.org/wiki/Special:FilePath/The_Sun_by_the_Atmospheric_Imaging_Assembly_of_NASA%27s_Solar_Dynamics_Observatory_-_20100819.jpg?width=500|https://upload.wikimedia.org/wikipedia/commons/b/b4/The_Sun_by_the_Atmospheric_Imaging_Assembly_of_NASA%27s_Solar_Dynamics_Observatory_-_20100819.jpg" alt="太陽の実画像（ソーラー・ダイナミクス・オブザーバトリー（紫外線））" decoding="async" onerror="mvNext(this)"><p class="fallback">画像を読み込めませんでした。<br><a href="https://science.nasa.gov/sun/" target="_blank" rel="noopener">NASAの太陽のページで見る</a></p></div></div><figcaption>ソーラー・ダイナミクス・オブザーバトリー（紫外線）<br>© NASA/SDO</figcaption></figure><span class="hint"><span class="h-c">クリックで数値を開く</span><span class="h-o">クリックで閉じる</span></span></button></div></div>
+          <div class="orbit"><svg class="links" aria-hidden="true" preserveAspectRatio="none"></svg><div class="stat c1" data-ang="150" style="grid-area:1/1"><b>質量</b><span class="v">約2.0×10³⁰ kg<br>地球の約33万倍</span></div><div class="stat c2" data-ang="90" style="grid-area:1/2"><b>半径</b><span class="v">約69.6万km<br>地球の約109倍</span></div><div class="stat c3" data-ang="30" style="grid-area:1/3"><b>地球からの距離</b><span class="v">約1億5,000万km＝1AU<br>光で約8分20秒</span></div><div class="stat c1" data-ang="210" style="grid-area:3/1"><b>温度</b><span class="v">表面 約5,500℃<br>中心 約1,500万℃</span></div><div class="stat c2" data-ang="270" style="grid-area:3/2"><b>物質構成（質量比）</b><span class="v">水素 約73%<br>ヘリウム 約25%</span></div><div class="stat c3" data-ang="330" style="grid-area:3/3"><b>平均密度</b><span class="v">約1.41 g/cm³</span></div><div class="stat c3" data-ang="10" style="grid-area:2/3"><b>表面重力</b><span class="v">274 m/s²<br>地球の約28倍</span></div><div class="stat c2" data-ang="350" style="grid-area:2/1"><b>磁場</b><span class="v">数G（黒点は数千G）<br>11年周期で反転する</span></div><div class="core"><button type="button" class="img-btn" aria-expanded="false"><figure class="planet-img"><div class="orb"><span class="ring r1"></span><span class="ring r2"></span><div class="frame"><img src="../image/memoryverse/sun.jpg" data-alt="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b4/The_Sun_by_the_Atmospheric_Imaging_Assembly_of_NASA%27s_Solar_Dynamics_Observatory_-_20100819.jpg/500px-The_Sun_by_the_Atmospheric_Imaging_Assembly_of_NASA%27s_Solar_Dynamics_Observatory_-_20100819.jpg|https://commons.wikimedia.org/wiki/Special:FilePath/The_Sun_by_the_Atmospheric_Imaging_Assembly_of_NASA%27s_Solar_Dynamics_Observatory_-_20100819.jpg?width=500|https://upload.wikimedia.org/wikipedia/commons/b/b4/The_Sun_by_the_Atmospheric_Imaging_Assembly_of_NASA%27s_Solar_Dynamics_Observatory_-_20100819.jpg" alt="太陽の実画像（ソーラー・ダイナミクス・オブザーバトリー（紫外線））" decoding="async" onerror="mvNext(this)"><p class="fallback">画像を読み込めませんでした。<br><a href="https://science.nasa.gov/sun/" target="_blank" rel="noopener">NASAの太陽のページで見る</a></p></div></div><figcaption>ソーラー・ダイナミクス・オブザーバトリー（紫外線）<br>© NASA/SDO</figcaption></figure><span class="hint"><span class="h-c">クリックで数値を開く</span><span class="h-o">クリックで閉じる</span></span></button></div></div>
           <div class="row"><span class="k">特徴</span><span class="v"><ul>
             <li>太陽系全体の質量の<strong>99.8%以上</strong>を占める</li>
             <li>スペクトル型<strong>G2V</strong>（黄色の主系列星）。年齢は約46億年</li>
             <li>中心部で水素がヘリウムに変わる核融合でエネルギーを出す</li>
             <li>固体ではないので場所によって自転の速さが違う（赤道で約25日、極付近で約35日）</li>
           </ul></span></div>
-          <div class="row"><span class="k">接続点</span><span class="v">北極は銀河層（第14回）への出口。ここには情報を置かない</span></div>
         </div>
       </div>
     </section>
@@ -440,12 +444,14 @@ code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border
       <div class="mod">
         <div class="mod-h"><span class="no">水星</span><span class="ttl">最も小さく、最も太陽に近い</span><span class="tag">MERCURY</span></div>
         <div class="mod-b">
-          <div class="orbit"><svg class="links" aria-hidden="true" preserveAspectRatio="none"></svg><div class="stat c1" data-ang="150" style="grid-area:1/1"><b>質量</b><span class="v">3.30×10²³ kg<br>地球の約0.055倍</span></div><div class="stat c2" data-ang="90" style="grid-area:1/2"><b>半径</b><span class="v">約2,440km<br>地球の約0.38倍</span></div><div class="stat c3" data-ang="30" style="grid-area:1/3"><b>地球から（最接近〜最遠）</b><span class="v">約7,700万〜2億2,200万km<br>光で約4〜12分</span></div><div class="stat c1" data-ang="180" style="grid-area:2/1"><b>自転</b><span class="v">約59日</span></div><div class="stat c1" data-ang="210" style="grid-area:3/1"><b>太陽から</b><span class="v">約0.39AU<br>公転 約88日</span></div><div class="stat c2 comp-stat" data-ang="270" style="grid-area:3/2"><b>外気圏（体積比）</b><span class="v">O₂ 42% ／ Na 29% ／ H₂ 22% ／ He 6% ／ K 0.5%</span></div><div class="stat c3" data-ang="330" style="grid-area:3/3"><b>密度</b><span class="v">5.43 g/cm³</span></div><div class="core"><button type="button" class="img-btn" aria-expanded="false"><figure class="planet-img"><div class="orb"><span class="ring r1"></span><span class="ring r2"></span><div class="frame"><img src="../image/memoryverse/mercury.jpg" data-alt="https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/Mercury_in_color_-_Prockter07_centered.jpg/500px-Mercury_in_color_-_Prockter07_centered.jpg|https://commons.wikimedia.org/wiki/Special:FilePath/Mercury_in_color_-_Prockter07_centered.jpg?width=500|https://upload.wikimedia.org/wikipedia/commons/3/30/Mercury_in_color_-_Prockter07_centered.jpg" alt="水星の実画像（探査機メッセンジャー（強調色））" decoding="async" onerror="mvNext(this)"><p class="fallback">画像を読み込めませんでした。<br><a href="https://science.nasa.gov/mercury/" target="_blank" rel="noopener">NASAの水星のページで見る</a></p></div></div><figcaption>探査機メッセンジャー（強調色）<br>© NASA/JHUAPL/Carnegie</figcaption></figure><span class="hint"><span class="h-c">クリックで数値を開く</span><span class="h-o">クリックで閉じる</span></span></button></div></div>
-          <div class="row"><span class="k">中身</span><span class="v">惑星の大きさに比べて<strong>非常に大きな鉄の核</strong>（半径の約8割以上）。その外側に薄い岩石の層</span></div>
+          <div class="orbit"><svg class="links" aria-hidden="true" preserveAspectRatio="none"></svg><div class="stat c1" data-ang="150" style="grid-area:1/1"><b>質量</b><span class="v">3.30×10²³ kg<br>地球の約0.055倍</span></div><div class="stat c2" data-ang="90" style="grid-area:1/2"><b>半径</b><span class="v">約2,440km<br>地球の約0.38倍</span></div><div class="stat c3" data-ang="30" style="grid-area:1/3"><b>地球から（最接近〜最遠）</b><span class="v">約7,700万〜2億2,200万km<br>光で約4〜12分</span></div><div class="stat c1" data-ang="180" style="grid-area:2/1"><b>自転</b><span class="v">約59日</span></div><div class="stat c1" data-ang="210" style="grid-area:3/1"><b>太陽から</b><span class="v">約0.39AU<br>公転 約88日</span></div><div class="stat c2 comp-stat" data-ang="270" style="grid-area:3/2"><b>外気圏（体積比）</b><span class="v">O₂ 42% ／ Na 29% ／ H₂ 22% ／ He 6% ／ K 0.5%</span></div><div class="stat c3" data-ang="330" style="grid-area:3/3"><b>密度</b><span class="v">5.43 g/cm³</span></div><div class="stat c3" data-ang="10" style="grid-area:2/3"><b>表面重力</b><span class="v">3.70 m/s²<br>地球の0.38倍</span></div><div class="stat c2" data-ang="350" style="grid-area:4/2"><b>磁場</b><span class="v">あり 約200 nT<br>地球の約1%</span></div><div class="core"><button type="button" class="img-btn" aria-expanded="false"><figure class="planet-img"><div class="orb"><span class="ring r1"></span><span class="ring r2"></span><div class="frame"><img src="../image/memoryverse/mercury.jpg" data-alt="https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/Mercury_in_color_-_Prockter07_centered.jpg/500px-Mercury_in_color_-_Prockter07_centered.jpg|https://commons.wikimedia.org/wiki/Special:FilePath/Mercury_in_color_-_Prockter07_centered.jpg?width=500|https://upload.wikimedia.org/wikipedia/commons/3/30/Mercury_in_color_-_Prockter07_centered.jpg" alt="水星の実画像（探査機メッセンジャー（強調色））" decoding="async" onerror="mvNext(this)"><p class="fallback">画像を読み込めませんでした。<br><a href="https://science.nasa.gov/mercury/" target="_blank" rel="noopener">NASAの水星のページで見る</a></p></div></div><figcaption>探査機メッセンジャー（強調色）<br>© NASA/JHUAPL/Carnegie</figcaption></figure><span class="hint"><span class="h-c">クリックで数値を開く</span><span class="h-o">クリックで閉じる</span></span></button></div></div>
+          <div class="row"><span class="k">中身</span><span class="v">惑星の大きさに比べて<strong>非常に大きな鉄の核</strong>（半径の約80%以上、約2,000km）。その外側に薄い岩石の層</span></div>
           <div class="moons">衛星：なし</div>
           <div class="row"><span class="k">特徴</span><span class="v"><ul>
-            <li>大気がほぼない。表面温度は昼 約430℃、夜 約−180℃と差が極端</li>
+            <li>大気がほぼない（地表の気圧は約10⁻¹⁰ Pa）。表面温度は昼 約430℃、夜 約−180℃と差が極端</li>
+            <li>極の永久影のクレーターに水の氷があると考えられている</li>
             <li>2回公転するあいだに3回自転する（3:2の共鳴）</li>
+            <li>岩石惑星で自前の全球磁場を持つのは、地球とこの水星だけ</li>
             <li>巨大な衝突跡<strong>カロリス盆地</strong>。探査機はマリナー10号、メッセンジャー、ベピコロンボ</li>
           </ul></span></div>
         </div>
@@ -454,11 +460,12 @@ code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border
       <div class="mod">
         <div class="mod-h"><span class="no">金星</span><span class="ttl">最も熱く、逆向きに回る</span><span class="tag">VENUS</span></div>
         <div class="mod-b">
-          <div class="orbit"><svg class="links" aria-hidden="true" preserveAspectRatio="none"></svg><div class="stat c1" data-ang="150" style="grid-area:1/1"><b>質量</b><span class="v">4.87×10²⁴ kg<br>地球の約0.82倍</span></div><div class="stat c2" data-ang="90" style="grid-area:1/2"><b>半径</b><span class="v">約6,052km<br>地球の約0.95倍</span></div><div class="stat c3" data-ang="30" style="grid-area:1/3"><b>地球から（最接近〜最遠）</b><span class="v">約3,800万〜2億6,100万km<br>光で約2〜15分</span></div><div class="stat c1" data-ang="180" style="grid-area:2/1"><b>自転</b><span class="v">約243日・<strong>逆向き</strong></span></div><div class="stat c1" data-ang="210" style="grid-area:3/1"><b>太陽から</b><span class="v">約0.72AU<br>公転 約225日</span></div><div class="stat c2 comp-stat" data-ang="270" style="grid-area:3/2"><b>大気（体積比）</b><span class="v">CO₂ 96.5% ／ N₂ 3.5%</span></div><div class="stat c3" data-ang="330" style="grid-area:3/3"><b>密度</b><span class="v">5.24 g/cm³</span></div><div class="core"><button type="button" class="img-btn" aria-expanded="false"><figure class="planet-img"><div class="orb"><span class="ring r1"></span><span class="ring r2"></span><div class="frame"><img src="../image/memoryverse/venus.jpg" data-alt="https://upload.wikimedia.org/wikipedia/commons/thumb/9/98/Venus_as_captured_by_Mariner_10.jpg/500px-Venus_as_captured_by_Mariner_10.jpg|https://commons.wikimedia.org/wiki/Special:FilePath/Venus_as_captured_by_Mariner_10.jpg?width=500|https://upload.wikimedia.org/wikipedia/commons/9/98/Venus_as_captured_by_Mariner_10.jpg" alt="金星の実画像（探査機マリナー10号（雲に覆われた姿））" decoding="async" onerror="mvNext(this)"><p class="fallback">画像を読み込めませんでした。<br><a href="https://science.nasa.gov/venus/" target="_blank" rel="noopener">NASAの金星のページで見る</a></p></div></div><figcaption>探査機マリナー10号（雲に覆われた姿）<br>© NASA/JPL</figcaption></figure><span class="hint"><span class="h-c">クリックで数値を開く</span><span class="h-o">クリックで閉じる</span></span></button></div></div>
-          <div class="row"><span class="k">中身</span><span class="v">地球に似た構造（鉄の核・岩石のマントル・地殻）と考えられている</span></div>
+          <div class="orbit"><svg class="links" aria-hidden="true" preserveAspectRatio="none"></svg><div class="stat c1" data-ang="150" style="grid-area:1/1"><b>質量</b><span class="v">4.87×10²⁴ kg<br>地球の約0.82倍</span></div><div class="stat c2" data-ang="90" style="grid-area:1/2"><b>半径</b><span class="v">約6,052km<br>地球の約0.95倍</span></div><div class="stat c3" data-ang="30" style="grid-area:1/3"><b>地球から（最接近〜最遠）</b><span class="v">約3,800万〜2億6,100万km<br>光で約2〜15分</span></div><div class="stat c1" data-ang="180" style="grid-area:2/1"><b>自転</b><span class="v">約243日・<strong>逆向き</strong></span></div><div class="stat c1" data-ang="210" style="grid-area:3/1"><b>太陽から</b><span class="v">約0.72AU<br>公転 約225日</span></div><div class="stat c2 comp-stat" data-ang="270" style="grid-area:3/2"><b>大気（体積比）</b><span class="v">CO₂ 96.5% ／ N₂ 3.5%</span></div><div class="stat c3" data-ang="330" style="grid-area:3/3"><b>密度</b><span class="v">5.24 g/cm³</span></div><div class="stat c3" data-ang="10" style="grid-area:2/3"><b>表面重力</b><span class="v">8.87 m/s²<br>地球の0.90倍</span></div><div class="stat c2" data-ang="350" style="grid-area:4/2"><b>磁場</b><span class="v">なし</span></div><div class="core"><button type="button" class="img-btn" aria-expanded="false"><figure class="planet-img"><div class="orb"><span class="ring r1"></span><span class="ring r2"></span><div class="frame"><img src="../image/memoryverse/venus.jpg" data-alt="https://upload.wikimedia.org/wikipedia/commons/thumb/9/98/Venus_as_captured_by_Mariner_10.jpg/500px-Venus_as_captured_by_Mariner_10.jpg|https://commons.wikimedia.org/wiki/Special:FilePath/Venus_as_captured_by_Mariner_10.jpg?width=500|https://upload.wikimedia.org/wikipedia/commons/9/98/Venus_as_captured_by_Mariner_10.jpg" alt="金星の実画像（探査機マリナー10号（雲に覆われた姿））" decoding="async" onerror="mvNext(this)"><p class="fallback">画像を読み込めませんでした。<br><a href="https://science.nasa.gov/venus/" target="_blank" rel="noopener">NASAの金星のページで見る</a></p></div></div><figcaption>探査機マリナー10号（雲に覆われた姿）<br>© NASA/JPL</figcaption></figure><span class="hint"><span class="h-c">クリックで数値を開く</span><span class="h-o">クリックで閉じる</span></span></button></div></div>
+          <div class="row"><span class="k">中身</span><span class="v">地球に似た構造（鉄の核・岩石のマントル・地殻）と考えられている。核は半径の約50%ほど</span></div>
           <div class="moons">衛星：なし</div>
           <div class="row"><span class="k">特徴</span><span class="v"><ul>
-            <li>大気の約96.5%が二酸化炭素。地表の気圧は地球の約90倍</li>
+            <li>大気の約96.5%が二酸化炭素。地表の気圧は約9,200 hPa（地球の約92倍）</li>
+            <li>水は地表になく、大気にごく微量の水蒸気があるだけ</li>
             <li>温室効果で表面は約460℃。太陽に近い水星より熱く、<strong>惑星で最も高温</strong></li>
             <li>硫酸の厚い雲に覆われ、地表は見えない。地形はレーダー（マゼラン探査機）で調べた</li>
             <li>自転が公転より長い（1日が1年より長い）。地球に最も近づく惑星</li>
@@ -469,28 +476,30 @@ code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border
       <div class="mod">
         <div class="mod-h"><span class="no">地球</span><span class="ttl">すべての比較の基準</span><span class="tag">EARTH</span></div>
         <div class="mod-b">
-          <div class="orbit"><svg class="links" aria-hidden="true" preserveAspectRatio="none"></svg><div class="stat c1" data-ang="150" style="grid-area:1/1"><b>質量</b><span class="v">5.97×10²⁴ kg（＝1）</span></div><div class="stat c2" data-ang="90" style="grid-area:1/2"><b>半径</b><span class="v">約6,371km（＝1）</span></div><div class="stat c3" data-ang="30" style="grid-area:1/3"><b>自転軸の傾き</b><span class="v">約23.4度</span></div><div class="stat c1" data-ang="180" style="grid-area:2/1"><b>自転</b><span class="v">約23時間56分</span></div><div class="stat c1" data-ang="210" style="grid-area:3/1"><b>太陽から</b><span class="v">1AU<br>公転 約365.25日</span></div><div class="stat c2 comp-stat" data-ang="270" style="grid-area:3/2"><b>大気（体積比）</b><span class="v">N₂ 78.1% ／ O₂ 20.9% ／ Ar 0.9%</span></div><div class="stat c3" data-ang="330" style="grid-area:3/3"><b>密度</b><span class="v">5.51 g/cm³<br><strong>惑星で最も高い</strong></span></div><div class="core"><button type="button" class="img-btn" aria-expanded="false"><figure class="planet-img"><div class="orb"><span class="ring r1"></span><span class="ring r2"></span><div class="frame"><img src="../image/memoryverse/earth.jpg" data-alt="https://upload.wikimedia.org/wikipedia/commons/thumb/9/97/The_Earth_seen_from_Apollo_17.jpg/500px-The_Earth_seen_from_Apollo_17.jpg|https://commons.wikimedia.org/wiki/Special:FilePath/The_Earth_seen_from_Apollo_17.jpg?width=500|https://upload.wikimedia.org/wikipedia/commons/9/97/The_Earth_seen_from_Apollo_17.jpg" alt="地球の実画像（アポロ17号（1972年））" decoding="async" onerror="mvNext(this)"><p class="fallback">画像を読み込めませんでした。<br><a href="https://science.nasa.gov/earth/" target="_blank" rel="noopener">NASAの地球のページで見る</a></p></div></div><figcaption>アポロ17号（1972年）<br>© NASA</figcaption></figure><span class="hint"><span class="h-c">クリックで数値を開く</span><span class="h-o">クリックで閉じる</span></span></button></div></div>
-          <div class="row"><span class="k">中身</span><span class="v">鉄とニッケルの核（内核は固体、外核は液体）、岩石のマントル、地殻</span></div>
+          <div class="orbit"><svg class="links" aria-hidden="true" preserveAspectRatio="none"></svg><div class="stat c1" data-ang="150" style="grid-area:1/1"><b>質量</b><span class="v">5.97×10²⁴ kg（＝1）</span></div><div class="stat c2" data-ang="90" style="grid-area:1/2"><b>半径</b><span class="v">約6,371km（＝1）</span></div><div class="stat c3" data-ang="30" style="grid-area:1/3"><b>自転軸の傾き</b><span class="v">約23.4度</span></div><div class="stat c1" data-ang="180" style="grid-area:2/1"><b>自転</b><span class="v">約23時間56分</span></div><div class="stat c1" data-ang="210" style="grid-area:3/1"><b>太陽から</b><span class="v">1AU<br>公転 約365.25日</span></div><div class="stat c2 comp-stat" data-ang="270" style="grid-area:3/2"><b>大気（体積比）</b><span class="v">N₂ 78.1% ／ O₂ 20.9% ／ Ar 0.9%</span></div><div class="stat c3" data-ang="330" style="grid-area:3/3"><b>密度</b><span class="v">5.51 g/cm³<br><strong>惑星で最も高い</strong></span></div><div class="stat c3" data-ang="10" style="grid-area:2/3"><b>表面重力</b><span class="v">9.81 m/s²<br>（この値が基準）</span></div><div class="stat c2" data-ang="350" style="grid-area:4/2"><b>磁場</b><span class="v">あり 25,000〜65,000 nT</span></div><div class="core"><button type="button" class="img-btn" aria-expanded="false"><figure class="planet-img"><div class="orb"><span class="ring r1"></span><span class="ring r2"></span><div class="frame"><img src="../image/memoryverse/earth.jpg" data-alt="https://upload.wikimedia.org/wikipedia/commons/thumb/9/97/The_Earth_seen_from_Apollo_17.jpg/500px-The_Earth_seen_from_Apollo_17.jpg|https://commons.wikimedia.org/wiki/Special:FilePath/The_Earth_seen_from_Apollo_17.jpg?width=500|https://upload.wikimedia.org/wikipedia/commons/9/97/The_Earth_seen_from_Apollo_17.jpg" alt="地球の実画像（アポロ17号（1972年））" decoding="async" onerror="mvNext(this)"><p class="fallback">画像を読み込めませんでした。<br><a href="https://science.nasa.gov/earth/" target="_blank" rel="noopener">NASAの地球のページで見る</a></p></div></div><figcaption>アポロ17号（1972年）<br>© NASA</figcaption></figure><span class="hint"><span class="h-c">クリックで数値を開く</span><span class="h-o">クリックで閉じる</span></span></button></div></div>
+          <div class="row"><span class="k">中身</span><span class="v">鉄とニッケルの核（内核は固体、外核は液体）、岩石のマントル、地殻。核は半径の約55%（約3,480km）</span></div>
           <div class="moons">衛星：<strong>月</strong>（半径 約1,737km＝地球の約4分の1。平均距離 約38万km、光で約1.3秒）</div>
           <div class="row"><span class="k">特徴</span><span class="v"><ul>
-            <li>大気は窒素 約78%・酸素 約21%</li>
-            <li>表面に液体の水がある。生命が確認されている唯一の天体</li>
+            <li>大気は窒素 約78%・酸素 約21%。地表の気圧は約1,013 hPa</li>
+            <li>表面に液体の水がある（海が表面の約71%）。生命が確認されている唯一の天体</li>
             <li>プレートが動く（プレートテクトニクス）</li>
           </ul></span></div>
-          <div class="row"><span class="k">注意</span><span class="v">L3の地球は宇宙から見た像だけ。国や地名はL2で扱う</span></div>
+          <div class="row"><span class="k">注意</span><span class="v">この回の地球は宇宙から見た姿だけです。国や地名は地球の回（第6回以降）で扱います</span></div>
         </div>
       </div>
 
       <div class="mod">
         <div class="mod-h"><span class="no">火星</span><span class="ttl">赤い惑星</span><span class="tag">MARS</span></div>
         <div class="mod-b">
-          <div class="orbit"><svg class="links" aria-hidden="true" preserveAspectRatio="none"></svg><div class="stat c1" data-ang="150" style="grid-area:1/1"><b>質量</b><span class="v">6.42×10²³ kg<br>地球の約0.11倍</span></div><div class="stat c2" data-ang="90" style="grid-area:1/2"><b>半径</b><span class="v">約3,390km<br>地球の約0.53倍</span></div><div class="stat c3" data-ang="30" style="grid-area:1/3"><b>地球から（最接近〜最遠）</b><span class="v">約5,500万〜4億km<br>光で約3〜22分</span></div><div class="stat c1" data-ang="180" style="grid-area:2/1"><b>自転</b><span class="v">約24時間37分<br>傾き 約25度</span></div><div class="stat c1" data-ang="210" style="grid-area:3/1"><b>太陽から</b><span class="v">約1.52AU<br>公転 約687日</span></div><div class="stat c2 comp-stat" data-ang="270" style="grid-area:3/2"><b>大気（体積比）</b><span class="v">CO₂ 95.1% ／ N₂ 2.6% ／ Ar 1.9% ／ O₂ 0.2%</span></div><div class="stat c3" data-ang="330" style="grid-area:3/3"><b>密度</b><span class="v">3.93 g/cm³</span></div><div class="core"><button type="button" class="img-btn" aria-expanded="false"><figure class="planet-img"><div class="orb"><span class="ring r1"></span><span class="ring r2"></span><div class="frame"><img src="../image/memoryverse/mars.jpg" data-alt="https://upload.wikimedia.org/wikipedia/commons/thumb/0/02/OSIRIS_Mars_true_color.jpg/500px-OSIRIS_Mars_true_color.jpg|https://commons.wikimedia.org/wiki/Special:FilePath/OSIRIS_Mars_true_color.jpg?width=500|https://upload.wikimedia.org/wikipedia/commons/0/02/OSIRIS_Mars_true_color.jpg" alt="火星の実画像（探査機ロゼッタのOSIRISカメラ）" decoding="async" onerror="mvNext(this)"><p class="fallback">画像を読み込めませんでした。<br><a href="https://science.nasa.gov/mars/" target="_blank" rel="noopener">NASAの火星のページで見る</a></p></div></div><figcaption>探査機ロゼッタのOSIRISカメラ<br>© ESA/MPS for OSIRIS Team（CC BY-SA 4.0）</figcaption></figure><span class="hint"><span class="h-c">クリックで数値を開く</span><span class="h-o">クリックで閉じる</span></span></button></div></div>
-          <div class="row"><span class="k">中身</span><span class="v">鉄を主とする核、岩石のマントルと地殻。表面の赤は<strong>酸化鉄</strong>（さび）の色</span></div>
+          <div class="orbit"><svg class="links" aria-hidden="true" preserveAspectRatio="none"></svg><div class="stat c1" data-ang="150" style="grid-area:1/1"><b>質量</b><span class="v">6.42×10²³ kg<br>地球の約0.11倍</span></div><div class="stat c2" data-ang="90" style="grid-area:1/2"><b>半径</b><span class="v">約3,390km<br>地球の約0.53倍</span></div><div class="stat c3" data-ang="30" style="grid-area:1/3"><b>地球から（最接近〜最遠）</b><span class="v">約5,500万〜4億km<br>光で約3〜22分</span></div><div class="stat c1" data-ang="180" style="grid-area:2/1"><b>自転</b><span class="v">約24時間37分<br>傾き 約25度</span></div><div class="stat c1" data-ang="210" style="grid-area:3/1"><b>太陽から</b><span class="v">約1.52AU<br>公転 約687日</span></div><div class="stat c2 comp-stat" data-ang="270" style="grid-area:3/2"><b>大気（体積比）</b><span class="v">CO₂ 95.1% ／ N₂ 2.6% ／ Ar 1.9% ／ O₂ 0.2%</span></div><div class="stat c3" data-ang="330" style="grid-area:3/3"><b>密度</b><span class="v">3.93 g/cm³</span></div><div class="stat c3" data-ang="10" style="grid-area:2/3"><b>表面重力</b><span class="v">3.71 m/s²<br>地球の0.38倍</span></div><div class="stat c2" data-ang="350" style="grid-area:4/2"><b>磁場</b><span class="v">なし<br>地殻に残留磁化 約2,000 nT</span></div><div class="core"><button type="button" class="img-btn" aria-expanded="false"><figure class="planet-img"><div class="orb"><span class="ring r1"></span><span class="ring r2"></span><div class="frame"><img src="../image/memoryverse/mars.jpg" data-alt="https://upload.wikimedia.org/wikipedia/commons/thumb/0/02/OSIRIS_Mars_true_color.jpg/500px-OSIRIS_Mars_true_color.jpg|https://commons.wikimedia.org/wiki/Special:FilePath/OSIRIS_Mars_true_color.jpg?width=500|https://upload.wikimedia.org/wikipedia/commons/0/02/OSIRIS_Mars_true_color.jpg" alt="火星の実画像（探査機ロゼッタのOSIRISカメラ）" decoding="async" onerror="mvNext(this)"><p class="fallback">画像を読み込めませんでした。<br><a href="https://science.nasa.gov/mars/" target="_blank" rel="noopener">NASAの火星のページで見る</a></p></div></div><figcaption>探査機ロゼッタのOSIRISカメラ<br>© ESA/MPS for OSIRIS Team（CC BY-SA 4.0）</figcaption></figure><span class="hint"><span class="h-c">クリックで数値を開く</span><span class="h-o">クリックで閉じる</span></span></button></div></div>
+          <div class="row"><span class="k">中身</span><span class="v">鉄を主とする核、岩石のマントルと地殻。核は半径の約50%ほど（約1,800km。インサイトの地震観測で測られた）。表面の赤は<strong>酸化鉄</strong>（さび）の色</span></div>
           <div class="moons">衛星：<strong>フォボス</strong>、<strong>ダイモス</strong>（どちらも小さくいびつな形）</div>
           <div class="row"><span class="k">特徴</span><span class="v"><ul>
-            <li>大気は約95%が二酸化炭素で、とても薄い（地表の気圧は地球の約1%未満）</li>
+            <li>大気は約95%が二酸化炭素で、とても薄い（地表の気圧は約6 hPa、地球の約0.6%）</li>
             <li>太陽系最大級の火山<strong>オリンポス山</strong>（高さ約22km）、巨大な<strong>マリネリス峡谷</strong></li>
-            <li>両極に氷の<strong>極冠</strong>。1日の長さと自転軸の傾きが地球に近い</li>
+            <li>両極に氷の<strong>極冠</strong>。地下にも氷があるが、いまの気圧では液体で存在しにくい</li>
+            <li>全球磁場はないが、南半球の地殻に残留磁化が残る</li>
+            <li>1日の長さと自転軸の傾きが地球に近い</li>
           </ul></span></div>
         </div>
       </div>
@@ -505,7 +514,7 @@ code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border
       <div class="mod">
         <div class="mod-h"><span class="no">木星</span><span class="ttl">最大の惑星</span><span class="tag">JUPITER / ガス</span></div>
         <div class="mod-b">
-          <div class="orbit"><svg class="links" aria-hidden="true" preserveAspectRatio="none"></svg><div class="stat c1" data-ang="150" style="grid-area:1/1"><b>質量</b><span class="v">1.90×10²⁷ kg<br>地球の約318倍</span></div><div class="stat c2" data-ang="90" style="grid-area:1/2"><b>半径</b><span class="v">約69,900km<br>地球の約11倍</span></div><div class="stat c3" data-ang="30" style="grid-area:1/3"><b>地球から（最接近〜最遠）</b><span class="v">約5億9,000万〜9億7,000万km<br>光で約33〜54分</span></div><div class="stat c1" data-ang="180" style="grid-area:2/1"><b>自転</b><span class="v">約9時間56分<br><strong>惑星で最短</strong></span></div><div class="stat c1" data-ang="210" style="grid-area:3/1"><b>太陽から</b><span class="v">約5.2AU<br>公転 約11.9年</span></div><div class="stat c2 comp-stat" data-ang="270" style="grid-area:3/2"><b>大気（体積比）</b><span class="v">H₂ 89.8% ／ He 10.2%</span></div><div class="stat c3" data-ang="330" style="grid-area:3/3"><b>密度</b><span class="v">1.33 g/cm³</span></div><div class="core"><button type="button" class="img-btn" aria-expanded="false"><figure class="planet-img"><div class="orb"><span class="ring r1"></span><span class="ring r2"></span><div class="frame"><img src="../image/memoryverse/jupiter.jpg" data-alt="https://upload.wikimedia.org/wikipedia/commons/thumb/8/84/Hubble_Visible_View_of_Jupiter.jpg/500px-Hubble_Visible_View_of_Jupiter.jpg|https://commons.wikimedia.org/wiki/Special:FilePath/Hubble_Visible_View_of_Jupiter.jpg?width=500|https://upload.wikimedia.org/wikipedia/commons/8/84/Hubble_Visible_View_of_Jupiter.jpg" alt="木星の実画像（ハッブル宇宙望遠鏡（可視光））" decoding="async" onerror="mvNext(this)"><p class="fallback">画像を読み込めませんでした。<br><a href="https://science.nasa.gov/jupiter/" target="_blank" rel="noopener">NASAの木星のページで見る</a></p></div></div><figcaption>ハッブル宇宙望遠鏡（可視光）<br>© NASA/ESA</figcaption></figure><span class="hint"><span class="h-c">クリックで数値を開く</span><span class="h-o">クリックで閉じる</span></span></button></div></div>
+          <div class="orbit"><svg class="links" aria-hidden="true" preserveAspectRatio="none"></svg><div class="stat c1" data-ang="150" style="grid-area:1/1"><b>質量</b><span class="v">1.90×10²⁷ kg<br>地球の約318倍</span></div><div class="stat c2" data-ang="90" style="grid-area:1/2"><b>半径</b><span class="v">約69,900km<br>地球の約11倍</span></div><div class="stat c3" data-ang="30" style="grid-area:1/3"><b>地球から（最接近〜最遠）</b><span class="v">約5億9,000万〜9億7,000万km<br>光で約33〜54分</span></div><div class="stat c1" data-ang="180" style="grid-area:2/1"><b>自転</b><span class="v">約9時間56分<br><strong>惑星で最短</strong></span></div><div class="stat c1" data-ang="210" style="grid-area:3/1"><b>太陽から</b><span class="v">約5.2AU<br>公転 約11.9年</span></div><div class="stat c2 comp-stat" data-ang="270" style="grid-area:3/2"><b>大気（体積比）</b><span class="v">H₂ 89.8% ／ He 10.2%</span></div><div class="stat c3" data-ang="330" style="grid-area:3/3"><b>密度</b><span class="v">1.33 g/cm³</span></div><div class="stat c3" data-ang="10" style="grid-area:2/3"><b>表面重力（雲の上端）</b><span class="v">24.8 m/s²<br>地球の2.5倍</span></div><div class="stat c2" data-ang="350" style="grid-area:4/2"><b>磁場</b><span class="v">あり <strong>惑星で最強</strong><br>地球の約2万倍</span></div><div class="core"><button type="button" class="img-btn" aria-expanded="false"><figure class="planet-img"><div class="orb"><span class="ring r1"></span><span class="ring r2"></span><div class="frame"><img src="../image/memoryverse/jupiter.jpg" data-alt="https://upload.wikimedia.org/wikipedia/commons/thumb/8/84/Hubble_Visible_View_of_Jupiter.jpg/500px-Hubble_Visible_View_of_Jupiter.jpg|https://commons.wikimedia.org/wiki/Special:FilePath/Hubble_Visible_View_of_Jupiter.jpg?width=500|https://upload.wikimedia.org/wikipedia/commons/8/84/Hubble_Visible_View_of_Jupiter.jpg" alt="木星の実画像（ハッブル宇宙望遠鏡（可視光））" decoding="async" onerror="mvNext(this)"><p class="fallback">画像を読み込めませんでした。<br><a href="https://science.nasa.gov/jupiter/" target="_blank" rel="noopener">NASAの木星のページで見る</a></p></div></div><figcaption>ハッブル宇宙望遠鏡（可視光）<br>© NASA/ESA</figcaption></figure><span class="hint"><span class="h-c">クリックで数値を開く</span><span class="h-o">クリックで閉じる</span></span></button></div></div>
           <div class="row"><span class="k">中身</span><span class="v">主に水素とヘリウム。深部では高圧で水素が金属のようにふるまう（金属水素）。中心部の核の状態は研究が続いている</span></div>
           <div class="moons">衛星：115（2026年4月時点）。主要な<strong>ガリレオ衛星</strong>＝<strong>イオ</strong>（活発な火山）、<strong>エウロパ</strong>（氷の下に海があると考えられる）、<strong>ガニメデ</strong>（太陽系最大の衛星）、<strong>カリスト</strong>（クレーターだらけ）</div>
           <div class="row"><span class="k">特徴</span><span class="v"><ul>
@@ -519,11 +528,12 @@ code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border
       <div class="mod">
         <div class="mod-h"><span class="no">土星</span><span class="ttl">環と、水より軽い密度</span><span class="tag">SATURN / ガス</span></div>
         <div class="mod-b">
-          <div class="orbit"><svg class="links" aria-hidden="true" preserveAspectRatio="none"></svg><div class="stat c1" data-ang="150" style="grid-area:1/1"><b>質量</b><span class="v">5.68×10²⁶ kg<br>地球の約95倍</span></div><div class="stat c2" data-ang="90" style="grid-area:1/2"><b>半径</b><span class="v">約58,200km<br>地球の約9.1倍</span></div><div class="stat c3" data-ang="30" style="grid-area:1/3"><b>地球から（最接近〜最遠）</b><span class="v">約12億〜16.6億km<br>光で約1.1〜1.5時間</span></div><div class="stat c1" data-ang="180" style="grid-area:2/1"><b>自転</b><span class="v">約10時間40分</span></div><div class="stat c1" data-ang="210" style="grid-area:3/1"><b>太陽から</b><span class="v">約9.5AU<br>公転 約29.5年</span></div><div class="stat c2 comp-stat" data-ang="270" style="grid-area:3/2"><b>大気（体積比）</b><span class="v">H₂ 96.3% ／ He 3.3%</span></div><div class="stat c3" data-ang="330" style="grid-area:3/3"><b>密度</b><span class="v">0.69 g/cm³<br><strong>水より小さい</strong></span></div><div class="core"><button type="button" class="img-btn" aria-expanded="false"><figure class="planet-img"><div class="orb"><span class="ring r1"></span><span class="ring r2"></span><div class="frame"><img src="../image/memoryverse/saturn.jpg" data-alt="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c7/Saturn_during_Equinox.jpg/500px-Saturn_during_Equinox.jpg|https://commons.wikimedia.org/wiki/Special:FilePath/Saturn_during_Equinox.jpg?width=500|https://upload.wikimedia.org/wikipedia/commons/c/c7/Saturn_during_Equinox.jpg" alt="土星の実画像（探査機カッシーニ（2008年の分点前後））" decoding="async" onerror="mvNext(this)"><p class="fallback">画像を読み込めませんでした。<br><a href="https://science.nasa.gov/saturn/" target="_blank" rel="noopener">NASAの土星のページで見る</a></p></div></div><figcaption>探査機カッシーニ（2008年の分点前後）<br>© NASA/JPL/Space Science Institute</figcaption></figure><span class="hint"><span class="h-c">クリックで数値を開く</span><span class="h-o">クリックで閉じる</span></span></button></div></div>
-          <div class="row"><span class="k">中身</span><span class="v">木星と同じく主に水素とヘリウム</span></div>
+          <div class="orbit"><svg class="links" aria-hidden="true" preserveAspectRatio="none"></svg><div class="stat c1" data-ang="150" style="grid-area:1/1"><b>質量</b><span class="v">5.68×10²⁶ kg<br>地球の約95倍</span></div><div class="stat c2" data-ang="90" style="grid-area:1/2"><b>半径</b><span class="v">約58,200km<br>地球の約9.1倍</span></div><div class="stat c3" data-ang="30" style="grid-area:1/3"><b>地球から（最接近〜最遠）</b><span class="v">約12億〜16.6億km<br>光で約1.1〜1.5時間</span></div><div class="stat c1" data-ang="180" style="grid-area:2/1"><b>自転</b><span class="v">約10時間40分</span></div><div class="stat c1" data-ang="210" style="grid-area:3/1"><b>太陽から</b><span class="v">約9.5AU<br>公転 約29.5年</span></div><div class="stat c2 comp-stat" data-ang="270" style="grid-area:3/2"><b>大気（体積比）</b><span class="v">H₂ 96.3% ／ He 3.3%</span></div><div class="stat c3" data-ang="330" style="grid-area:3/3"><b>密度</b><span class="v">0.69 g/cm³<br><strong>水より小さい</strong></span></div><div class="stat c3" data-ang="10" style="grid-area:2/3"><b>表面重力（雲の上端）</b><span class="v">10.4 m/s²<br>地球の1.07倍（<strong>地球並み</strong>）</span></div><div class="stat c2" data-ang="350" style="grid-area:4/2"><b>磁場</b><span class="v">あり<br><strong>自転軸とほぼ一致</strong>（1度未満）</span></div><div class="core"><button type="button" class="img-btn" aria-expanded="false"><figure class="planet-img"><div class="orb"><span class="ring r1"></span><span class="ring r2"></span><div class="frame"><img src="../image/memoryverse/saturn.jpg" data-alt="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c7/Saturn_during_Equinox.jpg/500px-Saturn_during_Equinox.jpg|https://commons.wikimedia.org/wiki/Special:FilePath/Saturn_during_Equinox.jpg?width=500|https://upload.wikimedia.org/wikipedia/commons/c/c7/Saturn_during_Equinox.jpg" alt="土星の実画像（探査機カッシーニ（2008年の分点前後））" decoding="async" onerror="mvNext(this)"><p class="fallback">画像を読み込めませんでした。<br><a href="https://science.nasa.gov/saturn/" target="_blank" rel="noopener">NASAの土星のページで見る</a></p></div></div><figcaption>探査機カッシーニ（2008年の分点前後）<br>© NASA/JPL/Space Science Institute</figcaption></figure><span class="hint"><span class="h-c">クリックで数値を開く</span><span class="h-o">クリックで閉じる</span></span></button></div></div>
+          <div class="row"><span class="k">中身</span><span class="v">木星と同じく主に水素とヘリウム。中心部の核は、木星と同じく状態も大きさもよく分かっていない</span></div>
           <div class="moons">衛星：293（2026年6月時点）。主要＝<strong>タイタン</strong>（厚い大気とメタンの湖）、<strong>エンケラドゥス</strong>（南極から水が噴き出す）、<strong>ミマス</strong>、<strong>テティス</strong>、<strong>ディオネ</strong>、<strong>レア</strong>、<strong>イアペトゥス</strong>（片側が暗い）</div>
           <div class="row"><span class="k">特徴</span><span class="v"><ul>
             <li>主に氷の粒でできた、はっきりした<strong>環</strong></li>
+            <li>巨大惑星でいちばん大きいのに、表面重力は地球とほぼ同じ。<strong>密度が低い</strong>ため</li>
             <li>北極に<strong>六角形</strong>の雲の模様</li>
             <li>惑星の中で最も衛星が多い。探査機カッシーニ（2017年に任務終了）</li>
           </ul></span></div>
@@ -533,11 +543,12 @@ code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border
       <div class="mod">
         <div class="mod-h"><span class="no">天王星</span><span class="ttl">横倒しで回る</span><span class="tag">URANUS / 氷</span></div>
         <div class="mod-b">
-          <div class="orbit"><svg class="links" aria-hidden="true" preserveAspectRatio="none"></svg><div class="stat c1" data-ang="150" style="grid-area:1/1"><b>質量</b><span class="v">8.68×10²⁵ kg<br>地球の約14.5倍</span></div><div class="stat c2" data-ang="90" style="grid-area:1/2"><b>半径</b><span class="v">約25,400km<br>地球の約4.0倍</span></div><div class="stat c3" data-ang="30" style="grid-area:1/3"><b>地球から（最接近〜最遠）</b><span class="v">約26億〜31.5億km<br>光で約2.4〜2.9時間</span></div><div class="stat c1" data-ang="180" style="grid-area:2/1"><b>自転</b><span class="v">約17時間・逆向き<br>傾き 約98度</span></div><div class="stat c1" data-ang="210" style="grid-area:3/1"><b>太陽から</b><span class="v">約19.2AU<br>公転 約84年</span></div><div class="stat c2 comp-stat" data-ang="270" style="grid-area:3/2"><b>大気（体積比）</b><span class="v">H₂ 82.5% ／ He 15.2% ／ CH₄ 2.3%</span></div><div class="stat c3" data-ang="330" style="grid-area:3/3"><b>密度</b><span class="v">1.27 g/cm³</span></div><div class="core"><button type="button" class="img-btn" aria-expanded="false"><figure class="planet-img"><div class="orb"><span class="ring r1"></span><span class="ring r2"></span><div class="frame"><img src="../image/memoryverse/uranus.jpg" data-alt="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Uranus_-_Voyager_2.jpg/500px-Uranus_-_Voyager_2.jpg|https://commons.wikimedia.org/wiki/Special:FilePath/Uranus_-_Voyager_2.jpg?width=500|https://upload.wikimedia.org/wikipedia/commons/2/2c/Uranus_-_Voyager_2.jpg" alt="天王星の実画像（探査機ボイジャー2号（1986年））" decoding="async" onerror="mvNext(this)"><p class="fallback">画像を読み込めませんでした。<br><a href="https://science.nasa.gov/uranus/" target="_blank" rel="noopener">NASAの天王星のページで見る</a></p></div></div><figcaption>探査機ボイジャー2号（1986年）<br>© NASA/JPL</figcaption></figure><span class="hint"><span class="h-c">クリックで数値を開く</span><span class="h-o">クリックで閉じる</span></span></button></div></div>
-          <div class="row"><span class="k">中身</span><span class="v">岩石の核のまわりに、水・アンモニア・メタンからなる厚い層（天文学では「氷」と呼ぶ）。外側は水素・ヘリウムの大気。<strong>大気のメタン</strong>が赤い光を吸収するため青緑に見える</span></div>
+          <div class="orbit"><svg class="links" aria-hidden="true" preserveAspectRatio="none"></svg><div class="stat c1" data-ang="150" style="grid-area:1/1"><b>質量</b><span class="v">8.68×10²⁵ kg<br>地球の約14.5倍</span></div><div class="stat c2" data-ang="90" style="grid-area:1/2"><b>半径</b><span class="v">約25,400km<br>地球の約4.0倍</span></div><div class="stat c3" data-ang="30" style="grid-area:1/3"><b>地球から（最接近〜最遠）</b><span class="v">約26億〜31.5億km<br>光で約2.4〜2.9時間</span></div><div class="stat c1" data-ang="180" style="grid-area:2/1"><b>自転</b><span class="v">約17時間・逆向き<br>傾き 約98度</span></div><div class="stat c1" data-ang="210" style="grid-area:3/1"><b>太陽から</b><span class="v">約19.2AU<br>公転 約84年</span></div><div class="stat c2 comp-stat" data-ang="270" style="grid-area:3/2"><b>大気（体積比）</b><span class="v">H₂ 82.5% ／ He 15.2% ／ CH₄ 2.3%</span></div><div class="stat c3" data-ang="330" style="grid-area:3/3"><b>密度</b><span class="v">1.27 g/cm³</span></div><div class="stat c3" data-ang="10" style="grid-area:2/3"><b>表面重力（雲の上端）</b><span class="v">8.87 m/s²<br>地球の0.90倍（<strong>金星と同じ</strong>）</span></div><div class="stat c2" data-ang="350" style="grid-area:4/2"><b>磁場</b><span class="v">あり <strong>約60度傾く</strong><br>中心からもずれる</span></div><div class="core"><button type="button" class="img-btn" aria-expanded="false"><figure class="planet-img"><div class="orb"><span class="ring r1"></span><span class="ring r2"></span><div class="frame"><img src="../image/memoryverse/uranus.jpg" data-alt="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Uranus_-_Voyager_2.jpg/500px-Uranus_-_Voyager_2.jpg|https://commons.wikimedia.org/wiki/Special:FilePath/Uranus_-_Voyager_2.jpg?width=500|https://upload.wikimedia.org/wikipedia/commons/2/2c/Uranus_-_Voyager_2.jpg" alt="天王星の実画像（探査機ボイジャー2号（1986年））" decoding="async" onerror="mvNext(this)"><p class="fallback">画像を読み込めませんでした。<br><a href="https://science.nasa.gov/uranus/" target="_blank" rel="noopener">NASAの天王星のページで見る</a></p></div></div><figcaption>探査機ボイジャー2号（1986年）<br>© NASA/JPL</figcaption></figure><span class="hint"><span class="h-c">クリックで数値を開く</span><span class="h-o">クリックで閉じる</span></span></button></div></div>
+          <div class="row"><span class="k">中身</span><span class="v">岩石の核のまわりに、水・アンモニア・メタンからなる厚い層（天文学では「氷」と呼ぶ）。外側は水素・ヘリウムの大気（核の大きさははっきりしていない）。<strong>大気のメタン</strong>が赤い光を吸収するため青緑に見える</span></div>
           <div class="moons">衛星：29。主要5つ＝<strong>ミランダ</strong>、<strong>アリエル</strong>、<strong>ウンブリエル</strong>、<strong>チタニア</strong>、<strong>オベロン</strong>（名前はシェイクスピアとポープの作品の登場人物から）</div>
           <div class="row"><span class="k">特徴</span><span class="v"><ul>
             <li>自転軸がほぼ横倒し。転がるように公転する</li>
+            <li>表面重力は 8.87 m/s² で<strong>金星とほぼ同じ</strong></li>
             <li>1781年にハーシェルが望遠鏡で発見した最初の惑星</li>
             <li>近くを通った探査機はボイジャー2号（1986年）だけ</li>
           </ul></span></div>
@@ -547,7 +558,7 @@ code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border
       <div class="mod">
         <div class="mod-h"><span class="no">海王星</span><span class="ttl">最も遠く、風が強い</span><span class="tag">NEPTUNE / 氷</span></div>
         <div class="mod-b">
-          <div class="orbit"><svg class="links" aria-hidden="true" preserveAspectRatio="none"></svg><div class="stat c1" data-ang="150" style="grid-area:1/1"><b>質量</b><span class="v">1.02×10²⁶ kg<br>地球の約17倍</span></div><div class="stat c2" data-ang="90" style="grid-area:1/2"><b>半径</b><span class="v">約24,600km<br>地球の約3.9倍</span></div><div class="stat c3" data-ang="30" style="grid-area:1/3"><b>地球から（最接近〜最遠）</b><span class="v">約43億〜47億km<br>光で約4.0〜4.4時間</span></div><div class="stat c1" data-ang="180" style="grid-area:2/1"><b>自転</b><span class="v">約16時間</span></div><div class="stat c1" data-ang="210" style="grid-area:3/1"><b>太陽から</b><span class="v">約30.1AU<br>公転 約165年</span></div><div class="stat c2 comp-stat" data-ang="270" style="grid-area:3/2"><b>大気（体積比）</b><span class="v">H₂ 80% ／ He 19% ／ CH₄ 1.5%</span></div><div class="stat c3" data-ang="330" style="grid-area:3/3"><b>密度</b><span class="v">1.64 g/cm³<br>巨大惑星で最も高い</span></div><div class="core"><button type="button" class="img-btn" aria-expanded="false"><figure class="planet-img"><div class="orb"><span class="ring r1"></span><span class="ring r2"></span><div class="frame"><img src="../image/memoryverse/neptune.jpg" data-alt="https://upload.wikimedia.org/wikipedia/commons/thumb/0/06/Neptune.jpg/500px-Neptune.jpg|https://commons.wikimedia.org/wiki/Special:FilePath/Neptune.jpg?width=500|https://upload.wikimedia.org/wikipedia/commons/0/06/Neptune.jpg" alt="海王星の実画像（探査機ボイジャー2号（1989年））" decoding="async" onerror="mvNext(this)"><p class="fallback">画像を読み込めませんでした。<br><a href="https://science.nasa.gov/neptune/" target="_blank" rel="noopener">NASAの海王星のページで見る</a></p></div></div><figcaption>探査機ボイジャー2号（1989年）<br>© NASA/JPL</figcaption></figure><span class="hint"><span class="h-c">クリックで数値を開く</span><span class="h-o">クリックで閉じる</span></span></button></div></div>
+          <div class="orbit"><svg class="links" aria-hidden="true" preserveAspectRatio="none"></svg><div class="stat c1" data-ang="150" style="grid-area:1/1"><b>質量</b><span class="v">1.02×10²⁶ kg<br>地球の約17倍</span></div><div class="stat c2" data-ang="90" style="grid-area:1/2"><b>半径</b><span class="v">約24,600km<br>地球の約3.9倍</span></div><div class="stat c3" data-ang="30" style="grid-area:1/3"><b>地球から（最接近〜最遠）</b><span class="v">約43億〜47億km<br>光で約4.0〜4.4時間</span></div><div class="stat c1" data-ang="180" style="grid-area:2/1"><b>自転</b><span class="v">約16時間</span></div><div class="stat c1" data-ang="210" style="grid-area:3/1"><b>太陽から</b><span class="v">約30.1AU<br>公転 約165年</span></div><div class="stat c2 comp-stat" data-ang="270" style="grid-area:3/2"><b>大気（体積比）</b><span class="v">H₂ 80% ／ He 19% ／ CH₄ 1.5%</span></div><div class="stat c3" data-ang="330" style="grid-area:3/3"><b>密度</b><span class="v">1.64 g/cm³<br>巨大惑星で最も高い</span></div><div class="stat c3" data-ang="10" style="grid-area:2/3"><b>表面重力（雲の上端）</b><span class="v">11.1 m/s²<br>地球の1.14倍</span></div><div class="stat c2" data-ang="350" style="grid-area:4/2"><b>磁場</b><span class="v">あり <strong>約47度傾く</strong><br>中心からずれる</span></div><div class="core"><button type="button" class="img-btn" aria-expanded="false"><figure class="planet-img"><div class="orb"><span class="ring r1"></span><span class="ring r2"></span><div class="frame"><img src="../image/memoryverse/neptune.jpg" data-alt="https://upload.wikimedia.org/wikipedia/commons/thumb/0/06/Neptune.jpg/500px-Neptune.jpg|https://commons.wikimedia.org/wiki/Special:FilePath/Neptune.jpg?width=500|https://upload.wikimedia.org/wikipedia/commons/0/06/Neptune.jpg" alt="海王星の実画像（探査機ボイジャー2号（1989年））" decoding="async" onerror="mvNext(this)"><p class="fallback">画像を読み込めませんでした。<br><a href="https://science.nasa.gov/neptune/" target="_blank" rel="noopener">NASAの海王星のページで見る</a></p></div></div><figcaption>探査機ボイジャー2号（1989年）<br>© NASA/JPL</figcaption></figure><span class="hint"><span class="h-c">クリックで数値を開く</span><span class="h-o">クリックで閉じる</span></span></button></div></div>
           <div class="row"><span class="k">中身</span><span class="v">天王星と同じ巨大氷惑星。水・アンモニア・メタンの層と水素・ヘリウムの大気</span></div>
           <div class="moons">衛星：16。主要＝<strong>トリトン</strong>（惑星の自転と<strong>逆向きに公転</strong>。捕獲された天体と考えられる）、<strong>プロテウス</strong>、<strong>ネレイド</strong></div>
           <div class="row"><span class="k">特徴</span><span class="v"><ul>
@@ -675,8 +686,19 @@ code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border
         <p class="ex-h"><span class="num">演習6</span>天体カードを白紙から再現する</p>
         <p>天体を1つ選び（サイコロなどで無作為に）、<strong>①位置→②周り→③外観→④断面→⑤重さ</strong>の順で、思い出せることをすべて紙に書いてください。書き終えたらカードと照合し、項目数で正答率を出します。</p>
         <details><summary>採点のしかた</summary><div class="ans">
-          <p>カードの数値欄（6項目）＋中身＋衛星＋特徴の各行を1項目として数えます。数値は<strong>1桁目と桁が合っていれば正解</strong>とします（例：木星の質量「地球の約300倍」は正解、「約30倍」は誤り）。</p>
+          <p>カードの数値欄（惑星は9項目、太陽は8項目）＋中身＋衛星＋特徴の各行を1項目として数えます。数値は<strong>1桁目と桁が合っていれば正解</strong>とします（例：木星の質量「地球の約300倍」は正解、「約30倍」は誤り）。</p>
           <p>正答率7割が到達目標②の目安です。何度も落ちる項目は、その天体の実画像のどこに結びつけるかを決め直してください（例：土星の密度＝「環の下の水に浮いている土星」の像）。</p></div></details>
+      </div>
+
+      <div class="ex">
+        <p class="ex-h"><span class="num">演習7</span>核の大きさで並べる</p>
+        <ol>
+          <li>岩石の5天体（水星・金星・地球・月・火星）を、核が半径に占める割合の大きい順に並べてください。いちばん大きいものは、そのことから何が言えますか。</li>
+        </ol>
+        <details><summary>解答</summary><div class="ans">
+          <ol>
+            <li>水星（約80%以上）＞地球（約55%）＞金星・火星（約50%）＞月（約20%以下）。水星は鉄の塊に薄い岩石をかぶせたような姿で、小さいのに密度が高い理由がここにあります。逆に月は鉄が少なく、これが、月が地球のマントルの材料からできたという説の根拠の一つです。</li>
+          </ol></div></details>
       </div>
     </section>
 
@@ -725,6 +747,7 @@ code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border
 
 
     <div class="foot"><p>天体の数値はNASAの公開データに基づく概数です。衛星の数はNASA Space Place（2026年7月31日更新）の記載によります。正確な値は NASA Planetary Fact Sheet（nssdc.gsfc.nasa.gov/planetary/factsheet）等で確認してください。惑星の画像はサイト内の image/memoryverse/ に置いたものを表示しています（読み込めないときだけ Wikimedia Commons を参照します）。NASA 等の公開画像で、火星のみ ESA/MPS for OSIRIS Team による <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">CC BY-SA 4.0</a> です（いずれも改変していません）。引用研究の記述は要約であり、原論文の主張全体を代表するものではありません。</p></div>
+    
   </main>
 </div>
 <div id="site-footer"><noscript><nav class="noscript-nav" aria-label="フッターナビゲーション"><a href="index.html">ホーム</a><a href="self-intro.html">自己紹介</a><a href="study.html">勉強の軌跡</a><a href="videos.html">動画</a><a href="blog.html">ブログ</a><a href="sns.html">各種SNS</a></nav></noscript></div>
@@ -734,6 +757,16 @@ code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border
    `orbit.clientWidth < 760` で分岐しており、本文 860px のとき .orbit は 818px
    （860 − 枠2 − .mod-b の左右パディング40）なので放射状になる。1024px では
    .orbit が 684px まで縮むので3列グリッドに落ちる — 元の設計どおり（§47.7）。 */
+/* --- 画像のフォールバック（§52.1）------------------------------------------
+   ★ この関数は onerror から呼ばれているのに、変換のときに落ちていた（定義なし）。
+   画像は全部リポジトリに同梱してあるので発火しないが、発火したら
+   ReferenceError になる状態だった。data-alt の候補へ順に切り替え、
+   最後まで落ちたらリンクだけ出す。 */
+function mvNext(img){
+  var list=(img.dataset.alt||'').split('|').filter(Boolean),i=parseInt(img.dataset.step||0,10);
+  if(i<list.length){img.dataset.step=i+1;img.src=list[i];return}
+  var f=img.closest('.planet-img');if(f)f.classList.add('failed');
+}
 function mvPlace(mod){
   var orbit=mod.querySelector('.orbit'),core=orbit.querySelector('.core'),orb=core.querySelector('.orb'),
       stats=[].slice.call(mod.querySelectorAll('.stat'));
@@ -756,6 +789,20 @@ function mvPlace(mod){
   });
   var below=cb.bottom-(rb.top+rb.height/2);      /* 円の中心から説明文の下端まで */
   R=Math.max(R,below+maxH/2+14);
+  /* ★ 隣り合う欄どうしが重ならない半径。7個のときは自然に空いていたが、
+     表面重力・磁場を足して9個になり、右側に4つ並ぶカードが出た。角度順に
+     見て、隣とは「横に離れる」か「縦に離れる」かのどちらかを満たさせる。
+     もともと空いているカードでは条件がすでに成り立つので、見た目は変わらない。 */
+  var ring=stats.map(function(st){var b=st.getBoundingClientRect();
+      return {a:(((parseFloat(st.dataset.ang)||90)%360)+360)%360,w:b.width,h:b.height}})
+    .sort(function(x,y){return x.a-y.a});
+  ring.forEach(function(q,i){
+    var t=ring[(i+1)%ring.length],d=(t.a-q.a+360)%360; if(!d)return;
+    var ar=q.a*Math.PI/180,br=t.a*Math.PI/180;
+    var dc=Math.abs(Math.cos(ar)-Math.cos(br)),ds=Math.abs(Math.sin(ar)-Math.sin(br));
+    var r=Math.min(dc>0.01?((q.w+t.w)/2+10)/dc:1e9, ds>0.01?((q.h+t.h)/2+10)/ds:1e9);
+    if(isFinite(r))R=Math.max(R,r);
+  });
   stats.forEach(function(st){
     var b=st.getBoundingClientRect(),a=(parseFloat(st.dataset.ang)||90)*Math.PI/180;
     if(R*Math.abs(Math.cos(a))+b.width/2+6>W/2)fits=false;   /* 枠からはみ出す */
