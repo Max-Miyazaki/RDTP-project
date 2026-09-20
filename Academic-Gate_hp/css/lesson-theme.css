@@ -222,3 +222,33 @@ footer {
         display: none !important;
     }
 }
+/* --- レール上部の「1階層上へ」（§66）--------------------------------------
+   全体の階層は右のサイトナビが持つ。ここはいちばん多い操作＝親へ戻る1行だけ。 */
+.rail-up {
+    margin: 0 0 12px;
+    padding: 0 0 10px;
+    border-bottom: 1px solid var(--line);
+    font-size: 12.5px;
+    line-height: 1.6;
+}
+.rail-up a {
+    color: var(--ink-faint);
+    text-decoration: none;
+    transition: color var(--dur) var(--ease);
+}
+.rail-up a:hover { color: var(--ink); }
+
+/* --- 記事の末尾の前後リンク（§64.3／§66で共通化）------------------------- */
+/* --- 記事の末尾の前後リンク（§64.3）。サイトに共通部品が無いので記事側に持つ。 --- */
+.lesson-nav{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:26px 0 0}
+.lesson-nav.two{grid-template-columns:repeat(2,minmax(0,1fr))}
+.lesson-nav a,.lesson-nav span.soon{display:block;border:1px solid var(--line);border-radius:var(--radius-md);
+  padding:11px 14px;font-size:13px;line-height:1.5;color:var(--ink-soft);text-decoration:none;background:var(--surface);
+  transition:border-color var(--dur) var(--ease),color var(--dur) var(--ease)}
+.lesson-nav a:hover{border-color:var(--accent);color:var(--ink)}
+.lesson-nav b{display:block;font-size:10px;font-weight:500;letter-spacing:.14em;color:var(--ink-faint);margin-bottom:3px}
+.lesson-nav .soon{color:var(--ink-faint);background:none;border-style:dashed}
+.lesson-nav .mid{text-align:center}
+.lesson-nav.two .mid{text-align:left}
+.lesson-nav .next{text-align:right}
+@media (max-width:560px){.lesson-nav,.lesson-nav.two{grid-template-columns:1fr}
