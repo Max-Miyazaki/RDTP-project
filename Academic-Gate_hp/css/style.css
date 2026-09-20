@@ -13,6 +13,9 @@
     --bg: #000000;
     --surface: rgba(255, 255, 255, 0.02);
     --surface-hover: rgba(255, 255, 255, 0.04);
+    /* 押せる面にカーソルを当てたときだけの面（§71）。.02 → .045 では
+       地が黒すぎて差が読み取れなかったので、もう一段上を作ってある。 */
+    --surface-hot: rgba(255, 255, 255, 0.07);
     --nav-bg: rgba(10, 10, 14, 0.60);
     --hairline: rgba(255, 255, 255, 0.14);
     --hairline-strong: rgba(255, 255, 255, 0.24);
@@ -25,6 +28,10 @@
     /* The spectrum (particles + accents) — teal-dominant, warm at cores only */
     --spec-blue-deep: #0b3be0;
     --spec-teal: #2bd9c4;
+    /* ★ 今回足した唯一の色（§73）。ホバーの光専用の蛍光の青。
+       色相 198°—— --spec-blue（#3d8bff、217°）よりシアン寄りで明るく、
+       --spec-teal（170°）よりはっきり青側。170°は画面で緑に見えた。 */
+    --spec-glow: #5fd0ff;
     --spec-cyan: #00c2cb;
     --spec-blue: #3d8bff;
     --spec-violet: #7b4dff;
@@ -1208,23 +1215,59 @@ footer a:hover {
 /* ホバーが付くのは a.study-card だけ。div のカードは反応しないことで
    「行き先がない」と分かる。枠線を薄くする案は採らない — 3つ目のヘアライン値を
    作ることになり、かつ disabled と同じ記号になってしまうため（§38.3）。 */
-.blog-card:hover,
-.video-card:hover,
-.sns-link:hover,
-.note-card:hover,
-a.study-card:hover {
-    background: var(--surface-hover);
-    border-color: var(--hairline-strong);
+/* タッチ端末ではタップ後に :hover が張り付く（戻ってきたとき、最後に触った
+   カードだけが明るいままになる）ので、(hover: hover) の中に置く（§68.4）。 */
+@media (hover: hover) {
+
+    .blog-card:hover,
+    .video-card:hover,
+    .sns-link:hover,
+    .note-card:hover,
+    a.study-card:hover {
+        background: var(--surface-hover);
+        border-color: var(--hairline-strong);
+    }
 }
 
-/* リンクであるカードの見出しだけアクセント色。サイト全体で「行き先がある」を
-   表している既存の合図をそのまま使う。 */
-a.study-card h3 {
-    color: var(--accent);
-}
-
-a.study-card:hover h3 {
+/* ★ 見出しの色は §75 で逆にした。以前は「行き先がある＝最初から青、触ると白」
+   だったが、青から白へ**落ちる**のが不自然だった。いまはどのカードも
+   平常は白で、触れると枠の光と同じ蛍光の青になる（光り方と文字が同じ動きをする）。 */
+.study-card h3 {
     color: var(--text-primary);
+}
+
+@media (hover: hover) {
+    a.study-card:hover h3 {
+        color: var(--spec-glow);
+    }
+}
+
+/* --- まだ行き先が無いカード（§75）------------------------------------------
+   「準備中」の札は layout.js が入れる（手書きしない）。押せないので、光らない・
+   拡大しない・カーソルも変えない（ホバーのルールはもともと a.study-card にしか
+   かからないので、打ち消しは不要）。
+   ★ 枠は三つ目のヘアラインの値を作らず、**破線**で薄く見せる—— 前後リンクの
+   「準備中」がすでに border-style: dashed を使っており、サイト内の既存の合図だから
+   （§38.3 は「薄い罫線は disabled に見える」として避けていたが、今回は
+   押せないことを見せるのが目的なので、その判断をひっくり返している）。 */
+.study-card.is-soon {
+    border-style: dashed;
+    cursor: default;
+}
+
+.study-card.is-soon h3 {
+    color: var(--text-secondary);
+}
+
+.card-soon {
+    align-self: flex-start;
+    margin-top: auto;
+    padding-top: var(--space-2);
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    /* ★ --text-tertiary（.40）だと 12px で 3.71:1 で AA を割る。地がほぼ黒なので
+       .62 に上げて 7.79:1（§75.3）。小さいので見た目は十分静か。 */
+    color: var(--text-secondary);
 }
 
 /* 節の見出しはグリッドの中に全幅のアイテムとして置く。グリッド自身の箱
@@ -1557,25 +1600,53 @@ input[type="range"] {
     }
 }
 
-/* --- 一覧ページの「← 一つ上」（§67）。レールのある記事では .rail-up が同じ役目を
-   する。見た目（大きさ・色・矢印）はそちらに合わせてある。h1 の上に置くので
-   余白は控えめに。行き先は layout.js が CRUMBS の親から決める。 */
-.page-up {
-    margin: 0 0 6px;
-    font-size: 12.5px;
-    line-height: 1.6;
-}
-.page-up a {
-    color: var(--ink-faint, var(--text-tertiary));
-    text-decoration: none;
-    transition: color var(--dur) var(--ease);
-}
-.page-up a:hover { color: var(--ink, var(--text-primary)); }
-
 /* ★ この2つの部品は「一覧ページ（style.css だけ）」と「教材ページ（＋lesson-theme.css）」
    の両方で使う。--ink / --line などは lesson-theme.css にしか無いトークンなので、
    var() の第2引数に style.css 側の同等トークンを置いてある。これが無いと、一覧
    ページでは無効値になり、文字が真っ白・罫線が真っ白になる（§67.1）。 */
+/* --- 一覧ページの「← 一つ上」（§67 / 枠は §69）。レールのある記事では
+   .rail-up が同じ役目をする。形も光り方もそちらと揃えてある。行き先は layout.js が
+   CRUMBS の親から決める。幅は文字なり（inline-flex）で、横いっぱいには伸ばさない。 */
+.page-up {
+    margin: 0 0 26px;
+    font-size: 12.5px;
+    line-height: 1.6;
+}
+.page-up a {
+    display: inline-flex;
+    align-items: center;
+    gap: .45em;
+    padding: 5px 13px;
+    border: 1px solid var(--line, var(--hairline));
+    border-radius: var(--radius-pill);
+    background: var(--surface);
+    color: var(--ink-faint, var(--text-tertiary));
+    text-decoration: none;
+    transition: color var(--dur) var(--ease), background var(--dur) var(--ease),
+        border-color var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+}
+
+/* 矢印だけを包むのは、ホバーでこれだけを動かすため（§68.2）。
+   間隔は gap が持つので margin は持たせない。 */
+.page-up .ar {
+    display: inline-block;
+    transition: transform var(--dur) var(--ease);
+}
+
+/* ホバーの応答はすべて (hover: hover) の中に置く。タッチ端末では
+   :hover がタップ後に張り付くため（§68.4）。外側の光は第1回の天体カードと
+   同じ系統を弱めたもの（向こうは 0 0 24px / .24、こちらは 0 0 14px / .12）。 */
+@media (hover: hover) {
+    .page-up a:hover {
+        color: var(--ink, var(--text-primary));
+        background: var(--surface-2, var(--surface-hover));
+        border-color: var(--line-strong, var(--hairline-strong));
+        box-shadow: 0 0 14px rgba(61, 139, 255, .12);
+    }
+    .page-up a:hover .ar { transform: translateX(-3px); }
+}
+.page-up a:focus-visible { color: var(--ink, var(--text-primary)); outline: 2px solid var(--accent); outline-offset: 3px; }
+
 /* ===========================================================================
    右側のサイトナビ（§66）。左のレールは「記事内の目次」、こちらは「サイト全体の
    階層」。中身は layout.js の CRUMBS から組み立てる（テーブルに1行足せば出る）。
@@ -1600,9 +1671,16 @@ input[type="range"] {
     border-right: 0;
     border-radius: 12px 0 0 12px;
     cursor: pointer;
-    transition: color var(--dur) var(--ease), border-color var(--dur) var(--ease);
+    transition: color var(--dur) var(--ease), border-color var(--dur) var(--ease),
+        transform var(--dur) var(--ease);
 }
-.sitenav-tab:hover { color: var(--ink, var(--text-primary)); border-color: var(--line-strong, var(--hairline-strong)); }
+@media (hover: hover) {
+    .sitenav-tab:hover {
+        color: var(--ink, var(--text-primary));
+        border-color: var(--line-strong, var(--hairline-strong));
+        transform: translateY(-50%) translateX(-2px);
+    }
+}
 .sitenav-tab:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
 .sitenav-scrim {
@@ -1654,7 +1732,7 @@ body.sitenav-open .sitenav { transform: none; }
     cursor: pointer;
     transition: color var(--dur) var(--ease);
 }
-.sitenav__x:hover { color: var(--ink, var(--text-primary)); }
+@media (hover: hover) { .sitenav__x:hover { color: var(--ink, var(--text-primary)); } }
 .sitenav__body { overflow-y: auto; padding: 14px 18px 40px; }
 
 /* ツリー。字下げは階層ごとに、開閉は grid-template-rows で滑らかに。 */
@@ -1677,7 +1755,12 @@ body.sitenav-open .sitenav { transform: none; }
     cursor: pointer;
     transition: color var(--dur) var(--ease), background var(--dur) var(--ease);
 }
-.sitenav .rw a:hover, .sitenav .rw .hd:hover { color: var(--ink, var(--text-primary)); background: var(--surface-2, var(--surface-hover)); }
+/* 行の反応は「行き先がある行」だけ。章の見出し（.hd）は開閉しかしないので、
+   リンクと同じ反応を与えない—— 代わりに三角だけが明るくなる（§68.3）。 */
+@media (hover: hover) {
+    .sitenav .rw a:hover { color: var(--ink, var(--text-primary)); background: var(--surface-2, var(--surface-hover)); }
+    .sitenav .rw:has(> .hd:hover) > .tw::before { border-color: var(--ink-soft, var(--text-secondary)); }
+}
 .sitenav .rw .hd { color: var(--ink-faint, var(--text-tertiary)); }
 .sitenav .rw .soon { flex: 1 1 auto; padding: 5px 8px; font-size: 14.5px; line-height: 1.65; color: var(--ink-faint, var(--text-tertiary)); opacity: .55; }
 .sitenav .rw a.cur { color: var(--accent); background: var(--accent-tint, rgba(61, 139, 255, .12)); }
@@ -1705,7 +1788,7 @@ body.sitenav-open .sitenav { transform: none; }
     transition: transform var(--dur) var(--ease), border-color var(--dur) var(--ease);
 }
 .sitenav .nd.open > .rw > .tw::before { transform: rotate(45deg); }
-.sitenav .tw:hover::before { border-color: var(--ink, var(--text-primary)); }
+@media (hover: hover) { .sitenav .tw:hover::before { border-color: var(--ink, var(--text-primary)); } }
 .sitenav .tw--leaf { cursor: default; }
 .sitenav .tw--leaf::before { display: none; }
 .sitenav .kids { display: grid; grid-template-rows: 0fr; transition: grid-template-rows var(--dur) var(--ease); }
@@ -1717,4 +1800,110 @@ body.sitenav-open .sitenav { transform: none; }
 }
 @media print {
     .sitenav, .sitenav-tab, .sitenav-scrim { display: none !important; }
+}
+
+/* --- 動きを減らす設定では、移動だけをやめる（§68.4）。§15 の全体ルールは
+   transition-duration を 0 にするだけなので「瞬間移動」になってしまう。
+   明度の変化は残す（それが「押せる」という情報そのものだから）。 */
+@media (prefers-reduced-motion: reduce) {
+    .page-up a:hover .ar { transform: none; }
+    .sitenav-tab:hover { transform: translateY(-50%); }
+}
+
+/* ===========================================================================
+   70. 押せる面のホバーをひとつの形に揃える（§70 → §73 → §74）
+   拡大（1.012）＋ **枠全体が蛍光の青で一様に光る** ＋ 背景がひと段明るく
+   ＋ 同じ色の外側のにじみ。文字の明度は要素ごとに元から決まっているものを使う。
+
+   ★ 光り方はこの1種類だけ（§74）。以前は「戻る＝全体」「進む＝弧が回る」と
+   分けていたが、回転をやめて全部を一様な光にした。conic-gradient と
+   @property（--edge-a / edgeSpin）は使う箇所が無くなったので削除してある。
+   （第1回の天体カードの環 .ring は別物。memoryverse_1-1.html に残っている）
+
+   ★ position は「まだ持っていないもの」だけに与える。.study-card は既に relative、
+   .sitenav-tab は fixed なので、まとめて relative を書くとタブが固定を失って
+   ページ末尾に落ちる（§70.4）。
+   =========================================================================== */
+.page-up a,
+.rail-up a,
+.lesson-nav a:not(.btn) {
+    position: relative;
+}
+
+.page-up a,
+.rail-up a,
+a.study-card,
+.lesson-nav a:not(.btn),
+.sitenav-tab {
+    transition: color var(--dur) var(--ease), background var(--dur) var(--ease),
+        border-color var(--dur) var(--ease), box-shadow var(--dur) var(--ease),
+        transform var(--dur) var(--ease);
+}
+
+/* 枠線そのものとして光る 1.5px のリング。要素の border の上に重なる。 */
+.page-up a::before,
+.rail-up a::before,
+a.study-card::before,
+.lesson-nav a:not(.btn)::before,
+.sitenav-tab::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    /* 1px では細すぎて黒に負けるので 1.5px。 */
+    padding: 1.5px;
+    background: color-mix(in srgb, var(--spec-glow) 92%, transparent);
+    filter: drop-shadow(0 0 6px color-mix(in srgb, var(--spec-glow) 55%, transparent));
+    /* 枠線の幅（padding）だけを残して中身を抜く。 */
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--dur) var(--ease);
+}
+
+@media (hover: hover) {
+
+    .page-up a:hover,
+    .rail-up a:hover,
+    a.study-card:hover,
+    .lesson-nav a:not(.btn):hover,
+    .sitenav-tab:hover {
+        background: var(--surface-hot, rgba(255, 255, 255, .07));
+        border-color: color-mix(in srgb, var(--spec-glow) 55%, transparent);
+        box-shadow: 0 0 22px color-mix(in srgb, var(--spec-glow) 34%, transparent);
+        transform: scale(1.012);
+    }
+
+    /* タブは中央寄せの translate を持っているので、その後ろに足す。 */
+    .sitenav-tab:hover {
+        transform: translateY(-50%) translateX(-2px) scale(1.012);
+    }
+
+    /* 触れた1枚だけが光る（:hover の中でしか opacity を上げない）。 */
+    .page-up a:hover::before,
+    .rail-up a:hover::before,
+    a.study-card:hover::before,
+    .lesson-nav a:not(.btn):hover::before,
+    .sitenav-tab:hover::before {
+        opacity: 1;
+    }
+}
+
+/* 動きを減らす設定では、拡大をやめて光だけを残す（§73.4）。
+   光は元々回らないので、ここで止めるものは拡大だけになった。 */
+@media (prefers-reduced-motion: reduce) {
+
+    .page-up a:hover,
+    .rail-up a:hover,
+    a.study-card:hover,
+    .lesson-nav a:not(.btn):hover {
+        transform: none;
+    }
+
+    .sitenav-tab:hover {
+        transform: translateY(-50%);
+    }
 }

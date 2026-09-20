@@ -65,13 +65,13 @@
 
     // レール用：1階層上へ戻る1行だけ。ページを持たない層（章）は飛ばして、
     // いちばん近い「ページのある親」へ返す。全体の階層は右のサイトナビが持つ。
-    /* 行き先は書かない。CRUMBS の親をたどって、最初に href を持つノードを使う
-       （章のような「ページでない階層」は自動で飛ばされる）。cls だけが違うので
-       レール（.rail-up）と一覧ページ（.page-up）で共用する。 */
     function upHtml(keys, cls) {
         for (var i = keys.length - 2; i >= 0; i--) {
             if (CRUMBS[keys[i]].href) {
-                return '<nav class="' + cls + '"><a href="' + CRUMBS[keys[i]].href + '">← ' +
+                // ← は .ar で包む。ホバーでこの矢印だけを左へずらすため（§68.2）。
+                // 読み上げには label だけ渡ればよいので aria-hidden。
+                return '<nav class="' + cls + '"><a href="' + CRUMBS[keys[i]].href + '">' +
+                       '<span class="ar" aria-hidden="true">←</span>' +
                        CRUMBS[keys[i]].label + '</a></nav>';
             }
         }
@@ -171,9 +171,10 @@
         var prev = i > 0 ? sib[i - 1] : null, next = i < sib.length - 1 ? sib[i + 1] : null;
         var nm = function (k) { return CRUMBS[k].title || CRUMBS[k].label; };
         var cells = [];
-        if (prev) cells.push(navCell('prev', '前の' + unit, '← ' + nm(prev), CRUMBS[prev].href));
+        var AR = function (d) { return '<span class="ar" aria-hidden="true">' + d + '</span>'; };
+        if (prev) cells.push(navCell('prev', '前の' + unit, AR('←') + nm(prev), CRUMBS[prev].href));
         if (ser) cells.push(navCell('mid', 'シリーズ', CRUMBS[ser].label + 'の目次へ', CRUMBS[ser].href));
-        if (next) cells.push(navCell('next', '次の' + unit, nm(next) + (CRUMBS[next].href ? ' →' : ''), CRUMBS[next].href));
+        if (next) cells.push(navCell('next', '次の' + unit, nm(next) + (CRUMBS[next].href ? AR('→') : ''), CRUMBS[next].href));
         if (!cells.length) return '';
         return '<nav class="lesson-nav' + (cells.length === 2 ? ' two' : '') + '" aria-label="前後の' + unit + '">' +
                cells.join('') + '</nav>';
@@ -185,6 +186,30 @@
         if (!foot || !CRUMBS[cur].parent) return;
         var h = lessonNavHtml(cur);
         if (h) foot.insertAdjacentHTML('afterend', h);
+    }
+
+    /* --- まだ行き先が無いカードに「準備中」を付ける（§75）-----------------------
+       ★ 手で書かない。判定は2通りで、どちらも自動：
+         ① <a> ではない（＝ href が無い）カード。分野や技能の未着手分はこれ。
+            これらはページでは無いので CRUMBS に行が無く、表からは引けない。
+         ② <a> だが、行き先が CRUMBS で soon になっているページ。今は該当なし。
+            （書き上がって soon を消すと、カードも自動で普通の表示に戻る） */
+    function markSoonCards() {
+        var byHref = {};
+        Object.keys(CRUMBS).forEach(function (k) {
+            if (CRUMBS[k].href) byHref[CRUMBS[k].href] = k;
+        });
+        [].forEach.call(document.querySelectorAll('.study-card'), function (c) {
+            var href = c.getAttribute('href');
+            var soon = !href;
+            if (href) {
+                var k = byHref[href.split('#')[0]];
+                soon = !!(k && CRUMBS[k].soon);
+            }
+            if (!soon || c.querySelector('.card-soon')) return;
+            c.classList.add('is-soon');
+            c.insertAdjacentHTML('beforeend', '<span class="card-soon">準備中</span>');
+        });
     }
 
     function mountCrumbs() {
@@ -271,6 +296,7 @@
         if (typeof window.__agMountThemeBtn === 'function') window.__agMountThemeBtn();
 
         mountCrumbs();
+        markSoonCards();
     }
 
     if (document.readyState === 'loading') {
