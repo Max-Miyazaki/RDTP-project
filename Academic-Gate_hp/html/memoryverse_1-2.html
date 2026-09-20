@@ -1,0 +1,1200 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第2回 岩石惑星を深める｜メモリーバース 1章 太陽系 | Academic Gates</title>
+<meta name="description" content="水星・金星・地球・月・火星の地形と大気を頭の中に再現する記憶訓練の教材（メモリーバース v3 第2回）。外観の球に全球地図を重ね、地形を位置ごと覚えます。">
+<link rel="icon" href="../../favicon.ico" sizes="32x32">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+<!-- ★ ライト/ダーク切替は停止中（DESIGN.md §44）。サイト全体がダーク基調なので、
+     記事だけテーマが変わるのは一貫性を欠くという判断。**復活させるには次の1行の
+     コメントを外すだけでよい**（js/theme.js も css/lesson-theme.css も残してある）。 -->
+<!-- <script src="../js/theme.js?v=r54"></script> -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;500&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+<!-- サイト共通 → 記事固有 → テーマ上書き の順で読む（lesson-theme.css は
+     記事の <style> より後ろに置くこと。css/lesson-theme.css 冒頭の注記どおり） -->
+<link rel="stylesheet" href="../css/style.css?v=r54">
+<!-- MathJax は読み込まない。この記事に数式は1つも無いため（§46.0 の執筆方針は
+     数式の話なので該当しない）。設定ブロックもローダーも置かないこと。 -->
+<style>
+/* メモリーバース v3 第2回 — 記事固有のスタイルのみ。
+   共通のリセット・背景・星・ヘッダー/フッター・ボタン・見出し階層・本文リズムは
+   css/style.css が持つ（DESIGN.md §35, §36, §47）。ここに残すのは、この教材の
+   構造（レール／天体カード／演習／図版）と、教育用の色トークンだけ。 */
+:root{
+  /* 教材固有のトークン。本体と同値のもの（--bg --surface --nav-bg --ink --line
+     --line-strong --glow-cool --font(=--font-body) --nav-clear(=--nav-clearance)
+     --ease --dur --radius-lg/md/sm）は css/style.css 側に定義があるので持たない。
+     --ink-soft / --ink-faint は本体より明るい値を「意図的に」維持している。
+     本体値に寄せると 13.5px の補足文が 4.56:1 → 3.66:1 と AA を割るため（§36.2）。
+     --accent / --accent-tint / --glow-cool は元はティール（#2bd9c4）だったが、
+     サイトの青に一本化した。--accent と --glow-cool は本体から継承するので
+     ここには無い。--accent-deep / --accent-tint はダークでの定義が本体にも
+     lesson-theme.css にも無いので、記事が持つ（§47.5）。 */
+  --surface-2:rgba(255,255,255,.045);
+  --ink-soft:rgba(255,255,255,.68);
+  --ink-faint:rgba(255,255,255,.46);
+  --line-soft:rgba(255,255,255,.05);
+  --accent-deep:#a8c9ff;
+  --accent-tint:rgba(77,148,255,.12);
+  --amber:#ffb46b;--amber-tint:rgba(255,160,70,.08);--amber-line:rgba(255,160,70,.32);
+  --good:#72e3ad;--good-tint:rgba(114,227,173,.08);--good-line:rgba(114,227,173,.28);
+  --key:#ff6fa5;--key-tint:rgba(255,61,139,.08);--key-line:rgba(255,61,139,.28);
+  --teach:#a48bff;--teach-tint:rgba(123,77,255,.11);--teach-line:rgba(123,77,255,.38);
+  --mono:ui-monospace,'SFMono-Regular',Menlo,Consolas,monospace;
+  --rail-w:250px;
+}
+body{font-size:15.5px;line-height:1.9;line-break:strict;overflow-x:hidden}
+
+/* --- レイアウト（左に目次レール／右に本文の2カラム）。phys-math_1-1 と同一。 ---
+   style.css の共通記事ルールは `body.is-article main > section:not(.rail)`
+   （詳細度 0,2,3）で 900px と 160px パディングをかけてくる。こちらは `.main` を
+   噛ませて 0,3,2 / 0,4,3 とし、確実に上回る（§36.5 B）。
+   レールの左余白は 1280px → 1440px にかけて 0 → 32px、レール↔本文の間隔は
+   1024px → 1280px にかけて 24 → 56px。狭い画面ではまず余白を削って本文幅に回す（§43.3）。 */
+.wrap{display:flex;padding-top:var(--nav-clearance);
+      padding-left:clamp(0px, calc((100vw - 1280px) * .2), 32px)}
+.rail{width:var(--rail-w);flex:0 0 var(--rail-w);position:sticky;top:var(--nav-clearance);height:calc(100vh - var(--nav-clearance));overflow-y:auto;padding:18px 14px 60px 22px;border-right:1px solid var(--line)}
+.main{flex:1 1 auto;min-width:0;
+      padding:0 clamp(24px, calc(24px + (100vw - 1024px) * .125), 56px) 110px}
+/* 本文列 860px（§43.2）。この記事に数式は無いので 853px という下限の根拠は
+   効かないが、教材どうしで本文幅が割れるほうが害なので phys-math_1-1 に揃える。
+   中央寄せをやめて左揃えにし、余りは右へ流す。 */
+body.is-article .main > .lesson-hero,
+body.is-article .main > section:not(.rail),
+body.is-article .main > .foot{max-width:860px;margin-left:0;margin-right:auto;padding-left:0;padding-right:0}
+.rail .brand{font-weight:400;font-size:15px;line-height:1.45;margin:2px 0 4px}
+.rail .brand small{display:block;font-size:10px;font-weight:500;color:var(--ink-faint);letter-spacing:.2em;margin-top:6px}
+/* --- 上の階層へ戻る導線（§64.1）。レールは sticky なので、読んでいる途中でも
+   親ページへ戻れる。狭い画面はレールが引き出しになるので .float-nav で補う。 --- */
+  .lesson-nav .next,.lesson-nav .mid{text-align:left}}
+.progress-wrap{height:2px;background:var(--line);border-radius:99px;margin:16px 0 18px;overflow:hidden}
+.progress-bar{height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--accent-deep));transition:width .15s linear}
+.toc{list-style:none;margin:0;padding:0;font-size:12.5px}
+.toc .part{font-size:10px;letter-spacing:.2em;color:var(--ink-faint);margin:16px 0 5px;padding-left:2px}
+.toc a{display:block;text-decoration:none;color:var(--ink-soft);padding:4px 10px;border-radius:999px;transition:color var(--dur) var(--ease),background var(--dur) var(--ease)}
+.toc a:hover{color:var(--ink);background:var(--surface-2)}
+.toc a.active{color:var(--ink);background:var(--accent-tint)}
+.toc a .n{font-size:10.5px;color:var(--ink-faint);margin-right:8px;font-variant-numeric:tabular-nums}
+.toc a.active .n{color:var(--accent)}
+
+/* --- 記事の導入部。`.hero` は index.html 専用で、style.css が
+   `.hero h1/.hero p/.hero .eyebrow` に黒い text-shadow をかけるため使えない（§36.5 A）。
+   要素も <header> ではなく <div>（裸の header は浮遊ナビの定義を浴びる）。 --- */
+.lesson-hero{padding:64px 0 34px;border-bottom:1px solid var(--line)}
+.lesson-hero h1{font-weight:300;font-size:clamp(28px,4vw,48px);line-height:1.25;letter-spacing:-.02em;margin:0 0 22px}
+.lesson-hero h1 .sub{display:block;font-size:.52em;font-weight:300;color:var(--ink-soft);letter-spacing:0;margin-top:12px}
+.lesson-hero p{color:var(--ink-soft);margin:0 0 12px}
+.lesson-hero .lead{font-size:16.5px;color:var(--ink-soft)}
+/* .eyebrow 本体は style.css の共通コンポーネント。色と余白だけ上書きする
+   （共通の --text-tertiary は 11px の小さな文字で 3.66:1 と AA を割るため） */
+.eyebrow{color:var(--ink-faint);margin-bottom:18px}
+
+section{border-bottom:1px solid var(--line-soft);scroll-margin-top:var(--nav-clearance)}
+body.is-article .main > section:not(.rail),
+body.is-article .main > section:not(.rail) ~ section:not(.rail){padding-top:56px;padding-bottom:12px}
+.sec-head{display:flex;align-items:baseline;gap:14px;margin-bottom:10px}
+.sec-head .idx{font-size:.72rem;font-weight:500;letter-spacing:.2em;color:var(--ink-faint);padding-top:4px;flex:0 0 auto;font-variant-numeric:tabular-nums}
+.sec-head .idx::after{content:' —'}
+body.is-article main h2{font-weight:400;font-size:clamp(21px,2.6vw,28px);line-height:1.3;letter-spacing:-.01em;margin:0}
+body.is-article main h3{font-weight:400;font-size:17px;margin:28px 0 6px;color:var(--ink)}
+body.is-article main p{margin:10px 0;color:var(--ink-soft)}
+body.is-article main ul,body.is-article main ol{margin:10px 0;padding-left:1.3em;color:var(--ink-soft)}
+li{margin:4px 0}
+strong{font-weight:500;color:var(--ink)}
+code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);border-radius:6px;padding:1px 6px;color:var(--accent-deep)}
+
+.box{border-radius:var(--radius-md);padding:16px 20px;margin:18px 0;border:1px solid var(--line);background:var(--surface)}
+.box .lab{font-size:.7rem;letter-spacing:.14em;font-weight:500;display:block;margin-bottom:6px}
+.box p:first-of-type{margin-top:2px}.box p:last-child{margin-bottom:0}
+/* 枠線は必ずトークン経由にすること。ここに直書きすると lesson-theme.css の
+   ライト上書きが効かず、暗い背景用の明るい色がライトでパステルになる（§41.2）。 */
+.box.principle{background:var(--key-tint);border-color:var(--key-line)}.box.principle .lab{color:var(--key)}
+.box.target{background:var(--good-tint);border-color:var(--good-line)}.box.target .lab{color:var(--good)}
+.box.warn{background:var(--amber-tint);border-color:var(--amber-line)}.box.warn .lab{color:var(--amber)}
+.box.teach{background:var(--teach-tint);border-color:var(--teach-line)}.box.teach .lab{color:var(--teach)}
+
+.table-scroll{overflow-x:auto;margin:14px 0}
+.mini-table{width:100%;border-collapse:collapse;font-size:14px;margin:14px 0;color:var(--ink-soft)}
+.mini-table th,.mini-table td{border:1px solid var(--line);padding:9px 11px;text-align:left;vertical-align:top}
+.mini-table th{background:var(--surface-2);font-weight:500;color:var(--ink)}
+/* 根拠の強度バッジ。枠線は tint と同系のトークンへ（上と同じ理由） */
+.g{font-size:10.5px;font-weight:500;border-radius:999px;padding:2px 9px;white-space:nowrap}
+.g.s{background:var(--good-tint);color:var(--good);border:1px solid var(--good-line)}
+.g.m{background:var(--amber-tint);color:var(--amber);border:1px solid var(--amber-line)}
+.g.w{background:var(--key-tint);color:var(--key);border:1px solid var(--key-line)}
+
+.fig{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-lg);padding:18px 18px 12px;margin:20px 0}
+.fig > svg{width:100%;height:auto;display:block}
+.fig svg text{font-family:var(--font-body)}
+.fig figcaption{font-size:13px;color:var(--ink-soft);margin-top:10px;line-height:1.8}
+
+/* --- 到達目標の箱。`.goals` は style.css の `.card`（サイト共通カード。blog /
+   videos / study など6ページで使用中）と衝突したための改名（§47.6）。
+   そのままだと display:flex / gap / .card::before のホバーグロー / .card:hover の
+   背景変化が降ってきて、読むだけの箱がマウスに反応してしまう。 --- */
+.goals{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-lg);padding:20px 24px;margin:18px 0}
+.goals ol{counter-reset:q;list-style:none;padding-left:0;margin:6px 0 0}
+.goals ol li{counter-increment:q;position:relative;padding-left:44px;margin:14px 0}
+.goals ol li::before{content:"G" counter(q);position:absolute;left:0;top:3px;font-size:11px;font-weight:500;color:var(--accent);border:1px solid var(--accent);border-radius:999px;padding:1px 9px}
+.goals ol li b{display:block;font-size:15.5px;font-weight:400;color:var(--ink)}
+.goals ol li span{font-size:14px;color:var(--ink-soft)}
+
+/* --- 天体カード ------------------------------------------------------------
+   画像をクリックすると .mod.open が付き、数値（.stat）が円の周りに放射状に並ぶ。
+   配置は JS（mvPlace / mvLinks）が計算する。CSS は「閉じているときの姿」と
+   「開いたときの入れ物」だけを持つ。 --- */
+.mod{position:relative;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-lg);margin:18px 0;overflow:hidden;transition:border-color var(--dur) var(--ease),background var(--dur) var(--ease)}
+.mod::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,var(--glow-cool),transparent 45%);opacity:0;transition:opacity var(--dur) var(--ease);pointer-events:none}
+.mod:hover{border-color:var(--line-strong);background:var(--surface-2)}
+.mod:hover::before{opacity:.5}
+.mod>*{position:relative}
+.mod-h{display:flex;align-items:center;gap:12px;padding:14px 20px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+/* .no の文字色は lesson-theme.css が var(--on-accent) で持つ（§44.1 の分類表に
+   登録済み）。ここで再宣言しないこと。背景だけが記事の持ち物。 */
+.mod-h .no{font-size:12px;font-weight:500;background:var(--accent);border-radius:999px;padding:3px 12px;flex:0 0 auto}
+.mod-h .ttl{font-weight:400;font-size:17px;flex:1 1 auto;min-width:0}
+.mod-h .tag{font-size:10px;font-weight:500;letter-spacing:.14em;color:var(--ink-faint);border:1px solid var(--line);border-radius:999px;padding:2px 10px}
+.mod-b{padding:16px 20px 18px}
+/* ★ 第2回の .orbit は「外観＝左に球・右に物差し」「地図＝画像に重ねる」の2種類で、
+   第1回の3列グリッド（放射状配置の受け皿）は使わない（§57.1）。
+   位置指定の基準（position:relative）だけが共通の役割。 */
+.orbit{position:relative;margin-bottom:10px}
+.orbit .links{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;overflow:visible}
+/* 引き出し線。青はティールより輝度が低いので、不透明度を .38 → .45 に上げて
+   線としての見えを保つ（黒地 6.34:1 対 11.82:1 の差を埋める。§47.5） */
+.orbit .links line{stroke:rgba(61,139,255,.45);stroke-width:1}
+.orbit .links circle{fill:var(--accent)}
+.orb{position:relative;width:100%}
+.core{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;gap:8px;width:100%;margin:0}
+.img-btn{background:none;border:0;padding:0;cursor:pointer;width:100%;font-family:var(--font-body);color:inherit;display:flex;flex-direction:column}
+.img-btn .hint{order:-1;display:block;font-size:11px;color:var(--ink-faint);margin:0 0 12px;letter-spacing:.06em;position:relative;z-index:3}
+.hint .h-o{display:none}
+.mod.open .hint .h-c{display:none}
+.mod.open .hint .h-o{display:inline}
+.img-btn:hover .frame{border-color:var(--accent);box-shadow:0 0 24px rgba(61,139,255,.24)}
+/* .stat は **<div>**。押しても何も起きない要素なので、<button> のままだと
+   9枚 × 6〜7個 = 62 個の無反応なボタンが Tab 順に入る（§47.9）。mvPlace /
+   mvLinks はセレクタで拾うだけなのでタグに依存しない。数値を押せるようにする
+   日が来たら button に戻すこと — そのときは中身も操作対象になる。 */
+.stat{position:relative;z-index:2;display:block;width:max-content;max-width:100%;text-align:left;background:rgba(12,14,18,.82);backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px);border:1px solid var(--line);border-radius:var(--radius-sm);padding:8px 11px;font-size:13.5px;line-height:1.6;color:var(--ink);font-family:var(--font-body);font-variant-numeric:tabular-nums;transition:opacity .28s var(--ease),transform .28s var(--ease),border-color .2s var(--ease)}
+.stat b{display:block;font-size:10px;color:var(--ink-faint);font-weight:500;letter-spacing:.12em;margin-bottom:2px}
+.stat strong{color:var(--accent-deep)}
+.stat .v{display:block}
+.mod:not(.open) .orbit .stat{display:none}
+.mod:not(.open) .links{display:none}
+
+.mod.open .stat{animation:mvIn .32s var(--ease) both}
+@keyframes mvIn{from{opacity:0}to{opacity:1}}
+@media (prefers-reduced-motion:reduce){.mod.open .stat{animation:none}}
+
+/* 惑星画像。枠の中は宇宙の写真なので、ライトでも黒のまま
+   （lesson-theme.css の注記「.planet-img .frame は変更しない」と対になっている）。 */
+.planet-img{margin:0}
+.planet-img .frame{border-radius:var(--radius-md);background:radial-gradient(circle at 50% 50%,rgba(255,255,255,.04),transparent 70%),#000;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;overflow:hidden}
+.planet-img img{width:100%;height:100%;object-fit:contain;display:block}
+.planet-img .fallback{display:none;padding:14px;text-align:center;font-size:12.5px;color:var(--ink-soft)}
+.planet-img.failed img{display:none}.planet-img.failed .fallback{display:block}
+.planet-img figcaption{position:relative;z-index:3;margin-top:12px;font-size:10.5px;color:var(--ink-faint);line-height:1.5}
+.mod-b .row{display:flex;gap:12px;margin:8px 0;font-size:14.5px;align-items:flex-start}
+.mod-b .row .k{font-size:10.5px;font-weight:500;color:var(--ink-faint);letter-spacing:.14em;flex:0 0 58px;padding-top:4px}
+.mod-b .row .v{flex:1 1 auto;min-width:0;line-height:1.8;color:var(--ink-soft)}
+.mod-b ul{margin:3px 0;padding-left:1.2em}
+.mod-b li{font-size:14.5px;margin:2px 0}
+
+/* --- この回は地図だけを見せる。外観（球）は第1回が持つ（§63.2）。 --- */
+.planet-img .map-img{display:block}
+/* ★ 地図のときは枠を画像そのものの比率に合わせる。球用の正方形の枠に
+   object-fit:contain で入れると上下が大きく空き、地形が半分の大きさになる。
+   高さを auto にして画像に持たせれば、2:1 の惑星図も 4:3 の月の図も等しく収まる。
+   円形の指定は `.planet-img .orb .frame`（0,3,0）なので、こちらは 0,5,0 で勝つ。
+   環は球の周りを回る飾りなので、平面の地図では消す（楕円にならない）。 */
+.mod.map-view .planet-img .orb{aspect-ratio:auto}
+.mod.map-view .planet-img .orb .frame{height:auto;min-height:118px;aspect-ratio:auto;border-radius:var(--radius-md)}
+.mod.map-view .planet-img .map-img{height:auto}
+/* 地球だけの注記。画像の下・キャプションの上に1行（§56.2）。
+   <button> の中なので <p> ではなく span（ボタンの中は phrasing content）。 */
+.map-note{display:none;margin:10px 0 0;font-size:11px;line-height:1.6;color:var(--ink-faint)}
+.mod.map-view .map-note{display:block}
+/* ★ 外観のときは数値欄（.stat）、地図のときは地形ラベル（.stat.geo）。
+   どちらも同じ .stat を使う（見た目の土台を共有する）。
+   閉じているときは第1回どおり両方とも隠れる（.mod:not(.open) .orbit .stat）。 */
+.mod.map-view .orbit .stat:not(.geo){display:none}
+/* ★ 地図のときだけ、線と点を画像の上に出す。共通CSSでは .links が z-index:0、
+   画像を持つ .core が z-index:1 なので、地図の上のピンが画像に隠れてしまう。
+   .stat と同じ z-index:2 にすると、DOM 順（svg → .stat）で線はラベルの下、
+   画像より上に来る。外観のときは第1回のままにしておく（§53.4）。 */
+.mod.map-view .orbit .links{z-index:2}
+
+/* === 地図は「カードの内幅いっぱい」。ラベルは地図の上に重ねる（§54／§55） =====
+   外観（左に球・右に物差し）とは別のレイアウトなので、.orbit をただのブロックに
+   して、中身を JS（mvMap）が絶対座標で置く。
+   ★ 数値（.stat）の開閉とは独立させる。地図の役目は地形の位置を示すことなので、
+   閉じていても大きさ・ピン・ラベル・線はそのまま出す（§55.1）。 */
+.mod.map-view .orbit{display:block;height:auto}
+.mod.map-view .core{grid-area:auto;max-width:none;width:100%;margin:0}
+/* 閉じたカード用の指定（`.mod:not(.open)` 系）のうち、大きさと基準線だけを打ち消す。
+   ★ ピン・ラベル・引き出し線は打ち消さない —— 地図を見て場所を思い出すのが
+   この回の訓練なので、答えにあたるラベルは数値と同じく「開いたときだけ」出す
+   （§56.1）。閉じている地図は、大きさとグリッドだけが見えている状態。 */
+.mod.map-view:not(.open) .core{max-width:none}
+.mod.map-view:not(.open) .grid{display:block}
+/* 900px 以下の `.planet-img .frame{max-width:260px}` と `.core{max-width:200px}`
+   （どちらも地図より弱い詳細度）を、ここで上書きしている。 */
+/* 枠は画像に合わせて縮める。月の図は 1.05:1 で、高さの上限に当たって
+   幅が 463px までしか出ないので、枠を内幅いっぱいのままにすると左右が
+   真っ黒な帯になる。min-width は読み込み前に枠が消えないための下限。 */
+.mod.map-view .planet-img .frame{max-width:100%;width:fit-content;min-width:260px;min-height:160px;margin:0 auto}
+/* 高さは画像に決めさせるが、上限を置く。2:1 の惑星図は内幅いっぱい（818→409px）、
+   1.05:1 の月と 1.75:1 の火星は上限に当たって幅が詰まる。**object-fit ではなく
+   画像そのものの寸法で収める** — 枠に余白が入ると data-x/data-y の基準が
+   画像とずれる（§53.3）。 */
+.mod.map-view .planet-img .map-img{width:auto;height:auto;max-width:100%;max-height:440px;margin:0 auto;object-fit:contain}
+/* 字幕は地図のとき中央に置く（画像が幅いっぱいになるため）。 */
+.mod.map-view .planet-img figcaption{text-align:center}
+
+/* ラベル。地図の上に乗るので pointer-events:none —— これが無いと、ラベルが
+   画像（.img-btn）を覆ってカードの開閉が効かなくなる。背景は .stat の .82 より
+   濃い .88（地図には砂漠や極冠のような明るい面があるため）、罫線は残す。 */
+.mod.map-view .orbit .stat.geo{position:absolute;left:0;top:0;z-index:2;pointer-events:none;
+  width:max-content;max-width:200px;background:rgba(10,12,16,.88);border-color:var(--line-strong);
+  font-size:11.5px;line-height:1.5;padding:4px 7px}
+.mod.map-view .orbit .stat.geo b{font-size:9px;letter-spacing:.08em;margin-bottom:0}
+/* ピンはラベルがすぐ横に来るぶん、白い縁取りで強める（どれがどこを指すかが要点）。
+   引き出し線は 22〜28px と短いので、不透明度を上げて確実に見えるようにする。 */
+.mod.map-view .orbit .links line{stroke:rgba(61,139,255,.9);stroke-width:1.4}
+.mod.map-view .orbit .links circle{fill:var(--accent);stroke:#fff;stroke-width:1.5}
+
+/* 緯度経度の基準線（§55.2）。画像より上・ピンより下に敷く。.links と同じ
+   z-index:2 で、DOM 順（.grid → .links → .stat）が重ね順を決める。 */
+.orbit .grid{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:2;overflow:visible;display:none}
+.mod.map-view .orbit .grid{display:block}
+.orbit .grid line,.orbit .grid path,.orbit .grid circle{fill:none;stroke:rgba(255,255,255,.2);stroke-width:.8}
+.orbit .grid .major{stroke:rgba(255,255,255,.35);stroke-width:1}
+/* 黒地にも砂漠のような明るい面にも乗るので、文字は暗い縁取りを付ける。 */
+.orbit .grid text{fill:rgba(255,255,255,.62);font-family:var(--font-body);font-size:9px;letter-spacing:.04em;
+  paint-order:stroke;stroke:rgba(0,0,0,.55);stroke-width:2.5;stroke-linejoin:round}
+
+/* 番号つきの説明リスト。560px 以下（地図の上にラベルを重ねると読めない）と、
+   ピンを持たない月（§53.7）で出す。番号は本文の「覚える地形」表と同じ順。 */
+.stat .n{display:none}
+.geo-list{display:none;list-style:none;margin:14px 0 0;padding:0;text-align:left}
+.geo-list li{display:flex;gap:9px;margin:5px 0;font-size:13px;line-height:1.6;color:var(--ink-soft)}
+.geo-list li b{font-weight:500;color:var(--ink)}
+.geo-list .n{display:grid;place-items:center;flex:0 0 auto;width:20px;height:20px;border-radius:50%;
+  background:var(--accent);color:var(--on-accent);font-size:11px;font-style:normal;margin-top:2px}
+.mod.map-view.open.no-pins .geo-list{display:block}
+.mod.map-view.no-pins .orbit .stat.geo{display:none}
+
+/* --- 演習。解答は <details> なので、印刷時に開く仕掛けを下の @media print に置く --- */
+.ex{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-lg);padding:18px 22px;margin:18px 0}
+.ex .ex-h{font-weight:400;font-size:16.5px;margin:0 0 6px;color:var(--ink)}
+.ex .ex-h .num{font-size:11px;font-weight:500;color:var(--teach);border:1px solid var(--teach-line);background:var(--teach-tint);border-radius:999px;padding:2px 10px;margin-right:10px;vertical-align:2px}
+.ex details{margin-top:12px;border-top:1px solid var(--line);padding-top:10px}
+.ex summary{cursor:pointer;font-size:12.5px;font-weight:500;color:var(--ink-soft);list-style:none;display:inline-flex;align-items:center;gap:8px;padding:5px 6px 5px 14px;border:1px solid var(--line);border-radius:999px}
+/* ＋/− の丸。白文字は --teach(#a48bff) 上で 2.72:1 しか出ない。--on-accent なら
+   ダーク 7.58:1 / 印刷（--teach が #5a3fc0、--on-accent が #fff）7.29:1 で両立する。 */
+.ex summary::after{content:'+';display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;background:var(--teach);color:var(--on-accent);font-size:13px}
+.ex details[open] summary::after{content:'−'}
+.ex summary:hover{color:var(--ink);border-color:var(--line-strong)}
+.ex summary::-webkit-details-marker{display:none}
+.ex details[open] summary{margin-bottom:8px}
+.ex .ans{font-size:14.5px}
+
+.foot{padding:34px 0 0;color:var(--ink-faint);font-size:12.5px}
+.foot p{color:var(--ink-faint)}
+
+/* モバイル：レールを引き出しに。`.menu-btn` は位置だけを持ち、見た目は
+   共通コンポーネントの `.btn` を併用する。 */
+.menu-btn{display:none}
+.float-nav{display:none}
+.scrim{display:none}
+@media (max-width:900px){
+  .rail{position:fixed;left:0;top:0;height:100vh;z-index:1100;transform:translateX(-100%);transition:transform .25s var(--ease);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);padding-top:28px}
+  body.nav-open .rail{transform:translateX(0)}
+  .main{padding:0 20px 90px}
+  .mod:not(.map-view) .orbit{gap:16px}
+  .orbit .stat{font-size:12.5px;padding:7px 9px}
+  .planet-img .frame{max-width:260px;margin:0 auto}
+  .planet-img figcaption{text-align:center}
+  .mod-b .row{flex-direction:column;gap:2px}
+  .mod-b .row .k{flex:0 0 auto}
+  /* 「戻る」と「目次」を横並びで浮かせる。位置は入れ物が持ち、ボタン自身は
+     見た目だけを持つ（§64.2）。 */
+  .float-nav{display:flex;gap:10px;position:fixed;bottom:18px;right:18px;z-index:1050}
+  .menu-btn,.back-btn{position:static;display:inline-flex;background:var(--nav-bg);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);color:var(--ink);text-decoration:none}
+  .scrim{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:1090}
+  body.nav-open .scrim{display:block}
+  .lesson-hero{padding-top:40px}
+}
+@media (max-width:560px){
+
+  /* 地図の上にラベルを重ねると読めなくなるので、地図には通し番号の丸だけを置き、
+     説明は番号つきのリストにして地図の下へ出す（§54.5）。 */
+  .mod.map-view.open .orbit .stat.geo{width:22px;height:22px;max-width:none;padding:0;border-radius:50%;
+    background:var(--accent);border-color:#fff;color:var(--on-accent);font-size:11px;font-weight:500;
+    display:grid;place-items:center;box-shadow:0 0 0 1px rgba(0,0,0,.55)}
+  .mod.map-view.open .orbit .stat.geo b,.mod.map-view.open .orbit .stat.geo .v{display:none}
+  .mod.map-view.open .orbit .stat.geo .n{display:block}
+  .mod.map-view.open .geo-list{display:block}
+  /* 月は地図に印を持たない。上の丸の指定（同じ詳細度）に負けないよう、
+     クラスを1つ多くして打ち消す。 */
+  .mod.map-view.open.no-pins .orbit .stat.geo{display:none}
+  .orbit{display:flex;flex-direction:column;gap:10px}
+  .orbit .core{order:-1;max-width:240px;align-self:center;margin:0;width:100%}
+  .orbit .links{display:none}
+  .orbit .stat{width:100%;max-width:none;font-size:13.5px;padding:8px 11px}
+}
+@media print{
+  body{background:#fff;color:#000}
+  header,.rail,.menu-btn,.float-nav,.lesson-nav,.scrim,#starfield,footer{display:none!important}
+  .wrap{display:block;padding-top:0}
+  /* ★ 解答（<details>）を開く。元の教材にあった `.ex details>*{display:block}` は
+     **効かない**（実測：閉じた details の中身は ::details-content の
+     content-visibility:hidden で隠れているので、子の display を変えても出てこない）。
+     効くのは次の1行。Chrome 131 / Safari 18.4 / Firefox 139 以降。
+     それ以前のブラウザ向けには、下の beforeprint で open 属性を足している。 */
+  details::details-content{content-visibility:visible!important}
+  .mod .orbit{display:block!important;height:auto!important}
+  .mod .orbit .stat{position:static!important;transform:none!important;max-width:none;margin:6px 0}
+  .mod .orbit .core{position:static!important;transform:none!important;margin:0 auto}
+  .mod .orbit{display:block!important}
+  .links{display:none!important}
+}
+</style>
+<link rel="stylesheet" href="../css/lesson-theme.css?v=r54">
+</head>
+<body data-page="study" class="is-article" data-node="memoryverse_1-2">
+<canvas id="starfield" aria-hidden="true"></canvas>
+<div id="site-nav"><noscript><nav class="noscript-nav" aria-label="メインナビゲーション"><a href="index.html">ホーム</a><a href="self-intro.html">自己紹介</a><a href="study.html">勉強の軌跡</a><a href="videos.html">動画</a><a href="blog.html">ブログ</a><a href="sns.html">各種SNS</a></nav></noscript></div>
+<div class="float-nav"><a class="back-btn btn" href="memoryverse.html">戻る <span class="btn-disc" aria-hidden="true">←</span></a><button class="menu-btn btn" id="menuBtn" aria-controls="rail" aria-expanded="false">目次 <span class="btn-disc" aria-hidden="true">≡</span></button></div>
+<div class="scrim" id="scrim"></div>
+<div class="wrap">
+  <nav class="rail" id="rail">
+    <!-- 科目へ戻る導線（科目ページ）。パンくずと対になる（§37.5）。 -->
+    
+    <div class="brand">第2回　岩石惑星を深める<small>SESSION 02 / ROCKY PLANETS</small></div>
+    <div class="progress-wrap"><div class="progress-bar" id="pbar"></div></div>
+    <ul class="toc" id="toc">
+      <li class="part">導入</li>
+      <li><a href="#goals"><span class="n">01</span>到達目標</a></li>
+      <li><a href="#overlay"><span class="n">02</span>地図を重ねる</a></li>
+      <li class="part">天体カード</li>
+      <li><a href="#mercury"><span class="n">03</span>水星</a></li>
+      <li><a href="#venus"><span class="n">04</span>金星</a></li>
+      <li><a href="#earth"><span class="n">05</span>地球（外観）</a></li>
+      <li><a href="#moon"><span class="n">06</span>月</a></li>
+      <li><a href="#mars"><span class="n">07</span>火星</a></li>
+      <li class="part">横断して見る</li>
+      <li><a href="#air"><span class="n">08</span>大気の違いと理由</a></li>
+      <li><a href="#relief"><span class="n">09</span>高さと深さ</a></li>
+      <li><a href="#probes"><span class="n">10</span>探査の歴史</a></li>
+      <li class="part">訓練</li>
+      <li><a href="#menu"><span class="n">11</span>訓練メニュー</a></li>
+      <li><a href="#drills"><span class="n">12</span>演習</a></li>
+      <li class="part">付録</li>
+      <li><a href="#plan"><span class="n">A</span>第1〜5回の改訂</a></li>
+      <li><a href="#evidence"><span class="n">B</span>根拠と強度</a></li>
+      <li><a href="#next"><span class="n">C</span>次回の予告</a></li>
+    </ul>
+  </nav>
+
+  <main class="main">
+    <!-- <header> ではなく <div>。style.css は裸の `header` を浮遊ナビとして
+         position:fixed / flex / border-radius:999px で組んでおり、記事の導入部が
+         <header> だと丸ごとそれを浴びてしまう（DESIGN.md §36.5 A）。
+         クラスも .hero ではなく .lesson-hero（.hero は index.html 専用で、
+         見出しと本文に黒い text-shadow が掛かる）。 -->
+    <div class="lesson-hero">
+      <!-- パンくずは右のサイトナビ（layout.js の CRUMBS）に一本化した（§66）。 -->
+      <h1>第2回　岩石惑星を深める<span class="sub">外から見た球に、地図を重ねる</span></h1>
+      <p class="lead">第1回で作った9枚のカードのうち、太陽に近い4つ——水星・金星・地球・火星——に<strong>表面の地図を1枚ずつ重ねます</strong>。加えて、地球の②周りにあたる月を、独立したカードとして詳しく置きます。</p>
+      <p>覚えるのは、地形の名前そのものではなく<strong>「その天体のどこに何があるか」</strong>です。カロリス盆地は水星の右上、オリンポス山は火星の赤道より少し北の左寄り、といった位置を、実際の地図の上に置いてください。この作業が、そのまま第6回以降の地球の地図の練習になります。</p>
+    </div>
+
+    <section id="goals">
+      <div class="sec-head"><span class="idx">01</span><h2>この回の到達目標</h2></div>
+      <div class="goals">
+        <ol>
+          <li><b>4つの岩石惑星と月について、白紙に丸を描き、主な地形を位置つきで5つ以上書き込める</b><span>地図を見ずに。名前と、おおよその緯度・経度の向き（北か南か、左寄りか右寄りか）が合っていれば正解。</span></li>
+          <li><b>4つの大気を、気圧・主成分・平均温度の3点で言い分け、その違いが生じた理由を1つずつ説明できる</b><span>「金星は厚い二酸化炭素の大気で熱を逃がさない」「火星は重力が弱く磁場がないため大気が薄い」など、理由まで。</span></li>
+          <li><b>探査機の名前を出されたら、行き先・年代・何を明らかにしたかを言える</b><span>マリナー10号、メッセンジャー、ベピコロンボ、ベネラ、マゼラン、バイキング、キュリオシティ、パーサヴィアランス、アポロ11号、嫦娥6号。</span></li>
+        </ol>
+      </div>
+      <div class="box warn"><span class="lab">前提の確認</span>
+      <p>第1回の到達目標②（どの天体でもカードの7割を見ずに言える）が満たせていない状態でこの回に入ると、地形名が骨格のない場所に散らばります。先に第1回のカードを1周してください。</p></div>
+    </section>
+
+    <section id="overlay">
+      <div class="sec-head"><span class="idx">02</span><h2>地図を重ねる</h2></div>
+      <p>第1回のカードは「外から見た球」でした。この回では同じ球の表面を開いて、<strong>展開図（世界地図と同じ形の平面図）</strong>を重ねます。下の各カードには、その天体の<strong>展開図</strong>が開いたまま置いてあります。球の姿は第1回のカードにあるので、同じ天体を第1回と行き来しながら、頭の中で同じ場所に重ねてください。</p>
+      <div class="box principle"><span class="lab">情報は像に結びつける。何もない空間に浮かべない</span>
+      <p>「オリンポス山 高さ22km」という文だけを覚えると、火星以外の場所にも貼りつきます。<strong>火星の展開図の、左のふくらんだ高地（タルシス）の上にある白い丸</strong>——そこに高さの数字を置いてください。思い出すときは、まず火星の球を出し、左側を正面に回し、タルシスを見つけ、そこから数字を読みます。</p></div>
+
+      <div class="box teach"><span class="lab">実画像・実地図を見ながら作る手順（1天体7分）</span>
+      <p><strong>1. 集める（1分）</strong>——下のカードの地図を開き、同じものを大きい画面でも開く。出どころは各カードのクレジットにあります。手元に保存する場合は image/memoryverse/ に置くと、カードが先にそちらを読みます。</p>
+      <p><strong>2. 区切る（2分）</strong>——展開図を左・中央・右の3つに縦に割り、さらに赤道で上下に割って6区画にする。名前を覚える前に「この天体は6つの区画に分かれている」という枠を作ります。</p>
+      <p><strong>3. 置く（2分）</strong>——この回の一覧表にある地形を、区画のどこに入るか指で差しながら声に出す。「カロリス盆地、上の……中央よりやや右」のように。</p>
+      <p><strong>4. 閉じる（1分）</strong>——目を閉じて、6区画の枠だけを思い浮かべ、入れたものを言う。</p>
+      <p><strong>5. 照合（1分）</strong>——もう一度地図を開き、ずれていたものに印をつける。翌日はその区画から始めます。</p>
+      <p><strong>地球だけは 2. までです。</strong>6区画に割って眺めるところまでにとどめ、地表の地名は置きません。地名・地域・国は地球の回（第6回以降）で、同じ地図の上に置いていきます。</p>
+      <p>地図を大きく見るときの出どころ：USGS Astrogeology（astrogeology.usgs.gov）、NASA Science の各惑星ページ（science.nasa.gov/solar-system/planets）、Wikimedia Commons の各ファイルページ。</p></div>
+
+      <div class="box teach"><span class="lab">巡り方は第1回と同じ。③外観で地図を見る</span>
+      <p><strong>①位置 → ②周り → ③外観 → ④断面 → ⑤重さ</strong>。この回で増えるのは③のなかだけです。③に入ったら地図を開き、地形を位置つきで言います。球の見え方や数値は第1回のカードにあるので、そちらで言います。①②④⑤は第1回のまま変えません。</p>
+      <p>この回で扱うのは③外観のうち、表面の地形と位置だけです。天体そのものの性質（重さ・大きさ・重力・磁場・大気・水・核）は第1回のカードにあります。第1回で天体の性質を、この回でその表面を覚える、という分担です。</p></div>
+
+      <div class="box warn"><span class="lab">緯度経度の確認先</span>
+      <p>この教材の緯度経度は概略です。正式な値は<strong>USGS Gazetteer of Planetary Nomenclature</strong>（planetarynames.wr.usgs.gov）で、地形名を入れると中心座標と直径が出ます。経度は天体や資料によって東経・西経の取り方が違うので、細かい数値を覚える必要はありません。<strong>覚えるのは「北か南か」「地図の左か右か」だけ</strong>で十分です。</p></div>
+    </section>
+
+    <section id="mercury">
+      <div class="sec-head"><span class="idx">03</span><h2>水星</h2></div>
+      <div class="mod map-view" data-grid="equi">
+        <div class="mod-h"><span class="no">水星</span><span class="ttl">大きな傷跡と、縮んだしわ</span><span class="tag">MERCURY</span></div>
+        <div class="mod-b">
+          <div class="orbit"><svg class="grid" aria-hidden="true" preserveAspectRatio="none"></svg><svg class="links" aria-hidden="true" preserveAspectRatio="none"></svg><div class="stat geo" data-n="1" data-x="0.0500" data-y="0.3239"><i class="n">1</i><b>カロリス盆地</b><span class="v">直径 約1,550km</span></div><div class="stat geo" data-n="2" data-x="0.5469" data-y="0.1789"><i class="n">2</i><b>ホクサイ</b><span class="v">白い光条が長く伸びる</span></div><div class="stat geo" data-n="3" data-x="0.1567" data-y="0.6156"><i class="n">3</i><b>ベートーヴェン盆地</b><span class="v">直径 約600kmの古い盆地</span></div><div class="stat geo" data-n="4" data-side="down" data-x="0.3933" data-y="0.8128"><i class="n">4</i><b>ディスカバリー・ルペス</b><span class="v">縮んでできた断層崖</span></div><div class="core"><button type="button" class="img-btn" aria-expanded="false"><figure class="planet-img"><div class="orb"><div class="frame"><img class="map-img" src="../image/memoryverse/mercury-map.jpg" data-alt="https://upload.wikimedia.org/wikipedia/commons/thumb/6/62/Mercury_MESSENGER_MDIS_Basemap_MD3Color_Mosaic_Global_32ppd.jpg/800px-Mercury_MESSENGER_MDIS_Basemap_MD3Color_Mosaic_Global_32ppd.jpg|https://commons.wikimedia.org/wiki/Special:FilePath/Mercury_MESSENGER_MDIS_Basemap_MD3Color_Mosaic_Global_32ppd.jpg?width=800|https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Mercury_MESSENGER_MDIS_Basemap_EnhancedColor_Mosaic_Global_32ppd.jpg/800px-Mercury_MESSENGER_MDIS_Basemap_EnhancedColor_Mosaic_Global_32ppd.jpg" alt="水星の全球地図（メッセンジャーMDISのモザイク）" loading="lazy" decoding="async" onerror="mvNext(this)"><p class="fallback">画像を読み込めませんでした。<br><a href="https://science.nasa.gov/mercury/" target="_blank" rel="noopener">NASAの水星のページで見る</a></p></div></div><figcaption>全球モザイク地図 MDIS MD3 Color<br>線は経度・緯度とも30度ごと（狭い画面は60度ごと）<br>© NASA/JHUAPL/Carnegie（USGS作成）</figcaption></figure><span class="hint"><span class="h-c">クリックで地形を開く</span><span class="h-o">クリックで閉じる</span></span></button></div></div>
+          <div class="row"><span class="k">見え方</span><span class="v">月に似た灰色のクレーター地形。ただし月と違い、<strong>長い崖が何本も走っている</strong>のが水星の見分けどころ</span></div>
+          <div class="row"><span class="k">1日の長さ</span><span class="v">日の出から次の日の出まで、地球の約176日</span></div>
+          <div class="row"><span class="k">覚える地形</span><span class="v">
+          <div class="table-scroll"><table class="mini-table">
+            <tr><th style="width:26%">名前</th><th style="width:30%">何か</th><th>位置の目印</th></tr>
+            <tr><td><strong>カロリス盆地</strong><br>Caloris Planitia</td><td>直径約1,550kmの巨大な衝突跡。太陽系でも最大級</td><td>北緯約30度。地図の上半分。名前は「熱」の意味で、近日点で正面を向く場所の一つ</td></tr>
+            <tr><td><strong>パンテオン・フォッサ</strong><br>Pantheon Fossae</td><td>カロリス盆地の中央から放射状にのびる細い谷の束</td><td>カロリス盆地の<strong>ど真ん中</strong>。クモの巣のように見える</td></tr>
+            <tr><td><strong>ホクサイ</strong><br>Hokusai</td><td>若いクレーター。白い光条（レイ）が長く伸びる</td><td>北半球。全球図で<strong>いちばん目立つ白い放射模様</strong></td></tr>
+            <tr><td><strong>ベートーヴェン盆地</strong><br>Beethoven</td><td>直径約600〜650kmの古い盆地</td><td>南半球側。カロリスより暗く、縁がぼやけている</td></tr>
+            <tr><td><strong>ディスカバリー・ルペス</strong><br>Discovery Rupes</td><td>数百kmにわたる断層崖。惑星が縮んだ跡</td><td>南半球。細い線としてしか見えないので、地図では位置だけ</td></tr>
+            <tr><td><strong>北極のクレーター群</strong></td><td>永久影の底に水の氷があると考えられている</td><td>地図のいちばん上の帯。極は日が当たらない</td></tr>
+          </table></div>
+          <p style="font-size:12.5px;color:var(--ink-faint);margin:2px 0 0">クレーターの名前は<strong>芸術家・作家・音楽家</strong>から取られています（北斎、ベートーヴェン、トルストイ、紫式部など）。名前の系統を知っておくと、どの天体の地形かを間違えにくくなります。</p>
+          </span></div>
+          <div class="row"><span class="k">大気の理由</span><span class="v">質量が小さく重力が弱いうえ、太陽に近く高温なので、気体を引きとめられません。いま観測される「外気圏」は、<strong>太陽風と微小隕石が表面から叩き出した原子</strong>が薄く漂っているものです。ナトリウムが多いのはそのため</span></div>
+          <div class="row"><span class="k">探査</span><span class="v"><ul>
+            <li><strong>マリナー10号</strong>（1974–75）——3回接近。表面の約45%を撮影。水星に行った最初の探査機</li>
+            <li><strong>メッセンジャー</strong>（2011–15周回）——全球を地図化。極の氷、縮んだ証拠、大きな鉄の核を確認</li>
+            <li><strong>ベピコロンボ</strong>（ESA／JAXA）——2026年9月3日に遷移モジュールを分離して到着フェーズへ。<strong>周回軌道への投入は2026年11月21日の予定</strong>で、この教材の時点ではまだ周回していません</li>
+          </ul></span></div>
+          <div class="box warn" style="margin:12px 0 0"><span class="lab">日付つきで覚える数値</span>
+          <p>ベピコロンボの日程は変わりえます。上の日程は2026年9月時点のESA発表によるもので、当初は2025年12月の到着予定でした。最新はESAのミッションページで確認してください。</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="venus">
+      <div class="sec-head"><span class="idx">04</span><h2>金星</h2></div>
+      <div class="mod map-view" data-grid="equi">
+        <div class="mod-h"><span class="no">金星</span><span class="ttl">雲の下に、レーダーで描いた地面</span><span class="tag">VENUS</span></div>
+        <div class="mod-b">
+          <div class="orbit"><svg class="grid" aria-hidden="true" preserveAspectRatio="none"></svg><svg class="links" aria-hidden="true" preserveAspectRatio="none"></svg><div class="stat geo" data-n="1" data-side="right" data-x="0.5764" data-y="0.1089"><i class="n">1</i><b>イシュタル大陸</b><span class="v">北の高地</span></div><div class="stat geo" data-n="2" data-x="0.5092" data-y="0.1378"><i class="n">2</i><b>マクスウェル山脈</b><span class="v">高さ 約11km</span></div><div class="stat geo" data-n="3" data-side="left" data-x="0.4425" data-y="0.1189"><i class="n">3</i><b>ラクシュミ平原</b><span class="v">高い溶岩の台地</span></div><div class="stat geo" data-n="4" data-x="0.7911" data-y="0.5322"><i class="n">4</i><b>アフロディーテ大陸</b><span class="v">赤道に沿う高地</span></div><div class="stat geo" data-n="5" data-side="up" data-x="0.0231" data-y="0.4528"><i class="n">5</i><b>サパス山</b><span class="v">盾状の火山</span></div><div class="stat geo" data-n="6" data-x="0.0406" data-y="0.4972"><i class="n">6</i><b>マート山</b><span class="v">2023年に活動の証拠</span></div><div class="core"><button type="button" class="img-btn" aria-expanded="false"><figure class="planet-img"><div class="orb"><div class="frame"><img class="map-img" src="../image/memoryverse/venus-map.jpg" data-alt="https://upload.wikimedia.org/wikipedia/commons/thumb/7/72/Venus_map_NASA_JPL_Magellan-Venera-Pioneer.jpg/800px-Venus_map_NASA_JPL_Magellan-Venera-Pioneer.jpg|https://commons.wikimedia.org/wiki/Special:FilePath/Venus_map_NASA_JPL_Magellan-Venera-Pioneer.jpg?width=800|https://upload.wikimedia.org/wikipedia/commons/thumb/8/85/Venus_globe.jpg/640px-Venus_globe.jpg" alt="金星の全球地図（マゼランのレーダーによる）" loading="lazy" decoding="async" onerror="mvNext(this)"><p class="fallback">画像を読み込めませんでした。<br><a href="https://science.nasa.gov/venus/" target="_blank" rel="noopener">NASAの金星のページで見る</a></p></div></div><figcaption>マゼランのレーダー＋ベネラの色＋パイオニア・ヴィーナス<br>線は経度・緯度とも30度ごと（狭い画面は60度ごと）<br>© NASA/JPL</figcaption></figure><span class="hint"><span class="h-c">クリックで地形を開く</span><span class="h-o">クリックで閉じる</span></span></button></div></div>
+          <div class="row"><span class="k">見え方</span><span class="v">可視光では<strong>のっぺりした黄白色の雲</strong>だけで、地面はまったく見えません。地図はすべて<strong>レーダー</strong>で描いたものなので、色は本物ではなく、電波の返り方の強弱を色に変えたものです</span></div>
+          <div class="row"><span class="k">雲と大気の回転</span><span class="v">雲は高度 約45〜70km、濃硫酸の粒でできています。大気は約4日で一周し、自転243日の<strong>約60倍速い</strong>。1日の長さ（日の出から次の日の出まで）は地球の約117日</span></div>
+          <div class="row"><span class="k">いまも火山活動があるか</span><span class="v">2023年の再解析で、マート山の周辺に地形の変化が見つかりました。火山活動の証拠とされますが、確定していません</span></div>
+          <div class="row"><span class="k">覚える地形</span><span class="v">
+          <div class="table-scroll"><table class="mini-table">
+            <tr><th style="width:26%">名前</th><th style="width:30%">何か</th><th>位置の目印</th></tr>
+            <tr><td><strong>イシュタル大陸</strong><br>Ishtar Terra</td><td>オーストラリアほどの高地。金星の2つの「大陸」の北側</td><td>地図の<strong>左上、北緯60度より上</strong>。明るく写る</td></tr>
+            <tr><td><strong>マクスウェル山脈</strong><br>Maxwell Montes</td><td>金星で最も高い山脈（約11km）</td><td><strong>イシュタル大陸の東の端</strong>。地図でいちばん白く光る部分</td></tr>
+            <tr><td><strong>ラクシュミ平原</strong><br>Lakshmi Planum</td><td>イシュタル大陸の上にある高い溶岩の台地</td><td>マクスウェル山脈のすぐ西</td></tr>
+            <tr><td><strong>アフロディーテ大陸</strong><br>Aphrodite Terra</td><td>アフリカほどの大きさの高地。2つの「大陸」の南側</td><td><strong>赤道に沿って横に長く</strong>。地図の中央から右にかけて帯のように伸びる</td></tr>
+            <tr><td><strong>サパス山</strong><br>Sapas Mons</td><td>盾状の火山。溶岩が広く流れ出した跡が残る</td><td>アフロディーテ大陸の北にあるアトラ地域</td></tr>
+            <tr><td><strong>コロナ</strong><br>coronae</td><td>直径数百kmの円形のしわ。下から熱いものが押し上げてできたと考えられる</td><td>金星にしかない形。全球に数百個ちらばる</td></tr>
+          </table></div>
+          <p style="font-size:12.5px;color:var(--ink-faint);margin:2px 0 0">金星の地形名はほぼすべて<strong>女性の名前・女神の名前</strong>です（例外はマクスウェル山脈など少数）。これも天体の見分けの手がかりになります。</p>
+          </span></div>
+          <div class="row"><span class="k">大気の理由</span><span class="v">大気の96.5%が二酸化炭素で、地表から出る赤外線を逃がしません（<strong>温室効果</strong>）。太陽から遠い金星が水星より熱いのはこのためです。水は早い時期に上空で分解して水素が宇宙へ逃げ、二酸化炭素を岩石に固定する仕組み（地球でいう水と炭素の循環）が働かなくなった、と考えられています。<strong>この筋書き自体はまだ確定していません</strong>——水の海がいつまであったかは研究が分かれています</span></div>
+          <div class="row"><span class="k">探査</span><span class="v"><ul>
+            <li><strong>ベネラ計画</strong>（ソ連）——ベネラ7号（1970）が初めて他の惑星の地表から信号を送った。9号以降は地表の白黒写真を送ったが、高温高圧のため動けたのは1〜2時間ほど</li>
+            <li><strong>マゼラン</strong>（NASA、1990–94周回）——レーダーで<strong>表面の約98%</strong>を地図化。いま使われる金星の地図はほぼこれ</li>
+            <li><strong>あかつき</strong>（JAXA、2015年周回投入）——雲と大気の動きを観測。運用は2024年に終了</li>
+          </ul></span></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="earth">
+      <div class="sec-head"><span class="idx">05</span><h2>地球（宇宙から見た外観）</h2></div>
+      <div class="box warn"><span class="lab">この層で扱う範囲</span>
+      <p>この回の地球は<strong>宇宙から見た姿だけ</strong>です。国名・都市・産物・民族は地球の回（第6回以降）で扱います。ここでは「遠くから見て地球をどう見分けるか」だけを覚えてください。</p></div>
+      <!-- 地球だけ経度を東西（180W〜180E）で書く。ほかは東経0〜360（§55.2）。 -->
+      <div class="mod map-view" data-grid="equi" data-lon="we">
+        <div class="mod-h"><span class="no">地球</span><span class="ttl">水と雲と、動く板</span><span class="tag">EARTH</span></div>
+        <div class="mod-b">
+          <div class="orbit"><svg class="grid" aria-hidden="true" preserveAspectRatio="none"></svg><svg class="links" aria-hidden="true" preserveAspectRatio="none"></svg><!-- 地球には地形ラベルを置かない。地名・地域・国は地球の回（第6回以降）で扱う（§56.2）。 --><div class="core"><button type="button" class="img-btn" aria-expanded="false"><figure class="planet-img"><div class="orb"><div class="frame"><img class="map-img" src="../image/memoryverse/earth-map.jpg" data-alt="https://upload.wikimedia.org/wikipedia/commons/thumb/4/4d/Whole_world_-_land_and_oceans.jpg/800px-Whole_world_-_land_and_oceans.jpg|https://commons.wikimedia.org/wiki/Special:FilePath/Whole_world_-_land_and_oceans.jpg?width=800|https://upload.wikimedia.org/wikipedia/commons/4/4d/Whole_world_-_land_and_oceans.jpg" alt="地球の全球地図（衛星観測をつないだ雲のない地表）" loading="lazy" decoding="async" onerror="mvNext(this)"><p class="fallback">画像を読み込めませんでした。<br><a href="https://science.nasa.gov/earth/" target="_blank" rel="noopener">NASAの地球のページで見る</a></p></div></div><span class="map-note">この層では地球の地形に名前をつけません。地名・国・地域は地球の回（第6回以降）で扱います。</span><figcaption>Blue Marble（雲を除いた地表、2002年）<br>線は経度・緯度とも30度ごと（狭い画面は60度ごと）<br>© NASA/GSFC</figcaption></figure><span class="hint"><span class="h-c">クリックで地形を開く</span><span class="h-o">クリックで閉じる</span></span></button></div></div>
+          <div class="row"><span class="k">見え方</span><span class="v">青い海、白い雲と極の氷、茶色〜緑の陸。<strong>他の3つと違って色が何種類もある</strong>のが地球です。夜の側には都市の光の筋が見えます</span></div>
+          <div class="row"><span class="k">外から見た数値</span><span class="v">海 約71%／陸 約29%。つねに約3分の2が雲の下にあり、反射率（アルベド）は約0.30。対流圏は約8〜17kmで、半径6,371kmの<strong>0.2%ほど</strong>。水の内訳は 海 約97%／氷 約2%／地下水・河川・湖 約1%。高さと深さはエベレスト8,849m、マリアナ海溝 約10,900m</span></div>
+          <div class="row"><span class="k">見分ける目印</span><span class="v">大きさの比べ方や色の見え方は外観の数値で扱います。地表の地名・地域・国は、この層では扱いません。地球の回（第6回以降）で、同じ地図の上に置いていきます。</span></div>
+          <div class="row"><span class="k">大気の理由</span><span class="v">質量が十分あって気体を引きとめられ、磁場が太陽風を逸らし、さらに<strong>二酸化炭素が海と岩石に取り込まれて戻る循環</strong>が働いています。窒素が8割を占めるのは、化学的に反応しにくく、抜けも吸収もされにくいからです。酸素の2割は生物が作ったもので、地球の大気の最大の特徴です</span></div>
+          <div class="row"><span class="k">他と違う点</span><span class="v">表面に液体の水がある。プレートが動いていて、古い地形が消え続ける（だから月や水星のようなクレーターだらけにならない）</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="moon">
+      <div class="sec-head"><span class="idx">06</span><h2>月</h2></div>
+      <p>月は地球の②周りにあたるので、地球のすぐあとに置きます。第1回では1行だけでしたが、この回から<strong>独立したカード</strong>にします。可搬層を廃止したため、衛星も覚える対象です。</p>
+      <!-- no-pins：月だけ地図にピンを打たない（満月写真の秤動、§53.7）。
+           ラベルは地図の上ではなく、番号つきリストとして地図の下に出す（§54.6）。 -->
+      <div class="mod map-view no-pins" data-grid="orth">
+        <div class="mod-h"><span class="no">月</span><span class="ttl">同じ面しか見せない、地球の衛星</span><span class="tag">MOON / 接続点</span></div>
+        <div class="mod-b">
+          <div class="orbit"><svg class="grid" aria-hidden="true" preserveAspectRatio="none"></svg><svg class="links" aria-hidden="true" preserveAspectRatio="none"></svg><div class="stat geo" data-n="1"><i class="n">1</i><b>静かの海</b><span class="v">アポロ11号が降りた海</span></div><div class="stat geo" data-n="2"><i class="n">2</i><b>雨の海</b><span class="v">表側最大級の円い海</span></div><div class="stat geo" data-n="3"><i class="n">3</i><b>嵐の大洋</b><span class="v">左側ぜんぶを占める暗部</span></div><div class="stat geo" data-n="4"><i class="n">4</i><b>危難の海</b><span class="v">右端近くの卵形</span></div><div class="stat geo" data-n="5"><i class="n">5</i><b>ティコ</b><span class="v">地球の回への入口</span></div><div class="stat geo" data-n="6"><i class="n">6</i><b>コペルニクス</b><span class="v">段になった内壁</span></div><div class="core"><button type="button" class="img-btn" aria-expanded="false"><figure class="planet-img"><div class="orb"><div class="frame"><img class="map-img" src="../image/memoryverse/moon-map.jpg" data-alt="https://upload.wikimedia.org/wikipedia/commons/thumb/6/61/Moon_names.svg/800px-Moon_names.svg.png|https://commons.wikimedia.org/wiki/Special:FilePath/Moon_names.svg?width=800|https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/Moon_landing_sites.svg/800px-Moon_landing_sites.svg.png" alt="月の表側の地形名を書き込んだ図" loading="lazy" decoding="async" onerror="mvNext(this)"><p class="fallback">画像を読み込めませんでした。<br><a href="https://science.nasa.gov/moon/" target="_blank" rel="noopener">NASAの月のページで見る</a></p></div></div><figcaption>表側（名前は下の一覧で示す）<br>線は経度・緯度とも30度ごと（狭い画面は60度ごと）<br>© Gregory H. Revera（CC BY-SA 3.0）</figcaption></figure><span class="hint"><span class="h-c">クリックで地形を開く</span><span class="h-o">クリックで閉じる</span></span></button></div></div>
+          <div class="row"><span class="k">基本</span><span class="v">半径1,737km（地球の約0.27倍）。地球からの距離は平均 約38万4,400km（光で<strong>約1.3秒</strong>）。重さは地球の約0.0123倍で、表面の重力は約6分の1。自転と公転はどちらも約27.3日で、<strong>つねに同じ面を地球へ</strong>向けています</span></div>
+          <div class="row"><span class="k">見え方</span><span class="v">暗い灰色の<strong>海</strong>（溶岩が固まった平原）と、明るい灰色の<strong>高地</strong>（クレーターだらけ）。裏側はほとんど高地だけで、見た目がまったく違います。海の割合は 表 約31%／裏 約1%</span></div>
+          <div class="row"><span class="k">覚える地形</span><span class="v">
+          <div class="table-scroll"><table class="mini-table">
+            <tr><th style="width:28%">名前</th><th style="width:28%">何か</th><th>位置の目印（表側）</th></tr>
+            <tr><td><strong>静かの海</strong><br>Mare Tranquillitatis</td><td>アポロ11号が降りた海</td><td>中央からやや右上。着陸地点は北緯0.7度・東経23.5度</td></tr>
+            <tr><td><strong>雨の海</strong><br>Mare Imbrium</td><td>表側で最大級の丸い海。巨大衝突の跡</td><td><strong>左上の大きな円</strong>。北緯約33度</td></tr>
+            <tr><td><strong>嵐の大洋</strong><br>Oceanus Procellarum</td><td>唯一「大洋」と呼ばれる広い暗部</td><td><strong>左側全体</strong>。雨の海の下から左端まで</td></tr>
+            <tr><td><strong>危難の海</strong><br>Mare Crisium</td><td>縁から少し離れた独立した卵形の海</td><td><strong>右端近くの小さな楕円</strong>。北緯約17度</td></tr>
+            <tr><td><strong>ティコ</strong><br>Tycho</td><td>若いクレーター。白い光条が全球に伸びる</td><td><strong>下寄りの中央。南緯43度・西経11度</strong>。満月のとき最も目立つ白い点</td></tr>
+            <tr><td><strong>コペルニクス</strong><br>Copernicus</td><td>直径約93kmのクレーター。段になった内壁</td><td>中央よりやや左下。北緯約10度</td></tr>
+            <tr><td><strong>南極エイトケン盆地</strong><br>South Pole–Aitken</td><td>直径約2,500kmの巨大な衝突跡。太陽系最大級</td><td><strong>裏側</strong>なので地球からは見えない。南極をまたぐ</td></tr>
+          </table></div></span></div>
+          <div class="row"><span class="k">起源の説</span><span class="v">いま最も支持されているのは<strong>ジャイアント・インパクト説</strong>——約45億年前、原始の地球に火星ほどの大きさの天体が衝突し、飛び散った破片が集まって月になった、という考えです。
+          <ul>
+            <li><strong>合う点</strong>——月は密度が低く鉄の核が小さい（地球のマントルの材料でできたと考えると合う）。地球と月を合わせた回転の勢いが説明できる。アポロが持ち帰った岩石の酸素同位体比が地球のものとほぼ同じ</li>
+            <li><strong>合わない点</strong>——同位体比が<strong>似すぎている</strong>。衝突した天体の物質がもっと混ざっているはずなのに、その痕跡が見えない。この点は未解決で、衝突の規模や条件を変えた改良案が今も出続けています</li>
+            <li><strong>いま採られていない説</strong>——捕獲説（通りかかった天体を捕まえた）、分裂説（速く回る地球からちぎれた）、双子集積説（地球と同時にできた）。いずれも上の観測とうまく合いません</li>
+          </ul>
+          <p style="margin:6px 0 0"><strong>「月がどうできたかは決着していない」ことまで含めて覚えてください。</strong>教材として断定できるのは、いくつかの説のうち一つが最も有力だという段階までです。</p></span></div>
+          <div class="row"><span class="k">月面着陸</span><span class="v">
+          <div class="table-scroll"><table class="mini-table">
+            <tr><th style="width:20%">年</th><th style="width:34%">できごと</th><th>覚えどころ</th></tr>
+            <tr><td>1959</td><td>ルナ2号（ソ連）が月面に到達</td><td>人工物が初めて他の天体に届いた</td></tr>
+            <tr><td>1966</td><td>ルナ9号（ソ連）が初の軟着陸</td><td>壊れずに降りた最初</td></tr>
+            <tr><td><strong>1969</strong></td><td><strong>アポロ11号</strong>が静かの海に有人着陸</td><td>7月20日。以後1972年のアポロ17号まで<strong>6回、12人</strong>が歩いた</td></tr>
+            <tr><td>2019</td><td>嫦娥4号（中国）が<strong>裏側</strong>に初着陸</td><td>裏側は地球と直接通信できないので中継衛星が要る</td></tr>
+            <tr><td>2023</td><td>チャンドラヤーン3号（インド）が南極域に着陸</td><td>南緯約69度。着陸を成功させた4番目の国</td></tr>
+            <tr><td>2024</td><td>SLIM（日本）が誤差約55mのピンポイント着陸／嫦娥6号が<strong>裏側から試料を持ち帰る</strong></td><td>「降りたい場所に降りる」段階に入った</td></tr>
+            <tr><td>2025</td><td>ブルーゴースト（米・民間）が危難の海に完全な軟着陸</td><td>3月2日。民間で初めて倒れずに降りた</td></tr>
+            <tr><td>2026</td><td>アルテミスII——4月1日〜11日、有人で月を周回飛行（<strong>着陸はしていない</strong>）</td><td>アポロ17号以来54年ぶりに人が月の近くへ。有人着陸はアルテミスIII以降の計画</td></tr>
+          </table></div>
+          <p style="font-size:12.5px;color:var(--ink-faint);margin:2px 0 0">出典：NASA／ESA／JAXA／ISRO各機関の発表（2026年9月時点）。今後の計画日程は変わるので、年と「何が初めてか」だけを覚え、予定は覚えないでください。</p>
+          </span></div>
+          <div class="box teach" style="margin:12px 0 0"><span class="lab">接続点</span>
+          <p><strong>ティコ・クレーターが、太陽系から地球へ移るときの入口です。</strong>地球の回（第6回以降）へ移るときは必ずここから入り、戻るときもここへ戻ります。ここには地形以外の情報を置きません。</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="mars">
+      <div class="sec-head"><span class="idx">07</span><h2>火星</h2></div>
+      <div class="mod map-view" data-grid="mars">
+        <div class="mod-h"><span class="no">火星</span><span class="ttl">太陽系でいちばん高い山と、いちばん長い谷</span><span class="tag">MARS</span></div>
+        <div class="mod-b">
+          <div class="orbit"><svg class="grid" aria-hidden="true" preserveAspectRatio="none"></svg><svg class="links" aria-hidden="true" preserveAspectRatio="none"></svg><div class="stat geo" data-n="1" data-side="up" data-x="0.1469" data-y="0.4284"><i class="n">1</i><b>オリンポス山</b><span class="v">高さ 約22km</span></div><div class="stat geo" data-n="2" data-x="0.2018" data-y="0.5099"><i class="n">2</i><b>タルシス三山</b><span class="v">火山が一直線に3つ</span></div><div class="stat geo" data-n="3" data-side="down" data-x="0.3443" data-y="0.5817"><i class="n">3</i><b>マリネリス峡谷</b><span class="v">長さ 約4,000km</span></div><div class="stat geo" data-n="4" data-x="0.6860" data-y="0.7331"><i class="n">4</i><b>ヘラス盆地</b><span class="v">直径 約2,300km・最も低い</span></div><div class="stat geo" data-n="5" data-x="0.3417" data-y="0.2108"><i class="n">5</i><b>北の低地</b><span class="v">上半分ぜんぶが低い</span></div><div class="stat geo" data-n="6" data-x="0.8636" data-y="0.5414"><i class="n">6</i><b>ゲール・クレーター</b><span class="v">キュリオシティ</span></div><div class="stat geo" data-n="7" data-x="0.7048" data-y="0.4299"><i class="n">7</i><b>ジェゼロ・クレーター</b><span class="v">パーサヴィアランス</span></div><div class="core"><button type="button" class="img-btn" aria-expanded="false"><figure class="planet-img"><div class="orb"><div class="frame"><img class="map-img" src="../image/memoryverse/mars-map.jpg" data-alt="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Mars_topography_%28MOLA_dataset%29_with_poles_HiRes.jpg/800px-Mars_topography_%28MOLA_dataset%29_with_poles_HiRes.jpg|https://commons.wikimedia.org/wiki/Special:FilePath/Mars_topography_(MOLA_dataset)_with_poles_HiRes.jpg?width=800|https://upload.wikimedia.org/wikipedia/commons/2/2c/Mars_topography_%28MOLA_dataset%29_with_poles_HiRes.jpg" alt="火星の全球地形図（MOLAの高度データ）" loading="lazy" decoding="async" onerror="mvNext(this)"><p class="fallback">画像を読み込めませんでした。<br><a href="https://science.nasa.gov/mars/" target="_blank" rel="noopener">NASAの火星のページで見る</a></p></div></div><figcaption>MOLA（マーズ・グローバル・サーベイヤー）による高度図<br>線は経度・緯度とも30度ごと（狭い画面は60度ごと）<br>© NASA/JPL/GSFC</figcaption></figure><span class="hint"><span class="h-c">クリックで地形を開く</span><span class="h-o">クリックで閉じる</span></span></button></div></div>
+          <div class="row"><span class="k">見え方</span><span class="v">酸化鉄による赤褐色。白い極冠と、暗い模様（砂が吹き払われて岩が露出した部分）。カードの高度図を見ると、<strong>北半球が低く、南半球が高い</strong>という大きな段差がひと目で分かります</span></div>
+          <div class="row"><span class="k">1日の長さ</span><span class="v">地球とほぼ同じ 約24時間39分</span></div>
+          <div class="row"><span class="k">砂嵐</span><span class="v">数年に一度、全球を覆う規模になります</span></div>
+          <div class="row"><span class="k">覚える地形</span><span class="v">
+          <div class="table-scroll"><table class="mini-table">
+            <tr><th style="width:26%">名前</th><th style="width:30%">何か</th><th>位置の目印</th></tr>
+            <tr><td><strong>オリンポス山</strong><br>Olympus Mons</td><td>高さ約22kmの盾状火山。裾野は約600km</td><td>北緯約19度。高度図で<strong>左寄りの白い丸</strong></td></tr>
+            <tr><td><strong>タルシス三山</strong><br>Tharsis Montes</td><td>アルシア／パヴォニス／アスクレウスの3つの火山が一直線に並ぶ</td><td>オリンポス山の<strong>すぐ右下に斜めの3点</strong>。赤道付近</td></tr>
+            <tr><td><strong>マリネリス峡谷</strong><br>Valles Marineris</td><td>長さ約4,000km、深さ最大約7kmの巨大な裂け目</td><td>タルシスの<strong>東（右）へ、赤道に沿って横に走る線</strong>。南緯約14度</td></tr>
+            <tr><td><strong>ヘラス盆地</strong><br>Hellas Planitia</td><td>直径約2,300km、深さ約7kmの衝突盆地。火星で最も低い場所</td><td><strong>右下の大きな濃い青の円</strong>。南緯約42度</td></tr>
+            <tr><td><strong>北の低地</strong><br>Vastitas Borealis</td><td>北半球を覆う平らな低地。かつて海だったという説がある</td><td>地図の<strong>上半分ほぼ全部</strong></td></tr>
+            <tr><td><strong>極冠</strong><br>Planum Boreum / Australe</td><td>北は主に水の氷、南は水の氷と二酸化炭素の氷</td><td>地図の上端と下端の白</td></tr>
+            <tr><td><strong>ゲール・クレーター</strong><br>Gale</td><td>キュリオシティが降りた場所。中央に高さ5kmの山</td><td>南緯約5度・東経約138度。赤道のすぐ南</td></tr>
+            <tr><td><strong>ジェゼロ・クレーター</strong><br>Jezero</td><td>パーサヴィアランスが降りた場所。川が流れ込んだ三角州の跡</td><td>北緯約18度・東経約78度。マリネリス峡谷の東</td></tr>
+          </table></div>
+          <p style="font-size:12.5px;color:var(--ink-faint);margin:2px 0 0">火星の地形は<strong>ラテン語の一般名詞＋固有名</strong>でできています。Mons＝山、Valles＝谷、Planitia＝平原、Planum＝台地。この語は他の惑星でも同じ意味で使われるので、覚えておくと地形の種類が名前から分かります。</p>
+          </span></div>
+          <div class="row"><span class="k">大気の理由</span><span class="v">質量が地球の約11%しかなく重力が弱いこと、そして<strong>全球的な磁場がない</strong>ことから、大気が太陽風に少しずつはぎ取られてきました。NASAのMAVEN探査機はこの流出を実際に測っています。かつては水が液体でいられる程度に厚い大気があったと考えられ、川や三角州の地形がその証拠とされています。<strong>いつ、どれだけの速さで失われたかは、まだ議論が続いています</strong></span></div>
+          <div class="row"><span class="k">探査</span><span class="v"><ul>
+            <li><strong>マリナー4号</strong>（1965）——初めて火星に接近し、クレーターだらけの姿を送った</li>
+            <li><strong>バイキング1号・2号</strong>（1976着陸）——初めて火星表面から写真を送り、生命を探す実験を行った（結果は決定的でない、と現在も評価されている）</li>
+            <li><strong>キュリオシティ</strong>（2012年着陸、ゲール・クレーター）——中央の山を登り続けている。2026年8月時点で運用中で、着陸から標高1kmを登った</li>
+            <li><strong>パーサヴィアランス</strong>（2021年着陸、ジェゼロ・クレーター）——岩石試料を採取して保管。2026年6月に走行距離42kmを超えた</li>
+          </ul></span></div>
+          <div class="box warn" style="margin:12px 0 0"><span class="lab">日付つきで覚える数値</span>
+          <p>探査車の稼働状況は変わります。上は2026年9月時点のNASAの発表によるものです。「いま何台動いているか」ではなく、<strong>どの探査機がどこに降りて何を見つけたか</strong>を覚えてください。</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="air">
+      <div class="sec-head"><span class="idx">08</span><h2>大気の違いと、その理由</h2></div>
+      <p>4つの岩石惑星は、材料も生まれた時期も似ています。それでも大気がまるで違うのは、<strong>重力の強さ・太陽からの距離・磁場の有無・二酸化炭素を回収する仕組みがあるか</strong>の組み合わせによります。数字を覚えるより、この4つの条件で説明できるようにしてください。</p>
+      <p style="font-size:13px;color:var(--ink-faint)">気圧・主成分・温度の数値は<strong>第1回のカードにあるもの</strong>で、ここでは横に並べて理由をつけるために再掲しています。天体カードからは外しました。この節で新しく覚えるのは、いちばん右の「理由」の列だけです。</p>
+      <figure class="fig">
+        <svg viewBox="0 0 640 230" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="岩石惑星と月の地表の気圧を対数目盛で比べた図">
+          <text x="20" y="22" font-size="12.5" font-weight="700" fill="var(--ink)">地表の気圧 ― 対数目盛（1目盛で100,000倍）</text>
+          <line x1="60" y1="150" x2="610" y2="150" stroke="var(--line)" stroke-width="1.5"/>
+          <g font-size="9.5" fill="var(--ink-faint)" text-anchor="middle">
+            <line x1="60" y1="146" x2="60" y2="156" stroke="var(--line)"/><text x="60" y="172">10⁻¹⁵ bar</text>
+            <line x1="219" y1="146" x2="219" y2="156" stroke="var(--line)"/><text x="219" y="172">10⁻¹⁰</text>
+            <line x1="377" y1="146" x2="377" y2="156" stroke="var(--line)"/><text x="377" y="172">10⁻⁵</text>
+            <line x1="536" y1="146" x2="536" y2="156" stroke="var(--line)"/><text x="536" y="172">1 bar</text>
+          </g>
+          <g>
+            <circle cx="60" cy="150" r="5" fill="var(--accent-deep)"/>
+            <line x1="60" y1="145" x2="60" y2="110" stroke="var(--line-strong)" stroke-width="1"/>
+            <text x="60" y="102" font-size="11" fill="var(--ink)" text-anchor="middle">水星</text>
+            <text x="60" y="88" font-size="9.5" fill="var(--ink-faint)" text-anchor="middle">外気圏だけ</text>
+          </g>
+          <g>
+            <circle cx="76" cy="150" r="5" fill="var(--good)"/>
+            <line x1="76" y1="155" x2="76" y2="192" stroke="var(--line-strong)" stroke-width="1"/>
+            <text x="76" y="205" font-size="11" fill="var(--ink)" text-anchor="middle">月</text>
+            <text x="76" y="219" font-size="9.5" fill="var(--ink-faint)" text-anchor="middle">ほぼ真空</text>
+          </g>
+          <g>
+            <circle cx="466" cy="150" r="5" fill="var(--amber)"/>
+            <line x1="466" y1="145" x2="466" y2="110" stroke="var(--line-strong)" stroke-width="1"/>
+            <text x="466" y="102" font-size="11" fill="var(--ink)" text-anchor="middle">火星 0.006</text>
+            <text x="466" y="88" font-size="9.5" fill="var(--ink-faint)" text-anchor="middle">CO₂ 95% ／ −63℃</text>
+          </g>
+          <g>
+            <circle cx="536" cy="150" r="6" fill="var(--accent)"/>
+            <line x1="536" y1="155" x2="536" y2="192" stroke="var(--line-strong)" stroke-width="1"/>
+            <text x="536" y="205" font-size="11" fill="var(--ink)" text-anchor="middle">地球 1</text>
+            <text x="536" y="219" font-size="9.5" fill="var(--ink-faint)" text-anchor="middle">N₂ 78% ／ +15℃</text>
+          </g>
+          <g>
+            <circle cx="599" cy="150" r="7" fill="var(--key)"/>
+            <line x1="599" y1="145" x2="599" y2="110" stroke="var(--line-strong)" stroke-width="1"/>
+            <text x="599" y="102" font-size="11" fill="var(--ink)" text-anchor="middle">金星 92</text>
+            <text x="599" y="88" font-size="9.5" fill="var(--ink-faint)" text-anchor="middle">CO₂ 96.5% ／ +464℃</text>
+          </g>
+          <text x="20" y="42" font-size="10" fill="var(--ink-soft)">目盛が1つ進むごとに10万倍。水星・月と金星のあいだには、17桁（10,000,000,000,000,000倍）の開きがある</text>
+        </svg>
+        <figcaption>覚え方：<strong>水星と月＝ほぼゼロ、火星＝地球の1%以下、地球＝1、金星＝92</strong>。この4つの数だけ押さえれば、あとは理由で説明できます。</figcaption>
+      </figure>
+      <div class="table-scroll">
+      <table class="mini-table">
+        <tr><th style="width:12%">天体</th><th style="width:16%">気圧（地球＝1）</th><th style="width:22%">主成分</th><th style="width:12%">平均温度</th><th>いまの姿になった理由</th></tr>
+        <tr><td><strong>水星</strong></td><td>約10⁻¹⁵</td><td>O₂・Na・H₂（外気圏）</td><td>−180〜430℃</td><td>重力が弱く、太陽に近くて高温。気体を引きとめられない。いまあるのは太陽風と隕石が表面から叩き出した原子</td></tr>
+        <tr><td><strong>金星</strong></td><td>約92</td><td>CO₂ 96.5%</td><td>約464℃</td><td>厚い二酸化炭素が赤外線を逃がさない（温室効果）。水が失われ、二酸化炭素を岩石に戻す仕組みが働かなくなったと考えられる</td></tr>
+        <tr><td><strong>地球</strong></td><td>1</td><td>N₂ 78%・O₂ 21%</td><td>約15℃</td><td>十分な重力＋磁場＋水と岩石が二酸化炭素を回収する循環。酸素は生物が作ったもの</td></tr>
+        <tr><td><strong>火星</strong></td><td>約0.006</td><td>CO₂ 95%</td><td>約−63℃</td><td>重力が弱く全球的な磁場がないため、太陽風に大気をはぎ取られてきた（MAVENが流出を観測）</td></tr>
+        <tr><td><strong>月</strong></td><td>約3×10⁻¹⁵</td><td>ほぼ真空</td><td>−173〜127℃</td><td>重力が地球の6分の1しかなく、気体を保持できない</td></tr>
+      </table>
+      </div>
+      <div class="box teach"><span class="lab">よくある取り違え</span>
+      <p><strong>「太陽に近いほど熱い」は成り立ちません。</strong>金星は水星より遠いのに、平均温度ははるかに高い。大気があるかないかが距離より効く、という例として覚えてください。<br>
+      <strong>「火星は二酸化炭素なのに寒い」</strong>のは、成分が同じでも<strong>量が違う</strong>からです。温室効果の強さは成分の割合ではなく、大気そのものの厚さで決まります。</p></div>
+    </section>
+
+    <section id="relief">
+      <div class="sec-head"><span class="idx">09</span><h2>高さと深さを、同じ物差しで</h2></div>
+      <p>地形の大きさは、天体ごとにばらばらに覚えると比べられなくなります。<strong>地球のエベレストを物差し</strong>にして、その何倍かで置いてください。</p>
+      <figure class="fig">
+        <svg viewBox="0 0 640 250" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="岩石惑星の主な地形の高さと深さを同じ縮尺で比べた図">
+          <text x="20" y="22" font-size="12.5" font-weight="700" fill="var(--ink)">高さと深さ ― 同じ縮尺（1km＝5px）</text>
+          <line x1="30" y1="160" x2="615" y2="160" stroke="var(--line-strong)" stroke-width="1.5"/>
+          <text x="618" y="158" font-size="9" fill="var(--ink-faint)">0</text>
+          <g font-size="9.5" fill="var(--ink-faint)" text-anchor="end">
+            <line x1="30" y1="60" x2="615" y2="60" stroke="var(--line-soft)" stroke-dasharray="3 3"/><text x="27" y="63">20km</text>
+            <line x1="30" y1="110" x2="615" y2="110" stroke="var(--line-soft)" stroke-dasharray="3 3"/><text x="27" y="113">10km</text>
+            <line x1="30" y1="195" x2="615" y2="195" stroke="var(--line-soft)" stroke-dasharray="3 3"/><text x="27" y="198">−7km</text>
+          </g>
+          <!-- 高さ -->
+          <rect x="70" y="50" width="52" height="110" rx="3" fill="var(--amber-tint)" stroke="var(--amber)" stroke-width="1.4"/>
+          <text x="96" y="44" font-size="10.5" fill="var(--ink)" text-anchor="middle">22km</text>
+          <text x="96" y="176" font-size="10" fill="var(--ink)" text-anchor="middle">オリンポス山</text>
+          <text x="96" y="189" font-size="9" fill="var(--ink-faint)" text-anchor="middle">火星</text>
+
+          <rect x="160" y="105" width="52" height="55" rx="3" fill="var(--key-tint)" stroke="var(--key)" stroke-width="1.4"/>
+          <text x="186" y="99" font-size="10.5" fill="var(--ink)" text-anchor="middle">11km</text>
+          <text x="186" y="176" font-size="10" fill="var(--ink)" text-anchor="middle">マクスウェル山脈</text>
+          <text x="186" y="189" font-size="9" fill="var(--ink-faint)" text-anchor="middle">金星</text>
+
+          <rect x="250" y="116" width="52" height="44" rx="3" fill="rgba(61,139,255,.12)" stroke="var(--accent)" stroke-width="1.4"/>
+          <text x="276" y="110" font-size="10.5" fill="var(--ink)" text-anchor="middle">8.8km</text>
+          <text x="276" y="176" font-size="10" fill="var(--ink)" text-anchor="middle">エベレスト</text>
+          <text x="276" y="189" font-size="9" fill="var(--ink-faint)" text-anchor="middle">地球（物差し）</text>
+
+          <!-- 深さ -->
+          <rect x="360" y="160" width="52" height="35" rx="3" fill="var(--amber-tint)" stroke="var(--amber)" stroke-width="1.4"/>
+          <text x="386" y="210" font-size="10.5" fill="var(--ink)" text-anchor="middle">−7km</text>
+          <text x="386" y="226" font-size="10" fill="var(--ink)" text-anchor="middle">マリネリス峡谷</text>
+          <text x="386" y="239" font-size="9" fill="var(--ink-faint)" text-anchor="middle">火星・長さ4,000km</text>
+
+          <rect x="450" y="160" width="52" height="35" rx="3" fill="var(--amber-tint)" stroke="var(--amber)" stroke-width="1.4"/>
+          <text x="476" y="210" font-size="10.5" fill="var(--ink)" text-anchor="middle">−7km</text>
+          <text x="476" y="226" font-size="10" fill="var(--ink)" text-anchor="middle">ヘラス盆地</text>
+          <text x="476" y="239" font-size="9" fill="var(--ink-faint)" text-anchor="middle">火星・直径2,300km</text>
+
+          <rect x="540" y="160" width="52" height="55" rx="3" fill="rgba(61,139,255,.12)" stroke="var(--accent)" stroke-width="1.4"/>
+          <text x="566" y="230" font-size="10.5" fill="var(--ink)" text-anchor="middle">−10.9km</text>
+          <text x="566" y="246" font-size="10" fill="var(--ink)" text-anchor="middle">マリアナ海溝・地球</text>
+          <text x="325" y="44" font-size="10" fill="var(--ink-soft)" text-anchor="middle">← 高さ　／　深さ →</text>
+        </svg>
+        <figcaption>オリンポス山はエベレストの<strong>約2.5倍</strong>。重力が弱く、プレートが動かないので、同じ場所に溶岩が積み上がり続けました。地球で山が高くなりきらないのは、重力が強く、プレートが動いて火山が移動してしまうためです。</figcaption>
+      </figure>
+      <div class="box teach"><span class="lab">数を減らして覚える</span>
+      <p>覚える数は<strong>3つだけ</strong>で足ります。<strong>エベレスト 約9km／マクスウェル山脈 約11km／オリンポス山 約22km</strong>。深さは「マリネリス峡谷もヘラス盆地も約7km」とまとめ、マリアナ海溝は約11kmでマクスウェル山脈と同じ、と結びつけてください。</p></div>
+    </section>
+
+    <section id="probes">
+      <div class="sec-head"><span class="idx">10</span><h2>探査の歴史</h2></div>
+      <p>探査機は<strong>「誰が・いつ・どこへ・何を明らかにしたか」</strong>の4点だけを覚えます。年号は10年単位で十分です。頭の中では、探査機をその天体の像のそばに置いてください——マゼランは金星の雲の上を回り、キュリオシティはゲール・クレーターの中にいます。</p>
+      <div class="table-scroll">
+      <table class="mini-table">
+        <tr><th style="width:18%">探査機</th><th style="width:10%">行き先</th><th style="width:14%">年</th><th>明らかにしたこと</th></tr>
+        <tr><td><strong>マリナー10号</strong></td><td>金星→水星</td><td>1974–75</td><td>水星に行った最初の探査機。表面の約45%を撮影。金星の重力を使って軌道を変える方法を初めて実用化した</td></tr>
+        <tr><td><strong>メッセンジャー</strong></td><td>水星</td><td>2011–15（周回）</td><td>水星の全球地図。極の永久影に氷。惑星が縮んだ証拠。核が大きいこと</td></tr>
+        <tr><td><strong>ベピコロンボ</strong></td><td>水星</td><td>2018打ち上げ<br>2026到着予定</td><td>ESAとJAXAの2機。<strong>周回軌道への投入は2026年11月21日の予定</strong>（2026年9月時点）</td></tr>
+        <tr><td><strong>ベネラ7号〜14号</strong></td><td>金星</td><td>1970年代</td><td>他の惑星の地表から信号を送った最初（7号）。地表の写真と気温・気圧の実測</td></tr>
+        <tr><td><strong>マゼラン</strong></td><td>金星</td><td>1990–94（周回）</td><td>レーダーで表面の約98%を地図化。いま使う金星の地図はほぼこれ</td></tr>
+        <tr><td><strong>バイキング1・2号</strong></td><td>火星</td><td>1976（着陸）</td><td>火星表面からの最初の写真。生命を探す実験（結果は決定的でないと評価されている）</td></tr>
+        <tr><td><strong>キュリオシティ</strong></td><td>火星</td><td>2012–</td><td>ゲール・クレーター。かつて湖があったこと、有機分子の存在。2026年も運用中</td></tr>
+        <tr><td><strong>パーサヴィアランス</strong></td><td>火星</td><td>2021–</td><td>ジェゼロ・クレーター。川の三角州の跡を調べ、岩石試料を採取・保管。2026年も運用中</td></tr>
+        <tr><td><strong>アポロ11〜17号</strong></td><td>月</td><td>1969–72</td><td>6回の有人着陸で計12人が歩き、岩石を持ち帰った。この試料が月の起源の議論を決めた</td></tr>
+        <tr><td><strong>嫦娥6号</strong></td><td>月</td><td>2024</td><td>月の裏側から試料を持ち帰った最初</td></tr>
+      </table>
+      </div>
+      <div class="box warn"><span class="lab">覚えなくていいこと</span>
+      <p>打ち上げ日、機体の重さ、搭載機器の名前は覚えません。<strong>予定になっている日程も覚えません</strong>（変わります）。表の最後の列だけを、天体の像のそばで言えるようにしてください。</p></div>
+    </section>
+
+    <section id="menu">
+      <div class="sec-head"><span class="idx">11</span><h2>訓練メニュー</h2></div>
+      <p>1日20分。順番は毎日同じです。<strong>思い出す時間を先に取り、覚える時間をあとに置きます</strong>。これは「構築と想起を並走させる」ための決まりで、順番を入れ替えないでください。</p>
+      <div class="goals">
+        <ol>
+          <li><b>A 構築（12分）</b><span>最初の4分——前日までにやった天体を、地図を見ずに1つ思い出す。白紙に丸を描き、地形を書き込む。<br>残りの8分——今日の天体を、02の「実画像・実地図を見ながら作る手順」で覚える（集める→区切る→置く→閉じる→照合）。</span></li>
+          <li><b>B 観察（5分）</b><span>今日の天体の実画像を30秒だけ見て、閉じる。見えたものを言葉にして書き出す（「北半球が明るい」「右上に円形のくぼみ」など）。もう一度30秒見て、言い落としを足す。名前は使わず、見えたままを書きます。</span></li>
+          <li><b>メモ（3分）</b><span>Aで抜けた地形と、Bで見落とした特徴を書き留める。翌日のAはここから始めます。</span></li>
+        </ol>
+      </div>
+      <div class="table-scroll">
+      <table class="mini-table">
+        <tr><th style="width:14%">日</th><th style="width:43%">第1週：地図を重ねる</th><th>第2週：横断して固める</th></tr>
+        <tr><td><strong>1日目</strong></td><td>教材を読む（30〜40分）。5天体の地図を集めて保存。第1回のカードを1周して骨格を確かめる</td><td>第1週の5天体を、地図を見ずに順に巡る。抜けた地形に印</td></tr>
+        <tr><td><strong>2日目</strong></td><td>水星</td><td>大気の表を、理由の列だけ見ずに再現する。演習2</td></tr>
+        <tr><td><strong>3日目</strong></td><td>金星（想起：水星）</td><td>高さと深さの図を白紙に描く。演習1</td></tr>
+        <tr><td><strong>4日目</strong></td><td>地球（想起：金星／水星）</td><td>探査機10個を、天体ごとに分けて言う。演習3</td></tr>
+        <tr><td><strong>5日目</strong></td><td>月（想起：地球）</td><td>月の地形と着陸の年表。演習4</td></tr>
+        <tr><td><strong>6日目</strong></td><td>火星（想起：月／金星）</td><td>5天体を順・逆で巡る。ティコから地球の回へ出て、すぐ戻る練習</td></tr>
+        <tr><td><strong>7日目</strong></td><td>5天体を地図なしで巡る。到達目標①を自分で確かめる</td><td>到達目標②③を確かめる。演習5</td></tr>
+      </table>
+      </div>
+      <div class="box warn"><span class="lab">進んでよい条件</span>
+      <p>到達目標①（5天体それぞれで地形を5つ以上、位置つきで書ける）が満たせない天体があれば、その天体だけをもう数日続けてください。第3回では衛星が一気に増えるので、ここで地形の置き方が身についていないと、同じ失敗を大きな規模で繰り返します。</p></div>
+    </section>
+
+    <section id="drills">
+      <div class="sec-head"><span class="idx">12</span><h2>演習</h2></div>
+      <p>すべて<strong>カードと地図を見ずに</strong>答え、答えたあとで開いてください。間違えた項目は控えておき、翌日その天体から巡ります。</p>
+
+      <div class="ex">
+        <p class="ex-h"><span class="num">演習1</span>地形から天体へ、位置つきで</p>
+        <p>次の地形は、どの天体の、どのあたりにありますか。「天体名＋北か南か＋地図の左か右か」の形で答えてください。</p>
+        <p>カロリス盆地／マリネリス峡谷／マクスウェル山脈／嵐の大洋／ヘラス盆地／アフロディーテ大陸／ティコ／オリンポス山</p>
+        <details><summary>解答</summary><div class="ans">
+          <ul>
+            <li><strong>カロリス盆地</strong>＝水星、北緯約30度、地図の上・中央寄り。直径約1,550km</li>
+            <li><strong>マリネリス峡谷</strong>＝火星、赤道のすぐ南、タルシスの東（右）へ横に走る。長さ約4,000km</li>
+            <li><strong>マクスウェル山脈</strong>＝金星、北緯約65度、イシュタル大陸の東端。高さ約11km</li>
+            <li><strong>嵐の大洋</strong>＝月の表側、左側全体を占める広い暗部</li>
+            <li><strong>ヘラス盆地</strong>＝火星、南緯約42度、地図の右下の大きな円。深さ約7km</li>
+            <li><strong>アフロディーテ大陸</strong>＝金星、赤道に沿って横に長い高地。中央から右</li>
+            <li><strong>ティコ</strong>＝月の表側、南緯43度・下寄りの中央。白い光条が全球に伸びる。<strong>地球の回への入口</strong></li>
+            <li><strong>オリンポス山</strong>＝火星、北緯約19度、地図の左寄りの白い丸。高さ約22km</li>
+          </ul></div></details>
+      </div>
+
+      <div class="ex">
+        <p class="ex-h"><span class="num">演習2</span>大気の理由を言う</p>
+        <ol>
+          <li>金星は水星より太陽から遠いのに、なぜ表面が熱いのですか。</li>
+          <li>火星と金星はどちらも大気の95%以上が二酸化炭素です。なぜ火星は寒いのですか。</li>
+          <li>火星の大気はなぜ薄くなったと考えられていますか。根拠になる観測を1つ挙げてください。</li>
+          <li>水星の「外気圏」は、地球の大気と何が違いますか。</li>
+        </ol>
+        <details><summary>解答</summary><div class="ans">
+          <ol>
+            <li>二酸化炭素の厚い大気が赤外線を逃がさないため（温室効果）。表面は約464℃で、太陽により近い水星の昼（約430℃）より高い。距離より大気の有無・厚さのほうが効く例です。</li>
+            <li>大気の<strong>量</strong>が違うから。火星の気圧は地球の約0.6%、金星は約92倍。温室効果の強さは成分の割合ではなく大気の厚さで決まります。</li>
+            <li>重力が弱く（質量は地球の約11%）、全球的な磁場がないため、太陽風に大気をはぎ取られてきたと考えられています。根拠——NASAのMAVEN探査機が大気の流出を実際に測っている。また、川や三角州の地形は、かつて水が液体でいられる大気があったことを示します。</li>
+            <li>惑星がもともと持っていた気体ではなく、<strong>太陽風と微小隕石が表面から叩き出した原子</strong>が薄く漂っているもの。気圧は約10⁻¹⁵ barで、ナトリウムが多いのが特徴です。</li>
+          </ol></div></details>
+      </div>
+
+      <div class="ex">
+        <p class="ex-h"><span class="num">演習3</span>探査機を天体に戻す</p>
+        <p>次の探査機の行き先・年代（10年単位でよい）・明らかにしたことを1つずつ言ってください。</p>
+        <p>マリナー10号／メッセンジャー／ベピコロンボ／ベネラ7号／マゼラン／バイキング1号／キュリオシティ／パーサヴィアランス／嫦娥6号</p>
+        <details><summary>解答</summary><div class="ans">
+          <ul>
+            <li><strong>マリナー10号</strong>——水星（金星経由）、1970年代。水星に行った最初。表面の約45%を撮影</li>
+            <li><strong>メッセンジャー</strong>——水星、2010年代に周回。全球地図、極の氷、惑星が縮んだ証拠</li>
+            <li><strong>ベピコロンボ</strong>——水星、ESAとJAXA。2018年打ち上げ、<strong>周回軌道への投入は2026年11月21日の予定</strong>（2026年9月時点でまだ周回していない）</li>
+            <li><strong>ベネラ7号</strong>——金星、1970年。他の惑星の地表から信号を送った最初</li>
+            <li><strong>マゼラン</strong>——金星、1990年代に周回。レーダーで表面の約98%を地図化</li>
+            <li><strong>バイキング1号</strong>——火星、1976年着陸。火星表面からの最初の写真</li>
+            <li><strong>キュリオシティ</strong>——火星のゲール・クレーター、2012年着陸。かつて湖があったこと、有機分子</li>
+            <li><strong>パーサヴィアランス</strong>——火星のジェゼロ・クレーター、2021年着陸。三角州の跡を調べ、試料を採取・保管</li>
+            <li><strong>嫦娥6号</strong>——月、2024年。<strong>裏側</strong>から試料を持ち帰った最初</li>
+          </ul></div></details>
+      </div>
+
+      <div class="ex">
+        <p class="ex-h"><span class="num">演習4</span>月</p>
+        <ol>
+          <li>月の表側と裏側で、見た目が大きく違うのはなぜですか（見た目の違いを先に述べてから）。</li>
+          <li>月がつねに同じ面を地球に向けているのはなぜですか。</li>
+          <li>ジャイアント・インパクト説を支える証拠を2つと、説明できていない点を1つ挙げてください。</li>
+          <li>アポロ11号はどこに降りましたか。着陸は何年で、アポロ計画では合計何回・何人が月面に立ちましたか。</li>
+        </ol>
+        <details><summary>解答</summary><div class="ans">
+          <ol>
+            <li>表側は暗い「海」が約31%を占めるのに対し、裏側は約1%しかなく、ほぼ高地とクレーターです。表側の地殻が薄く、溶岩が地表まで上がりやすかったためと考えられています（GRAIL探査機の重力測定などによる）。</li>
+            <li>自転周期と公転周期がどちらも約27.3日で一致しているから（潮汐によって固定された）。</li>
+            <li>証拠——⑴月は密度が低く鉄の核が小さい（地球のマントルの材料でできたとすると合う）。⑵アポロが持ち帰った岩石の酸素同位体比が地球のものとほぼ同じ。⑶地球と月を合わせた回転の勢いが説明できる。<br>説明できていない点——同位体比が<strong>似すぎている</strong>こと。衝突した天体の物質がもっと混ざっているはずなのに、その痕跡が見つかりません。</li>
+            <li><strong>静かの海</strong>（北緯0.7度・東経23.5度）、<strong>1969年</strong>。アポロ計画では11号から17号まで<strong>6回</strong>着陸し、<strong>12人</strong>が月面に立ちました。</li>
+          </ol></div></details>
+      </div>
+
+      <div class="ex">
+        <p class="ex-h"><span class="num">演習5</span>白紙から地図を再現する</p>
+        <p>天体を1つ選び（無作為に）、白紙に<strong>横長の長方形</strong>を描いて展開図に見立て、赤道の線と縦3本の目安線を引いてください。そこへ、思い出せる地形をすべて書き込みます。書き終えたら地図と照合します。</p>
+        <details><summary>採点のしかた</summary><div class="ans">
+          <p>一覧表にある地形を1項目として数えます。<strong>名前が合っていて、かつ入れた区画（上下・左右）が合っていれば正解</strong>。名前だけ合って場所が違うものは0.5とします。</p>
+          <p>到達目標①の目安は、<strong>5項目以上を位置つきで書ける</strong>ことです。何度も場所を間違える地形は、隣の地形との関係で覚え直してください（例：「マクスウェル山脈はイシュタル大陸の<strong>東の端</strong>」「パンテオン・フォッサはカロリス盆地の<strong>ど真ん中</strong>」）。単独の点として覚えるより、隣接関係のほうが崩れにくくなります。</p>
+          <p>③外観だけでなく、①位置〜⑤重さを通して巡り、第1回の数値が出てくるかも同時に確かめてください。地形を足したことで骨格の数値が抜け落ちていないか、ここで分かります。</p></div></details>
+      </div>
+    </section>
+
+    <section id="plan">
+      <div class="sec-head"><span class="idx">A</span><h2>第1〜5回の改訂</h2></div>
+      <table class="mini-table">
+        <tr><th style="width:8%">回</th><th style="width:32%">タイトル</th><th>内容</th></tr>
+        <tr><td><strong>1</strong></td><td>太陽系の骨格</td><td>太陽と8惑星の基本情報と特徴。配置図と比較図。天体の巡り方①〜⑤</td></tr>
+        <tr><td><strong>2</strong></td><td>岩石惑星を深める</td><td>この教材。水星・金星・地球（外観）・月・火星の地形、大気の違いとその理由、探査の歴史</td></tr>
+        <tr><td><strong>3</strong></td><td>巨大惑星を深める</td><td>木星〜海王星の大気の構造、環、主要衛星それぞれのカード（ガリレオ衛星、タイタン、エンケラドゥス、トリトンなど）</td></tr>
+        <tr><td><strong>4</strong></td><td>小天体</td><td>小惑星帯（ケレス、ベスタなど）、準惑星（冥王星ほか）、カイパーベルト、彗星、オールトの雲</td></tr>
+        <tr><td><strong>5</strong></td><td>太陽と全体の統合</td><td>恒星としての太陽の詳細、太陽系の形成、全天体の横断比較と巡回</td></tr>
+      </table>
+      <p>第6回以降（地球の回）に入る前に、太陽系の回の全体を1回通して巡る時間を第5回に置きます。第6回以降の構成は、地球の回に入る直前に目的に合わせて見直します。</p>
+    </section>
+
+    <section id="evidence">
+      <div class="sec-head"><span class="idx">B</span><h2>根拠と強度</h2></div>
+      <div class="table-scroll">
+      <table class="mini-table">
+        <tr><th style="width:20%">この回の要素</th><th style="width:34%">主な根拠</th><th style="width:34%">示していないこと</th><th style="width:8%">強度</th></tr>
+        <tr><td>見ずに思い出す（演習・前日想起）</td><td>検索練習効果。読み返しより想起のほうが長く残ることが多数の研究で繰り返し示されている（Roediger &amp; Butler 2011 の総説ほか）</td><td>理解や応用が自動的に伸びること</td><td><span class="g s">強</span></td></tr>
+        <tr><td>間隔を空けて繰り返す（前日・3日前）</td><td>分散学習の効果（Cepeda et al. 2006 のメタ分析ほか）</td><td>この回の間隔が最適であること</td><td><span class="g s">強</span></td></tr>
+        <tr><td>実画像・実地図と文章を一緒に使う</td><td>言葉と図を組み合わせると、言葉だけより学習成績がよいことが多い（Mayer のマルチメディア学習研究）</td><td>頭の中で像を再構成する手順そのものの効果</td><td><span class="g s">強</span></td></tr>
+        <tr><td>地図の上に事実を結びつける（この回の中心）</td><td>地図と一緒に学んだ文章の事実が思い出しやすくなる（Kulhavy らの一連の研究）</td><td>多くは短い教材と短い保持期間での結果。頭の中だけの地図で同じ効果が出るか</td><td><span class="g m">中</span></td></tr>
+        <tr><td>地形を隣接関係で覚える（演習5）</td><td>手がかりを増やすと想起が助けられるという一般的な知見と整合する。<strong>この具体的なやり方を検証した研究は確認できていない</strong></td><td>単独で覚えるより優れていること</td><td><span class="g w">弱</span></td></tr>
+        <tr><td>6区画に割ってから名前を入れる（02の手順）</td><td>検証した研究は確認できていない。想起の手がかりを一定にするための設計判断</td><td>区画の数や割り方が最適であること</td><td><span class="g w">弱</span></td></tr>
+        <tr><td>層の移動を固定の接続点に限る</td><td>検証した研究は確認できていない。層をまたいだときに混ざるのを防ぐための設計判断</td><td>接続点を決めないやり方より優れていること</td><td><span class="g w">弱</span></td></tr>
+        <tr><td>場所法を知識の学習に使う</td><td>場所法の効果（Dresler et al. 2017 ほか）は<strong>無関係な語リスト</strong>で示されたもの</td><td>意味のある知識の長期定着に場所法が効くこと</td><td><span class="g w">弱</span></td></tr>
+        <tr><td>観察の言語化（Bトラック）</td><td>Naghshineh et al. 2008／Gurwin et al. 2018。観察訓練で記述の量と質が向上</td><td>記憶力が伸びること</td><td><span class="g m">中</span></td></tr>
+      </table>
+      </div>
+      <p style="font-size:13px;color:var(--ink-faint)">研究の記述は要約です。効果量や条件は原論文で確認してください。この回で新しく足した手順（地図を重ねる、隣接関係、6区画）は、いずれも設計判断であって、効果が確かめられたものではありません。</p>
+    </section>
+
+    <section id="next">
+      <div class="sec-head"><span class="idx">C</span><h2>次回の予告</h2></div>
+      <div class="box teach"><span class="lab">第3回の予告　巨大惑星を深める</span>
+      <p>木星から海王星までの4つに、この回と同じやり方で中身を足します。扱うのは、<strong>大気の帯と縞の構造</strong>（大赤斑、土星の六角形）、<strong>環</strong>の作りと見え方の違い、そして<strong>主要な衛星それぞれのカード</strong>——イオ、エウロパ、ガニメデ、カリスト、タイタン、エンケラドゥス、ミランダ、トリトン。可搬層を廃止したので、衛星もそれぞれ地形と数値を持つ対象になります。</p>
+      <p>岩石惑星と違い、巨大惑星には「地面」がありません。地図を重ねる代わりに、<strong>断面を重ねる</strong>回になります。</p></div>
+    </section>
+
+    <div class="foot"><p>天体の数値はNASAの公開データ（NASA Planetary Fact Sheet、nssdc.gsfc.nasa.gov/planetary/factsheet）に基づく概数です。地形の緯度経度は概略であり、正式な値はUSGS Gazetteer of Planetary Nomenclature（planetarynames.wr.usgs.gov）で確認してください。ベピコロンボの日程はESA発表（2026年9月時点）、火星探査車の稼働状況はNASA発表（2026年9月時点）、月面着陸の記録は各宇宙機関の発表によります。いずれも変わりうるため、日付と合わせて扱ってください。画像はサイト内の image/memoryverse/ に置いたものを表示しています（読み込めないときだけ Wikimedia Commons を参照します）。NASA 等の公開画像のほか、火星の外観は ESA/MPS for OSIRIS Team による <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">CC BY-SA 4.0</a>、月の外観は Gregory H. Revera 氏、月の地名図は Cmglee 氏による <a href="https://creativecommons.org/licenses/by-sa/3.0/" target="_blank" rel="noopener">CC BY-SA 3.0</a> です（いずれも改変していません）。引用研究の記述は要約であり、原論文の主張全体を代表するものではありません。</p></div>
+    
+
+  </main>
+</div>
+<div id="site-footer"><noscript><nav class="noscript-nav" aria-label="フッターナビゲーション"><a href="index.html">ホーム</a><a href="self-intro.html">自己紹介</a><a href="study.html">勉強の軌跡</a><a href="videos.html">動画</a><a href="blog.html">ブログ</a><a href="sns.html">各種SNS</a></nav></noscript></div>
+<script>
+/* --- 天体カード -------------------------------------------------------------
+   外観：左に球、右に「5天体を並べた物差し」6本。配置は CSS だけで決まる。
+   地図：画像をカードの内幅いっぱいに広げ、mvGrid が基準線、mvMap がラベル、
+         mvLinks がピンと引き出し線を置く（どれも画像の矩形が基準）。
+   第1回の放射状配置（mvPlace の半径計算・中心からの線）は第2回では使わない。 */
+/* --- 画像のフォールバック（§52.1）------------------------------------------
+   ★ この関数は onerror から呼ばれているのに、変換のときに落ちていた（定義なし）。
+   画像は全部リポジトリに同梱してあるので発火しないが、発火したら
+   ReferenceError になる状態だった。data-alt の候補へ順に切り替え、
+   最後まで落ちたらリンクだけ出す。 */
+function mvNext(img){
+  var list=(img.dataset.alt||'').split('|').filter(Boolean),i=parseInt(img.dataset.step||0,10);
+  if(i<list.length){img.dataset.step=i+1;img.src=list[i];return}
+  var f=img.closest('.planet-img');if(f)f.classList.add('failed');
+}
+/* いま表示されている地形ラベルだけを返す。閉じているときや外観のときは
+   display:none なので 0 件になる（§53.1／§56.1）。 */
+function visibleStats(mod){
+  return [].slice.call(mod.querySelectorAll('.stat')).filter(function(s){return s.offsetParent!==null});
+}
+/* 560px 以下は「地図の上は番号の丸だけ、説明は下のリスト」。CSSの @media と
+   同じ境目を見ているので、片方だけ変えないこと。 */
+function mvNarrow(){return window.innerWidth<=560}
+function mvPlace(mod){
+  /* ラベルは絶対座標を持つので、置き直す前に必ず消す（幅が変わったときのため）。 */
+  [].slice.call(mod.querySelectorAll('.stat.geo')).forEach(function(s){s.style.left='';s.style.top=''});
+  mvMap(mod);
+}
+/* --- 地図表示：緯度経度の基準線（§55.2） ------------------------------------
+   画像は加工しない。較正（§53.2）と同じ式で、上から SVG で描く。
+   equi  正距円筒：左端＝東経180度、緯度は線形
+   mars  経度は線形（左右に2.5%の余白）・緯度はメルカトル。図は南北70.2度まで
+   orth  正射投影の円盤（月）。円盤の中心と半径は実測値（§53.7） */
+var MVGRID={
+  equi:{maxLat:90,x0:0,xw:1,y:function(p){return (90-p)/180}},
+  mars:{maxLat:70,x0:0.025,xw:0.95,y:function(p){return 0.516393-0.264754*Math.log(Math.tan(Math.PI/4+p*Math.PI/360))}}
+};
+var MVDISK={cx:0.5003,cy:0.5087,r:0.4142};   /* 月：画像の幅・高さに対する割合 */
+function mvSvg(svg,tag,attrs,cls){
+  var e=document.createElementNS('http://www.w3.org/2000/svg',tag);
+  for(var k in attrs)e.setAttribute(k,attrs[k]);
+  if(cls)e.setAttribute('class',cls);
+  svg.appendChild(e);return e;
+}
+function mvGrid(mod){
+  var orbit=mod.querySelector('.orbit'),svg=orbit&&orbit.querySelector('.grid');
+  if(!svg)return;
+  while(svg.firstChild)svg.removeChild(svg.firstChild);
+  if(!mod.classList.contains('map-view'))return;
+  var img=orbit.querySelector('.map-img');if(!img)return;
+  var ob=orbit.getBoundingClientRect(),ib=img.getBoundingClientRect();
+  if(ib.height<8||ob.width<1)return;
+  svg.setAttribute('viewBox','0 0 '+ob.width+' '+ob.height);
+  var x0=ib.left-ob.left,y0=ib.top-ob.top,w=ib.width,h=ib.height;
+  var narrow=mvNarrow(),step=narrow?60:30,kind=mod.dataset.grid;
+  if(kind==='orth'){
+    var cx=x0+w*MVDISK.cx,cy=y0+h*MVDISK.cy,R=w*MVDISK.r,d=Math.PI/180;
+    mvSvg(svg,'circle',{cx:cx,cy:cy,r:R});
+    /* 0 から左右・上下へ振る。間引くとき（60度ごと）も赤道と中央経線が残る。 */
+    for(var la=0;la<90;la+=step)[la,-la].forEach(function(v,idx){
+      if(idx&&!v)return;
+      var yy=cy-R*Math.sin(v*d),hw=R*Math.cos(v*d);
+      mvSvg(svg,'line',{x1:cx-hw,y1:yy,x2:cx+hw,y2:yy},v===0?'major':null);
+    });
+    for(var lo=0;lo<90;lo+=step)[lo,-lo].forEach(function(v,idx){
+      if(idx&&!v)return;
+      if(v===0){mvSvg(svg,'line',{x1:cx,y1:cy-R,x2:cx,y2:cy+R},'major');return}
+      var rx=R*Math.abs(Math.sin(v*d));
+      mvSvg(svg,'path',{d:'M'+cx+' '+(cy-R)+'A'+rx+' '+R+' 0 0 '+(v>0?1:0)+' '+cx+' '+(cy+R)});
+    });
+    return;
+  }
+  var P=MVGRID[kind==='mars'?'mars':'equi'],n=360/step;
+  for(var k=0;k<=n;k++){                                 /* 経線 */
+    var fx=P.x0+P.xw*k/n,X=x0+w*fx,lonE=(180+step*k)%360;
+    mvSvg(svg,'line',{x1:X,y1:y0+h*P.y(P.maxLat),x2:X,y2:y0+h*P.y(-P.maxLat)},lonE===0?'major':null);
+  }
+  for(var la2=-60;la2<=60;la2+=step){                    /* 緯線 */
+    if(Math.abs(la2)>P.maxLat)continue;
+    var Y=y0+h*P.y(la2);
+    mvSvg(svg,'line',{x1:x0+w*P.x0,y1:Y,x2:x0+w*(P.x0+P.xw),y2:Y},la2===0?'major':null);
+  }
+  if(narrow)return;                                      /* 狭いときは文字を出さない */
+  var yb=y0+h*P.y(-P.maxLat);
+  for(var k2=0;k2<=n;k2+=(step===30?2:1)){               /* 経度のラベルは60度ごと */
+    var lon=(180+step*k2)%360,fx2=P.x0+P.xw*k2/n,X2=x0+w*fx2,an='middle';
+    if(k2===0){an='start';X2+=3}
+    if(k2===n){an='end';X2-=3}
+    var t=mod.dataset.lon==='we'?(lon===0?'0°':lon===180?'180°':lon<180?lon+'°E':(360-lon)+'°W'):lon+'°';
+    mvSvg(svg,'text',{x:X2,y:yb-5,'text-anchor':an}).textContent=t;
+  }
+  for(var la3=-60;la3<=60;la3+=30){                      /* 緯度のラベルは左右の端 */
+    if(Math.abs(la3)>P.maxLat)continue;
+    var Y3=y0+h*P.y(la3)-3,s3=la3>0?la3+'°N':la3<0?(-la3)+'°S':'0°';
+    mvSvg(svg,'text',{x:x0+w*P.x0+4,y:Y3,'text-anchor':'start'}).textContent=s3;
+    mvSvg(svg,'text',{x:x0+w*(P.x0+P.xw)-4,y:Y3,'text-anchor':'end'}).textContent=s3;
+  }
+}
+
+/* --- 地図表示：ラベルを地図の上に置く（§54.2） ------------------------------
+   向きの既定ルール：x<0.5 なら右、x>=0.5 なら左。ただし y<0.25 なら下、
+   y>0.75 なら上を優先する（地図の上下端でラベルがはみ出すため）。
+   どうしても重なる組み合わせだけ、HTML の data-side で手で指定する。 */
+function mvSide(st){
+  if(st.dataset.side)return st.dataset.side;
+  var x=parseFloat(st.dataset.x),y=parseFloat(st.dataset.y);
+  if(y<0.25)return 'down';
+  if(y>0.75)return 'up';
+  return x<0.5?'right':'left';
+}
+function mvMap(mod){
+  var orbit=mod.querySelector('.orbit'),img=orbit.querySelector('.map-img');
+  var labs=[].slice.call(mod.querySelectorAll('.stat.geo'));
+  /* 閉じているときラベルは display:none で、幅も高さも 0 になる。置いても意味が
+     ないので何もしない（開いたときに mvPlace からもう一度呼ばれる。§56.1）。 */
+  if(!img||!mod.classList.contains('open'))return;
+  var ob=orbit.getBoundingClientRect(),ib=img.getBoundingClientRect();
+  if(ib.height<8)return;                      /* 画像がまだ届いていない */
+  var x0=ib.left-ob.left,y0=ib.top-ob.top,D=24,PAD=4,narrow=mvNarrow();
+  labs.forEach(function(st){
+    if(st.dataset.x===undefined)return;       /* 座標を持たないもの（月）は置かない */
+    var px=x0+ib.width*parseFloat(st.dataset.x),py=y0+ib.height*parseFloat(st.dataset.y);
+    var w=st.offsetWidth,h=st.offsetHeight,L,T;
+    if(narrow){L=px-w/2;T=py-h/2;}            /* 番号の丸はピンそのものの位置へ */
+    else{
+      var side=mvSide(st);
+      if(side==='right'){L=px+D;T=py-h/2;}
+      else if(side==='left'){L=px-D-w;T=py-h/2;}
+      else if(side==='down'){L=px-w/2;T=py+D;}
+      else{L=px-w/2;T=py-D-h;}
+    }
+    /* 地図の外へ出るなら内側へ寄せる */
+    L=Math.max(x0+PAD,Math.min(x0+ib.width-PAD-w,L));
+    T=Math.max(y0+PAD,Math.min(y0+ib.height-PAD-h,T));
+    st.style.left=L.toFixed(1)+'px';st.style.top=T.toFixed(1)+'px';
+  });
+  if(narrow)mvSpread(mod,x0,y0,ib);
+}
+/* 狭いときの番号の丸は 22px あるので、地図が縮むと隣り合う地形（金星のサパス山と
+   マート山は実距離でも近い）で番号が読めなくなる。重なった分だけ左右上下に
+   押し離す。動かすのは数px で、指している場所の意味は変えない。 */
+function mvSpread(mod,x0,y0,ib){
+  var els=[].slice.call(mod.querySelectorAll('.stat.geo')).filter(function(s){return s.dataset.x!==undefined}),
+      P=els.map(function(s){return {e:s,x:parseFloat(s.style.left),y:parseFloat(s.style.top),w:s.offsetWidth}});
+  for(var pass=0;pass<4;pass++){
+    for(var i=0;i<P.length;i++)for(var j=i+1;j<P.length;j++){
+      var a=P[i],b=P[j],dx=(b.x-a.x),dy=(b.y-a.y),d=Math.hypot(dx,dy),min=a.w+2;
+      if(d>=min)continue;
+      if(d<0.01){dx=1;dy=0;d=1}
+      var k=(min-d)/2/d;
+      a.x-=dx*k;a.y-=dy*k;b.x+=dx*k;b.y+=dy*k;
+    }
+  }
+  P.forEach(function(p){
+    p.x=Math.max(x0,Math.min(x0+ib.width-p.w,p.x));
+    p.y=Math.max(y0,Math.min(y0+ib.height-p.w,p.y));
+    p.e.style.left=p.x.toFixed(1)+'px';p.e.style.top=p.y.toFixed(1)+'px';
+  });
+}
+/* 番号つきの説明リスト。ラベルから一度だけ作る（本文を二重に持たないため）。 */
+function mvGeoList(mod){
+  var core=mod.querySelector('.core');
+  if(!core||core.querySelector('.geo-list'))return;
+  var labs=[].slice.call(mod.querySelectorAll('.stat.geo'));
+  if(!labs.length)return;
+  var ol=document.createElement('ol');ol.className='geo-list';
+  labs.forEach(function(st){
+    var li=document.createElement('li');
+    var n=document.createElement('i');n.className='n';n.textContent=st.dataset.n;
+    var t=document.createElement('span');
+    t.innerHTML='<b>'+st.querySelector('b').innerHTML+'</b>　'+st.querySelector('.v').innerHTML;
+    li.appendChild(n);li.appendChild(t);ol.appendChild(li);
+  });
+  core.appendChild(ol);
+}
+function mvLinks(mod){
+  var orbit=mod.querySelector('.orbit'),svg=orbit&&orbit.querySelector('.links');
+  mvGrid(mod);                                 /* 基準線も同じ機会に引き直す */
+  if(!svg)return;
+  while(svg.firstChild)svg.removeChild(svg.firstChild);
+  if(!mod.classList.contains('open'))return;  /* 線とピンは開いているときだけ */
+  var ob=orbit.getBoundingClientRect(),frame=orbit.querySelector('.frame');
+  if(!frame||ob.width<480)return;
+  svg.setAttribute('viewBox','0 0 '+ob.width+' '+ob.height);
+  var fb=frame.getBoundingClientRect();
+  /* ★ 地図のときは線の始点が「球の縁」ではなく「地形の座標」になる。
+     data-x / data-y は画像に対する割合で、枠の縦横比を画像に合わせてあるので
+     そのまま枠の矩形に対応する（§53.2）。持っていないラベル（月）は線を引かない。 */
+  var mapView=mod.classList.contains('map-view');
+  if(!mapView)return;                          /* 外観では線を引かない（§57.1） */
+  /* 割合は「画像」に対する値。枠は min-height のぶん画像より高いことがあるので、
+     枠ではなく画像の矩形に当てる（枠に当てると緯度が数度ずれる）。 */
+  var mimg=mapView?frame.querySelector('.map-img'):null,mb=fb;
+  if(mimg){var r2=mimg.getBoundingClientRect();if(r2.height>4)mb=r2;}
+  if(mapView&&mvNarrow())return;                       /* 番号の丸が印そのもの */
+  visibleStats(mod).forEach(function(st){
+    var sb=st.getBoundingClientRect(),x=sb.left-ob.left+sb.width/2,y=sb.top-ob.top+sb.height/2;
+    var px,py;
+    if(mapView){
+      if(st.dataset.x===undefined)return;              /* 座標を持たないものは線なし */
+      px=mb.left-ob.left+mb.width*parseFloat(st.dataset.x);
+      py=mb.top-ob.top+mb.height*parseFloat(st.dataset.y);
+      /* 終点はラベルの中心ではなく、ピンにいちばん近いラベルの縁の点。
+         矩形にピンの座標を押し込めば、右・左・上・下のどの向きでも、
+         はみ出して寄せたあとでも、正しい辺の真ん中あたりに当たる。 */
+      x=Math.max(sb.left-ob.left,Math.min(sb.right-ob.left,px));
+      y=Math.max(sb.top-ob.top,Math.min(sb.bottom-ob.top,py));
+    }
+    var l=document.createElementNS('http://www.w3.org/2000/svg','line');
+    l.setAttribute('x1',px);l.setAttribute('y1',py);
+    l.setAttribute('x2',x);l.setAttribute('y2',y);svg.appendChild(l);
+    var c=document.createElementNS('http://www.w3.org/2000/svg','circle');
+    c.setAttribute('cx',px);c.setAttribute('cy',py);c.setAttribute('r',3.5);svg.appendChild(c);
+  });
+}
+addEventListener('resize',function(){document.querySelectorAll('.mod').forEach(function(m){mvPlace(m);setTimeout(function(){mvLinks(m)},340)})});
+document.querySelectorAll('.mod .img-btn').forEach(function(b){
+  b.addEventListener('click',function(){
+    var mod=b.closest('.mod'),open=mod.classList.toggle('open');
+    b.setAttribute('aria-expanded',open);
+    mvGeoList(mod);
+    requestAnimationFrame(function(){mvPlace(mod);mvLinks(mod);mvKeepTop(mod);
+      setTimeout(function(){mvLinks(mod)},340);});
+  });
+});
+
+/* 外観と地図では高さが大きく変わる（地図は本文幅いっぱいに広がる）ので、
+   開閉のあとにカードの上端が画面の外へ出ていたら、ヘッダーのすぐ下まで
+   引き戻す。html{scroll-behavior:smooth} が効くので behavior:'instant' を明示。 */
+function mvKeepTop(mod){
+  var t=mod.getBoundingClientRect().top,HEAD=96;
+  if(t<HEAD||t>window.innerHeight-80){
+    try{window.scrollBy({top:t-HEAD,behavior:'instant'})}catch(e){window.scrollBy(0,t-HEAD)}
+  }
+}
+
+/* --- 地図は loading="lazy"。届いた時点で基準線とラベルを組み直す（§63.3）。
+   以前は［地図］に切り替えたときに組んでいたが、切り替えが無くなったので、
+   画像の到着そのものを合図にする。閉じていても基準線は出る。 */
+document.querySelectorAll('.mod .map-img').forEach(function(img){
+  var mod=img.closest('.mod'),redraw=function(){mvPlace(mod);mvLinks(mod)};
+  if(img.complete&&img.naturalWidth)redraw();
+  else img.addEventListener('load',redraw,{once:true});
+});
+
+/* --- 目次の追従 ------------------------------------------------------------ */
+var links=[].slice.call(document.querySelectorAll('.toc a[href^="#"]'));
+var secs=links.map(function(a){return document.querySelector(a.getAttribute('href'))});
+var pbar=document.getElementById('pbar');
+function onScroll(){
+  /* getBoundingClientRect を使う（offsetTop ではない）。style.css の
+     `main{position:relative}` で <main> が offsetParent になり、offsetTop が
+     文書基準でなくなるため、scrollY と直接比べると約90px ずれる（§36.5 C）。 */
+  var idx=0;
+  secs.forEach(function(s,i){ if(s&&s.getBoundingClientRect().top<=140) idx=i; });
+  links.forEach(function(a){a.classList.remove('active')});
+  if(links[idx]) links[idx].classList.add('active');
+  var h=document.documentElement.scrollHeight-window.innerHeight;
+  pbar.style.width=(h>0?(window.scrollY/h*100):0)+'%';
+}
+window.addEventListener('scroll',onScroll,{passive:true});
+window.addEventListener('resize',onScroll); onScroll();
+
+/* --- 印刷時に解答（<details>）を開く ------------------------------------------
+   本命は CSS の `details::details-content{content-visibility:visible}`。これは
+   Chrome 131 / Safari 18.4 / Firefox 139 以降でしか効かないので、それ以前向けに
+   open 属性を足しておく。閉じていたものだけ印章を付け、印刷後に元へ戻す。 */
+window.addEventListener('beforeprint',function(){
+  document.querySelectorAll('.ex details:not([open])').forEach(function(d){
+    d.setAttribute('data-mv-print','');d.open=true;
+  });
+});
+window.addEventListener('afterprint',function(){
+  document.querySelectorAll('.ex details[data-mv-print]').forEach(function(d){
+    d.open=false;d.removeAttribute('data-mv-print');
+  });
+});
+
+/* --- 目次の引き出し（900px 以下） -------------------------------------------- */
+var body=document.body,mb=document.getElementById('menuBtn'),scrim=document.getElementById('scrim');
+mb.addEventListener('click',function(){var o=body.classList.toggle('nav-open');mb.setAttribute('aria-expanded',o)});
+scrim.addEventListener('click',function(){body.classList.remove('nav-open')});
+document.getElementById('toc').addEventListener('click',function(e){if(e.target.closest('a'))body.classList.remove('nav-open')});
+</script>
+<script src="../js/layout.js?v=r54"></script>
+<script src="../js/main.js?v=r54"></script>
+<script src="../js/starfield.js?v=r54"></script>
+</body>
+</html>
