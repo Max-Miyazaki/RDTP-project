@@ -42,7 +42,7 @@
         // まだ書いていない記事。href の代わりに soon を立てると、ツリーと前後リンクに
         // 「（準備中）」として出る。書き上がったら soon を消して href を入れる。
         'phys-math:ch2':   { label: '2章 積分',                                    parent: 'phys-math' },
-        'phys-math_2-1':   { label: 'SECTION 2-1', soon: true,                     parent: 'phys-math:ch2',
+        'phys-math_2-1':   { label: 'SECTION 2-1',  href: 'phys-math_2-1.html',    parent: 'phys-math:ch2',
                              title: '2-1　積分の基礎' },
         'skills':          { label: '精神の圏域',   href: 'study_skills.html',     parent: 'study' },
         'mnemonics':       { label: '記憶術',       href: 'skills_mnemonics.html', parent: 'skills' },

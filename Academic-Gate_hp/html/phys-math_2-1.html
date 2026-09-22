@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2-1 積分の基礎｜物理数学I 2章 積分 | Academic Gates</title>
+<meta name="description" content="区分求積による定積分の定義から、微積分学の基本定理、不定積分と積分定数まで。物理数学I 2章 積分／2-1。">
+<link rel="icon" href="../../favicon.ico" sizes="32x32">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+<!-- ★ ライト/ダーク切替は停止中（DESIGN.md §44）。サイト全体がダーク基調なので、
+     記事だけテーマが変わるのは一貫性を欠くという判断。**復活させるには次の1行の
+     コメントを外すだけでよい**（js/theme.js も css/lesson-theme.css も残してある）。
+     data-theme を付ける主体がこれしか無いので、外しておけば :root[data-theme="light"]
+     は構造的にマッチしない。逆に読み込んだままボタンだけ消すと、OS がライト設定の
+     端末が勝手にライトになり、戻す手段が無くなる（§44.2）。
+     復活時の挙動: テーマは描画前に同期で決まり（FOUC 防止）、ボタンの設置は
+     layout.js がヘッダーを書き出したあと DOMContentLoaded で行われる。 -->
+<!-- <script src="../js/theme.js?v=r58"></script> -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;500&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+<!-- サイト共通 → 記事固有 → テーマ上書き の順で読む（lesson-theme.css は
+     記事の <style> より後ろに置くこと。css/lesson-theme.css 冒頭の注記どおり） -->
+<link rel="stylesheet" href="../css/style.css?v=r58">
+<!-- MathJax: 設定ブロックはローダーより「前」に置く（DESIGN.md §11b）。
+     フォールバックは this.src= ではなく createElement 方式（同§）。 -->
+<script>
+window.MathJax={tex:{inlineMath:[['\\(','\\)']],displayMath:[['\\[','\\]']],tags:'none'},svg:{fontCache:'global'},options:{skipHtmlTags:['script','noscript','style','textarea','pre','code']}};
+</script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"
+        onerror="this.onerror=null;var s=document.createElement('script');s.async=true;s.src='https://unpkg.com/mathjax@3/es5/tex-svg.js';document.head.appendChild(s);"></script>
+<style>
+/* 2-1 積分の基礎 — 記事固有のスタイルのみ。1-2 と同じ構成をそのまま使う。
+   共通のリセット・背景・星・ヘッダー/フッター・ボタン・見出し階層・本文リズムは
+   css/style.css が持つ（DESIGN.md §35, §36）。ここに残すのは、この教材の
+   構造（レール／演習ブロック／図版）と、教育用の色トークンだけ。 */
+:root{
+  /* 教材固有のトークン。本体と同値のもの（--bg --surface --nav-bg --ink --line
+     --line-strong --glow-cool --font --nav-clear --ease --radius-lg/md）は
+     css/style.css 側に定義があるので、ここでは持たない。
+     --ink-soft / --ink-faint は本体より明るい値を「意図的に」維持している。
+     本体値に寄せると 13.5px の解説文が 4.56:1 → 3.66:1 と AA を割るため（§36）。 */
+  --surface-2:rgba(255,255,255,.045);
+  --ink-soft:rgba(255,255,255,.68);
+  --ink-faint:rgba(255,255,255,.46);
+  --line-soft:rgba(255,255,255,.05);
+  --accent-deep:#a8c9ff;
+  --accent-tint:rgba(77,148,255,.12);
+  --amber:#ffb46b;--amber-tint:rgba(255,160,70,.08);--amber-line:rgba(255,160,70,.32);
+  --good:#72e3ad;--good-tint:rgba(114,227,173,.08);--good-line:rgba(114,227,173,.28);
+  --key:#ff6fa5;--key-tint:rgba(255,61,139,.08);--key-line:rgba(255,61,139,.28);
+  --teach:#a48bff;--teach-tint:rgba(123,77,255,.11);--teach-line:rgba(123,77,255,.38);
+  --mono:ui-monospace,'SFMono-Regular',Menlo,Consolas,monospace;
+  --rail-w:250px;
+}
+body{font-size:15.5px;line-height:1.9;line-break:strict;overflow-x:hidden}
+
+/* --- レイアウト（左に目次レール／右に本文の2カラム） ------------------------
+   本文列 760px は日本語の長文＋数式に合わせた measure。style.css の共通記事
+   ルールは `body.is-article main > section:not(.rail)`（詳細度 0,2,3）と
+   `… ~ section:not(.rail)`（0,3,4）で 900px と 160px パディングをかけてくる。
+   こちらは `.main` を噛ませて 0,3,2 / 0,4,3 とし、確実に上回る（§36）。 */
+/* 全幅。左寄せのレイアウトで、余った幅は右に流す（§43）。
+   §40 で一度 max-width を外して差し戻しているが、あれは「中央寄せのまま左右を
+   対称にする」変更で、本文の位置も幅も変わらなかったため戻した。今回は本文を
+   860px に広げて左揃えにするので、目的も結果も違う。
+   レールの左余白は 1280px → 1440px にかけて 0 → 32px。狭い画面ではまず余白を
+   削って本文幅に回す（レール幅 250px は目次の文字量で決まるので触らない）。 */
+.wrap{display:flex;padding-top:var(--nav-clearance);
+      padding-left:clamp(0px, calc((100vw - 1280px) * .2), 32px)}
+.rail{width:var(--rail-w);flex:0 0 var(--rail-w);position:sticky;top:var(--nav-clearance);height:calc(100vh - var(--nav-clearance));overflow-y:auto;padding:18px 14px 60px 22px;border-right:1px solid var(--line)}
+/* 左パディング＝レールと本文の間隔。1024px → 1280px にかけて 24 → 56px。
+   これも狭い画面では縮めて本文幅に回す。 */
+.main{flex:1 1 auto;min-width:0;
+      padding:0 clamp(24px, calc(24px + (100vw - 1024px) * .125), 56px) 110px}
+/* 本文列 860px。760px では display 数式が 6 本はみ出していた（解答の入れ子
+   パディングで、.sol の中は本文列より 132px 狭い箱になる）。全 82 本が収まる
+   最小幅は実測 853px（§43.2）。中央寄せをやめて左揃えにし、余りは右へ。 */
+body.is-article .main > .lesson-hero,
+body.is-article .main > section:not(.rail),
+body.is-article .main > .foot{max-width:860px;margin-left:0;margin-right:auto;padding-left:0;padding-right:0}
+.rail .brand{font-weight:400;font-size:15px;line-height:1.45;margin:2px 0 4px}
+.rail .brand small{display:block;font-size:10px;font-weight:500;color:var(--ink-faint);letter-spacing:.2em;margin-top:6px}
+.progress-wrap{height:2px;background:var(--line);border-radius:99px;margin:16px 0 18px;overflow:hidden}
+.progress-bar{height:100%;width:0;background:linear-gradient(90deg,var(--accent),#a8c9ff);transition:width .15s linear}
+.toc{list-style:none;margin:0;padding:0;font-size:12.5px}
+.toc .part{font-size:10px;letter-spacing:.2em;color:var(--ink-faint);margin:16px 0 5px;padding-left:2px}
+.toc a{display:block;text-decoration:none;color:var(--ink-soft);padding:4px 10px;border-radius:999px;transition:color var(--dur) var(--ease),background var(--dur) var(--ease)}
+.toc a:hover{color:var(--ink);background:var(--surface-2)}
+.toc a.active{color:var(--ink);background:var(--accent-tint)}
+.toc a .n{font-size:10.5px;color:var(--ink-faint);margin-right:8px;font-variant-numeric:tabular-nums}
+.toc a.active .n{color:var(--accent)}
+
+/* --- 記事の導入部。`.hero` は index.html 専用で、style.css が
+   `.hero h1/.hero p/.hero .eyebrow` に黒い text-shadow をかけるため使えない（§36）。 --- */
+.lesson-hero{padding:64px 0 34px;border-bottom:1px solid var(--line)}
+.lesson-hero h1{font-weight:300;font-size:clamp(28px,4vw,48px);line-height:1.25;letter-spacing:-.02em;margin:0 0 22px}
+.lesson-hero h1 .sub{display:block;font-size:.52em;font-weight:300;color:var(--ink-soft);letter-spacing:0;margin-top:12px}
+.lesson-hero p{color:var(--ink-soft);margin:0 0 12px}
+.lesson-hero .lead{font-size:16.5px;color:var(--ink-soft)}
+/* .eyebrow 本体は style.css の共通コンポーネント。色と余白だけ上書きする
+   （共通の --text-tertiary は 11px の小さな文字で 3.66:1 と AA を割るため） */
+.eyebrow{color:var(--ink-faint);margin-bottom:18px}
+
+section{border-bottom:1px solid var(--line-soft);scroll-margin-top:var(--nav-clearance)}
+/* 縦の余白も共通ルールに勝つ必要がある（先頭セクションも2つ目以降も同じ 56px） */
+body.is-article .main > section:not(.rail),
+body.is-article .main > section:not(.rail) ~ section:not(.rail){padding-top:56px;padding-bottom:12px}
+.sec-head{display:flex;align-items:baseline;gap:14px;margin-bottom:10px}
+.sec-head .idx{font-size:.72rem;font-weight:500;letter-spacing:.2em;color:var(--ink-faint);padding-top:4px;flex:0 0 auto;font-variant-numeric:tabular-nums}
+.sec-head .idx::after{content:' —'}
+body.is-article main h2{font-weight:400;font-size:clamp(21px,2.6vw,28px);line-height:1.3;letter-spacing:-.01em;margin:0}
+body.is-article main h3{font-weight:400;font-size:17px;margin:30px 0 6px;color:var(--ink)}
+body.is-article main h4{font-weight:500;font-size:14.5px;margin:18px 0 4px;color:var(--ink)}
+body.is-article main p{margin:10px 0;color:var(--ink-soft)}
+body.is-article main ul,body.is-article main ol{margin:10px 0;padding-left:1.3em;color:var(--ink-soft)}
+li{margin:4px 0}
+strong{font-weight:500;color:var(--ink)}
+code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);border-radius:6px;padding:1px 6px;color:var(--accent-deep)}
+mjx-container{color:var(--ink)}
+mjx-container[display="true"]{margin:14px 0!important;overflow-x:auto;overflow-y:hidden;padding:2px 0}
+
+/* 別行立て数式だけ、入れ子のパディングの外へ広げる（§46）。
+   解答や色付きボックスの中の数式は、section → .drill(20) → .attempt(22) →
+   .sol(20) と積み上がるパディングで、本文列より最大 132px 狭い箱に入っていた。
+   1024px では 82本中 6本がはみ出し、最大 +127px。**文章の字下げはそのまま**に、
+   数式だけを外へ出す。
+   値は「祖先のパディングの合計 − 8px」。8px 残すのは枠線に重ねないため。
+   全量（合計そのまま）だと .sol 左端の青いアクセントバーの上に分数が乗る。
+   はみ出しが無い幅では見た目が変わらない（箱が左右対称に広がるだけで中身は
+   中央揃えのまま。1440px で適用前後のピクセル差 0 を確認済み）。
+   !important は既存の margin:14px 0!important を上書きするため。
+   新しい入れ子を足すときは、この表に1行足すこと（現在 .hint の中に別行立ては無い）。
+     .box 20 / .drill 20 / .attempt 22 / .sol 20 */
+.box mjx-container[display="true"],
+.drill > mjx-container[display="true"]{margin:14px -12px!important}
+.attempt mjx-container[display="true"]{margin:14px -14px!important}
+.drill .attempt mjx-container[display="true"],
+.attempt .sol mjx-container[display="true"]{margin:14px -34px!important}
+.drill .attempt .sol mjx-container[display="true"]{margin:14px -54px!important}
+
+.box{border-radius:var(--radius-md);padding:16px 20px;margin:18px 0;border:1px solid var(--line);background:var(--surface)}
+.box .lab{font-size:.7rem;letter-spacing:.14em;font-weight:500;display:block;margin-bottom:6px}
+.box p{max-width:none}
+.box p:first-of-type{margin-top:2px}.box p:last-child{margin-bottom:0}
+/* 枠線は必ずトークン経由にすること。ここに直書きすると lesson-theme.css の
+   ライト上書きが効かず、暗い背景用の明るい色がライトでパステルになる（§41）。 */
+.box.principle{background:var(--key-tint);border-color:var(--key-line)}.box.principle .lab{color:var(--key)}
+.box.target{background:var(--good-tint);border-color:var(--good-line)}.box.target .lab{color:var(--good)}
+.box.warn{background:var(--amber-tint);border-color:var(--amber-line)}.box.warn .lab{color:var(--amber)}
+.box.teach{background:var(--teach-tint);border-color:var(--teach-line)}.box.teach .lab{color:var(--teach)}
+.box.teach .lab::before{content:"◎ "}
+
+.table-scroll{overflow-x:auto;margin:14px 0}
+.mini-table{width:100%;border-collapse:collapse;font-size:14px;margin:0;color:var(--ink-soft)}
+.mini-table th,.mini-table td{border:1px solid var(--line);padding:9px 11px;text-align:left;vertical-align:top}
+.mini-table th{background:var(--surface-2);font-weight:500;color:var(--ink)}
+
+.fig{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-lg);padding:18px 18px 12px;margin:20px 0}
+.fig > svg{width:100%;height:auto;display:block}
+.fig svg text{font-family:var(--font-body)}
+.fig figcaption{font-size:13px;color:var(--ink-soft);margin-top:10px;line-height:1.8;max-width:none}
+
+/* --- 演習まわり。`.ctl-btn` は style.css の `.btn`（サイト CTA。
+   `.btn::before` のホバーグローを持つ）と衝突しないよう改名したもの（§36）。 --- */
+.attempt{background:var(--surface);border:1px solid var(--amber-line);border-radius:var(--radius-lg);padding:18px 22px;margin:20px 0}
+.attempt .lab{font-size:.7rem;letter-spacing:.14em;color:var(--amber);font-weight:500;display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.attempt .lab::before{content:"✎"}
+.attempt p{max-width:none}
+.controls{display:flex;flex-wrap:wrap;gap:10px;margin:14px 0 4px}
+.ctl-btn{font-family:var(--font-body);font-size:12.5px;font-weight:500;border:1px solid var(--line);background:transparent;color:var(--ink-soft);padding:7px 16px;border-radius:var(--radius-pill);cursor:pointer;transition:color var(--dur) var(--ease),border-color var(--dur) var(--ease),background var(--dur) var(--ease)}
+.ctl-btn:hover{color:var(--ink);border-color:var(--line-strong);background:var(--surface-2)}
+.ctl-btn.amber{color:var(--amber);border-color:var(--amber-line)}
+.ctl-btn.amber:hover{background:var(--amber-tint)}
+.ctl-btn:disabled{opacity:.4;cursor:default;background:transparent}
+.hint{display:none;border-left:2px solid var(--amber);background:var(--amber-tint);border-radius:0 var(--radius-sm) var(--radius-sm) 0;padding:12px 16px;margin:10px 0}
+.hint .hn{font-size:.68rem;letter-spacing:.14em;color:var(--amber);font-weight:500;display:block;margin-bottom:3px}
+.hint p{max-width:none}.hint p:last-child{margin-bottom:0}.hint p:first-child{margin-top:0}
+.sol{display:none;border:1px solid var(--line);border-left:2px solid var(--accent);border-radius:0 var(--radius-md) var(--radius-md) 0;background:var(--surface-2);padding:8px 20px 16px;margin:12px 0}
+.sol p{max-width:none}
+.step{margin:18px 0}
+.step .sh{display:flex;gap:10px;align-items:baseline;font-weight:500;color:var(--ink);margin-bottom:2px}
+.step .sn{font-size:11px;font-weight:500;color:#06142e;background:var(--accent);border-radius:999px;padding:1px 10px;flex:0 0 auto}
+.step .why{font-size:13.5px;color:var(--ink-faint);border-left:1px solid var(--line);padding-left:12px;margin:5px 0 5px 2px;max-width:none}
+.transfer{background:var(--surface-2);border:1px solid var(--line);border-radius:var(--radius-md);padding:14px 18px;margin:18px 0}
+.transfer .lab{font-size:.7rem;letter-spacing:.14em;color:var(--accent);font-weight:500;display:block;margin-bottom:5px}
+.transfer p{max-width:none}
+.drill{background:var(--surface);border:1px solid var(--line);border-left:2px solid var(--accent);border-radius:0 var(--radius-md) var(--radius-md) 0;padding:14px 20px;margin:16px 0}
+.drill .qn{font-size:11px;font-weight:500;color:#06142e;background:var(--accent);border-radius:999px;padding:2px 11px;margin-right:8px}
+.drill p{max-width:none}
+.drill p:first-child{margin-top:2px}
+.drill .attempt{background:transparent;border-style:dashed}
+.foot{padding:34px 0 0;color:var(--ink-faint);font-size:12.5px}
+.foot p{color:var(--ink-faint);max-width:none}
+
+/* モバイル：レールを引き出しに。`.menu-btn` は位置だけを持ち、見た目は
+   共通コンポーネントの `.btn` を併用する。 */
+.menu-btn{display:none}
+.scrim{display:none}
+@media (max-width:900px){
+  .rail{position:fixed;left:0;top:0;height:100vh;z-index:1100;transform:translateX(-100%);transition:transform .25s var(--ease);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);padding-top:28px}
+  body.nav-open .rail{transform:translateX(0)}
+  .main{padding:0 20px 90px}
+  .menu-btn{display:inline-flex;position:fixed;bottom:18px;right:18px;z-index:1050;background:var(--nav-bg);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);color:var(--ink)}
+  .scrim{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:1090}
+  body.nav-open .scrim{display:block}
+  .lesson-hero{padding-top:40px}
+  /* 案A（§46.1）の負マージンをここで切る。マージンは固定 px なので、箱そのものが
+     狭いこの帯では数式が .sol の枠を大きく飛び出し、点線の .attempt 枠まで越えて
+     見える。390px では 28本が枠を横切っていた。はみ出し本数は 36→42 に増えるが、
+     どれも数式ごとの横スクロールで読める。§46.4 */
+  .box mjx-container[display="true"],
+  .drill > mjx-container[display="true"],
+  .attempt mjx-container[display="true"],
+  .drill .attempt mjx-container[display="true"],
+  .attempt .sol mjx-container[display="true"],
+  .drill .attempt .sol mjx-container[display="true"]{margin:14px 0!important}
+}
+@media print{
+  body{background:#fff;color:#000}
+  header,.rail,.menu-btn,.scrim,#starfield,footer{display:none!important}
+  .wrap{display:block;padding-top:0}
+  .hint,.sol{display:block!important}
+}
+</style>
+<link rel="stylesheet" href="../css/lesson-theme.css?v=r58">
+</head>
+<body data-page="study" class="is-article" data-node="phys-math_2-1">
+<canvas id="starfield" aria-hidden="true"></canvas>
+<div id="site-nav"><noscript><nav class="noscript-nav" aria-label="メインナビゲーション"><a href="index.html">ホーム</a><a href="self-intro.html">自己紹介</a><a href="study.html">勉強の軌跡</a><a href="videos.html">動画</a><a href="blog.html">ブログ</a><a href="sns.html">各種SNS</a></nav></noscript></div>
+<button class="menu-btn btn" id="menuBtn" aria-controls="rail" aria-expanded="false">目次 <span class="btn-disc" aria-hidden="true">≡</span></button>
+<div class="scrim" id="scrim"></div>
+<div class="wrap">
+  <nav class="rail" id="rail">
+    <!-- 科目へ戻る導線（レール上部の「← 一つ上」）は layout.js が CRUMBS から書き出す。 -->
+    <div class="brand">2-1　積分の基礎<small>SECTION 2-1 / INTEGRALS</small></div>
+    <div class="progress-wrap"><div class="progress-bar" id="pbar"></div></div>
+    <ul class="toc" id="toc">
+      <li class="part">導入</li>
+      <li><a href="#m0"><span class="n">01</span>変化から、元の量へ</a></li>
+      <li class="part">積分とは何か</li>
+      <li><a href="#d1"><span class="n">02</span>細かく切って足す</a></li>
+      <li><a href="#d2"><span class="n">03</span>微積分学の基本定理</a></li>
+      <li class="part">計算する</li>
+      <li><a href="#d3"><span class="n">04</span>不定積分と公式表</a></li>
+      <li class="part">仕上げ</li>
+      <li><a href="#howto"><span class="n">05</span>チェックリストと次回予告</a></li>
+    </ul>
+  </nav>
+
+  <main class="main">
+    <!-- <header> ではなく <div>。style.css は裸の `header` を浮遊ナビとして
+         position:fixed / flex / border-radius:999px で組んでおり、記事の導入部が
+         <header> だと丸ごとそれを浴びてしまう（DESIGN.md §36） -->
+    <div class="lesson-hero">
+      <div class="eyebrow">物理数学 I ／ 2章 積分 ／ SECTION 2-1</div>
+      <h1>2-1　積分の基礎<span class="sub">変化のしかたから、元の量を取り戻す</span></h1>
+      <p class="lead">1章の微分では、位置から速度を取り出すように、<strong>元の量から変化率を求める操作</strong>を習得しました。この記事ではその逆の操作を学びます。変化のしかただけが分かっているとき、元の量はどうなっているのか。速度計の表示だけを見て、走った距離を知りたい——そういう問題です。</p>
+      <p>そして、この「復元」の問題は、意外なところにつながります。<strong>グラフの下の面積を求めること</strong>と、まったく同じ問題になるのです。さらにその面積が、<strong>微分を逆にたどるだけで求まってしまう</strong>。この2つの発見が、この記事の中身です。</p>
+      <p>読み方：解答は必ず閉じたまま、紙で挑戦してください。</p>
+    </div>
+
+    <!-- §01 -->
+    <section id="m0">
+      <div class="sec-head"><span class="idx">§01</span><h2>変化から、元の量へ</h2></div>
+
+      <p>車を運転していて、速度計だけが見えているとします。窓の外は見えず、距離計も壊れている。それでも「いままでに何 km 走ったか」を知ることはできるでしょうか。</p>
+      <p>速度が一定なら簡単です。時速 40 km で 2 時間走ったなら 80 km。掛け算するだけです。</p>
+      <p>では、速度が刻々と変わるときは。掛け算はもう使えません。これは1章で「平均の速さでは粗すぎる」と言って微分にたどり着いたのと、ちょうど裏返しの問題です。あのときは細かい情報が欲しくて区間を縮めました。今度は細かい情報を<strong>積み上げて</strong>全体を知りたい。</p>
+      <p>手がかりは、速度が一定の場合をグラフで眺めることです。</p>
+
+      <figure class="fig">
+        <svg viewBox="0 0 640 250" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="速度が一定の場合と変化する場合の、走った距離">
+          <text x="70" y="26" font-size="12.5" font-weight="500" fill="var(--ink)">速度が一定なら</text>
+          <line x1="70" y1="205" x2="290" y2="205" stroke="var(--ink-faint)" stroke-width="1.3"/>
+          <line x1="70" y1="225" x2="70" y2="55" stroke="var(--ink-faint)" stroke-width="1.3"/>
+          <text x="296" y="209" font-size="12" fill="var(--ink)" font-style="italic">t</text>
+          <text x="56" y="60" font-size="12" fill="var(--ink)" font-style="italic">v</text>
+          <rect x="70" y="130" width="186" height="75" fill="var(--accent-tint)" stroke="var(--accent)" stroke-width="2"/>
+          <line x1="64" y1="130" x2="70" y2="130" stroke="var(--ink-faint)" stroke-width="1"/>
+          <text x="60" y="134" font-size="11" fill="var(--ink-faint)" text-anchor="end">v</text>
+          <line x1="256" y1="205" x2="256" y2="211" stroke="var(--ink-faint)" stroke-width="1"/>
+          <text x="256" y="225" font-size="11" fill="var(--ink-faint)" text-anchor="middle">t</text>
+          <text x="163" y="172" font-size="13" font-weight="500" fill="var(--accent-deep)" text-anchor="middle">距離 = v × t</text>
+          <text x="163" y="192" font-size="11.5" fill="var(--ink-soft)" text-anchor="middle">＝ 長方形の面積</text>
+
+          <text x="380" y="26" font-size="12.5" font-weight="500" fill="var(--key)">速度が変わるなら</text>
+          <line x1="380" y1="205" x2="600" y2="205" stroke="var(--ink-faint)" stroke-width="1.3"/>
+          <line x1="380" y1="225" x2="380" y2="55" stroke="var(--ink-faint)" stroke-width="1.3"/>
+          <text x="606" y="209" font-size="12" fill="var(--ink)" font-style="italic">t</text>
+          <text x="366" y="60" font-size="12" fill="var(--ink)" font-style="italic">v</text>
+          <polygon points="380.0,205.0 380.0,173.4 382.5,167.0 385.0,161.0 387.4,155.4 389.9,150.1 392.4,145.3 394.9,140.8 397.4,136.7 399.8,132.9 402.3,129.4 404.8,126.3 407.3,123.4 409.8,120.9 412.2,118.7 414.7,116.7 417.2,115.0 419.7,113.6 422.2,112.4 424.6,111.4 427.1,110.7 429.6,110.2 432.1,109.9 434.6,109.8 437.0,109.9 439.5,110.2 442.0,110.6 444.5,111.2 447.0,112.0 449.4,112.8 451.9,113.8 454.4,114.9 456.9,116.1 459.4,117.4 461.8,118.8 464.3,120.3 466.8,121.8 469.3,123.4 471.8,125.0 474.2,126.7 476.7,128.3 479.2,130.0 481.7,131.7 484.2,133.3 486.6,135.0 489.1,136.6 491.6,138.2 494.1,139.7 496.6,141.2 499.0,142.6 501.5,143.9 504.0,145.1 506.5,146.2 509.0,147.2 511.4,148.0 513.9,148.8 516.4,149.4 518.9,149.8 521.4,150.1 523.8,150.2 526.3,150.1 528.8,149.8 531.3,149.3 533.8,148.6 536.2,147.6 538.7,146.4 541.2,145.0 543.7,143.3 546.2,141.3 548.6,139.1 551.1,136.6 553.6,133.7 556.1,130.6 558.6,127.1 561.0,123.3 563.5,119.2 566.0,114.7 568.5,109.9 571.0,104.6 573.4,99.0 575.9,93.0 578.4,86.6 578.4,205.0" fill="var(--key-tint)" stroke="none"/>
+          <polyline points="380.0,173.4 382.5,167.0 385.0,161.0 387.4,155.4 389.9,150.1 392.4,145.3 394.9,140.8 397.4,136.7 399.8,132.9 402.3,129.4 404.8,126.3 407.3,123.4 409.8,120.9 412.2,118.7 414.7,116.7 417.2,115.0 419.7,113.6 422.2,112.4 424.6,111.4 427.1,110.7 429.6,110.2 432.1,109.9 434.6,109.8 437.0,109.9 439.5,110.2 442.0,110.6 444.5,111.2 447.0,112.0 449.4,112.8 451.9,113.8 454.4,114.9 456.9,116.1 459.4,117.4 461.8,118.8 464.3,120.3 466.8,121.8 469.3,123.4 471.8,125.0 474.2,126.7 476.7,128.3 479.2,130.0 481.7,131.7 484.2,133.3 486.6,135.0 489.1,136.6 491.6,138.2 494.1,139.7 496.6,141.2 499.0,142.6 501.5,143.9 504.0,145.1 506.5,146.2 509.0,147.2 511.4,148.0 513.9,148.8 516.4,149.4 518.9,149.8 521.4,150.1 523.8,150.2 526.3,150.1 528.8,149.8 531.3,149.3 533.8,148.6 536.2,147.6 538.7,146.4 541.2,145.0 543.7,143.3 546.2,141.3 548.6,139.1 551.1,136.6 553.6,133.7 556.1,130.6 558.6,127.1 561.0,123.3 563.5,119.2 566.0,114.7 568.5,109.9 571.0,104.6 573.4,99.0 575.9,93.0 578.4,86.6" fill="none" stroke="var(--key)" stroke-width="2.6"/>
+          <text x="480" y="184" font-size="13" font-weight="500" fill="var(--key)" text-anchor="middle">距離 = 曲線の下の面積</text>
+          <text x="480" y="200" font-size="11.5" fill="var(--ink-soft)" text-anchor="middle">＝ どう計算する？</text>
+        </svg>
+        <figcaption>横軸に時刻、縦軸に速度をとると、「速度 × 時間」は<strong>長方形の面積</strong>になります。速度が変わると長方形ではなくなりますが、<strong>グラフの下の面積が走った距離である</strong>という関係は変わりません。こうして問題は「曲がった線の下の面積をどう求めるか」に移ります。</figcaption>
+      </figure>
+
+      <p>グラフの下の面積が距離を表す、という関係は速度が変わっても変わりません。こうして問題は<strong>「曲がった線の下の面積をどう求めるか」</strong>に移ります。</p>
+
+      <div class="box principle"><span class="lab">この記事の出発点</span>
+      <p>1章で作ったのは、元の量から変化率を取り出す操作（微分）でした。ここで作るのは、その逆——<strong>変化率から元の量を復元する操作</strong>です。そして上で見たとおり、それは<strong>グラフの下の面積を求めること</strong>と同じ問題になります。</p>
+      <p style="margin-top:8px">「変化から元の量へ」と「曲線の下の面積」。この一見無関係な2つが同じものだと分かることが、この記事の山場です。</p></div>
+
+      <div class="box teach"><span class="lab">この記事の到達目標</span>
+      <ul style="margin:6px 0 0">
+        <li>定積分を「細かく切って足して、極限をとる」という<strong>定義</strong>で説明できる</li>
+        <li>区分求積で \(\displaystyle\int_0^1 x\,dx\) と \(\displaystyle\int_0^1 x^2\,dx\) を自力で計算できる</li>
+        <li>微積分学の基本定理がなぜ成り立つかを、<strong>面積関数の増分</strong>から説明できる</li>
+        <li>1章で作った微分の公式表を、そのまま積分の公式表として読み直せる</li>
+        <li>積分定数 \(C\) がなぜ現れるのか、その意味を説明できる</li>
+      </ul></div>
+
+      <div class="box principle"><span class="lab">前提として使うもの</span>
+      <ul style="margin:6px 0 0">
+        <li><strong>1章 微分</strong>：導関数の定義と、基本関数の微分公式</li>
+        <li><strong>\(\Sigma\) 記号</strong>：§02 の冒頭で復習します</li>
+        <li><strong>極限の素朴な扱い</strong>：「値がある数に近づいていく」という感覚</li>
+      </ul></div>
+    </section>
+
+    <!-- §02 -->
+    <section id="d1">
+      <div class="sec-head"><span class="idx">§02</span><h2>細かく切って足す — 定積分の定義</h2></div>
+
+      <p>曲線の下の面積を、いきなり求める方法はありません。そこで1章と同じ手を使います。<strong>いったん粗く近似してから、細かくしていく。</strong></p>
+
+      <div class="box teach"><span class="lab">準備：\(\Sigma\)（シグマ）記号</span>
+      <p>たくさんの項の和を短く書くための記号です。</p>
+      \[ \sum_{k=1}^{n}a_k \;=\; a_1+a_2+a_3+\cdots+a_n \]
+      <p>\(k\) は 1 から \(n\) まで順に動く番号です。たとえば</p>
+      \[ \sum_{k=1}^{4}k = 1+2+3+4 = 10 \]
+      <p>計算し終えた答え（ここでは 10）には \(k\) が含まれていません。\(k\) は足し算を書き表すために途中で使う番号にすぎないので、\(i\) や \(j\) に取り替えても同じ意味になります。</p>
+      <p style="margin-top:8px">この記事で使う公式は次の2つだけです。どちらも高校で習うものです。</p>
+      \[ \sum_{k=1}^{n}k=\frac{n(n+1)}{2},\qquad \sum_{k=1}^{n}k^2=\frac{n(n+1)(2n+1)}{6} \]</div>
+
+      <h3>長方形で埋める</h3>
+      <p>区間 \([a,b]\) の上にある曲線 \(y=f(x)\) の、下の面積を求めたいとします。手順はこうです。</p>
+      <ol>
+        <li>区間を \(n\) 等分する。1つあたりの幅は \(\Delta x=\dfrac{b-a}{n}\)</li>
+        <li>分点を \(x_k=a+k\,\Delta x\)（\(k=1,2,\ldots,n\)）とする</li>
+        <li>小区間の中では \(f\) は<strong>ほぼ一定</strong>とみなし、高さ \(f(x_k)\)、幅 \(\Delta x\) の長方形で置き換える</li>
+        <li>その面積 \(f(x_k)\,\Delta x\) を全部足す</li>
+      </ol>
+      \[ S_n=\sum_{k=1}^{n}f(x_k)\,\Delta x \]
+      <p>これは本当の面積ではありません。長方形が曲線からはみ出したり足りなかったりするからです。しかし \(n\) を大きくすれば、そのズレは小さくなっていきます。</p>
+
+      <figure class="fig">
+        <svg viewBox="0 0 640 250" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="長方形の分割を細かくすると曲線の下の面積に近づく">
+          <text x="70" y="26" font-size="12.5" font-weight="500" fill="var(--ink)">n = 4 に分ける</text>
+          <line x1="70" y1="205" x2="290" y2="205" stroke="var(--ink-faint)" stroke-width="1.3"/>
+          <line x1="70" y1="225" x2="70" y2="55" stroke="var(--ink-faint)" stroke-width="1.3"/>
+
+          <rect x="70.0" y="110.2" width="49.6" height="94.8" fill="var(--accent-tint)" stroke="var(--accent)" stroke-width="1.2"/><rect x="119.6" y="130.0" width="49.6" height="75.0" fill="var(--accent-tint)" stroke="var(--accent)" stroke-width="1.2"/><rect x="169.2" y="149.8" width="49.6" height="55.2" fill="var(--accent-tint)" stroke="var(--accent)" stroke-width="1.2"/><rect x="218.8" y="86.6" width="49.6" height="118.4" fill="var(--accent-tint)" stroke="var(--accent)" stroke-width="1.2"/><polyline points="70.0,173.4 72.5,167.0 75.0,161.0 77.4,155.4 79.9,150.1 82.4,145.3 84.9,140.8 87.4,136.7 89.8,132.9 92.3,129.4 94.8,126.3 97.3,123.4 99.8,120.9 102.2,118.7 104.7,116.7 107.2,115.0 109.7,113.6 112.2,112.4 114.6,111.4 117.1,110.7 119.6,110.2 122.1,109.9 124.6,109.8 127.0,109.9 129.5,110.2 132.0,110.6 134.5,111.2 137.0,112.0 139.4,112.8 141.9,113.8 144.4,114.9 146.9,116.1 149.4,117.4 151.8,118.8 154.3,120.3 156.8,121.8 159.3,123.4 161.8,125.0 164.2,126.7 166.7,128.3 169.2,130.0 171.7,131.7 174.2,133.3 176.6,135.0 179.1,136.6 181.6,138.2 184.1,139.7 186.6,141.2 189.0,142.6 191.5,143.9 194.0,145.1 196.5,146.2 199.0,147.2 201.4,148.0 203.9,148.8 206.4,149.4 208.9,149.8 211.4,150.1 213.8,150.2 216.3,150.1 218.8,149.8 221.3,149.3 223.8,148.6 226.2,147.6 228.7,146.4 231.2,145.0 233.7,143.3 236.2,141.3 238.6,139.1 241.1,136.6 243.6,133.7 246.1,130.6 248.6,127.1 251.0,123.3 253.5,119.2 256.0,114.7 258.5,109.9 261.0,104.6 263.4,99.0 265.9,93.0 268.4,86.6" fill="none" stroke="var(--key)" stroke-width="2.4"/>
+          <text x="180" y="240" font-size="11.5" fill="var(--amber)" text-anchor="middle">はみ出しが大きい</text>
+
+          <text x="380" y="26" font-size="12.5" font-weight="500" fill="var(--good)">n = 16 に分ける</text>
+          <line x1="380" y1="205" x2="600" y2="205" stroke="var(--ink-faint)" stroke-width="1.3"/>
+          <line x1="380" y1="225" x2="380" y2="55" stroke="var(--ink-faint)" stroke-width="1.3"/>
+
+          <rect x="380.0" y="145.3" width="12.4" height="59.7" fill="var(--accent-tint)" stroke="var(--accent)" stroke-width="1.2"/><rect x="392.4" y="126.3" width="12.4" height="78.7" fill="var(--accent-tint)" stroke="var(--accent)" stroke-width="1.2"/><rect x="404.8" y="115.0" width="12.4" height="90.0" fill="var(--accent-tint)" stroke="var(--accent)" stroke-width="1.2"/><rect x="417.2" y="110.2" width="12.4" height="94.8" fill="var(--accent-tint)" stroke="var(--accent)" stroke-width="1.2"/><rect x="429.6" y="110.6" width="12.4" height="94.4" fill="var(--accent-tint)" stroke="var(--accent)" stroke-width="1.2"/><rect x="442.0" y="114.9" width="12.4" height="90.1" fill="var(--accent-tint)" stroke="var(--accent)" stroke-width="1.2"/><rect x="454.4" y="121.8" width="12.4" height="83.2" fill="var(--accent-tint)" stroke="var(--accent)" stroke-width="1.2"/><rect x="466.8" y="130.0" width="12.4" height="75.0" fill="var(--accent-tint)" stroke="var(--accent)" stroke-width="1.2"/><rect x="479.2" y="138.2" width="12.4" height="66.8" fill="var(--accent-tint)" stroke="var(--accent)" stroke-width="1.2"/><rect x="491.6" y="145.1" width="12.4" height="59.9" fill="var(--accent-tint)" stroke="var(--accent)" stroke-width="1.2"/><rect x="504.0" y="149.4" width="12.4" height="55.6" fill="var(--accent-tint)" stroke="var(--accent)" stroke-width="1.2"/><rect x="516.4" y="149.8" width="12.4" height="55.2" fill="var(--accent-tint)" stroke="var(--accent)" stroke-width="1.2"/><rect x="528.8" y="145.0" width="12.4" height="60.0" fill="var(--accent-tint)" stroke="var(--accent)" stroke-width="1.2"/><rect x="541.2" y="133.7" width="12.4" height="71.3" fill="var(--accent-tint)" stroke="var(--accent)" stroke-width="1.2"/><rect x="553.6" y="114.7" width="12.4" height="90.3" fill="var(--accent-tint)" stroke="var(--accent)" stroke-width="1.2"/><rect x="566.0" y="86.6" width="12.4" height="118.4" fill="var(--accent-tint)" stroke="var(--accent)" stroke-width="1.2"/><polyline points="380.0,173.4 382.5,167.0 385.0,161.0 387.4,155.4 389.9,150.1 392.4,145.3 394.9,140.8 397.4,136.7 399.8,132.9 402.3,129.4 404.8,126.3 407.3,123.4 409.8,120.9 412.2,118.7 414.7,116.7 417.2,115.0 419.7,113.6 422.2,112.4 424.6,111.4 427.1,110.7 429.6,110.2 432.1,109.9 434.6,109.8 437.0,109.9 439.5,110.2 442.0,110.6 444.5,111.2 447.0,112.0 449.4,112.8 451.9,113.8 454.4,114.9 456.9,116.1 459.4,117.4 461.8,118.8 464.3,120.3 466.8,121.8 469.3,123.4 471.8,125.0 474.2,126.7 476.7,128.3 479.2,130.0 481.7,131.7 484.2,133.3 486.6,135.0 489.1,136.6 491.6,138.2 494.1,139.7 496.6,141.2 499.0,142.6 501.5,143.9 504.0,145.1 506.5,146.2 509.0,147.2 511.4,148.0 513.9,148.8 516.4,149.4 518.9,149.8 521.4,150.1 523.8,150.2 526.3,150.1 528.8,149.8 531.3,149.3 533.8,148.6 536.2,147.6 538.7,146.4 541.2,145.0 543.7,143.3 546.2,141.3 548.6,139.1 551.1,136.6 553.6,133.7 556.1,130.6 558.6,127.1 561.0,123.3 563.5,119.2 566.0,114.7 568.5,109.9 571.0,104.6 573.4,99.0 575.9,93.0 578.4,86.6" fill="none" stroke="var(--key)" stroke-width="2.4"/>
+          <text x="490" y="240" font-size="11.5" fill="var(--good)" text-anchor="middle">ほとんど曲線と一致する</text>
+        </svg>
+        <figcaption>区間を \(n\) 等分し、それぞれの小区間で「速度は一定」とみなして長方形の面積を足します。\(n\) を大きくするほど、はみ出しや足りない部分は小さくなり、和は曲線の下の面積に近づいていきます。<strong>この「細かく切って足して、極限をとる」という操作が定積分です</strong>。1章で割線を接線に近づけたのと、発想はまったく同じです。</figcaption>
+      </figure>
+
+      <div class="box target"><span class="lab">定義：定積分</span>
+      \[ \int_a^b f(x)\,dx\;\equiv\;\lim_{n\to\infty}\sum_{k=1}^{n}f(x_k)\,\Delta x \]
+      <p>長方形の和 \(S_n\) が、分割を細かくしていったときに近づく値。これを \(a\) から \(b\) までの<strong>定積分</strong>と呼びます。この求め方を<strong>区分求積法</strong>といいます。</p></div>
+
+      <div class="box teach"><span class="lab">記号の読み方</span>
+      <p>定義の式は、右辺の記号を1つずつ置き換えただけの形をしています。</p>
+      <div class="table-scroll"><table class="mini-table">
+        <tr><th style="width:22%">和の記号</th><th style="width:22%">積分の記号</th><th>意味</th></tr>
+        <tr><td>\(\sum\)</td><td>\(\displaystyle\int\)</td><td>足し合わせる。\(\int\) はラテン語の Summa（和）の頭文字 S を縦に引き伸ばしたもので、ライプニッツの考案です</td></tr>
+        <tr><td>\(\Delta x\)</td><td>\(dx\)</td><td>刻み幅。\(\Delta x\) を限りなく小さくしたものが \(dx\)。「何で刻んで足しているか」を示します</td></tr>
+        <tr><td>\(k=1\) から \(n\)</td><td>\(a\) から \(b\)</td><td>足し合わせる範囲。\(a\) を下端、\(b\) を上端と呼びます</td></tr>
+      </table></div>
+      <p><strong>有限個の足し算が、連続的な足し上げに変わっただけ</strong>です。「インテグラル」という名前に身構える必要はありません。</p>
+      <p style="margin-top:8px">なお、積分変数にどの文字を使っても、結果は変わりません。定積分の値は、関数 \(f\) と区間の端 \(a,b\) だけで決まる<strong>ひとつの数</strong>です。\(x\) は「区間の中を動きながら足し合わせていく位置」を表すために計算の途中で使っているだけで、答えには現れません（たとえば §02 問1 の答え \(\int_0^1x\,dx=\frac12\) の右辺に \(x\) はありません）。だから \(x\) を \(t\) や \(u\) に取り替えても、同じ積分を表します。</p>
+      \[ \int_a^b f(x)\,dx=\int_a^b f(t)\,dt=\int_a^b f(u)\,du \]</div>
+
+      <div class="box warn"><span class="lab">面積といっても符号がつく</span>
+      <p>\(f(x)<0\) の区間では、長方形の「高さ」が負になるので \(f(x_k)\Delta x\) も負になります。つまり定積分は<strong>符号つきの面積</strong>で、\(x\) 軸より下の部分はマイナスに数えられます。</p>
+      <p style="margin-top:8px">これは不自然なルールではありません。速度が負（後退している）なら進んだ距離は減るべきで、符号つきで足すほうが正しいからです。</p></div>
+
+      <h3>計算ドリル（§02・全2問）</h3>
+
+      <div class="drill"><p><span class="qn">問1</span>定義に従って \(\displaystyle\int_0^1 x\,dx\) を求めよ。区間を \(n\) 等分し、\(n\to\infty\) とすること。得られた値を、グラフから読み取れる面積と照合せよ。</p>
+      <div class="attempt" style="margin:10px 0 4px"><span class="lab">自分の答えを出してから</span>
+      <div class="controls">
+        <button class="ctl-btn amber" data-hint>ヒントを表示</button>
+        <button class="ctl-btn" data-sol>解答を見る</button>
+      </div>
+      <div class="hint"><span class="hn">HINT 1</span><p>\(a=0,\ b=1\) なので \(\Delta x=\dfrac1n\)、\(x_k=\dfrac{k}{n}\)。これを \(f(x_k)\Delta x\) に入れて \(\Sigma\) を作ってください。</p></div>
+      <div class="hint"><span class="hn">HINT 2</span><p>\(n\) は \(k\) によらない定数なので、\(\Sigma\) の外に出せます。残るのは \(\sum k\) です。</p></div>
+      <div class="sol"><p>\(\Delta x=\dfrac1n\)、\(x_k=\dfrac kn\)、\(f(x)=x\) なので</p>
+      \[ S_n=\sum_{k=1}^{n}\frac{k}{n}\cdot\frac1n=\frac{1}{n^2}\sum_{k=1}^{n}k=\frac{1}{n^2}\cdot\frac{n(n+1)}{2}=\frac{n+1}{2n}=\frac12\left(1+\frac1n\right) \]
+      <p>\(n\to\infty\) で \(\dfrac1n\to0\) なので</p>
+      \[ \int_0^1 x\,dx=\frac12 \]
+      <p><strong>照合</strong>：\(y=x\) と \(x\) 軸、\(x=1\) が囲むのは、底辺 1・高さ 1 の直角三角形です。面積は \(\frac12\cdot1\cdot1=\frac12\) ✓。</p>
+      <p style="font-size:13.5px;color:var(--ink-faint)">答えが分かっている図形で定義を試すのは、定義そのものの検算になります。\(S_n=\frac12\left(1+\frac1n\right)\) という式は「長方形の和は常に真の面積より \(\frac{1}{2n}\) だけ大きい」と言っていて、右端で高さを取ったぶんはみ出している量にあたります。\(n\) を増やせばこのはみ出しが消える、という構造は、1章で見た「差分商＝答え＋\(h\) に比例する誤差」とそっくりです。</p></div></div></div>
+
+      <div class="drill"><p><span class="qn">問2</span>同じ手順で \(\displaystyle\int_0^1 x^2\,dx\) を求めよ。</p>
+      <div class="attempt" style="margin:10px 0 4px"><span class="lab">自分の答えを出してから</span>
+      <div class="controls">
+        <button class="ctl-btn amber" data-hint>ヒントを表示</button>
+        <button class="ctl-btn" data-sol>解答を見る</button>
+      </div>
+      <div class="hint"><span class="hn">HINT 1</span><p>今度は \(f(x_k)=\left(\dfrac kn\right)^2\)。\(\Sigma\) に残るのは \(\sum k^2\) で、公式は \(\dfrac{n(n+1)(2n+1)}{6}\) です。</p></div>
+      <div class="hint"><span class="hn">HINT 2</span><p>分母の \(n^3\) と分子を見比べて、\(n\to\infty\) で生き残る項を考えてください。分子は \(n\) の3次式です。</p></div>
+      <div class="sol">
+      \[ S_n=\sum_{k=1}^{n}\left(\frac kn\right)^2\cdot\frac1n=\frac{1}{n^3}\sum_{k=1}^{n}k^2=\frac{1}{n^3}\cdot\frac{n(n+1)(2n+1)}{6}=\frac{(n+1)(2n+1)}{6n^2} \]
+      <p>分子を展開すると \(2n^2+3n+1\) なので</p>
+      \[ S_n=\frac{2n^2+3n+1}{6n^2}=\frac13+\frac{1}{2n}+\frac{1}{6n^2}\ \xrightarrow[n\to\infty]{}\ \frac13 \]
+      \[ \int_0^1 x^2\,dx=\frac13 \]
+      <p style="font-size:13.5px;color:var(--ink-faint)">放物線の下の面積が \(\frac13\) という、グラフを見ただけでは絶対に出てこない値が、定義から計算できました。<strong>ただし、この計算の大変さにも注目してください。</strong>\(x^2\) ですら平方和の公式が必要で、\(x^3\) なら立方和、\(\sin x\) ならどうすればいいのか見当もつきません。定義としては正しくても、計算手段としては行き詰まります。§03 で、この行き詰まりを一気に抜ける道が見つかります。</p></div></div></div>
+    </section>
+
+    <!-- §03 -->
+    <section id="d2">
+      <div class="sec-head"><span class="idx">§03</span><h2>微積分学の基本定理 — 面積は微分の逆</h2></div>
+
+      <p>区分求積は、積分とは何かを決める<strong>定義</strong>としては明快です。しかし実際の<strong>計算手段</strong>として使おうとすると、すぐに行き詰まります。</p>
+      <p>§02 を振り返ると、\(f(x)=x\) には \(\sum k\) の公式が、\(f(x)=x^2\) には \(\sum k^2\) の公式が必要でした。\(x^3\) なら \(\sum k^3\) の公式が要りますし、\(\sin x\) なら \(\sum\sin\frac kn\) という和を計算しなければならず、これはもう覚えやすい公式では書けません。<strong>関数が変わるたびに、それ専用の和の公式を探し、そのうえで \(n\to\infty\) の極限をとる</strong>——これを積分のたびに繰り返すのは、とても現実的ではありません。</p>
+      <p>ところが、この足し算の極限には<strong>驚くほどの近道</strong>があります。</p>
+
+      <div class="box target"><span class="lab">微積分学の基本定理</span>
+      <p>微分すると \(f\) になる関数 \(F\)、すなわち \(F'(x)=f(x)\) を満たす \(F\) が1つ見つかれば</p>
+      \[ \int_a^b f(x)\,dx=F(b)-F(a) \]
+      <p>無限個の長方形を足す作業が、<strong>微分を逆にたどって、両端で値を引き算するだけ</strong>になります。</p></div>
+
+      <p>面積と微分は、出自がまったく違う概念です。かたや図形の量、かたや変化率。それが結びつくこと自体が驚きで、この定理が「基本定理」と呼ばれるゆえんです。なぜこんなことが起こるのか、順に見ていきます。</p>
+
+      <h3>上端を動かしてみる</h3>
+      <p>鍵は、<strong>面積を「固定した値」ではなく「関数」として見る</strong>ことです。下端 \(a\) は固定したまま、上端だけを動かせるようにして</p>
+      \[ S(x)=\int_a^x f(t)\,dt \]
+      <p>と書きます。「\(a\) から \(x\) までの面積」という意味で、\(x\) を決めるごとに1つの値が決まるので、これは \(x\) の関数です。上端に \(x\) を使ったので、積分変数のほうは \(t\) に変えてあります（名前を区別するためで、中身は同じです）。</p>
+      <p>この \(S(x)\) を、微分してみます。</p>
+
+      <figure class="fig">
+        <svg viewBox="0 0 640 280" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="面積関数S(x)とその増分">
+          <line x1="80" y1="225" x2="600" y2="225" stroke="var(--ink-faint)" stroke-width="1.3"/>
+          <polygon points="608,225 594,219 594,231" fill="var(--ink-faint)"/>
+          <line x1="110" y1="245" x2="110" y2="45" stroke="var(--ink-faint)" stroke-width="1.3"/>
+          <text x="604" y="245" font-size="12" fill="var(--ink)" font-style="italic">x</text>
+          <polygon points="131.0,225.0 131.0,182.6 134.2,181.9 137.3,181.2 140.4,180.5 143.6,179.8 146.8,179.1 149.9,178.4 153.1,177.7 156.2,177.0 159.4,176.4 162.5,175.7 165.7,175.0 168.8,174.4 172.0,173.7 175.1,173.1 178.3,172.5 181.4,171.8 184.6,171.2 187.7,170.6 190.9,170.0 194.0,169.4 197.2,168.8 200.3,168.2 203.5,167.6 206.6,167.0 209.8,166.4 212.9,165.9 216.1,165.3 219.2,164.8 222.4,164.2 225.5,163.7 228.7,163.1 231.8,162.6 235.0,162.1 238.1,161.6 241.3,161.0 244.4,160.5 247.6,160.0 250.7,159.5 253.9,159.0 257.0,158.6 260.2,158.1 263.3,157.6 266.5,157.2 269.6,156.7 272.8,156.2 275.9,155.8 279.1,155.4 282.2,154.9 285.4,154.5 288.5,154.1 291.7,153.7 294.8,153.3 298.0,152.8 301.1,152.5 304.3,152.1 307.4,151.7 310.6,151.3 313.7,150.9 316.9,150.6 320.0,150.2 323.2,149.8 326.3,149.5 329.5,149.2 332.6,148.8 335.8,148.5 338.9,148.2 342.0,147.9 345.2,147.5 348.3,147.2 351.5,146.9 354.6,146.6 357.8,146.4 360.9,146.1 362.0,225.0" fill="var(--accent-tint)" stroke="none"/>
+          <polygon points="362.0,225.0 362.0,146.0 365.1,145.7 368.3,145.4 371.4,145.2 374.6,144.9 377.7,144.7 380.9,144.4 384.0,144.2 387.2,144.0 390.3,143.8 393.5,143.5 396.6,143.3 399.8,143.1 402.9,142.9 406.1,142.7 409.2,142.5 412.4,142.4 415.5,142.2 418.7,142.0 419.8,225.0" fill="var(--amber-tint)" stroke="var(--amber)" stroke-width="1.4"/>
+          <polyline points="110.0,187.6 113.2,186.8 116.3,186.1 119.5,185.3 122.6,184.6 125.8,183.9 128.9,183.1 132.1,182.4 135.2,181.7 138.3,181.0 141.5,180.3 144.7,179.6 147.8,178.9 151.0,178.2 154.1,177.5 157.3,176.8 160.4,176.1 163.6,175.5 166.7,174.8 169.9,174.2 173.0,173.5 176.2,172.9 179.3,172.3 182.5,171.6 185.6,171.0 188.8,170.4 191.9,169.8 195.1,169.2 198.2,168.6 201.4,168.0 204.5,167.4 207.7,166.8 210.8,166.3 214.0,165.7 217.1,165.1 220.3,164.6 223.4,164.0 226.6,163.5 229.7,162.9 232.9,162.4 236.0,161.9 239.2,161.4 242.3,160.9 245.5,160.4 248.6,159.9 251.8,159.4 254.9,158.9 258.1,158.4 261.2,157.9 264.4,157.5 267.5,157.0 270.7,156.5 273.8,156.1 277.0,155.7 280.1,155.2 283.3,154.8 286.4,154.4 289.6,153.9 292.7,153.5 295.9,153.1 299.0,152.7 302.2,152.3 305.3,151.9 308.5,151.6 311.6,151.2 314.8,150.8 317.9,150.4 321.1,150.1 324.2,149.7 327.4,149.4 330.5,149.0 333.7,148.7 336.8,148.4 340.0,148.1 343.1,147.7 346.2,147.4 349.4,147.1 352.5,146.8 355.7,146.5 358.8,146.3 362.0,146.0 365.1,145.7 368.3,145.4 371.4,145.2 374.6,144.9 377.7,144.7 380.9,144.4 384.0,144.2 387.2,144.0 390.3,143.8 393.5,143.5 396.6,143.3 399.8,143.1 402.9,142.9 406.1,142.7 409.2,142.5 412.4,142.4 415.5,142.2 418.7,142.0 421.8,141.9 425.0,141.7 428.1,141.6 431.3,141.4 434.4,141.3 437.6,141.1 440.7,141.0 443.9,140.9 447.0,140.8 450.2,140.7 453.3,140.6 456.5,140.5 459.6,140.4 462.8,140.3 465.9,140.2 469.1,140.2 472.2,140.1 475.4,140.0 478.5,140.0 481.7,139.9 484.8,139.9 488.0,139.9 491.1,139.8 494.3,139.8 497.4,139.8 500.6,139.8 503.7,139.8 506.9,139.8 510.0,139.8 513.2,139.8 516.3,139.8 519.5,139.9 522.6,139.9 525.8,139.9 528.9,140.0 532.1,140.0 535.2,140.1 538.4,140.2 541.5,140.2 544.7,140.3 547.8,140.4 551.0,140.5" fill="none" stroke="var(--key)" stroke-width="2.6"/>
+          <text x="556" y="132.3" font-size="12.5" font-weight="500" fill="var(--key)">y = f(x)</text>
+          <line x1="131.0" y1="225" x2="131.0" y2="182.6" stroke="var(--ink-faint)" stroke-width="1.1" stroke-dasharray="4 4"/>
+          <line x1="362.0" y1="225" x2="362.0" y2="146.0" stroke="var(--ink-faint)" stroke-width="1.1" stroke-dasharray="4 4"/>
+          <line x1="419.8" y1="225" x2="419.8" y2="142.0" stroke="var(--ink-faint)" stroke-width="1.1" stroke-dasharray="4 4"/>
+          <text x="131.0" y="243" font-size="12" fill="var(--ink-soft)" text-anchor="middle">a</text>
+          <text x="362.0" y="243" font-size="12" fill="var(--ink-soft)" text-anchor="middle">x</text>
+          <text x="427.8" y="243" font-size="12" fill="var(--amber)" text-anchor="middle">x+h</text>
+          <text x="246.5" y="200" font-size="13.5" font-weight="500" fill="var(--accent-deep)" text-anchor="middle">S(x)</text>
+          <text x="246.5" y="178" font-size="11.5" fill="var(--ink-soft)" text-anchor="middle">a から x までの面積</text>
+          <line x1="390.9" y1="146.0" x2="480" y2="92" stroke="var(--line-strong)" stroke-width="1"/>
+          <text x="486" y="82" font-size="12.5" font-weight="500" fill="var(--amber)">増えた分 S(x+h) − S(x)</text>
+          <text x="486" y="102" font-size="12" fill="var(--ink-soft)">≃ 高さ f(x) × 幅 h</text>
+          <text x="486" y="122" font-size="12" fill="var(--ink-soft)">の細い短冊</text>
+        </svg>
+        <figcaption>上端 \(x\) だけを動かせるようにして、「\(a\) から \(x\) までの面積」を \(S(x)\) と書きます。\(x\) を \(h\) だけ増やすと、面積は<strong>幅 \(h\) の細い短冊のぶんだけ増えます</strong>。\(h\) が小さければその区間で \(f\) はほぼ一定なので、短冊はほぼ長方形で、面積は \(f(x)\,h\)。つまり \(S(x+h)-S(x)\simeq f(x)h\) となり、両辺を \(h\) で割って \(h\to0\) とすれば \(S'(x)=f(x)\)。<strong>面積を表す関数は、微分すると元の関数に戻る</strong>——これが基本定理の正体です。</figcaption>
+      </figure>
+
+      <div class="box principle"><span class="lab">導出</span>
+      <p>\(x\) を \(h\) だけ増やすと、増えた面積 \(S(x+h)-S(x)\) は<strong>幅 \(h\) の細い短冊</strong>です。\(h\) が小さければ、その区間で \(f\) はほとんど変わらないので、短冊はほぼ長方形とみなせて</p>
+      \[ S(x+h)-S(x)\simeq f(x)\,h \]
+      <p>両辺を \(h\) で割ると</p>
+      \[ \frac{S(x+h)-S(x)}{h}\simeq f(x) \]
+      <p>左辺は、まさに1章で定義した差分商です。\(h\to0\) とすれば近似は正確になり</p>
+      \[ \boxed{\;S'(x)=f(x)\;} \]
+      <p><strong>面積を表す関数は、微分すると元の関数に戻る。</strong>これが基本定理の中身です。</p></div>
+
+      <p>あとは仕上げです。いま \(F'=f\) となる関数 \(F\) が別に手元にあるとします。\(S'=f\) でもあるので</p>
+      \[ (S-F)'=S'-F'=f-f=0 \]
+      <p>微分して 0 になる関数は定数だけなので、ある定数 \(C\) を使って \(S(x)=F(x)+C\) と書けます。ここで両端を入れてみます。</p>
+      <ul>
+        <li>\(x=a\) のとき：\(S(a)\) は「\(a\) から \(a\) まで」の面積、つまり幅ゼロなので \(S(a)=0\)。よって \(0=F(a)+C\)、すなわち \(C=-F(a)\)</li>
+        <li>\(x=b\) のとき：\(S(b)=F(b)+C=F(b)-F(a)\)</li>
+      </ul>
+      <p>\(S(b)\) は \(a\) から \(b\) までの面積そのものなので</p>
+      \[ \int_a^b f(x)\,dx=F(b)-F(a) \]
+      <p>が示されました。</p>
+
+      <div class="box teach"><span class="lab">記法</span>
+      <p>\(F(b)-F(a)\) は、計算の途中で何度も書くことになるので略記があります。</p>
+      \[ \Big[F(x)\Big]_a^b\;\equiv\;F(b)-F(a) \]
+      <p>たとえば \(\displaystyle\int_0^1 x^2dx=\left[\frac{x^3}{3}\right]_0^1=\frac13-0=\frac13\) のように使います。</p></div>
+
+      <div class="box principle"><span class="lab">この定理が言っていること</span>
+      <p><strong>微分と積分は、別々に発明された2つの技術ではありません。</strong>同じ関係を逆向きに読んだものです。1章の冒頭で「変化のしかたを取り出す道具」として微分を作りましたが、その操作には逆があり、そして逆をたどる作業は「面積を求める」という見た目をしていた——という話でした。</p>
+      <p style="margin-top:8px">実用上の意味も大きく、<strong>1章で作った微分の公式表が、そのまま積分の公式表として使える</strong>ことになります。§04 でそれを確認します。</p></div>
+
+      <h3>計算ドリル（§03・全2問）</h3>
+
+      <div class="drill"><p><span class="qn">問1</span>基本定理を使って \(\displaystyle\int_0^1 x^2\,dx\) を求め、§02 問2 で区分求積によって得た値と一致することを確かめよ。</p>
+      <div class="attempt" style="margin:10px 0 4px"><span class="lab">自分の答えを出してから</span>
+      <div class="controls"><button class="ctl-btn" data-sol>解答を見る</button></div>
+      <div class="sol"><p>微分すると \(x^2\) になる関数を探します。\(\left(x^3\right)'=3x^2\) なので、3 で割った \(F(x)=\dfrac{x^3}{3}\) が条件を満たします。</p>
+      \[ \int_0^1x^2dx=\left[\frac{x^3}{3}\right]_0^1=\frac{1^3}{3}-\frac{0^3}{3}=\frac13 \]
+      <p>§02 問2 の結果と一致 ✓。</p>
+      <p style="font-size:13.5px;color:var(--ink-faint)">平方和の公式を使って数行かかった計算が、1行で終わりました。<strong>この差が、基本定理の威力です。</strong>以降、定積分を区分求積で計算することはまずありません。定義に戻るのは、積分の意味を確認したいときだけです。</p></div></div></div>
+
+      <div class="drill"><p><span class="qn">問2</span>\(\displaystyle\int_0^{\pi}\sin x\,dx\) を求めよ。また、その値が何を表しているか、グラフと合わせて説明せよ。</p>
+      <div class="attempt" style="margin:10px 0 4px"><span class="lab">自分の答えを出してから</span>
+      <div class="controls">
+        <button class="ctl-btn amber" data-hint>ヒントを表示</button>
+        <button class="ctl-btn" data-sol>解答を見る</button>
+      </div>
+      <div class="hint"><span class="hn">HINT 1</span><p>微分すると \(\sin x\) になる関数を探します。1章で \((\cos x)'=-\sin x\) を導きました。符号を合わせるには？</p></div>
+      <div class="sol"><p>\((-\cos x)'=\sin x\) なので \(F(x)=-\cos x\)。</p>
+      \[ \int_0^{\pi}\sin x\,dx=\Big[-\cos x\Big]_0^{\pi}=(-\cos\pi)-(-\cos 0)=1+1=2 \]
+      <p><strong>意味</strong>：\(0\) から \(\pi\) までの \(\sin x\) は正なので、これはサインカーブの山ひとつ分の面積です。山の高さは 1、幅は \(\pi\simeq3.14\) なので、もし長方形なら面積 3.14。実際には山なりなので、それより小さい 2 になる——という見積もりとも合っています。</p>
+      <p style="font-size:13.5px;color:var(--ink-faint)">\(\pi\) が絡む図形の面積が、ぴったり 2 という整数になるのは気持ちのいいところです。ちなみに \(0\) から \(2\pi\) まで積分すると、後半の谷（負の面積）が前半の山を打ち消して 0 になります。符号つきの面積であることの確認になるので、余力があれば計算してみてください。</p></div></div></div>
+    </section>
+
+    <!-- §04 -->
+    <section id="d3">
+      <div class="sec-head"><span class="idx">§04</span><h2>不定積分 — 微分の公式表を逆から読む</h2></div>
+
+      <p>基本定理のおかげで、積分の計算は「微分すると \(f\) になる関数を探す」作業に変わりました。この探し物に名前を付けておきます。</p>
+
+      <div class="box target"><span class="lab">原始関数と不定積分</span>
+      <p>\(F'(x)=f(x)\) を満たす \(F\) を、\(f\) の<strong>原始関数</strong>といいます。そして原始関数を求めることを<strong>不定積分</strong>といい、こう書きます。</p>
+      \[ \int f(x)\,dx=F(x)+C \]
+      <p>定積分と違って上端・下端が付きません。答えは数ではなく<strong>関数</strong>です。</p></div>
+
+      <h3>なぜ \(C\) が付くのか</h3>
+      <p>原始関数は1つに決まりません。\(F'=f\) なら、定数 \(C\) をいくつ足しても</p>
+      \[ (F+C)'=F'+C'=f+0=f \]
+      <p>なので、\(F+C\) もやはり原始関数です。<strong>定数の微分が 0 である以上、微分は「定数のぶんの情報」を捨ててしまう</strong>わけです。だから逆をたどるときには、その分からない定数を \(C\) として書き添えます。これを<strong>積分定数</strong>といいます。</p>
+
+      <div class="box teach"><span class="lab">\(C\) の物理的な意味</span>
+      <p>速度 \(v(t)\) が分かっていて、位置 \(x(t)\) を復元する場面を考えてください。速度は「どれだけ動いたか」しか教えてくれないので、<strong>どこから出発したかは分かりません</strong>。同じ速度で走っても、東京を出たのか大阪を出たのかで、いまいる場所は違います。</p>
+      <p style="margin-top:8px">この「出発点の情報」が積分定数 \(C\) です。\(C\) は計算では決まらず、<strong>初期条件（\(t=0\) でどこにいたか）を与えて初めて決まります</strong>。5章の微分方程式でも、解に「計算では決まらない定数」が現れますが、その正体はこれと同じです。</p>
+      <p style="margin-top:8px">なお定積分では \(C\) を気にする必要がありません。\(\{F(b)+C\}-\{F(a)+C\}\) で打ち消し合うからです。</p></div>
+
+      <h3>公式表</h3>
+      <p>新しく覚えることはありません。1章で導いた微分の結果を、<strong>右から左に読み直す</strong>だけです。</p>
+
+      <div class="table-scroll"><table class="mini-table">
+        <tr><th style="width:26%">微分（1章の結果）</th><th style="width:34%">積分（その裏返し）</th><th>確かめ方</th></tr>
+        <tr><td>\(\left(x^{n+1}\right)'=(n+1)x^{n}\)</td><td>\(\displaystyle\int x^{n}dx=\frac{x^{n+1}}{n+1}+C\quad(n\neq-1)\)</td><td>右辺を微分すると \(\left(\dfrac{x^{n+1}}{n+1}\right)'=\dfrac{(n+1)x^n}{n+1}=x^n\) となり、積分する前の関数に戻る</td></tr>
+        <tr><td>\((\ln x)'=\dfrac1x\)</td><td>\(\displaystyle\int\frac{dx}{x}=\ln|x|+C\)</td><td>\(x>0\) なら右辺は \(\ln x\) で、微分すると \(\dfrac1x\)。\(x<0\) なら右辺は \(\ln(-x)\) で、連鎖律より \(\dfrac{1}{-x}\cdot(-1)=\dfrac1x\)。どちらでも積分する前の関数に戻る</td></tr>
+        <tr><td>\(\left(e^{x}\right)'=e^{x}\)</td><td>\(\displaystyle\int e^{x}dx=e^{x}+C\)</td><td>右辺を微分すると \(\left(e^{x}\right)'=e^{x}\) となり、積分する前の関数に戻る。微分しても形が変わらない関数なので、積分しても形が変わらない</td></tr>
+        <tr><td>\((\sin x)'=\cos x\)</td><td>\(\displaystyle\int\cos x\,dx=\sin x+C\)</td><td>右辺を微分すると \((\sin x)'=\cos x\) となり、積分する前の関数に戻る</td></tr>
+        <tr><td>\((\cos x)'=-\sin x\)</td><td>\(\displaystyle\int\sin x\,dx=-\cos x+C\)</td><td>右辺を微分すると \((-\cos x)'=-(-\sin x)=\sin x\) となり、積分する前の関数に戻る。マイナスが2つ重なって消える点に注意</td></tr>
+      </table></div>
+
+      <div class="box warn"><span class="lab">\(n=-1\) だけが例外なのはなぜか</span>
+      <p>べき関数の公式 \(\displaystyle\int x^n dx=\frac{x^{n+1}}{n+1}+C\) は、\(n=-1\) のとき分母が \(n+1=0\) となって使えません。これは偶然ではなく、<strong>微分して \(x^{-1}\) になるべき関数が存在しない</strong>からです。どんな \(m\) についても \((x^m)'=mx^{m-1}\) が \(x^{-1}\) になるには \(m=0\) が必要ですが、\(x^0=1\) の微分は 0 になってしまいます。</p>
+      <p style="margin-top:8px">この「べき関数の表に空いた穴」を埋めているのが対数でした（1章）。\(\ln x\) は、べき関数では届かない場所にちょうど収まる関数なのです。</p></div>
+
+      <h3>足し算と定数倍はそのまま通る</h3>
+      <p>微分が線形だった（1章）ので、その裏返しとして積分も線形です。</p>
+      \[ \int\{f(x)+g(x)\}dx=\int f(x)dx+\int g(x)dx,\qquad \int c\,f(x)\,dx=c\int f(x)\,dx \]
+      <p>つまり多項式なら、項ごとにばらして積分できます。</p>
+
+      <div class="box warn"><span class="lab">積と合成には、一般の公式がない</span>
+      <p>微分には積の微分 \((fg)'=f'g+fg'\) と連鎖律がありました。<strong>積分には、それに対応する公式がありません。</strong>\(\displaystyle\int f(x)g(x)dx\) を \(\int f\) と \(\int g\) だけで書く方法は存在しないのです。</p>
+      <p style="margin-top:8px">その代わりに、積の微分と連鎖律を<strong>逆向きに使う技法</strong>があります。連鎖律の裏返しが<strong>置換積分</strong>、積の微分の裏返しが<strong>部分積分</strong>。これが次節 2-2 の内容です。</p>
+      <p style="margin-top:8px">微分は「与えられた式を機械的に処理すれば必ず答えが出る」作業でしたが、積分はそうではありません。<strong>どの技法を使うかを自分で選ぶ必要があり、そもそも初等関数で書けない場合すらあります</strong>（\(\int e^{-x^2}dx\) がその代表で、7章のガウス積分で再会します）。この非対称性は、積分を難しく感じさせる最大の理由です。</p></div>
+
+      <h3>計算ドリル（§04・全3問）</h3>
+
+      <div class="drill"><p><span class="qn">問1</span>次の不定積分を求めよ。\(C\) を忘れないこと。<br>(a) \(\displaystyle\int x^{3}dx\)　(b) \(\displaystyle\int\frac{dx}{x^{2}}\)　(c) \(\displaystyle\int\sqrt{x}\,dx\)　(d) \(\displaystyle\int\left(3x^{2}-2x+5\right)dx\)</p>
+      <div class="attempt" style="margin:10px 0 4px"><span class="lab">自分の答えを出してから</span>
+      <div class="controls"><button class="ctl-btn" data-sol>解答を見る</button></div>
+      <div class="sol"><p>(a) \(\dfrac{x^4}{4}+C\)</p>
+      <p>(b) \(\dfrac{1}{x^2}=x^{-2}\) なので \(n=-2\)。\(\dfrac{x^{-1}}{-1}+C=-\dfrac1x+C\)</p>
+      <p>(c) \(\sqrt x=x^{1/2}\) なので \(n=\frac12\)。\(\dfrac{x^{3/2}}{3/2}+C=\dfrac23x^{3/2}+C=\dfrac23x\sqrt x+C\)</p>
+      <p>(d) 線形性で項ごとに：\(x^3-x^2+5x+C\)</p>
+      <p style="font-size:13.5px;color:var(--ink-faint)"><strong>検算は必ず微分で行ってください。</strong>積分の答えは微分すれば必ず確かめられます。(c) なら \(\left(\frac23x^{3/2}\right)'=\frac23\cdot\frac32x^{1/2}=\sqrt x\) ✓。この確認の手軽さは積分計算の大きな利点で、テストでも実務でも使えます。</p></div></div></div>
+
+      <div class="drill"><p><span class="qn">問2</span>次の定積分を求めよ。<br>(a) \(\displaystyle\int_1^{e}\frac{dx}{x}\)　(b) \(\displaystyle\int_0^{\pi/2}\cos x\,dx\)　(c) \(\displaystyle\int_0^{1}e^{x}dx\)</p>
+      <div class="attempt" style="margin:10px 0 4px"><span class="lab">自分の答えを出してから</span>
+      <div class="controls"><button class="ctl-btn" data-sol>解答を見る</button></div>
+      <div class="sol"><p>(a) \(\Big[\ln|x|\Big]_1^{e}=\ln e-\ln 1=1-0=1\)</p>
+      <p>(b) \(\Big[\sin x\Big]_0^{\pi/2}=1-0=1\)</p>
+      <p>(c) \(\Big[e^{x}\Big]_0^{1}=e-1\simeq1.72\)</p>
+      <p style="font-size:13.5px;color:var(--ink-faint)">(a) は「\(y=1/x\) のグラフの下の面積が、ちょうど 1 になるところまで進んだ点が \(e\) である」とも読めます。1章では \(e\) を「微分しても形が変わらない底」として定義しましたが、面積の側から \(e\) を定義することもでき、両者は同じ数に行き着きます。<strong>同じ数が別々の入口から現れる</strong>のは、その数が本質的である証拠です。</p></div></div></div>
+
+      <div class="drill"><p><span class="qn">問3</span><strong>口頭試問形式</strong>：次の3つを、公式を見ずに自分の言葉で説明せよ。<br>①定積分はどう定義されるか。\(\int\) と \(dx\) はそれぞれ何を表しているか。<br>②微積分学の基本定理はなぜ成り立つのか。面積関数を使って説明せよ。<br>③不定積分に積分定数 \(C\) が現れるのはなぜか。その \(C\) は何で決まるのか。</p>
+      <div class="attempt" style="margin:10px 0 4px"><span class="lab">自分の答えを出してから</span>
+      <div class="controls"><button class="ctl-btn" data-sol>解答例を見る</button></div>
+      <div class="sol"><p><strong>①</strong> 区間を \(n\) 等分し、各小区間で関数を定数とみなして長方形の面積 \(f(x_k)\Delta x\) を作り、全部足したものが \(S_n\)。その \(n\to\infty\) の極限が定積分。\(\int\) は \(\Sigma\) にあたる「足し合わせる」記号（Summa の S を伸ばしたもの）、\(dx\) は \(\Delta x\) を限りなく小さくしたもので、何で刻んで足しているかを示す。</p>
+      <p><strong>②</strong> 上端を変数にした面積関数 \(S(x)=\int_a^x f(t)dt\) を考える。\(x\) を \(h\) 増やすと面積は幅 \(h\) の細い短冊のぶんだけ増え、それは \(f(x)h\) にほぼ等しい。したがって差分商は \(f(x)\) に近づき、\(S'(x)=f(x)\)。一方 \(F'=f\) なら \((S-F)'=0\) なので \(S=F+C\)。\(S(a)=0\) から \(C=-F(a)\) が決まり、\(x=b\) を入れて \(\int_a^b f=F(b)-F(a)\)。</p>
+      <p><strong>③</strong> 定数を微分すると 0 になるので、微分は定数の情報を捨てている。だから逆をたどっても定数ぶんが決まらず、\(C\) として残す。\(C\) は計算では決まらず、初期条件（出発点の値）を与えて初めて決まる。定積分では引き算で打ち消し合うので影響しない。</p>
+      <p style="font-size:13.5px;color:var(--ink-faint)">この3つが澱みなく言えれば、この記事は通過です。特に②は、面積と微分という無関係に見える2つが結びつく場面なので、絵を描きながら再現してみてください。</p></div></div></div>
+    </section>
+
+    <!-- §05 -->
+    <section id="howto">
+      <div class="sec-head"><span class="idx">§05</span><h2>チェックリストと次回予告</h2></div>
+
+      <h3>この記事で答えられるようになるべき問い</h3>
+      <div class="box principle"><span class="lab">最終チェック</span>
+      <ul style="margin:8px 0 0">
+        <li>「変化率から元の量を復元する」ことが、なぜ「グラフの下の面積」と同じ問題になるのか説明できるか（§01）</li>
+        <li>\(\Sigma\) 記号を読み書きできるか（§02）</li>
+        <li>定積分の定義式を、\(\Delta x\) と \(x_k\) を使って書けるか（§02）</li>
+        <li>\(\displaystyle\int_0^1 x\,dx\) と \(\displaystyle\int_0^1 x^2\,dx\) を区分求積で計算できるか（§02）</li>
+        <li>定積分が「符号つきの面積」である理由を言えるか（§02）</li>
+        <li>面積関数 \(S(x)\) の増分から \(S'(x)=f(x)\) を導けるか（§03）</li>
+        <li>そこから \(\int_a^b f=F(b)-F(a)\) を導けるか（§03）</li>
+        <li>積分定数 \(C\) が現れる理由と、その物理的な意味を言えるか（§04）</li>
+        <li>\(x^n,\ 1/x,\ e^x,\ \sin x,\ \cos x\) の不定積分を、微分の裏返しとして書けるか（§04）</li>
+        <li>\(n=-1\) が例外である理由を説明できるか（§04）</li>
+      </ul></div>
+
+      <h3>次節（2-2 積分の技法）への接続</h3>
+      <p>公式表に載っている関数なら、積分は微分の裏返しで片付きます。しかし物理で出てくるのは、たいてい \(xe^{-x}\) や \(\dfrac{x}{\sqrt{x^2+a^2}}\) のような<strong>組み合わさった形</strong>です。これらは公式表をそのまま当てはめても解けません。</p>
+      <p>そこで、微分の側にあった2つの規則を逆向きに使います。<strong>連鎖律の裏返しが置換積分、積の微分の裏返しが部分積分</strong>。この2つを手に入れると、学部物理に出てくる積分のほとんどが処理できるようになります。</p>
+      <div class="box teach"><span class="lab">2-2 で扱う問い（予習用）</span>
+      <ul style="margin:6px 0 0">
+        <li>連鎖律 \(\dfrac{dy}{dx}=\dfrac{dy}{du}\dfrac{du}{dx}\) を逆から読むと、何ができるようになるか</li>
+        <li>なぜ置換積分では \(dx\) を \(du\) に「書き換える」ことができるのか</li>
+        <li>積の微分 \((fg)'=f'g+fg'\) を移項すると、何が言えるか</li>
+        <li>\(\displaystyle\int xe^{x}dx\) のような「掛け算の積分」をどう崩すか</li>
+      </ul>
+      <p style="margin-top:8px"><strong>鍵となる一言</strong>：積分に新しい公式はほとんど登場しません。1章で作った微分の規則を、どう逆向きに使うかという技術の話です。</p></div>
+
+      <h3>学習サイクルの推奨手順</h3>
+      <ol>
+        <li><strong>解答を開かず、紙で挑戦</strong>。詰まっても5分は粘ってください。詰まるのは失敗ではなく、<strong>まだ腑に落ちていない一点が表に出た合図</strong>です。そこを自分の手で越えた経験が、そのまま次に進む力になります。</li>
+        <li><strong>ヒントを1つずつ</strong>開き、詰まりが解けたら閉じて自力で続行。</li>
+        <li>積分の答えは<strong>必ず微分して検算する</strong>。これは積分計算の最大の利点なので、習慣にしてください。</li>
+        <li>翌日、何も見ずに §04 問3（口頭試問）を再現する。特に②の基本定理の導出を、絵を描きながら言えるか確かめてください。</li>
+      </ol>
+
+      <div class="box warn"><span class="lab">この教材の立ち位置</span>
+      <p>本節は<strong>物理で使うための積分</strong>に絞っています。リーマン積分の厳密な定義、可積分性の条件、広義積分の収束判定などには踏み込んでいません。それらは数学科向けの解析学の領域で、<strong>学部物理の計算をする上では、なくても困りません</strong>。</p>
+      <p style="margin-top:8px">ただし「困らない」のは計算をするときの話です。発散する積分や、極限と積分の順序交換が問題になる場面に出会ったら、そのときに戻ってくれば十分です。</p></div>
+
+      <div class="foot"><p>Academic Gates ／ 物理数学I 2章 積分 ／ 2-1「積分の基礎」。演習問題は本教材独自の構成です。続編：2-2「積分の技法（置換積分と部分積分）」。</p></div>
+    </section>
+  </main>
+</div>
+
+<div id="site-footer"><noscript><nav class="noscript-nav" aria-label="フッターナビゲーション"><a href="index.html">ホーム</a><a href="self-intro.html">自己紹介</a><a href="study.html">勉強の軌跡</a><a href="videos.html">動画</a><a href="blog.html">ブログ</a><a href="sns.html">各種SNS</a></nav></noscript></div>
+
+<script>
+/* ヒント／解答トグル */
+document.querySelectorAll('[data-hint]').forEach(function(btn){
+  var box=btn.closest('.attempt');
+  var hints=[].slice.call(box.querySelectorAll('.hint'));
+  if(!hints.length){ btn.style.display='none'; return; }
+  var hideBtn=document.createElement('button');
+  hideBtn.type='button';hideBtn.className='ctl-btn amber';hideBtn.textContent='ヒントを隠す';hideBtn.style.display='none';
+  btn.after(hideBtn);
+  btn.addEventListener('click',function(){
+    var hidden=hints.filter(function(h){return h.style.display!=='block'});
+    if(hidden.length){ hidden[0].style.display='block'; hideBtn.style.display='';
+      if(hidden.length===1){ btn.textContent='ヒントは以上'; btn.disabled=true; }
+      else { btn.textContent='次のヒント ('+(hints.length-hidden.length+1)+'/'+hints.length+')'; }
+    }
+  });
+  hideBtn.addEventListener('click',function(){
+    hints.forEach(function(h){h.style.display='none'});
+    hideBtn.style.display='none';btn.disabled=false;btn.textContent='ヒントを表示';
+  });
+});
+document.querySelectorAll('[data-sol]').forEach(function(btn){
+  btn.addEventListener('click',function(){
+    var sol=btn.closest('.attempt').querySelector('.sol');
+    var open=sol.style.display==='block';
+    sol.style.display=open?'none':'block';
+    if(!btn.dataset.show) btn.dataset.show=btn.textContent;
+    btn.textContent=open?btn.dataset.show:'閉じる';
+    if(!open && window.MathJax && MathJax.typesetPromise) MathJax.typesetPromise([sol]);
+  });
+});
+
+/* 目次の追従 */
+var links=[].slice.call(document.querySelectorAll('.toc a[href^="#"]'));
+var secs=links.map(function(a){return document.querySelector(a.getAttribute('href'))});
+var pbar=document.getElementById('pbar');
+function onScroll(){
+  // getBoundingClientRect を使う（offsetTop ではない）。style.css の
+  // `main{position:relative}` で <main> が offsetParent になり、offsetTop が
+  // 文書基準でなくなるため、scrollY と直接比べると判定がずれる（§36）。
+  var idx=0;
+  secs.forEach(function(s,i){ if(s&&s.getBoundingClientRect().top<=140) idx=i; });
+  links.forEach(function(a){a.classList.remove('active')});
+  if(links[idx]) links[idx].classList.add('active');
+  var h=document.documentElement.scrollHeight-window.innerHeight;
+  pbar.style.width=(h>0?(window.scrollY/h*100):0)+'%';
+}
+window.addEventListener('scroll',onScroll,{passive:true});
+window.addEventListener('resize',onScroll); onScroll();
+var body=document.body,mb=document.getElementById('menuBtn'),scrim=document.getElementById('scrim');
+mb.addEventListener('click',function(){var o=body.classList.toggle('nav-open');mb.setAttribute('aria-expanded',o)});
+scrim.addEventListener('click',function(){body.classList.remove('nav-open')});
+document.getElementById('toc').addEventListener('click',function(e){if(e.target.closest('a'))body.classList.remove('nav-open')});
+</script>
+<script src="../js/layout.js?v=r58"></script>
+<script src="../js/main.js?v=r58"></script>
+<script src="../js/starfield.js?v=r58"></script>
+</body>
+</html>
