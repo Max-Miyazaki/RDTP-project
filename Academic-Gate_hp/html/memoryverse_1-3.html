@@ -11,13 +11,13 @@
 <!-- ★ ライト/ダーク切替は停止中（DESIGN.md §44）。サイト全体がダーク基調なので、
      記事だけテーマが変わるのは一貫性を欠くという判断。**復活させるには次の1行の
      コメントを外すだけでよい**（js/theme.js も css/lesson-theme.css も残してある）。 -->
-<!-- <script src="../js/theme.js?v=r62"></script> -->
+<!-- <script src="../js/theme.js?v=r63"></script> -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;500&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
 <!-- サイト共通 → 記事固有 → テーマ上書き の順で読む（lesson-theme.css は
      記事の <style> より後ろに置くこと。css/lesson-theme.css 冒頭の注記どおり） -->
-<link rel="stylesheet" href="../css/style.css?v=r62">
+<link rel="stylesheet" href="../css/style.css?v=r63">
 <!-- MathJax は読み込まない。この記事に数式は1つも無いため（§46.0 の執筆方針は
      数式の話なので該当しない）。設定ブロックもローダーも置かないこと。 -->
 <style>
@@ -410,6 +410,11 @@ code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border
   .links{display:none!important}
 }
 
+/* 近赤外の静止画（天王星）。球にはしない1枚 —— 回せる球は「可視光でどう見えるか」
+   を見せる面で、これはその可視光で見えないものを補う証拠として本文に添える。 */
+.fig.ir{max-width:560px;margin:14px 0 4px}
+.fig.ir img{width:100%;height:auto;display:block;border-radius:var(--radius-md)}
+
 /* --- 断面（巨大惑星のカードの「覚える面」）----------------------------------
    第2回の展開図にあたる位置に入るが、写真ではなく SVG で描く。巨大惑星には
    固体の表面が無く、貼れる地図が存在しないため。
@@ -455,7 +460,7 @@ code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border
   .mod.cut-view.open .cut-list{display:block}
 }
 </style>
-<link rel="stylesheet" href="../css/lesson-theme.css?v=r62">
+<link rel="stylesheet" href="../css/lesson-theme.css?v=r63">
 </head>
 <body data-page="study" class="is-article" data-node="memoryverse_1-3">
 <canvas id="starfield" aria-hidden="true"></canvas>
@@ -537,7 +542,7 @@ code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border
          JS（mvGrid / mvMap / mvLinks）はそのまま残してある。 -->
     <section id="jupiter">
       <div class="sec-head"><span class="idx">03</span><h2>木星</h2></div>
-      <div class="mod cut-view has-globe" data-globe="../image/memoryverse/jupiter-map.jpg?v=r62">
+      <div class="mod cut-view has-globe" data-globe="../image/memoryverse/jupiter-map.jpg?v=r63">
         <div class="mod-h"><span class="no">木星</span><span class="ttl">太陽系最大の惑星</span><span class="tag">JUPITER</span></div>
         <div class="mod-b">
           <div class="vsw" role="group" aria-label="表示の切り替え" hidden>
@@ -607,7 +612,7 @@ code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border
 
     <section id="saturn">
       <div class="sec-head"><span class="idx">04</span><h2>土星</h2></div>
-      <div class="mod cut-view has-globe" data-globe="../image/memoryverse/saturn-map.jpg?v=r62">
+      <div class="mod cut-view has-globe" data-globe="../image/memoryverse/saturn-map.jpg?v=r63">
         <div class="mod-h"><span class="no">土星</span><span class="ttl">環と、水より軽い密度</span><span class="tag">SATURN</span></div>
         <div class="mod-b">
           <div class="vsw" role="group" aria-label="表示の切り替え" hidden>
@@ -665,7 +670,7 @@ code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border
             </div>
             <ol class="globe-list" hidden></ol>
             <p class="globe-note">覚えるのは断面のほうです。球は<strong>帯と縞の並びを見るため</strong>のもので、ピンは置いていません。既定の向きは東経0度が正面・北が上です。</p>
-            <p class="globe-cap">正距円筒の全球テクスチャ。<strong>北半球はボイジャー2号（1981年）、南半球はカッシーニ（2004年）</strong>の画像から作られており、両半球は別の時期の姿です（土星は季節で色が変わります）。環は含まれていません。<br>Askaniy Anpilogov ／ Björn Jónsson（ボイジャー・カッシーニの画像に基づく）／ <a href="https://creativecommons.org/licenses/by-sa/3.0/" target="_blank" rel="noopener">CC BY-SA 3.0</a>。表示用に縮小しています。</p>
+            <p class="globe-cap">カッシーニの全球カラーマップ（正距円筒・中央は経度0度、左右の端は±180度）。<strong>2011年8月11日の1日分</strong>の画像から作られていて、<strong>全球が同じ時期の姿</strong>です。北半球の乱れた帯（北緯25〜48度あたり）は、2010年12月に始まった大規模な嵐<strong>「大白斑」</strong>が残した乱れです。環は含まれていません。<br>★ カッシーニから見て<strong>環に隠れていた南緯5〜17度の帯と、北緯79度より北・南緯82度より南は撮れていません</strong>。この教材では、その部分を上下の色でつないで埋めてあります（模様は入れていません）。<br>NASA Planetary Data System ／ Li, L., West, R., Jiang, X., Knowles, B. (2023)「Cassini ISS Global Maps of Jupiter and Saturn Bundle」（Cassini ISS、RGBフィルター）。表示用に縮小しています。</p>
           </div>
           <div class="row"><span class="k">断面</span><span class="v">木星と同じ4層ですが、<strong>金属水素の層が薄く、核が相対的に大きい</strong>のが違いです。<strong>ヘリウムが雨のように内部へ落ちている</strong>と考えられています</span></div>
           <div class="row"><span class="k">密度</span><span class="v">平均密度 <strong>0.687 g/cm³</strong>。<strong>水より軽い</strong>——太陽系で唯一です（NASA Planetary Fact Sheet）</span></div>
@@ -678,7 +683,7 @@ code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border
 
     <section id="uranus">
       <div class="sec-head"><span class="idx">05</span><h2>天王星</h2></div>
-      <div class="mod cut-view has-globe" data-globe="../image/memoryverse/uranus-map.jpg?v=r62">
+      <div class="mod cut-view has-globe" data-globe="../image/memoryverse/uranus-map.jpg?v=r63">
         <div class="mod-h"><span class="no">天王星</span><span class="ttl">横倒しで回る</span><span class="tag">URANUS</span></div>
         <div class="mod-b">
           <div class="vsw" role="group" aria-label="表示の切り替え" hidden>
@@ -732,7 +737,11 @@ code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border
           </div>
           <div class="row"><span class="k">断面</span><span class="v">外から<strong>大気（水素・ヘリウム・メタン） → 水・アンモニア・メタンからなる厚い層 → 岩石の核</strong>の3層。真ん中の層は天文学で<strong>「氷」</strong>と呼びますが、<strong>固体とは限りません</strong>。<strong>木星型の金属水素の層が無い</strong>——これが巨大ガス惑星との決定的な違いです</span></div>
           <div class="row"><span class="k">自転軸</span><span class="v">傾きが約<strong>98度</strong>。ほとんど<strong>横倒し</strong>のまま公転します</span></div>
-          <div class="row"><span class="k">見え方</span><span class="v"><strong>メタンが赤い光を吸収する</strong>ため青緑に見えます。<strong>模様がほとんど見えません</strong></span></div>
+          <div class="row"><span class="k">見え方</span><span class="v"><strong>メタンが赤い光を吸収する</strong>ため青緑に見えます。<strong>可視光でほとんど模様が見えないこと自体が天王星の特徴です</strong>。1986年にボイジャー2号が接近したときも、ほぼ一様な青緑の球が写るだけでした。模様が無いのではなく<strong>可視光では見えないだけ</strong>で、近赤外線では雲が写ります（下の画像）</span></div>
+          <figure class="fig ir">
+            <img src="../image/memoryverse/uranus-ir.jpg?v=r63" alt="ジェイムズ・ウェッブ宇宙望遠鏡が近赤外線でとらえた天王星。明るい北極の冠と、縁の明るい雲、周囲をとりまく環が写っている" loading="lazy" decoding="async" width="900" height="675">
+            <figcaption><strong>可視光ではほぼ一様に見えますが、近赤外線では雲と極の明暗が写ります。</strong>右側の明るい広がりが<strong>北極の冠</strong>（いまは北極が太陽の方を向いています）。縁のあたりに明るい<strong>雲</strong>が見え、外側の輪が<strong>環</strong>です。ジェイムズ・ウェッブ宇宙望遠鏡 NIRCam、2023年2月6日。1.4μmと3.0μmの2つのフィルターを色に置き換えた表現色で、目で見た色ではありません。<br>クレジット：NASA, ESA, CSA, STScI, J. DePasquale (STScI)／<a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>。表示用に縮小しています。</figcaption>
+          </figure>
           <div class="row"><span class="k">環</span><span class="v"><strong>13本</strong>。細く暗い。<strong>1977年</strong>に恒星の<strong>掩蔽</strong>（星が天王星の背後に隠れる現象）を観測していて<strong>偶然</strong>見つかりました。いちばん明るいのが<strong>ε（イプシロン）環</strong>で、1977年に見つかった中ではいちばん外側です。さらに外側にあるν環・μ環は、2003〜2005年にハッブル宇宙望遠鏡が見つけた、より淡い環です</span></div>
           <div class="row"><span class="k">衛星</span><span class="v"><strong>29</strong>（2025年8月に S/2025 U1 が発表されて29になりました。ジェイムズ・ウェッブ宇宙望遠鏡による発見、直径約10km）。主要5つ——ミランダ・アリエル・ウンブリエル・チタニア・オベロン——は第1回のカードにあります</span></div>
         </div>
@@ -741,7 +750,7 @@ code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border
 
     <section id="neptune">
       <div class="sec-head"><span class="idx">06</span><h2>海王星</h2></div>
-      <div class="mod cut-view has-globe" data-globe="../image/memoryverse/neptune-map.jpg?v=r62">
+      <div class="mod cut-view has-globe" data-globe="../image/memoryverse/neptune-map.jpg?v=r63">
         <div class="mod-h"><span class="no">海王星</span><span class="ttl">最も遠く、風が強い</span><span class="tag">NEPTUNE</span></div>
         <div class="mod-b">
           <div class="vsw" role="group" aria-label="表示の切り替え" hidden>
@@ -934,7 +943,7 @@ code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border
       <p>小惑星帯（ケレス、ベスタ）、準惑星（冥王星ほか）、カイパーベルト、彗星、オールトの雲。小さくて数が多い天体を、どうまとめて置くかが主題になります。</p></div>
     </section>
 
-    <div class="foot"><p>天体の数値はNASAの公開データ（NASA Planetary Fact Sheet、nssdc.gsfc.nasa.gov/planetary/factsheet）に基づく概数です。木星・土星の衛星数はIAU小惑星センターの確認総数（2026年3月16日のMPEC、IAU告知は同年3月26日）、天王星の衛星数は2025年8月のS/2025 U1の発表後の値、海王星の衛星数はNASA Science（2026年9月時点）およびJPL Solar System Dynamicsの一覧によります。<strong>衛星の数は数え方と確認の時点で変わります</strong>。土星の環の厚さと差し渡しはNASAの記載、海王星の色の補正はIrwin et al.（2024, MNRAS）によります。断面の層の境界の深さは資料により幅があるため、図の厚みは模式であり、縮尺ではありません。画像はサイト内の image/memoryverse/ に置いたものを表示しています。木星の全球図は NASA/JPL/Space Science Institute（PIA07782、パブリックドメイン）、土星は Askaniy Anpilogov ／ Björn Jónsson による <a href="https://creativecommons.org/licenses/by-sa/3.0/" target="_blank" rel="noopener">CC BY-SA 3.0</a>、天王星・海王星は Solar System Scope による <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a> で、いずれも表示用に縮小しています（それ以外の改変はしていません）。断面図と比較図は本教材で作成しました。引用研究の記述は要約であり、原論文の主張全体を代表するものではありません。</p></div>
+    <div class="foot"><p>天体の数値はNASAの公開データ（NASA Planetary Fact Sheet、nssdc.gsfc.nasa.gov/planetary/factsheet）に基づく概数です。木星・土星の衛星数はIAU小惑星センターの確認総数（2026年3月16日のMPEC、IAU告知は同年3月26日）、天王星の衛星数は2025年8月のS/2025 U1の発表後の値、海王星の衛星数はNASA Science（2026年9月時点）およびJPL Solar System Dynamicsの一覧によります。<strong>衛星の数は数え方と確認の時点で変わります</strong>。土星の環の厚さと差し渡しはNASAの記載、海王星の色の補正はIrwin et al.（2024, MNRAS）によります。断面の層の境界の深さは資料により幅があるため、図の厚みは模式であり、縮尺ではありません。画像はサイト内の image/memoryverse/ に置いたものを表示しています。木星の全球図は NASA/JPL/Space Science Institute（PIA07782、パブリックドメイン）、土星は NASA Planetary Data System の Cassini ISS 全球カラーマップ（Li, West, Jiang, Knowles 2023。2011年8月11日の観測。パブリックドメイン）、天王星・海王星は Solar System Scope による <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>、天王星の近赤外画像は NASA, ESA, CSA, STScI, J. DePasquale (STScI) による <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a> で、いずれも表示用に縮小しています（土星のみ、環に隠れてデータの無い帯を上下の色でつないで埋めています。それ以外の改変はしていません）。断面図と比較図は本教材で作成しました。引用研究の記述は要約であり、原論文の主張全体を代表するものではありません。</p></div>
   </main>
 </div>
 <div id="site-footer"><noscript><nav class="noscript-nav" aria-label="フッターナビゲーション"><a href="index.html">ホーム</a><a href="self-intro.html">自己紹介</a><a href="study.html">勉強の軌跡</a><a href="videos.html">動画</a><a href="blog.html">ブログ</a><a href="sns.html">各種SNS</a></nav></noscript></div>
@@ -1227,7 +1236,7 @@ window.addEventListener('resize',onScroll); onScroll();
   if(!hasWebGL())return;           /* 使えない環境では切り替えごと出さない */
 
   function load(){                  /* 何度呼ばれても実体の読み込みは1回 */
-    return import('../js/vendor/three.min.js?v=r62');
+    return import('../js/vendor/three.min.js?v=r63');
   }
 
   mods.forEach(function(mod){
@@ -1404,8 +1413,8 @@ window.addEventListener('resize',onScroll); onScroll();
 })();
 
 </script>
-<script src="../js/layout.js?v=r62"></script>
-<script src="../js/main.js?v=r62"></script>
-<script src="../js/starfield.js?v=r62"></script>
+<script src="../js/layout.js?v=r63"></script>
+<script src="../js/main.js?v=r63"></script>
+<script src="../js/starfield.js?v=r63"></script>
 </body>
 </html>
