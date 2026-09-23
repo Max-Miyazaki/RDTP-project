@@ -424,6 +424,14 @@ code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border
 .mod.open .ring-svg .lay-lab{opacity:1;visibility:visible}
 @media (prefers-reduced-motion:reduce){.ring-svg .lay-lab{transition:none}}
 .ring-fig figcaption{margin-top:10px;font-size:10.5px;color:var(--ink-faint);line-height:1.6}
+/* ★ 環の図にも、それ自体を押して名前を出す入口を付ける。開閉は .mod.open で
+   断面と共有しているが、断面の図は本文のずっと上にあるので、環の図を見ている人が
+   そこまで戻らないと名前が出ない、という状態になっていた。
+   h-c / h-o の入れ替えは共通の `.hint .h-o` 側が持つので、ここは配置だけ。 */
+.ring-btn{background:none;border:0;padding:0;width:100%;cursor:pointer;font-family:var(--font-body);
+  color:inherit;display:flex;flex-direction:column;text-align:left}
+.ring-btn .hint{order:-1;display:block;font-size:11px;color:var(--ink-faint);margin:0 0 10px;letter-spacing:.06em}
+@media (hover:hover){.ring-btn:hover .ring-svg{filter:drop-shadow(0 0 16px rgba(61,139,255,.28))}}
 .ring-narrow{display:none;margin:10px 0 0;font-size:13px;line-height:1.7;color:var(--ink-soft)}
 .ring-narrow b{color:var(--ink);font-weight:500}
 .ring-narrow .ring-names{display:none}
@@ -627,7 +635,7 @@ code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border
           </div>
           <div class="row"><span class="k">断面</span><span class="v">外から<strong>大気の層 → 分子水素の層 → 金属水素の層 → 核</strong>の4層。金属水素の層で強い磁場を作ります。核はジュノーの重力測定から、境界のはっきりしない<strong>希薄な核</strong>だと考えられています。<strong>層の境界の深さは資料により幅があるので、数値ではなく順番を覚えてください</strong></span></div>
           <div class="row"><span class="k">帯と縞</span><span class="v">明るい<strong>帯（zone）</strong>と暗い<strong>縞（belt）</strong>が、緯度ごとに交互に並びます。<strong>大赤斑は南緯約22度</strong>。緯度は決まっていますが、周りの大気と違う速さで流れるため<strong>経度は動きます</strong></span></div>
-          <div class="row"><span class="k">環</span><span class="v">薄く暗い。<strong>塵</strong>でできています。内側から<strong>ハロー・主環・ゴサマー環</strong>の3つ。供給源は<strong>内側の小さな衛星から叩き出された塵</strong>です</span></div>
+          <div class="row"><span class="k">環</span><span class="v">薄く暗い。<strong>塵</strong>でできています。内側から<strong>ハロー・主環・ゴサマー環</strong>の3つ。このうち<strong>主環</strong>がいちばん濃く、幅は約6,000km（半径の1.72〜1.80倍）と細い帯です——横断の節の比較図で、木星の行にひとつだけ濃く見えるのがこれです。供給源は<strong>内側の小さな衛星から叩き出された塵</strong>です</span></div>
           <div class="row"><span class="k">衛星</span><span class="v"><strong>101</strong>（IAU小惑星センターの確認総数、2026年3月時点）。主要な<strong>ガリレオ衛星</strong>4つ——イオ・エウロパ・ガニメデ・カリスト——は、次に足す衛星のカードで扱います</span></div>
         </div>
       </div>
@@ -700,7 +708,7 @@ code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border
           <div class="row"><span class="k">帯と縞</span><span class="v">木星より<strong>淡い</strong>。<strong>北極に六角形の雲</strong>があります</span></div>
           <div class="row"><span class="k">環</span><span class="v">この回の主役です。<strong>主にほぼ純粋な水の氷の粒</strong>でできています。内側から<strong>D・C・B・A・F・G・E</strong>の順。<strong>A環とB環の間がカッシーニの間隙</strong>。主要なA・B・C環の厚さは平均でおよそ<strong>10メートル</strong>（場所により数十メートル程度）で、主要な環の差し渡しは約275,000km——<strong>幅は厚さの3,000万倍</strong>です（NASA）。<strong>E環はエンケラドゥスの噴出物が供給源</strong></span></div>
           <figure class="ring-fig">
-            <svg class="ring-svg" viewBox="0 0 640 378" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="土星の環を真横から見た並び。本体から外へ D C B カッシーニの間隙 A F G E の順に並ぶ">
+            <button type="button" class="ring-btn" aria-expanded="false"><svg class="ring-svg" viewBox="0 0 640 378" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="土星の環を真横から見た並び。本体から外へ D C B カッシーニの間隙 A F G E の順に並ぶ">
               <defs><linearGradient id="eFade" x1="0" x2="1" y1="0" y2="0"><stop offset="0" stop-color="#fff" stop-opacity=".075"/><stop offset="1" stop-color="#fff" stop-opacity=".015"/></linearGradient></defs>
               <g class="ring-num"><text x="14" y="20" font-size="12.5" font-weight="500" fill="var(--ink)">土星の環 ― 真横から見た並び（横は土星の半径を1とした距離）</text></g>
               <line x1="36.0" y1="180.0" x2="620.0" y2="180.0" stroke="rgba(255,255,255,.14)" stroke-width="1" stroke-dasharray="3 5"/>
@@ -748,7 +756,7 @@ code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border
                 <text x="293.8" y="226.0" font-size="11.5" fill="var(--amber)" text-anchor="middle">カッシーニの間隙</text>
                 <text x="293.8" y="239.0" font-size="9.5" fill="var(--ink-faint)" text-anchor="middle">117,507〜122,340km（幅 約4,800km）</text>
               </g>
-            </svg>
+            </svg><span class="hint"><span class="h-c">クリックで環の名前を開く</span><span class="h-o">クリックで閉じる</span></span></button>
             <p class="ring-narrow">本体の半径 60,268km、主要な環の外縁 136,780km（半径の2.27倍）、いちばん外側の環は 480,000km（半径の約8倍）まで。<span class="ring-names">内側から <b>D・C・B</b> ー <b>カッシーニの間隙</b> ー <b>A・F・G・E</b>。</span></p>
             <figcaption>閉じたまま「どこに広い隙間があるか」を見てから開いてください。距離は NSSDC の Saturnian Rings Fact Sheet の値（土星の半径の何倍か）をそのまま使っています。<strong>濃淡は、光の通しにくさ（光学的厚み）とアルベドの順に合わせた模式</strong>で、正確な明るさの比ではありません。D環・G環・E環がほとんど見えないのは、実際に非常に薄いからです。</figcaption>
           </figure>
@@ -818,7 +826,8 @@ code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border
             <img src="../image/memoryverse/uranus-ir.jpg?v=r64" alt="ジェイムズ・ウェッブ宇宙望遠鏡が近赤外線でとらえた天王星。明るい北極の冠と、縁の明るい雲、周囲をとりまく環が写っている" loading="lazy" decoding="async" width="900" height="675">
             <figcaption><strong>可視光ではほぼ一様に見えますが、近赤外線では雲と極の明暗が写ります。</strong>右側の明るい広がりが<strong>北極の冠</strong>（いまは北極が太陽の方を向いています）。縁のあたりに明るい<strong>雲</strong>が見え、外側の輪が<strong>環</strong>です。ジェイムズ・ウェッブ宇宙望遠鏡 NIRCam、2023年2月6日。1.4μmと3.0μmの2つのフィルターを色に置き換えた表現色で、目で見た色ではありません。<br>クレジット：NASA, ESA, CSA, STScI, J. DePasquale (STScI)／<a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>。表示用に縮小しています。</figcaption>
           </figure>
-          <div class="row"><span class="k">環</span><span class="v"><strong>13本</strong>。細く暗い。<strong>1977年</strong>に恒星の<strong>掩蔽</strong>（星が天王星の背後に隠れる現象）を観測していて<strong>偶然</strong>見つかりました。いちばん明るいのが<strong>ε（イプシロン）環</strong>で、1977年に見つかった中ではいちばん外側です。さらに外側にあるν環・μ環は、2003〜2005年にハッブル宇宙望遠鏡が見つけた、より淡い環です</span></div>
+          <div class="row"><span class="k">環</span><span class="v"><strong>13本</strong>。細く暗い。<strong>1977年</strong>に恒星の<strong>掩蔽</strong>（星が天王星の背後に隠れる現象）を観測していて<strong>偶然</strong>見つかりました。名前は<strong>ギリシャ文字</strong>（α・β・γ・δ・ε・η・λ・ζ・ν・μ）と<strong>番号</strong>（6・5・4）で付けられています</span></div>
+          <div class="row"><span class="k">ε環</span><span class="v">ギリシャ文字で名づけられた環のひとつで、<strong>細い環のなかでいちばん明るく、いちばん太い</strong>——幅は場所によって<strong>20〜96km</strong>と変わります（ほかの細い環は1〜11km）。<strong>1977年の掩蔽で最初に見つかった5本</strong>（α・β・γ・δ・ε）のうち、そして地上観測を合わせて<strong>9本</strong>になった段階でも、<strong>いちばん外側</strong>の環でした。2003〜2005年にハッブル宇宙望遠鏡が見つけたν環・μ環は、さらに外側にあります（幅は数千〜1万7千kmと広いものの、きわめて淡い）。<br>ε環の<strong>すぐ内側と外側</strong>には、<strong>コーデリア</strong>と<strong>オフィーリア</strong>という小さな衛星があり、粒を散らばらせずにつなぎとめていると考えられています（<strong>羊飼い衛星</strong>）。数値は NSSDC の Uranus Rings Fact Sheet によります</span></div>
           <div class="row"><span class="k">衛星</span><span class="v"><strong>29</strong>（2025年8月に S/2025 U1 が発表されて29になりました。ジェイムズ・ウェッブ宇宙望遠鏡による発見、直径約10km）。主要5つ——ミランダ・アリエル・ウンブリエル・チタニア・オベロン——は第1回のカードにあります</span></div>
         </div>
       </div>
@@ -1548,6 +1557,26 @@ window.addEventListener('resize',onScroll); onScroll();
     var ib0=mod.querySelector('.img-btn');
     if(ib0)ib0.addEventListener('click',function(){setTimeout(syncOpen,0)});
     syncOpen();
+  });
+})();
+
+/* --- 環の図の開閉（§81）------------------------------------------------------
+   断面の図と同じ .mod.open を共有する。押した場所から画面が飛ばないよう、
+   mvKeepTop は呼ばない —— カードの上端まで引き戻すと、いま見ている環の図が
+   画面の外へ出てしまう。aria-expanded は両方のボタンで揃える。 */
+(function(){
+  function sync(mod){
+    var on=mod.classList.contains('open');
+    [].forEach.call(mod.querySelectorAll('.img-btn,.ring-btn'),function(b){
+      b.setAttribute('aria-expanded',on?'true':'false');});
+  }
+  document.querySelectorAll('.mod .ring-btn').forEach(function(b){
+    var mod=b.closest('.mod');
+    b.addEventListener('click',function(){mod.classList.toggle('open');sync(mod)});
+  });
+  document.querySelectorAll('.mod .img-btn').forEach(function(b){
+    var mod=b.closest('.mod');
+    b.addEventListener('click',function(){setTimeout(function(){sync(mod)},0)});
   });
 })();
 
