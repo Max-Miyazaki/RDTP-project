@@ -54,8 +54,8 @@
                              title: '第1回　太陽系の骨格' },
         'memoryverse_1-2': { label: '第2回',        href: 'memoryverse_1-2.html',  parent: 'memoryverse:ch1',
                              title: '第2回　岩石惑星を深める' },
-        'memoryverse_1-3': { label: '第3回',        soon: true,                    parent: 'memoryverse:ch1',
-                             title: '第3回' }
+        'memoryverse_1-3': { label: '第3回',        href: 'memoryverse_1-3.html',  parent: 'memoryverse:ch1',
+                             title: '第3回　巨大惑星を深める' }
     };
 
     // node から根までの並び（根が先頭）。

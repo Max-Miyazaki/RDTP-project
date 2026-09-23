@@ -11,13 +11,13 @@
 <!-- ★ ライト/ダーク切替は停止中（DESIGN.md §44）。サイト全体がダーク基調なので、
      記事だけテーマが変わるのは一貫性を欠くという判断。**復活させるには次の1行の
      コメントを外すだけでよい**（js/theme.js も css/lesson-theme.css も残してある）。 -->
-<!-- <script src="../js/theme.js?v=r61"></script> -->
+<!-- <script src="../js/theme.js?v=r62"></script> -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;500&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
 <!-- サイト共通 → 記事固有 → テーマ上書き の順で読む（lesson-theme.css は
      記事の <style> より後ろに置くこと。css/lesson-theme.css 冒頭の注記どおり） -->
-<link rel="stylesheet" href="../css/style.css?v=r61">
+<link rel="stylesheet" href="../css/style.css?v=r62">
 <!-- MathJax は読み込まない。この記事に数式は1つも無いため（§46.0 の執筆方針は
      数式の話なので該当しない）。設定ブロックもローダーも置かないこと。 -->
 <style>
@@ -295,7 +295,7 @@ code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border
   .ring,.links{display:none!important}
 }
 </style>
-<link rel="stylesheet" href="../css/lesson-theme.css?v=r61">
+<link rel="stylesheet" href="../css/lesson-theme.css?v=r62">
 </head>
 <body data-page="study" class="is-article" data-node="memoryverse_1-1">
 <canvas id="starfield" aria-hidden="true"></canvas>
@@ -509,14 +509,15 @@ code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border
       <div class="sec-head"><span class="idx">06</span><h2>巨大惑星</h2></div>
       <p>小惑星帯より外側の4つ。大きく、軽い物質が多く、密度が低い。4つとも<strong>環</strong>をもち、衛星が多い。木星・土星は<strong>巨大ガス惑星</strong>、天王星・海王星は<strong>巨大氷惑星</strong>。</p>
       <div class="box warn"><span class="lab">衛星の数は変わる</span>
-      <p>下の数はNASA Space Placeの記載（2026年7月更新のページ）によります。木星は2026年4月時点で115、土星は2026年6月時点で293。資料によって数え方や時点が違うので、<strong>数は日付と一緒に覚え</strong>、ときどき確認してください。名前のある主要な衛星のほうが変わりにくく、覚える価値があります。</p></div>
+      <p>木星と土星の数は<strong>IAU小惑星センター（MPC）の確認総数</strong>によります。木星101・土星285は2026年3月16日のMPECで発表され、IAUが同年3月26日に告知したものです。天王星（29）と海王星（16）についてはMPCによる同様の発表が見当たらないため、NASA ScienceとJPL Solar System Dynamicsの一覧の値を載せています（2026年9月時点）。</p>
+      <p><strong>数は数え方と確認の時点で変わります。覚えるのは数ではなく、名前のついた主要な衛星のほうです。</strong>たとえばNASA Space Placeは同じ時期に木星115・土星293と記載しており、数え方と更新の時点が違うだけで、どちらも誤りではありません。確認先：minorplanetcenter.net ／ ssd.jpl.nasa.gov/sats。</p></div>
 
       <div class="mod">
         <div class="mod-h"><span class="no">木星</span><span class="ttl">最大の惑星</span><span class="tag">JUPITER / ガス</span></div>
         <div class="mod-b">
           <div class="orbit"><svg class="links" aria-hidden="true" preserveAspectRatio="none"></svg><div class="stat c1" data-ang="150" style="grid-area:1/1"><b>質量</b><span class="v">1.90×10²⁷ kg<br>地球の約318倍</span></div><div class="stat c2" data-ang="90" style="grid-area:1/2"><b>半径</b><span class="v">約69,900km<br>地球の約11倍</span></div><div class="stat c3" data-ang="30" style="grid-area:1/3"><b>地球から（最接近〜最遠）</b><span class="v">約5億9,000万〜9億7,000万km<br>光で約33〜54分</span></div><div class="stat c1" data-ang="180" style="grid-area:2/1"><b>自転</b><span class="v">約9時間56分<br><strong>惑星で最短</strong></span></div><div class="stat c1" data-ang="210" style="grid-area:3/1"><b>太陽から</b><span class="v">約5.2AU<br>公転 約11.9年</span></div><div class="stat c2 comp-stat" data-ang="270" style="grid-area:3/2"><b>大気（体積比）</b><span class="v">H₂ 89.8% ／ He 10.2%</span></div><div class="stat c3" data-ang="330" style="grid-area:3/3"><b>密度</b><span class="v">1.33 g/cm³</span></div><div class="stat c3" data-ang="10" style="grid-area:2/3"><b>表面重力（雲の上端）</b><span class="v">24.8 m/s²<br>地球の2.5倍</span></div><div class="stat c2" data-ang="350" style="grid-area:4/2"><b>磁場</b><span class="v">あり <strong>惑星で最強</strong><br>地球の約2万倍</span></div><div class="core"><button type="button" class="img-btn" aria-expanded="false"><figure class="planet-img"><div class="orb"><span class="ring r1"></span><span class="ring r2"></span><div class="frame"><img src="../image/memoryverse/jupiter.jpg" data-alt="https://upload.wikimedia.org/wikipedia/commons/thumb/8/84/Hubble_Visible_View_of_Jupiter.jpg/500px-Hubble_Visible_View_of_Jupiter.jpg|https://commons.wikimedia.org/wiki/Special:FilePath/Hubble_Visible_View_of_Jupiter.jpg?width=500|https://upload.wikimedia.org/wikipedia/commons/8/84/Hubble_Visible_View_of_Jupiter.jpg" alt="木星の実画像（ハッブル宇宙望遠鏡（可視光））" decoding="async" onerror="mvNext(this)"><p class="fallback">画像を読み込めませんでした。<br><a href="https://science.nasa.gov/jupiter/" target="_blank" rel="noopener">NASAの木星のページで見る</a></p></div></div><figcaption>ハッブル宇宙望遠鏡（可視光）<br>© NASA/ESA</figcaption></figure><span class="hint"><span class="h-c">クリックで数値を開く</span><span class="h-o">クリックで閉じる</span></span></button></div></div>
           <div class="row"><span class="k">中身</span><span class="v">主に水素とヘリウム。深部では高圧で水素が金属のようにふるまう（金属水素）。中心部の核の状態は研究が続いている</span></div>
-          <div class="moons">衛星：115（2026年4月時点）。主要な<strong>ガリレオ衛星</strong>＝<strong>イオ</strong>（活発な火山）、<strong>エウロパ</strong>（氷の下に海があると考えられる）、<strong>ガニメデ</strong>（太陽系最大の衛星）、<strong>カリスト</strong>（クレーターだらけ）</div>
+          <div class="moons">衛星：<strong>101</strong>（IAU確認、2026年3月時点）。主要な<strong>ガリレオ衛星</strong>＝<strong>イオ</strong>（活発な火山）、<strong>エウロパ</strong>（氷の下に海があると考えられる）、<strong>ガニメデ</strong>（太陽系最大の衛星）、<strong>カリスト</strong>（クレーターだらけ）</div>
           <div class="row"><span class="k">特徴</span><span class="v"><ul>
             <li>質量はほかの惑星をすべて合わせた量の2倍以上</li>
             <li>地球より大きな嵐<strong>大赤斑</strong>と、横縞の模様</li>
@@ -530,7 +531,7 @@ code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border
         <div class="mod-b">
           <div class="orbit"><svg class="links" aria-hidden="true" preserveAspectRatio="none"></svg><div class="stat c1" data-ang="150" style="grid-area:1/1"><b>質量</b><span class="v">5.68×10²⁶ kg<br>地球の約95倍</span></div><div class="stat c2" data-ang="90" style="grid-area:1/2"><b>半径</b><span class="v">約58,200km<br>地球の約9.1倍</span></div><div class="stat c3" data-ang="30" style="grid-area:1/3"><b>地球から（最接近〜最遠）</b><span class="v">約12億〜16.6億km<br>光で約1.1〜1.5時間</span></div><div class="stat c1" data-ang="180" style="grid-area:2/1"><b>自転</b><span class="v">約10時間40分</span></div><div class="stat c1" data-ang="210" style="grid-area:3/1"><b>太陽から</b><span class="v">約9.5AU<br>公転 約29.5年</span></div><div class="stat c2 comp-stat" data-ang="270" style="grid-area:3/2"><b>大気（体積比）</b><span class="v">H₂ 96.3% ／ He 3.3%</span></div><div class="stat c3" data-ang="330" style="grid-area:3/3"><b>密度</b><span class="v">0.69 g/cm³<br><strong>水より小さい</strong></span></div><div class="stat c3" data-ang="10" style="grid-area:2/3"><b>表面重力（雲の上端）</b><span class="v">10.4 m/s²<br>地球の1.07倍（<strong>地球並み</strong>）</span></div><div class="stat c2" data-ang="350" style="grid-area:4/2"><b>磁場</b><span class="v">あり<br><strong>自転軸とほぼ一致</strong>（1度未満）</span></div><div class="core"><button type="button" class="img-btn" aria-expanded="false"><figure class="planet-img"><div class="orb"><span class="ring r1"></span><span class="ring r2"></span><div class="frame"><img src="../image/memoryverse/saturn.jpg" data-alt="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c7/Saturn_during_Equinox.jpg/500px-Saturn_during_Equinox.jpg|https://commons.wikimedia.org/wiki/Special:FilePath/Saturn_during_Equinox.jpg?width=500|https://upload.wikimedia.org/wikipedia/commons/c/c7/Saturn_during_Equinox.jpg" alt="土星の実画像（探査機カッシーニ（2008年の分点前後））" decoding="async" onerror="mvNext(this)"><p class="fallback">画像を読み込めませんでした。<br><a href="https://science.nasa.gov/saturn/" target="_blank" rel="noopener">NASAの土星のページで見る</a></p></div></div><figcaption>探査機カッシーニ（2008年の分点前後）<br>© NASA/JPL/Space Science Institute</figcaption></figure><span class="hint"><span class="h-c">クリックで数値を開く</span><span class="h-o">クリックで閉じる</span></span></button></div></div>
           <div class="row"><span class="k">中身</span><span class="v">木星と同じく主に水素とヘリウム。中心部の核は、木星と同じく状態も大きさもよく分かっていない</span></div>
-          <div class="moons">衛星：293（2026年6月時点）。主要＝<strong>タイタン</strong>（厚い大気とメタンの湖）、<strong>エンケラドゥス</strong>（南極から水が噴き出す）、<strong>ミマス</strong>、<strong>テティス</strong>、<strong>ディオネ</strong>、<strong>レア</strong>、<strong>イアペトゥス</strong>（片側が暗い）</div>
+          <div class="moons">衛星：<strong>285</strong>（IAU確認、2026年3月時点）。主要＝<strong>タイタン</strong>（厚い大気とメタンの湖）、<strong>エンケラドゥス</strong>（南極から水が噴き出す）、<strong>ミマス</strong>、<strong>テティス</strong>、<strong>ディオネ</strong>、<strong>レア</strong>、<strong>イアペトゥス</strong>（片側が暗い）</div>
           <div class="row"><span class="k">特徴</span><span class="v"><ul>
             <li>主に氷の粒でできた、はっきりした<strong>環</strong></li>
             <li>巨大惑星でいちばん大きいのに、表面重力は地球とほぼ同じ。<strong>密度が低い</strong>ため</li>
@@ -545,7 +546,7 @@ code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border
         <div class="mod-b">
           <div class="orbit"><svg class="links" aria-hidden="true" preserveAspectRatio="none"></svg><div class="stat c1" data-ang="150" style="grid-area:1/1"><b>質量</b><span class="v">8.68×10²⁵ kg<br>地球の約14.5倍</span></div><div class="stat c2" data-ang="90" style="grid-area:1/2"><b>半径</b><span class="v">約25,400km<br>地球の約4.0倍</span></div><div class="stat c3" data-ang="30" style="grid-area:1/3"><b>地球から（最接近〜最遠）</b><span class="v">約26億〜31.5億km<br>光で約2.4〜2.9時間</span></div><div class="stat c1" data-ang="180" style="grid-area:2/1"><b>自転</b><span class="v">約17時間・逆向き<br>傾き 約98度</span></div><div class="stat c1" data-ang="210" style="grid-area:3/1"><b>太陽から</b><span class="v">約19.2AU<br>公転 約84年</span></div><div class="stat c2 comp-stat" data-ang="270" style="grid-area:3/2"><b>大気（体積比）</b><span class="v">H₂ 82.5% ／ He 15.2% ／ CH₄ 2.3%</span></div><div class="stat c3" data-ang="330" style="grid-area:3/3"><b>密度</b><span class="v">1.27 g/cm³</span></div><div class="stat c3" data-ang="10" style="grid-area:2/3"><b>表面重力（雲の上端）</b><span class="v">8.87 m/s²<br>地球の0.90倍（<strong>金星と同じ</strong>）</span></div><div class="stat c2" data-ang="350" style="grid-area:4/2"><b>磁場</b><span class="v">あり <strong>約60度傾く</strong><br>中心からもずれる</span></div><div class="core"><button type="button" class="img-btn" aria-expanded="false"><figure class="planet-img"><div class="orb"><span class="ring r1"></span><span class="ring r2"></span><div class="frame"><img src="../image/memoryverse/uranus.jpg" data-alt="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Uranus_-_Voyager_2.jpg/500px-Uranus_-_Voyager_2.jpg|https://commons.wikimedia.org/wiki/Special:FilePath/Uranus_-_Voyager_2.jpg?width=500|https://upload.wikimedia.org/wikipedia/commons/2/2c/Uranus_-_Voyager_2.jpg" alt="天王星の実画像（探査機ボイジャー2号（1986年））" decoding="async" onerror="mvNext(this)"><p class="fallback">画像を読み込めませんでした。<br><a href="https://science.nasa.gov/uranus/" target="_blank" rel="noopener">NASAの天王星のページで見る</a></p></div></div><figcaption>探査機ボイジャー2号（1986年）<br>© NASA/JPL</figcaption></figure><span class="hint"><span class="h-c">クリックで数値を開く</span><span class="h-o">クリックで閉じる</span></span></button></div></div>
           <div class="row"><span class="k">中身</span><span class="v">岩石の核のまわりに、水・アンモニア・メタンからなる厚い層（天文学では「氷」と呼ぶ）。外側は水素・ヘリウムの大気（核の大きさははっきりしていない）。<strong>大気のメタン</strong>が赤い光を吸収するため青緑に見える</span></div>
-          <div class="moons">衛星：29。主要5つ＝<strong>ミランダ</strong>、<strong>アリエル</strong>、<strong>ウンブリエル</strong>、<strong>チタニア</strong>、<strong>オベロン</strong>（名前はシェイクスピアとポープの作品の登場人物から）</div>
+          <div class="moons">衛星：<strong>29</strong>（2026年9月時点。2025年8月にS/2025 U1が加わった）。主要5つ＝<strong>ミランダ</strong>、<strong>アリエル</strong>、<strong>ウンブリエル</strong>、<strong>チタニア</strong>、<strong>オベロン</strong>（名前はシェイクスピアとポープの作品の登場人物から）</div>
           <div class="row"><span class="k">特徴</span><span class="v"><ul>
             <li>自転軸がほぼ横倒し。転がるように公転する</li>
             <li>表面重力は 8.87 m/s² で<strong>金星とほぼ同じ</strong></li>
@@ -560,7 +561,7 @@ code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border
         <div class="mod-b">
           <div class="orbit"><svg class="links" aria-hidden="true" preserveAspectRatio="none"></svg><div class="stat c1" data-ang="150" style="grid-area:1/1"><b>質量</b><span class="v">1.02×10²⁶ kg<br>地球の約17倍</span></div><div class="stat c2" data-ang="90" style="grid-area:1/2"><b>半径</b><span class="v">約24,600km<br>地球の約3.9倍</span></div><div class="stat c3" data-ang="30" style="grid-area:1/3"><b>地球から（最接近〜最遠）</b><span class="v">約43億〜47億km<br>光で約4.0〜4.4時間</span></div><div class="stat c1" data-ang="180" style="grid-area:2/1"><b>自転</b><span class="v">約16時間</span></div><div class="stat c1" data-ang="210" style="grid-area:3/1"><b>太陽から</b><span class="v">約30.1AU<br>公転 約165年</span></div><div class="stat c2 comp-stat" data-ang="270" style="grid-area:3/2"><b>大気（体積比）</b><span class="v">H₂ 80% ／ He 19% ／ CH₄ 1.5%</span></div><div class="stat c3" data-ang="330" style="grid-area:3/3"><b>密度</b><span class="v">1.64 g/cm³<br>巨大惑星で最も高い</span></div><div class="stat c3" data-ang="10" style="grid-area:2/3"><b>表面重力（雲の上端）</b><span class="v">11.1 m/s²<br>地球の1.14倍</span></div><div class="stat c2" data-ang="350" style="grid-area:4/2"><b>磁場</b><span class="v">あり <strong>約47度傾く</strong><br>中心からずれる</span></div><div class="core"><button type="button" class="img-btn" aria-expanded="false"><figure class="planet-img"><div class="orb"><span class="ring r1"></span><span class="ring r2"></span><div class="frame"><img src="../image/memoryverse/neptune.jpg" data-alt="https://upload.wikimedia.org/wikipedia/commons/thumb/0/06/Neptune.jpg/500px-Neptune.jpg|https://commons.wikimedia.org/wiki/Special:FilePath/Neptune.jpg?width=500|https://upload.wikimedia.org/wikipedia/commons/0/06/Neptune.jpg" alt="海王星の実画像（探査機ボイジャー2号（1989年））" decoding="async" onerror="mvNext(this)"><p class="fallback">画像を読み込めませんでした。<br><a href="https://science.nasa.gov/neptune/" target="_blank" rel="noopener">NASAの海王星のページで見る</a></p></div></div><figcaption>探査機ボイジャー2号（1989年）<br>© NASA/JPL</figcaption></figure><span class="hint"><span class="h-c">クリックで数値を開く</span><span class="h-o">クリックで閉じる</span></span></button></div></div>
           <div class="row"><span class="k">中身</span><span class="v">天王星と同じ巨大氷惑星。水・アンモニア・メタンの層と水素・ヘリウムの大気</span></div>
-          <div class="moons">衛星：16。主要＝<strong>トリトン</strong>（惑星の自転と<strong>逆向きに公転</strong>。捕獲された天体と考えられる）、<strong>プロテウス</strong>、<strong>ネレイド</strong></div>
+          <div class="moons">衛星：<strong>16</strong>（2026年9月時点）。主要＝<strong>トリトン</strong>（惑星の自転と<strong>逆向きに公転</strong>。捕獲された天体と考えられる）、<strong>プロテウス</strong>、<strong>ネレイド</strong></div>
           <div class="row"><span class="k">特徴</span><span class="v"><ul>
             <li>天王星より小さいが<strong>重い</strong>（質量と大きさの順が入れ替わる）</li>
             <li>太陽系で最も強い部類の風。ボイジャー2号（1989年）が暗い嵐<strong>大暗斑</strong>を撮影</li>
@@ -746,7 +747,7 @@ code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border
 
 
 
-    <div class="foot"><p>天体の数値はNASAの公開データに基づく概数です。衛星の数はNASA Space Place（2026年7月31日更新）の記載によります。正確な値は NASA Planetary Fact Sheet（nssdc.gsfc.nasa.gov/planetary/factsheet）等で確認してください。惑星の画像はサイト内の image/memoryverse/ に置いたものを表示しています（読み込めないときだけ Wikimedia Commons を参照します）。NASA 等の公開画像で、火星のみ ESA/MPS for OSIRIS Team による <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">CC BY-SA 4.0</a> です（いずれも改変していません）。引用研究の記述は要約であり、原論文の主張全体を代表するものではありません。</p></div>
+    <div class="foot"><p>天体の数値はNASAの公開データに基づく概数です。木星・土星の衛星数はIAU小惑星センターの確認総数（2026年3月16日のMPEC、IAU告知は同年3月26日）、天王星・海王星の衛星数はNASA ScienceおよびJPL Solar System Dynamicsの一覧（2026年9月時点）によります。数は数え方と確認の時点で変わるため、日付と合わせて扱ってください。正確な値は NASA Planetary Fact Sheet（nssdc.gsfc.nasa.gov/planetary/factsheet）等で確認してください。惑星の画像はサイト内の image/memoryverse/ に置いたものを表示しています（読み込めないときだけ Wikimedia Commons を参照します）。NASA 等の公開画像で、火星のみ ESA/MPS for OSIRIS Team による <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">CC BY-SA 4.0</a> です（いずれも改変していません）。引用研究の記述は要約であり、原論文の主張全体を代表するものではありません。</p></div>
     
   </main>
 </div>
@@ -884,8 +885,8 @@ mb.addEventListener('click',function(){var o=body.classList.toggle('nav-open');m
 scrim.addEventListener('click',function(){body.classList.remove('nav-open')});
 document.getElementById('toc').addEventListener('click',function(e){if(e.target.closest('a'))body.classList.remove('nav-open')});
 </script>
-<script src="../js/layout.js?v=r61"></script>
-<script src="../js/main.js?v=r61"></script>
-<script src="../js/starfield.js?v=r61"></script>
+<script src="../js/layout.js?v=r62"></script>
+<script src="../js/main.js?v=r62"></script>
+<script src="../js/starfield.js?v=r62"></script>
 </body>
 </html>
