@@ -11,13 +11,13 @@
 <!-- ★ ライト/ダーク切替は停止中（DESIGN.md §44）。サイト全体がダーク基調なので、
      記事だけテーマが変わるのは一貫性を欠くという判断。**復活させるには次の1行の
      コメントを外すだけでよい**（js/theme.js も css/lesson-theme.css も残してある）。 -->
-<!-- <script src="../js/theme.js?v=r59"></script> -->
+<!-- <script src="../js/theme.js?v=r60"></script> -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;500&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
 <!-- サイト共通 → 記事固有 → テーマ上書き の順で読む（lesson-theme.css は
      記事の <style> より後ろに置くこと。css/lesson-theme.css 冒頭の注記どおり） -->
-<link rel="stylesheet" href="../css/style.css?v=r59">
+<link rel="stylesheet" href="../css/style.css?v=r60">
 <!-- MathJax は読み込まない。この記事に数式は1つも無いため（§46.0 の執筆方針は
      数式の話なので該当しない）。設定ブロックもローダーも置かないこと。 -->
 <style>
@@ -280,15 +280,62 @@ code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border
   paint-order:stroke;stroke:rgba(0,0,0,.55);stroke-width:2.5;stroke-linejoin:round}
 
 /* 番号つきの説明リスト。560px 以下（地図の上にラベルを重ねると読めない）と、
-   ピンを持たない月（§53.7）で出す。番号は本文の「覚える地形」表と同じ順。 */
+   狭い画面（560px 以下）で出す。番号は本文の「覚える地形」表と同じ順。 */
 .stat .n{display:none}
 .geo-list{display:none;list-style:none;margin:14px 0 0;padding:0;text-align:left}
 .geo-list li{display:flex;gap:9px;margin:5px 0;font-size:13px;line-height:1.6;color:var(--ink-soft)}
 .geo-list li b{font-weight:500;color:var(--ink)}
 .geo-list .n{display:grid;place-items:center;flex:0 0 auto;width:20px;height:20px;border-radius:50%;
   background:var(--accent);color:var(--on-accent);font-size:11px;font-style:normal;margin-top:2px}
-.mod.map-view.open.no-pins .geo-list{display:block}
-.mod.map-view.no-pins .orbit .stat.geo{display:none}
+
+/* --- 展開図と球の切り替え（§77）-------------------------------------------
+   球は「覚える面」ではなく確かめるためのもう1枚なので、切り替えは控えめに。 */
+.vsw{display:flex;gap:6px;justify-content:center;margin:0 0 12px}
+.vsw-b{font-family:inherit;font-size:12px;letter-spacing:.06em;padding:5px 14px;border-radius:999px;
+  border:1px solid var(--line);background:var(--surface);color:var(--ink-soft);cursor:pointer;
+  transition:color .25s var(--ease),border-color .25s var(--ease),background .25s var(--ease)}
+.vsw-b.is-on{color:var(--ink);border-color:var(--line-strong);background:var(--surface-2)}
+.vsw-b:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+@media (hover:hover){.vsw-b:hover{color:var(--ink);border-color:var(--line-strong)}}
+
+.mod.globe-view .orbit{display:none}
+.mod:not(.globe-view) .globe{display:none}
+.globe{text-align:center}
+/* ★ touch-action は「指が触れた要素」の値で決まる（継承されない）ので、
+   canvas にも書く。無いと指では回せない（§77.5）。
+   none ではなく pan-y にしてある—— 縦のスワイプはページのスクロールに
+   渡し、横のドラッグだけで回す。球の上でスクロールが止まると、
+   狭い画面では先へ進めなくなるため。 */
+.globe-stage{position:relative;width:100%;max-width:440px;margin:0 auto;aspect-ratio:1/1;
+  touch-action:pan-y;cursor:grab}
+.globe-stage.is-drag{cursor:grabbing}
+.globe-cv{display:block;width:100%;height:100%;touch-action:pan-y}
+.globe-fail{position:absolute;inset:0;display:grid;place-items:center;margin:0;color:var(--ink-faint);font-size:13px}
+/* ★ display を持つクラスは UA の [hidden]{display:none} を上書きするので、
+   hidden を付けても消えない。明示的に消す（§77.4）。 */
+.globe-fail[hidden],.globe-list[hidden],.vsw[hidden],.globe[hidden]{display:none}
+.globe-ctl{display:flex;gap:8px;justify-content:center;margin:10px 0 0}
+.globe-b{font-family:inherit;font-size:12px;padding:5px 13px;border-radius:999px;border:1px solid var(--line);
+  background:var(--surface);color:var(--ink-soft);cursor:pointer;
+  transition:color .25s var(--ease),border-color .25s var(--ease)}
+@media (hover:hover){.globe-b:hover{color:var(--ink);border-color:var(--line-strong)}}
+.globe-b:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.globe-list{list-style:none;margin:12px auto 0;padding:0;max-width:440px;text-align:left;
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:2px 12px}
+.globe-list li{display:flex;gap:7px;font-size:12.5px;line-height:1.6;color:var(--ink-soft)}
+/* 月だけ、球でしか見えない裏側の地形が入る（§78.3）。
+   .geo-far は座標と名前を持つだけの入れ物で、画面には出さない。 */
+.geo-far{display:none}
+.globe-list .far{margin-left:6px;font-size:10px;letter-spacing:.08em;color:var(--ink-faint);
+  border:1px solid var(--line);border-radius:999px;padding:0 6px;align-self:center}
+.globe-list .n{display:grid;place-items:center;flex:0 0 auto;width:18px;height:18px;border-radius:50%;
+  background:var(--accent);color:var(--on-accent);font-size:10px;font-style:normal;margin-top:3px}
+.globe-note{max-width:560px;margin:14px auto 0;font-size:12.5px;line-height:1.7;color:var(--ink-faint);text-align:left}
+.globe-cap{margin:10px 0 0;font-size:11px;line-height:1.7;color:var(--ink-faint)}
+@media (max-width:560px){
+  .globe-stage{max-width:300px}
+  .globe-list{grid-template-columns:1fr}
+}
 
 /* --- 演習。解答は <details> なので、印刷時に開く仕掛けを下の @media print に置く --- */
 .ex{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-lg);padding:18px 22px;margin:18px 0}
@@ -341,9 +388,6 @@ code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border
   .mod.map-view.open .orbit .stat.geo b,.mod.map-view.open .orbit .stat.geo .v{display:none}
   .mod.map-view.open .orbit .stat.geo .n{display:block}
   .mod.map-view.open .geo-list{display:block}
-  /* 月は地図に印を持たない。上の丸の指定（同じ詳細度）に負けないよう、
-     クラスを1つ多くして打ち消す。 */
-  .mod.map-view.open.no-pins .orbit .stat.geo{display:none}
   .orbit{display:flex;flex-direction:column;gap:10px}
   .orbit .core{order:-1;max-width:240px;align-self:center;margin:0;width:100%}
   .orbit .links{display:none}
@@ -366,7 +410,7 @@ code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border
   .links{display:none!important}
 }
 </style>
-<link rel="stylesheet" href="../css/lesson-theme.css?v=r59">
+<link rel="stylesheet" href="../css/lesson-theme.css?v=r60">
 </head>
 <body data-page="study" class="is-article" data-node="memoryverse_1-2">
 <canvas id="starfield" aria-hidden="true"></canvas>
@@ -442,6 +486,7 @@ code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border
       <p><strong>4. 閉じる（1分）</strong>——目を閉じて、6区画の枠だけを思い浮かべ、入れたものを言う。</p>
       <p><strong>5. 照合（1分）</strong>——もう一度地図を開き、ずれていたものに印をつける。翌日はその区画から始めます。</p>
       <p><strong>地球だけは 2. までです。</strong>6区画に割って眺めるところまでにとどめ、地表の地名は置きません。地名・地域・国は地球の回（第6回以降）で、同じ地図の上に置いていきます。</p>
+      <p><strong>6. 球で確かめる</strong>——展開図で位置を覚えたら、球に切り替えて同じ地形を探してください。展開図で「左寄り」と覚えたものが、球の既定の向きでどこに見えるかを確かめます。見つからないときは、覚えた位置がずれています。</p>
       <p>地図を大きく見るときの出どころ：USGS Astrogeology（astrogeology.usgs.gov）、NASA Science の各惑星ページ（science.nasa.gov/solar-system/planets）、Wikimedia Commons の各ファイルページ。</p></div>
 
       <div class="box teach"><span class="lab">巡り方は第1回と同じ。③外観で地図を見る</span>
@@ -452,12 +497,30 @@ code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border
       <p>この教材の緯度経度は概略です。正式な値は<strong>USGS Gazetteer of Planetary Nomenclature</strong>（planetarynames.wr.usgs.gov）で、地形名を入れると中心座標と直径が出ます。経度は天体や資料によって東経・西経の取り方が違うので、細かい数値を覚える必要はありません。<strong>覚えるのは「北か南か」「地図の左か右か」だけ</strong>で十分です。</p></div>
     </section>
 
+    <!-- ★ 水星・金星・地球は、展開図そのものが正距円筒 2:1 なので、data-globe で
+     同じファイルを球にも使っている（§78.2）。**これらの地図を差し替えるときは、
+     新しい画像が正距円筒 2:1 か必ず確かめること**。違うなら xxx-globe.jpg を別に用意して
+     data-globe をそちらへ向ける。火星と月は展開図が貼れないので別ファイル。 -->
     <section id="mercury">
       <div class="sec-head"><span class="idx">03</span><h2>水星</h2></div>
-      <div class="mod map-view" data-grid="equi">
+      <div class="mod map-view has-globe" data-globe="../image/memoryverse/mercury-map.jpg?v=r60" data-grid="equi">
         <div class="mod-h"><span class="no">水星</span><span class="ttl">大きな傷跡と、縮んだしわ</span><span class="tag">MERCURY</span></div>
         <div class="mod-b">
-          <div class="orbit"><svg class="grid" aria-hidden="true" preserveAspectRatio="none"></svg><svg class="links" aria-hidden="true" preserveAspectRatio="none"></svg><div class="stat geo" data-n="1" data-x="0.0500" data-y="0.3239"><i class="n">1</i><b>カロリス盆地</b><span class="v">直径 約1,550km</span></div><div class="stat geo" data-n="2" data-x="0.5469" data-y="0.1789"><i class="n">2</i><b>ホクサイ</b><span class="v">白い光条が長く伸びる</span></div><div class="stat geo" data-n="3" data-x="0.1567" data-y="0.6156"><i class="n">3</i><b>ベートーヴェン盆地</b><span class="v">直径 約600kmの古い盆地</span></div><div class="stat geo" data-n="4" data-side="down" data-x="0.3933" data-y="0.8128"><i class="n">4</i><b>ディスカバリー・ルペス</b><span class="v">縮んでできた断層崖</span></div><div class="core"><button type="button" class="img-btn" aria-expanded="false"><figure class="planet-img"><div class="orb"><div class="frame"><img class="map-img" src="../image/memoryverse/mercury-map.jpg" data-alt="https://upload.wikimedia.org/wikipedia/commons/thumb/6/62/Mercury_MESSENGER_MDIS_Basemap_MD3Color_Mosaic_Global_32ppd.jpg/800px-Mercury_MESSENGER_MDIS_Basemap_MD3Color_Mosaic_Global_32ppd.jpg|https://commons.wikimedia.org/wiki/Special:FilePath/Mercury_MESSENGER_MDIS_Basemap_MD3Color_Mosaic_Global_32ppd.jpg?width=800|https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Mercury_MESSENGER_MDIS_Basemap_EnhancedColor_Mosaic_Global_32ppd.jpg/800px-Mercury_MESSENGER_MDIS_Basemap_EnhancedColor_Mosaic_Global_32ppd.jpg" alt="水星の全球地図（メッセンジャーMDISのモザイク）" loading="lazy" decoding="async" onerror="mvNext(this)"><p class="fallback">画像を読み込めませんでした。<br><a href="https://science.nasa.gov/mercury/" target="_blank" rel="noopener">NASAの水星のページで見る</a></p></div></div><figcaption>全球モザイク地図 MDIS MD3 Color<br>線は経度・緯度とも30度ごと（狭い画面は60度ごと）<br>© NASA/JHUAPL/Carnegie（USGS作成）</figcaption></figure><span class="hint"><span class="h-c">クリックで地形を開く</span><span class="h-o">クリックで閉じる</span></span></button></div></div>
+          <div class="vsw" role="group" aria-label="表示の切り替え" hidden>
+            <button type="button" class="vsw-b is-on" data-view="map" aria-pressed="true">地図</button>
+            <button type="button" class="vsw-b" data-view="globe" aria-pressed="false">球</button>
+          </div>
+          <div class="orbit"><svg class="grid" aria-hidden="true" preserveAspectRatio="none"></svg><svg class="links" aria-hidden="true" preserveAspectRatio="none"></svg><div class="stat geo" data-n="1" data-x="0.0500" data-y="0.3239" data-lat="31.7" data-lon="-162.0"><i class="n">1</i><b>カロリス盆地</b><span class="v">直径 約1,550km</span></div><div class="stat geo" data-n="2" data-x="0.5469" data-y="0.1789" data-lat="57.8" data-lon="16.9"><i class="n">2</i><b>ホクサイ</b><span class="v">白い光条が長く伸びる</span></div><div class="stat geo" data-n="3" data-x="0.1567" data-y="0.6156" data-lat="-20.8" data-lon="-123.6"><i class="n">3</i><b>ベートーヴェン盆地</b><span class="v">直径 約600kmの古い盆地</span></div><div class="stat geo" data-n="4" data-side="down" data-x="0.3933" data-y="0.8128" data-lat="-56.3" data-lon="-38.4"><i class="n">4</i><b>ディスカバリー・ルペス</b><span class="v">縮んでできた断層崖</span></div><div class="core"><button type="button" class="img-btn" aria-expanded="false"><figure class="planet-img"><div class="orb"><div class="frame"><img class="map-img" src="../image/memoryverse/mercury-map.jpg" data-alt="https://upload.wikimedia.org/wikipedia/commons/thumb/6/62/Mercury_MESSENGER_MDIS_Basemap_MD3Color_Mosaic_Global_32ppd.jpg/800px-Mercury_MESSENGER_MDIS_Basemap_MD3Color_Mosaic_Global_32ppd.jpg|https://commons.wikimedia.org/wiki/Special:FilePath/Mercury_MESSENGER_MDIS_Basemap_MD3Color_Mosaic_Global_32ppd.jpg?width=800|https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Mercury_MESSENGER_MDIS_Basemap_EnhancedColor_Mosaic_Global_32ppd.jpg/800px-Mercury_MESSENGER_MDIS_Basemap_EnhancedColor_Mosaic_Global_32ppd.jpg" alt="水星の全球地図（メッセンジャーMDISのモザイク）" loading="lazy" decoding="async" onerror="mvNext(this)"><p class="fallback">画像を読み込めませんでした。<br><a href="https://science.nasa.gov/mercury/" target="_blank" rel="noopener">NASAの水星のページで見る</a></p></div></div><figcaption>全球モザイク地図 MDIS MD3 Color<br>線は経度・緯度とも30度ごと（狭い画面は60度ごと）<br>© NASA/JHUAPL/Carnegie（USGS作成）</figcaption></figure><span class="hint"><span class="h-c">クリックで地形を開く</span><span class="h-o">クリックで閉じる</span></span></button></div></div>
+          <div class="globe" hidden>
+            <div class="globe-stage"><canvas class="globe-cv"></canvas><p class="globe-fail" hidden>球を表示できませんでした。展開図でご覧ください。</p></div>
+            <div class="globe-ctl">
+              <button type="button" class="globe-b globe-home">基準に戻す</button>
+              <button type="button" class="globe-b globe-open" aria-pressed="false">地形を開く</button>
+            </div>
+            <ol class="globe-list" hidden></ol>
+            <p class="globe-note">覚えるのは展開図のほうです。球は、展開図で覚えた位置が実物でどう見えるかを確かめるためのものです。既定の向きは東経0度が正面・北が上です。</p>
+            <p class="globe-cap">MESSENGER MDIS MD3 Color 全球モザイク（正距円筒・中央は経度0度、左右の端は±180度）<br>線は経度・緯度とも30度ごと<br>© NASA/JHUAPL/Carnegie（USGS作成）</p>
+          </div>
           <div class="row"><span class="k">見え方</span><span class="v">月に似た灰色のクレーター地形。ただし月と違い、<strong>長い崖が何本も走っている</strong>のが水星の見分けどころ</span></div>
           <div class="row"><span class="k">1日の長さ</span><span class="v">日の出から次の日の出まで、地球の約176日</span></div>
           <div class="row"><span class="k">覚える地形</span><span class="v">
@@ -486,10 +549,24 @@ code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border
 
     <section id="venus">
       <div class="sec-head"><span class="idx">04</span><h2>金星</h2></div>
-      <div class="mod map-view" data-grid="equi">
+      <div class="mod map-view has-globe" data-globe="../image/memoryverse/venus-map.jpg?v=r60" data-grid="equi">
         <div class="mod-h"><span class="no">金星</span><span class="ttl">雲の下に、レーダーで描いた地面</span><span class="tag">VENUS</span></div>
         <div class="mod-b">
-          <div class="orbit"><svg class="grid" aria-hidden="true" preserveAspectRatio="none"></svg><svg class="links" aria-hidden="true" preserveAspectRatio="none"></svg><div class="stat geo" data-n="1" data-side="right" data-x="0.5764" data-y="0.1089"><i class="n">1</i><b>イシュタル大陸</b><span class="v">北の高地</span></div><div class="stat geo" data-n="2" data-x="0.5092" data-y="0.1378"><i class="n">2</i><b>マクスウェル山脈</b><span class="v">高さ 約11km</span></div><div class="stat geo" data-n="3" data-side="left" data-x="0.4425" data-y="0.1189"><i class="n">3</i><b>ラクシュミ平原</b><span class="v">高い溶岩の台地</span></div><div class="stat geo" data-n="4" data-x="0.7911" data-y="0.5322"><i class="n">4</i><b>アフロディーテ大陸</b><span class="v">赤道に沿う高地</span></div><div class="stat geo" data-n="5" data-side="up" data-x="0.0231" data-y="0.4528"><i class="n">5</i><b>サパス山</b><span class="v">盾状の火山</span></div><div class="stat geo" data-n="6" data-x="0.0406" data-y="0.4972"><i class="n">6</i><b>マート山</b><span class="v">2023年に活動の証拠</span></div><div class="core"><button type="button" class="img-btn" aria-expanded="false"><figure class="planet-img"><div class="orb"><div class="frame"><img class="map-img" src="../image/memoryverse/venus-map.jpg" data-alt="https://upload.wikimedia.org/wikipedia/commons/thumb/7/72/Venus_map_NASA_JPL_Magellan-Venera-Pioneer.jpg/800px-Venus_map_NASA_JPL_Magellan-Venera-Pioneer.jpg|https://commons.wikimedia.org/wiki/Special:FilePath/Venus_map_NASA_JPL_Magellan-Venera-Pioneer.jpg?width=800|https://upload.wikimedia.org/wikipedia/commons/thumb/8/85/Venus_globe.jpg/640px-Venus_globe.jpg" alt="金星の全球地図（マゼランのレーダーによる）" loading="lazy" decoding="async" onerror="mvNext(this)"><p class="fallback">画像を読み込めませんでした。<br><a href="https://science.nasa.gov/venus/" target="_blank" rel="noopener">NASAの金星のページで見る</a></p></div></div><figcaption>マゼランのレーダー＋ベネラの色＋パイオニア・ヴィーナス<br>線は経度・緯度とも30度ごと（狭い画面は60度ごと）<br>© NASA/JPL</figcaption></figure><span class="hint"><span class="h-c">クリックで地形を開く</span><span class="h-o">クリックで閉じる</span></span></button></div></div>
+          <div class="vsw" role="group" aria-label="表示の切り替え" hidden>
+            <button type="button" class="vsw-b is-on" data-view="map" aria-pressed="true">地図</button>
+            <button type="button" class="vsw-b" data-view="globe" aria-pressed="false">球</button>
+          </div>
+          <div class="orbit"><svg class="grid" aria-hidden="true" preserveAspectRatio="none"></svg><svg class="links" aria-hidden="true" preserveAspectRatio="none"></svg><div class="stat geo" data-n="1" data-side="right" data-x="0.5764" data-y="0.1089" data-lat="70.4" data-lon="27.5"><i class="n">1</i><b>イシュタル大陸</b><span class="v">北の高地</span></div><div class="stat geo" data-n="2" data-x="0.5092" data-y="0.1378" data-lat="65.2" data-lon="3.3"><i class="n">2</i><b>マクスウェル山脈</b><span class="v">高さ 約11km</span></div><div class="stat geo" data-n="3" data-side="left" data-x="0.4425" data-y="0.1189" data-lat="68.6" data-lon="-20.7"><i class="n">3</i><b>ラクシュミ平原</b><span class="v">高い溶岩の台地</span></div><div class="stat geo" data-n="4" data-x="0.7911" data-y="0.5322" data-lat="-5.8" data-lon="104.8"><i class="n">4</i><b>アフロディーテ大陸</b><span class="v">赤道に沿う高地</span></div><div class="stat geo" data-n="5" data-side="up" data-x="0.0231" data-y="0.4528" data-lat="8.5" data-lon="-171.7"><i class="n">5</i><b>サパス山</b><span class="v">盾状の火山</span></div><div class="stat geo" data-n="6" data-x="0.0406" data-y="0.4972" data-lat="0.5" data-lon="-165.4"><i class="n">6</i><b>マート山</b><span class="v">2023年に活動の証拠</span></div><div class="core"><button type="button" class="img-btn" aria-expanded="false"><figure class="planet-img"><div class="orb"><div class="frame"><img class="map-img" src="../image/memoryverse/venus-map.jpg" data-alt="https://upload.wikimedia.org/wikipedia/commons/thumb/7/72/Venus_map_NASA_JPL_Magellan-Venera-Pioneer.jpg/800px-Venus_map_NASA_JPL_Magellan-Venera-Pioneer.jpg|https://commons.wikimedia.org/wiki/Special:FilePath/Venus_map_NASA_JPL_Magellan-Venera-Pioneer.jpg?width=800|https://upload.wikimedia.org/wikipedia/commons/thumb/8/85/Venus_globe.jpg/640px-Venus_globe.jpg" alt="金星の全球地図（マゼランのレーダーによる）" loading="lazy" decoding="async" onerror="mvNext(this)"><p class="fallback">画像を読み込めませんでした。<br><a href="https://science.nasa.gov/venus/" target="_blank" rel="noopener">NASAの金星のページで見る</a></p></div></div><figcaption>マゼランのレーダー＋ベネラの色＋パイオニア・ヴィーナス<br>線は経度・緯度とも30度ごと（狭い画面は60度ごと）<br>© NASA/JPL</figcaption></figure><span class="hint"><span class="h-c">クリックで地形を開く</span><span class="h-o">クリックで閉じる</span></span></button></div></div>
+          <div class="globe" hidden>
+            <div class="globe-stage"><canvas class="globe-cv"></canvas><p class="globe-fail" hidden>球を表示できませんでした。展開図でご覧ください。</p></div>
+            <div class="globe-ctl">
+              <button type="button" class="globe-b globe-home">基準に戻す</button>
+              <button type="button" class="globe-b globe-open" aria-pressed="false">地形を開く</button>
+            </div>
+            <ol class="globe-list" hidden></ol>
+            <p class="globe-note">覚えるのは展開図のほうです。球は、展開図で覚えた位置が実物でどう見えるかを確かめるためのものです。既定の向きは東経0度が正面・北が上です。</p>
+            <p class="globe-cap">マゼランのレーダー＋ベネラの色＋パイオニア・ヴィーナス（正距円筒・中央は経度0度、左右の端は±180度）<br>線は経度・緯度とも30度ごと<br>© NASA/JPL</p>
+          </div>
           <div class="row"><span class="k">見え方</span><span class="v">可視光では<strong>のっぺりした黄白色の雲</strong>だけで、地面はまったく見えません。地図はすべて<strong>レーダー</strong>で描いたものなので、色は本物ではなく、電波の返り方の強弱を色に変えたものです</span></div>
           <div class="row"><span class="k">雲と大気の回転</span><span class="v">雲は高度 約45〜70km、濃硫酸の粒でできています。大気は約4日で一周し、自転243日の<strong>約60倍速い</strong>。1日の長さ（日の出から次の日の出まで）は地球の約117日</span></div>
           <div class="row"><span class="k">いまも火山活動があるか</span><span class="v">2023年の再解析で、マート山の周辺に地形の変化が見つかりました。火山活動の証拠とされますが、確定していません</span></div>
@@ -520,10 +597,24 @@ code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border
       <div class="box warn"><span class="lab">この層で扱う範囲</span>
       <p>この回の地球は<strong>宇宙から見た姿だけ</strong>です。国名・都市・産物・民族は地球の回（第6回以降）で扱います。ここでは「遠くから見て地球をどう見分けるか」だけを覚えてください。</p></div>
       <!-- 地球だけ経度を東西（180W〜180E）で書く。ほかは東経0〜360（§55.2）。 -->
-      <div class="mod map-view" data-grid="equi" data-lon="we">
+      <div class="mod map-view has-globe" data-globe="../image/memoryverse/earth-map.jpg?v=r60" data-grid="equi" data-lon="we">
         <div class="mod-h"><span class="no">地球</span><span class="ttl">水と雲と、動く板</span><span class="tag">EARTH</span></div>
         <div class="mod-b">
+          <div class="vsw" role="group" aria-label="表示の切り替え" hidden>
+            <button type="button" class="vsw-b is-on" data-view="map" aria-pressed="true">地図</button>
+            <button type="button" class="vsw-b" data-view="globe" aria-pressed="false">球</button>
+          </div>
           <div class="orbit"><svg class="grid" aria-hidden="true" preserveAspectRatio="none"></svg><svg class="links" aria-hidden="true" preserveAspectRatio="none"></svg><!-- 地球には地形ラベルを置かない。地名・地域・国は地球の回（第6回以降）で扱う（§56.2）。 --><div class="core"><button type="button" class="img-btn" aria-expanded="false"><figure class="planet-img"><div class="orb"><div class="frame"><img class="map-img" src="../image/memoryverse/earth-map.jpg" data-alt="https://upload.wikimedia.org/wikipedia/commons/thumb/4/4d/Whole_world_-_land_and_oceans.jpg/800px-Whole_world_-_land_and_oceans.jpg|https://commons.wikimedia.org/wiki/Special:FilePath/Whole_world_-_land_and_oceans.jpg?width=800|https://upload.wikimedia.org/wikipedia/commons/4/4d/Whole_world_-_land_and_oceans.jpg" alt="地球の全球地図（衛星観測をつないだ雲のない地表）" loading="lazy" decoding="async" onerror="mvNext(this)"><p class="fallback">画像を読み込めませんでした。<br><a href="https://science.nasa.gov/earth/" target="_blank" rel="noopener">NASAの地球のページで見る</a></p></div></div><span class="map-note">この層では地球の地形に名前をつけません。地名・国・地域は地球の回（第6回以降）で扱います。</span><figcaption>Blue Marble（雲を除いた地表、2002年）<br>線は経度・緯度とも30度ごと（狭い画面は60度ごと）<br>© NASA/GSFC</figcaption></figure><span class="hint"><span class="h-c">クリックで地形を開く</span><span class="h-o">クリックで閉じる</span></span></button></div></div>
+          <div class="globe" hidden>
+            <div class="globe-stage"><canvas class="globe-cv"></canvas><p class="globe-fail" hidden>球を表示できませんでした。展開図でご覧ください。</p></div>
+            <div class="globe-ctl">
+              <button type="button" class="globe-b globe-home">基準に戻す</button>
+              <button type="button" class="globe-b globe-open" aria-pressed="false">地形を開く</button>
+            </div>
+            <ol class="globe-list" hidden></ol>
+            <p class="globe-note">覚えるのは展開図のほうです。球は、展開図で覚えた位置が実物でどう見えるかを確かめるためのものです。既定の向きは東経0度が正面・北が上です。</p>
+            <p class="globe-cap">Blue Marble（雲を除いた地表、2002年。正距円筒・中央は経度0度、左右の端は±180度）<br>線は経度・緯度とも30度ごと<br>© NASA/GSFC</p>
+          </div>
           <div class="row"><span class="k">見え方</span><span class="v">青い海、白い雲と極の氷、茶色〜緑の陸。<strong>他の3つと違って色が何種類もある</strong>のが地球です。夜の側には都市の光の筋が見えます</span></div>
           <div class="row"><span class="k">外から見た数値</span><span class="v">海 約71%／陸 約29%。つねに約3分の2が雲の下にあり、反射率（アルベド）は約0.30。対流圏は約8〜17kmで、半径6,371kmの<strong>0.2%ほど</strong>。水の内訳は 海 約97%／氷 約2%／地下水・河川・湖 約1%。高さと深さはエベレスト8,849m、マリアナ海溝 約10,900m</span></div>
           <div class="row"><span class="k">見分ける目印</span><span class="v">大きさの比べ方や色の見え方は外観の数値で扱います。地表の地名・地域・国は、この層では扱いません。地球の回（第6回以降）で、同じ地図の上に置いていきます。</span></div>
@@ -536,12 +627,27 @@ code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border
     <section id="moon">
       <div class="sec-head"><span class="idx">06</span><h2>月</h2></div>
       <p>月は地球の②周りにあたるので、地球のすぐあとに置きます。第1回では1行だけでしたが、この回から<strong>独立したカード</strong>にします。可搬層を廃止したため、衛星も覚える対象です。</p>
-      <!-- no-pins：月だけ地図にピンを打たない（満月写真の秤動、§53.7）。
-           ラベルは地図の上ではなく、番号つきリストとして地図の下に出す（§54.6）。 -->
-      <div class="mod map-view no-pins" data-grid="orth">
-        <div class="mod-h"><span class="no">月</span><span class="ttl">同じ面しか見せない、地球の衛星</span><span class="tag">MOON / 接続点</span></div>
+      <!-- 月も他の4枚と同じ扱い（§76）。ピンを打たなかったのは正射投影の較正が
+           できていなかったためだが、§55.3 でグリッドの外周円がリムに一致することを
+           確認したので、同じ式（MVDISK）で座標を出せる。 -->
+      <div class="mod map-view has-globe" data-globe="../image/memoryverse/moon-lroc.jpg?v=r60" data-grid="equi">
+        <div class="mod-h"><span class="no">月</span><span class="ttl">同じ面しか見せない、地球の衛星</span><span class="tag">MOON</span></div>
         <div class="mod-b">
-          <div class="orbit"><svg class="grid" aria-hidden="true" preserveAspectRatio="none"></svg><svg class="links" aria-hidden="true" preserveAspectRatio="none"></svg><div class="stat geo" data-n="1"><i class="n">1</i><b>静かの海</b><span class="v">アポロ11号が降りた海</span></div><div class="stat geo" data-n="2"><i class="n">2</i><b>雨の海</b><span class="v">表側最大級の円い海</span></div><div class="stat geo" data-n="3"><i class="n">3</i><b>嵐の大洋</b><span class="v">左側ぜんぶを占める暗部</span></div><div class="stat geo" data-n="4"><i class="n">4</i><b>危難の海</b><span class="v">右端近くの卵形</span></div><div class="stat geo" data-n="5"><i class="n">5</i><b>ティコ</b><span class="v">地球の回への入口</span></div><div class="stat geo" data-n="6"><i class="n">6</i><b>コペルニクス</b><span class="v">段になった内壁</span></div><div class="core"><button type="button" class="img-btn" aria-expanded="false"><figure class="planet-img"><div class="orb"><div class="frame"><img class="map-img" src="../image/memoryverse/moon-map.jpg" data-alt="https://upload.wikimedia.org/wikipedia/commons/thumb/6/61/Moon_names.svg/800px-Moon_names.svg.png|https://commons.wikimedia.org/wiki/Special:FilePath/Moon_names.svg?width=800|https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/Moon_landing_sites.svg/800px-Moon_landing_sites.svg.png" alt="月の表側の地形名を書き込んだ図" loading="lazy" decoding="async" onerror="mvNext(this)"><p class="fallback">画像を読み込めませんでした。<br><a href="https://science.nasa.gov/moon/" target="_blank" rel="noopener">NASAの月のページで見る</a></p></div></div><figcaption>表側（名前は下の一覧で示す）<br>線は経度・緯度とも30度ごと（狭い画面は60度ごと）<br>© Gregory H. Revera（CC BY-SA 3.0）</figcaption></figure><span class="hint"><span class="h-c">クリックで地形を開く</span><span class="h-o">クリックで閉じる</span></span></button></div></div>
+          <div class="vsw" role="group" aria-label="表示の切り替え" hidden>
+            <button type="button" class="vsw-b is-on" data-view="map" aria-pressed="true">地図</button>
+            <button type="button" class="vsw-b" data-view="globe" aria-pressed="false">球</button>
+          </div>
+          <div class="orbit"><svg class="grid" aria-hidden="true" preserveAspectRatio="none"></svg><svg class="links" aria-hidden="true" preserveAspectRatio="none"></svg><div class="stat geo" data-n="1" data-side="up" data-x="0.5872" data-y="0.4528" data-lat="8.5" data-lon="31.4"><i class="n">1</i><b>静かの海</b><span class="v">アポロ11号が降りた海</span></div><div class="stat geo" data-n="2" data-side="up" data-x="0.4567" data-y="0.3178" data-lat="32.8" data-lon="-15.6"><i class="n">2</i><b>雨の海</b><span class="v">表側最大級の円い海</span></div><div class="stat geo" data-n="3" data-side="left" data-x="0.3406" data-y="0.3978" data-lat="18.4" data-lon="-57.4"><i class="n">3</i><b>嵐の大洋</b><span class="v">左側ぜんぶを占める暗部</span></div><div class="stat geo" data-n="4" data-side="down" data-x="0.6642" data-y="0.4056" data-lat="17.0" data-lon="59.1"><i class="n">4</i><b>危難の海</b><span class="v">右端近くの卵形</span></div><div class="stat geo" data-n="5" data-side="down" data-x="0.4683" data-y="0.7406" data-lat="-43.3" data-lon="-11.4"><i class="n">5</i><b>ティコ</b><span class="v">光条が伸びる若いクレーター</span></div><div class="stat geo" data-n="6" data-side="down" data-x="0.4442" data-y="0.4467" data-lat="9.6" data-lon="-20.1"><i class="n">6</i><b>コペルニクス</b><span class="v">段になった内壁</span></div><div class="stat geo" data-n="7" data-far="1" data-side="up" data-x="0.0306" data-y="0.7944" data-lat="-53.0" data-lon="191.0"><i class="n">7</i><b>南極エイトケン盆地</b><span class="v">直径 約2,500kmの衝突跡</span></div><div class="stat geo" data-n="8" data-far="1" data-side="up" data-x="0.9114" data-y="0.3483" data-lat="27.3" data-lon="148.1"><i class="n">8</i><b>モスクワの海</b><span class="v">裏側では珍しい海</span></div><div class="stat geo" data-n="9" data-far="1" data-side="up" data-x="0.8583" data-y="0.6133" data-lat="-20.4" data-lon="129.0"><i class="n">9</i><b>チオルコフスキー</b><span class="v">暗い底を持つクレーター</span></div><div class="core"><button type="button" class="img-btn" aria-expanded="false"><figure class="planet-img"><div class="orb"><div class="frame"><img class="map-img" src="../image/memoryverse/moon-lroc.jpg?v=r60" data-alt="https://planetarymaps.usgs.gov/cgi-bin/mapserv?map=/maps/earth/moon_simp_cyl.map&amp;service=WMS&amp;version=1.1.1&amp;request=GetMap&amp;layers=LROC_WAC&amp;styles=&amp;srs=EPSG:4326&amp;bbox=-180,-90,180,90&amp;width=2048&amp;height=1024&amp;format=image/jpeg" alt="月の全球地図（LRO WAC のモザイク。表側と裏側の両方）" loading="lazy" decoding="async" onerror="mvNext(this)"><p class="fallback">画像を読み込めませんでした。<br><a href="https://science.nasa.gov/moon/" target="_blank" rel="noopener">NASAの月のページで見る</a></p></div></div><figcaption>LRO WAC 全球モザイク（正距円筒・中央は東経0度、左右の端は±180度）<br>線は経度・緯度とも30度ごと（狭い画面は60度ごと）<br>© NASA/GSFC/Arizona State University（パブリックドメイン）</figcaption></figure><span class="hint"><span class="h-c">クリックで地形を開く</span><span class="h-o">クリックで閉じる</span></span></button></div></div>
+          <div class="globe" hidden>
+            <div class="globe-stage"><canvas class="globe-cv"></canvas><p class="globe-fail" hidden>球を表示できませんでした。展開図でご覧ください。</p></div>
+            <div class="globe-ctl">
+              <button type="button" class="globe-b globe-home">基準に戻す</button>
+              <button type="button" class="globe-b globe-open" aria-pressed="false">地形を開く</button>
+            </div>
+            <ol class="globe-list" hidden></ol>
+            <p class="globe-note">覚えるのは展開図のほうです。球は、展開図で覚えた位置が実物でどう見えるかを確かめるためのものです。既定の向きは東経0度が正面・北が上です。<strong>月は地球につねに同じ面を向けています。既定の向きで見えている面が、夜空で実際に見えている側です。</strong></p>
+            <p class="globe-cap">LROC WAC 全球モザイク（正距円筒・中央は東経0度、左右の端は±180度）。<strong>裏側も入っています</strong><br>線は経度・緯度とも30度ごと<br>© NASA/GSFC/ASU（USGS Astrogeology、パブリックドメイン）</p>
+          </div>
           <div class="row"><span class="k">基本</span><span class="v">半径1,737km（地球の約0.27倍）。地球からの距離は平均 約38万4,400km（光で<strong>約1.3秒</strong>）。重さは地球の約0.0123倍で、表面の重力は約6分の1。自転と公転はどちらも約27.3日で、<strong>つねに同じ面を地球へ</strong>向けています</span></div>
           <div class="row"><span class="k">見え方</span><span class="v">暗い灰色の<strong>海</strong>（溶岩が固まった平原）と、明るい灰色の<strong>高地</strong>（クレーターだらけ）。裏側はほとんど高地だけで、見た目がまったく違います。海の割合は 表 約31%／裏 約1%</span></div>
           <div class="row"><span class="k">覚える地形</span><span class="v">
@@ -553,7 +659,9 @@ code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border
             <tr><td><strong>危難の海</strong><br>Mare Crisium</td><td>縁から少し離れた独立した卵形の海</td><td><strong>右端近くの小さな楕円</strong>。北緯約17度</td></tr>
             <tr><td><strong>ティコ</strong><br>Tycho</td><td>若いクレーター。白い光条が全球に伸びる</td><td><strong>下寄りの中央。南緯43度・西経11度</strong>。満月のとき最も目立つ白い点</td></tr>
             <tr><td><strong>コペルニクス</strong><br>Copernicus</td><td>直径約93kmのクレーター。段になった内壁</td><td>中央よりやや左下。北緯約10度</td></tr>
-            <tr><td><strong>南極エイトケン盆地</strong><br>South Pole–Aitken</td><td>直径約2,500kmの巨大な衝突跡。太陽系最大級</td><td><strong>裏側</strong>なので地球からは見えない。南極をまたぐ</td></tr>
+            <tr><td><strong>南極エイトケン盆地</strong><br>South Pole–Aitken</td><td>直径約2,500kmの巨大な衝突跡。太陽系最大級</td><td><strong>裏側</strong>なので地球からは見えない。南極をまたぐ。<strong>球に切り替えると見られる</strong>（南緯53度・東経191度）</td></tr>
+            <tr><td><strong>モスクワの海</strong><br>Mare Moscoviense</td><td>裏側では珍しい、はっきりした海</td><td><strong>裏側</strong>。北緯27度・東経148度。<strong>球でのみ見える</strong></td></tr>
+            <tr><td><strong>チオルコフスキー</strong><br>Tsiolkovskiy</td><td>暗い底を持つクレーター。直径約184km</td><td><strong>裏側</strong>。南緯20度・東経129度。<strong>球でのみ見える</strong></td></tr>
           </table></div></span></div>
           <div class="row"><span class="k">起源の説</span><span class="v">いま最も支持されているのは<strong>ジャイアント・インパクト説</strong>——約45億年前、原始の地球に火星ほどの大きさの天体が衝突し、飛び散った破片が集まって月になった、という考えです。
           <ul>
@@ -577,17 +685,34 @@ code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border
           <p style="font-size:12.5px;color:var(--ink-faint);margin:2px 0 0">出典：NASA／ESA／JAXA／ISRO各機関の発表（2026年9月時点）。今後の計画日程は変わるので、年と「何が初めてか」だけを覚え、予定は覚えないでください。</p>
           </span></div>
           <div class="box teach" style="margin:12px 0 0"><span class="lab">接続点</span>
-          <p><strong>ティコ・クレーターが、太陽系から地球へ移るときの入口です。</strong>地球の回（第6回以降）へ移るときは必ずここから入り、戻るときもここへ戻ります。ここには地形以外の情報を置きません。</p></div>
+          <p>このシリーズでは、太陽系の回から地球の回（第6回以降）へ移るとき、頭の中で必ず月のティコ・クレーターを経由します。どこから入ってどこへ戻るかを決めておくと、2つの地図が混ざらずに済みます。ティコには地形以外の情報を置きません。</p></div>
         </div>
       </div>
     </section>
 
     <section id="mars">
       <div class="sec-head"><span class="idx">07</span><h2>火星</h2></div>
-      <div class="mod map-view" data-grid="mars">
+      <div class="mod map-view has-globe" data-globe="../image/memoryverse/mars-globe.jpg?v=r60" data-grid="mars">
         <div class="mod-h"><span class="no">火星</span><span class="ttl">太陽系でいちばん高い山と、いちばん長い谷</span><span class="tag">MARS</span></div>
         <div class="mod-b">
-          <div class="orbit"><svg class="grid" aria-hidden="true" preserveAspectRatio="none"></svg><svg class="links" aria-hidden="true" preserveAspectRatio="none"></svg><div class="stat geo" data-n="1" data-side="up" data-x="0.1469" data-y="0.4284"><i class="n">1</i><b>オリンポス山</b><span class="v">高さ 約22km</span></div><div class="stat geo" data-n="2" data-x="0.2018" data-y="0.5099"><i class="n">2</i><b>タルシス三山</b><span class="v">火山が一直線に3つ</span></div><div class="stat geo" data-n="3" data-side="down" data-x="0.3443" data-y="0.5817"><i class="n">3</i><b>マリネリス峡谷</b><span class="v">長さ 約4,000km</span></div><div class="stat geo" data-n="4" data-x="0.6860" data-y="0.7331"><i class="n">4</i><b>ヘラス盆地</b><span class="v">直径 約2,300km・最も低い</span></div><div class="stat geo" data-n="5" data-x="0.3417" data-y="0.2108"><i class="n">5</i><b>北の低地</b><span class="v">上半分ぜんぶが低い</span></div><div class="stat geo" data-n="6" data-x="0.8636" data-y="0.5414"><i class="n">6</i><b>ゲール・クレーター</b><span class="v">キュリオシティ</span></div><div class="stat geo" data-n="7" data-x="0.7048" data-y="0.4299"><i class="n">7</i><b>ジェゼロ・クレーター</b><span class="v">パーサヴィアランス</span></div><div class="core"><button type="button" class="img-btn" aria-expanded="false"><figure class="planet-img"><div class="orb"><div class="frame"><img class="map-img" src="../image/memoryverse/mars-map.jpg" data-alt="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Mars_topography_%28MOLA_dataset%29_with_poles_HiRes.jpg/800px-Mars_topography_%28MOLA_dataset%29_with_poles_HiRes.jpg|https://commons.wikimedia.org/wiki/Special:FilePath/Mars_topography_(MOLA_dataset)_with_poles_HiRes.jpg?width=800|https://upload.wikimedia.org/wikipedia/commons/2/2c/Mars_topography_%28MOLA_dataset%29_with_poles_HiRes.jpg" alt="火星の全球地形図（MOLAの高度データ）" loading="lazy" decoding="async" onerror="mvNext(this)"><p class="fallback">画像を読み込めませんでした。<br><a href="https://science.nasa.gov/mars/" target="_blank" rel="noopener">NASAの火星のページで見る</a></p></div></div><figcaption>MOLA（マーズ・グローバル・サーベイヤー）による高度図<br>線は経度・緯度とも30度ごと（狭い画面は60度ごと）<br>© NASA/JPL/GSFC</figcaption></figure><span class="hint"><span class="h-c">クリックで地形を開く</span><span class="h-o">クリックで閉じる</span></span></button></div></div>
+          <!-- 展開図と球の切り替え（§77）。球は three.js で描くので、
+               押されたときに初めて読み込む。WebGL が無い環境では JS がこの
+               切り替え自体を消すので、展開図だけが残る。 -->
+          <div class="vsw" role="group" aria-label="表示の切り替え" hidden>
+            <button type="button" class="vsw-b is-on" data-view="map" aria-pressed="true">地図</button>
+            <button type="button" class="vsw-b" data-view="globe" aria-pressed="false">球</button>
+          </div>
+          <div class="orbit"><svg class="grid" aria-hidden="true" preserveAspectRatio="none"></svg><svg class="links" aria-hidden="true" preserveAspectRatio="none"></svg><div class="stat geo" data-n="1" data-side="up" data-x="0.1469" data-y="0.4284" data-lat="18.7" data-lon="-133.8"><i class="n">1</i><b>オリンポス山</b><span class="v">高さ 約22km</span></div><div class="stat geo" data-n="2" data-x="0.2018" data-y="0.5099" data-lat="1.4" data-lon="-113.0"><i class="n">2</i><b>タルシス三山</b><span class="v">火山が一直線に3つ</span></div><div class="stat geo" data-n="3" data-side="down" data-x="0.3443" data-y="0.5817" data-lat="-14.0" data-lon="-59.0"><i class="n">3</i><b>マリネリス峡谷</b><span class="v">長さ 約4,000km</span></div><div class="stat geo" data-n="4" data-x="0.6860" data-y="0.7331" data-lat="-42.4" data-lon="70.5"><i class="n">4</i><b>ヘラス盆地</b><span class="v">直径 約2,300km・最も低い</span></div><div class="stat geo" data-n="5" data-x="0.3417" data-y="0.2108" data-lat="55.0" data-lon="-60.0"><i class="n">5</i><b>北の低地</b><span class="v">上半分ぜんぶが低い</span></div><div class="stat geo" data-n="6" data-x="0.8636" data-y="0.5414" data-lat="-5.4" data-lon="137.8"><i class="n">6</i><b>ゲール・クレーター</b><span class="v">キュリオシティ</span></div><div class="stat geo" data-n="7" data-x="0.7048" data-y="0.4299" data-lat="18.4" data-lon="77.6"><i class="n">7</i><b>ジェゼロ・クレーター</b><span class="v">パーサヴィアランス</span></div><div class="core"><button type="button" class="img-btn" aria-expanded="false"><figure class="planet-img"><div class="orb"><div class="frame"><img class="map-img" src="../image/memoryverse/mars-map.jpg" data-alt="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Mars_topography_%28MOLA_dataset%29_with_poles_HiRes.jpg/800px-Mars_topography_%28MOLA_dataset%29_with_poles_HiRes.jpg|https://commons.wikimedia.org/wiki/Special:FilePath/Mars_topography_(MOLA_dataset)_with_poles_HiRes.jpg?width=800|https://upload.wikimedia.org/wikipedia/commons/2/2c/Mars_topography_%28MOLA_dataset%29_with_poles_HiRes.jpg" alt="火星の全球地形図（MOLAの高度データ）" loading="lazy" decoding="async" onerror="mvNext(this)"><p class="fallback">画像を読み込めませんでした。<br><a href="https://science.nasa.gov/mars/" target="_blank" rel="noopener">NASAの火星のページで見る</a></p></div></div><figcaption>MOLA（マーズ・グローバル・サーベイヤー）による高度図<br>線は経度・緯度とも30度ごと（狭い画面は60度ごと）<br>© NASA/JPL/GSFC</figcaption></figure><span class="hint"><span class="h-c">クリックで地形を開く</span><span class="h-o">クリックで閉じる</span></span></button></div></div>
+          <div class="globe" hidden>
+            <div class="globe-stage"><canvas class="globe-cv"></canvas><p class="globe-fail" hidden>球を表示できませんでした。展開図でご覧ください。</p></div>
+            <div class="globe-ctl">
+              <button type="button" class="globe-b globe-home">基準に戻す</button>
+              <button type="button" class="globe-b globe-open" aria-pressed="false">地形を開く</button>
+            </div>
+            <ol class="globe-list" hidden></ol>
+            <p class="globe-note">覚えるのは展開図のほうです。球は、展開図で覚えた位置が実物でどう見えるかを確かめるためのものです。既定の向きは東経0度が正面・北が上です。</p>
+            <p class="globe-cap">MOLA 色つき陰影図（正距円筒・中央は東経0度、左右の端は東経±180度）<br>線は経度・緯度とも30度ごと<br>© NASA/GSFC ／ USGS Astrogeology（パブリックドメイン）</p>
+          </div>
           <div class="row"><span class="k">見え方</span><span class="v">酸化鉄による赤褐色。白い極冠と、暗い模様（砂が吹き払われて岩が露出した部分）。カードの高度図を見ると、<strong>北半球が低く、南半球が高い</strong>という大きな段差がひと目で分かります</span></div>
           <div class="row"><span class="k">1日の長さ</span><span class="v">地球とほぼ同じ 約24時間39分</span></div>
           <div class="row"><span class="k">砂嵐</span><span class="v">数年に一度、全球を覆う規模になります</span></div>
@@ -796,7 +921,7 @@ code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border
             <li><strong>嵐の大洋</strong>＝月の表側、左側全体を占める広い暗部</li>
             <li><strong>ヘラス盆地</strong>＝火星、南緯約42度、地図の右下の大きな円。深さ約7km</li>
             <li><strong>アフロディーテ大陸</strong>＝金星、赤道に沿って横に長い高地。中央から右</li>
-            <li><strong>ティコ</strong>＝月の表側、南緯43度・下寄りの中央。白い光条が全球に伸びる。<strong>地球の回への入口</strong></li>
+            <li><strong>ティコ</strong>＝月の表側、南緯43度・下寄りの中央。白い光条が全球に伸びる</li>
             <li><strong>オリンポス山</strong>＝火星、北緯約19度、地図の左寄りの白い丸。高さ約22km</li>
           </ul></div></details>
       </div>
@@ -887,7 +1012,7 @@ code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border
         <tr><td>地図の上に事実を結びつける（この回の中心）</td><td>地図と一緒に学んだ文章の事実が思い出しやすくなる（Kulhavy らの一連の研究）</td><td>多くは短い教材と短い保持期間での結果。頭の中だけの地図で同じ効果が出るか</td><td><span class="g m">中</span></td></tr>
         <tr><td>地形を隣接関係で覚える（演習5）</td><td>手がかりを増やすと想起が助けられるという一般的な知見と整合する。<strong>この具体的なやり方を検証した研究は確認できていない</strong></td><td>単独で覚えるより優れていること</td><td><span class="g w">弱</span></td></tr>
         <tr><td>6区画に割ってから名前を入れる（02の手順）</td><td>検証した研究は確認できていない。想起の手がかりを一定にするための設計判断</td><td>区画の数や割り方が最適であること</td><td><span class="g w">弱</span></td></tr>
-        <tr><td>層の移動を固定の接続点に限る</td><td>検証した研究は確認できていない。層をまたいだときに混ざるのを防ぐための設計判断</td><td>接続点を決めないやり方より優れていること</td><td><span class="g w">弱</span></td></tr>
+        <tr><td>層の移動を、いつも同じ1か所から行う</td><td>検証した研究は確認できていない。層をまたいだときに混ざるのを防ぐための設計判断</td><td>移動する場所を決めないやり方より優れていること</td><td><span class="g w">弱</span></td></tr>
         <tr><td>場所法を知識の学習に使う</td><td>場所法の効果（Dresler et al. 2017 ほか）は<strong>無関係な語リスト</strong>で示されたもの</td><td>意味のある知識の長期定着に場所法が効くこと</td><td><span class="g w">弱</span></td></tr>
         <tr><td>観察の言語化（Bトラック）</td><td>Naghshineh et al. 2008／Gurwin et al. 2018。観察訓練で記述の量と質が向上</td><td>記憶力が伸びること</td><td><span class="g m">中</span></td></tr>
       </table>
@@ -1172,29 +1297,210 @@ function onScroll(){
 window.addEventListener('scroll',onScroll,{passive:true});
 window.addEventListener('resize',onScroll); onScroll();
 
-/* --- 印刷時に解答（<details>）を開く ------------------------------------------
-   本命は CSS の `details::details-content{content-visibility:visible}`。これは
-   Chrome 131 / Safari 18.4 / Firefox 139 以降でしか効かないので、それ以前向けに
-   open 属性を足しておく。閉じていたものだけ印章を付け、印刷後に元へ戻す。 */
-window.addEventListener('beforeprint',function(){
-  document.querySelectorAll('.ex details:not([open])').forEach(function(d){
-    d.setAttribute('data-mv-print','');d.open=true;
-  });
-});
-window.addEventListener('afterprint',function(){
-  document.querySelectorAll('.ex details[data-mv-print]').forEach(function(d){
-    d.open=false;d.removeAttribute('data-mv-print');
-  });
-});
+/* === 回せる球（§77 で火星に試作、§78 で5天体へ）===========================
+   ★ 展開図（.orbit）が「覚える面」で、球は確かめるためのもう1枚。だから
+     ・既定の向きを必ず東経0度・北が上に戻す（毎回同じ絵になること）
+     ・拡大縮小はしない（回転だけ）
+     ・星空は描かない（ページの canvas と二重になる）
+   ★ テクスチャは正距円筒（2:1）でなければ貼れない。どの画像を使うかは
+     カードの data-globe が持つ。水星・金星・地球は展開図そのものが正距円筒
+     なので同じファイルを指しており、火星と月だけ球専用の画像がある（§78.2）。
+   ★ three.js は js/vendor/ に置き、［球］が最初に押されたときだけ動的 import
+     する。import() は同じ URL なら解決済みモジュールを返すので、5天体ぶん
+     押しても読み込みは1回きり（§78.4）。                                   */
+(function(){
+  var mods=[].slice.call(document.querySelectorAll('.mod.has-globe'));
+  if(!mods.length)return;
+  var reduce=window.matchMedia('(prefers-reduced-motion: reduce)');
+  var DEG=Math.PI/180, THREE=null;
 
-/* --- 目次の引き出し（900px 以下） -------------------------------------------- */
-var body=document.body,mb=document.getElementById('menuBtn'),scrim=document.getElementById('scrim');
-mb.addEventListener('click',function(){var o=body.classList.toggle('nav-open');mb.setAttribute('aria-expanded',o)});
-scrim.addEventListener('click',function(){body.classList.remove('nav-open')});
-document.getElementById('toc').addEventListener('click',function(e){if(e.target.closest('a'))body.classList.remove('nav-open')});
+  function hasWebGL(){
+    try{var c=document.createElement('canvas');
+      return !!(window.WebGLRenderingContext&&(c.getContext('webgl2')||c.getContext('webgl')));}
+    catch(e){return false}
+  }
+  if(!hasWebGL())return;           /* 使えない環境では切り替えごと出さない */
+
+  function load(){                  /* 何度呼ばれても実体の読み込みは1回 */
+    return import('../js/vendor/three.min.js?v=r60');
+  }
+
+  mods.forEach(function(mod){
+    var sw=mod.querySelector('.vsw'),box=mod.querySelector('.globe');
+    if(!sw||!box)return;
+    var stage=box.querySelector('.globe-stage'),cv=box.querySelector('.globe-cv');
+    var fail=box.querySelector('.globe-fail'),list=box.querySelector('.globe-list');
+    var bHome=box.querySelector('.globe-home'),bOpen=box.querySelector('.globe-open');
+    /* ピンは展開図のラベル（.stat.geo）と、月だけ持つ裏側用（.geo-far）から拾う。
+       どちらも data-lat / data-lon を持つものだけが対象。 */
+    var src=[].slice.call(mod.querySelectorAll('.stat.geo[data-lat],.geo-far [data-lat]'));
+    sw.hidden=false;
+    if(!src.length){bOpen.hidden=true;}      /* 地球は地形名を置かない（§56.2） */
+
+    var G=null,loading=false,raf=0;
+    var rotX=0,rotY=0,vx=0,vy=0,drag=false,px=0,py=0;
+
+    function setView(v){
+      mod.classList.toggle('globe-view',v==='globe');
+      box.hidden=(v!=='globe');
+      [].forEach.call(sw.querySelectorAll('.vsw-b'),function(b){
+        var on=b.dataset.view===v;b.classList.toggle('is-on',on);b.setAttribute('aria-pressed',on?'true':'false');});
+      if(v==='globe'){home(true);build();start();}else{stop();}
+    }
+    sw.addEventListener('click',function(e){
+      var b=e.target.closest('.vsw-b');if(!b)return;setView(b.dataset.view);
+    });
+
+    function home(instant){
+      vx=vy=0;
+      if(instant||reduce.matches){rotX=0;rotY=0;apply();return;}
+      var x0=rotX,y0=rotY,t0=performance.now(),D=420;
+      (function step(t){
+        var k=Math.min(1,(t-t0)/D),e=1-Math.pow(1-k,3);
+        rotX=x0*(1-e);rotY=y0*(1-e);apply();
+        if(k<1)requestAnimationFrame(step);
+      })(t0);
+    }
+    bHome.addEventListener('click',function(){home(false)});
+
+    bOpen.addEventListener('click',function(){
+      mod.classList.toggle('open');syncOpen();
+      var ib=mod.querySelector('.img-btn');
+      if(ib)ib.setAttribute('aria-expanded',mod.classList.contains('open')?'true':'false');
+    });
+    function syncOpen(){
+      var on=mod.classList.contains('open');
+      bOpen.textContent=on?'地形を閉じる':'地形を開く';
+      bOpen.setAttribute('aria-pressed',on?'true':'false');
+      list.hidden=!on||!src.length;
+      if(G)G.pins.forEach(function(s){s.visible=on});
+    }
+
+    function apply(){
+      if(!G)return;
+      G.grp.quaternion.copy(G.qx.setFromAxisAngle(G.AX,rotX)).multiply(G.qy.setFromAxisAngle(G.AY,rotY));
+    }
+
+    stage.addEventListener('pointerdown',function(e){
+      drag=true;px=e.clientX;py=e.clientY;vx=vy=0;
+      stage.classList.add('is-drag');
+      try{stage.setPointerCapture(e.pointerId)}catch(err){}
+    });
+    stage.addEventListener('pointermove',function(e){
+      if(!drag)return;
+      var dx=e.clientX-px,dy=e.clientY-py;px=e.clientX;py=e.clientY;
+      rotY+=dx*0.006;rotX+=dy*0.006;
+      rotX=Math.max(-85*DEG,Math.min(85*DEG,rotX));
+      vx=dx*0.006;vy=dy*0.006;apply();
+    });
+    function end(e){
+      if(!drag)return;drag=false;stage.classList.remove('is-drag');
+      try{stage.releasePointerCapture(e.pointerId)}catch(err){}
+      if(reduce.matches){vx=vy=0}
+    }
+    stage.addEventListener('pointerup',end);
+    stage.addEventListener('pointercancel',end);
+
+    function start(){if(!raf)raf=requestAnimationFrame(tick)}
+    function stop(){if(raf)cancelAnimationFrame(raf);raf=0}
+    function tick(){
+      raf=requestAnimationFrame(tick);
+      if(!G)return;
+      if(!drag&&!reduce.matches&&(Math.abs(vx)>1e-4||Math.abs(vy)>1e-4)){
+        rotY+=vx;rotX+=vy;rotX=Math.max(-85*DEG,Math.min(85*DEG,rotX));
+        vx*=0.94;vy*=0.94;apply();
+      }
+      G.rn.render(G.sc,G.cam);
+    }
+
+    function size(){
+      if(!G)return;
+      var w=stage.clientWidth,h=stage.clientHeight;
+      if(!w||!h)return;
+      G.rn.setPixelRatio(Math.min(window.devicePixelRatio||1,2));
+      G.rn.setSize(w,h,false);
+      G.cam.aspect=w/h;G.cam.updateProjectionMatrix();
+    }
+    window.addEventListener('resize',size);
+
+    function build(){
+      if(G||loading)return;loading=true;
+      load().then(function(T){
+        THREE=T;
+        var R=1;
+        var rn=new T.WebGLRenderer({canvas:cv,antialias:true,alpha:true});
+        rn.setClearAlpha(0);
+        var sc=new T.Scene();
+        /* ★ 4.1 だと球が画面いっぱいになり、高緯度のピン（金星のイシュタル大陸など）の
+           バッジが canvas の外へ出て切れる。少し引いて余白を作る（§78.5）。 */
+        var cam=new T.PerspectiveCamera(30,1,0.1,20);cam.position.set(0,0,4.35);
+        var grp=new T.Group();sc.add(grp);
+
+        var tex=new T.TextureLoader().load(mod.dataset.globe);
+        tex.colorSpace=T.SRGBColorSpace;
+        tex.anisotropy=Math.min(8,rn.capabilities.getMaxAnisotropy());
+        /* テクスチャの u=0 は経度−180度。東経0度を正面へ出すため球だけ −90度回す
+           （ピンとグリッドは回さない側に置くので、素直な式のまま書ける）。 */
+        var ball=new T.Mesh(new T.SphereGeometry(R,96,64),new T.MeshBasicMaterial({map:tex}));
+        ball.rotation.y=-Math.PI/2;
+        grp.add(ball);
+
+        var P=function(la,lo){var a=la*DEG,b=lo*DEG,c=Math.cos(a);
+          return new T.Vector3(R*c*Math.sin(b),R*Math.sin(a),R*c*Math.cos(b));};
+        function line(pts,strong){
+          var g=new T.BufferGeometry().setFromPoints(pts);
+          return new T.Line(g,new T.LineBasicMaterial({color:0xffffff,transparent:true,
+            opacity:strong?0.55:0.22}));
+        }
+        var la,lo,t,u,pts;
+        for(la=-60;la<=60;la+=30){
+          pts=[];for(t=0;t<=360;t+=3)pts.push(P(la,t).multiplyScalar(1.002));
+          grp.add(line(pts,la===0));
+        }
+        for(lo=-180;lo<180;lo+=30){
+          pts=[];for(u=-90;u<=90;u+=3)pts.push(P(u,lo).multiplyScalar(1.002));
+          grp.add(line(pts,lo===0));
+        }
+
+        function badge(n){
+          var c=document.createElement('canvas');c.width=c.height=64;
+          var x=c.getContext('2d');
+          x.beginPath();x.arc(32,32,26,0,Math.PI*2);x.fillStyle='#3d8bff';x.fill();
+          x.lineWidth=5;x.strokeStyle='#ffffff';x.stroke();
+          x.fillStyle='#ffffff';x.font='bold 30px system-ui,sans-serif';
+          x.textAlign='center';x.textBaseline='middle';x.fillText(String(n),32,34);
+          var tx=new T.CanvasTexture(c);tx.colorSpace=T.SRGBColorSpace;return tx;
+        }
+        var pins=[],items=[];
+        src.sort(function(a,b){return (+a.dataset.n)-(+b.dataset.n)});
+        src.forEach(function(st){
+          var n=st.dataset.n,nm=st.querySelector('b').textContent;
+          var sp=new T.Sprite(new T.SpriteMaterial({map:badge(n),depthTest:true,transparent:true}));
+          sp.position.copy(P(parseFloat(st.dataset.lat),parseFloat(st.dataset.lon)).multiplyScalar(1.012));
+          sp.scale.setScalar(0.11);sp.visible=false;
+          grp.add(sp);pins.push(sp);
+          items.push('<li><i class="n">'+n+'</i>'+nm+(st.dataset.far?'<span class="far">裏側</span>':'')+'</li>');
+        });
+        list.innerHTML=items.join('');
+
+        G={rn:rn,sc:sc,cam:cam,grp:grp,pins:pins,qx:new T.Quaternion(),qy:new T.Quaternion(),
+           AX:new T.Vector3(1,0,0),AY:new T.Vector3(0,1,0)};
+        size();apply();syncOpen();start();loading=false;
+      }).catch(function(e){
+        loading=false;fail.hidden=false;
+        if(window.console&&console.warn)console.warn('球を初期化できませんでした',e);
+      });
+    }
+
+    var ib0=mod.querySelector('.img-btn');
+    if(ib0)ib0.addEventListener('click',function(){setTimeout(syncOpen,0)});
+    syncOpen();
+  });
+})();
+
 </script>
-<script src="../js/layout.js?v=r59"></script>
-<script src="../js/main.js?v=r59"></script>
-<script src="../js/starfield.js?v=r59"></script>
+<script src="../js/layout.js?v=r60"></script>
+<script src="../js/main.js?v=r60"></script>
+<script src="../js/starfield.js?v=r60"></script>
 </body>
 </html>
