@@ -410,6 +410,29 @@ code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border
   .links{display:none!important}
 }
 
+/* --- 環の並びの図（土星のカード）------------------------------------------
+   真横から見た並び。横だけが縮尺で、距離は NSSDC の Rings Fact Sheet の
+   「惑星半径の何倍か」をそのまま使う。開閉の規則は断面と同じで、
+   閉じているときは帯の濃淡だけ、開くと環の名前とカッシーニの間隙の名前が出る。
+   ★ 狭い画面では図の中の文字が 5px 台まで縮むので、名前（.lay-lab）も
+     数値と物差し（.ring-num）も畳み、図の下の1行（.ring-narrow）に落とす。
+     断面図で使った「ラベルを畳んで一覧に落とす」のと同じ考え方（§54.5）。 */
+.ring-fig{margin:14px 0 4px;width:100%}
+.ring-svg{width:100%;height:auto;display:block}
+.ring-svg text{font-family:var(--font-body)}
+.ring-svg .lay-lab{opacity:0;visibility:hidden;transition:opacity .3s var(--ease)}
+.mod.open .ring-svg .lay-lab{opacity:1;visibility:visible}
+@media (prefers-reduced-motion:reduce){.ring-svg .lay-lab{transition:none}}
+.ring-fig figcaption{margin-top:10px;font-size:10.5px;color:var(--ink-faint);line-height:1.6}
+.ring-narrow{display:none;margin:10px 0 0;font-size:13px;line-height:1.7;color:var(--ink-soft)}
+.ring-narrow b{color:var(--ink);font-weight:500}
+.ring-narrow .ring-names{display:none}
+@media (max-width:560px){
+  .ring-svg .lay-lab,.ring-svg .ring-num{display:none}
+  .ring-narrow{display:block}
+  .mod.open .ring-narrow .ring-names{display:inline}
+}
+
 /* 近赤外の静止画（天王星）。球にはしない1枚 —— 回せる球は「可視光でどう見えるか」
    を見せる面で、これはその可視光で見えないものを補う証拠として本文に添える。 */
 .fig.ir{max-width:560px;margin:14px 0 4px}
@@ -676,6 +699,59 @@ code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border
           <div class="row"><span class="k">密度</span><span class="v">平均密度 <strong>0.687 g/cm³</strong>。<strong>水より軽い</strong>——太陽系で唯一です（NASA Planetary Fact Sheet）</span></div>
           <div class="row"><span class="k">帯と縞</span><span class="v">木星より<strong>淡い</strong>。<strong>北極に六角形の雲</strong>があります</span></div>
           <div class="row"><span class="k">環</span><span class="v">この回の主役です。<strong>主にほぼ純粋な水の氷の粒</strong>でできています。内側から<strong>D・C・B・A・F・G・E</strong>の順。<strong>A環とB環の間がカッシーニの間隙</strong>。主要なA・B・C環の厚さは平均でおよそ<strong>10メートル</strong>（場所により数十メートル程度）で、主要な環の差し渡しは約275,000km——<strong>幅は厚さの3,000万倍</strong>です（NASA）。<strong>E環はエンケラドゥスの噴出物が供給源</strong></span></div>
+          <figure class="ring-fig">
+            <svg class="ring-svg" viewBox="0 0 640 378" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="土星の環を真横から見た並び。本体から外へ D C B カッシーニの間隙 A F G E の順に並ぶ">
+              <defs><linearGradient id="eFade" x1="0" x2="1" y1="0" y2="0"><stop offset="0" stop-color="#fff" stop-opacity=".075"/><stop offset="1" stop-color="#fff" stop-opacity=".015"/></linearGradient></defs>
+              <g class="ring-num"><text x="14" y="20" font-size="12.5" font-weight="500" fill="var(--ink)">土星の環 ― 真横から見た並び（横は土星の半径を1とした距離）</text></g>
+              <line x1="36.0" y1="180.0" x2="620.0" y2="180.0" stroke="rgba(255,255,255,.14)" stroke-width="1" stroke-dasharray="3 5"/>
+              <path d="M36.0 50.5A129.5 129.5 0 0 1 36.0 309.5Z" fill="var(--accent-tint)" stroke="var(--accent)" stroke-width="1.3"/>
+              <line x1="36.0" y1="42.5" x2="36.0" y2="317.5" stroke="var(--line-strong)" stroke-width="1" stroke-dasharray="4 4"/>
+              <g class="ring-num">
+                <text x="98.2" y="176.0" font-size="11.5" fill="var(--ink)" text-anchor="middle">本体</text>
+                <text x="98.2" y="193.0" font-size="10" fill="var(--ink-soft)" text-anchor="middle">半径 60,268km</text>
+              </g>
+              <rect x="179.8" y="161.0" width="16.3" height="38.0" fill="rgba(255,255,255,0.070)"/>
+              <rect x="196.5" y="161.0" width="37.2" height="38.0" fill="rgba(255,255,255,0.260)"/>
+              <rect x="233.7" y="161.0" width="54.9" height="38.0" fill="rgba(255,255,255,0.720)"/>
+              <rect x="299.0" y="161.0" width="31.1" height="38.0" fill="rgba(255,255,255,0.550)"/>
+              <rect x="336.5" y="161.0" width="1.6" height="38.0" fill="rgba(255,255,255,0.550)"/>
+              <rect x="392.8" y="161.0" width="15.5" height="38.0" fill="rgba(255,255,255,0.070)"/>
+              <rect x="423.0" y="161.0" width="183.0" height="38.0" fill="url(#eFade)"/>
+              <path d="M608.0 180.0l11 0m-4 -4l4 4l-4 4" fill="none" stroke="var(--ink-faint)" stroke-width="1.2"/>
+              <line x1="293.8" y1="201.0" x2="293.8" y2="213.0" stroke="var(--amber)" stroke-width="1"/>
+              <g class="ring-num">
+              <line x1="330.1" y1="159.0" x2="330.1" y2="135.0" stroke="rgba(255,255,255,.34)" stroke-width="1"/>
+              <text x="335.1" y="132.0" font-size="10" fill="var(--ink-soft)">主要な環の外縁　136,780km（半径の2.27倍）</text>
+              <text x="618.0" y="271.0" font-size="10" fill="var(--ink-faint)" text-anchor="end">いちばん外側の環は 480,000km（半径の約8倍）まで →</text>
+              <line x1="36.0" y1="331.5" x2="620.0" y2="331.5" stroke="var(--line-strong)" stroke-width="1"/>
+              <line x1="36.0" y1="331.5" x2="36.0" y2="336.5" stroke="var(--line-strong)" stroke-width="1"/>
+              <text x="36.0" y="347.5" font-size="9.5" fill="var(--ink-faint)" text-anchor="middle">0</text>
+              <line x1="165.5" y1="331.5" x2="165.5" y2="336.5" stroke="var(--line-strong)" stroke-width="1"/>
+              <text x="165.5" y="347.5" font-size="9.5" fill="var(--ink-faint)" text-anchor="middle">1</text>
+              <line x1="295.1" y1="331.5" x2="295.1" y2="336.5" stroke="var(--line-strong)" stroke-width="1"/>
+              <text x="295.1" y="347.5" font-size="9.5" fill="var(--ink-faint)" text-anchor="middle">2</text>
+              <line x1="424.6" y1="331.5" x2="424.6" y2="336.5" stroke="var(--line-strong)" stroke-width="1"/>
+              <text x="424.6" y="347.5" font-size="9.5" fill="var(--ink-faint)" text-anchor="middle">3</text>
+              <line x1="554.2" y1="331.5" x2="554.2" y2="336.5" stroke="var(--line-strong)" stroke-width="1"/>
+              <text x="554.2" y="347.5" font-size="9.5" fill="var(--ink-faint)" text-anchor="middle">4</text>
+              <text x="620.0" y="325.5" font-size="9.5" fill="var(--ink-faint)" text-anchor="end">土星の半径の何倍か</text>
+              <text x="14" y="368.0" font-size="10" fill="var(--ink-faint)">環の厚さは平均10メートルほどで、この図では表せない（帯の高さは見せるためのもので、厚さではない）</text>
+              </g>
+              <g class="lay-lab">
+                <text x="188.0" y="155.0" font-size="13" fill="var(--ink)" text-anchor="middle">D</text>
+                <text x="215.1" y="155.0" font-size="13" fill="var(--ink)" text-anchor="middle">C</text>
+                <text x="261.1" y="155.0" font-size="13" fill="var(--ink)" text-anchor="middle">B</text>
+                <text x="314.5" y="155.0" font-size="13" fill="var(--ink)" text-anchor="middle">A</text>
+                <text x="336.5" y="155.0" font-size="13" fill="var(--ink)" text-anchor="middle">F</text>
+                <text x="400.5" y="155.0" font-size="13" fill="var(--ink)" text-anchor="middle">G</text>
+                <text x="475.0" y="155.0" font-size="13" fill="var(--ink)" text-anchor="middle">E</text>
+                <text x="293.8" y="226.0" font-size="11.5" fill="var(--amber)" text-anchor="middle">カッシーニの間隙</text>
+                <text x="293.8" y="239.0" font-size="9.5" fill="var(--ink-faint)" text-anchor="middle">117,507〜122,340km（幅 約4,800km）</text>
+              </g>
+            </svg>
+            <p class="ring-narrow">本体の半径 60,268km、主要な環の外縁 136,780km（半径の2.27倍）、いちばん外側の環は 480,000km（半径の約8倍）まで。<span class="ring-names">内側から <b>D・C・B</b> ー <b>カッシーニの間隙</b> ー <b>A・F・G・E</b>。</span></p>
+            <figcaption>閉じたまま「どこに広い隙間があるか」を見てから開いてください。距離は NSSDC の Saturnian Rings Fact Sheet の値（土星の半径の何倍か）をそのまま使っています。<strong>濃淡は、光の通しにくさ（光学的厚み）とアルベドの順に合わせた模式</strong>で、正確な明るさの比ではありません。D環・G環・E環がほとんど見えないのは、実際に非常に薄いからです。</figcaption>
+          </figure>
           <div class="row"><span class="k">衛星</span><span class="v"><strong>285</strong>（IAU小惑星センターの確認総数、2026年3月時点）。主要な<strong>タイタン</strong>と<strong>エンケラドゥス</strong>は、次に足す衛星のカードで扱います</span></div>
         </div>
       </div>
@@ -872,6 +948,69 @@ code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border
       <div class="sec-head"><span class="idx">08</span><h2>環をくらべる</h2></div>
       <div class="box principle"><span class="lab">4つとも環を持つ。見えるのは土星だけ</span>
       <p><strong>巨大惑星は4つとも環を持っています。</strong>ただし、小さな望遠鏡で<strong>見えるのは土星の環だけ</strong>です。木星・天王星・海王星の環は細く暗く、探査機や掩蔽の観測で見つかりました。「環＝土星」と覚えていると、この3つを取りこぼします。</p></div>
+      <figure class="fig">
+        <svg viewBox="0 0 640 360" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="巨大惑星4つの環を同じ縮尺で並べた比較図">
+          <defs><linearGradient id="eFade2" x1="0" x2="1" y1="0" y2="0"><stop offset="0" stop-color="#fff" stop-opacity=".075"/><stop offset="1" stop-color="#fff" stop-opacity=".015"/></linearGradient></defs>
+          <text x="14" y="20" font-size="12.5" font-weight="500" fill="var(--ink)">4つの環 ― 同じ縮尺で並べる（横は各惑星の半径を1とした距離）</text>
+          <text x="626.0" y="20" font-size="10.5" fill="var(--ink-soft)" text-anchor="end">白いほど光を通しにくい環</text>
+          <text x="54.0" y="72.0" font-size="12" fill="var(--ink)" text-anchor="end">木星</text>
+          <path d="M64.0 55.0H175.7a13.0 13.0 0 0 1 0 26.0H64.0Z" fill="var(--accent-tint)" stroke="var(--accent)" stroke-width="1.1"/>
+          <rect x="219.8" y="55.0" width="58.6" height="26.0" fill="rgba(255,255,255,0.060)"/>
+          <rect x="278.4" y="55.0" width="10.0" height="26.0" fill="rgba(255,255,255,0.200)"/>
+          <rect x="288.4" y="55.0" width="92.2" height="26.0" fill="rgba(255,255,255,0.050)"/>
+          <rect x="380.6" y="55.0" width="69.8" height="26.0" fill="rgba(255,255,255,0.035)"/>
+          <text x="283.4" y="49.0" font-size="9.5" fill="var(--ink-soft)" text-anchor="middle">主環</text>
+          <text x="54.0" y="140.0" font-size="12" fill="var(--ink)" text-anchor="end">土星</text>
+          <path d="M64.0 123.0H175.7a13.0 13.0 0 0 1 0 26.0H64.0Z" fill="var(--accent-tint)" stroke="var(--accent)" stroke-width="1.1"/>
+          <rect x="202.4" y="123.0" width="15.7" height="26.0" fill="rgba(255,255,255,0.070)"/>
+          <rect x="218.4" y="123.0" width="35.8" height="26.0" fill="rgba(255,255,255,0.260)"/>
+          <rect x="254.2" y="123.0" width="52.9" height="26.0" fill="rgba(255,255,255,0.720)"/>
+          <rect x="317.0" y="123.0" width="29.9" height="26.0" fill="rgba(255,255,255,0.550)"/>
+          <rect x="353.2" y="123.0" width="1.5" height="26.0" fill="rgba(255,255,255,0.550)"/>
+          <rect x="407.3" y="123.0" width="15.0" height="26.0" fill="rgba(255,255,255,0.070)"/>
+          <rect x="436.3" y="123.0" width="163.7" height="26.0" fill="url(#eFade2)"/>
+          <path d="M602.0 136.0l11 0m-4 -4l4 4l-4 4" fill="none" stroke="var(--ink-faint)" stroke-width="1.2"/>
+          <text x="598.0" y="161.0" font-size="9" fill="var(--ink-faint)" text-anchor="end">E環は半径の約8倍まで</text>
+          <text x="312.1" y="117.0" font-size="9.5" fill="var(--amber)" text-anchor="middle">カッシーニの間隙</text>
+          <text x="54.0" y="208.0" font-size="12" fill="var(--ink)" text-anchor="end">天王星</text>
+          <path d="M64.0 191.0H175.7a13.0 13.0 0 0 1 0 26.0H64.0Z" fill="var(--accent-tint)" stroke="var(--accent)" stroke-width="1.1"/>
+          <rect x="268.1" y="191.0" width="1.5" height="26.0" fill="rgba(255,255,255,0.200)"/>
+          <rect x="269.9" y="191.0" width="1.5" height="26.0" fill="rgba(255,255,255,0.200)"/>
+          <rect x="271.7" y="191.0" width="1.5" height="26.0" fill="rgba(255,255,255,0.200)"/>
+          <rect x="282.1" y="191.0" width="1.5" height="26.0" fill="rgba(255,255,255,0.220)"/>
+          <rect x="286.6" y="191.0" width="1.5" height="26.0" fill="rgba(255,255,255,0.220)"/>
+          <rect x="292.6" y="191.0" width="1.5" height="26.0" fill="rgba(255,255,255,0.180)"/>
+          <rect x="296.2" y="191.0" width="1.5" height="26.0" fill="rgba(255,255,255,0.220)"/>
+          <rect x="300.8" y="191.0" width="1.5" height="26.0" fill="rgba(255,255,255,0.200)"/>
+          <rect x="307.9" y="191.0" width="1.5" height="26.0" fill="rgba(255,255,255,0.100)"/>
+          <rect x="314.1" y="191.0" width="1.5" height="26.0" fill="rgba(255,255,255,0.400)"/>
+          <rect x="392.2" y="191.0" width="1.5" height="26.0" fill="rgba(255,255,255,0.070)"/>
+          <rect x="540.5" y="191.0" width="1.5" height="26.0" fill="rgba(255,255,255,0.060)"/>
+          <text x="314.1" y="185.0" font-size="9.5" fill="var(--ink-soft)" text-anchor="middle">ε環</text>
+          <text x="54.0" y="276.0" font-size="12" fill="var(--ink)" text-anchor="end">海王星</text>
+          <path d="M64.0 259.0H175.7a13.0 13.0 0 0 1 0 26.0H64.0Z" fill="var(--accent-tint)" stroke="var(--accent)" stroke-width="1.1"/>
+          <rect x="274.9" y="259.0" width="1.5" height="26.0" fill="rgba(255,255,255,0.060)"/>
+          <rect x="331.8" y="259.0" width="1.5" height="26.0" fill="rgba(255,255,255,0.160)"/>
+          <rect x="331.8" y="259.0" width="20.2" height="26.0" fill="rgba(255,255,255,0.040)"/>
+          <rect x="351.9" y="259.0" width="1.5" height="26.0" fill="rgba(255,255,255,0.080)"/>
+          <rect x="380.7" y="259.0" width="1.5" height="26.0" fill="rgba(255,255,255,0.200)"/>
+          <text x="380.7" y="253.0" font-size="9.5" fill="var(--ink-soft)" text-anchor="middle">アダムズ環</text>
+          <line x1="64.0" y1="313.0" x2="614.0" y2="313.0" stroke="var(--line-strong)" stroke-width="1"/>
+          <line x1="64.0" y1="313.0" x2="64.0" y2="318.0" stroke="var(--line-strong)" stroke-width="1"/>
+          <text x="64.0" y="329.0" font-size="9.5" fill="var(--ink-faint)" text-anchor="middle">0</text>
+          <line x1="188.7" y1="313.0" x2="188.7" y2="318.0" stroke="var(--line-strong)" stroke-width="1"/>
+          <text x="188.7" y="329.0" font-size="9.5" fill="var(--ink-faint)" text-anchor="middle">1</text>
+          <line x1="313.3" y1="313.0" x2="313.3" y2="318.0" stroke="var(--line-strong)" stroke-width="1"/>
+          <text x="313.3" y="329.0" font-size="9.5" fill="var(--ink-faint)" text-anchor="middle">2</text>
+          <line x1="438.0" y1="313.0" x2="438.0" y2="318.0" stroke="var(--line-strong)" stroke-width="1"/>
+          <text x="438.0" y="329.0" font-size="9.5" fill="var(--ink-faint)" text-anchor="middle">3</text>
+          <line x1="562.6" y1="313.0" x2="562.6" y2="318.0" stroke="var(--line-strong)" stroke-width="1"/>
+          <text x="562.6" y="329.0" font-size="9.5" fill="var(--ink-faint)" text-anchor="middle">4</text>
+          <text x="614.0" y="307.0" font-size="9.5" fill="var(--ink-faint)" text-anchor="end">惑星の半径の何倍か</text>
+          <text x="14" y="352.0" font-size="9.5" fill="var(--ink-faint)">本体（青）は横だけが縮尺。縦の高さと環の厚さは表していない</text>
+        </svg>
+        <figcaption><strong>4つとも環を持っていますが、広くて明るい帯になっているのは土星だけ</strong>です。木星・天王星・海王星の環は、同じ縮尺で並べると細い線にしかなりません。距離は NSSDC の各 Rings Fact Sheet（惑星の半径の何倍か）。濃淡は光の通しにくさの順に合わせた模式で、正確な明るさの比ではありません。天王星は13本のうち、この表に値のある12本を描いています（いちばん内側のζ環は載っていません）。</figcaption>
+      </figure>
       <div class="table-scroll">
       <table class="mini-table">
         <tr><th style="width:12%">惑星</th><th style="width:19%">素材</th><th style="width:12%">明るさ</th><th style="width:21%">本数か構造</th><th style="width:20%">見つかった経緯</th><th>供給源</th></tr>
