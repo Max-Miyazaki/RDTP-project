@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>3-1 近似と展開｜物理数学I 3章 近似と展開 | Academic Gates</title>
+<meta name="description" content="1次近似からテイラー展開まで。係数が微分で決まる理由と、誤差の見積もり方。mgh と 1/2mv^2 の由来も。物理数学I 3章 近似と展開／3-1。">
+<link rel="icon" href="../../favicon.ico" sizes="32x32">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+<!-- ★ ライト/ダーク切替は停止中（DESIGN.md §44）。サイト全体がダーク基調なので、
+     記事だけテーマが変わるのは一貫性を欠くという判断。**復活させるには次の1行の
+     コメントを外すだけでよい**（js/theme.js も css/lesson-theme.css も残してある）。
+     data-theme を付ける主体がこれしか無いので、外しておけば :root[data-theme="light"]
+     は構造的にマッチしない。逆に読み込んだままボタンだけ消すと、OS がライト設定の
+     端末が勝手にライトになり、戻す手段が無くなる（§44.2）。
+     復活時の挙動: テーマは描画前に同期で決まり（FOUC 防止）、ボタンの設置は
+     layout.js がヘッダーを書き出したあと DOMContentLoaded で行われる。 -->
+<!-- <script src="../js/theme.js?v=r64"></script> -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;500&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+<!-- サイト共通 → 記事固有 → テーマ上書き の順で読む（lesson-theme.css は
+     記事の <style> より後ろに置くこと。css/lesson-theme.css 冒頭の注記どおり） -->
+<link rel="stylesheet" href="../css/style.css?v=r64">
+<!-- MathJax: 設定ブロックはローダーより「前」に置く（DESIGN.md §11b）。
+     フォールバックは this.src= ではなく createElement 方式（同§）。 -->
+<script>
+window.MathJax={tex:{inlineMath:[['\\(','\\)']],displayMath:[['\\[','\\]']],tags:'none'},svg:{fontCache:'global'},options:{skipHtmlTags:['script','noscript','style','textarea','pre','code']}};
+</script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"
+        onerror="this.onerror=null;var s=document.createElement('script');s.async=true;s.src='https://unpkg.com/mathjax@3/es5/tex-svg.js';document.head.appendChild(s);"></script>
+<style>
+/* 3-1 近似と展開 — 記事固有のスタイルのみ。2-2 と同じ構成をそのまま使う。
+   共通のリセット・背景・星・ヘッダー/フッター・ボタン・見出し階層・本文リズムは
+   css/style.css が持つ（DESIGN.md §35, §36）。ここに残すのは、この教材の
+   構造（レール／演習ブロック／図版）と、教育用の色トークンだけ。 */
+:root{
+  /* 教材固有のトークン。本体と同値のもの（--bg --surface --nav-bg --ink --line
+     --line-strong --glow-cool --font --nav-clear --ease --radius-lg/md）は
+     css/style.css 側に定義があるので、ここでは持たない。
+     --ink-soft / --ink-faint は本体より明るい値を「意図的に」維持している。
+     本体値に寄せると 13.5px の解説文が 4.56:1 → 3.66:1 と AA を割るため（§36）。 */
+  --surface-2:rgba(255,255,255,.045);
+  --ink-soft:rgba(255,255,255,.68);
+  --ink-faint:rgba(255,255,255,.46);
+  --line-soft:rgba(255,255,255,.05);
+  --accent-deep:#a8c9ff;
+  --accent-tint:rgba(77,148,255,.12);
+  --amber:#ffb46b;--amber-tint:rgba(255,160,70,.08);--amber-line:rgba(255,160,70,.32);
+  --good:#72e3ad;--good-tint:rgba(114,227,173,.08);--good-line:rgba(114,227,173,.28);
+  --key:#ff6fa5;--key-tint:rgba(255,61,139,.08);--key-line:rgba(255,61,139,.28);
+  --teach:#a48bff;--teach-tint:rgba(123,77,255,.11);--teach-line:rgba(123,77,255,.38);
+  --mono:ui-monospace,'SFMono-Regular',Menlo,Consolas,monospace;
+  --rail-w:250px;
+}
+body{font-size:15.5px;line-height:1.9;line-break:strict;overflow-x:hidden}
+
+/* --- レイアウト（左に目次レール／右に本文の2カラム） ------------------------
+   本文列 760px は日本語の長文＋数式に合わせた measure。style.css の共通記事
+   ルールは `body.is-article main > section:not(.rail)`（詳細度 0,2,3）と
+   `… ~ section:not(.rail)`（0,3,4）で 900px と 160px パディングをかけてくる。
+   こちらは `.main` を噛ませて 0,3,2 / 0,4,3 とし、確実に上回る（§36）。 */
+/* 全幅。左寄せのレイアウトで、余った幅は右に流す（§43）。
+   §40 で一度 max-width を外して差し戻しているが、あれは「中央寄せのまま左右を
+   対称にする」変更で、本文の位置も幅も変わらなかったため戻した。今回は本文を
+   860px に広げて左揃えにするので、目的も結果も違う。
+   レールの左余白は 1280px → 1440px にかけて 0 → 32px。狭い画面ではまず余白を
+   削って本文幅に回す（レール幅 250px は目次の文字量で決まるので触らない）。 */
+.wrap{display:flex;padding-top:var(--nav-clearance);
+      padding-left:clamp(0px, calc((100vw - 1280px) * .2), 32px)}
+.rail{width:var(--rail-w);flex:0 0 var(--rail-w);position:sticky;top:var(--nav-clearance);height:calc(100vh - var(--nav-clearance));overflow-y:auto;padding:18px 14px 60px 22px;border-right:1px solid var(--line)}
+/* 左パディング＝レールと本文の間隔。1024px → 1280px にかけて 24 → 56px。
+   これも狭い画面では縮めて本文幅に回す。 */
+.main{flex:1 1 auto;min-width:0;
+      padding:0 clamp(24px, calc(24px + (100vw - 1024px) * .125), 56px) 110px}
+/* 本文列 860px。760px では display 数式が 6 本はみ出していた（解答の入れ子
+   パディングで、.sol の中は本文列より 132px 狭い箱になる）。全 82 本が収まる
+   最小幅は実測 853px（§43.2）。中央寄せをやめて左揃えにし、余りは右へ。 */
+body.is-article .main > .lesson-hero,
+body.is-article .main > section:not(.rail),
+body.is-article .main > .foot{max-width:860px;margin-left:0;margin-right:auto;padding-left:0;padding-right:0}
+.rail .brand{font-weight:400;font-size:15px;line-height:1.45;margin:2px 0 4px}
+.rail .brand small{display:block;font-size:10px;font-weight:500;color:var(--ink-faint);letter-spacing:.2em;margin-top:6px}
+.progress-wrap{height:2px;background:var(--line);border-radius:99px;margin:16px 0 18px;overflow:hidden}
+.progress-bar{height:100%;width:0;background:linear-gradient(90deg,var(--accent),#a8c9ff);transition:width .15s linear}
+.toc{list-style:none;margin:0;padding:0;font-size:12.5px}
+.toc .part{font-size:10px;letter-spacing:.2em;color:var(--ink-faint);margin:16px 0 5px;padding-left:2px}
+.toc a{display:block;text-decoration:none;color:var(--ink-soft);padding:4px 10px;border-radius:999px;transition:color var(--dur) var(--ease),background var(--dur) var(--ease)}
+.toc a:hover{color:var(--ink);background:var(--surface-2)}
+.toc a.active{color:var(--ink);background:var(--accent-tint)}
+.toc a .n{font-size:10.5px;color:var(--ink-faint);margin-right:8px;font-variant-numeric:tabular-nums}
+.toc a.active .n{color:var(--accent)}
+
+/* --- 記事の導入部。`.hero` は index.html 専用で、style.css が
+   `.hero h1/.hero p/.hero .eyebrow` に黒い text-shadow をかけるため使えない（§36）。 --- */
+.lesson-hero{padding:64px 0 34px;border-bottom:1px solid var(--line)}
+.lesson-hero h1{font-weight:300;font-size:clamp(28px,4vw,48px);line-height:1.25;letter-spacing:-.02em;margin:0 0 22px}
+.lesson-hero h1 .sub{display:block;font-size:.52em;font-weight:300;color:var(--ink-soft);letter-spacing:0;margin-top:12px}
+.lesson-hero p{color:var(--ink-soft);margin:0 0 12px}
+.lesson-hero .lead{font-size:16.5px;color:var(--ink-soft)}
+/* .eyebrow 本体は style.css の共通コンポーネント。色と余白だけ上書きする
+   （共通の --text-tertiary は 11px の小さな文字で 3.66:1 と AA を割るため） */
+.eyebrow{color:var(--ink-faint);margin-bottom:18px}
+
+section{border-bottom:1px solid var(--line-soft);scroll-margin-top:var(--nav-clearance)}
+/* 縦の余白も共通ルールに勝つ必要がある（先頭セクションも2つ目以降も同じ 56px） */
+body.is-article .main > section:not(.rail),
+body.is-article .main > section:not(.rail) ~ section:not(.rail){padding-top:56px;padding-bottom:12px}
+.sec-head{display:flex;align-items:baseline;gap:14px;margin-bottom:10px}
+.sec-head .idx{font-size:.72rem;font-weight:500;letter-spacing:.2em;color:var(--ink-faint);padding-top:4px;flex:0 0 auto;font-variant-numeric:tabular-nums}
+.sec-head .idx::after{content:' —'}
+body.is-article main h2{font-weight:400;font-size:clamp(21px,2.6vw,28px);line-height:1.3;letter-spacing:-.01em;margin:0}
+body.is-article main h3{font-weight:400;font-size:17px;margin:30px 0 6px;color:var(--ink)}
+body.is-article main h4{font-weight:500;font-size:14.5px;margin:18px 0 4px;color:var(--ink)}
+body.is-article main p{margin:10px 0;color:var(--ink-soft)}
+body.is-article main ul,body.is-article main ol{margin:10px 0;padding-left:1.3em;color:var(--ink-soft)}
+li{margin:4px 0}
+strong{font-weight:500;color:var(--ink)}
+code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);border-radius:6px;padding:1px 6px;color:var(--accent-deep)}
+mjx-container{color:var(--ink)}
+mjx-container[display="true"]{margin:14px 0!important;overflow-x:auto;overflow-y:hidden;padding:2px 0}
+
+/* 別行立て数式だけ、入れ子のパディングの外へ広げる（§46）。
+   解答や色付きボックスの中の数式は、section → .drill(20) → .attempt(22) →
+   .sol(20) と積み上がるパディングで、本文列より最大 132px 狭い箱に入っていた。
+   1024px では 82本中 6本がはみ出し、最大 +127px。**文章の字下げはそのまま**に、
+   数式だけを外へ出す。
+   値は「祖先のパディングの合計 − 8px」。8px 残すのは枠線に重ねないため。
+   全量（合計そのまま）だと .sol 左端の青いアクセントバーの上に分数が乗る。
+   はみ出しが無い幅では見た目が変わらない（箱が左右対称に広がるだけで中身は
+   中央揃えのまま。1440px で適用前後のピクセル差 0 を確認済み）。
+   !important は既存の margin:14px 0!important を上書きするため。
+   新しい入れ子を足すときは、この表に1行足すこと（現在 .hint の中に別行立ては無い）。
+     .box 20 / .drill 20 / .attempt 22 / .sol 20 */
+.box mjx-container[display="true"],
+.drill > mjx-container[display="true"]{margin:14px -12px!important}
+.attempt mjx-container[display="true"]{margin:14px -14px!important}
+.drill .attempt mjx-container[display="true"],
+.attempt .sol mjx-container[display="true"]{margin:14px -34px!important}
+.drill .attempt .sol mjx-container[display="true"]{margin:14px -54px!important}
+
+.box{border-radius:var(--radius-md);padding:16px 20px;margin:18px 0;border:1px solid var(--line);background:var(--surface)}
+.box .lab{font-size:.7rem;letter-spacing:.14em;font-weight:500;display:block;margin-bottom:6px}
+.box p{max-width:none}
+.box p:first-of-type{margin-top:2px}.box p:last-child{margin-bottom:0}
+/* 枠線は必ずトークン経由にすること。ここに直書きすると lesson-theme.css の
+   ライト上書きが効かず、暗い背景用の明るい色がライトでパステルになる（§41）。 */
+.box.principle{background:var(--key-tint);border-color:var(--key-line)}.box.principle .lab{color:var(--key)}
+.box.target{background:var(--good-tint);border-color:var(--good-line)}.box.target .lab{color:var(--good)}
+.box.warn{background:var(--amber-tint);border-color:var(--amber-line)}.box.warn .lab{color:var(--amber)}
+.box.teach{background:var(--teach-tint);border-color:var(--teach-line)}.box.teach .lab{color:var(--teach)}
+.box.teach .lab::before{content:"◎ "}
+
+.table-scroll{overflow-x:auto;margin:14px 0}
+.mini-table{width:100%;border-collapse:collapse;font-size:14px;margin:0;color:var(--ink-soft)}
+.mini-table th,.mini-table td{border:1px solid var(--line);padding:9px 11px;text-align:left;vertical-align:top}
+.mini-table th{background:var(--surface-2);font-weight:500;color:var(--ink)}
+
+.fig{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-lg);padding:18px 18px 12px;margin:20px 0}
+.fig > svg{width:100%;height:auto;display:block}
+.fig svg text{font-family:var(--font-body)}
+.fig figcaption{font-size:13px;color:var(--ink-soft);margin-top:10px;line-height:1.8;max-width:none}
+
+/* --- 演習まわり。`.ctl-btn` は style.css の `.btn`（サイト CTA。
+   `.btn::before` のホバーグローを持つ）と衝突しないよう改名したもの（§36）。 --- */
+.attempt{background:var(--surface);border:1px solid var(--amber-line);border-radius:var(--radius-lg);padding:18px 22px;margin:20px 0}
+.attempt .lab{font-size:.7rem;letter-spacing:.14em;color:var(--amber);font-weight:500;display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.attempt .lab::before{content:"✎"}
+.attempt p{max-width:none}
+.controls{display:flex;flex-wrap:wrap;gap:10px;margin:14px 0 4px}
+.ctl-btn{font-family:var(--font-body);font-size:12.5px;font-weight:500;border:1px solid var(--line);background:transparent;color:var(--ink-soft);padding:7px 16px;border-radius:var(--radius-pill);cursor:pointer;transition:color var(--dur) var(--ease),border-color var(--dur) var(--ease),background var(--dur) var(--ease)}
+.ctl-btn:hover{color:var(--ink);border-color:var(--line-strong);background:var(--surface-2)}
+.ctl-btn.amber{color:var(--amber);border-color:var(--amber-line)}
+.ctl-btn.amber:hover{background:var(--amber-tint)}
+.ctl-btn:disabled{opacity:.4;cursor:default;background:transparent}
+.hint{display:none;border-left:2px solid var(--amber);background:var(--amber-tint);border-radius:0 var(--radius-sm) var(--radius-sm) 0;padding:12px 16px;margin:10px 0}
+.hint .hn{font-size:.68rem;letter-spacing:.14em;color:var(--amber);font-weight:500;display:block;margin-bottom:3px}
+.hint p{max-width:none}.hint p:last-child{margin-bottom:0}.hint p:first-child{margin-top:0}
+.sol{display:none;border:1px solid var(--line);border-left:2px solid var(--accent);border-radius:0 var(--radius-md) var(--radius-md) 0;background:var(--surface-2);padding:8px 20px 16px;margin:12px 0}
+.sol p{max-width:none}
+.step{margin:18px 0}
+.step .sh{display:flex;gap:10px;align-items:baseline;font-weight:500;color:var(--ink);margin-bottom:2px}
+.step .sn{font-size:11px;font-weight:500;color:#06142e;background:var(--accent);border-radius:999px;padding:1px 10px;flex:0 0 auto}
+.step .why{font-size:13.5px;color:var(--ink-faint);border-left:1px solid var(--line);padding-left:12px;margin:5px 0 5px 2px;max-width:none}
+.transfer{background:var(--surface-2);border:1px solid var(--line);border-radius:var(--radius-md);padding:14px 18px;margin:18px 0}
+.transfer .lab{font-size:.7rem;letter-spacing:.14em;color:var(--accent);font-weight:500;display:block;margin-bottom:5px}
+.transfer p{max-width:none}
+.drill{background:var(--surface);border:1px solid var(--line);border-left:2px solid var(--accent);border-radius:0 var(--radius-md) var(--radius-md) 0;padding:14px 20px;margin:16px 0}
+.drill .qn{font-size:11px;font-weight:500;color:#06142e;background:var(--accent);border-radius:999px;padding:2px 11px;margin-right:8px}
+.drill p{max-width:none}
+.drill p:first-child{margin-top:2px}
+.drill .attempt{background:transparent;border-style:dashed}
+.foot{padding:34px 0 0;color:var(--ink-faint);font-size:12.5px}
+.foot p{color:var(--ink-faint);max-width:none}
+
+/* モバイル：レールを引き出しに。`.menu-btn` は位置だけを持ち、見た目は
+   共通コンポーネントの `.btn` を併用する。 */
+.menu-btn{display:none}
+.scrim{display:none}
+@media (max-width:900px){
+  .rail{position:fixed;left:0;top:0;height:100vh;z-index:1100;transform:translateX(-100%);transition:transform .25s var(--ease);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);padding-top:28px}
+  body.nav-open .rail{transform:translateX(0)}
+  .main{padding:0 20px 90px}
+  .menu-btn{display:inline-flex;position:fixed;bottom:18px;right:18px;z-index:1050;background:var(--nav-bg);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);color:var(--ink)}
+  .scrim{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:1090}
+  body.nav-open .scrim{display:block}
+  .lesson-hero{padding-top:40px}
+  /* 案A（§46.1）の負マージンをここで切る。マージンは固定 px なので、箱そのものが
+     狭いこの帯では数式が .sol の枠を大きく飛び出し、点線の .attempt 枠まで越えて
+     見える。390px では 28本が枠を横切っていた。はみ出し本数は 36→42 に増えるが、
+     どれも数式ごとの横スクロールで読める。§46.4 */
+  .box mjx-container[display="true"],
+  .drill > mjx-container[display="true"],
+  .attempt mjx-container[display="true"],
+  .drill .attempt mjx-container[display="true"],
+  .attempt .sol mjx-container[display="true"],
+  .drill .attempt .sol mjx-container[display="true"]{margin:14px 0!important}
+}
+@media print{
+  body{background:#fff;color:#000}
+  header,.rail,.menu-btn,.scrim,#starfield,footer{display:none!important}
+  .wrap{display:block;padding-top:0}
+  .hint,.sol{display:block!important}
+}
+</style>
+<link rel="stylesheet" href="../css/lesson-theme.css?v=r64">
+</head>
+<body data-page="study" class="is-article" data-node="phys-math_3-1">
+<canvas id="starfield" aria-hidden="true"></canvas>
+<div id="site-nav"><noscript><nav class="noscript-nav" aria-label="メインナビゲーション"><a href="index.html">ホーム</a><a href="self-intro.html">自己紹介</a><a href="study.html">勉強の軌跡</a><a href="videos.html">動画</a><a href="blog.html">ブログ</a><a href="sns.html">各種SNS</a></nav></noscript></div>
+<button class="menu-btn btn" id="menuBtn" aria-controls="rail" aria-expanded="false">目次 <span class="btn-disc" aria-hidden="true">≡</span></button>
+<div class="scrim" id="scrim"></div>
+<div class="wrap">
+  <nav class="rail" id="rail">
+    <!-- 科目へ戻る導線（レール上部の「← 一つ上」）は layout.js が CRUMBS から書き出す。 -->
+    <div class="brand">3-1　近似と展開<small>SECTION 3-1 / APPROXIMATION</small></div>
+    <div class="progress-wrap"><div class="progress-bar" id="pbar"></div></div>
+    <ul class="toc" id="toc">
+      <li class="part">導入</li>
+      <li><a href="#m0"><span class="n">01</span>なぜ近似するのか</a></li>
+      <li class="part">近似を作る</li>
+      <li><a href="#d1"><span class="n">02</span>1次近似</a></li>
+      <li><a href="#d2"><span class="n">03</span>テイラー展開</a></li>
+      <li class="part">使いこなす</li>
+      <li><a href="#d3"><span class="n">04</span>誤差と物理での近似</a></li>
+      <li class="part">仕上げ</li>
+      <li><a href="#howto"><span class="n">05</span>チェックリストと次回予告</a></li>
+    </ul>
+  </nav>
+
+  <main class="main">
+    <!-- <header> ではなく <div>。style.css は裸の `header` を浮遊ナビとして
+         position:fixed / flex / border-radius:999px で組んでおり、記事の導入部が
+         <header> だと丸ごとそれを浴びてしまう（DESIGN.md §36） -->
+    <div class="lesson-hero">
+      <div class="eyebrow">物理数学 I ／ 3章 近似と展開 ／ SECTION 3-1</div>
+      <h1>3-1　近似と展開<span class="sub">小さい量を、どこまで捨ててよいか</span></h1>
+      <p class="lead">物理の教科書をめくると、\(\sin\theta\simeq\theta\)、\(\sqrt{1+x}\simeq1+\frac x2\)、\((1+x)^n\simeq1+nx\) といった<strong>近似の式</strong>が当たり前のように出てきます。そして多くの場合、これらは「だいたいの話」ではなく、<strong>その場面では正確な答えと実質的に区別がつかない</strong>という意味で使われています。</p>
+      <p>この記事では、そうした近似がどこから来るのかを見ます。答えは1章の微分です。関数を多項式で置き換えるとき、その係数は<strong>すべて微分の値で決まります</strong>。さらに「どこまで項を取れば十分か」も、自分で判断できるようになります。</p>
+      <p>読み方：解答は必ず閉じたまま、紙で挑戦してください。</p>
+    </div>
+
+    <!-- §01 -->
+    <section id="m0">
+      <div class="sec-head"><span class="idx">§01</span><h2>なぜ近似するのか</h2></div>
+
+      <p>\(\sqrt{1.02}\) の値を、電卓なしで小数第3位まで言えるでしょうか。</p>
+      <p>まともに計算しようとすると手が止まりますが、この記事の道具を使えば<strong>暗算で 1.010</strong> と答えられます（正確な値は 1.00995 です）。しかも、なぜその桁まで信用してよいかまで説明できます。</p>
+
+      <h3>厳密に解ける問題は、ほとんどない</h3>
+      <p>近似は「手を抜くための技術」ではありません。物理では、<strong>近似なしには話が始まらない</strong>場面のほうが多いのです。</p>
+      <ul>
+        <li>振り子の運動は、厳密に解こうとすると初等関数では書けません。しかし \(\sin\theta\simeq\theta\) と近似した瞬間に、きれいな振動の式になります</li>
+        <li>地表付近の重力による位置エネルギーは \(mgh\) と習いますが、本当の万有引力のポテンシャルは \(-GMm/r\) です。\(mgh\) はその近似形です</li>
+        <li>運動エネルギー \(\frac12mv^2\) も、相対性理論のエネルギーを、光速に比べて遅い場合について近似したものです</li>
+      </ul>
+      <p>どれも「厳密な式があるが、そのままでは扱いにくいので、いま必要な精度まで削ぎ落とした」形です。<strong>削ぎ落とし方を知っていることは、厳密な式を知っていることと同じくらい大事</strong>だということになります。</p>
+
+      <div class="box principle"><span class="lab">近似とは「どこまで正確かを言えること」</span>
+      <p>日常語の「だいたい」と、物理の近似は違います。物理で「\(\sin\theta\simeq\theta\)」と書くとき、その裏には<strong>「捨てた分はどのくらいの大きさか」という見積もり</strong>があります。</p>
+      <p style="margin-top:8px">この記事のゴールは、近似の式を覚えることではなく、<strong>自分で近似式を作り、その誤差の大きさを見積もれるようになること</strong>です。</p></div>
+
+      <div class="box teach"><span class="lab">この記事の到達目標</span>
+      <ul style="margin:6px 0 0">
+        <li>1次近似 \(f(a+h)\simeq f(a)+f'(a)h\) を、微分の定義から導ける</li>
+        <li>\((1+x)^n\simeq1+nx\) を導き、数値計算に使える</li>
+        <li>テイラー展開（マクローリン展開）の係数が \(\dfrac{f^{(n)}(0)}{n!}\) になる理由を説明できる</li>
+        <li>\(e^x,\ \sin x,\ \cos x\) の展開を自力で導ける</li>
+        <li>近似の誤差がどのくらいかを見積もり、どこで打ち切るかを判断できる</li>
+      </ul></div>
+
+      <div class="box principle"><span class="lab">前提として使うもの</span>
+      <ul style="margin:6px 0 0">
+        <li><strong>1章 微分</strong>：導関数の定義と、基本関数の微分公式</li>
+        <li><strong>高階微分</strong>：§03 の冒頭で導入します。1章の微分を繰り返すだけです</li>
+      </ul>
+      <p style="margin-top:8px">2章の積分は使いません。</p></div>
+    </section>
+
+    <!-- §02 -->
+    <section id="d1">
+      <div class="sec-head"><span class="idx">§02</span><h2>1次近似 — 曲線を接線で置き換える</h2></div>
+
+      <p>出発点は、1章で書いた導関数の定義そのものです。</p>
+      \[ f'(a)=\lim_{h\to0}\frac{f(a+h)-f(a)}{h} \]
+      <p>極限を取る前の段階では、これは「\(h\) が小さければ、左辺と右辺はほぼ等しい」と言っています。</p>
+      \[ \frac{f(a+h)-f(a)}{h}\simeq f'(a) \]
+      <p>分母を払って移項すれば、それだけで近似式ができあがります。</p>
+
+      <div class="box target"><span class="lab">1次近似</span>
+      \[ f(a+h)\simeq f(a)+f'(a)\,h\qquad(h\ \text{が小さいとき}) \]
+      <p><strong>「いまの値」に「傾き × 進んだ量」を足す。</strong>これだけです。グラフで言えば、点 \(a\) のまわりで<strong>曲線を接線で置き換えている</strong>ことになります。</p></div>
+
+      <figure class="fig">
+        <svg viewBox="0 0 640 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="曲線と接線は接点の近くで重なる">
+          <rect x="163.6" y="60" width="52.8" height="190" fill="var(--accent-tint)" stroke="none"/>
+          <line x1="100" y1="250" x2="410" y2="250" stroke="var(--ink-faint)" stroke-width="1.3"/>
+          <line x1="190" y1="268" x2="190" y2="60" stroke="var(--ink-faint)" stroke-width="1.3"/>
+          <text x="416" y="254" font-size="12" fill="var(--ink)" font-style="italic">x</text>
+          <text x="176" y="68" font-size="12" fill="var(--ink)" font-style="italic">y</text>
+          <line x1="184" y1="160" x2="196" y2="160" stroke="var(--ink-faint)" stroke-width="1"/>
+          <text x="180" y="155" font-size="10.5" fill="var(--ink-faint)" text-anchor="end">1</text>
+          <text x="181" y="266" font-size="10.5" fill="var(--ink-faint)" text-anchor="middle">0</text>
+          <polyline points="115.6,187.9 118.0,187.0 120.4,186.1 122.8,185.2 125.2,184.3 127.6,183.4 130.0,182.5 132.4,181.6 134.8,180.7 137.2,179.8 139.6,178.9 142.0,178.0 144.4,177.1 146.8,176.2 149.2,175.3 151.6,174.4 154.0,173.5 156.4,172.6 158.8,171.7 161.2,170.8 163.6,169.9 166.0,169.0 168.4,168.1 170.8,167.2 173.2,166.3 175.6,165.4 178.0,164.5 180.4,163.6 182.8,162.7 185.2,161.8 187.6,160.9 190.0,160.0 192.4,159.1 194.8,158.2 197.2,157.3 199.6,156.4 202.0,155.5 204.4,154.6 206.8,153.7 209.2,152.8 211.6,151.9 214.0,151.0 216.4,150.1 218.8,149.2 221.2,148.3 223.6,147.4 226.0,146.5 228.4,145.6 230.8,144.7 233.2,143.8 235.6,142.9 238.0,142.0 240.4,141.1 242.8,140.2 245.2,139.3 247.6,138.4 250.0,137.5 252.4,136.6 254.8,135.7 257.2,134.8 259.6,133.9 262.0,133.0 264.4,132.1 266.8,131.2 269.2,130.3 271.6,129.4 274.0,128.5 276.4,127.6 278.8,126.7 281.2,125.8 283.6,124.9 286.0,124.0 288.4,123.1 290.8,122.2 293.2,121.3 295.6,120.4 298.0,119.5 300.4,118.6 302.8,117.7 305.2,116.8 307.6,115.9 310.0,115.0 312.4,114.1 314.8,113.2 317.2,112.3 319.6,111.4 322.0,110.5 324.4,109.6 326.8,108.7 329.2,107.8 331.6,106.9 334.0,106.0 336.4,105.1 338.8,104.2 341.2,103.3 343.6,102.4 346.0,101.5 348.4,100.6 350.8,99.7 353.2,98.8 355.6,97.9 358.0,97.0 360.4,96.1 362.8,95.2 365.2,94.3 367.6,93.4 370.0,92.5 372.4,91.6 374.8,90.7 377.2,89.8 379.6,88.9 382.0,88.0 384.4,87.1" fill="none" stroke="var(--good)" stroke-width="2.4" stroke-dasharray="7 5"/>
+          <polyline points="115.6,194.5 118.0,193.1 120.4,191.7 122.8,190.3 125.2,189.0 127.6,187.6 130.0,186.4 132.4,185.1 134.8,183.9 137.2,182.7 139.6,181.5 142.0,180.3 144.4,179.1 146.8,178.0 149.2,176.9 151.6,175.8 154.0,174.7 156.4,173.6 158.8,172.6 161.2,171.5 163.6,170.5 166.0,169.5 168.4,168.5 170.8,167.5 173.2,166.5 175.6,165.6 178.0,164.6 180.4,163.7 182.8,162.7 185.2,161.8 187.6,160.9 190.0,160.0 192.4,159.1 194.8,158.2 197.2,157.3 199.6,156.5 202.0,155.6 204.4,154.8 206.8,153.9 209.2,153.1 211.6,152.2 214.0,151.4 216.4,150.6 218.8,149.8 221.2,149.0 223.6,148.2 226.0,147.4 228.4,146.6 230.8,145.8 233.2,145.0 235.6,144.3 238.0,143.5 240.4,142.8 242.8,142.0 245.2,141.3 247.6,140.5 250.0,139.8 252.4,139.0 254.8,138.3 257.2,137.6 259.6,136.9 262.0,136.2 264.4,135.4 266.8,134.7 269.2,134.0 271.6,133.3 274.0,132.7 276.4,132.0 278.8,131.3 281.2,130.6 283.6,129.9 286.0,129.3 288.4,128.6 290.8,127.9 293.2,127.3 295.6,126.6 298.0,125.9 300.4,125.3 302.8,124.6 305.2,124.0 307.6,123.4 310.0,122.7 312.4,122.1 314.8,121.5 317.2,120.8 319.6,120.2 322.0,119.6 324.4,119.0 326.8,118.3 329.2,117.7 331.6,117.1 334.0,116.5 336.4,115.9 338.8,115.3 341.2,114.7 343.6,114.1 346.0,113.5 348.4,112.9 350.8,112.3 353.2,111.7 355.6,111.2 358.0,110.6 360.4,110.0 362.8,109.4 365.2,108.8 367.6,108.3 370.0,107.7 372.4,107.1 374.8,106.6 377.2,106.0 379.6,105.4 382.0,104.9 384.4,104.3" fill="none" stroke="var(--key)" stroke-width="2.6"/>
+          <circle cx="190" cy="160" r="4.5" fill="var(--accent)" stroke="#000" stroke-width="2"/>
+          <text x="190.0" y="52" font-size="11.5" fill="var(--accent-deep)" text-anchor="middle">この範囲では見分けられない</text>
+          <text x="440" y="110" font-size="12.5" font-weight="500" fill="var(--key)">y = (1+x)<tspan dy="-6" font-size="9.5">1/2</tspan></text>
+          <text x="440" y="136" font-size="12.5" font-weight="500" fill="var(--good)">y = 1 + x/2（接線）</text>
+          <text x="440" y="172" font-size="12" fill="var(--ink-soft)">x = 0 の近くでは</text>
+          <text x="440" y="192" font-size="12" fill="var(--ink-soft)">2本の線がほぼ重なる</text>
+          <text x="440" y="222" font-size="12" fill="var(--amber)">離れるほど、ずれが</text>
+          <text x="440" y="242" font-size="12" fill="var(--amber)">目に見えて大きくなる</text>
+        </svg>
+        <figcaption>\(y=\sqrt{1+x}=(1+x)^{1/2}\)（曲線）と、\(x=0\) における接線 \(y=1+\frac x2\)（破線）。<strong>接点のまわりでは、2本の線は見分けがつきません</strong>。1次近似とは、この「見分けがつかない」範囲でだけ、曲線を接線で置き換えてしまう操作です。\(x\) が大きくなるとずれが目立ってきますが、それは<strong>近似が使える範囲を超えた</strong>ということです。</figcaption>
+      </figure>
+      <h3>物理で最もよく使う形</h3>
+      <p>\(a=0\) のまわりで考え、\(h\) を \(x\) と書き直すと \(f(x)\simeq f(0)+f'(0)\,x\) です。代表的な関数に当てはめると、次の表ができます。</p>
+
+      <div class="table-scroll"><table class="mini-table">
+        <tr><th style="width:26%">関数</th><th style="width:20%">1次近似</th><th>確かめ方（\(f(0)\) と \(f'(0)\)）</th></tr>
+        <tr><td>\((1+x)^{n}\)</td><td>\(1+nx\)</td><td>\(f(0)=1\)、\(f'(x)=n(1+x)^{n-1}\) より \(f'(0)=n\)</td></tr>
+        <tr><td>\(e^{x}\)</td><td>\(1+x\)</td><td>\(f(0)=1\)、\(f'(x)=e^{x}\) より \(f'(0)=1\)</td></tr>
+        <tr><td>\(\sin x\)</td><td>\(x\)</td><td>\(f(0)=0\)、\(f'(x)=\cos x\) より \(f'(0)=1\)</td></tr>
+        <tr><td>\(\ln(1+x)\)</td><td>\(x\)</td><td>\(f(0)=0\)、\(f'(x)=\dfrac{1}{1+x}\) より \(f'(0)=1\)</td></tr>
+        <tr><td>\(\cos x\)</td><td>\(1\)</td><td>\(f(0)=1\)、\(f'(x)=-\sin x\) より \(f'(0)=0\)</td></tr>
+      </table></div>
+
+      <p>このうち <strong>\((1+x)^{n}\simeq1+nx\)</strong> は別格によく使います。\(n\) は整数でなくてよいので、平方根や逆数もこれ1本で扱えるからです。</p>
+      \[ \sqrt{1+x}=(1+x)^{1/2}\simeq1+\frac x2,\qquad \frac{1}{1+x}=(1+x)^{-1}\simeq1-x,\qquad \frac{1}{\sqrt{1+x}}\simeq1-\frac x2 \]
+
+      <div class="box warn"><span class="lab">\(\cos x\) だけ様子が違う</span>
+      <p>表の最後の行に注目してください。\(\cos x\) の1次近似は \(1\) で、\(x\) の項が消えてしまいます。これは \(\cos x\) が \(x=0\) で<strong>頂点</strong>になっていて、接線が水平だからです。</p>
+      <p style="margin-top:8px">つまり \(\cos x\) については、1次近似では「変化しない」としか言えません。変化のようすを捉えるには<strong>2次の項まで必要</strong>になります。次の §03 で、その2次の項を作ります。</p></div>
+
+      <h3>計算ドリル（§02・全2問）</h3>
+
+      <div class="drill"><p><span class="qn">問1</span>\((1+x)^n\simeq1+nx\) を使って、次の値を暗算で求めよ。そのあと正確な値と比べ、何桁目まで合っているか確かめよ。<br>(a) \(\sqrt{1.02}\)　(b) \(\dfrac{1}{0.98}\)　(c) \(1.03^{10}\)</p>
+      <div class="attempt" style="margin:10px 0 4px"><span class="lab">自分の答えを出してから</span>
+      <div class="controls">
+        <button class="ctl-btn amber" data-hint>ヒントを表示</button>
+        <button class="ctl-btn" data-sol>解答を見る</button>
+      </div>
+      <div class="hint"><span class="hn">HINT 1</span><p>まず \((1+x)^n\) の形に書き直します。(b) は \(0.98=1+(-0.02)\)、指数は \(-1\) です。</p></div>
+      <div class="sol"><p>(a) \(\sqrt{1.02}=(1+0.02)^{1/2}\simeq1+\dfrac{0.02}{2}=1.010\)。正確な値は 1.00995 で、<strong>小数第3位まで合っています</strong>。</p>
+      <p>(b) \(\dfrac{1}{0.98}=(1-0.02)^{-1}\simeq1+(-1)(-0.02)=1.020\)。正確な値は 1.02041 で、小数第3位でわずかにずれます。</p>
+      <p>(c) \(1.03^{10}=(1+0.03)^{10}\simeq1+10\times0.03=1.30\)。正確な値は 1.3439 で、<strong>2桁目からずれています</strong>。</p>
+      <p style="font-size:13.5px;color:var(--ink-faint)">(c) だけ精度が落ちたのは偶然ではありません。近似がよく効く条件は「\(x\) が小さいこと」ではなく、<strong>\(nx\) が小さいこと</strong>だからです。(a)(b) では \(nx\) が \(0.01\) や \(0.02\) でしたが、(c) では \(nx=0.3\) と大きくなっています。<strong>指数が大きいときは、\(x\) が小さくても油断できない</strong>——これは物理でも実際に効いてくる注意点です。</p></div></div></div>
+
+      <div class="drill"><p><span class="qn">問2</span>1次近似の式 \(f(a+h)\simeq f(a)+f'(a)h\) で \(a=0,\ f(x)=(1+x)^n\) として、\((1+x)^n\simeq1+nx\) を導け。さらに \(n=2\) のとき、この近似で何を捨てているかを、実際に展開して確かめよ。</p>
+      <div class="attempt" style="margin:10px 0 4px"><span class="lab">自分の答えを出してから</span>
+      <div class="controls"><button class="ctl-btn" data-sol>解答を見る</button></div>
+      <div class="sol"><p>\(f(x)=(1+x)^n\) について \(f(0)=1\)。連鎖律より \(f'(x)=n(1+x)^{n-1}\) なので \(f'(0)=n\)。よって</p>
+      \[ (1+x)^n\simeq f(0)+f'(0)x=1+nx \]
+      <p><strong>\(n=2\) で確かめる</strong>：正確には \((1+x)^2=1+2x+x^2\) です。近似式 \(1+2x\) と比べると、<strong>捨てたのは \(x^2\) の項</strong>だと分かります。</p>
+      <p style="font-size:13.5px;color:var(--ink-faint)">\(x=0.01\) なら捨てた分は \(0.0001\)。残した項 \(2x=0.02\) に比べて<strong>桁が2つ小さい</strong>ので、小数第3位までは影響しません。これが「1次で止めてよい」ことの中身です。1章で差分商を「答え ＋ \(h\) に比例する誤差」に分けたときと、同じ構造が現れています。</p></div></div></div>
+    </section>
+
+    <!-- §03 -->
+    <section id="d2">
+      <div class="sec-head"><span class="idx">§03</span><h2>テイラー展開 — 次数を上げる</h2></div>
+
+      <p>1次近似は直線でした。直線では足りないとき、次にやることは決まっています。<strong>2次、3次と項を足して、もっと複雑な形にも沿わせる。</strong></p>
+      <p>そのために、まず道具を1つ用意します。</p>
+
+      <div class="box teach"><span class="lab">準備：高階微分</span>
+      <p>導関数 \(f'(x)\) もまた関数なので、もう一度微分できます。これを<strong>2階微分</strong>といい、\(f''(x)\) や \(\dfrac{d^2f}{dx^2}\) と書きます。繰り返せば3階、4階と続き、\(n\) 階微分は \(f^{(n)}(x)\) と書きます（ダッシュを何個も並べるのは読みにくいので、4階以上は番号で表すのが普通です）。</p>
+      <p style="margin-top:8px">意味は「変化率の変化率」です。位置を1回微分すると速度、もう1回微分すると加速度——1章で見たあの関係が、まさに2階微分でした。</p>
+      \[ f^{(0)}=f,\qquad f^{(1)}=f',\qquad f^{(2)}=f'',\qquad f^{(3)},\ f^{(4)},\ \ldots \]
+      <p>約束として、0階微分は微分しないこと（\(f\) そのもの）とします。</p></div>
+
+      <div class="box principle"><span class="lab">テイラー展開とマクローリン展開</span>
+      <p>ある点のまわりで関数を多項式に置き換えることを、その点のまわりの<strong>展開</strong>といいます。どの点のまわりで展開するかによって、2つの呼び名があります。</p>
+      <ul style="margin:6px 0">
+        <li><strong>テイラー展開</strong>：一般の点 \(x=a\) のまわりで展開したもの</li>
+        <li><strong>マクローリン展開</strong>：とくに \(x=0\) のまわりで展開したもの</li>
+      </ul>
+      <p>別物ではありません。<strong>マクローリン展開は、テイラー展開の \(a=0\) という特別な場合</strong>です。</p>
+      <p style="margin-top:8px">この記事では、まず \(a=0\) の場合から調べます。理由は単純で、<strong>\(x=0\) を代入すると余計な項がきれいに消えて、係数が取り出しやすいから</strong>です。一般の点 \(a\) のまわりについては、\(h=x-a\) と置き直せば「\(h=0\) のまわりの展開」に帰着するので、同じ計算がそのまま使えます。物理で実際に使うのも、ほとんどは \(a=0\) のまわりの展開です。</p></div>
+
+      <h3>係数はどう決まるか</h3>
+      <p>求めたいのは、\(x=0\) の近くで \(f(x)\) にぴったり沿う多項式です。そこで、答えの形をこう仮定してしまいます。</p>
+      \[ f(x)=c_0+c_1x+c_2x^2+c_3x^3+\cdots \]
+      <p>あとは係数 \(c_0,c_1,c_2,\ldots\) を決めるだけ。ここで効くのが<strong>「\(x=0\) を代入すると、その項より後ろが全部消える」</strong>という性質です。</p>
+
+      <div class="attempt"><span class="lab">まず自力で</span>
+      <p>上の式に \(x=0\) を代入する、両辺を微分してから \(x=0\) を代入する、もう一度微分してから代入する……を繰り返して、\(c_0,\ c_1,\ c_2,\ c_3\) を \(f\) の微分係数で表してください。そこから一般の \(c_n\) を予想すること。</p>
+      <div class="controls">
+        <button class="ctl-btn amber" data-hint>ヒントを表示</button>
+        <button class="ctl-btn" data-sol>解答を見る</button>
+      </div>
+      <div class="hint"><span class="hn">HINT 1</span><p>\(x=0\) を代入すると、\(x\) を含む項はすべて 0 になります。だから残るのは定数項だけです。</p></div>
+      <div class="hint"><span class="hn">HINT 2</span><p>微分するたびに、各項の次数が1つ下がり、係数に元の次数が掛かります。\(x^3\) を3回微分すると \(3\cdot2\cdot1=3!\) が出てくることに注意してください。</p></div>
+      <div class="sol">
+        <div class="step"><div class="sh"><span class="sn">1</span>そのまま代入して \(c_0\)</div>
+        <div class="why">なぜ：\(x=0\) を入れると \(x,\ x^2,\ x^3,\ldots\) の項はすべて消え、定数項だけが残ります。</div>
+        \[ f(0)=c_0\quad\Longrightarrow\quad c_0=f(0) \]
+        </div>
+        <div class="step"><div class="sh"><span class="sn">2</span>1回微分して代入し \(c_1\)</div>
+        <div class="why">なぜ：微分すると定数項が消え、\(c_1x\) の項が定数 \(c_1\) になります。そこに \(x=0\) を入れれば \(c_1\) だけが残ります。</div>
+        \[ f'(x)=c_1+2c_2x+3c_3x^2+\cdots\quad\Longrightarrow\quad f'(0)=c_1 \]
+        </div>
+        <div class="step"><div class="sh"><span class="sn">3</span>2回微分して代入し \(c_2\)</div>
+        <div class="why">なぜ：同じ操作をもう一度。今度は \(c_2x^2\) が \(2c_2\) になって残ります。</div>
+        \[ f''(x)=2c_2+3\cdot2\,c_3x+\cdots\quad\Longrightarrow\quad f''(0)=2c_2,\qquad c_2=\frac{f''(0)}{2} \]
+        </div>
+        <div class="step"><div class="sh"><span class="sn">4</span>3回微分して \(c_3\)、そして一般形へ</div>
+        <div class="why">なぜ：\(x^3\) を3回微分すると \(3\cdot2\cdot1=3!\) が前に出ます。この「階乗が出てくる」構造が、一般形の分母の正体です。</div>
+        \[ f^{(3)}(0)=3\cdot2\cdot1\,c_3=3!\,c_3,\qquad c_3=\frac{f^{(3)}(0)}{3!} \]
+        <p style="margin:4px 0">同じように \(x^n\) を \(n\) 回微分すると \(n!\) が出るので、一般には</p>
+        \[ \boxed{\;c_n=\frac{f^{(n)}(0)}{n!}\;} \]
+        <p style="font-size:13.5px;color:var(--ink-faint);margin:6px 0 0">分母の \(n!\) は、天下りの約束ではなく<strong>微分を \(n\) 回繰り返したときに自動的に出てくる係数を打ち消すため</strong>に現れたものです。ここが腑に落ちると、テイラー展開の式を覚える必要がなくなります。</p></div>
+      </div>
+      </div>
+
+      <div class="box target"><span class="lab">マクローリン展開（\(x=0\) のまわり）</span>
+      \[ f(x)=f(0)+f'(0)\,x+\frac{f''(0)}{2!}x^2+\frac{f^{(3)}(0)}{3!}x^3+\cdots=\sum_{n=0}^{\infty}\frac{f^{(n)}(0)}{n!}x^n \]
+      <p>そして \(h=x-a\) と置き直して同じ計算を行えば、一般の点 \(a\) のまわりの<strong>テイラー展開</strong>が得られます。式の形は変わりません。</p>
+      \[ f(a+h)=f(a)+f'(a)\,h+\frac{f''(a)}{2!}h^2+\frac{f^{(3)}(a)}{3!}h^3+\cdots \]
+      <p>第1項までで打ち切れば「値をそのまま使う」、第2項までなら §02 の1次近似です。<strong>1次近似は、テイラー展開の最初の2項だった</strong>ことになります。</p></div>
+
+      <h3>代表的な展開</h3>
+      <p>あとは微分を繰り返して \(x=0\) を代入するだけです。物理でよく出るものを挙げます。</p>
+      \[ e^{x}=1+x+\frac{x^2}{2!}+\frac{x^3}{3!}+\cdots \]
+      \[ \sin x=x-\frac{x^3}{3!}+\frac{x^5}{5!}-\cdots,\qquad \cos x=1-\frac{x^2}{2!}+\frac{x^4}{4!}-\cdots \]
+      \[ \frac{1}{1-x}=1+x+x^2+x^3+\cdots,\qquad \ln(1+x)=x-\frac{x^2}{2}+\frac{x^3}{3}-\cdots \]
+      \[ (1+x)^{n}=1+nx+\frac{n(n-1)}{2!}x^2+\frac{n(n-1)(n-2)}{3!}x^3+\cdots \]
+
+      <figure class="fig">
+        <svg viewBox="0 0 640 310" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="sin x を1次・3次・5次の多項式で近似した比較">
+          <line x1="70" y1="200" x2="580" y2="200" stroke="var(--ink-faint)" stroke-width="1.3"/>
+          <line x1="90" y1="290" x2="90" y2="50" stroke="var(--ink-faint)" stroke-width="1.3"/>
+          <text x="586" y="204" font-size="12" fill="var(--ink)" font-style="italic">x</text>
+          <line x1="84" y1="158" x2="96" y2="158" stroke="var(--ink-faint)" stroke-width="1"/>
+          <text x="80" y="162" font-size="10.5" fill="var(--ink-faint)" text-anchor="end">1</text>
+          <line x1="514.1" y1="196" x2="514.1" y2="204" stroke="var(--ink-faint)" stroke-width="1"/>
+          <text x="514.1" y="219" font-size="11" fill="var(--ink-faint)" text-anchor="middle">π</text>
+          <line x1="302.1" y1="196" x2="302.1" y2="204" stroke="var(--ink-faint)" stroke-width="1"/>
+          <text x="302.1" y="219" font-size="11" fill="var(--ink-faint)" text-anchor="middle">π/2</text>
+          <polyline points="90.0,200.0 92.7,199.2 95.4,198.3 98.1,197.5 100.8,196.6 103.5,195.8 106.2,195.0 108.9,194.1 111.6,193.3 114.3,192.4 117.0,191.6 119.7,190.8 122.4,189.9 125.1,189.1 127.8,188.2 130.5,187.4 133.2,186.6 135.9,185.7 138.6,184.9 141.3,184.0 144.0,183.2 146.7,182.4 149.4,181.5 152.1,180.7 154.8,179.8 157.5,179.0 160.2,178.2 162.9,177.3 165.6,176.5 168.3,175.6 171.0,174.8 173.7,174.0 176.4,173.1 179.1,172.3 181.8,171.4 184.5,170.6 187.2,169.8 189.9,168.9 192.6,168.1 195.3,167.2 198.0,166.4 200.7,165.6 203.4,164.7 206.1,163.9 208.8,163.0 211.5,162.2 214.2,161.4 216.9,160.5 219.6,159.7 222.3,158.8 225.0,158.0 227.7,157.2 230.4,156.3 233.1,155.5 235.8,154.6 238.5,153.8 241.2,153.0 243.9,152.1 246.6,151.3 249.3,150.4 252.0,149.6 254.7,148.8 257.4,147.9 260.1,147.1 262.8,146.2 265.5,145.4 268.2,144.6 270.9,143.7 273.6,142.9 276.3,142.0 279.0,141.2 281.7,140.4 284.4,139.5 287.1,138.7 289.8,137.8 292.5,137.0 295.2,136.2 297.9,135.3 300.6,134.5 303.3,133.6 306.0,132.8 308.7,132.0 311.4,131.1 314.1,130.3 316.8,129.4 319.5,128.6 322.2,127.8 324.9,126.9 327.6,126.1 330.3,125.2 333.0,124.4 335.7,123.6 338.4,122.7 341.1,121.9 343.8,121.0 346.5,120.2 349.2,119.4 351.9,118.5 354.6,117.7 357.3,116.8 360.0,116.0 362.7,115.2 365.4,114.3 368.1,113.5 370.8,112.6 373.5,111.8 376.2,111.0 378.9,110.1 381.6,109.3 384.3,108.4 387.0,107.6 389.7,106.8 392.4,105.9 395.1,105.1 397.8,104.2 400.5,103.4 403.2,102.6 405.9,101.7 408.6,100.9 411.3,100.0 414.0,99.2 416.7,98.4 419.4,97.5 422.1,96.7 424.8,95.8 427.5,95.0 430.2,94.2 432.9,93.3 435.6,92.5 438.3,91.6 441.0,90.8 443.7,90.0 446.4,89.1 449.1,88.3 451.8,87.4 454.5,86.6 457.2,85.8 459.9,84.9 462.6,84.1 465.3,83.2 468.0,82.4 470.7,81.6 473.4,80.7 476.1,79.9 478.8,79.0 481.5,78.2 484.2,77.4 486.9,76.5 489.6,75.7 492.3,74.8 495.0,74.0 497.7,73.2 500.4,72.3 503.1,71.5 505.8,70.6 508.5,69.8 511.2,69.0 513.9,68.1 516.6,67.3 519.3,66.4 522.0,65.6 524.7,64.8 527.4,63.9 530.1,63.1 532.8,62.2 535.5,61.4 538.2,60.6 540.9,59.7 543.6,58.9 546.3,58.0 549.0,57.2 551.7,56.4 554.4,55.5 557.1,54.7 559.8,53.8 562.5,53.0" fill="none" stroke="var(--accent)" stroke-width="2.2"/>
+          <polyline points="90.0,200.0 92.7,199.2 95.4,198.3 98.1,197.5 100.8,196.6 103.5,195.8 106.2,195.0 108.9,194.1 111.6,193.3 114.3,192.5 117.0,191.7 119.7,190.8 122.4,190.0 125.1,189.2 127.8,188.4 130.5,187.6 133.2,186.8 135.9,186.0 138.6,185.2 141.3,184.4 144.0,183.6 146.7,182.9 149.4,182.1 152.1,181.4 154.8,180.6 157.5,179.9 160.2,179.1 162.9,178.4 165.6,177.7 168.3,177.0 171.0,176.3 173.7,175.6 176.4,175.0 179.1,174.3 181.8,173.6 184.5,173.0 187.2,172.4 189.9,171.8 192.6,171.2 195.3,170.6 198.0,170.0 200.7,169.4 203.4,168.9 206.1,168.3 208.8,167.8 211.5,167.3 214.2,166.8 216.9,166.3 219.6,165.9 222.3,165.4 225.0,165.0 227.7,164.6 230.4,164.2 233.1,163.8 235.8,163.5 238.5,163.1 241.2,162.8 243.9,162.5 246.6,162.2 249.3,161.9 252.0,161.7 254.7,161.5 257.4,161.3 260.1,161.1 262.8,160.9 265.5,160.8 268.2,160.7 270.9,160.6 273.6,160.5 276.3,160.4 279.0,160.4 281.7,160.4 284.4,160.4 287.1,160.5 289.8,160.5 292.5,160.6 295.2,160.7 297.9,160.9 300.6,161.1 303.3,161.3 306.0,161.5 308.7,161.7 311.4,162.0 314.1,162.3 316.8,162.6 319.5,163.0 322.2,163.4 324.9,163.8 327.6,164.2 330.3,164.7 333.0,165.2 335.7,165.8 338.4,166.3 341.1,166.9 343.8,167.6 346.5,168.2 349.2,168.9 351.9,169.6 354.6,170.4 357.3,171.2 360.0,172.0 362.7,172.9 365.4,173.7 368.1,174.7 370.8,175.6 373.5,176.6 376.2,177.7 378.9,178.7 381.6,179.8 384.3,181.0 387.0,182.1 389.7,183.3 392.4,184.6 395.1,185.9 397.8,187.2 400.5,188.6 403.2,190.0 405.9,191.4 408.6,192.9 411.3,194.4 414.0,196.0 416.7,197.6 419.4,199.2 422.1,200.9 424.8,202.6 427.5,204.4 430.2,206.2 432.9,208.0 435.6,209.9 438.3,211.9 441.0,213.8 443.7,215.9 446.4,217.9 449.1,220.0 451.8,222.2 454.5,224.4 457.2,226.6 459.9,228.9 462.6,231.3 465.3,233.6 468.0,236.1 470.7,238.5 473.4,241.1 476.1,243.6 478.8,246.3 481.5,248.9 484.2,251.6 486.9,254.4 489.6,257.2 492.3,260.1 495.0,263.0 497.7,266.0 500.4,269.0 503.1,272.0 505.8,275.2 508.5,278.3 511.2,281.6 513.9,284.8 516.6,288.2" fill="none" stroke="var(--good)" stroke-width="2.2"/>
+          <polyline points="90.0,200.0 92.7,199.2 95.4,198.3 98.1,197.5 100.8,196.6 103.5,195.8 106.2,195.0 108.9,194.1 111.6,193.3 114.3,192.5 117.0,191.7 119.7,190.8 122.4,190.0 125.1,189.2 127.8,188.4 130.5,187.6 133.2,186.8 135.9,186.0 138.6,185.2 141.3,184.4 144.0,183.6 146.7,182.9 149.4,182.1 152.1,181.4 154.8,180.6 157.5,179.9 160.2,179.1 162.9,178.4 165.6,177.7 168.3,177.0 171.0,176.3 173.7,175.6 176.4,174.9 179.1,174.2 181.8,173.6 184.5,172.9 187.2,172.3 189.9,171.7 192.6,171.1 195.3,170.5 198.0,169.9 200.7,169.3 203.4,168.7 206.1,168.2 208.8,167.6 211.5,167.1 214.2,166.6 216.9,166.1 219.6,165.6 222.3,165.1 225.0,164.6 227.7,164.2 230.4,163.8 233.1,163.3 235.8,162.9 238.5,162.6 241.2,162.2 243.9,161.8 246.6,161.5 249.3,161.1 252.0,160.8 254.7,160.5 257.4,160.2 260.1,160.0 262.8,159.7 265.5,159.5 268.2,159.3 270.9,159.1 273.6,158.9 276.3,158.7 279.0,158.5 281.7,158.4 284.4,158.3 287.1,158.1 289.8,158.0 292.5,158.0 295.2,157.9 297.9,157.9 300.6,157.8 303.3,157.8 306.0,157.8 308.7,157.8 311.4,157.8 314.1,157.9 316.8,157.9 319.5,158.0 322.2,158.1 324.9,158.2 327.6,158.3 330.3,158.5 333.0,158.6 335.7,158.8 338.4,158.9 341.1,159.1 343.8,159.3 346.5,159.5 349.2,159.8 351.9,160.0 354.6,160.3 357.3,160.5 360.0,160.8 362.7,161.1 365.4,161.4 368.1,161.7 370.8,162.0 373.5,162.3 376.2,162.7 378.9,163.0 381.6,163.4 384.3,163.7 387.0,164.1 389.7,164.5 392.4,164.9 395.1,165.2 397.8,165.6 400.5,166.0 403.2,166.4 405.9,166.9 408.6,167.3 411.3,167.7 414.0,168.1 416.7,168.5 419.4,168.9 422.1,169.4 424.8,169.8 427.5,170.2 430.2,170.6 432.9,171.0 435.6,171.4 438.3,171.8 441.0,172.2 443.7,172.6 446.4,173.0 449.1,173.4 451.8,173.8 454.5,174.2 457.2,174.5 459.9,174.9 462.6,175.2 465.3,175.5 468.0,175.8 470.7,176.1 473.4,176.4 476.1,176.7 478.8,176.9 481.5,177.1 484.2,177.3 486.9,177.5 489.6,177.7 492.3,177.8 495.0,177.9 497.7,178.0 500.4,178.1 503.1,178.1 505.8,178.2 508.5,178.1 511.2,178.1 513.9,178.0 516.6,177.9 519.3,177.7 522.0,177.5 524.7,177.3 527.4,177.0 530.1,176.7 532.8,176.4 535.5,176.0 538.2,175.5 540.9,175.1 543.6,174.5 546.3,173.9 549.0,173.3 551.7,172.6 554.4,171.9 557.1,171.1 559.8,170.2 562.5,169.3" fill="none" stroke="var(--amber)" stroke-width="2.2"/>
+          <polyline points="90.0,200.0 92.7,199.2 95.4,198.3 98.1,197.5 100.8,196.6 103.5,195.8 106.2,195.0 108.9,194.1 111.6,193.3 114.3,192.5 117.0,191.7 119.7,190.8 122.4,190.0 125.1,189.2 127.8,188.4 130.5,187.6 133.2,186.8 135.9,186.0 138.6,185.2 141.3,184.4 144.0,183.6 146.7,182.9 149.4,182.1 152.1,181.4 154.8,180.6 157.5,179.9 160.2,179.1 162.9,178.4 165.6,177.7 168.3,177.0 171.0,176.3 173.7,175.6 176.4,174.9 179.1,174.2 181.8,173.6 184.5,172.9 187.2,172.3 189.9,171.7 192.6,171.1 195.3,170.5 198.0,169.9 200.7,169.3 203.4,168.7 206.1,168.2 208.8,167.6 211.5,167.1 214.2,166.6 216.9,166.1 219.6,165.6 222.3,165.1 225.0,164.7 227.7,164.2 230.4,163.8 233.1,163.4 235.8,163.0 238.5,162.6 241.2,162.2 243.9,161.8 246.6,161.5 249.3,161.2 252.0,160.9 254.7,160.6 257.4,160.3 260.1,160.0 262.8,159.8 265.5,159.5 268.2,159.3 270.9,159.1 273.6,158.9 276.3,158.8 279.0,158.6 281.7,158.5 284.4,158.4 287.1,158.3 289.8,158.2 292.5,158.1 295.2,158.1 297.9,158.0 300.6,158.0 303.3,158.0 306.0,158.0 308.7,158.1 311.4,158.1 314.1,158.2 316.8,158.3 319.5,158.4 322.2,158.5 324.9,158.6 327.6,158.7 330.3,158.9 333.0,159.1 335.7,159.3 338.4,159.5 341.1,159.7 343.8,160.0 346.5,160.3 349.2,160.5 351.9,160.8 354.6,161.1 357.3,161.5 360.0,161.8 362.7,162.2 365.4,162.5 368.1,162.9 370.8,163.3 373.5,163.7 376.2,164.2 378.9,164.6 381.6,165.1 384.3,165.6 387.0,166.0 389.7,166.5 392.4,167.1 395.1,167.6 397.8,168.1 400.5,168.7 403.2,169.2 405.9,169.8 408.6,170.4 411.3,171.0 414.0,171.6 416.7,172.3 419.4,172.9 422.1,173.5 424.8,174.2 427.5,174.9 430.2,175.5 432.9,176.2 435.6,176.9 438.3,177.6 441.0,178.3 443.7,179.1 446.4,179.8 449.1,180.5 451.8,181.3 454.5,182.1 457.2,182.8 459.9,183.6 462.6,184.4 465.3,185.1 468.0,185.9 470.7,186.7 473.4,187.5 476.1,188.3 478.8,189.1 481.5,190.0 484.2,190.8 486.9,191.6 489.6,192.4 492.3,193.2 495.0,194.1 497.7,194.9 500.4,195.7 503.1,196.6 505.8,197.4 508.5,198.3 511.2,199.1 513.9,199.9 516.6,200.8 519.3,201.6 522.0,202.5 524.7,203.3 527.4,204.1 530.1,205.0 532.8,205.8 535.5,206.6 538.2,207.5 540.9,208.3 543.6,209.1 546.3,209.9 549.0,210.7 551.7,211.5 554.4,212.3 557.1,213.1 559.8,213.9 562.5,214.7" fill="none" stroke="var(--key)" stroke-width="3"/>
+          <text x="110" y="70" font-size="12.5" font-weight="500" fill="var(--accent)">1次：x</text>
+          <text x="110" y="94" font-size="12.5" font-weight="500" fill="var(--good)">3次：x − x³/6</text>
+          <text x="110" y="118" font-size="12.5" font-weight="500" fill="var(--amber)">5次：x − x³/6 + x⁵/120</text>
+          <text x="110" y="142" font-size="12.5" font-weight="500" fill="var(--key)">y = sin x</text>
+        </svg>
+        <figcaption>\(\sin x\)（太い線）と、その1次・3次・5次の近似多項式。<strong>原点のそばではどれも重なって見えます</strong>が、離れるにつれて低い次数のものから順にずれていきます。1次の \(x\) は \(x\simeq0.5\) あたりから離れはじめ、3次は \(\pi/2\) を過ぎるまで、5次は \(\pi\) の近くまでついていきます。<strong>次数を上げることは、近似が使える範囲を広げること</strong>だと分かります。</figcaption>
+      </figure>
+      <h3>計算ドリル（§03・全3問）</h3>
+
+      <div class="drill"><p><span class="qn">問1</span>\(f(x)=e^{x}\) のマクローリン展開を、係数の公式から導け。</p>
+      <div class="attempt" style="margin:10px 0 4px"><span class="lab">自分の答えを出してから</span>
+      <div class="controls"><button class="ctl-btn" data-sol>解答を見る</button></div>
+      <div class="sol"><p>\(e^x\) は何回微分しても \(e^x\) のままなので、すべての \(n\) について \(f^{(n)}(0)=e^0=1\)。よって</p>
+      \[ c_n=\frac{1}{n!},\qquad e^{x}=1+x+\frac{x^2}{2!}+\frac{x^3}{3!}+\cdots \]
+      <p style="font-size:13.5px;color:var(--ink-faint)">1章で \(e\) を「微分しても形が変わらない底」として定義しましたが、その性質がそのまま<strong>最も簡単な展開</strong>を生んでいます。ちなみに \(x=1\) を代入すると \(e=1+1+\frac12+\frac16+\frac1{24}+\cdots\) となり、\(2.718\cdots\) に収束します。1章で見た \(\left(1+\frac1n\right)^n\) より、こちらのほうがずっと速く収束します。</p></div></div></div>
+
+      <div class="drill"><p><span class="qn">問2</span>\(f(x)=\sin x\) のマクローリン展開を導け。微分を繰り返すと \(f^{(n)}(0)\) がどうなるかに注目すること。</p>
+      <div class="attempt" style="margin:10px 0 4px"><span class="lab">自分の答えを出してから</span>
+      <div class="controls">
+        <button class="ctl-btn amber" data-hint>ヒントを表示</button>
+        <button class="ctl-btn" data-sol>解答を見る</button>
+      </div>
+      <div class="hint"><span class="hn">HINT 1</span><p>\(\sin\to\cos\to-\sin\to-\cos\to\sin\) と4回で元に戻ります。\(x=0\) を代入すると、\(\sin0=0\)、\(\cos0=1\) なので、値は 0 と \(\pm1\) が交互に並びます。</p></div>
+      <div class="sol"><p>微分を順に並べ、\(x=0\) を代入します。</p>
+      <div class="table-scroll"><table class="mini-table">
+        <tr><th>\(n\)</th><th>0</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th></tr>
+        <tr><td>\(f^{(n)}(x)\)</td><td>\(\sin x\)</td><td>\(\cos x\)</td><td>\(-\sin x\)</td><td>\(-\cos x\)</td><td>\(\sin x\)</td><td>\(\cos x\)</td></tr>
+        <tr><td>\(f^{(n)}(0)\)</td><td>0</td><td>1</td><td>0</td><td>\(-1\)</td><td>0</td><td>1</td></tr>
+      </table></div>
+      <p>偶数番目がすべて 0 になるので、奇数次の項だけが残ります。</p>
+      \[ \sin x=x-\frac{x^3}{3!}+\frac{x^5}{5!}-\cdots \]
+      <p style="font-size:13.5px;color:var(--ink-faint)">偶数次が消えるのは偶然ではありません。\(\sin(-x)=-\sin x\) という<strong>奇関数</strong>の性質があるので、偶数次の項（符号が変わらない項）は最初から現れようがないのです。同じ理由で、偶関数である \(\cos x\) の展開には偶数次しか現れません。<strong>関数の対称性が、展開の形に直接出てくる</strong>好例です。</p></div></div></div>
+
+      <div class="drill"><p><span class="qn">問3</span>\(\cos x\) の展開を2次の項まで求めよ。§02 で「\(\cos x\) の1次近似は \(1\) で、変化を捉えられない」と述べたが、2次まで取ると何が言えるようになるか。</p>
+      <div class="attempt" style="margin:10px 0 4px"><span class="lab">自分の答えを出してから</span>
+      <div class="controls"><button class="ctl-btn" data-sol>解答を見る</button></div>
+      <div class="sol"><p>\(f(0)=\cos0=1\)、\(f'(x)=-\sin x\) より \(f'(0)=0\)、\(f''(x)=-\cos x\) より \(f''(0)=-1\)。よって</p>
+      \[ \cos x\simeq1+0\cdot x+\frac{-1}{2!}x^2=1-\frac{x^2}{2} \]
+      <p><strong>言えるようになること</strong>：\(\cos x\) は \(x=0\) のまわりで、\(x\) の<strong>2乗に比例して</strong>1から減っていく、と分かります。1次近似では「変化しない」としか言えませんでしたが、2次まで取ると減り方の速さまで表せます。</p>
+      <p style="font-size:13.5px;color:var(--ink-faint)">1章で \(\dfrac{\cos h-1}{h}\to0\) を示したことを覚えているでしょうか。いまの展開から \(\cos h-1\simeq-\dfrac{h^2}{2}\) なので、\(h\) で割ると \(-\dfrac h2\to0\)。<strong>あのとき証明した極限が、展開を見れば一目で分かります</strong>。展開は「その関数が原点付近でどう振る舞うか」を全部吐き出してくれる道具です。</p></div></div></div>
+    </section>
+
+    <!-- §04 -->
+    <section id="d3">
+      <div class="sec-head"><span class="idx">§04</span><h2>どこで止めるか — 誤差の見積もりと物理での近似</h2></div>
+
+      <p>展開は無限に続きますが、実際に使うのは最初の数項だけです。では<strong>どこで止めればよいのか</strong>。判断の基準は単純です。</p>
+
+      <div class="box principle"><span class="lab">打ち切り誤差の目安</span>
+      <p><strong>打ち切ったときの誤差は、最初に捨てた項とだいたい同じ大きさ。</strong></p>
+      <p style="margin-top:8px">たとえば \(\sin x\) を1次で打ち切ると \(\sin x\simeq x\) ですが、実際の展開は</p>
+      \[ \sin x=x-\frac{x^3}{6}+\frac{x^5}{120}-\cdots \]
+      <p>なので、捨てたのは \(-\dfrac{x^3}{6}\) 以降のすべてです。続く項は \(x^5,\ x^7,\ldots\) とさらに桁が小さいので、<strong>捨てた分のほとんどは最初の1項が占めています</strong>。つまり</p>
+      \[ \underbrace{x-\sin x}_{\text{ずれ}}\simeq\frac{x^3}{6} \]
+      <p>これが<strong>絶対誤差</strong>——値そのもののずれです。</p></div>
+
+      <div class="box teach"><span class="lab">相対誤差 — ずれを元の量と比べる</span>
+      <p>「ずれが 0.02」と言われても、それが大きいのか小さいのかは、<strong>元の量がどれくらいか</strong>によります。1000 に対する 0.02 は無視できますが、0.03 に対する 0.02 は致命的です。そこで、ずれを本来の値で割った<strong>相対誤差</strong>を見ます。</p>
+      \[ \text{相対誤差}=\frac{\text{ずれ}}{\text{本来の値}}=\frac{x^3/6}{\sin x} \]
+      <p>ここで分母の \(\sin x\) は、いま調べている範囲では \(x\) とほぼ等しいので、\(\sin x\simeq x\) で置き換えてしまいます（誤差の<strong>見積もり</strong>なので、分母まで厳密にする必要はありません）。すると \(x^3\) を \(x\) で割って</p>
+      \[ \text{相対誤差}\simeq\frac{x^3/6}{x}=\frac{x^2}{6} \]
+      <p style="margin-top:10px"><strong>数値で追ってみます。</strong>\(x=0.5\)（約 28.6°）の場合です。</p>
+      <ul style="margin:6px 0">
+        <li>近似で使う値は \(x=0.5\)、本来の値は \(\sin0.5=0.4794\)。ずれは \(0.5-0.4794=0.0206\)</li>
+        <li>相対誤差は \(0.0206\div0.4794=0.043\)、つまり <strong>4.3 %</strong></li>
+        <li>いっぽう目安の式は \(\dfrac{x^2}{6}=\dfrac{0.25}{6}=0.042\)、つまり <strong>4.2 %</strong></li>
+      </ul>
+      <p><strong>この2つが近いことに意味があります。</strong>上の 4.3 % は、\(\sin0.5=0.4794\) という正確な値を知っていて初めて計算できた数です。それに対して下の 4.2 % は、<strong>\(\sin\) の値を一切使わず、\(x=0.5\) を式に入れただけ</strong>で出た数です。</p>
+      <p>つまり目安の式を使えば、<strong>正確な値を計算する前に「誤差は 4 % くらいだ」と言い当てられる</strong>。これが「誤差を見積もれる」ということの中身です。</p>
+
+      <p style="margin-top:12px"><strong>\(x\) を小さくすると、どれくらい良くなるか。</strong>目安の式 \(\dfrac{x^2}{6}\) には \(x\) が2乗で入っています。だから \(x\) を半分にすると、誤差の割合は \(\left(\dfrac12\right)^2=\dfrac14\) になります。</p>
+      <div class="table-scroll"><table class="mini-table">
+        <tr><th style="width:22%">\(x\)（rad）</th><th style="width:26%">角度</th><th>相対誤差の目安 \(x^2/6\)</th></tr>
+        <tr><td>0.5</td><td>約 28.6°</td><td>4.2 %</td></tr>
+        <tr><td>0.25</td><td>約 14.3°</td><td>1.0 %</td></tr>
+        <tr><td>0.125</td><td>約 7.2°</td><td>0.26 %</td></tr>
+      </table></div>
+      <p>角度を半分にするたびに、誤差が4分の1ずつ落ちていきます。<strong>近似は「少し条件を良くするだけで、急激に正確になる」</strong>——だから、範囲さえ守れば安心して使えるわけです。</p></div>
+
+      <h3>数値で確かめる</h3>
+      <p>\(\sin x\simeq x\) の誤差を、実際に計算した値と目安とで並べてみます。</p>
+
+      <div class="table-scroll"><table class="mini-table">
+        <tr><th>\(x\)（rad）</th><th>角度</th><th>\(\sin x\)（本来の値）</th><th>ずれ \(x-\sin x\)</th><th>相対誤差（実測）</th><th>目安 \(x^2/6\)</th></tr>
+        <tr><td>0.1</td><td>約 5.7°</td><td>0.09983</td><td>0.00017</td><td>0.17 %</td><td>0.17 %</td></tr>
+        <tr><td>0.2</td><td>約 11.5°</td><td>0.19867</td><td>0.00133</td><td>0.67 %</td><td>0.67 %</td></tr>
+        <tr><td>0.5</td><td>約 28.6°</td><td>0.47943</td><td>0.02057</td><td>4.3 %</td><td>4.2 %</td></tr>
+        <tr><td>1.0</td><td>約 57.3°</td><td>0.84147</td><td>0.15853</td><td>19 %</td><td>17 %</td></tr>
+      </table></div>
+
+      <p>右の2列を見比べてください。<strong>捨てた項から見積もっただけの目安が、実測の誤差をきちんと言い当てています</strong>。だから「どこまで信用してよいか」は、正確な値を計算する前に分かります。\(x=1.0\) で少しずれが出るのは、そこではもう \(\sin x\simeq x\) という置き換え自体が粗くなっているためです。</p>
+
+      <div class="box teach"><span class="lab">「1次まで取る」という言い方</span>
+      <p>物理の文章では「\(h\) の1次まで取る」「2次以上は落とす」といった言い方が頻繁に出てきます。これは<strong>テイラー展開の何項目までを残すか</strong>を指定している、というだけの意味です。</p>
+      <p style="margin-top:8px">同じことを記号で書くときは \(O\)（オーダー）を使い、</p>
+      \[ \sin x=x+O(x^3) \]
+      <p>のように書きます。「\(x^3\) と同じ程度の大きさの項が、この後ろに続く」という意味です。細かい係数を気にせず「桁」だけを言いたいときに便利な書き方で、物理の論文や教科書では日常的に使われます。</p></div>
+
+      <h3>総合演習（§04・全3問）</h3>
+
+      <div class="drill"><p><span class="qn">問1</span>地球（質量 \(M\)、半径 \(R\)）による万有引力のポテンシャルは \(U(r)=-\dfrac{GMm}{r}\) である。地表からの高さ \(h\) が \(R\) に比べて十分小さいとき、\(U(R+h)\) を \(h\) の1次まで近似し、高校で習う \(mgh\) の形が出てくることを示せ。ただし \(g=\dfrac{GM}{R^2}\) とする。</p>
+      <div class="attempt" style="margin:10px 0 4px"><span class="lab">自分の答えを出してから</span>
+      <div class="controls">
+        <button class="ctl-btn amber" data-hint>ヒントを表示</button>
+        <button class="ctl-btn" data-sol>解答を見る</button>
+      </div>
+      <div class="hint"><span class="hn">HINT 1</span><p>\(\dfrac{1}{R+h}\) を \(\dfrac{1}{R}\cdot\dfrac{1}{1+h/R}\) と書き直してください。小さい量は \(x=h/R\) です。</p></div>
+      <div class="hint"><span class="hn">HINT 2</span><p>\((1+x)^{-1}\simeq1-x\) を使います。</p></div>
+      <div class="sol"><p>小さい量が \(h/R\) になるように、式を整えます。</p>
+      \[ U(R+h)=-\frac{GMm}{R+h}=-\frac{GMm}{R}\cdot\frac{1}{1+\dfrac hR} \]
+      <p>\((1+x)^{-1}\simeq1-x\) を \(x=h/R\) に使うと</p>
+      \[ U(R+h)\simeq-\frac{GMm}{R}\left(1-\frac hR\right)=-\frac{GMm}{R}+\frac{GMm}{R^2}h \]
+      <p>第1項は \(h\) によらない定数、第2項は \(g=\dfrac{GM}{R^2}\) を使って \(mgh\)。つまり</p>
+      \[ U(R+h)\simeq\text{（定数）}+mgh \]
+      <p style="font-size:13.5px;color:var(--ink-faint)">ポテンシャルは差だけが意味を持つので、定数項は基準の取り方で消せます。残るのが \(mgh\) です。<strong>高校で「なぜか天下りに与えられた \(mgh\)」の正体は、万有引力ポテンシャルの1次近似だった</strong>わけです。捨てた2次の項は \(\dfrac{GMm}{R^3}h^2\) 程度で、\(h/R\) がもう1つ掛かるぶん小さくなります。地上の建物の高さなら \(h/R\) は \(10^{-4}\) 以下なので、まったく問題になりません。</p></div></div></div>
+
+      <div class="drill"><p><span class="qn">問2</span>相対性理論では、速さ \(v\) で運動する質量 \(m\) の物体のエネルギーが</p>
+      \[ E=\frac{mc^{2}}{\sqrt{1-\dfrac{v^{2}}{c^{2}}}} \]
+      <p>で与えられることが知られている（\(c\) は光速）。\(v\) が \(c\) に比べて十分小さいとき、この式を \(v^2/c^2\) の1次まで近似せよ。</p>
+      <div class="attempt" style="margin:10px 0 4px"><span class="lab">自分の答えを出してから</span>
+      <div class="controls">
+        <button class="ctl-btn amber" data-hint>ヒントを表示</button>
+        <button class="ctl-btn" data-sol>解答を見る</button>
+      </div>
+      <div class="hint"><span class="hn">HINT 1</span><p>\(\dfrac{1}{\sqrt{1+x}}=(1+x)^{-1/2}\simeq1-\dfrac x2\) を使います。小さい量は \(x=-\dfrac{v^2}{c^2}\) です。符号に注意してください。</p></div>
+      <div class="sol"><p>\(x=-\dfrac{v^2}{c^2}\) と見ると、\(E=mc^2(1+x)^{-1/2}\) の形です。\((1+x)^{-1/2}\simeq1-\dfrac x2\) より</p>
+      \[ E\simeq mc^{2}\left(1-\frac12\cdot\left(-\frac{v^{2}}{c^{2}}\right)\right)=mc^{2}\left(1+\frac{v^{2}}{2c^{2}}\right)=mc^{2}+\frac12mv^{2} \]
+      <p><strong>見慣れた運動エネルギー \(\frac12mv^2\) が出てきました。</strong>第1項 \(mc^2\) は速さによらない定数で、静止エネルギーと呼ばれるものです。</p>
+      <p style="font-size:13.5px;color:var(--ink-faint)">つまり \(\frac12mv^2\) は、相対論のエネルギーを「光速に比べて遅い」という条件で1次まで切り取った近似形です。次の項は \(\dfrac38\dfrac{mv^4}{c^2}\) 程度で、たとえば秒速 8 km の人工衛星でも \(v/c\) は \(3\times10^{-5}\) ほどなので、まったく効いてきません。<strong>ニュートン力学が長らく正しく見えた理由が、この式に表れています。</strong></p></div></div></div>
+
+      <div class="drill"><p><span class="qn">問3</span><strong>口頭試問形式</strong>：次の3つを、公式を見ずに自分の言葉で説明せよ。<br>①1次近似 \(f(a+h)\simeq f(a)+f'(a)h\) は、微分のどの式から出てくるか。グラフで言えば何をしているか。<br>②マクローリン展開の係数が \(\dfrac{f^{(n)}(0)}{n!}\) になるのはなぜか。特に分母の \(n!\) はどこから来たのか。<br>③近似を途中で打ち切ったとき、誤差の大きさをどう見積もるか。</p>
+      <div class="attempt" style="margin:10px 0 4px"><span class="lab">自分の答えを出してから</span>
+      <div class="controls"><button class="ctl-btn" data-sol>解答例を見る</button></div>
+      <div class="sol"><p><strong>①</strong> 導関数の定義 \(f'(a)=\lim_{h\to0}\frac{f(a+h)-f(a)}{h}\) で、極限を取る前の「\(h\) が小さければほぼ等しい」という段階の式を、分母を払って移項しただけ。グラフで言えば、点 \(a\) のまわりで曲線を接線に置き換えている。</p>
+      <p><strong>②</strong> 答えを \(f(x)=c_0+c_1x+c_2x^2+\cdots\) と仮定し、\(x=0\) を代入すると定数項だけが残るので \(c_0=f(0)\)。1回微分してから代入すれば \(c_1=f'(0)\)。\(n\) 回微分すると \(x^n\) の項からは \(n(n-1)\cdots1=n!\) という係数が出てくるので、\(f^{(n)}(0)=n!\,c_n\) となり \(c_n=f^{(n)}(0)/n!\)。分母の \(n!\) は、<strong>微分を繰り返したときに自動的に出てくる係数を打ち消すため</strong>に現れる。</p>
+      <p><strong>③</strong> 最初に捨てた項の大きさが、そのまま誤差の目安になる。続く項はさらに桁が小さいので無視できる。\(\sin x\simeq x\) なら誤差は \(x^3/6\) 程度で、相対誤差は \(x^2/6\)。</p>
+      <p style="font-size:13.5px;color:var(--ink-faint)">この3つが澱みなく言えれば、この記事は通過です。特に②の \(n!\) の由来は、公式を暗記しているだけでは答えられない問いなので、実際に3回くらい微分して確かめてみてください。</p></div></div></div>
+    </section>
+
+    <!-- §05 -->
+    <section id="howto">
+      <div class="sec-head"><span class="idx">§05</span><h2>チェックリストと次回予告</h2></div>
+
+      <h3>この記事で答えられるようになるべき問い</h3>
+      <div class="box principle"><span class="lab">最終チェック</span>
+      <ul style="margin:8px 0 0">
+        <li>1次近似の式を、導関数の定義から導けるか（§02）</li>
+        <li>1次近似がグラフ上で何をしているか説明できるか（§02）</li>
+        <li>\((1+x)^n\simeq1+nx\) を導き、\(\sqrt{1.02}\) のような値を暗算できるか（§02）</li>
+        <li>近似が効く条件が「\(x\) が小さい」ではなく「\(nx\) が小さい」だと説明できるか（§02）</li>
+        <li>高階微分の意味と記法（\(f''\)、\(f^{(n)}\)）を言えるか（§03）</li>
+        <li>マクローリン展開の係数 \(\dfrac{f^{(n)}(0)}{n!}\) を、仮定した多項式から導けるか（§03）</li>
+        <li>分母の \(n!\) がどこから来たか説明できるか（§03）</li>
+        <li>\(e^x,\ \sin x,\ \cos x\) の展開を、微分を繰り返して導けるか（§03）</li>
+        <li>打ち切り誤差を「最初に捨てた項」で見積もれるか（§04）</li>
+        <li>\(mgh\) と \(\frac12mv^2\) が、それぞれ何の1次近似かを説明できるか（§04）</li>
+      </ul></div>
+
+      <h3>次章（4-1 複素数とオイラーの公式）への接続</h3>
+      <p>§03 で作った3つの展開を、並べて書いてみます。</p>
+      \[ e^{x}=1+x+\frac{x^2}{2!}+\frac{x^3}{3!}+\frac{x^4}{4!}+\cdots \]
+      \[ \cos x=1-\frac{x^2}{2!}+\frac{x^4}{4!}-\cdots,\qquad \sin x=x-\frac{x^3}{3!}+\frac{x^5}{5!}-\cdots \]
+      <p>気づくことがあります。\(e^x\) の展開を偶数次の項と奇数次の項に分けると、<strong>前者は \(\cos x\) の、後者は \(\sin x\) の項とぴったり同じ並び</strong>になっています。違うのは符号だけ。\(\cos\) と \(\sin\) は符号が交互に入れ替わるのに、\(e^x\) はすべてプラスです。</p>
+      <p>では、この符号の食い違いを埋める方法はあるでしょうか。2乗すると \(-1\) になる数を \(x\) の代わりに入れたら、どうなるでしょうか。</p>
+      <p>その問いに答えると、物理で最も使われる公式の1つ——<strong>オイラーの公式</strong>にたどり着きます。</p>
+      <div class="box teach"><span class="lab">4-1 で扱う問い（予習用）</span>
+      <ul style="margin:6px 0 0">
+        <li>2乗して \(-1\) になる数とは何か。それは数直線のどこにあるのか</li>
+        <li>複素数の掛け算は、図形的には何をしているのか</li>
+        <li>\(e^{i\theta}=\cos\theta+i\sin\theta\) はなぜ成り立つのか</li>
+        <li>なぜ物理では、実数で済むはずの振動をわざわざ複素数で書くのか</li>
+      </ul>
+      <p style="margin-top:8px"><strong>鍵となる一言</strong>：オイラーの公式は、この記事で作った3つの展開を見比べるだけで導けます。3章は4章のための準備でもありました。</p></div>
+
+      <h3>学習サイクルの推奨手順</h3>
+      <ol>
+        <li><strong>解答を開かず、紙で挑戦</strong>。詰まっても5分は粘ってください。詰まるのは失敗ではなく、<strong>まだ腑に落ちていない一点が表に出た合図</strong>です。そこを自分の手で越えた経験が、そのまま次に進む力になります。</li>
+        <li><strong>ヒントを1つずつ</strong>開き、詰まりが解けたら閉じて自力で続行。</li>
+        <li>近似式を使ったら、<strong>捨てた項がどのくらいの大きさかを必ず見積もる</strong>。これを省くと、近似が「だいたいの話」に落ちてしまいます。</li>
+        <li>翌日、何も見ずに §04 問3（口頭試問）を再現する。特に②の \(n!\) の由来を、実際に微分しながら説明できるか確かめてください。</li>
+      </ol>
+
+      <div class="box warn"><span class="lab">この教材の立ち位置</span>
+      <p>本節は<strong>物理で使うための近似</strong>に絞っています。テイラー展開が元の関数に本当に収束するかどうか（収束半径、剰余項の評価、テイラー級数が収束しても元の関数に一致しない例）には踏み込んでいません。</p>
+      <p style="margin-top:8px">物理で扱う関数のほとんどは素直に展開できるので、学部の計算では困りません。ただし「展開したら必ず正しい」と思い込むのは危険で、たとえば \(\ln(1+x)\) の展開は \(|x|<1\) でしか使えません。<strong>近似には有効範囲がある</strong>——この記事で誤差の見積もりを強調したのは、そのためでもあります。</p></div>
+
+      <div class="foot"><p>Academic Gates ／ 物理数学I 3章 近似と展開 ／ 3-1「近似と展開」。演習問題は本教材独自の構成です。続編：4章 複素数とオイラーの公式 ／ 4-1。</p></div>
+    </section>
+  </main>
+</div>
+
+<div id="site-footer"><noscript><nav class="noscript-nav" aria-label="フッターナビゲーション"><a href="index.html">ホーム</a><a href="self-intro.html">自己紹介</a><a href="study.html">勉強の軌跡</a><a href="videos.html">動画</a><a href="blog.html">ブログ</a><a href="sns.html">各種SNS</a></nav></noscript></div>
+
+<script>
+/* ヒント／解答トグル */
+document.querySelectorAll('[data-hint]').forEach(function(btn){
+  var box=btn.closest('.attempt');
+  var hints=[].slice.call(box.querySelectorAll('.hint'));
+  if(!hints.length){ btn.style.display='none'; return; }
+  var hideBtn=document.createElement('button');
+  hideBtn.type='button';hideBtn.className='ctl-btn amber';hideBtn.textContent='ヒントを隠す';hideBtn.style.display='none';
+  btn.after(hideBtn);
+  btn.addEventListener('click',function(){
+    var hidden=hints.filter(function(h){return h.style.display!=='block'});
+    if(hidden.length){ hidden[0].style.display='block'; hideBtn.style.display='';
+      if(hidden.length===1){ btn.textContent='ヒントは以上'; btn.disabled=true; }
+      else { btn.textContent='次のヒント ('+(hints.length-hidden.length+1)+'/'+hints.length+')'; }
+    }
+  });
+  hideBtn.addEventListener('click',function(){
+    hints.forEach(function(h){h.style.display='none'});
+    hideBtn.style.display='none';btn.disabled=false;btn.textContent='ヒントを表示';
+  });
+});
+document.querySelectorAll('[data-sol]').forEach(function(btn){
+  btn.addEventListener('click',function(){
+    var sol=btn.closest('.attempt').querySelector('.sol');
+    var open=sol.style.display==='block';
+    sol.style.display=open?'none':'block';
+    if(!btn.dataset.show) btn.dataset.show=btn.textContent;
+    btn.textContent=open?btn.dataset.show:'閉じる';
+    if(!open && window.MathJax && MathJax.typesetPromise) MathJax.typesetPromise([sol]);
+  });
+});
+
+/* 目次の追従 */
+var links=[].slice.call(document.querySelectorAll('.toc a[href^="#"]'));
+var secs=links.map(function(a){return document.querySelector(a.getAttribute('href'))});
+var pbar=document.getElementById('pbar');
+function onScroll(){
+  // getBoundingClientRect を使う（offsetTop ではない）。style.css の
+  // `main{position:relative}` で <main> が offsetParent になり、offsetTop が
+  // 文書基準でなくなるため、scrollY と直接比べると判定がずれる（§36）。
+  var idx=0;
+  secs.forEach(function(s,i){ if(s&&s.getBoundingClientRect().top<=140) idx=i; });
+  links.forEach(function(a){a.classList.remove('active')});
+  if(links[idx]) links[idx].classList.add('active');
+  var h=document.documentElement.scrollHeight-window.innerHeight;
+  pbar.style.width=(h>0?(window.scrollY/h*100):0)+'%';
+}
+window.addEventListener('scroll',onScroll,{passive:true});
+window.addEventListener('resize',onScroll); onScroll();
+var body=document.body,mb=document.getElementById('menuBtn'),scrim=document.getElementById('scrim');
+mb.addEventListener('click',function(){var o=body.classList.toggle('nav-open');mb.setAttribute('aria-expanded',o)});
+scrim.addEventListener('click',function(){body.classList.remove('nav-open')});
+document.getElementById('toc').addEventListener('click',function(e){if(e.target.closest('a'))body.classList.remove('nav-open')});
+</script>
+<script src="../js/layout.js?v=r64"></script>
+<script src="../js/main.js?v=r64"></script>
+<script src="../js/starfield.js?v=r64"></script>
+</body>
+</html>
