@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2-2 積分の技法｜物理数学I 2章 積分 | Academic Gates</title>
+<meta name="description" content="連鎖律を逆に読む置換積分と、積の微分を逆に読む部分積分。技法の使い分けまで。物理数学I 2章 積分／2-2。">
+<link rel="icon" href="../../favicon.ico" sizes="32x32">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+<!-- ★ ライト/ダーク切替は停止中（DESIGN.md §44）。サイト全体がダーク基調なので、
+     記事だけテーマが変わるのは一貫性を欠くという判断。**復活させるには次の1行の
+     コメントを外すだけでよい**（js/theme.js も css/lesson-theme.css も残してある）。
+     data-theme を付ける主体がこれしか無いので、外しておけば :root[data-theme="light"]
+     は構造的にマッチしない。逆に読み込んだままボタンだけ消すと、OS がライト設定の
+     端末が勝手にライトになり、戻す手段が無くなる（§44.2）。
+     復活時の挙動: テーマは描画前に同期で決まり（FOUC 防止）、ボタンの設置は
+     layout.js がヘッダーを書き出したあと DOMContentLoaded で行われる。 -->
+<!-- <script src="../js/theme.js?v=r61"></script> -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;500&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+<!-- サイト共通 → 記事固有 → テーマ上書き の順で読む（lesson-theme.css は
+     記事の <style> より後ろに置くこと。css/lesson-theme.css 冒頭の注記どおり） -->
+<link rel="stylesheet" href="../css/style.css?v=r61">
+<!-- MathJax: 設定ブロックはローダーより「前」に置く（DESIGN.md §11b）。
+     フォールバックは this.src= ではなく createElement 方式（同§）。 -->
+<script>
+window.MathJax={tex:{inlineMath:[['\\(','\\)']],displayMath:[['\\[','\\]']],tags:'none'},svg:{fontCache:'global'},options:{skipHtmlTags:['script','noscript','style','textarea','pre','code']}};
+</script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"
+        onerror="this.onerror=null;var s=document.createElement('script');s.async=true;s.src='https://unpkg.com/mathjax@3/es5/tex-svg.js';document.head.appendChild(s);"></script>
+<style>
+/* 2-2 積分の技法 — 記事固有のスタイルのみ。2-1 と同じ構成をそのまま使う。
+   共通のリセット・背景・星・ヘッダー/フッター・ボタン・見出し階層・本文リズムは
+   css/style.css が持つ（DESIGN.md §35, §36）。ここに残すのは、この教材の
+   構造（レール／演習ブロック／図版）と、教育用の色トークンだけ。 */
+:root{
+  /* 教材固有のトークン。本体と同値のもの（--bg --surface --nav-bg --ink --line
+     --line-strong --glow-cool --font --nav-clear --ease --radius-lg/md）は
+     css/style.css 側に定義があるので、ここでは持たない。
+     --ink-soft / --ink-faint は本体より明るい値を「意図的に」維持している。
+     本体値に寄せると 13.5px の解説文が 4.56:1 → 3.66:1 と AA を割るため（§36）。 */
+  --surface-2:rgba(255,255,255,.045);
+  --ink-soft:rgba(255,255,255,.68);
+  --ink-faint:rgba(255,255,255,.46);
+  --line-soft:rgba(255,255,255,.05);
+  --accent-deep:#a8c9ff;
+  --accent-tint:rgba(77,148,255,.12);
+  --amber:#ffb46b;--amber-tint:rgba(255,160,70,.08);--amber-line:rgba(255,160,70,.32);
+  --good:#72e3ad;--good-tint:rgba(114,227,173,.08);--good-line:rgba(114,227,173,.28);
+  --key:#ff6fa5;--key-tint:rgba(255,61,139,.08);--key-line:rgba(255,61,139,.28);
+  --teach:#a48bff;--teach-tint:rgba(123,77,255,.11);--teach-line:rgba(123,77,255,.38);
+  --mono:ui-monospace,'SFMono-Regular',Menlo,Consolas,monospace;
+  --rail-w:250px;
+}
+body{font-size:15.5px;line-height:1.9;line-break:strict;overflow-x:hidden}
+
+/* --- レイアウト（左に目次レール／右に本文の2カラム） ------------------------
+   本文列 760px は日本語の長文＋数式に合わせた measure。style.css の共通記事
+   ルールは `body.is-article main > section:not(.rail)`（詳細度 0,2,3）と
+   `… ~ section:not(.rail)`（0,3,4）で 900px と 160px パディングをかけてくる。
+   こちらは `.main` を噛ませて 0,3,2 / 0,4,3 とし、確実に上回る（§36）。 */
+/* 全幅。左寄せのレイアウトで、余った幅は右に流す（§43）。
+   §40 で一度 max-width を外して差し戻しているが、あれは「中央寄せのまま左右を
+   対称にする」変更で、本文の位置も幅も変わらなかったため戻した。今回は本文を
+   860px に広げて左揃えにするので、目的も結果も違う。
+   レールの左余白は 1280px → 1440px にかけて 0 → 32px。狭い画面ではまず余白を
+   削って本文幅に回す（レール幅 250px は目次の文字量で決まるので触らない）。 */
+.wrap{display:flex;padding-top:var(--nav-clearance);
+      padding-left:clamp(0px, calc((100vw - 1280px) * .2), 32px)}
+.rail{width:var(--rail-w);flex:0 0 var(--rail-w);position:sticky;top:var(--nav-clearance);height:calc(100vh - var(--nav-clearance));overflow-y:auto;padding:18px 14px 60px 22px;border-right:1px solid var(--line)}
+/* 左パディング＝レールと本文の間隔。1024px → 1280px にかけて 24 → 56px。
+   これも狭い画面では縮めて本文幅に回す。 */
+.main{flex:1 1 auto;min-width:0;
+      padding:0 clamp(24px, calc(24px + (100vw - 1024px) * .125), 56px) 110px}
+/* 本文列 860px。760px では display 数式が 6 本はみ出していた（解答の入れ子
+   パディングで、.sol の中は本文列より 132px 狭い箱になる）。全 82 本が収まる
+   最小幅は実測 853px（§43.2）。中央寄せをやめて左揃えにし、余りは右へ。 */
+body.is-article .main > .lesson-hero,
+body.is-article .main > section:not(.rail),
+body.is-article .main > .foot{max-width:860px;margin-left:0;margin-right:auto;padding-left:0;padding-right:0}
+.rail .brand{font-weight:400;font-size:15px;line-height:1.45;margin:2px 0 4px}
+.rail .brand small{display:block;font-size:10px;font-weight:500;color:var(--ink-faint);letter-spacing:.2em;margin-top:6px}
+.progress-wrap{height:2px;background:var(--line);border-radius:99px;margin:16px 0 18px;overflow:hidden}
+.progress-bar{height:100%;width:0;background:linear-gradient(90deg,var(--accent),#a8c9ff);transition:width .15s linear}
+.toc{list-style:none;margin:0;padding:0;font-size:12.5px}
+.toc .part{font-size:10px;letter-spacing:.2em;color:var(--ink-faint);margin:16px 0 5px;padding-left:2px}
+.toc a{display:block;text-decoration:none;color:var(--ink-soft);padding:4px 10px;border-radius:999px;transition:color var(--dur) var(--ease),background var(--dur) var(--ease)}
+.toc a:hover{color:var(--ink);background:var(--surface-2)}
+.toc a.active{color:var(--ink);background:var(--accent-tint)}
+.toc a .n{font-size:10.5px;color:var(--ink-faint);margin-right:8px;font-variant-numeric:tabular-nums}
+.toc a.active .n{color:var(--accent)}
+
+/* --- 記事の導入部。`.hero` は index.html 専用で、style.css が
+   `.hero h1/.hero p/.hero .eyebrow` に黒い text-shadow をかけるため使えない（§36）。 --- */
+.lesson-hero{padding:64px 0 34px;border-bottom:1px solid var(--line)}
+.lesson-hero h1{font-weight:300;font-size:clamp(28px,4vw,48px);line-height:1.25;letter-spacing:-.02em;margin:0 0 22px}
+.lesson-hero h1 .sub{display:block;font-size:.52em;font-weight:300;color:var(--ink-soft);letter-spacing:0;margin-top:12px}
+.lesson-hero p{color:var(--ink-soft);margin:0 0 12px}
+.lesson-hero .lead{font-size:16.5px;color:var(--ink-soft)}
+/* .eyebrow 本体は style.css の共通コンポーネント。色と余白だけ上書きする
+   （共通の --text-tertiary は 11px の小さな文字で 3.66:1 と AA を割るため） */
+.eyebrow{color:var(--ink-faint);margin-bottom:18px}
+
+section{border-bottom:1px solid var(--line-soft);scroll-margin-top:var(--nav-clearance)}
+/* 縦の余白も共通ルールに勝つ必要がある（先頭セクションも2つ目以降も同じ 56px） */
+body.is-article .main > section:not(.rail),
+body.is-article .main > section:not(.rail) ~ section:not(.rail){padding-top:56px;padding-bottom:12px}
+.sec-head{display:flex;align-items:baseline;gap:14px;margin-bottom:10px}
+.sec-head .idx{font-size:.72rem;font-weight:500;letter-spacing:.2em;color:var(--ink-faint);padding-top:4px;flex:0 0 auto;font-variant-numeric:tabular-nums}
+.sec-head .idx::after{content:' —'}
+body.is-article main h2{font-weight:400;font-size:clamp(21px,2.6vw,28px);line-height:1.3;letter-spacing:-.01em;margin:0}
+body.is-article main h3{font-weight:400;font-size:17px;margin:30px 0 6px;color:var(--ink)}
+body.is-article main h4{font-weight:500;font-size:14.5px;margin:18px 0 4px;color:var(--ink)}
+body.is-article main p{margin:10px 0;color:var(--ink-soft)}
+body.is-article main ul,body.is-article main ol{margin:10px 0;padding-left:1.3em;color:var(--ink-soft)}
+li{margin:4px 0}
+strong{font-weight:500;color:var(--ink)}
+code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);border-radius:6px;padding:1px 6px;color:var(--accent-deep)}
+mjx-container{color:var(--ink)}
+mjx-container[display="true"]{margin:14px 0!important;overflow-x:auto;overflow-y:hidden;padding:2px 0}
+
+/* 別行立て数式だけ、入れ子のパディングの外へ広げる（§46）。
+   解答や色付きボックスの中の数式は、section → .drill(20) → .attempt(22) →
+   .sol(20) と積み上がるパディングで、本文列より最大 132px 狭い箱に入っていた。
+   1024px では 82本中 6本がはみ出し、最大 +127px。**文章の字下げはそのまま**に、
+   数式だけを外へ出す。
+   値は「祖先のパディングの合計 − 8px」。8px 残すのは枠線に重ねないため。
+   全量（合計そのまま）だと .sol 左端の青いアクセントバーの上に分数が乗る。
+   はみ出しが無い幅では見た目が変わらない（箱が左右対称に広がるだけで中身は
+   中央揃えのまま。1440px で適用前後のピクセル差 0 を確認済み）。
+   !important は既存の margin:14px 0!important を上書きするため。
+   新しい入れ子を足すときは、この表に1行足すこと（現在 .hint の中に別行立ては無い）。
+     .box 20 / .drill 20 / .attempt 22 / .sol 20 */
+.box mjx-container[display="true"],
+.drill > mjx-container[display="true"]{margin:14px -12px!important}
+.attempt mjx-container[display="true"]{margin:14px -14px!important}
+.drill .attempt mjx-container[display="true"],
+.attempt .sol mjx-container[display="true"]{margin:14px -34px!important}
+.drill .attempt .sol mjx-container[display="true"]{margin:14px -54px!important}
+
+.box{border-radius:var(--radius-md);padding:16px 20px;margin:18px 0;border:1px solid var(--line);background:var(--surface)}
+.box .lab{font-size:.7rem;letter-spacing:.14em;font-weight:500;display:block;margin-bottom:6px}
+.box p{max-width:none}
+.box p:first-of-type{margin-top:2px}.box p:last-child{margin-bottom:0}
+/* 枠線は必ずトークン経由にすること。ここに直書きすると lesson-theme.css の
+   ライト上書きが効かず、暗い背景用の明るい色がライトでパステルになる（§41）。 */
+.box.principle{background:var(--key-tint);border-color:var(--key-line)}.box.principle .lab{color:var(--key)}
+.box.target{background:var(--good-tint);border-color:var(--good-line)}.box.target .lab{color:var(--good)}
+.box.warn{background:var(--amber-tint);border-color:var(--amber-line)}.box.warn .lab{color:var(--amber)}
+.box.teach{background:var(--teach-tint);border-color:var(--teach-line)}.box.teach .lab{color:var(--teach)}
+.box.teach .lab::before{content:"◎ "}
+
+.table-scroll{overflow-x:auto;margin:14px 0}
+.mini-table{width:100%;border-collapse:collapse;font-size:14px;margin:0;color:var(--ink-soft)}
+.mini-table th,.mini-table td{border:1px solid var(--line);padding:9px 11px;text-align:left;vertical-align:top}
+.mini-table th{background:var(--surface-2);font-weight:500;color:var(--ink)}
+
+.fig{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-lg);padding:18px 18px 12px;margin:20px 0}
+.fig > svg{width:100%;height:auto;display:block}
+.fig svg text{font-family:var(--font-body)}
+.fig figcaption{font-size:13px;color:var(--ink-soft);margin-top:10px;line-height:1.8;max-width:none}
+
+/* --- 演習まわり。`.ctl-btn` は style.css の `.btn`（サイト CTA。
+   `.btn::before` のホバーグローを持つ）と衝突しないよう改名したもの（§36）。 --- */
+.attempt{background:var(--surface);border:1px solid var(--amber-line);border-radius:var(--radius-lg);padding:18px 22px;margin:20px 0}
+.attempt .lab{font-size:.7rem;letter-spacing:.14em;color:var(--amber);font-weight:500;display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.attempt .lab::before{content:"✎"}
+.attempt p{max-width:none}
+.controls{display:flex;flex-wrap:wrap;gap:10px;margin:14px 0 4px}
+.ctl-btn{font-family:var(--font-body);font-size:12.5px;font-weight:500;border:1px solid var(--line);background:transparent;color:var(--ink-soft);padding:7px 16px;border-radius:var(--radius-pill);cursor:pointer;transition:color var(--dur) var(--ease),border-color var(--dur) var(--ease),background var(--dur) var(--ease)}
+.ctl-btn:hover{color:var(--ink);border-color:var(--line-strong);background:var(--surface-2)}
+.ctl-btn.amber{color:var(--amber);border-color:var(--amber-line)}
+.ctl-btn.amber:hover{background:var(--amber-tint)}
+.ctl-btn:disabled{opacity:.4;cursor:default;background:transparent}
+.hint{display:none;border-left:2px solid var(--amber);background:var(--amber-tint);border-radius:0 var(--radius-sm) var(--radius-sm) 0;padding:12px 16px;margin:10px 0}
+.hint .hn{font-size:.68rem;letter-spacing:.14em;color:var(--amber);font-weight:500;display:block;margin-bottom:3px}
+.hint p{max-width:none}.hint p:last-child{margin-bottom:0}.hint p:first-child{margin-top:0}
+.sol{display:none;border:1px solid var(--line);border-left:2px solid var(--accent);border-radius:0 var(--radius-md) var(--radius-md) 0;background:var(--surface-2);padding:8px 20px 16px;margin:12px 0}
+.sol p{max-width:none}
+.step{margin:18px 0}
+.step .sh{display:flex;gap:10px;align-items:baseline;font-weight:500;color:var(--ink);margin-bottom:2px}
+.step .sn{font-size:11px;font-weight:500;color:#06142e;background:var(--accent);border-radius:999px;padding:1px 10px;flex:0 0 auto}
+.step .why{font-size:13.5px;color:var(--ink-faint);border-left:1px solid var(--line);padding-left:12px;margin:5px 0 5px 2px;max-width:none}
+.transfer{background:var(--surface-2);border:1px solid var(--line);border-radius:var(--radius-md);padding:14px 18px;margin:18px 0}
+.transfer .lab{font-size:.7rem;letter-spacing:.14em;color:var(--accent);font-weight:500;display:block;margin-bottom:5px}
+.transfer p{max-width:none}
+.drill{background:var(--surface);border:1px solid var(--line);border-left:2px solid var(--accent);border-radius:0 var(--radius-md) var(--radius-md) 0;padding:14px 20px;margin:16px 0}
+.drill .qn{font-size:11px;font-weight:500;color:#06142e;background:var(--accent);border-radius:999px;padding:2px 11px;margin-right:8px}
+.drill p{max-width:none}
+.drill p:first-child{margin-top:2px}
+.drill .attempt{background:transparent;border-style:dashed}
+.foot{padding:34px 0 0;color:var(--ink-faint);font-size:12.5px}
+.foot p{color:var(--ink-faint);max-width:none}
+
+/* モバイル：レールを引き出しに。`.menu-btn` は位置だけを持ち、見た目は
+   共通コンポーネントの `.btn` を併用する。 */
+.menu-btn{display:none}
+.scrim{display:none}
+@media (max-width:900px){
+  .rail{position:fixed;left:0;top:0;height:100vh;z-index:1100;transform:translateX(-100%);transition:transform .25s var(--ease);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);padding-top:28px}
+  body.nav-open .rail{transform:translateX(0)}
+  .main{padding:0 20px 90px}
+  .menu-btn{display:inline-flex;position:fixed;bottom:18px;right:18px;z-index:1050;background:var(--nav-bg);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);color:var(--ink)}
+  .scrim{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:1090}
+  body.nav-open .scrim{display:block}
+  .lesson-hero{padding-top:40px}
+  /* 案A（§46.1）の負マージンをここで切る。マージンは固定 px なので、箱そのものが
+     狭いこの帯では数式が .sol の枠を大きく飛び出し、点線の .attempt 枠まで越えて
+     見える。390px では 28本が枠を横切っていた。はみ出し本数は 36→42 に増えるが、
+     どれも数式ごとの横スクロールで読める。§46.4 */
+  .box mjx-container[display="true"],
+  .drill > mjx-container[display="true"],
+  .attempt mjx-container[display="true"],
+  .drill .attempt mjx-container[display="true"],
+  .attempt .sol mjx-container[display="true"],
+  .drill .attempt .sol mjx-container[display="true"]{margin:14px 0!important}
+}
+@media print{
+  body{background:#fff;color:#000}
+  header,.rail,.menu-btn,.scrim,#starfield,footer{display:none!important}
+  .wrap{display:block;padding-top:0}
+  .hint,.sol{display:block!important}
+}
+</style>
+<link rel="stylesheet" href="../css/lesson-theme.css?v=r61">
+</head>
+<body data-page="study" class="is-article" data-node="phys-math_2-2">
+<canvas id="starfield" aria-hidden="true"></canvas>
+<div id="site-nav"><noscript><nav class="noscript-nav" aria-label="メインナビゲーション"><a href="index.html">ホーム</a><a href="self-intro.html">自己紹介</a><a href="study.html">勉強の軌跡</a><a href="videos.html">動画</a><a href="blog.html">ブログ</a><a href="sns.html">各種SNS</a></nav></noscript></div>
+<button class="menu-btn btn" id="menuBtn" aria-controls="rail" aria-expanded="false">目次 <span class="btn-disc" aria-hidden="true">≡</span></button>
+<div class="scrim" id="scrim"></div>
+<div class="wrap">
+  <nav class="rail" id="rail">
+    <!-- 科目へ戻る導線（レール上部の「← 一つ上」）は layout.js が CRUMBS から書き出す。 -->
+    <div class="brand">2-2　積分の技法<small>SECTION 2-2 / INTEGRALS</small></div>
+    <div class="progress-wrap"><div class="progress-bar" id="pbar"></div></div>
+    <ul class="toc" id="toc">
+      <li class="part">導入</li>
+      <li><a href="#m0"><span class="n">01</span>公式表だけでは解けない積分</a></li>
+      <li class="part">2つの技法</li>
+      <li><a href="#d1"><span class="n">02</span>置換積分</a></li>
+      <li><a href="#d2"><span class="n">03</span>部分積分</a></li>
+      <li class="part">使い分ける</li>
+      <li><a href="#d3"><span class="n">04</span>どの技法を使うか</a></li>
+      <li class="part">仕上げ</li>
+      <li><a href="#howto"><span class="n">05</span>チェックリストと次回予告</a></li>
+    </ul>
+  </nav>
+
+  <main class="main">
+    <!-- <header> ではなく <div>。style.css は裸の `header` を浮遊ナビとして
+         position:fixed / flex / border-radius:999px で組んでおり、記事の導入部が
+         <header> だと丸ごとそれを浴びてしまう（DESIGN.md §36） -->
+    <div class="lesson-hero">
+      <div class="eyebrow">物理数学 I ／ 2章 積分 ／ SECTION 2-2</div>
+      <h1>2-2　積分の技法<span class="sub">微分の規則を、逆向きに使う</span></h1>
+      <p class="lead">2-1 で、積分は「微分の公式表を逆から読む」ことで計算できると分かりました。ところが、少し形が込み入った関数になると、公式表をそのまま当てはめても解けなくなります。\(2x\,e^{x^2}\) や \(x\,e^{x}\) のような、<strong>関数が組み合わさった形</strong>です。</p>
+      <p>この記事では、そういう積分を崩すための2つの技法を身につけます。どちらも新しい公式ではなく、1章で作った<strong>連鎖律</strong>と<strong>積の微分</strong>を、逆向きに読み直したものです。</p>
+      <p>読み方：解答は必ず閉じたまま、紙で挑戦してください。</p>
+    </div>
+
+    <!-- §01 -->
+    <section id="m0">
+      <div class="sec-head"><span class="idx">§01</span><h2>公式表だけでは解けない積分</h2></div>
+
+      <p>次の2つの積分を見てください。</p>
+      \[ \int 2x\,e^{x^2}\,dx,\qquad \int x\,e^{x}\,dx \]
+      <p>どちらも \(e\) の指数関数が入っていますが、2-1 の公式表に載っているのは \(\int e^x dx=e^x+C\) だけです。\(e^{x^2}\) のように肩が \(x^2\) になっていたり、\(x\) が掛かっていたりすると、表のどの行にも当てはまりません。</p>
+      <p>微分なら、こういう形でも困りませんでした。合成関数には<strong>連鎖律</strong>、積には<strong>積の微分</strong>という規則があり、機械的に処理できたからです。</p>
+
+      <div class="box warn"><span class="lab">積分には、積と合成の公式がない</span>
+      <p>2-1 の最後で見たとおり、積分には</p>
+      \[ \int f(x)g(x)\,dx=\left(\int f\,dx\right)\cdot\left(\int g\,dx\right)\quad\text{のような公式は成り立たない} \]
+      <p>という事情があります。試しに \(f=g=x\) で確かめると、左辺は \(\int x^2dx=\frac{x^3}{3}\)、右辺は \(\frac{x^2}{2}\cdot\frac{x^2}{2}=\frac{x^4}{4}\) で、まったく違います。</p></div>
+
+      <p>そこで発想を変えます。積分に専用の公式がないなら、<strong>微分の公式を作り直して使えばいい</strong>のです。</p>
+      <p>微分の公式は「ある関数を微分すると、こういう形になる」という等式です。これを<strong>逆に読み直せば、「こういう形の関数は、あの関数を微分したものだ」——つまり原始関数が分かる</strong>ことになります。2-1 で公式表を逆から読んで積分の表を作ったのと、同じ発想です。今度はそれを、1章の連鎖律と積の微分に対して行います。</p>
+
+      <div class="box principle"><span class="lab">この記事の2つの道具</span>
+      <div class="table-scroll"><table class="mini-table">
+        <tr><th style="width:26%">微分の規則（1章）</th><th style="width:26%">逆に読むと</th><th>向いている形</th></tr>
+        <tr><td>連鎖律</td><td><strong>置換積分</strong>（§02）</td><td>\(2x\,e^{x^2}\) のように、中身の関数と、その微分が一緒に掛かっている形</td></tr>
+        <tr><td>積の微分</td><td><strong>部分積分</strong>（§03）</td><td>\(x\,e^{x}\) のように、種類の違う関数が掛け算になっている形</td></tr>
+      </table></div>
+      <p style="margin-top:8px">新しく覚える公式はこの2本だけで、しかもどちらも1章の規則から1行で導けます。</p></div>
+
+      <div class="box teach"><span class="lab">この記事の到達目標</span>
+      <ul style="margin:6px 0 0">
+        <li>置換積分を連鎖律から導き、\(dx\) を \(du\) に書き換える手順を説明できる</li>
+        <li>定積分で置換するとき、積分区間も一緒に変わる理由を説明できる</li>
+        <li>部分積分の公式を積の微分から導ける</li>
+        <li>部分積分で、どちらの関数を微分側にするかを判断できる</li>
+        <li>与えられた積分に対して、どの技法を使うかを自分で選べる</li>
+      </ul></div>
+
+      <div class="box principle"><span class="lab">前提として使うもの</span>
+      <ul style="margin:6px 0 0">
+        <li><strong>1章 微分</strong>：特に連鎖律と積の微分</li>
+        <li><strong>2-1 積分の基礎</strong>：基本定理と、不定積分の公式表</li>
+      </ul></div>
+    </section>
+
+    <!-- §02 -->
+    <section id="d1">
+      <div class="sec-head"><span class="idx">§02</span><h2>置換積分 — 連鎖律を逆から読む</h2></div>
+
+      <p>\(\int 2x\,e^{x^2}\,dx\) をよく見ると、ある特徴に気づきます。肩に乗っている \(x^2\) を微分すると \(2x\) で、<strong>それがちょうど前に掛かっている</strong>のです。</p>
+      <p>これは偶然ではなく、連鎖律で微分した結果の形そのものです。</p>
+      \[ \frac{d}{dx}\,e^{x^2}=e^{x^2}\cdot\underbrace{2x}_{\text{中身の微分}} \]
+      <p>つまり \(2x\,e^{x^2}\) は、\(e^{x^2}\) を微分したものでした。だから逆にたどれば</p>
+      \[ \int 2x\,e^{x^2}\,dx=e^{x^2}+C \]
+      <p>です。この「中身の微分が外に掛かっている形を見抜いて、連鎖律を逆にたどる」操作を、一般的な手順にしたものが置換積分です。</p>
+
+      <h3>連鎖律を逆に読む</h3>
+      <p>\(F\) を \(f\) の原始関数（\(F'=f\)）とします。連鎖律から</p>
+      \[ \frac{d}{dx}F\big(g(x)\big)=F'\big(g(x)\big)\,g'(x)=f\big(g(x)\big)\,g'(x) \]
+      <p>この式を逆に読むと、「\(f(g(x))\,g'(x)\) の原始関数は \(F(g(x))\) である」と言っています。</p>
+
+      <div class="box target"><span class="lab">置換積分</span>
+      \[ \int f\big(g(x)\big)\,g'(x)\,dx=F\big(g(x)\big)+C \]
+      <p><strong>「中身 \(g(x)\)」と「中身の微分 \(g'(x)\)」が一緒に掛かっていれば、中身をひとかたまりとみなして積分できる。</strong></p></div>
+
+      <h3>実際の手順 — \(dx\) を \(du\) に書き換える</h3>
+      <p>上の公式をそのまま当てはめるのは見通しが悪いので、実際には次の手順で計算します。</p>
+      <ol>
+        <li>中身を \(u=g(x)\) と置く</li>
+        <li>両辺を微分して \(\dfrac{du}{dx}=g'(x)\)。これを <strong>\(du=g'(x)\,dx\)</strong> と書く</li>
+        <li>被積分関数の中の \(g'(x)\,dx\) を、まるごと \(du\) に置き換える</li>
+        <li>\(u\) についての積分 \(\int f(u)\,du\) を、公式表で計算する</li>
+        <li>最後に \(u\) を \(g(x)\) に戻す</li>
+      </ol>
+
+      <div class="box teach"><span class="lab">\(du=g'(x)\,dx\) と書いてよい理由</span>
+      <p>\(\dfrac{du}{dx}\) は本当は分数ではないので、両辺に \(dx\) を掛けて \(du=g'(x)\,dx\) とするのは、厳密には「割り算を戻した」わけではありません。</p>
+      <p style="margin-top:8px">それでもこの書き換えが正しい答えを出すのは、<strong>結果が上の置換積分の公式と一致するように、ライプニッツの記法が設計されているから</strong>です。1章で「連鎖律を書くと \(du\) が約分されるように見える」と触れましたが、それとまったく同じ仕組みです。記号を分数のように動かしてよいことは、連鎖律が保証しています。</p></div>
+
+      <div class="attempt"><span class="lab">まず自力で</span>
+      <p>上の手順に従って、\(\displaystyle\int 2x\,e^{x^2}\,dx\) を置換積分で計算してください。最後に、答えを微分して元に戻ることを確かめること。</p>
+      <div class="controls">
+        <button class="ctl-btn amber" data-hint>ヒントを表示</button>
+        <button class="ctl-btn" data-sol>解答を見る</button>
+      </div>
+      <div class="hint"><span class="hn">HINT 1</span><p>中身は肩に乗っている \(x^2\) です。\(u=x^2\) と置くと、\(du\) は何になりますか。</p></div>
+      <div class="sol">
+        <div class="step"><div class="sh"><span class="sn">1</span>中身を置く</div>
+        <div class="why">なぜ：\(e\) の肩に乗っている \(x^2\) が「中身」で、その微分 \(2x\) が外に掛かっています。</div>
+        \[ u=x^2,\qquad \frac{du}{dx}=2x\quad\Longrightarrow\quad du=2x\,dx \]
+        </div>
+        <div class="step"><div class="sh"><span class="sn">2</span>\(2x\,dx\) を \(du\) に置き換える</div>
+        <div class="why">なぜ：被積分関数の中に \(2x\,dx\) がそっくり含まれているので、それを \(du\) に取り替えます。残りは \(e^{x^2}=e^{u}\)。</div>
+        \[ \int e^{x^2}\cdot\underbrace{2x\,dx}_{du}=\int e^{u}\,du=e^{u}+C \]
+        </div>
+        <div class="step"><div class="sh"><span class="sn">3</span>\(u\) を戻して検算</div>
+        <div class="why">なぜ：答えは \(x\) の関数で書く必要があります。</div>
+        \[ \int 2x\,e^{x^2}\,dx=e^{x^2}+C \]
+        <p style="margin:4px 0">検算：\(\left(e^{x^2}\right)'=e^{x^2}\cdot2x\)（連鎖律）で、積分する前の関数に戻ります。</p></div>
+      </div>
+      </div>
+
+      <h3>定積分では、区間も一緒に置き換わる</h3>
+      <p>定積分で置換するときは、1つだけ注意があります。積分変数を \(x\) から \(u\) に変えたら、<strong>積分区間も \(u\) の値に書き換える</strong>必要があります。</p>
+      <p>たとえば \(\int_0^1 2x\,e^{x^2}dx\) で \(u=x^2\) と置くと、\(x=0\) のとき \(u=0\)、\(x=1\) のとき \(u=1\) なので</p>
+      \[ \int_{x=0}^{x=1}2x\,e^{x^2}\,dx=\int_{u=0}^{u=1}e^{u}\,du=\Big[e^{u}\Big]_0^1=e-1 \]
+      <p>となります。\(u\) で計算したあと \(x\) に戻す必要はありません。区間ごと \(u\) の世界に移っているからです。</p>
+
+      <figure class="fig">
+        <svg viewBox="0 0 640 270" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="置換の前後で面積が変わらない様子">
+          <text x="70" y="26" font-size="12.5" font-weight="500" fill="var(--ink)">置換する前（x で積分）</text>
+          <line x1="70" y1="215" x2="300" y2="215" stroke="var(--ink-faint)" stroke-width="1.3"/>
+          <line x1="70" y1="225" x2="70" y2="40" stroke="var(--ink-faint)" stroke-width="1.3"/>
+          <line x1="64" y1="185.0" x2="70" y2="185.0" stroke="var(--ink-faint)" stroke-width="1"/><text x="60" y="189.0" font-size="10.5" fill="var(--ink-faint)" text-anchor="end">1</text><line x1="64" y1="155.0" x2="70" y2="155.0" stroke="var(--ink-faint)" stroke-width="1"/><text x="60" y="159.0" font-size="10.5" fill="var(--ink-faint)" text-anchor="end">2</text><line x1="64" y1="125.0" x2="70" y2="125.0" stroke="var(--ink-faint)" stroke-width="1"/><text x="60" y="129.0" font-size="10.5" fill="var(--ink-faint)" text-anchor="end">3</text><line x1="64" y1="95.0" x2="70" y2="95.0" stroke="var(--ink-faint)" stroke-width="1"/><text x="60" y="99.0" font-size="10.5" fill="var(--ink-faint)" text-anchor="end">4</text><line x1="64" y1="65.0" x2="70" y2="65.0" stroke="var(--ink-faint)" stroke-width="1"/><text x="60" y="69.0" font-size="10.5" fill="var(--ink-faint)" text-anchor="end">5</text>
+          <polygon points="70.0,215.0 70.0,215.0 74.2,213.8 78.4,212.6 82.6,211.4 86.8,210.2 91.0,208.9 95.2,207.7 99.4,206.4 103.6,205.2 107.8,203.8 112.0,202.5 116.2,201.1 120.4,199.7 124.6,198.3 128.8,196.8 133.0,195.3 137.2,193.7 141.4,192.1 145.6,190.4 149.8,188.7 154.0,186.8 158.2,184.9 162.4,183.0 166.6,180.9 170.8,178.7 175.0,176.5 179.2,174.1 183.4,171.6 187.6,169.0 191.8,166.3 196.0,163.4 200.2,160.4 204.4,157.2 208.6,153.8 212.8,150.2 217.0,146.4 221.2,142.5 225.4,138.2 229.6,133.8 233.8,129.0 238.0,124.0 242.2,118.6 246.4,112.9 250.6,106.9 254.8,100.5 259.0,93.6 263.2,86.3 267.4,78.5 271.6,70.2 275.8,61.4 280.0,51.9 280.0,215.0" fill="var(--accent-tint)" stroke="none"/>
+          <polyline points="70.0,215.0 74.2,213.8 78.4,212.6 82.6,211.4 86.8,210.2 91.0,208.9 95.2,207.7 99.4,206.4 103.6,205.2 107.8,203.8 112.0,202.5 116.2,201.1 120.4,199.7 124.6,198.3 128.8,196.8 133.0,195.3 137.2,193.7 141.4,192.1 145.6,190.4 149.8,188.7 154.0,186.8 158.2,184.9 162.4,183.0 166.6,180.9 170.8,178.7 175.0,176.5 179.2,174.1 183.4,171.6 187.6,169.0 191.8,166.3 196.0,163.4 200.2,160.4 204.4,157.2 208.6,153.8 212.8,150.2 217.0,146.4 221.2,142.5 225.4,138.2 229.6,133.8 233.8,129.0 238.0,124.0 242.2,118.6 246.4,112.9 250.6,106.9 254.8,100.5 259.0,93.6 263.2,86.3 267.4,78.5 271.6,70.2 275.8,61.4 280.0,51.9" fill="none" stroke="var(--accent)" stroke-width="2.6"/>
+          <line x1="280" y1="215" x2="280" y2="221" stroke="var(--ink-faint)" stroke-width="1"/>
+          <text x="70" y="236" font-size="11.5" fill="var(--ink-soft)" text-anchor="middle">0</text>
+          <text x="280" y="236" font-size="11.5" fill="var(--ink-soft)" text-anchor="middle">1</text>
+          <text x="306" y="219" font-size="12" fill="var(--ink)" font-style="italic">x</text>
+          <text x="118" y="70" font-size="12.5" font-weight="500" fill="var(--accent-deep)">y = 2x e<tspan dy="-6" font-size="9.5">x²</tspan></text>
+          <text x="175" y="200" font-size="12" fill="var(--accent-deep)" text-anchor="middle">面積 e − 1</text>
+
+          <text x="380" y="26" font-size="12.5" font-weight="500" fill="var(--good)">置換した後（u で積分）</text>
+          <line x1="380" y1="215" x2="610" y2="215" stroke="var(--ink-faint)" stroke-width="1.3"/>
+          <line x1="380" y1="225" x2="380" y2="40" stroke="var(--ink-faint)" stroke-width="1.3"/>
+          <line x1="374" y1="185.0" x2="380" y2="185.0" stroke="var(--ink-faint)" stroke-width="1"/><text x="370" y="189.0" font-size="10.5" fill="var(--ink-faint)" text-anchor="end">1</text><line x1="374" y1="155.0" x2="380" y2="155.0" stroke="var(--ink-faint)" stroke-width="1"/><text x="370" y="159.0" font-size="10.5" fill="var(--ink-faint)" text-anchor="end">2</text>
+          <polygon points="380.0,215.0 380.0,185.0 384.2,184.4 388.4,183.8 392.6,183.1 396.8,182.5 401.0,181.8 405.2,181.2 409.4,180.5 413.6,179.8 417.8,179.1 422.0,178.4 426.2,177.6 430.4,176.9 434.6,176.1 438.8,175.3 443.0,174.5 447.2,173.7 451.4,172.9 455.6,172.0 459.8,171.1 464.0,170.2 468.2,169.3 472.4,168.4 476.6,167.5 480.8,166.5 485.0,165.5 489.2,164.5 493.4,163.5 497.6,162.5 501.8,161.4 506.0,160.3 510.2,159.2 514.4,158.1 518.6,157.0 522.8,155.8 527.0,154.6 531.2,153.4 535.4,152.1 539.6,150.9 543.8,149.6 548.0,148.2 552.2,146.9 556.4,145.5 560.6,144.1 564.8,142.7 569.0,141.2 573.2,139.7 577.4,138.2 581.6,136.6 585.8,135.1 590.0,133.5 590.0,215.0" fill="var(--good-tint)" stroke="none"/>
+          <polyline points="380.0,185.0 384.2,184.4 388.4,183.8 392.6,183.1 396.8,182.5 401.0,181.8 405.2,181.2 409.4,180.5 413.6,179.8 417.8,179.1 422.0,178.4 426.2,177.6 430.4,176.9 434.6,176.1 438.8,175.3 443.0,174.5 447.2,173.7 451.4,172.9 455.6,172.0 459.8,171.1 464.0,170.2 468.2,169.3 472.4,168.4 476.6,167.5 480.8,166.5 485.0,165.5 489.2,164.5 493.4,163.5 497.6,162.5 501.8,161.4 506.0,160.3 510.2,159.2 514.4,158.1 518.6,157.0 522.8,155.8 527.0,154.6 531.2,153.4 535.4,152.1 539.6,150.9 543.8,149.6 548.0,148.2 552.2,146.9 556.4,145.5 560.6,144.1 564.8,142.7 569.0,141.2 573.2,139.7 577.4,138.2 581.6,136.6 585.8,135.1 590.0,133.5" fill="none" stroke="var(--good)" stroke-width="2.6"/>
+          <line x1="590" y1="215" x2="590" y2="221" stroke="var(--ink-faint)" stroke-width="1"/>
+          <text x="380" y="236" font-size="11.5" fill="var(--ink-soft)" text-anchor="middle">0</text>
+          <text x="590" y="236" font-size="11.5" fill="var(--ink-soft)" text-anchor="middle">1</text>
+          <text x="616" y="219" font-size="12" fill="var(--ink)" font-style="italic">u</text>
+          <text x="470" y="112" font-size="12.5" font-weight="500" fill="var(--good)">y = e<tspan dy="-6" font-size="9.5">u</tspan></text>
+          <text x="485" y="200" font-size="12" fill="var(--good)" text-anchor="middle">面積 e − 1</text>
+          <text x="335" y="262" font-size="11.5" fill="var(--ink-faint)" text-anchor="middle">u = x² と置き換えると、x: 0 → 1 は u: 0 → 1 に対応する</text>
+        </svg>
+        <figcaption>左は \(y=2xe^{x^2}\) を \(x\) について、右は \(y=e^{u}\) を \(u\) について描いたものです。曲線の形はまったく違いますが、<strong>塗った部分の面積はどちらも \(e-1\simeq1.72\) で等しい</strong>。置換積分は、同じ量を別の目盛りで描き直して、計算しやすい形に変える操作です。左の積分は見た目が複雑でも、右に描き直せば公式表の \(\int e^u\,du\) そのものになります。</figcaption>
+      </figure>
+
+      <div class="box teach"><span class="lab">よく使う特別な場合：中身が1次式</span>
+      <p>中身が \(ax+b\) のような1次式なら、中身の微分は定数 \(a\) です。\(u=ax+b\) と置くと \(du=a\,dx\)、つまり \(dx=\dfrac{du}{a}\) なので</p>
+      \[ \int f(ax+b)\,dx=\frac1a\,F(ax+b)+C \]
+      <p><strong>「中身をひとかたまりとして積分し、中身の係数 \(a\) で割る」</strong>だけです。1章で連鎖律を使うと中身の微分 \(a\) が前に<strong>掛かって</strong>出てきたのと、ちょうど逆に<strong>割って</strong>出てきます。</p>
+      \[ \int e^{kx}\,dx=\frac{e^{kx}}{k}+C,\qquad \int\cos(\omega t)\,dt=\frac{\sin(\omega t)}{\omega}+C,\qquad \int\sin(\omega t)\,dt=-\frac{\cos(\omega t)}{\omega}+C \]
+      <p>この3つは物理で繰り返し出てくる形なので、すぐ書けるようにしておくと便利です。</p></div>
+
+      <h3>計算ドリル（§02・全3問）</h3>
+
+      <div class="drill"><p><span class="qn">問1</span>中身が1次式の場合の置換を使って、次の不定積分を求めよ。<br>(a) \(\displaystyle\int\cos(3x)\,dx\)　(b) \(\displaystyle\int e^{-2x}\,dx\)　(c) \(\displaystyle\int(2x+1)^5\,dx\)</p>
+      <div class="attempt" style="margin:10px 0 4px"><span class="lab">自分の答えを出してから</span>
+      <div class="controls"><button class="ctl-btn" data-sol>解答を見る</button></div>
+      <div class="sol"><p>(a) 中身の係数は 3。\(\dfrac{\sin(3x)}{3}+C\)</p>
+      <p>(b) 中身の係数は \(-2\)。\(\dfrac{e^{-2x}}{-2}+C=-\dfrac12e^{-2x}+C\)</p>
+      <p>(c) 中身 \(u=2x+1\) をひとかたまりとして \(\int u^5du=\frac{u^6}{6}\)、係数 2 で割って \(\dfrac{(2x+1)^6}{12}+C\)</p>
+      <p style="font-size:13.5px;color:var(--ink-faint)">(c) を展開してから項ごとに積分することもできますが、6乗の展開は大変です。<strong>ひとかたまりのまま扱える</strong>のが置換積分の強みです。どれも微分すれば元に戻ることを確かめてください。(b) なら \(\left(-\frac12e^{-2x}\right)'=-\frac12\cdot e^{-2x}\cdot(-2)=e^{-2x}\) となり、元に戻ります。</p></div></div></div>
+
+      <div class="drill"><p><span class="qn">問2</span>\(\displaystyle\int\frac{x}{x^2+1}\,dx\) を求めよ。</p>
+      <div class="attempt" style="margin:10px 0 4px"><span class="lab">自分の答えを出してから</span>
+      <div class="controls">
+        <button class="ctl-btn amber" data-hint>ヒントを表示</button>
+        <button class="ctl-btn" data-sol>解答を見る</button>
+      </div>
+      <div class="hint"><span class="hn">HINT 1</span><p>分母の \(x^2+1\) を \(u\) と置くと、\(du=2x\,dx\)。分子にあるのは \(x\,dx\) なので、\(du\) の半分です。</p></div>
+      <div class="sol"><p>\(u=x^2+1\) と置くと \(du=2x\,dx\)、よって \(x\,dx=\dfrac12du\)。</p>
+      \[ \int\frac{x}{x^2+1}\,dx=\int\frac1u\cdot\frac12\,du=\frac12\ln|u|+C=\frac12\ln(x^2+1)+C \]
+      <p>（\(x^2+1>0\) なので絶対値は外せます。）</p>
+      <p style="font-size:13.5px;color:var(--ink-faint)">中身の微分が<strong>定数倍ずれている</strong>だけなら、その定数を外に出して調整すれば置換できます。完全に一致している必要はありません。一方、分子が \(x^2\) のように中身の微分と<strong>関数として</strong>違う形だと、この方法は使えません。</p></div></div></div>
+
+      <div class="drill"><p><span class="qn">問3</span>\(\displaystyle\int_0^1 x\,(1+x^2)^3\,dx\) を、積分区間の置き換えに注意して求めよ。</p>
+      <div class="attempt" style="margin:10px 0 4px"><span class="lab">自分の答えを出してから</span>
+      <div class="controls">
+        <button class="ctl-btn amber" data-hint>ヒントを表示</button>
+        <button class="ctl-btn" data-sol>解答を見る</button>
+      </div>
+      <div class="hint"><span class="hn">HINT 1</span><p>\(u=1+x^2\) と置きます。\(x=0\) と \(x=1\) のとき、\(u\) はそれぞれいくつになりますか。</p></div>
+      <div class="sol"><p>\(u=1+x^2\) と置くと \(du=2x\,dx\)、よって \(x\,dx=\dfrac12du\)。区間は \(x=0\to u=1\)、\(x=1\to u=2\)。</p>
+      \[ \int_0^1x(1+x^2)^3\,dx=\frac12\int_1^2u^3\,du=\frac12\left[\frac{u^4}{4}\right]_1^2=\frac12\left(\frac{16}{4}-\frac14\right)=\frac{15}{8} \]
+      <p style="font-size:13.5px;color:var(--ink-faint)">よくある間違いは、区間を \(0\) から \(1\) のまま \(\int_0^1u^3du\) としてしまうことです。<strong>\(u\) の世界に移ったら、区間も \(u\) の値で書く</strong>。これを忘れると答えが変わってしまいます。</p></div></div></div>
+    </section>
+
+    <!-- §03 -->
+    <section id="d2">
+      <div class="sec-head"><span class="idx">§03</span><h2>部分積分 — 積の微分を逆から読む</h2></div>
+
+      <p>もう一つの積分 \(\int x\,e^{x}\,dx\) はどうでしょうか。今度は \(x\) を微分すると \(1\) なので、「中身の微分が外に掛かっている」形にはなっていません。置換積分は使えません。</p>
+      <p>ここで役に立つのが、1章の<strong>積の微分</strong>です。</p>
+      \[ (fg)'=f'g+fg' \]
+
+      <h3>積の微分を逆に読む</h3>
+      <p>両辺を積分すると、左辺は「微分したものを積分する」ので元に戻ります。</p>
+      \[ f\,g=\int f'g\,dx+\int f\,g'\,dx \]
+      <p>このうち \(\int f\,g'\,dx\) を左に残して、残りを右に移項します。</p>
+
+      <div class="box target"><span class="lab">部分積分</span>
+      \[ \int f\,g'\,dx=f\,g-\int f'\,g\,dx \]
+      <p><strong>積の片方 \(f\) を微分し、もう片方 \(g'\) を積分することで、別の積分 \(\int f'g\,dx\) に移し替える。</strong>移し替えた先が元より易しければ、それで解けます。</p></div>
+
+      <p>ポイントは、部分積分そのものは積分を<strong>解いてくれるわけではない</strong>ことです。やっているのは「解けない積分を、別の積分に取り替える」だけ。だから、<strong>取り替えた先が易しくなるように \(f\) と \(g'\) を選ぶ</strong>ことがすべてです。</p>
+
+      <div class="attempt"><span class="lab">まず自力で</span>
+      <p>\(\displaystyle\int x\,e^{x}\,dx\) を部分積分で求めてください。\(f=x\)、\(g'=e^{x}\) と選ぶこと。最後に、答えを微分して元に戻ることを確かめてください。</p>
+      <div class="controls">
+        <button class="ctl-btn amber" data-hint>ヒントを表示</button>
+        <button class="ctl-btn" data-sol>解答を見る</button>
+      </div>
+      <div class="hint"><span class="hn">HINT 1</span><p>公式に入れるには \(f'\) と \(g\) が必要です。\(f=x\) を微分すると？　\(g'=e^x\) を積分すると？</p></div>
+      <div class="sol">
+        <div class="step"><div class="sh"><span class="sn">1</span>微分する側と積分する側を用意する</div>
+        <div class="why">なぜ：公式の右辺には \(f'\) と \(g\) が現れるので、先にそれを作っておきます。</div>
+        \[ f=x\ \xrightarrow{\text{微分}}\ f'=1,\qquad g'=e^{x}\ \xrightarrow{\text{積分}}\ g=e^{x} \]
+        </div>
+        <div class="step"><div class="sh"><span class="sn">2</span>公式に入れる</div>
+        <div class="why">なぜ：右辺の積分 \(\int f'g\,dx\) が、元の積分より易しくなっているかを確かめます。</div>
+        \[ \int x\,e^{x}\,dx=x\,e^{x}-\int 1\cdot e^{x}\,dx=x\,e^{x}-e^{x}+C \]
+        <p style="margin:4px 0">\(x\) が微分されて \(1\) になったおかげで、右辺の積分はただの \(\int e^x dx\) になりました。</p></div>
+        <div class="step"><div class="sh"><span class="sn">3</span>検算</div>
+        <div class="why">なぜ：積分の答えは、微分すれば必ず確かめられます。</div>
+        \[ \left(x\,e^{x}-e^{x}\right)'=\left(e^{x}+x\,e^{x}\right)-e^{x}=x\,e^{x} \]
+        </div>
+      </div>
+      </div>
+
+      <h3>どちらを微分する側にするか</h3>
+      <p>上の計算がうまくいったのは、\(f=x\) を<strong>微分すると簡単になる</strong>側に選んだからです。逆に選ぶとどうなるか見てみます。</p>
+      <p>\(f=e^{x}\)、\(g'=x\) とすると、\(f'=e^{x}\)、\(g=\dfrac{x^2}{2}\) で</p>
+      \[ \int x\,e^{x}\,dx=\frac{x^2}{2}e^{x}-\int\frac{x^2}{2}e^{x}\,dx \]
+      <p>右辺の積分は \(x^2e^x\) になり、<strong>元より難しくなってしまいました</strong>。これでは前に進みません。</p>
+
+      <div class="box teach"><span class="lab">選び方の目安</span>
+      <p><strong>微分すると簡単になるほうを \(f\) に、積分しても複雑にならないほうを \(g'\) に選ぶ。</strong></p>
+      <div class="table-scroll"><table class="mini-table">
+        <tr><th style="width:36%">微分すると簡単になる（→ \(f\) に）</th><th>積分しても形が変わらない（→ \(g'\) に）</th></tr>
+        <tr><td>\(x,\ x^2\) などの多項式（微分するたびに次数が下がり、いずれ定数になる）</td><td>\(e^{x}\)、\(\sin x\)、\(\cos x\)（積分しても同じ種類の関数のまま）</td></tr>
+        <tr><td>\(\ln x\)（微分すると \(1/x\) になり、対数が消える）</td><td>\(1\) や \(x\)（\(\ln x\) と組むとき）</td></tr>
+      </table></div>
+      <p style="margin-top:8px">迷ったら、両方の選び方で右辺の積分を書いてみて、易しくなったほうを採用すれば確実です。</p></div>
+
+      <h3>計算ドリル（§03・全3問）</h3>
+
+      <div class="drill"><p><span class="qn">問1</span>\(\displaystyle\int x\cos x\,dx\) を求めよ。</p>
+      <div class="attempt" style="margin:10px 0 4px"><span class="lab">自分の答えを出してから</span>
+      <div class="controls"><button class="ctl-btn" data-sol>解答を見る</button></div>
+      <div class="sol"><p>\(f=x\)（微分すると 1）、\(g'=\cos x\)（積分すると \(\sin x\)）と選びます。</p>
+      \[ \int x\cos x\,dx=x\sin x-\int 1\cdot\sin x\,dx=x\sin x+\cos x+C \]
+      <p style="font-size:13.5px;color:var(--ink-faint)">検算：\((x\sin x+\cos x)'=(\sin x+x\cos x)-\sin x=x\cos x\) となり、元に戻ります。最後の積分で \(\int\sin x\,dx=-\cos x\) となり、前のマイナスと合わさってプラスになる点に注意してください。</p></div></div></div>
+
+      <div class="drill"><p><span class="qn">問2</span>\(\displaystyle\int\ln x\,dx\) を求めよ。一見すると積の形をしていないが、\(\ln x=\ln x\cdot1\) と見ること。</p>
+      <div class="attempt" style="margin:10px 0 4px"><span class="lab">自分の答えを出してから</span>
+      <div class="controls">
+        <button class="ctl-btn amber" data-hint>ヒントを表示</button>
+        <button class="ctl-btn" data-sol>解答を見る</button>
+      </div>
+      <div class="hint"><span class="hn">HINT 1</span><p>\(\ln x\) は積分の公式表にはありませんが、微分すれば \(\dfrac1x\) と簡単になります。どちらを \(f\) にするべきでしょうか。</p></div>
+      <div class="sol"><p>\(f=\ln x\)（微分すると \(\frac1x\)）、\(g'=1\)（積分すると \(x\)）と選びます。</p>
+      \[ \int\ln x\,dx=x\ln x-\int\frac1x\cdot x\,dx=x\ln x-\int1\,dx=x\ln x-x+C \]
+      <p style="font-size:13.5px;color:var(--ink-faint)">\(\ln x\) は公式表に載っていない関数でしたが、<strong>「\(\times1\)」を補って部分積分する</strong>という一手で積分できました。検算：\((x\ln x-x)'=\left(\ln x+x\cdot\frac1x\right)-1=\ln x\) となり、元に戻ります。</p></div></div></div>
+
+      <div class="drill"><p><span class="qn">問3</span>\(\displaystyle\int x^2e^{x}\,dx\) を求めよ。部分積分を2回使う。</p>
+      <div class="attempt" style="margin:10px 0 4px"><span class="lab">自分の答えを出してから</span>
+      <div class="controls">
+        <button class="ctl-btn amber" data-hint>ヒントを表示</button>
+        <button class="ctl-btn" data-sol>解答を見る</button>
+      </div>
+      <div class="hint"><span class="hn">HINT 1</span><p>1回目は \(f=x^2\)。右辺に \(\int x\,e^x dx\) が残りますが、これは「まず自力で」ですでに求めた積分です。</p></div>
+      <div class="sol"><p>1回目：\(f=x^2\)（\(f'=2x\)）、\(g'=e^x\)（\(g=e^x\)）。</p>
+      \[ \int x^2e^{x}\,dx=x^2e^{x}-\int 2x\,e^{x}\,dx=x^2e^{x}-2\int x\,e^{x}\,dx \]
+      <p>残った \(\int x\,e^x dx\) は、先ほど求めた \(x\,e^x-e^x\) です。</p>
+      \[ =x^2e^{x}-2\left(x\,e^{x}-e^{x}\right)+C=\left(x^2-2x+2\right)e^{x}+C \]
+      <p style="font-size:13.5px;color:var(--ink-faint)">部分積分を1回するごとに、多項式の次数が1つずつ下がっていきます。\(x^n e^x\) なら \(n\) 回で終わります。<strong>「微分すると次数が下がる」という性質を、部分積分で繰り返し利用している</strong>わけです。</p></div></div></div>
+    </section>
+
+    <!-- §04 -->
+    <section id="d3">
+      <div class="sec-head"><span class="idx">§04</span><h2>どの技法を使うか — 見分け方と総合演習</h2></div>
+
+      <p>技法を2つ手に入れましたが、実際の問題では「どちらを使うか」は書いてありません。積分の難しさの半分は、この<strong>判断</strong>にあります。形から見分ける目安をまとめておきます。</p>
+
+      <div class="table-scroll"><table class="mini-table">
+        <tr><th style="width:36%">被積分関数の形</th><th style="width:22%">使う技法</th><th>例</th></tr>
+        <tr><td>中身 \(g(x)\) と、その微分 \(g'(x)\) が一緒に掛かっている（定数倍のずれは可）</td><td>置換積分</td><td>\(\int x\,e^{x^2}dx\)、\(\int\dfrac{x}{x^2+1}dx\)</td></tr>
+        <tr><td>中身が1次式 \(ax+b\)</td><td>置換積分（係数 \(a\) で割るだけ）</td><td>\(\int e^{-3x}dx\)、\(\int\cos(\omega t)\,dt\)</td></tr>
+        <tr><td>多項式 × （\(e^x\)、\(\sin x\)、\(\cos x\)）</td><td>部分積分（多項式を微分側に）</td><td>\(\int x\sin x\,dx\)</td></tr>
+        <tr><td>\(\ln x\) を含む</td><td>部分積分（\(\ln x\) を微分側に）</td><td>\(\int x\ln x\,dx\)、\(\int\ln x\,dx\)</td></tr>
+        <tr><td>三角関数の2乗など、そのままでは形が合わない</td><td>公式で形を変えてから積分</td><td>\(\int\sin^2x\,dx\)</td></tr>
+      </table></div>
+
+      <div class="box warn"><span class="lab">積分は「見抜く」作業</span>
+      <p>微分は、どんな式でも規則を順に当てはめれば必ず答えが出る、機械的な作業でした。積分はそうではありません。<strong>式の形を見て、どの技法が使えそうかを見抜く</strong>必要があり、慣れないうちは試行錯誤が避けられません。</p>
+      <p style="margin-top:8px">うまくいかなければ別の技法を試せばよく、答えが出たら微分して確かめればよい。<strong>検算がいつでもできる</strong>ことが、試行錯誤を安心して続けられる理由です。</p></div>
+
+      <h3>総合演習（§04・全3問）</h3>
+
+      <div class="drill"><p><span class="qn">問1</span>次の不定積分について、まず<strong>どの技法を使うか判断してから</strong>計算せよ。<br>(a) \(\displaystyle\int x\,e^{x^2}\,dx\)　(b) \(\displaystyle\int x\,e^{2x}\,dx\)　(c) \(\displaystyle\int\sin x\cos x\,dx\)　(d) \(\displaystyle\int x\ln x\,dx\)</p>
+      <div class="attempt" style="margin:10px 0 4px"><span class="lab">自分の答えを出してから</span>
+      <div class="controls">
+        <button class="ctl-btn amber" data-hint>ヒントを表示</button>
+        <button class="ctl-btn" data-sol>解答を見る</button>
+      </div>
+      <div class="hint"><span class="hn">HINT 1</span><p>(c) は \(\sin x\) を中身と見ると、その微分 \(\cos x\) が掛かっています。(a) と (b) は見た目が似ていますが、肩に乗っているのが \(x^2\) か \(2x\) かで、使う技法が変わります。</p></div>
+      <div class="sol"><p><strong>(a) 置換積分</strong>：\(u=x^2\)、\(du=2x\,dx\) なので \(x\,dx=\frac12du\)。</p>
+      \[ \int x\,e^{x^2}dx=\frac12\int e^{u}du=\frac12e^{x^2}+C \]
+      <p><strong>(b) 部分積分</strong>：肩の \(2x\) を微分しても定数なので、\(x\) を消す手段にはなりません。\(f=x\)、\(g'=e^{2x}\)（積分すると \(\frac12e^{2x}\)、中身が1次式）。</p>
+      \[ \int x\,e^{2x}dx=\frac{x}{2}e^{2x}-\int\frac12e^{2x}dx=\frac{x}{2}e^{2x}-\frac14e^{2x}+C \]
+      <p><strong>(c) 置換積分</strong>：\(u=\sin x\)、\(du=\cos x\,dx\)。</p>
+      \[ \int\sin x\cos x\,dx=\int u\,du=\frac{u^2}{2}+C=\frac{\sin^2x}{2}+C \]
+      <p><strong>(d) 部分積分</strong>：\(f=\ln x\)（微分すると \(\frac1x\)）、\(g'=x\)（積分すると \(\frac{x^2}{2}\)）。</p>
+      \[ \int x\ln x\,dx=\frac{x^2}{2}\ln x-\int\frac{x^2}{2}\cdot\frac1x\,dx=\frac{x^2}{2}\ln x-\frac{x^2}{4}+C \]
+      <p style="font-size:13.5px;color:var(--ink-faint)">(a) と (b) の違いが今回の要点です。\(x\,e^{x^2}\) は肩の \(x^2\) を微分すると \(2x\) で、前の \(x\) と組になる。\(x\,e^{2x}\) は肩の \(2x\) を微分しても 2 で、前の \(x\) は残ってしまう。<strong>「中身の微分が外にいるか」を確かめる</strong>のが、判断の第一歩です。</p></div></div></div>
+
+      <div class="drill"><p><span class="qn">問2</span>三角関数の公式 \(\sin^2x=\dfrac{1-\cos2x}{2}\) を使って、\(\displaystyle\int_0^{2\pi}\sin^2x\,dx\) を求めよ。</p>
+      <div class="attempt" style="margin:10px 0 4px"><span class="lab">自分の答えを出してから</span>
+      <div class="controls"><button class="ctl-btn" data-sol>解答を見る</button></div>
+      <div class="sol"><p>公式で書き換えると、1次式の置換で済む形になります。</p>
+      \[ \int_0^{2\pi}\sin^2x\,dx=\int_0^{2\pi}\frac{1-\cos2x}{2}\,dx=\left[\frac{x}{2}-\frac{\sin2x}{4}\right]_0^{2\pi}=\pi-0=\pi \]
+      <p style="font-size:13.5px;color:var(--ink-faint)">区間の長さ \(2\pi\) で割ると \(\frac12\)。つまり<strong>\(\sin^2x\) の1周期の平均は \(\frac12\)</strong> です。\(\sin^2x\) は 0 と 1 の間を行き来するので、平均がちょうど真ん中の \(\frac12\) になるのは直観とも合います。振動を扱う場面で「2乗の平均」はよく出てくるので、この結果は覚えておく価値があります。</p></div></div></div>
+
+      <div class="drill"><p><span class="qn">問3</span><strong>口頭試問形式</strong>：次の3つを、公式を見ずに自分の言葉で説明せよ。<br>①置換積分は1章のどの規則を逆に読んだものか。\(dx\) を \(du\) に書き換えてよいのはなぜか。<br>②部分積分の公式を、積の微分から導け。どちらを微分側にするかの目安は何か。<br>③積分が微分より難しく感じられるのはなぜか。</p>
+      <div class="attempt" style="margin:10px 0 4px"><span class="lab">自分の答えを出してから</span>
+      <div class="controls"><button class="ctl-btn" data-sol>解答例を見る</button></div>
+      <div class="sol"><p><strong>①</strong> 連鎖律。\(F'=f\) のとき \(\frac{d}{dx}F(g(x))=f(g(x))g'(x)\) なので、\(f(g(x))g'(x)\) の原始関数は \(F(g(x))\)。\(u=g(x)\) と置いて \(du=g'(x)dx\) と書き換える操作は、\(\frac{du}{dx}\) を分数のように扱っているように見えるが、その結果が連鎖律から導いた公式と一致するので正しい。定積分では区間も \(u\) の値に置き換える。</p>
+      <p><strong>②</strong> \((fg)'=f'g+fg'\) の両辺を積分すると \(fg=\int f'g\,dx+\int fg'\,dx\)。移項して \(\int fg'\,dx=fg-\int f'g\,dx\)。微分すると簡単になるほう（多項式、\(\ln x\)）を \(f\) に、積分しても複雑にならないほう（\(e^x\)、\(\sin x\)、\(\cos x\)）を \(g'\) に選ぶ。</p>
+      <p><strong>③</strong> 微分には積の微分・連鎖律という規則があり、どんな式でも機械的に処理できる。積分にはそれに対応する一般公式がなく、式の形を見てどの技法を使うかを自分で判断する必要がある。ただし答えは微分すれば必ず検算できる。</p>
+      <p style="font-size:13.5px;color:var(--ink-faint)">この3つが澱みなく言えれば、この記事は通過です。特に①の「なぜ \(dx\) を \(du\) に書き換えてよいか」は、手順だけ覚えていると答えられない問いなので、連鎖律の式から説明できるか確かめてください。</p></div></div></div>
+    </section>
+
+    <!-- §05 -->
+    <section id="howto">
+      <div class="sec-head"><span class="idx">§05</span><h2>チェックリストと次回予告</h2></div>
+
+      <h3>この記事で答えられるようになるべき問い</h3>
+      <div class="box principle"><span class="lab">最終チェック</span>
+      <ul style="margin:8px 0 0">
+        <li>積分に「積の公式」がないことを、具体例で示せるか（§01）</li>
+        <li>置換積分の公式を連鎖律から導けるか（§02）</li>
+        <li>\(u=g(x)\)、\(du=g'(x)\,dx\) と置き換える手順を実行できるか（§02）</li>
+        <li>\(dx\) を \(du\) に書き換えてよい理由を説明できるか（§02）</li>
+        <li>定積分で置換するとき、区間を \(u\) の値に書き換えられるか（§02）</li>
+        <li>中身が1次式のとき、係数で割るだけで積分できるか（§02）</li>
+        <li>部分積分の公式を積の微分から導けるか（§03）</li>
+        <li>どちらを微分側にするかを判断し、逆に選ぶと難しくなることを説明できるか（§03）</li>
+        <li>\(\int\ln x\,dx\) を「\(\times1\)」を補って積分できるか（§03）</li>
+        <li>与えられた積分に対して、置換・部分積分・式変形のどれを使うかを選べるか（§04）</li>
+      </ul></div>
+
+      <h3>次章（3-1 近似と展開）への接続</h3>
+      <p>これで、1章の微分と2章の積分がそろいました。学部物理の計算に必要な「微分積分の基本操作」は、ひととおり手に入ったことになります。</p>
+      <p>ここまでの計算の中で、何度か同じ考え方が顔を出していました。1章では差分商を「求めたい答え ＋ \(h\) に比例する誤差」に分け、\(h\) の1次の項だけを拾いました。2章の区分求積でも、はみ出しが \(\frac1n\) に比例して消えていく構造が現れました。<strong>「小さい量について、1次の項だけを拾い、それより小さいものは捨てる」</strong>——この発想は、物理で近似式を立てるときの中心的な道具です。</p>
+      <p>3章では、この考え方を体系化します。</p>
+      <div class="box teach"><span class="lab">3-1 で扱う問い（予習用）</span>
+      <ul style="margin:6px 0 0">
+        <li>どんな関数も、多項式で近似できるのか。そのとき係数はどう決まるのか</li>
+        <li>「\(\theta\) が小さければ \(\sin\theta\simeq\theta\)」は、どこまで正確なのか</li>
+        <li>近似の誤差は、どのくらいの大きさになるのか</li>
+        <li>どこまで項を取れば「十分」と言えるのか</li>
+      </ul>
+      <p style="margin-top:8px"><strong>鍵となる一言</strong>：関数を多項式で近似するとき、係数はすべて「微分の値」で決まります。1章で作った微分が、ここで最も強力に働きます。</p></div>
+
+      <h3>学習サイクルの推奨手順</h3>
+      <ol>
+        <li><strong>解答を開かず、紙で挑戦</strong>。詰まっても5分は粘ってください。詰まるのは失敗ではなく、<strong>まだ腑に落ちていない一点が表に出た合図</strong>です。そこを自分の手で越えた経験が、そのまま次に進む力になります。</li>
+        <li><strong>ヒントを1つずつ</strong>開き、詰まりが解けたら閉じて自力で続行。</li>
+        <li>積分の答えは<strong>必ず微分して検算する</strong>。技法の選択を試行錯誤できるのは、この検算があるからです。</li>
+        <li>翌日、何も見ずに §04 問3（口頭試問）を再現する。特に①の「なぜ \(dx\) を \(du\) に書き換えてよいか」を、連鎖律の式から説明できるか確かめてください。</li>
+      </ol>
+
+      <div class="box warn"><span class="lab">この教材の立ち位置</span>
+      <p>本節は<strong>物理で使うための積分の技法</strong>に絞っています。部分分数分解、三角関数を使った置換（\(x=\sin\theta\) など）、有理関数の積分の一般論などは扱っていません。これらは必要になった場面（たとえば 7章の座標変換）で、その都度導入します。</p>
+      <p style="margin-top:8px">また、\(\int e^{-x^2}dx\) のように<strong>初等関数では原始関数が書けない積分</strong>も存在します。それでも定積分の値は求められる場合があり、7章のガウス積分で扱います。</p></div>
+
+      <div class="foot"><p>Academic Gates ／ 物理数学I 2章 積分 ／ 2-2「積分の技法」。演習問題は本教材独自の構成です。続編：3章 近似と展開 ／ 3-1。</p></div>
+    </section>
+  </main>
+</div>
+
+<div id="site-footer"><noscript><nav class="noscript-nav" aria-label="フッターナビゲーション"><a href="index.html">ホーム</a><a href="self-intro.html">自己紹介</a><a href="study.html">勉強の軌跡</a><a href="videos.html">動画</a><a href="blog.html">ブログ</a><a href="sns.html">各種SNS</a></nav></noscript></div>
+
+<script>
+/* ヒント／解答トグル */
+document.querySelectorAll('[data-hint]').forEach(function(btn){
+  var box=btn.closest('.attempt');
+  var hints=[].slice.call(box.querySelectorAll('.hint'));
+  if(!hints.length){ btn.style.display='none'; return; }
+  var hideBtn=document.createElement('button');
+  hideBtn.type='button';hideBtn.className='ctl-btn amber';hideBtn.textContent='ヒントを隠す';hideBtn.style.display='none';
+  btn.after(hideBtn);
+  btn.addEventListener('click',function(){
+    var hidden=hints.filter(function(h){return h.style.display!=='block'});
+    if(hidden.length){ hidden[0].style.display='block'; hideBtn.style.display='';
+      if(hidden.length===1){ btn.textContent='ヒントは以上'; btn.disabled=true; }
+      else { btn.textContent='次のヒント ('+(hints.length-hidden.length+1)+'/'+hints.length+')'; }
+    }
+  });
+  hideBtn.addEventListener('click',function(){
+    hints.forEach(function(h){h.style.display='none'});
+    hideBtn.style.display='none';btn.disabled=false;btn.textContent='ヒントを表示';
+  });
+});
+document.querySelectorAll('[data-sol]').forEach(function(btn){
+  btn.addEventListener('click',function(){
+    var sol=btn.closest('.attempt').querySelector('.sol');
+    var open=sol.style.display==='block';
+    sol.style.display=open?'none':'block';
+    if(!btn.dataset.show) btn.dataset.show=btn.textContent;
+    btn.textContent=open?btn.dataset.show:'閉じる';
+    if(!open && window.MathJax && MathJax.typesetPromise) MathJax.typesetPromise([sol]);
+  });
+});
+
+/* 目次の追従 */
+var links=[].slice.call(document.querySelectorAll('.toc a[href^="#"]'));
+var secs=links.map(function(a){return document.querySelector(a.getAttribute('href'))});
+var pbar=document.getElementById('pbar');
+function onScroll(){
+  // getBoundingClientRect を使う（offsetTop ではない）。style.css の
+  // `main{position:relative}` で <main> が offsetParent になり、offsetTop が
+  // 文書基準でなくなるため、scrollY と直接比べると判定がずれる（§36）。
+  var idx=0;
+  secs.forEach(function(s,i){ if(s&&s.getBoundingClientRect().top<=140) idx=i; });
+  links.forEach(function(a){a.classList.remove('active')});
+  if(links[idx]) links[idx].classList.add('active');
+  var h=document.documentElement.scrollHeight-window.innerHeight;
+  pbar.style.width=(h>0?(window.scrollY/h*100):0)+'%';
+}
+window.addEventListener('scroll',onScroll,{passive:true});
+window.addEventListener('resize',onScroll); onScroll();
+var body=document.body,mb=document.getElementById('menuBtn'),scrim=document.getElementById('scrim');
+mb.addEventListener('click',function(){var o=body.classList.toggle('nav-open');mb.setAttribute('aria-expanded',o)});
+scrim.addEventListener('click',function(){body.classList.remove('nav-open')});
+document.getElementById('toc').addEventListener('click',function(e){if(e.target.closest('a'))body.classList.remove('nav-open')});
+</script>
+<script src="../js/layout.js?v=r61"></script>
+<script src="../js/main.js?v=r61"></script>
+<script src="../js/starfield.js?v=r61"></script>
+</body>
+</html>

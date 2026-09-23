@@ -44,6 +44,8 @@
         'phys-math:ch2':   { label: '2章 積分',                                    parent: 'phys-math' },
         'phys-math_2-1':   { label: 'SECTION 2-1',  href: 'phys-math_2-1.html',    parent: 'phys-math:ch2',
                              title: '2-1　積分の基礎' },
+        'phys-math_2-2':   { label: 'SECTION 2-2',  href: 'phys-math_2-2.html',    parent: 'phys-math:ch2',
+                             title: '2-2　積分の技法' },
         'skills':          { label: '精神の圏域',   href: 'study_skills.html',     parent: 'study' },
         'mnemonics':       { label: '記憶術',       href: 'skills_mnemonics.html', parent: 'skills' },
         'memoryverse':     { label: 'メモリーバース', href: 'memoryverse.html',    parent: 'mnemonics', unit: '回' },
