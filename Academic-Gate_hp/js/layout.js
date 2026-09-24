@@ -52,6 +52,8 @@
         'phys-math:ch4':   { label: '4章 複素数とオイラーの公式',                  parent: 'phys-math' },
         'phys-math_4-1':   { label: 'SECTION 4-1',  href: 'phys-math_4-1.html',    parent: 'phys-math:ch4',
                              title: '4-1　複素数とオイラーの公式' },
+        'phys-math_4-2':   { label: 'SECTION 4-2',  href: 'phys-math_4-2.html',    parent: 'phys-math:ch4',
+                             title: '4-2　複素数で振動を扱う' },
         'skills':          { label: '精神の圏域',   href: 'study_skills.html',     parent: 'study' },
         'mnemonics':       { label: '記憶術',       href: 'skills_mnemonics.html', parent: 'skills' },
         'memoryverse':     { label: 'メモリーバース', href: 'memoryverse.html',    parent: 'mnemonics', unit: '回' },
