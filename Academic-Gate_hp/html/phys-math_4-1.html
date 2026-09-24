@@ -16,13 +16,13 @@
      端末が勝手にライトになり、戻す手段が無くなる（§44.2）。
      復活時の挙動: テーマは描画前に同期で決まり（FOUC 防止）、ボタンの設置は
      layout.js がヘッダーを書き出したあと DOMContentLoaded で行われる。 -->
-<!-- <script src="../js/theme.js?v=r66"></script> -->
+<!-- <script src="../js/theme.js?v=r67"></script> -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;500&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
 <!-- サイト共通 → 記事固有 → テーマ上書き の順で読む（lesson-theme.css は
      記事の <style> より後ろに置くこと。css/lesson-theme.css 冒頭の注記どおり） -->
-<link rel="stylesheet" href="../css/style.css?v=r66">
+<link rel="stylesheet" href="../css/style.css?v=r67">
 <!-- MathJax: 設定ブロックはローダーより「前」に置く（DESIGN.md §11b）。
      フォールバックは this.src= ではなく createElement 方式（同§）。 -->
 <script>
@@ -224,7 +224,7 @@ mjx-container[display="true"]{margin:14px 0!important;overflow-x:auto;overflow-y
   .hint,.sol{display:block!important}
 }
 </style>
-<link rel="stylesheet" href="../css/lesson-theme.css?v=r66">
+<link rel="stylesheet" href="../css/lesson-theme.css?v=r67">
 </head>
 <body data-page="study" class="is-article" data-node="phys-math_4-1">
 <canvas id="starfield" aria-hidden="true"></canvas>
@@ -365,7 +365,10 @@ mjx-container[display="true"]{margin:14px 0!important;overflow-x:auto;overflow-y
       <div class="controls"><button class="ctl-btn" data-sol>解答を見る</button></div>
       <div class="sol"><p>\(|z|=\sqrt{3^2+4^2}=\sqrt{25}=5\)、\(\bar z=3-4i\)、\(z\bar z=|z|^2=25\)。</p>
       <p>複素平面では、実軸方向に 3、虚軸方向に 4 進んだ点（原点から距離 5 の位置）です。</p>
-      <p style="font-size:13.5px;color:var(--ink-faint)">\(z\bar z\) を展開して確かめると \((3+4i)(3-4i)=9-12i+12i-16i^2=9+16=25\)。<strong>虚部が打ち消し合い、\(i^2=-1\) が \(+16\) を生みます。</strong>複素数どうしの掛け算なのに答えが実数になるのは、共役どうしの積の特徴です。</p></div></div></div>
+      <p style="font-size:13.5px;color:var(--ink-faint)">\(z\bar z\) を展開して確かめます。</p>
+      \[ (3+4i)(3-4i)=9-12i+12i-16i^2 \]
+      \[ =9+16=25 \]
+      <p style="font-size:13.5px;color:var(--ink-faint)"><strong>虚部が打ち消し合い、\(i^2=-1\) が \(+16\) を生みます。</strong>複素数どうしの掛け算なのに答えが実数になるのは、共役どうしの積の特徴です。</p></div></div></div>
 
       <div class="drill"><p><span class="qn">問2</span>\((2+3i)(1-i)\) を計算し、実部と虚部を答えよ。</p>
       <div class="attempt" style="margin:10px 0 4px"><span class="lab">自分の答えを出してから</span>
@@ -505,7 +508,9 @@ mjx-container[display="true"]{margin:14px 0!important;overflow-x:auto;overflow-y
         <button class="ctl-btn amber" data-hint>ヒントを表示</button>
         <button class="ctl-btn" data-sol>解答を見る</button>
       </div>
-      <div class="hint"><span class="hn">HINT 1</span><p>\(i\) の累乗は4つで一巡します：\(i^0=1,\ i^1=i,\ i^2=-1,\ i^3=-i,\ i^4=1,\ \ldots\)</p></div>
+      <div class="hint"><span class="hn">HINT 1</span><p>\(i\) の累乗は4つで一巡します。</p>
+      \[ i^0=1,\quad i^1=i,\quad i^2=-1,\quad i^3=-i \]
+      <p>そして \(i^4=1\) で元に戻り、以降はこの4つの繰り返しです。</p></div>
       <div class="hint"><span class="hn">HINT 2</span><p>\(i\) が付かない項（偶数次）と、\(i\) が付く項（奇数次）に分けてください。それぞれが何の展開になっているでしょうか。</p></div>
       <div class="sol">
         <div class="step"><div class="sh"><span class="sn">1</span>代入して \(i\) の累乗を処理する</div>
@@ -710,8 +715,8 @@ mb.addEventListener('click',function(){var o=body.classList.toggle('nav-open');m
 scrim.addEventListener('click',function(){body.classList.remove('nav-open')});
 document.getElementById('toc').addEventListener('click',function(e){if(e.target.closest('a'))body.classList.remove('nav-open')});
 </script>
-<script src="../js/layout.js?v=r66"></script>
-<script src="../js/main.js?v=r66"></script>
-<script src="../js/starfield.js?v=r66"></script>
+<script src="../js/layout.js?v=r67"></script>
+<script src="../js/main.js?v=r67"></script>
+<script src="../js/starfield.js?v=r67"></script>
 </body>
 </html>
