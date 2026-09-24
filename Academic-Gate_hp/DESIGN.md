@@ -8685,3 +8685,62 @@ figcaption に明記。経度の対応はずらしていない。
 カードだけ見る人と節だけ読む人の両方に届かせるため。
 
 ## 87.8 State
+`c108a6c`（残りの節）、`5e8e0a4`（同期回転の集約）。
+
+---
+
+# 88 js/memoryverse.js への切り出し（§85.8 の実行）
+
+## 88.1 何を1つにしたか
+第1〜3回が同じ内容のインラインスクリプトを別々に持っていた（131／490／559行）。
+第4回を作る前に `js/memoryverse.js`（679行）へ切り出し、3ファイルの
+インラインスクリプトを**全部消して**外部読み込み1行に置き換えた。
+
+```html
+<script src="../js/memoryverse.js?v=rNN"></script>
+<script src="../js/layout.js?v=rNN"></script>
+```
+
+## 88.2 ★ 第1回だけカードの作りが違う
+第1回は `.mod`（追加クラスなし）で、数値を円の周りに**放射状**に並べる。
+第2回以降は `.mod.map-view` / `.mod.cut-view` で、地図・断面にピンを打つ。
+**同名の `mvPlace` / `mvLinks` が、回によって中身の違う別物だった。**
+
+```js
+function mvIsMap(mod){return mod.classList.contains('map-view')||mod.classList.contains('cut-view')}
+function mvPlace(mod){return mvIsMap(mod)?mvPlaceMap(mod):mvPlaceRadial(mod)}
+function mvLinks(mod){return mvIsMap(mod)?mvLinksMap(mod):mvLinksRadial(mod)}
+```
+
+クリック時の `mvGeoList` と `mvKeepTop`、resize 時の対象（第1回は開いているカードだけ）も
+`mvIsMap` で分けた。どちらも第1回には無かった動きなので、混ぜると挙動が変わる。
+
+## 88.3 ★ 動的 import の解決基準が変わる
+球の three.js は `import('../js/vendor/three.min.js?v=rNN')` で読んでいた。
+**クラシックスクリプトの動的 import は、相対指定を「そのスクリプトの URL」基準で
+解決する。**インラインのときは基準が html/ だったので `../js/vendor/…` でよかったが、
+`js/memoryverse.js` に移すと `js/js/vendor/…` を探して落ちる。
+`document.currentScript.src` から組み立てるようにした（`MV_THREE_URL`）。
+キャッシュバスターも memoryverse.js に付いたものがそのまま引き継がれる。
+
+## 88.4 存在チェックを足した
+目次の引き出し（`menuBtn` / `scrim` / `toc`）と進捗バー（`pbar`）に `if(...)` を付けた。
+共通ファイルは要素が無いページでも読まれうるので、1つ欠けただけで以降の
+イベント登録が全部死ぬ状態をやめた。
+
+## 88.5 ★ 挙動が変わっていないことの確かめ方
+「動いた」では足りないので、**切り出し前後の DOM を機械的に突き合わせた**。
+`git archive HEAD` で切り出し前のサイトを別ポート（8732）に立て、同じ操作
+（全カードを画面に入れて画像を読ませる → 全部開く）をしたあとの
+
+- カードごとの open / radial / 高さ / grid 要素数 / links 要素数 / geo-list 件数
+- 各 `.stat` の `style.transform`（放射状）と `style.left/top`（地図）の**文字列そのもの**
+- `.vsw` の表示、`.globe-open` の hidden、文書の高さ、scrollWidth
+- 印刷トグル（`beforeprint` → 開いた数 → `afterprint` → 戻った数）
+
+を JSON にして比較。**1440 / 560 / 390px の3幅 × 3回ぶん、すべて完全一致**。
+球は別に、第2回2枚・第3回2枚で「表示された／fail しない／canvas の大きさ／
+地形リストの件数／three.js の実 URL」を前後で比較し、いずれも一致
+（URL も前後とも `/js/vendor/three.min.js?v=r72`）。
+
+## 88.6 State
