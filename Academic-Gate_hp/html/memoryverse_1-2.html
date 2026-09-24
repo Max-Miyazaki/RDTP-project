@@ -1498,6 +1498,32 @@ window.addEventListener('resize',onScroll); onScroll();
   });
 })();
 
+
+/* --- 印刷時に解答（<details>）を開く ------------------------------------------
+   本命は CSS の `details::details-content{content-visibility:visible}`。これは
+   Chrome 131 / Safari 18.4 / Firefox 139 以降でしか効かないので、それ以前向けに
+   open 属性を足しておく。閉じていたものだけ印章を付け、印刷後に元へ戻す。
+   ★ 第1回にはあったが、第2回・第3回に写すときに落ちていた。@media print の
+     コメントが「下の beforeprint で…」と書いているのに、その beforeprint 自体が
+     無い状態だった（§85）。 */
+window.addEventListener('beforeprint',function(){
+  document.querySelectorAll('.ex details:not([open])').forEach(function(d){
+    d.setAttribute('data-mv-print','');d.open=true;
+  });
+});
+window.addEventListener('afterprint',function(){
+  document.querySelectorAll('.ex details[data-mv-print]').forEach(function(d){
+    d.open=false;d.removeAttribute('data-mv-print');
+  });
+});
+
+/* --- 目次の引き出し（900px 以下） --------------------------------------------
+   第1回にはあったが、第2回に写すときに落ちていた。これが無いと「目次」ボタンが
+   何もしない（レールは transform:translateX(-100%) のまま）。§85 で気づいて復帰。 */
+var body=document.body,mb=document.getElementById('menuBtn'),scrim=document.getElementById('scrim');
+mb.addEventListener('click',function(){var o=body.classList.toggle('nav-open');mb.setAttribute('aria-expanded',o)});
+scrim.addEventListener('click',function(){body.classList.remove('nav-open')});
+document.getElementById('toc').addEventListener('click',function(e){if(e.target.closest('a'))body.classList.remove('nav-open')});
 </script>
 <script src="../js/layout.js?v=r68"></script>
 <script src="../js/main.js?v=r68"></script>
