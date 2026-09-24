@@ -81,6 +81,16 @@ body.is-article .main > .foot{max-width:860px;margin-left:0;margin-right:auto;pa
 .toc a.active{color:var(--ink);background:var(--accent-tint)}
 .toc a .n{font-size:10.5px;color:var(--ink-faint);margin-right:8px;font-variant-numeric:tabular-nums}
 .toc a.active .n{color:var(--accent)}
+/* 衛星は惑星の下の階層。番号を持たず、字下げ・小さめ・薄めで区別する。
+   左のヘアラインが、どの惑星にぶら下がっているかを示す（§85）。 */
+.toc .sub{list-style:none;margin:2px 0 6px;padding:0 0 0 2px;margin-left:12px;border-left:1px solid var(--line)}
+.toc .sub a{padding-left:16px;font-size:11.5px;color:var(--ink-faint)}
+.toc .sub a:hover{color:var(--ink-soft)}
+.toc .sub a.active{color:var(--ink)}
+/* 衛星にいるとき、その親の惑星も同時に示す。現在地（.active）の丸い下地とは
+   競合させず、文字と番号の色だけを上げる。 */
+.toc a.parent{color:var(--ink)}
+.toc a.parent .n{color:var(--accent)}
 
 /* --- 記事の導入部。`.hero` は index.html 専用で、style.css が
    `.hero h1/.hero p/.hero .eyebrow` に黒い text-shadow をかけるため使えない（§36.5 A）。
@@ -100,6 +110,10 @@ body.is-article .main > section:not(.rail) ~ section:not(.rail){padding-top:56px
 .sec-head{display:flex;align-items:baseline;gap:14px;margin-bottom:10px}
 .sec-head .idx{font-size:.72rem;font-weight:500;letter-spacing:.2em;color:var(--ink-faint);padding-top:4px;flex:0 0 auto;font-variant-numeric:tabular-nums}
 .sec-head .idx::after{content:' —'}
+/* 衛星の節は番号を持たない。見出しの文字だけは惑星の見出しと左端を揃えたいので、
+   番号の幅（約37.5px）＋ gap（14px）ぶんだけ寄せる。狭い画面では詰める（§85）。 */
+.sec-head.is-sub{padding-left:51.5px}
+@media (max-width:560px){.sec-head.is-sub{padding-left:20px}}
 body.is-article main h2{font-weight:400;font-size:clamp(21px,2.6vw,28px);line-height:1.3;letter-spacing:-.01em;margin:0}
 body.is-article main h3{font-weight:400;font-size:17px;margin:28px 0 6px;color:var(--ink)}
 body.is-article main p{margin:10px 0;color:var(--ink-soft)}
@@ -508,7 +522,14 @@ code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border
       <li><a href="#goals"><span class="n">01</span>到達目標</a></li>
       <li><a href="#cutaway"><span class="n">02</span>断面で覚える</a></li>
       <li class="part">天体カード</li>
-      <li><a href="#jupiter"><span class="n">03</span>木星</a></li>
+      <li><a href="#jupiter"><span class="n">03</span>木星</a>
+        <ul class="sub">
+          <li><a href="#io">イオ</a></li>
+          <li><a href="#europa">エウロパ</a></li>
+          <li><a href="#ganymede">ガニメデ</a></li>
+          <li><a href="#callisto">カリスト</a></li>
+        </ul>
+      </li>
       <li><a href="#saturn"><span class="n">04</span>土星</a></li>
       <li><a href="#uranus"><span class="n">05</span>天王星</a></li>
       <li><a href="#neptune"><span class="n">06</span>海王星</a></li>
@@ -534,9 +555,9 @@ code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border
       <!-- パンくずは右のサイトナビ（layout.js の CRUMBS）に一本化した（§66）。 -->
       <h1>第3回　巨大惑星を深める<span class="sub">地面のない天体を、断面で覚える</span></h1>
       <p class="lead">第2回は「地面のある天体を地図で覚える」回でした。<strong>巨大惑星には地面がありません</strong>。表面と呼べるものが無いので、地図を重ねることができません。そこでこの回では、地図の代わりに<strong>断面</strong>を重ねます。</p>
-      <p>カードの2層は、木星・土星・天王星・海王星が<strong>［断面］と［球］</strong>、次に足す8つの衛星が<strong>［地図］と［球］</strong>（第2回と同じ）です。巨大惑星の球にはピンを置きません。覚える対象は断面のほうに置いてあります。</p>
-      <div class="box warn"><span class="lab">いまは巨大惑星4枚だけです</span>
-      <p>この回は全12枚（巨大惑星4＋主要衛星8）の予定で、いまあるのは<strong>巨大惑星の4枚</strong>だけです。断面の見せ方を決めてから衛星に広げるため、到達目標・探査の歴史・訓練メニュー・演習の各節は<strong>まだ枠だけ</strong>です。</p></div>
+      <p>カードの2層は、木星・土星・天王星・海王星が<strong>［断面］と［球］</strong>、主要な衛星が<strong>［地図］と［球］</strong>（第2回と同じ）です。巨大惑星の球にはピンを置きません。覚える対象は断面のほうに置いてあります。</p>
+      <div class="box warn"><span class="lab">いまは8枚です</span>
+      <p>この回は全12枚（巨大惑星4＋主要衛星8）の予定で、いまあるのは<strong>巨大惑星4枚と、木星のガリレオ衛星4枚</strong>です。残る4枚（エンケラドゥス・タイタン・ミランダ・トリトン）は、この形が固まってから足します。到達目標・探査の歴史・訓練メニュー・演習の各節は、12枚が揃ってから書くので<strong>まだ枠だけ</strong>です。</p></div>
     </div>
 
     <section id="goals">
@@ -688,7 +709,127 @@ code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border
             <p class="ring-narrow">本体の半径 71,492km、環は半径の1.25〜3.92倍。<span class="ring-names">内側から <b>ハロー環・主環・ゴサマー環</b>（ゴサマー環はアマルテア環とテーベ環の2枚）。</span></p>
             <figcaption>閉じたまま「どこに環があるか」を見てから開いてください。距離は NSSDC の Jupiter Rings Fact Sheet の値（木星の半径の何倍か）をそのまま使っています。<strong>濃淡は、光の通しにくさ（光学的厚み）の順に合わせた模式</strong>で、正確な明るさの比ではありません。全体にほとんど見えないのは、木星の環が実際に非常に薄いからです。</figcaption>
           </figure>
-          <div class="row"><span class="k">衛星</span><span class="v"><strong>101</strong>（IAU小惑星センターの確認総数、2026年3月時点）。主要な<strong>ガリレオ衛星</strong>4つ——イオ・エウロパ・ガニメデ・カリスト——は、次に足す衛星のカードで扱います</span></div>
+          <div class="row"><span class="k">衛星</span><span class="v"><strong>101</strong>（IAU小惑星センターの確認総数、2026年3月時点）。主要な<strong>ガリレオ衛星</strong>4つ——イオ・エウロパ・ガニメデ・カリスト——は、<strong>このすぐ下の4枚のカード</strong>で扱います。軌道の内側から順に並べてあります</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="io">
+      <div class="sec-head is-sub"><h2>イオ</h2></div>
+      <p>イオは木星にいちばん近いガリレオ衛星です。公転周期は1.769日で、木星のまわりを2日足らずで一周します。</p>
+      <div class="mod map-view has-globe" data-globe="../image/memoryverse/io-map.jpg?v=r68" data-grid="equi">
+        <div class="mod-h"><span class="no">イオ</span><span class="ttl">太陽系でいちばん火山が活発な天体</span><span class="tag">IO</span></div>
+        <div class="mod-b">
+          <div class="vsw" role="group" aria-label="表示の切り替え" hidden>
+            <button type="button" class="vsw-b is-on" data-view="map" aria-pressed="true">地図</button>
+            <button type="button" class="vsw-b" data-view="globe" aria-pressed="false">球</button>
+          </div>
+          <div class="orbit"><svg class="grid" aria-hidden="true" preserveAspectRatio="none"></svg><svg class="links" aria-hidden="true" preserveAspectRatio="none"></svg><div class="stat geo" data-n="1" data-x="0.6422" data-y="0.4277" data-lat="13.0" data-lon="51.2"><i class="n">1</i><b>ロキ・パテラ</b><span class="v">太陽系最大級の溶岩湖</span></div><div class="stat geo" data-n="2" data-side="left" data-x="0.7909" data-y="0.6039" data-lat="-18.7" data-lon="104.7"><i class="n">2</i><b>ペレ</b><span class="v">赤い輪が広がる噴出中心</span></div><div class="stat geo" data-n="3" data-side="right" data-x="0.8242" data-y="0.5683" data-lat="-12.3" data-lon="116.7"><i class="n">3</i><b>ピラン・パテラ</b><span class="v">1997年の噴火を撮られた</span></div><div class="stat geo" data-n="4" data-x="0.0724" data-y="0.5084" data-lat="-1.5" data-lon="-153.9"><i class="n">4</i><b>プロメテウス</b><span class="v">20年噴き続ける噴煙</span></div><div class="stat geo" data-n="5" data-x="0.1569" data-y="0.1513" data-lat="62.8" data-lon="-123.5"><i class="n">5</i><b>トバシュタル・パテラ</b><span class="v">高さ約300kmの噴煙</span></div><div class="stat geo" data-n="6" data-side="up" data-x="0.7525" data-y="0.5208" data-lat="-3.8" data-lon="90.9"><i class="n">6</i><b>ボーサウレ山</b><span class="v">イオで最も高い山</span></div><div class="core"><button type="button" class="img-btn" aria-expanded="false"><figure class="planet-img"><div class="orb"><div class="frame"><img class="map-img" src="../image/memoryverse/io-map.jpg?v=r68" data-alt="https://astrogeology.usgs.gov/ckan/dataset/f6924861-ce9c-490d-8a4b-7812a20f2de5/resource/a9fab679-8081-4144-9f58-45848836c8f5/download/full.jpg" alt="イオの全球地図（USGS Astrogeology のモザイク。正距円筒）" loading="lazy" decoding="async" onerror="mvNext(this)"><p class="fallback">画像を読み込めませんでした。<br><a href="https://science.nasa.gov/jupiter/moons/" target="_blank" rel="noopener">NASAの木星の衛星のページで見る</a></p></div></div><figcaption>USGS Astrogeology「Io Galileo SSI / Voyager Color Merged Global Mosaic 1km」（正距円筒・中央は東経0度、左右の端は東経180度。左半分は東経180〜360度）<br>線は経度・緯度とも30度ごと（狭い画面は60度ごと）<br>配布されている画像は左端が東経180度なので、そのまま使っています。このモザイクに未撮影の黒い部分はありません（全球の0.00%）。<br>© NASA/JPL/USGS Astrogeology Science Center（パブリックドメイン）</figcaption></figure><span class="hint"><span class="h-c">クリックで地形を開く</span><span class="h-o">クリックで閉じる</span></span></button></div></div>
+          <div class="globe" hidden>
+            <div class="globe-stage"><canvas class="globe-cv"></canvas><p class="globe-fail" hidden>球を表示できませんでした。展開図でご覧ください。</p></div>
+            <div class="globe-ctl">
+              <button type="button" class="globe-b globe-home">基準に戻す</button>
+              <button type="button" class="globe-b globe-open" aria-pressed="false">地形を開く</button>
+            </div>
+            <ol class="globe-list" hidden></ol>
+            <p class="globe-note">覚えるのは展開図のほうです。球は、展開図で覚えた位置が実物でどう見えるかを確かめるためのものです。既定の向きは東経0度が正面・北が上です。<strong>イオは自転と公転の周期が同じなので、木星からはつねに同じ面が見えています。</strong></p>
+            <p class="globe-cap">USGS Astrogeology「Io Galileo SSI / Voyager Color Merged Global Mosaic 1km」（正距円筒・中央は東経0度、左右の端は東経180度）<br>線は経度・緯度とも30度ごと<br>© NASA/JPL/USGS Astrogeology（パブリックドメイン）</p>
+          </div>
+          <div class="row"><span class="k">基本</span><span class="v">半径 <strong>1,821.5km</strong>（月の1,737kmより少し大きい）。木星からの距離 平均 <strong>42万1,800km</strong>（木星の半径の5.91倍）。公転周期 <strong>1.769日</strong>。自転と公転が同じで、<strong>つねに同じ面を木星へ</strong>向けています。平均密度 3,530kg/m³ はガリレオ衛星で最大で、中身は岩石です<br><span style="font-size:12.5px;color:var(--ink-faint)">出典：NASA NSSDC Jovian Satellite Fact Sheet（2026年9月24日閲覧）</span></span></div>
+          <div class="row"><span class="k">見え方</span><span class="v">硫黄と二酸化硫黄の霜による<strong>黄・白・赤・黒のまだら</strong>。ピザにたとえられます。<strong>クレーターがほとんど見当たりません</strong>——噴出物が絶えず表面を塗り替えているためで、これは「表面がとても若い」ことの証拠です</span></div>
+          <div class="row"><span class="k">覚える地形</span><span class="v"><div class="table-scroll"><table class="mini-table"><tr><th style="width:27%">名前</th><th style="width:33%">何か</th><th>位置の目印</th></tr><tr><td><strong>ロキ・パテラ</strong><br>Loki Patera</td><td>太陽系最大級の溶岩湖。直径 約227km。イオが出す熱のかなりの部分をここが占める</td><td>北緯13度・東経51度。地図の中央よりやや右、赤道のすぐ北の暗い楕円</td></tr><tr><td><strong>ペレ</strong><br>Pele</td><td>巨大な噴煙を上げる噴出中心。まわりに赤い輪（硫黄の降下物）が広がる</td><td>南緯19度・東経105度。右寄り、赤道の下の<strong>赤いリング</strong></td></tr><tr><td><strong>ピラン・パテラ</strong><br>Pillan Patera</td><td>直径 約69km。1997年にガリレオが噴火の前と後を撮り、ペレの赤い輪の上に暗い堆積が広がったことが分かった</td><td>南緯12度・東経117度。ペレのすぐ右上</td></tr><tr><td><strong>プロメテウス</strong><br>Prometheus</td><td>20年近く同じ場所で噴き続けている噴煙。「イオの灯台」と呼ばれる</td><td>南緯2度・東経206度。地図の<strong>左端近く</strong>、赤道の上</td></tr><tr><td><strong>トバシュタル・パテラ</strong><br>Tvashtar Paterae</td><td>2007年にニューホライズンズが高さ約300kmの噴煙を撮影した</td><td>北緯63度・東経236度。左上</td></tr><tr><td><strong>ボーサウレ山</strong><br>Boösaule Montes</td><td>イオで最も高い山。南の峰は太陽系でも屈指の高さだが、<strong>高さの値は研究によって幅がある</strong>ので、ここでは数値を出しません（確認先：USGS Gazetteer と Schenk ほかの地形図研究）</td><td>南緯4度・東経91度。ペレの左上</td></tr></table></div><p style="font-size:12.5px;color:var(--ink-faint);margin:2px 0 0">USGS Gazetteer of Planetary Nomenclature は木星の衛星の地名を<strong>「惑星測地系・西経0〜360度」</strong>で記録しています。この表と地図は<strong>東経に直してあります</strong>（東経＝360−西経）。直径は同 Gazetteer の値（2026年9月24日閲覧）。</p></span></div>
+          <div class="row"><span class="k">特徴</span><span class="v"><strong>太陽系で最も火山活動が活発な天体</strong>です。活火山は400以上（NASA）。熱源は<strong>潮汐加熱</strong>——イオ・エウロパ・ガニメデの公転周期がちょうど 1:2:4 になる<strong>ラプラス共鳴</strong>にあるため、3つが繰り返し同じ配置で引き合い、イオの軌道が真円になりません。木星に近いときと遠いときで受ける潮汐力が変わり、イオの内部が揉まれて熱くなります。<strong>「潮汐で内部が熱せられる」が、この衛星の覚えどころです</strong></span></div>
+          <div class="row"><span class="k">探査</span><span class="v"><ul><li><strong>ボイジャー1号</strong>（1979年3月）——航法用の画像から噴煙が見つかり、地球以外で初めて<strong>現在進行形の火山活動</strong>が確認された</li><li><strong>ガリレオ</strong>（1995〜2003）——噴火の前後を繰り返し撮り、表面が年単位で変わることを示した</li><li><strong>ニューホライズンズ</strong>（2007）——冥王星へ向かう途中にトバシュタルの噴煙を撮影</li><li><strong>ジュノー</strong>——2023年12月と2024年2月にイオへ接近し、ガリレオ以来の近距離画像を撮った（NASA Juno ミッションページ、2026年7月4日更新）</li></ul></span></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="europa">
+      <div class="sec-head is-sub"><h2>エウロパ</h2></div>
+      <p>エウロパはイオの次に木星から近いガリレオ衛星です。イオが「熱で焼かれた天体」なら、エウロパは「熱で溶かされた天体」です。</p>
+      <div class="mod map-view has-globe" data-globe="../image/memoryverse/europa-map.jpg?v=r68" data-grid="equi">
+        <div class="mod-h"><span class="no">エウロパ</span><span class="ttl">氷の下に海があると考えられている</span><span class="tag">EUROPA</span></div>
+        <div class="mod-b">
+          <div class="vsw" role="group" aria-label="表示の切り替え" hidden>
+            <button type="button" class="vsw-b is-on" data-view="map" aria-pressed="true">地図</button>
+            <button type="button" class="vsw-b" data-view="globe" aria-pressed="false">球</button>
+          </div>
+          <div class="orbit"><svg class="grid" aria-hidden="true" preserveAspectRatio="none"></svg><svg class="links" aria-hidden="true" preserveAspectRatio="none"></svg><div class="stat geo" data-n="1" data-x="0.7461" data-y="0.6400" data-lat="-25.2" data-lon="88.6"><i class="n">1</i><b>プウィル</b><span class="v">白い光条を持つ若いクレーター</span></div><div class="stat geo" data-n="2" data-x="0.7425" data-y="0.4461" data-lat="9.7" data-lon="87.3"><i class="n">2</i><b>コナマラ・カオス</b><span class="v">氷の板が割れて動いた跡</span></div><div class="stat geo" data-n="3" data-x="0.0928" data-y="0.3133" data-lat="33.6" data-lon="-146.6"><i class="n">3</i><b>ティル</b><span class="v">多重リングの衝突跡</span></div><div class="stat geo" data-n="4" data-x="0.0219" data-y="0.7550" data-lat="-45.9" data-lon="-172.1"><i class="n">4</i><b>トラキア・マクラ</b><span class="v">赤褐色の暗い斑点</span></div><div class="stat geo" data-n="5" data-x="0.9069" data-y="0.7433" data-lat="-43.8" data-lon="146.5"><i class="n">5</i><b>アゲノル・リネア</b><span class="v">長さ 約1,500kmの明るい筋</span></div><div class="core"><button type="button" class="img-btn" aria-expanded="false"><figure class="planet-img"><div class="orb"><div class="frame"><img class="map-img" src="../image/memoryverse/europa-map.jpg?v=r68" data-alt="https://astrogeology.usgs.gov/ckan/dataset/4080036f-afc5-422e-abe9-1c0c8e4f98ea/resource/3647e7b3-425e-4dcf-951b-cc4a22fb0129/download/europa_voyager_galileossi_global_mosaic_500m_1024.jpg" alt="エウロパの全球地図（USGS Astrogeology のモザイク。正距円筒）" loading="lazy" decoding="async" onerror="mvNext(this)"><p class="fallback">画像を読み込めませんでした。<br><a href="https://science.nasa.gov/jupiter/moons/" target="_blank" rel="noopener">NASAの木星の衛星のページで見る</a></p></div></div><figcaption>USGS Astrogeology「Europa Voyager–Galileo SSI Global Mosaic 500m」（正距円筒・中央は東経0度、左右の端は東経180度。左半分は東経180〜360度）<br>線は経度・緯度とも30度ごと（狭い画面は60度ごと）<br>配布されている画像は左端が東経0度なので、左端が東経180度になるよう横に半周ずらしました。ずらした以外の加工はしていません。<strong>南緯83.5度より南は撮影されておらず、黒いまま</strong>です（南緯75度より南の約49%、全球では約4.1%）。埋める加工はしていません。<br>© NASA/JPL/USGS Astrogeology Science Center（パブリックドメイン）</figcaption></figure><span class="hint"><span class="h-c">クリックで地形を開く</span><span class="h-o">クリックで閉じる</span></span></button></div></div>
+          <div class="globe" hidden>
+            <div class="globe-stage"><canvas class="globe-cv"></canvas><p class="globe-fail" hidden>球を表示できませんでした。展開図でご覧ください。</p></div>
+            <div class="globe-ctl">
+              <button type="button" class="globe-b globe-home">基準に戻す</button>
+              <button type="button" class="globe-b globe-open" aria-pressed="false">地形を開く</button>
+            </div>
+            <ol class="globe-list" hidden></ol>
+            <p class="globe-note">覚えるのは展開図のほうです。球は、展開図で覚えた位置が実物でどう見えるかを確かめるためのものです。既定の向きは東経0度が正面・北が上です。<strong>エウロパは自転と公転の周期が同じなので、木星からはつねに同じ面が見えています。</strong></p>
+            <p class="globe-cap">USGS Astrogeology「Europa Voyager–Galileo SSI Global Mosaic 500m」（正距円筒・中央は東経0度、左右の端は東経180度）<br>線は経度・緯度とも30度ごと<br>© NASA/JPL/USGS Astrogeology（パブリックドメイン）</p>
+          </div>
+          <div class="row"><span class="k">基本</span><span class="v">半径 <strong>1,560.8km</strong>（月より少し小さい）。木星からの距離 平均 <strong>67万1,100km</strong>（木星の半径の9.40倍）。公転周期 <strong>3.551日</strong>。自転と公転が同じで、つねに同じ面を木星へ向けています。平均密度 3,010kg/m³<br><span style="font-size:12.5px;color:var(--ink-faint)">出典：NASA NSSDC Jovian Satellite Fact Sheet（2026年9月24日閲覧）</span></span></div>
+          <div class="row"><span class="k">見え方</span><span class="v">反射率0.68の<strong>明るい氷の表面</strong>に、赤褐色の筋（リネア）が縦横に走ります。<strong>クレーターがごくわずかしかありません</strong>。太陽系でいちばん平らな天体のひとつで、高低差は数百mしかありません</span></div>
+          <div class="row"><span class="k">覚える地形</span><span class="v"><div class="table-scroll"><table class="mini-table"><tr><th style="width:27%">名前</th><th style="width:33%">何か</th><th>位置の目印</th></tr><tr><td><strong>プウィル</strong><br>Pwyll</td><td>直径 約45kmの若いクレーター。白い光条が広く伸びる。エウロパで最も新しい地形のひとつ</td><td>南緯25度・東経89度。右寄り、赤道の下</td></tr><tr><td><strong>コナマラ・カオス</strong><br>Conamara Chaos</td><td>氷の板が割れて動き、また固まった「カオス地形」の代表。差し渡し 約144km</td><td>北緯10度・東経87度。<strong>プウィルのほぼ真上</strong></td></tr><tr><td><strong>ティル</strong><br>Tyre</td><td>直径 約149kmの多重リング構造。氷の殻を貫いた衝突の跡とされる</td><td>北緯34度・東経213度。左上</td></tr><tr><td><strong>トラキア・マクラ</strong><br>Thrace Macula</td><td>赤褐色の暗い斑点（マクラ）。長さ 約180km。塩を含む物質が下から染み出したと考えられる</td><td>南緯46度・東経188度。左下</td></tr><tr><td><strong>アゲノル・リネア</strong><br>Agenor Linea</td><td>長さ 約1,500kmの明るい筋。氷が横にずれ動いた跡とされる</td><td>南緯44度・東経147度。右下</td></tr></table></div><p style="font-size:12.5px;color:var(--ink-faint);margin:2px 0 0">USGS Gazetteer of Planetary Nomenclature は木星の衛星の地名を<strong>「惑星測地系・西経0〜360度」</strong>で記録しています。この表と地図は<strong>東経に直してあります</strong>（東経＝360−西経）。直径は同 Gazetteer の値（2026年9月24日閲覧）。</p></span></div>
+          <div class="row"><span class="k">特徴</span><span class="v"><strong>氷の下に液体の海があると考えられています</strong>。根拠はガリレオの磁力計が測った<strong>誘導磁場</strong>——木星の磁場の向きが変わるのに合わせてエウロパが磁場を返しており、塩を含んだ<strong>電気を通す層</strong>が浅いところにあると考えると説明がつきます。また、クレーターの少なさは表面が絶えず作り直されていることを示します。<br><strong>ただし、海そのものを見た人はいません。</strong>あるかどうか、あるとして厚さや深さがどれだけかは、まだ確かめられていません。ハッブルは2012年と2016年に水蒸気の噴出らしきものを捉えましたが、<strong>繰り返し確認はできていません</strong>。「ある」と断定せず、<strong>「あると考えられている。まだ確かめられていない」</strong>まで含めて覚えてください</span></div>
+          <div class="row"><span class="k">探査</span><span class="v"><ul><li><strong>ボイジャー2号</strong>（1979年7月）——筋だらけの表面を初めて写した</li><li><strong>ガリレオ</strong>（1995〜2003）——12回の接近観測。誘導磁場を測り、海の存在を示唆した</li><li><strong>ジュノー</strong>（2022年9月29日）——高度約352kmまで接近（NASA）</li><li><strong>エウロパ・クリッパー</strong>——2024年10月14日打ち上げ。<strong>2030年4月に木星へ到着</strong>し、エウロパへ49回接近する予定。目的は「生命を支えられる条件があるか」を調べること（NASA、2026年9月24日閲覧）</li></ul></span></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="ganymede">
+      <div class="sec-head is-sub"><h2>ガニメデ</h2></div>
+      <p>ガニメデは3番目のガリレオ衛星で、太陽系のすべての衛星のなかで最大です。水星より大きく、惑星と呼んでもおかしくない大きさがあります。</p>
+      <div class="mod map-view has-globe" data-globe="../image/memoryverse/ganymede-map.jpg?v=r68" data-grid="equi">
+        <div class="mod-h"><span class="no">ガニメデ</span><span class="ttl">太陽系最大の衛星。自前の磁場を持つ</span><span class="tag">GANYMEDE</span></div>
+        <div class="mod-b">
+          <div class="vsw" role="group" aria-label="表示の切り替え" hidden>
+            <button type="button" class="vsw-b is-on" data-view="map" aria-pressed="true">地図</button>
+            <button type="button" class="vsw-b" data-view="globe" aria-pressed="false">球</button>
+          </div>
+          <div class="orbit"><svg class="grid" aria-hidden="true" preserveAspectRatio="none"></svg><svg class="links" aria-hidden="true" preserveAspectRatio="none"></svg><div class="stat geo" data-n="1" data-x="0.1472" data-y="0.2500" data-lat="45.0" data-lon="-127.0"><i class="n">1</i><b>ガリレオ領域</b><span class="v">直径 約4,400kmの暗く古い地域</span></div><div class="stat geo" data-n="2" data-x="0.0556" data-y="0.4811" data-lat="3.4" data-lon="-160.0"><i class="n">2</i><b>ウルク溝状地</b><span class="v">明るい筋の入った新しい地形</span></div><div class="stat geo" data-n="3" data-x="0.0380" data-y="0.7111" data-lat="-38.0" data-lon="-166.3"><i class="n">3</i><b>オシリス</b><span class="v">白い光条を持つ若いクレーター</span></div><div class="stat geo" data-n="4" data-x="0.4243" data-y="0.4381" data-lat="11.1" data-lon="-27.3"><i class="n">4</i><b>トロス</b><span class="v">直径 約94kmの明るいクレーター</span></div><div class="stat geo" data-n="5" data-x="0.4822" data-y="0.6839" data-lat="-33.1" data-lon="-6.4"><i class="n">5</i><b>ニコルソン領域</b><span class="v">暗く古い地域</span></div><div class="stat geo" data-n="6" data-x="0.4615" data-y="0.2842" data-lat="38.8" data-lon="-13.9"><i class="n">6</i><b>エンキ・カテナ</b><span class="v">一直線に並んだクレーター</span></div><div class="core"><button type="button" class="img-btn" aria-expanded="false"><figure class="planet-img"><div class="orb"><div class="frame"><img class="map-img" src="../image/memoryverse/ganymede-map.jpg?v=r68" data-alt="https://astrogeology.usgs.gov/ckan/dataset/57cad6e2-ed52-4b99-9d44-afbb9def6450/resource/1d52d4a5-bc78-4ac1-a7d0-8d5254ebf1a8/download/ganymede_voyager_galileossi_global_mosaic_1024.jpg" alt="ガニメデの全球地図（USGS Astrogeology のモザイク。正距円筒）" loading="lazy" decoding="async" onerror="mvNext(this)"><p class="fallback">画像を読み込めませんでした。<br><a href="https://science.nasa.gov/jupiter/moons/" target="_blank" rel="noopener">NASAの木星の衛星のページで見る</a></p></div></div><figcaption>USGS Astrogeology「Ganymede Voyager–Galileo SSI Global Mosaic 1km」（正距円筒・中央は東経0度、左右の端は東経180度。左半分は東経180〜360度）<br>線は経度・緯度とも30度ごと（狭い画面は60度ごと）<br>配布されている画像は左端が東経0度なので、左端が東経180度になるよう横に半周ずらしました。ずらした以外の加工はしていません。<strong>両極に未撮影の黒い部分</strong>があります（北緯75度より北の約29%、南緯75度より南の約15%、全球では約3.6%）。埋める加工はしていません。<br>© NASA/JPL/USGS Astrogeology Science Center（パブリックドメイン）</figcaption></figure><span class="hint"><span class="h-c">クリックで地形を開く</span><span class="h-o">クリックで閉じる</span></span></button></div></div>
+          <div class="globe" hidden>
+            <div class="globe-stage"><canvas class="globe-cv"></canvas><p class="globe-fail" hidden>球を表示できませんでした。展開図でご覧ください。</p></div>
+            <div class="globe-ctl">
+              <button type="button" class="globe-b globe-home">基準に戻す</button>
+              <button type="button" class="globe-b globe-open" aria-pressed="false">地形を開く</button>
+            </div>
+            <ol class="globe-list" hidden></ol>
+            <p class="globe-note">覚えるのは展開図のほうです。球は、展開図で覚えた位置が実物でどう見えるかを確かめるためのものです。既定の向きは東経0度が正面・北が上です。<strong>ガニメデは自転と公転の周期が同じなので、木星からはつねに同じ面が見えています。</strong></p>
+            <p class="globe-cap">USGS Astrogeology「Ganymede Voyager–Galileo SSI Global Mosaic 1km」（正距円筒・中央は東経0度、左右の端は東経180度）<br>線は経度・緯度とも30度ごと<br>© NASA/JPL/USGS Astrogeology（パブリックドメイン）</p>
+          </div>
+          <div class="row"><span class="k">基本</span><span class="v">半径 <strong>2,631.2km</strong>——<strong>太陽系最大の衛星</strong>で、水星（半径2,439.7km）より大きい。ただし重さは水星の半分に届きません（約45%）。木星からの距離 平均 <strong>107万400km</strong>（木星の半径の14.97倍）。公転周期 <strong>7.155日</strong>。自転と公転が同じで、つねに同じ面を木星へ向けています。平均密度 1,940kg/m³ で、氷と岩が半分ずつくらいです<br><span style="font-size:12.5px;color:var(--ink-faint)">出典：NASA NSSDC Jovian Satellite Fact Sheet／同 Planetary Fact Sheet（2026年9月24日閲覧）</span></span></div>
+          <div class="row"><span class="k">見え方</span><span class="v"><strong>2種類の地形</strong>がはっきり分かれています。暗く古い<strong>領域（regio）</strong>はクレーターだらけ、明るく筋の入った<strong>溝状地（sulcus）</strong>は割れて新しくなった場所です。地図では、この明暗の境目をまず探してください</span></div>
+          <div class="row"><span class="k">覚える地形</span><span class="v"><div class="table-scroll"><table class="mini-table"><tr><th style="width:27%">名前</th><th style="width:33%">何か</th><th>位置の目印</th></tr><tr><td><strong>ガリレオ領域</strong><br>Galileo Regio</td><td>直径 約4,400kmの暗く古い地域。ガニメデで最大の暗い領域</td><td>北緯45度・東経233度。<strong>左上の大きな暗い円</strong></td></tr><tr><td><strong>ウルク溝状地</strong><br>Uruk Sulcus</td><td>明るい筋の入った新しい地形の代表。長さ 約2,200km</td><td>北緯3度・東経200度。左寄り、赤道のあたり</td></tr><tr><td><strong>オシリス</strong><br>Osiris</td><td>直径 約107kmの若いクレーター。白い光条が伸びる</td><td>南緯38度・東経194度。左下</td></tr><tr><td><strong>トロス</strong><br>Tros</td><td>直径 約94kmの明るいクレーター</td><td>北緯11度・東経333度。中央よりやや左、赤道の上</td></tr><tr><td><strong>ニコルソン領域</strong><br>Nicholson Regio</td><td>暗く古い地域。差し渡し 約3,900km</td><td>南緯33度・東経354度。中央のやや下</td></tr><tr><td><strong>エンキ・カテナ</strong><br>Enki Catena</td><td>一直線に並んだ13個のクレーター。全長 約160km。ちぎれた彗星が次々に当たった跡とされる</td><td>北緯39度・東経346度。中央のやや上</td></tr></table></div><p style="font-size:12.5px;color:var(--ink-faint);margin:2px 0 0">USGS Gazetteer of Planetary Nomenclature は木星の衛星の地名を<strong>「惑星測地系・西経0〜360度」</strong>で記録しています。この表と地図は<strong>東経に直してあります</strong>（東経＝360−西経）。直径は同 Gazetteer の値（2026年9月24日閲覧）。</p></span></div>
+          <div class="row"><span class="k">特徴</span><span class="v"><strong>自前の磁場を持つ、唯一の衛星です</strong>（ガリレオが1996年に発見）。木星の巨大な磁気圏の中に、ガニメデ自身の小さな磁気圏が<strong>入れ子</strong>になっています。磁場があるということは、内部に流れる金属の核があることを意味します。<br>地下に海があるとも考えられています。ハッブルがガニメデのオーロラの揺れ方を測り、その揺れが抑えられていることから、電気を通す層＝塩水の層があると推定されました（2015年）。<strong>これも直接見たわけではありません</strong></span></div>
+          <div class="row"><span class="k">探査</span><span class="v"><ul><li><strong>ボイジャー1号・2号</strong>（1979）——2種類の地形を初めて写した</li><li><strong>ガリレオ</strong>（1996）——磁場を発見</li><li><strong>ジュノー</strong>（2021年6月7日）——高度約1,038kmまで接近（NASA）</li><li><strong>ジュース（JUICE, ESA）</strong>——2023年4月14日打ち上げ、<strong>2031年7月に木星へ到着</strong>予定。木星の衛星に35回接近したのち、<strong>ガニメデを回る軌道に入る</strong>計画です。地球以外の衛星を回る初めての探査機になります（ESA、2026年9月24日閲覧）</li></ul></span></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="callisto">
+      <div class="sec-head is-sub"><h2>カリスト</h2></div>
+      <p>カリストはいちばん外側のガリレオ衛星です。内側の3つと違ってラプラス共鳴に入っておらず、潮汐で揉まれません。その結果がこの表面です。</p>
+      <div class="mod map-view has-globe" data-globe="../image/memoryverse/callisto-map.jpg?v=r68" data-grid="equi">
+        <div class="mod-h"><span class="no">カリスト</span><span class="ttl">クレーターに覆われた、静かな衛星</span><span class="tag">CALLISTO</span></div>
+        <div class="mod-b">
+          <div class="vsw" role="group" aria-label="表示の切り替え" hidden>
+            <button type="button" class="vsw-b is-on" data-view="map" aria-pressed="true">地図</button>
+            <button type="button" class="vsw-b" data-view="globe" aria-pressed="false">球</button>
+          </div>
+          <div class="orbit"><svg class="grid" aria-hidden="true" preserveAspectRatio="none"></svg><svg class="links" aria-hidden="true" preserveAspectRatio="none"></svg><div class="stat geo" data-n="1" data-x="0.3444" data-y="0.4183" data-lat="14.7" data-lon="-56.0"><i class="n">1</i><b>ヴァルハラ</b><span class="v">直径 約3,000kmの多重リング</span></div><div class="stat geo" data-n="2" data-x="0.1114" data-y="0.3211" data-lat="32.2" data-lon="-139.9"><i class="n">2</i><b>アスガルド</b><span class="v">直径 約1,400kmの多重リング</span></div><div class="stat geo" data-n="3" data-side="left" data-x="0.4011" data-y="0.7694" data-lat="-48.5" data-lon="-35.6"><i class="n">3</i><b>アドリンダ</b><span class="v">直径 約840kmの多重リング</span></div><div class="stat geo" data-n="4" data-side="down" data-x="0.4381" data-y="0.8139" data-lat="-56.5" data-lon="-22.3"><i class="n">4</i><b>ロフン</b><span class="v">白く明るい若いクレーター</span></div><div class="stat geo" data-n="5" data-side="right" data-x="0.5083" data-y="0.8528" data-lat="-63.5" data-lon="3.0"><i class="n">5</i><b>ヘイムダル</b><span class="v">直径 約210kmの若いクレーター</span></div><div class="core"><button type="button" class="img-btn" aria-expanded="false"><figure class="planet-img"><div class="orb"><div class="frame"><img class="map-img" src="../image/memoryverse/callisto-map.jpg?v=r68" data-alt="https://astrogeology.usgs.gov/ckan/dataset/a80abd68-7ed9-440e-829a-76376779164f/resource/ac628525-cb1c-4742-928b-5a0a60f372cd/download/callisto_voyager_galileossi_global_mosaic_1024.jpg" alt="カリストの全球地図（USGS Astrogeology のモザイク。正距円筒）" loading="lazy" decoding="async" onerror="mvNext(this)"><p class="fallback">画像を読み込めませんでした。<br><a href="https://science.nasa.gov/jupiter/moons/" target="_blank" rel="noopener">NASAの木星の衛星のページで見る</a></p></div></div><figcaption>USGS Astrogeology「Callisto Galileo/Voyager Global Mosaic 1km」（正距円筒・中央は東経0度、左右の端は東経180度。左半分は東経180〜360度）<br>線は経度・緯度とも30度ごと（狭い画面は60度ごと）<br>配布されている画像は左端が東経0度なので、左端が東経180度になるよう横に半周ずらしました。ずらした以外の加工はしていません。<strong>両極に未撮影の黒い部分</strong>があります（南緯75度より南の約32%、北緯75度より北の約7%、全球では約3.8%）。埋める加工はしていません。<br>© NASA/JPL/USGS Astrogeology Science Center（パブリックドメイン）</figcaption></figure><span class="hint"><span class="h-c">クリックで地形を開く</span><span class="h-o">クリックで閉じる</span></span></button></div></div>
+          <div class="globe" hidden>
+            <div class="globe-stage"><canvas class="globe-cv"></canvas><p class="globe-fail" hidden>球を表示できませんでした。展開図でご覧ください。</p></div>
+            <div class="globe-ctl">
+              <button type="button" class="globe-b globe-home">基準に戻す</button>
+              <button type="button" class="globe-b globe-open" aria-pressed="false">地形を開く</button>
+            </div>
+            <ol class="globe-list" hidden></ol>
+            <p class="globe-note">覚えるのは展開図のほうです。球は、展開図で覚えた位置が実物でどう見えるかを確かめるためのものです。既定の向きは東経0度が正面・北が上です。<strong>カリストは自転と公転の周期が同じなので、木星からはつねに同じ面が見えています。</strong></p>
+            <p class="globe-cap">USGS Astrogeology「Callisto Galileo/Voyager Global Mosaic 1km」（正距円筒・中央は東経0度、左右の端は東経180度）<br>線は経度・緯度とも30度ごと<br>© NASA/JPL/USGS Astrogeology（パブリックドメイン）</p>
+          </div>
+          <div class="row"><span class="k">基本</span><span class="v">半径 <strong>2,410.3km</strong>（水星とほぼ同じ大きさ）。木星からの距離 平均 <strong>188万2,700km</strong>（木星の半径の26.33倍）。公転周期 <strong>16.689日</strong>。自転と公転が同じで、つねに同じ面を木星へ向けています。平均密度 1,830kg/m³。<strong>内側の3つと違い、ラプラス共鳴には入っていません</strong><br><span style="font-size:12.5px;color:var(--ink-faint)">出典：NASA NSSDC Jovian Satellite Fact Sheet（2026年9月24日閲覧）</span></span></div>
+          <div class="row"><span class="k">見え方</span><span class="v">反射率0.19で、ガリレオ衛星のなかで<strong>最も暗い</strong>。<strong>全面がクレーターに覆われています</strong>——新しい地形がほとんど見当たらず、これ以上クレーターが増えられないほど詰まっています（飽和）。明るい点はすべて比較的新しいクレーターです</span></div>
+          <div class="row"><span class="k">覚える地形</span><span class="v"><div class="table-scroll"><table class="mini-table"><tr><th style="width:27%">名前</th><th style="width:33%">何か</th><th>位置の目印</th></tr><tr><td><strong>ヴァルハラ</strong><br>Valhalla</td><td>直径 約3,000kmの<strong>多重リング構造</strong>。カリスト最大の衝突跡。明るい中心のまわりに同心円のしわが広がる</td><td>北緯15度・東経304度。左寄り、赤道のすぐ北の<strong>同心円</strong></td></tr><tr><td><strong>アスガルド</strong><br>Asgard</td><td>直径 約1,400kmの多重リング構造。ヴァルハラを小さくしたような形</td><td>北緯32度・東経220度。左上</td></tr><tr><td><strong>アドリンダ</strong><br>Adlinda</td><td>直径 約840kmの多重リング構造</td><td>南緯49度・東経324度。中央より少し左の下</td></tr><tr><td><strong>ロフン</strong><br>Lofn</td><td>直径 約200kmの若いクレーター。白く明るい</td><td>南緯57度・東経338度。アドリンダの右下</td></tr><tr><td><strong>ヘイムダル</strong><br>Heimdall</td><td>直径 約210kmの若いクレーター</td><td>南緯64度・東経3度。中央の下端近く</td></tr></table></div><p style="font-size:12.5px;color:var(--ink-faint);margin:2px 0 0">USGS Gazetteer of Planetary Nomenclature は木星の衛星の地名を<strong>「惑星測地系・西経0〜360度」</strong>で記録しています。この表と地図は<strong>東経に直してあります</strong>（東経＝360−西経）。直径は同 Gazetteer の値（2026年9月24日閲覧）。</p></span></div>
+          <div class="row"><span class="k">特徴</span><span class="v"><strong>地質活動がほとんどありません</strong>。ラプラス共鳴に入っていないため軌道が真円に近く、潮汐で揉まれることがないので、内部が熱せられなかったと考えられています。密度1,830kg/m³は、氷と岩が<strong>分離しきらずに混ざったまま</strong>であることを示します。イオ・エウロパ・ガニメデが「熱せられた側」、カリストが「熱せられなかった側」——<strong>この対比が、この4枚を並べて覚える意味です</strong>。<br>なお、ガリレオの磁力計はカリストにも誘導磁場を検出しており、地下に海がある可能性が示されています。<strong>これは確かめられていません</strong></span></div>
+          <div class="row"><span class="k">探査</span><span class="v"><ul><li><strong>ボイジャー1号・2号</strong>（1979）——ヴァルハラを初めて写した</li><li><strong>ガリレオ</strong>（1995〜2003）——8回の接近観測。誘導磁場を測った</li><li><strong>ジュース（JUICE, ESA）</strong>——2031年7月の到着後、カリストにも繰り返し接近する予定（ESA、2026年9月24日閲覧）</li></ul></span></div>
         </div>
       </div>
     </section>
@@ -1507,8 +1648,17 @@ function onScroll(){
      文書基準でなくなるため、scrollY と直接比べると約90px ずれる（§36.5 C）。 */
   var idx=0;
   secs.forEach(function(s,i){ if(s&&s.getBoundingClientRect().top<=140) idx=i; });
-  links.forEach(function(a){a.classList.remove('active')});
-  if(links[idx]) links[idx].classList.add('active');
+  links.forEach(function(a){a.classList.remove('active');a.classList.remove('parent')});
+  var cur=links[idx];
+  if(cur){
+    cur.classList.add('active');
+    /* 衛星は .toc .sub の中にある。その親 <li> の先頭のリンク＝所属する惑星。 */
+    var sub=cur.closest&&cur.closest('.toc .sub');
+    if(sub){
+      var pa=sub.parentElement.querySelector('a[href^="#"]');
+      if(pa&&pa!==cur) pa.classList.add('parent');
+    }
+  }
   var h=document.documentElement.scrollHeight-window.innerHeight;
   pbar.style.width=(h>0?(window.scrollY/h*100):0)+'%';
 }
@@ -1736,6 +1886,32 @@ window.addEventListener('resize',onScroll); onScroll();
   });
 })();
 
+
+/* --- 印刷時に解答（<details>）を開く ------------------------------------------
+   本命は CSS の `details::details-content{content-visibility:visible}`。これは
+   Chrome 131 / Safari 18.4 / Firefox 139 以降でしか効かないので、それ以前向けに
+   open 属性を足しておく。閉じていたものだけ印章を付け、印刷後に元へ戻す。
+   ★ 第1回にはあったが、第2回・第3回に写すときに落ちていた。@media print の
+     コメントが「下の beforeprint で…」と書いているのに、その beforeprint 自体が
+     無い状態だった（§85）。 */
+window.addEventListener('beforeprint',function(){
+  document.querySelectorAll('.ex details:not([open])').forEach(function(d){
+    d.setAttribute('data-mv-print','');d.open=true;
+  });
+});
+window.addEventListener('afterprint',function(){
+  document.querySelectorAll('.ex details[data-mv-print]').forEach(function(d){
+    d.open=false;d.removeAttribute('data-mv-print');
+  });
+});
+
+/* --- 目次の引き出し（900px 以下） --------------------------------------------
+   第1回にはあったが、第2回から写すときに落ちていた。これが無いと「目次」ボタンが
+   何もしない（レールは transform:translateX(-100%) のまま）。§85 で気づいて復帰。 */
+var body=document.body,mb=document.getElementById('menuBtn'),scrim=document.getElementById('scrim');
+mb.addEventListener('click',function(){var o=body.classList.toggle('nav-open');mb.setAttribute('aria-expanded',o)});
+scrim.addEventListener('click',function(){body.classList.remove('nav-open')});
+document.getElementById('toc').addEventListener('click',function(e){if(e.target.closest('a'))body.classList.remove('nav-open')});
 </script>
 <script src="../js/layout.js?v=r68"></script>
 <script src="../js/main.js?v=r68"></script>
