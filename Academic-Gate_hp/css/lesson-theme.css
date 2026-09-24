@@ -293,3 +293,58 @@ footer {
 .lesson-nav .next{text-align:right}
 @media (max-width:560px){.lesson-nav,.lesson-nav.two{grid-template-columns:1fr}
 }
+
+/* === 数式の溢れ（§84）=======================================================
+ * 狭い画面で、数式が本文の箱より広くなってページの外へ出る。はみ出したぶんは
+ * body{overflow-x:hidden}（style.css と記事の <style> の両方にある）に隠され、
+ * 「右端で切れて読めない」状態になっていた。実測では 360px で最大 127px。
+ * 原因は **14本のインライン数式**だけで、display 数式と表は記事側の
+ * `overflow-x:auto` / `.table-scroll` で既に箱の中に収まっていた。
+ * 隠すのではなく、**その数式の箱の中でスクロールさせる**。
+ *
+ * ★ インライン数式（\( … \)）の mjx-container は既定が display:inline。
+ *   inline の箱には overflow も max-width も効かない（実測：ルールを当てても
+ *   位置が 1px も動かない）。inline-block にしてから制限する必要がある。
+ * ★ inline-block は overflow が visible 以外のときベースラインが
+ *   「下マージン辺」に変わり、数式が行から浮き上がる（実測：最大 13.6px）。
+ *   vertical-align:bottom で打ち消す —— 203本中 198本でずれ 0.5px 未満、
+ *   残る5本（分数を含む背の高いもの）でも最大 4.1px。-0.25em のような固定値の
+ *   補正は、ずれが平均 5.4px 残って使えなかった。
+ * ★ この inline-block 化そのものは、1440px での文書高・節の位置・図の幅を
+ *   1px も変えない（実測）。 */
+mjx-container:not([display="true"]){
+  display:inline-block;max-width:100%;
+  overflow-x:auto;overflow-y:hidden;
+  -webkit-overflow-scrolling:touch;
+  vertical-align:bottom;
+}
+/* display 数式（\[ … \]）。同じ指定は記事の <style> にもあるが、新しい記事で
+   書き漏れても効くように共通側にも置く。
+   ★ max-width は付けないこと。記事側が `.box / .drill / .attempt / .sol` の中の
+     display 数式に負マージン（案A、§46.1）を掛けて箱より広く見せており、
+     max-width:100% はそれを打ち消す（実測：818px に戻って 24px 細くなる）。 */
+mjx-container[display="true"]{
+  display:block;
+  overflow-x:auto;overflow-y:hidden;
+  -webkit-overflow-scrolling:touch;
+}
+/* 数式を包む箱が flex / grid の子になったときに、子のスクロールを効かせる。
+   いまの記事はどれも block なので効かないが、箱の入れ子が増えたときの保険。 */
+.box,.drill,.sol,.attempt,.hint,.step{min-width:0}
+
+@media (max-width:1024px){
+  /* スクロールバーが数式の下端を欠けさせないための余白。記事側の `padding:2px 0`
+     の下だけを広げる（lesson-theme.css は記事の <style> より後ろに読まれるので、
+     同じ詳細度で勝つ）。
+     ★ 幅を限ってあるのは、**1440px では横スクロールの要る display 数式が 0 本**
+       だから（実測：1024px で 8本、600px で 28本、390px で 100本）。
+       全幅に掛けると、余白のぶんだけ文書が 100〜175px 伸びて
+       「デスクトップの見た目が変わらない」という条件を満たせなくなる。 */
+  mjx-container[display="true"]{padding-bottom:5px}
+}
+@media (max-width:600px){
+  /* 狭い画面では display 数式だけ少し小さく。本文（15.5px）は変えない。
+     これは補助で、単独では溢れは消えない（最大の 399.6px を 92% にしても
+     368px で、.sol の使える幅 218px には届かない）。 */
+  mjx-container[display="true"]{font-size:92%}
+}
