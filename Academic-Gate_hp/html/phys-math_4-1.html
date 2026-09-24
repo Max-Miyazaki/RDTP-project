@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>4-1 複素数とオイラーの公式｜物理数学I 4章 | Academic Gates</title>
+<meta name="description" content="複素平面と極形式、掛け算が回転であること、そして展開から導くオイラーの公式まで。物理数学I 4章／4-1。">
+<link rel="icon" href="../../favicon.ico" sizes="32x32">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+<!-- ★ ライト/ダーク切替は停止中（DESIGN.md §44）。サイト全体がダーク基調なので、
+     記事だけテーマが変わるのは一貫性を欠くという判断。**復活させるには次の1行の
+     コメントを外すだけでよい**（js/theme.js も css/lesson-theme.css も残してある）。
+     data-theme を付ける主体がこれしか無いので、外しておけば :root[data-theme="light"]
+     は構造的にマッチしない。逆に読み込んだままボタンだけ消すと、OS がライト設定の
+     端末が勝手にライトになり、戻す手段が無くなる（§44.2）。
+     復活時の挙動: テーマは描画前に同期で決まり（FOUC 防止）、ボタンの設置は
+     layout.js がヘッダーを書き出したあと DOMContentLoaded で行われる。 -->
+<!-- <script src="../js/theme.js?v=r65"></script> -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;500&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+<!-- サイト共通 → 記事固有 → テーマ上書き の順で読む（lesson-theme.css は
+     記事の <style> より後ろに置くこと。css/lesson-theme.css 冒頭の注記どおり） -->
+<link rel="stylesheet" href="../css/style.css?v=r65">
+<!-- MathJax: 設定ブロックはローダーより「前」に置く（DESIGN.md §11b）。
+     フォールバックは this.src= ではなく createElement 方式（同§）。 -->
+<script>
+window.MathJax={tex:{inlineMath:[['\\(','\\)']],displayMath:[['\\[','\\]']],tags:'none'},svg:{fontCache:'global'},options:{skipHtmlTags:['script','noscript','style','textarea','pre','code']}};
+</script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"
+        onerror="this.onerror=null;var s=document.createElement('script');s.async=true;s.src='https://unpkg.com/mathjax@3/es5/tex-svg.js';document.head.appendChild(s);"></script>
+<style>
+/* 4-1 複素数とオイラーの公式 — 記事固有のスタイルのみ。3-1 と同じ構成をそのまま使う。
+   共通のリセット・背景・星・ヘッダー/フッター・ボタン・見出し階層・本文リズムは
+   css/style.css が持つ（DESIGN.md §35, §36）。ここに残すのは、この教材の
+   構造（レール／演習ブロック／図版）と、教育用の色トークンだけ。 */
+:root{
+  /* 教材固有のトークン。本体と同値のもの（--bg --surface --nav-bg --ink --line
+     --line-strong --glow-cool --font --nav-clear --ease --radius-lg/md）は
+     css/style.css 側に定義があるので、ここでは持たない。
+     --ink-soft / --ink-faint は本体より明るい値を「意図的に」維持している。
+     本体値に寄せると 13.5px の解説文が 4.56:1 → 3.66:1 と AA を割るため（§36）。 */
+  --surface-2:rgba(255,255,255,.045);
+  --ink-soft:rgba(255,255,255,.68);
+  --ink-faint:rgba(255,255,255,.46);
+  --line-soft:rgba(255,255,255,.05);
+  --accent-deep:#a8c9ff;
+  --accent-tint:rgba(77,148,255,.12);
+  --amber:#ffb46b;--amber-tint:rgba(255,160,70,.08);--amber-line:rgba(255,160,70,.32);
+  --good:#72e3ad;--good-tint:rgba(114,227,173,.08);--good-line:rgba(114,227,173,.28);
+  --key:#ff6fa5;--key-tint:rgba(255,61,139,.08);--key-line:rgba(255,61,139,.28);
+  --teach:#a48bff;--teach-tint:rgba(123,77,255,.11);--teach-line:rgba(123,77,255,.38);
+  --mono:ui-monospace,'SFMono-Regular',Menlo,Consolas,monospace;
+  --rail-w:250px;
+}
+body{font-size:15.5px;line-height:1.9;line-break:strict;overflow-x:hidden}
+
+/* --- レイアウト（左に目次レール／右に本文の2カラム） ------------------------
+   本文列 760px は日本語の長文＋数式に合わせた measure。style.css の共通記事
+   ルールは `body.is-article main > section:not(.rail)`（詳細度 0,2,3）と
+   `… ~ section:not(.rail)`（0,3,4）で 900px と 160px パディングをかけてくる。
+   こちらは `.main` を噛ませて 0,3,2 / 0,4,3 とし、確実に上回る（§36）。 */
+/* 全幅。左寄せのレイアウトで、余った幅は右に流す（§43）。
+   §40 で一度 max-width を外して差し戻しているが、あれは「中央寄せのまま左右を
+   対称にする」変更で、本文の位置も幅も変わらなかったため戻した。今回は本文を
+   860px に広げて左揃えにするので、目的も結果も違う。
+   レールの左余白は 1280px → 1440px にかけて 0 → 32px。狭い画面ではまず余白を
+   削って本文幅に回す（レール幅 250px は目次の文字量で決まるので触らない）。 */
+.wrap{display:flex;padding-top:var(--nav-clearance);
+      padding-left:clamp(0px, calc((100vw - 1280px) * .2), 32px)}
+.rail{width:var(--rail-w);flex:0 0 var(--rail-w);position:sticky;top:var(--nav-clearance);height:calc(100vh - var(--nav-clearance));overflow-y:auto;padding:18px 14px 60px 22px;border-right:1px solid var(--line)}
+/* 左パディング＝レールと本文の間隔。1024px → 1280px にかけて 24 → 56px。
+   これも狭い画面では縮めて本文幅に回す。 */
+.main{flex:1 1 auto;min-width:0;
+      padding:0 clamp(24px, calc(24px + (100vw - 1024px) * .125), 56px) 110px}
+/* 本文列 860px。760px では display 数式が 6 本はみ出していた（解答の入れ子
+   パディングで、.sol の中は本文列より 132px 狭い箱になる）。全 82 本が収まる
+   最小幅は実測 853px（§43.2）。中央寄せをやめて左揃えにし、余りは右へ。 */
+body.is-article .main > .lesson-hero,
+body.is-article .main > section:not(.rail),
+body.is-article .main > .foot{max-width:860px;margin-left:0;margin-right:auto;padding-left:0;padding-right:0}
+.rail .brand{font-weight:400;font-size:15px;line-height:1.45;margin:2px 0 4px}
+.rail .brand small{display:block;font-size:10px;font-weight:500;color:var(--ink-faint);letter-spacing:.2em;margin-top:6px}
+.progress-wrap{height:2px;background:var(--line);border-radius:99px;margin:16px 0 18px;overflow:hidden}
+.progress-bar{height:100%;width:0;background:linear-gradient(90deg,var(--accent),#a8c9ff);transition:width .15s linear}
+.toc{list-style:none;margin:0;padding:0;font-size:12.5px}
+.toc .part{font-size:10px;letter-spacing:.2em;color:var(--ink-faint);margin:16px 0 5px;padding-left:2px}
+.toc a{display:block;text-decoration:none;color:var(--ink-soft);padding:4px 10px;border-radius:999px;transition:color var(--dur) var(--ease),background var(--dur) var(--ease)}
+.toc a:hover{color:var(--ink);background:var(--surface-2)}
+.toc a.active{color:var(--ink);background:var(--accent-tint)}
+.toc a .n{font-size:10.5px;color:var(--ink-faint);margin-right:8px;font-variant-numeric:tabular-nums}
+.toc a.active .n{color:var(--accent)}
+
+/* --- 記事の導入部。`.hero` は index.html 専用で、style.css が
+   `.hero h1/.hero p/.hero .eyebrow` に黒い text-shadow をかけるため使えない（§36）。 --- */
+.lesson-hero{padding:64px 0 34px;border-bottom:1px solid var(--line)}
+.lesson-hero h1{font-weight:300;font-size:clamp(28px,4vw,48px);line-height:1.25;letter-spacing:-.02em;margin:0 0 22px}
+.lesson-hero h1 .sub{display:block;font-size:.52em;font-weight:300;color:var(--ink-soft);letter-spacing:0;margin-top:12px}
+.lesson-hero p{color:var(--ink-soft);margin:0 0 12px}
+.lesson-hero .lead{font-size:16.5px;color:var(--ink-soft)}
+/* .eyebrow 本体は style.css の共通コンポーネント。色と余白だけ上書きする
+   （共通の --text-tertiary は 11px の小さな文字で 3.66:1 と AA を割るため） */
+.eyebrow{color:var(--ink-faint);margin-bottom:18px}
+
+section{border-bottom:1px solid var(--line-soft);scroll-margin-top:var(--nav-clearance)}
+/* 縦の余白も共通ルールに勝つ必要がある（先頭セクションも2つ目以降も同じ 56px） */
+body.is-article .main > section:not(.rail),
+body.is-article .main > section:not(.rail) ~ section:not(.rail){padding-top:56px;padding-bottom:12px}
+.sec-head{display:flex;align-items:baseline;gap:14px;margin-bottom:10px}
+.sec-head .idx{font-size:.72rem;font-weight:500;letter-spacing:.2em;color:var(--ink-faint);padding-top:4px;flex:0 0 auto;font-variant-numeric:tabular-nums}
+.sec-head .idx::after{content:' —'}
+body.is-article main h2{font-weight:400;font-size:clamp(21px,2.6vw,28px);line-height:1.3;letter-spacing:-.01em;margin:0}
+body.is-article main h3{font-weight:400;font-size:17px;margin:30px 0 6px;color:var(--ink)}
+body.is-article main h4{font-weight:500;font-size:14.5px;margin:18px 0 4px;color:var(--ink)}
+body.is-article main p{margin:10px 0;color:var(--ink-soft)}
+body.is-article main ul,body.is-article main ol{margin:10px 0;padding-left:1.3em;color:var(--ink-soft)}
+li{margin:4px 0}
+strong{font-weight:500;color:var(--ink)}
+code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);border-radius:6px;padding:1px 6px;color:var(--accent-deep)}
+mjx-container{color:var(--ink)}
+mjx-container[display="true"]{margin:14px 0!important;overflow-x:auto;overflow-y:hidden;padding:2px 0}
+
+/* 別行立て数式だけ、入れ子のパディングの外へ広げる（§46）。
+   解答や色付きボックスの中の数式は、section → .drill(20) → .attempt(22) →
+   .sol(20) と積み上がるパディングで、本文列より最大 132px 狭い箱に入っていた。
+   1024px では 82本中 6本がはみ出し、最大 +127px。**文章の字下げはそのまま**に、
+   数式だけを外へ出す。
+   値は「祖先のパディングの合計 − 8px」。8px 残すのは枠線に重ねないため。
+   全量（合計そのまま）だと .sol 左端の青いアクセントバーの上に分数が乗る。
+   はみ出しが無い幅では見た目が変わらない（箱が左右対称に広がるだけで中身は
+   中央揃えのまま。1440px で適用前後のピクセル差 0 を確認済み）。
+   !important は既存の margin:14px 0!important を上書きするため。
+   新しい入れ子を足すときは、この表に1行足すこと（現在 .hint の中に別行立ては無い）。
+     .box 20 / .drill 20 / .attempt 22 / .sol 20 */
+.box mjx-container[display="true"],
+.drill > mjx-container[display="true"]{margin:14px -12px!important}
+.attempt mjx-container[display="true"]{margin:14px -14px!important}
+.drill .attempt mjx-container[display="true"],
+.attempt .sol mjx-container[display="true"]{margin:14px -34px!important}
+.drill .attempt .sol mjx-container[display="true"]{margin:14px -54px!important}
+
+.box{border-radius:var(--radius-md);padding:16px 20px;margin:18px 0;border:1px solid var(--line);background:var(--surface)}
+.box .lab{font-size:.7rem;letter-spacing:.14em;font-weight:500;display:block;margin-bottom:6px}
+.box p{max-width:none}
+.box p:first-of-type{margin-top:2px}.box p:last-child{margin-bottom:0}
+/* 枠線は必ずトークン経由にすること。ここに直書きすると lesson-theme.css の
+   ライト上書きが効かず、暗い背景用の明るい色がライトでパステルになる（§41）。 */
+.box.principle{background:var(--key-tint);border-color:var(--key-line)}.box.principle .lab{color:var(--key)}
+.box.target{background:var(--good-tint);border-color:var(--good-line)}.box.target .lab{color:var(--good)}
+.box.warn{background:var(--amber-tint);border-color:var(--amber-line)}.box.warn .lab{color:var(--amber)}
+.box.teach{background:var(--teach-tint);border-color:var(--teach-line)}.box.teach .lab{color:var(--teach)}
+.box.teach .lab::before{content:"◎ "}
+
+.table-scroll{overflow-x:auto;margin:14px 0}
+.mini-table{width:100%;border-collapse:collapse;font-size:14px;margin:0;color:var(--ink-soft)}
+.mini-table th,.mini-table td{border:1px solid var(--line);padding:9px 11px;text-align:left;vertical-align:top}
+.mini-table th{background:var(--surface-2);font-weight:500;color:var(--ink)}
+
+.fig{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-lg);padding:18px 18px 12px;margin:20px 0}
+.fig > svg{width:100%;height:auto;display:block}
+.fig svg text{font-family:var(--font-body)}
+.fig figcaption{font-size:13px;color:var(--ink-soft);margin-top:10px;line-height:1.8;max-width:none}
+
+/* --- 演習まわり。`.ctl-btn` は style.css の `.btn`（サイト CTA。
+   `.btn::before` のホバーグローを持つ）と衝突しないよう改名したもの（§36）。 --- */
+.attempt{background:var(--surface);border:1px solid var(--amber-line);border-radius:var(--radius-lg);padding:18px 22px;margin:20px 0}
+.attempt .lab{font-size:.7rem;letter-spacing:.14em;color:var(--amber);font-weight:500;display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.attempt .lab::before{content:"✎"}
+.attempt p{max-width:none}
+.controls{display:flex;flex-wrap:wrap;gap:10px;margin:14px 0 4px}
+.ctl-btn{font-family:var(--font-body);font-size:12.5px;font-weight:500;border:1px solid var(--line);background:transparent;color:var(--ink-soft);padding:7px 16px;border-radius:var(--radius-pill);cursor:pointer;transition:color var(--dur) var(--ease),border-color var(--dur) var(--ease),background var(--dur) var(--ease)}
+.ctl-btn:hover{color:var(--ink);border-color:var(--line-strong);background:var(--surface-2)}
+.ctl-btn.amber{color:var(--amber);border-color:var(--amber-line)}
+.ctl-btn.amber:hover{background:var(--amber-tint)}
+.ctl-btn:disabled{opacity:.4;cursor:default;background:transparent}
+.hint{display:none;border-left:2px solid var(--amber);background:var(--amber-tint);border-radius:0 var(--radius-sm) var(--radius-sm) 0;padding:12px 16px;margin:10px 0}
+.hint .hn{font-size:.68rem;letter-spacing:.14em;color:var(--amber);font-weight:500;display:block;margin-bottom:3px}
+.hint p{max-width:none}.hint p:last-child{margin-bottom:0}.hint p:first-child{margin-top:0}
+.sol{display:none;border:1px solid var(--line);border-left:2px solid var(--accent);border-radius:0 var(--radius-md) var(--radius-md) 0;background:var(--surface-2);padding:8px 20px 16px;margin:12px 0}
+.sol p{max-width:none}
+.step{margin:18px 0}
+.step .sh{display:flex;gap:10px;align-items:baseline;font-weight:500;color:var(--ink);margin-bottom:2px}
+.step .sn{font-size:11px;font-weight:500;color:#06142e;background:var(--accent);border-radius:999px;padding:1px 10px;flex:0 0 auto}
+.step .why{font-size:13.5px;color:var(--ink-faint);border-left:1px solid var(--line);padding-left:12px;margin:5px 0 5px 2px;max-width:none}
+.transfer{background:var(--surface-2);border:1px solid var(--line);border-radius:var(--radius-md);padding:14px 18px;margin:18px 0}
+.transfer .lab{font-size:.7rem;letter-spacing:.14em;color:var(--accent);font-weight:500;display:block;margin-bottom:5px}
+.transfer p{max-width:none}
+.drill{background:var(--surface);border:1px solid var(--line);border-left:2px solid var(--accent);border-radius:0 var(--radius-md) var(--radius-md) 0;padding:14px 20px;margin:16px 0}
+.drill .qn{font-size:11px;font-weight:500;color:#06142e;background:var(--accent);border-radius:999px;padding:2px 11px;margin-right:8px}
+.drill p{max-width:none}
+.drill p:first-child{margin-top:2px}
+.drill .attempt{background:transparent;border-style:dashed}
+.foot{padding:34px 0 0;color:var(--ink-faint);font-size:12.5px}
+.foot p{color:var(--ink-faint);max-width:none}
+
+/* モバイル：レールを引き出しに。`.menu-btn` は位置だけを持ち、見た目は
+   共通コンポーネントの `.btn` を併用する。 */
+.menu-btn{display:none}
+.scrim{display:none}
+@media (max-width:900px){
+  .rail{position:fixed;left:0;top:0;height:100vh;z-index:1100;transform:translateX(-100%);transition:transform .25s var(--ease);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);padding-top:28px}
+  body.nav-open .rail{transform:translateX(0)}
+  .main{padding:0 20px 90px}
+  .menu-btn{display:inline-flex;position:fixed;bottom:18px;right:18px;z-index:1050;background:var(--nav-bg);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);color:var(--ink)}
+  .scrim{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:1090}
+  body.nav-open .scrim{display:block}
+  .lesson-hero{padding-top:40px}
+  /* 案A（§46.1）の負マージンをここで切る。マージンは固定 px なので、箱そのものが
+     狭いこの帯では数式が .sol の枠を大きく飛び出し、点線の .attempt 枠まで越えて
+     見える。390px では 28本が枠を横切っていた。はみ出し本数は 36→42 に増えるが、
+     どれも数式ごとの横スクロールで読める。§46.4 */
+  .box mjx-container[display="true"],
+  .drill > mjx-container[display="true"],
+  .attempt mjx-container[display="true"],
+  .drill .attempt mjx-container[display="true"],
+  .attempt .sol mjx-container[display="true"],
+  .drill .attempt .sol mjx-container[display="true"]{margin:14px 0!important}
+}
+@media print{
+  body{background:#fff;color:#000}
+  header,.rail,.menu-btn,.scrim,#starfield,footer{display:none!important}
+  .wrap{display:block;padding-top:0}
+  .hint,.sol{display:block!important}
+}
+</style>
+<link rel="stylesheet" href="../css/lesson-theme.css?v=r65">
+</head>
+<body data-page="study" class="is-article" data-node="phys-math_4-1">
+<canvas id="starfield" aria-hidden="true"></canvas>
+<div id="site-nav"><noscript><nav class="noscript-nav" aria-label="メインナビゲーション"><a href="index.html">ホーム</a><a href="self-intro.html">自己紹介</a><a href="study.html">勉強の軌跡</a><a href="videos.html">動画</a><a href="blog.html">ブログ</a><a href="sns.html">各種SNS</a></nav></noscript></div>
+<button class="menu-btn btn" id="menuBtn" aria-controls="rail" aria-expanded="false">目次 <span class="btn-disc" aria-hidden="true">≡</span></button>
+<div class="scrim" id="scrim"></div>
+<div class="wrap">
+  <nav class="rail" id="rail">
+    <!-- 科目へ戻る導線（レール上部の「← 一つ上」）は layout.js が CRUMBS から書き出す。 -->
+    <div class="brand">4-1　複素数とオイラーの公式<small>SECTION 4-1 / COMPLEX NUMBERS</small></div>
+    <div class="progress-wrap"><div class="progress-bar" id="pbar"></div></div>
+    <ul class="toc" id="toc">
+      <li class="part">導入</li>
+      <li><a href="#m0"><span class="n">01</span>なぜ複素数を使うのか</a></li>
+      <li class="part">複素数とは</li>
+      <li><a href="#d1"><span class="n">02</span>虚数単位と複素平面</a></li>
+      <li><a href="#d2"><span class="n">03</span>掛け算は回転と拡大</a></li>
+      <li class="part">つなげる</li>
+      <li><a href="#d3"><span class="n">04</span>オイラーの公式</a></li>
+      <li class="part">仕上げ</li>
+      <li><a href="#howto"><span class="n">05</span>チェックリストと次回予告</a></li>
+    </ul>
+  </nav>
+
+  <main class="main">
+    <!-- <header> ではなく <div>。style.css は裸の `header` を浮遊ナビとして
+         position:fixed / flex / border-radius:999px で組んでおり、記事の導入部が
+         <header> だと丸ごとそれを浴びてしまう（DESIGN.md §36） -->
+    <div class="lesson-hero">
+      <div class="eyebrow">物理数学 I ／ 4章 複素数とオイラーの公式 ／ SECTION 4-1</div>
+      <h1>4-1　複素数とオイラーの公式<span class="sub">回転を、数の掛け算として書く</span></h1>
+      <p class="lead">「2乗して \(-1\) になる数はない」——実数の範囲ではそのとおりです。ところが物理の教科書をめくると、振動でも波でも交流でも量子力学でも、その「ないはずの数」が当たり前のように使われています。しかも測定できる量はすべて実数なのに、です。</p>
+      <p>この記事では、複素数が何を表しているのかを見ます。答えを先に言えば、<strong>複素数は平面上の点であり、その掛け算は回転を表します</strong>。そして 3章で作った展開を使うと、回転と指数関数が同じものだという式——<strong>オイラーの公式</strong>にたどり着きます。</p>
+      <p>読み方：解答は必ず閉じたまま、紙で挑戦してください。</p>
+    </div>
+
+    <!-- §01 -->
+    <section id="m0">
+      <div class="sec-head"><span class="idx">§01</span><h2>なぜ複素数を使うのか</h2></div>
+
+      <p>3-1 の最後に、3つの展開を並べて眺めました。もう一度書きます。</p>
+      \[ e^{x}=1+x+\frac{x^2}{2!}+\frac{x^3}{3!}+\frac{x^4}{4!}+\frac{x^5}{5!}+\cdots \]
+      \[ \cos x=1-\frac{x^2}{2!}+\frac{x^4}{4!}-\cdots,\qquad \sin x=x-\frac{x^3}{3!}+\frac{x^5}{5!}-\cdots \]
+      <p>\(e^x\) の展開を偶数次の項と奇数次の項に分けると、前者は \(\cos x\) と、後者は \(\sin x\) と、<strong>まったく同じ項が同じ順に並んでいます</strong>。違うのは符号だけ。\(\cos\) と \(\sin\) は符号が交互に入れ替わるのに、\(e^x\) はすべてプラスです。</p>
+      <p>ここで一つの問いが立ちます。<strong>符号を交互に反転させる仕掛けを持ち込めば、指数関数と三角関数はつながるのではないか。</strong>そして「掛けるたびに符号が変わる」ような数といえば、2乗して \(-1\) になる数です。</p>
+      <p>この記事のゴールは、その問いに答えることです。</p>
+
+      <div class="box principle"><span class="lab">複素数は「計算を楽にするための遠回り」</span>
+      <p>物理で測れる量は、長さでも電圧でも確率でも、すべて実数です。それなのに複素数を使うのは、<strong>実数だけで計算するより圧倒的に楽になる</strong>からです。</p>
+      <p style="margin-top:8px">たとえば三角関数の加法定理は、覚えるのも導くのも面倒な式です。ところが複素数を使うと、指数法則 \(e^{p}e^{q}=e^{p+q}\) を書くだけで自動的に出てきます（§04）。振動を足し合わせる計算も、位相のずれを扱う計算も、同じように簡単になります。</p>
+      <p style="margin-top:8px">複素数を経由して計算し、最後に実部だけを取り出す——これが物理での標準的な使い方です。その具体的なやり方は次節 4-2 で扱います。</p></div>
+
+      <div class="box teach"><span class="lab">この記事の到達目標</span>
+      <ul style="margin:6px 0 0">
+        <li>複素数を複素平面上の点として図示でき、絶対値と偏角の意味を言える</li>
+        <li>複素数の掛け算が「長さは掛け算、角度は足し算」であることを説明できる</li>
+        <li>\(i\) を掛けることが 90° 回転であることを、図と式の両方で説明できる</li>
+        <li>オイラーの公式 \(e^{i\theta}=\cos\theta+i\sin\theta\) を、展開から自力で導ける</li>
+        <li>オイラーの公式を使って、三角関数の加法定理を導ける</li>
+      </ul></div>
+
+      <div class="box principle"><span class="lab">前提として使うもの</span>
+      <ul style="margin:6px 0 0">
+        <li><strong>3章 近似と展開</strong>：\(e^x,\ \sin x,\ \cos x\) のマクローリン展開</li>
+        <li><strong>三角関数</strong>：加法定理（§03 で1回だけ使います）</li>
+      </ul>
+      <p style="margin-top:8px">高校で複素数を習っていなくても読めるように、\(i^2=-1\) から始めます。</p></div>
+    </section>
+
+    <!-- §02 -->
+    <section id="d1">
+      <div class="sec-head"><span class="idx">§02</span><h2>虚数単位と複素平面</h2></div>
+
+      <p>実数の世界では、どんな数も2乗すると 0 以上になります。だから \(x^2=-1\) を満たす実数はありません。</p>
+      <p>そこで、<strong>そういう数を新しく一つ用意します</strong>。</p>
+      \[ i^2=-1 \]
+      <p>この \(i\) を<strong>虚数単位</strong>といいます。「そんな数を勝手に作っていいのか」と思うかもしれませんが、負の数や無理数も同じように、それまでの数では足りない場面が出てきたときに作られたものです。大事なのは、<strong>作った数が矛盾なく計算でき、しかも役に立つかどうか</strong>です。</p>
+
+      <h3>数直線から平面へ</h3>
+      <p>実数は数直線という<strong>1本の線</strong>の上に並んでいます。\(i\) はその線上のどこにもありません。では、どこにあるのか。</p>
+      <p>答えは<strong>線の外</strong>です。実数 \(a,b\) を使って</p>
+      \[ z=a+bi \]
+      <p>と書ける数を<strong>複素数</strong>といい、\(a\) を実部、\(b\) を虚部と呼びます。そして \((a,b)\) を座標と見れば、複素数は<strong>平面上の1点</strong>になります。</p>
+
+      <figure class="fig">
+        <svg viewBox="0 0 640 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="複素平面上の点">
+          <line x1="90" y1="190" x2="400" y2="190" stroke="var(--ink-faint)" stroke-width="1.3"/>
+          <polygon points="408,190 394,184 394,196" fill="var(--ink-faint)"/>
+          <line x1="210" y1="285" x2="210" y2="55" stroke="var(--ink-faint)" stroke-width="1.3"/>
+          <polygon points="210,47 204,61 216,61" fill="var(--ink-faint)"/>
+          <text x="404" y="209" font-size="11.5" fill="var(--ink-soft)">実軸</text>
+          <text x="222" y="56" font-size="11.5" fill="var(--ink-soft)">虚軸</text>
+          <line x1="210" y1="106" x2="336" y2="106" stroke="var(--ink-faint)" stroke-width="1.1" stroke-dasharray="4 4"/>
+          <line x1="336" y1="190" x2="336" y2="106" stroke="var(--ink-faint)" stroke-width="1.1" stroke-dasharray="4 4"/>
+          <line x1="210" y1="190" x2="336" y2="106" stroke="var(--accent)" stroke-width="2.4"/>
+          <path d="M252,190 A42,42 0 0 0 244.9,166.7" fill="none" stroke="var(--ink-soft)" stroke-width="1.4"/>
+          <text x="258" y="176" font-size="12.5" fill="var(--ink)" font-style="italic">θ</text>
+          <circle cx="336" cy="106" r="5" fill="var(--accent)" stroke="#000" stroke-width="2"/>
+          <text x="346" y="100" font-size="13" font-weight="500" fill="var(--accent-deep)">z = a + bi</text>
+          <text x="327" y="209" font-size="12" fill="var(--ink-soft)" text-anchor="middle">a</text>
+          <text x="200" y="110" font-size="12" fill="var(--ink-soft)" text-anchor="end">b</text>
+          <text x="262" y="138" font-size="12.5" font-weight="500" fill="var(--accent-deep)">r</text>
+          <circle cx="336" cy="274" r="5" fill="var(--key)" stroke="#000" stroke-width="2"/>
+          <line x1="336" y1="190" x2="336" y2="274" stroke="var(--key)" stroke-width="1.1" stroke-dasharray="4 4"/>
+          <text x="346" y="280" font-size="12.5" font-weight="500" fill="var(--key)">z̄ = a − bi</text>
+          <text x="440" y="96" font-size="12.5" font-weight="500" fill="var(--ink)">実部 a、虚部 b</text>
+          <text x="440" y="124" font-size="12.5" fill="var(--ink-soft)">r = |z| = √(a² + b²)</text>
+          <text x="440" y="146" font-size="11.5" fill="var(--ink-faint)">（原点からの距離）</text>
+          <text x="440" y="176" font-size="12.5" fill="var(--ink-soft)">θ = 偏角</text>
+          <text x="440" y="198" font-size="11.5" fill="var(--ink-faint)">（実軸から測った角度）</text>
+          <text x="440" y="230" font-size="12.5" fill="var(--key)">z̄ は実軸で折り返した点</text>
+        </svg>
+        <figcaption>複素数 \(z=a+bi\) は、実部 \(a\) を横、虚部 \(b\) を縦に取った<strong>平面上の1点</strong>として表せます。この平面を複素平面（ガウス平面）といいます。原点からの距離 \(r=|z|\) を<strong>絶対値</strong>、実軸から測った角度 \(\theta\) を<strong>偏角</strong>と呼びます。実軸で折り返した点が<strong>共役複素数</strong> \(\bar z=a-bi\) です。</figcaption>
+      </figure>
+      <p>横軸を<strong>実軸</strong>、縦軸を<strong>虚軸</strong>と呼び、この平面を<strong>複素平面</strong>といいます。実数は虚部が 0 の複素数なので、実軸の上に並びます。<strong>複素数とは、数直線を平面に広げたもの</strong>です。</p>
+
+      <div class="box target"><span class="lab">複素数の基本用語</span>
+      <div class="table-scroll"><table class="mini-table">
+        <tr><th style="width:24%">名前</th><th style="width:26%">式</th><th>意味</th></tr>
+        <tr><td>実部・虚部</td><td>\(z=a+bi\)</td><td>平面上の座標 \((a,b)\)</td></tr>
+        <tr><td>絶対値</td><td>\(|z|=\sqrt{a^2+b^2}\)</td><td>原点からの距離（三平方の定理そのもの）</td></tr>
+        <tr><td>偏角</td><td>\(\theta\)</td><td>実軸から測った角度</td></tr>
+        <tr><td>共役複素数</td><td>\(\bar z=a-bi\)</td><td>実軸で折り返した点</td></tr>
+      </table></div>
+      <p style="margin-top:8px">共役には便利な性質があります。掛けると虚部が消えて、絶対値の2乗になります。</p>
+      \[ z\bar z=(a+bi)(a-bi)=a^2-(bi)^2=a^2+b^2=|z|^2 \]
+      <p>\(i^2=-1\) のおかげで \(-(bi)^2=+b^2\) となるところが要点です。</p></div>
+
+      <h3>足し算は平行移動</h3>
+      <p>複素数の和は、実部どうし・虚部どうしを足すだけです。</p>
+      \[ (a+bi)+(c+di)=(a+c)+(b+d)i \]
+      <p>これは座標の足し算そのもので、平面上では<strong>矢印をつなげる操作</strong>（ベクトルの和）になります。ここまでは特に新しいことは起きません。<strong>複素数が面白くなるのは、掛け算です。</strong></p>
+
+      <h3>計算ドリル（§02・全2問）</h3>
+
+      <div class="drill"><p><span class="qn">問1</span>\(z=3+4i\) について、\(|z|\)、\(\bar z\)、\(z\bar z\) を求めよ。また \(z\) を複素平面のどこに打つか述べよ。</p>
+      <div class="attempt" style="margin:10px 0 4px"><span class="lab">自分の答えを出してから</span>
+      <div class="controls"><button class="ctl-btn" data-sol>解答を見る</button></div>
+      <div class="sol"><p>\(|z|=\sqrt{3^2+4^2}=\sqrt{25}=5\)、\(\bar z=3-4i\)、\(z\bar z=|z|^2=25\)。</p>
+      <p>複素平面では、実軸方向に 3、虚軸方向に 4 進んだ点（原点から距離 5 の位置）です。</p>
+      <p style="font-size:13.5px;color:var(--ink-faint)">\(z\bar z\) を展開して確かめると \((3+4i)(3-4i)=9-12i+12i-16i^2=9+16=25\)。<strong>虚部が打ち消し合い、\(i^2=-1\) が \(+16\) を生みます。</strong>複素数どうしの掛け算なのに答えが実数になるのは、共役どうしの積の特徴です。</p></div></div></div>
+
+      <div class="drill"><p><span class="qn">問2</span>\((2+3i)(1-i)\) を計算し、実部と虚部を答えよ。</p>
+      <div class="attempt" style="margin:10px 0 4px"><span class="lab">自分の答えを出してから</span>
+      <div class="controls"><button class="ctl-btn" data-sol>解答を見る</button></div>
+      <div class="sol"><p>普通に展開して、最後に \(i^2=-1\) を使います。</p>
+      \[ (2+3i)(1-i)=2-2i+3i-3i^2=2+i+3=5+i \]
+      <p>実部 5、虚部 1。</p>
+      <p style="font-size:13.5px;color:var(--ink-faint)">計算規則は「\(i\) を文字と思って展開し、\(i^2\) が出たら \(-1\) に置き換える」だけです。新しい規則はこれ1つしかありません。</p></div></div></div>
+    </section>
+
+    <!-- §03 -->
+    <section id="d2">
+      <div class="sec-head"><span class="idx">§03</span><h2>掛け算は回転と拡大</h2></div>
+
+      <p>まず、いちばん簡単な掛け算から試します。\(1\) に \(i\) を掛け続けると、どうなるでしょうか。</p>
+      \[ 1\ \xrightarrow{\times i}\ i\ \xrightarrow{\times i}\ i^2=-1\ \xrightarrow{\times i}\ -i\ \xrightarrow{\times i}\ i^4=1 \]
+      <p>4回で元に戻りました。これを複素平面に打ってみると、意味がはっきりします。</p>
+
+      <figure class="fig">
+        <svg viewBox="0 0 640 310" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="iを掛けると90度回転する">
+          <text x="60" y="26" font-size="12.5" font-weight="500" fill="var(--ink)">1 に i を掛け続けると</text>
+          <circle cx="180" cy="160" r="70" fill="none" stroke="var(--line)" stroke-width="1.2"/>
+          <line x1="90" y1="160" x2="270" y2="160" stroke="var(--ink-faint)" stroke-width="1.1"/>
+          <line x1="180" y1="250" x2="180" y2="70" stroke="var(--ink-faint)" stroke-width="1.1"/>
+          <circle cx="250" cy="160" r="5" fill="var(--accent)" stroke="#000" stroke-width="2"/>
+          <text x="258" y="178" font-size="12.5" font-weight="500" fill="var(--accent-deep)">1</text>
+          <circle cx="180" cy="90" r="5" fill="var(--accent)" stroke="#000" stroke-width="2"/>
+          <text x="190" y="84" font-size="12.5" font-weight="500" fill="var(--accent-deep)">i</text>
+          <circle cx="110" cy="160" r="5" fill="var(--accent)" stroke="#000" stroke-width="2"/>
+          <text x="102" y="178" font-size="12.5" font-weight="500" fill="var(--accent-deep)" text-anchor="end">−1</text>
+          <circle cx="180" cy="230" r="5" fill="var(--accent)" stroke="#000" stroke-width="2"/>
+          <text x="190" y="244" font-size="12.5" font-weight="500" fill="var(--accent-deep)">−i</text>
+          <path d="M243,131 A92,92 0 0 0 209,97" fill="none" stroke="var(--good)" stroke-width="2"/>
+          <polygon points="203,92 215,98 207,105" fill="var(--good)"/>
+          <path d="M151,97 A92,92 0 0 0 117,131" fill="none" stroke="var(--good)" stroke-width="2"/>
+          <polygon points="112,137 118,125 125,133" fill="var(--good)"/>
+          <path d="M117,189 A92,92 0 0 0 151,223" fill="none" stroke="var(--good)" stroke-width="2"/>
+          <polygon points="157,228 145,222 153,215" fill="var(--good)"/>
+          <path d="M209,223 A92,92 0 0 0 243,189" fill="none" stroke="var(--good)" stroke-width="2"/>
+          <polygon points="248,183 242,195 235,187" fill="var(--good)"/>
+          <text x="238" y="112" font-size="11.5" fill="var(--good)">× i</text>
+          <text x="180" y="278" font-size="11.5" fill="var(--ink-soft)" text-anchor="middle">90° ずつ回って、4回で元に戻る</text>
+
+          <text x="380" y="26" font-size="12.5" font-weight="500" fill="var(--key)">どんな数でも同じ</text>
+          <line x1="380" y1="160" x2="600" y2="160" stroke="var(--ink-faint)" stroke-width="1.1"/>
+          <line x1="470" y1="250" x2="470" y2="70" stroke="var(--ink-faint)" stroke-width="1.1"/>
+          <line x1="470" y1="160" x2="560" y2="115" stroke="var(--accent)" stroke-width="2.2"/>
+          <circle cx="560" cy="115" r="5" fill="var(--accent)" stroke="#000" stroke-width="2"/>
+          <text x="568" y="110" font-size="12.5" font-weight="500" fill="var(--accent-deep)">z = 2 + i</text>
+          <line x1="470" y1="160" x2="425" y2="70" stroke="var(--key)" stroke-width="2.2"/>
+          <circle cx="425" cy="70" r="5" fill="var(--key)" stroke="#000" stroke-width="2"/>
+          <text x="417" y="64" font-size="12.5" font-weight="500" fill="var(--key)" text-anchor="end">iz = −1 + 2i</text>
+          <path d="M520,104 A100,100 0 0 0 461,68" fill="none" stroke="var(--good)" stroke-width="2" stroke-dasharray="5 4"/>
+          <polygon points="455,66 467,62 464,74" fill="var(--good)"/>
+          <text x="496" y="52" font-size="11.5" fill="var(--good)" text-anchor="middle">90° 回転</text>
+          <text x="490" y="272" font-size="11.5" fill="var(--ink-soft)" text-anchor="middle">長さは変わらず、向きだけ 90° 変わる</text>
+        </svg>
+        <figcaption>\(1\) に \(i\) を掛けると \(i\)、もう一度掛けると \(i^2=-1\)、さらに \(-i\)、そして \(1\) に戻ります。複素平面で見ると、<strong>90° ずつの回転</strong>です。これは \(1\) に限った話ではなく、どんな複素数でも \(i\) を掛けると 90° 回ります（右）。\(i^2=-1\) という約束は、<strong>「90° の回転を2回すると 180°、つまり符号が反転する」</strong>と読めるわけです。</figcaption>
+      </figure>
+      <p><strong>\(i\) を掛けることは、90° の回転だった</strong>わけです。そう読むと \(i^2=-1\) も自然に見えてきます。90° を2回まわれば 180°、つまり反対向き。実数の世界で「\(-1\) を掛けると符号が反転する」のは、複素平面で見れば 180° の回転だったのです。</p>
+
+      <h3>一般の掛け算</h3>
+      <p>では \(i\) 以外を掛けたらどうなるか。ここで<strong>極形式</strong>を使います。絶対値 \(r\) と偏角 \(\theta\) を使えば、複素数は</p>
+      \[ z=r(\cos\theta+i\sin\theta) \]
+      <p>と書けます（図A を見れば、横の座標が \(r\cos\theta\)、縦が \(r\sin\theta\) であることが分かります）。この形で2つの複素数を掛けてみます。</p>
+
+      <div class="attempt"><span class="lab">まず自力で</span>
+      <p>\(z_1=r_1(\cos\theta_1+i\sin\theta_1)\)、\(z_2=r_2(\cos\theta_2+i\sin\theta_2)\) の積 \(z_1z_2\) を展開し、加法定理を使って整理してください。何が起きるか見えるはずです。</p>
+      <div class="controls">
+        <button class="ctl-btn amber" data-hint>ヒントを表示</button>
+        <button class="ctl-btn" data-sol>解答を見る</button>
+      </div>
+      <div class="hint"><span class="hn">HINT 1</span><p>展開したら、実部（\(i\) が付かない項）と虚部（\(i\) が付く項）に分けてください。\(i^2=-1\) を忘れずに。</p></div>
+      <div class="hint"><span class="hn">HINT 2</span><p>加法定理は \(\cos(\alpha+\beta)=\cos\alpha\cos\beta-\sin\alpha\sin\beta\)、\(\sin(\alpha+\beta)=\sin\alpha\cos\beta+\cos\alpha\sin\beta\) です。</p></div>
+      <div class="sol">
+        <div class="step"><div class="sh"><span class="sn">1</span>展開する</div>
+        <div class="why">なぜ：\(i\) を文字と思って普通に展開し、\(i^2\) を \(-1\) に置き換えます。</div>
+        \[ z_1z_2=r_1r_2\big(\cos\theta_1\cos\theta_2+i\cos\theta_1\sin\theta_2+i\sin\theta_1\cos\theta_2+i^2\sin\theta_1\sin\theta_2\big) \]
+        <p style="margin:4px 0">最後の項で \(i^2=-1\) となるので、実部と虚部に分けると</p>
+        \[ =r_1r_2\Big[\big(\cos\theta_1\cos\theta_2-\sin\theta_1\sin\theta_2\big)+i\big(\sin\theta_1\cos\theta_2+\cos\theta_1\sin\theta_2\big)\Big] \]
+        </div>
+        <div class="step"><div class="sh"><span class="sn">2</span>加法定理を当てる</div>
+        <div class="why">なぜ：括弧の中身が、そっくり加法定理の右辺の形をしています。</div>
+        \[ z_1z_2=r_1r_2\big(\cos(\theta_1+\theta_2)+i\sin(\theta_1+\theta_2)\big) \]
+        </div>
+        <div class="step"><div class="sh"><span class="sn">3</span>読み取る</div>
+        <div class="why">なぜ：結果の絶対値と偏角を、元の2つと見比べます。</div>
+        <p style="margin:4px 0">絶対値は \(r_1r_2\)、偏角は \(\theta_1+\theta_2\)。つまり</p>
+        \[ \boxed{\;\text{長さは掛け算、角度は足し算}\;} \]
+        <p style="font-size:13.5px;color:var(--ink-faint);margin:6px 0 0">\(i\) は「長さ 1、角度 90°」の数です。だから掛けても長さは変わらず、角度だけ 90° 増える——最初に見た回転は、この一般則の特別な場合でした。</p></div>
+      </div>
+      </div>
+
+      <div class="box target"><span class="lab">ド・モアブルの定理</span>
+      <p>同じ数を \(n\) 回掛ければ、長さは \(n\) 乗、角度は \(n\) 倍になります。</p>
+      \[ \big(r(\cos\theta+i\sin\theta)\big)^n=r^n\big(\cos n\theta+i\sin n\theta\big) \]
+      <p>累乗の計算が、<strong>角度を \(n\) 倍するだけ</strong>で済むようになります。</p></div>
+
+      <h3>計算ドリル（§03・全3問）</h3>
+
+      <div class="drill"><p><span class="qn">問1</span>\(z=1+i\) の絶対値と偏角を求め、極形式で表せ。</p>
+      <div class="attempt" style="margin:10px 0 4px"><span class="lab">自分の答えを出してから</span>
+      <div class="controls"><button class="ctl-btn" data-sol>解答を見る</button></div>
+      <div class="sol"><p>\(|z|=\sqrt{1^2+1^2}=\sqrt2\)。実部と虚部が等しいので、複素平面では原点から 45° の方向、つまり \(\theta=\dfrac{\pi}{4}\)。</p>
+      \[ 1+i=\sqrt2\left(\cos\frac{\pi}{4}+i\sin\frac{\pi}{4}\right) \]
+      <p style="font-size:13.5px;color:var(--ink-faint)">確かめ：\(\cos\frac{\pi}{4}=\sin\frac{\pi}{4}=\frac{1}{\sqrt2}\) なので、右辺は \(\sqrt2\cdot\frac{1}{\sqrt2}(1+i)=1+i\) となります。</p></div></div></div>
+
+      <div class="drill"><p><span class="qn">問2</span>ド・モアブルの定理を使って \((1+i)^8\) を求めよ。展開して計算するのと、どちらが楽か比べること。</p>
+      <div class="attempt" style="margin:10px 0 4px"><span class="lab">自分の答えを出してから</span>
+      <div class="controls"><button class="ctl-btn" data-sol>解答を見る</button></div>
+      <div class="sol"><p>問1 より \(1+i\) は長さ \(\sqrt2\)、角度 \(\dfrac{\pi}{4}\)。8乗すれば、長さは 8 乗、角度は 8 倍です。</p>
+      \[ (1+i)^8=(\sqrt2)^8\left(\cos\frac{8\pi}{4}+i\sin\frac{8\pi}{4}\right)=16\big(\cos2\pi+i\sin2\pi\big)=16 \]
+      <p>角度が \(2\pi\)、つまりちょうど1周して実軸上に戻るので、答えは実数 16 になります。</p>
+      <p style="font-size:13.5px;color:var(--ink-faint)">同じことを展開でやろうとすると、二項定理で9個の項を並べ、\(i\) の累乗を1つずつ処理することになります。<strong>累乗は極形式の独壇場</strong>です。</p></div></div></div>
+
+      <div class="drill"><p><span class="qn">問3</span>\(z=2+2i\) に \(i\) を掛けた \(iz\) を計算し、複素平面上で \(z\) から 90° 回転した位置にあることを、絶対値と偏角の両方から確かめよ。</p>
+      <div class="attempt" style="margin:10px 0 4px"><span class="lab">自分の答えを出してから</span>
+      <div class="controls"><button class="ctl-btn" data-sol>解答を見る</button></div>
+      <div class="sol"><p>\(iz=i(2+2i)=2i+2i^2=-2+2i\)。</p>
+      <p><strong>絶対値</strong>：\(|z|=\sqrt{4+4}=2\sqrt2\)、\(|iz|=\sqrt{4+4}=2\sqrt2\)。変わっていません。</p>
+      <p><strong>偏角</strong>：\(z=2+2i\) は 45°（第1象限）、\(iz=-2+2i\) は 135°（第2象限）。ちょうど 90° 増えています。</p>
+      <p style="font-size:13.5px;color:var(--ink-faint)">「長さは掛け算、角度は足し算」という規則に、\(i\)（長さ 1、角度 90°）を当てはめた結果です。長さが 1 なので変わらず、角度だけ 90° 足される。<strong>回転を表す数は、長さ 1 の複素数</strong>だということになります。</p></div></div></div>
+    </section>
+
+    <!-- §04 -->
+    <section id="d3">
+      <div class="sec-head"><span class="idx">§04</span><h2>オイラーの公式</h2></div>
+
+      <p>§03 で分かったのは、複素数を掛けると<strong>角度が足し算になる</strong>ということでした。ここで思い出してほしいのが、指数関数の性質です。</p>
+      \[ e^{p}\cdot e^{q}=e^{p+q} \]
+      <p>こちらも<strong>肩の数が足し算</strong>になっています。構造がそっくりです。ということは、<strong>回転は指数関数で書けるのではないか</strong>。</p>
+      <p>この予想を確かめるために、\(e^x\) の展開に \(x=i\theta\) を代入してみます。</p>
+
+      <div class="attempt"><span class="lab">まず自力で</span>
+      <p>\(e^{x}=1+x+\dfrac{x^2}{2!}+\dfrac{x^3}{3!}+\cdots\) に \(x=i\theta\) を代入し、\(i\) の累乗を整理して、実部と虚部に分けてください。3-1 で導いた \(\cos\theta\) と \(\sin\theta\) の展開と見比べること。</p>
+      <div class="controls">
+        <button class="ctl-btn amber" data-hint>ヒントを表示</button>
+        <button class="ctl-btn" data-sol>解答を見る</button>
+      </div>
+      <div class="hint"><span class="hn">HINT 1</span><p>\(i\) の累乗は4つで一巡します：\(i^0=1,\ i^1=i,\ i^2=-1,\ i^3=-i,\ i^4=1,\ \ldots\)</p></div>
+      <div class="hint"><span class="hn">HINT 2</span><p>\(i\) が付かない項（偶数次）と、\(i\) が付く項（奇数次）に分けてください。それぞれが何の展開になっているでしょうか。</p></div>
+      <div class="sol">
+        <div class="step"><div class="sh"><span class="sn">1</span>代入して \(i\) の累乗を処理する</div>
+        <div class="why">なぜ：\((i\theta)^n=i^n\theta^n\) なので、\(i^n\) を 1, i, −1, −i の繰り返しに置き換えるだけです。</div>
+        \[ e^{i\theta}=1+i\theta+\frac{(i\theta)^2}{2!}+\frac{(i\theta)^3}{3!}+\frac{(i\theta)^4}{4!}+\frac{(i\theta)^5}{5!}+\cdots \]
+        \[ =1+i\theta-\frac{\theta^2}{2!}-i\frac{\theta^3}{3!}+\frac{\theta^4}{4!}+i\frac{\theta^5}{5!}-\cdots \]
+        <p style="margin:4px 0">\(i^2=-1\)、\(i^3=-i\)、\(i^4=1\) を使いました。<strong>符号がプラス・プラス・マイナス・マイナスの周期で変わる</strong>のが見どころです。</p>
+        </div>
+        <div class="step"><div class="sh"><span class="sn">2</span>実部と虚部に分ける</div>
+        <div class="why">なぜ：\(i\) が付いていない項と、付いている項をまとめます。</div>
+        \[ e^{i\theta}=\underbrace{\left(1-\frac{\theta^2}{2!}+\frac{\theta^4}{4!}-\cdots\right)}_{\text{実部}}+i\underbrace{\left(\theta-\frac{\theta^3}{3!}+\frac{\theta^5}{5!}-\cdots\right)}_{\text{虚部}} \]
+        </div>
+        <div class="step"><div class="sh"><span class="sn">3</span>見比べる</div>
+        <div class="why">なぜ：括弧の中身は、3-1 で導いた展開そのものです。</div>
+        <p style="margin:4px 0">実部の括弧は \(\cos\theta\) の展開、虚部の括弧は \(\sin\theta\) の展開。したがって</p>
+        \[ \boxed{\;e^{i\theta}=\cos\theta+i\sin\theta\;} \]
+        <p style="font-size:13.5px;color:var(--ink-faint);margin:6px 0 0">§01 で「符号を交互に反転させる仕掛けがあれば、指数関数と三角関数はつながるのでは」と問いました。その仕掛けが \(i\) だったわけです。\(i\) の累乗が 4 つで一巡するせいで、\(e^x\) のすべてプラスだった符号が、\(\cos\) と \(\sin\) の交互の符号に振り分けられます。</p></div>
+      </div>
+      </div>
+
+      <figure class="fig">
+        <svg viewBox="0 0 640 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="単位円上の点としてのオイラーの公式">
+          <circle cx="230" cy="205" r="110" fill="none" stroke="var(--line)" stroke-width="1.4"/>
+          <line x1="100" y1="205" x2="380" y2="205" stroke="var(--ink-faint)" stroke-width="1.2"/>
+          <line x1="230" y1="290" x2="230" y2="80" stroke="var(--ink-faint)" stroke-width="1.2"/>
+          <text x="386" y="223" font-size="11.5" fill="var(--ink-soft)">実軸</text>
+          <text x="242" y="84" font-size="11.5" fill="var(--ink-soft)">虚軸</text>
+          <line x1="230" y1="205" x2="297.7" y2="118.3" stroke="var(--accent)" stroke-width="2.4"/>
+          <line x1="297.7" y1="205" x2="297.7" y2="118.3" stroke="var(--good)" stroke-width="2" stroke-dasharray="5 4"/>
+          <line x1="230" y1="118.3" x2="297.7" y2="118.3" stroke="var(--amber)" stroke-width="2" stroke-dasharray="5 4"/>
+          <path d="M270,205 A40,40 0 0 0 255,174" fill="none" stroke="var(--ink-soft)" stroke-width="1.4"/>
+          <text x="276" y="190" font-size="12.5" fill="var(--ink)" font-style="italic">θ</text>
+          <circle cx="297.7" cy="118.3" r="5" fill="var(--accent)" stroke="#000" stroke-width="2"/>
+          <text x="307.7" y="110.3" font-size="12.5" font-weight="500" fill="var(--accent-deep)">e<tspan dy="-5" font-size="9.5">iθ</tspan></text>
+          <text x="263.9" y="224" font-size="12" font-weight="500" fill="var(--amber)" text-anchor="middle">cos θ</text>
+          <text x="305.7" y="165.7" font-size="12" font-weight="500" fill="var(--good)">sin θ</text>
+          <text x="340.0" y="224" font-size="11.5" fill="var(--ink-faint)" text-anchor="middle">1</text>
+          <text x="264" y="161.6" dy="-7" font-size="11.5" fill="var(--accent-deep)" text-anchor="middle" transform="rotate(-52 264 161.6)">長さ 1</text>
+          <text x="430" y="120" font-size="13" font-weight="500" fill="var(--ink)">単位円上の点</text>
+          <text x="430" y="150" font-size="12.5" fill="var(--ink-soft)">横の座標 … cos θ</text>
+          <text x="430" y="174" font-size="12.5" fill="var(--ink-soft)">縦の座標 … sin θ</text>
+          <text x="430" y="212" font-size="12.5" font-weight="500" fill="var(--accent-deep)">e<tspan dy="-5" font-size="9.5">iθ</tspan><tspan dy="5" font-size="12.5"> = cos θ + i sin θ</tspan></text>
+          <text x="430" y="242" font-size="11.5" fill="var(--ink-faint)">θ を増やすと、点は</text>
+          <text x="430" y="262" font-size="11.5" fill="var(--ink-faint)">円周上を反時計回りに進む</text>
+        </svg>
+        <figcaption>\(e^{i\theta}\) は、複素平面の<strong>単位円（半径1の円）の上の点</strong>で、実軸から測った角度がちょうど \(\theta\) になる位置を指します。その点の横の座標が \(\cos\theta\)、縦の座標が \(\sin\theta\) なので、\(e^{i\theta}=\cos\theta+i\sin\theta\) が成り立ちます。<strong>\(\theta\) を時間とともに増やしていけば、点は円周上を回り続けます</strong>——この「回転する点」が、次節で振動を扱うときの主役になります。</figcaption>
+      </figure>
+      <div class="box teach"><span class="lab">\(e^{i\pi}=-1\) の意味</span>
+      <p>\(\theta=\pi\) を入れると \(\cos\pi=-1\)、\(\sin\pi=0\) なので</p>
+      \[ e^{i\pi}=-1 \]
+      <p>「数学で最も美しい式」と呼ばれることもありますが、図で見れば当たり前のことを言っています。<strong>単位円を半周（180°）すれば、\(1\) の反対側、つまり \(-1\) に着く</strong>。それだけです。</p>
+      <p style="margin-top:8px">同じように \(e^{i\pi/2}=i\)（4分の1周）、\(e^{2\pi i}=1\)（1周して戻る）。オイラーの公式は、<strong>角度と回転を、指数の肩に載せて扱えるようにした</strong>式なのです。</p></div>
+
+      <h3>極形式が短く書ける</h3>
+      <p>オイラーの公式を使うと、極形式は次のように書けます。</p>
+      \[ z=r(\cos\theta+i\sin\theta)=r\,e^{i\theta} \]
+      <p>この形にすると、§03 で苦労して導いた「長さは掛け算、角度は足し算」が、<strong>指数法則そのもの</strong>になります。</p>
+      \[ z_1z_2=r_1e^{i\theta_1}\cdot r_2e^{i\theta_2}=r_1r_2\,e^{i(\theta_1+\theta_2)} \]
+      <p>ド・モアブルの定理も \(\left(re^{i\theta}\right)^n=r^ne^{in\theta}\) と、指数法則を書いただけになります。<strong>覚えるべき公式が1つ減った</strong>わけです。</p>
+
+      <h3>計算ドリル（§04・全3問）</h3>
+
+      <div class="drill"><p><span class="qn">問1</span>オイラーの公式から、加法定理 \(\cos(\alpha+\beta)\) と \(\sin(\alpha+\beta)\) を導け。</p>
+      <div class="attempt" style="margin:10px 0 4px"><span class="lab">自分の答えを出してから</span>
+      <div class="controls">
+        <button class="ctl-btn amber" data-hint>ヒントを表示</button>
+        <button class="ctl-btn" data-sol>解答を見る</button>
+      </div>
+      <div class="hint"><span class="hn">HINT 1</span><p>指数法則 \(e^{i(\alpha+\beta)}=e^{i\alpha}\cdot e^{i\beta}\) の両辺を、オイラーの公式で書き直してください。</p></div>
+      <div class="sol"><p>左辺をオイラーの公式で書くと</p>
+      \[ e^{i(\alpha+\beta)}=\cos(\alpha+\beta)+i\sin(\alpha+\beta) \]
+      <p>右辺は2つに分けてから展開します。</p>
+      \[ e^{i\alpha}e^{i\beta}=(\cos\alpha+i\sin\alpha)(\cos\beta+i\sin\beta) \]
+      \[ =(\cos\alpha\cos\beta-\sin\alpha\sin\beta)+i(\sin\alpha\cos\beta+\cos\alpha\sin\beta) \]
+      <p>両辺で実部どうし、虚部どうしを比べれば</p>
+      \[ \cos(\alpha+\beta)=\cos\alpha\cos\beta-\sin\alpha\sin\beta \]
+      \[ \sin(\alpha+\beta)=\sin\alpha\cos\beta+\cos\alpha\sin\beta \]
+      <p style="font-size:13.5px;color:var(--ink-faint)">加法定理は、覚えるのも符号を間違えるのも面倒な式です。しかしオイラーの公式があれば、<strong>指数法則を書いて展開するだけで、2本同時に出てきます</strong>。しかも符号を間違えようがありません。これが §01 で言った「複素数を使うと楽になる」の具体例です。</p>
+      <p style="font-size:13.5px;color:var(--ink-faint)">なお §03 では加法定理を使って「角度が足し算になる」を示したので、論理の順序としては循環しないよう注意が必要です。オイラーの公式自体は展開だけから導いたので、ここで加法定理を導くのは問題ありません。</p></div></div></div>
+
+      <div class="drill"><p><span class="qn">問2</span>次の値を求め、複素平面のどこにあるか述べよ。<br>(a) \(e^{i\pi/2}\)　(b) \(e^{i\pi}\)　(c) \(e^{2\pi i}\)　(d) \(e^{-i\theta}\)</p>
+      <div class="attempt" style="margin:10px 0 4px"><span class="lab">自分の答えを出してから</span>
+      <div class="controls"><button class="ctl-btn" data-sol>解答を見る</button></div>
+      <div class="sol"><p>(a) \(\cos\frac{\pi}{2}+i\sin\frac{\pi}{2}=i\)。単位円を4分の1周した、虚軸上の点。</p>
+      <p>(b) \(\cos\pi+i\sin\pi=-1\)。半周して、実軸の負の側。</p>
+      <p>(c) \(\cos2\pi+i\sin2\pi=1\)。1周して出発点に戻る。</p>
+      <p>(d) \(\cos(-\theta)+i\sin(-\theta)=\cos\theta-i\sin\theta\)。\(\cos\) は偶関数、\(\sin\) は奇関数なので、虚部だけ符号が変わります。これは \(e^{i\theta}\) の<strong>共役複素数</strong>、つまり実軸で折り返した点です。</p>
+      <p style="font-size:13.5px;color:var(--ink-faint)">(c) から分かるように、\(e^{i\theta}\) は \(\theta\) が \(2\pi\) 増えるごとに同じ値に戻ります。<strong>指数関数なのに周期を持つ</strong>——実数の \(e^x\) では考えられない性質ですが、「円周上を回っている」と思えば当然です。</p></div></div></div>
+
+      <div class="drill"><p><span class="qn">問3</span><strong>口頭試問形式</strong>：次の3つを、公式を見ずに自分の言葉で説明せよ。<br>①複素数の掛け算は、複素平面上で何をしているか。\(i\) を掛けるとどうなるか。<br>②オイラーの公式を、\(e^x\) の展開からどう導くか。\(i\) の累乗がどう効いてくるか。<br>③\(e^{i\pi}=-1\) は何を言っているか。</p>
+      <div class="attempt" style="margin:10px 0 4px"><span class="lab">自分の答えを出してから</span>
+      <div class="controls"><button class="ctl-btn" data-sol>解答例を見る</button></div>
+      <div class="sol"><p><strong>①</strong> 極形式 \(z=r(\cos\theta+i\sin\theta)\) で2つを掛けると、加法定理によって絶対値は掛け算、偏角は足し算になる。つまり掛け算は「拡大（または縮小）と回転」。\(i\) は長さ 1・角度 90° の数なので、掛けると長さは変わらず 90° 回転する。\(i^2=-1\) は「90° を2回で 180°」と読める。</p>
+      <p><strong>②</strong> \(e^x\) の展開に \(x=i\theta\) を代入する。\(i\) の累乗は \(1,\ i,\ -1,\ -i\) の4つで一巡するので、項の符号がプラス・プラス・マイナス・マイナスの周期で変わる。\(i\) の付かない項（偶数次）を集めると \(\cos\theta\) の展開、\(i\) の付く項（奇数次）を集めると \(\sin\theta\) の展開になり、\(e^{i\theta}=\cos\theta+i\sin\theta\) が出る。</p>
+      <p><strong>③</strong> 単位円上を角度 \(\pi\)（180°）だけ回ると、出発点 \(1\) の反対側 \(-1\) に着く、ということ。</p>
+      <p style="font-size:13.5px;color:var(--ink-faint)">この3つが澱みなく言えれば、この記事は通過です。特に②は、3-1 の展開を覚えていないと答えられません。忘れていたら 3-1 に戻って、\(\cos\) と \(\sin\) の展開を導き直してから再挑戦してください。</p></div></div></div>
+    </section>
+
+    <!-- §05 -->
+    <section id="howto">
+      <div class="sec-head"><span class="idx">§05</span><h2>チェックリストと次回予告</h2></div>
+
+      <h3>この記事で答えられるようになるべき問い</h3>
+      <div class="box principle"><span class="lab">最終チェック</span>
+      <ul style="margin:8px 0 0">
+        <li>複素数 \(z=a+bi\) を複素平面上に図示できるか（§02）</li>
+        <li>絶対値と偏角の意味を、図の上で言えるか（§02）</li>
+        <li>\(z\bar z=|z|^2\) を計算で確かめられるか（§02）</li>
+        <li>\(i\) を掛けることが 90° 回転であると、図で説明できるか（§03）</li>
+        <li>極形式の積から「長さは掛け算、角度は足し算」を導けるか（§03）</li>
+        <li>ド・モアブルの定理で \((1+i)^8\) のような累乗を計算できるか（§03）</li>
+        <li>オイラーの公式を \(e^x\) の展開から導けるか（§04）</li>
+        <li>\(i\) の累乗が4つで一巡することが、どう効いてくるか説明できるか（§04）</li>
+        <li>\(e^{i\pi}=-1\) の意味を、図で説明できるか（§04）</li>
+        <li>オイラーの公式から加法定理を導けるか（§04）</li>
+      </ul></div>
+
+      <h3>次節（4-2 複素数で振動を扱う）への接続</h3>
+      <p>オイラーの公式で、\(e^{i\theta}\) が「単位円上を回る点」だと分かりました。ここで \(\theta\) を時間とともに増やしてみます。角速度を \(\omega\) として \(\theta=\omega t\) と置けば</p>
+      \[ e^{i\omega t}=\cos\omega t+i\sin\omega t \]
+      <p>点は円周上を一定の速さで回り続けます。そして<strong>その影</strong>——実軸に落とした座標——は \(\cos\omega t\)、つまり<strong>振動</strong>です。</p>
+      <p>回っている点を横から見ると、往復運動に見える。この見方を手に入れると、振動の計算が大きく変わります。</p>
+      <div class="box teach"><span class="lab">4-2 で扱う問い（予習用）</span>
+      <ul style="margin:6px 0 0">
+        <li>なぜ実数で済む振動を、わざわざ複素数で書くのか</li>
+        <li>\(x=\mathrm{Re}\left[A\,e^{i\omega t}\right]\) という書き方は何をしているのか</li>
+        <li>振幅と位相のずれを、1つの複素数にまとめるとはどういうことか</li>
+        <li>微分が「\(i\omega\) を掛けるだけ」になるとはどういう意味か</li>
+      </ul>
+      <p style="margin-top:8px"><strong>鍵となる一言</strong>：複素数で書くと、振動の微分が掛け算に変わります。これが5章で微分方程式を解くときに効いてきます。</p></div>
+
+      <h3>学習サイクルの推奨手順</h3>
+      <ol>
+        <li><strong>解答を開かず、紙で挑戦</strong>。詰まっても5分は粘ってください。詰まるのは失敗ではなく、<strong>まだ腑に落ちていない一点が表に出た合図</strong>です。そこを自分の手で越えた経験が、そのまま次に進む力になります。</li>
+        <li><strong>ヒントを1つずつ</strong>開き、詰まりが解けたら閉じて自力で続行。</li>
+        <li>複素数の計算をしたら、<strong>複素平面のどこにあるかを必ず図で確かめる</strong>。式だけで進めると、回転という意味を見失います。</li>
+        <li>翌日、何も見ずに §04 問3（口頭試問）を再現する。特に②のオイラーの公式の導出を、展開から書き下せるか確かめてください。</li>
+      </ol>
+
+      <div class="box warn"><span class="lab">この教材の立ち位置</span>
+      <p>本節は<strong>物理で使うための複素数</strong>に絞っています。複素関数論（正則性、コーシーの積分定理、留数定理）には踏み込んでいません。それらは物理数学IIで扱う内容で、積分の計算や、散乱・応答の理論で必要になります。</p>
+      <p style="margin-top:8px">また、複素数の展開を \(x=i\theta\) と形式的に代入して導いた点も、厳密には「複素数の範囲で展開が収束するか」という議論が必要です。結論としては問題なく成り立ちますが、その正当化は複素関数論の役目です。</p></div>
+
+      <div class="foot"><p>Academic Gates ／ 物理数学I 4章 複素数とオイラーの公式 ／ 4-1「複素数とオイラーの公式」。演習問題は本教材独自の構成です。続編：4-2「複素数で振動を扱う」。</p></div>
+    </section>
+  </main>
+</div>
+
+<div id="site-footer"><noscript><nav class="noscript-nav" aria-label="フッターナビゲーション"><a href="index.html">ホーム</a><a href="self-intro.html">自己紹介</a><a href="study.html">勉強の軌跡</a><a href="videos.html">動画</a><a href="blog.html">ブログ</a><a href="sns.html">各種SNS</a></nav></noscript></div>
+
+<script>
+/* ヒント／解答トグル */
+document.querySelectorAll('[data-hint]').forEach(function(btn){
+  var box=btn.closest('.attempt');
+  var hints=[].slice.call(box.querySelectorAll('.hint'));
+  if(!hints.length){ btn.style.display='none'; return; }
+  var hideBtn=document.createElement('button');
+  hideBtn.type='button';hideBtn.className='ctl-btn amber';hideBtn.textContent='ヒントを隠す';hideBtn.style.display='none';
+  btn.after(hideBtn);
+  btn.addEventListener('click',function(){
+    var hidden=hints.filter(function(h){return h.style.display!=='block'});
+    if(hidden.length){ hidden[0].style.display='block'; hideBtn.style.display='';
+      if(hidden.length===1){ btn.textContent='ヒントは以上'; btn.disabled=true; }
+      else { btn.textContent='次のヒント ('+(hints.length-hidden.length+1)+'/'+hints.length+')'; }
+    }
+  });
+  hideBtn.addEventListener('click',function(){
+    hints.forEach(function(h){h.style.display='none'});
+    hideBtn.style.display='none';btn.disabled=false;btn.textContent='ヒントを表示';
+  });
+});
+document.querySelectorAll('[data-sol]').forEach(function(btn){
+  btn.addEventListener('click',function(){
+    var sol=btn.closest('.attempt').querySelector('.sol');
+    var open=sol.style.display==='block';
+    sol.style.display=open?'none':'block';
+    if(!btn.dataset.show) btn.dataset.show=btn.textContent;
+    btn.textContent=open?btn.dataset.show:'閉じる';
+    if(!open && window.MathJax && MathJax.typesetPromise) MathJax.typesetPromise([sol]);
+  });
+});
+
+/* 目次の追従 */
+var links=[].slice.call(document.querySelectorAll('.toc a[href^="#"]'));
+var secs=links.map(function(a){return document.querySelector(a.getAttribute('href'))});
+var pbar=document.getElementById('pbar');
+function onScroll(){
+  // getBoundingClientRect を使う（offsetTop ではない）。style.css の
+  // `main{position:relative}` で <main> が offsetParent になり、offsetTop が
+  // 文書基準でなくなるため、scrollY と直接比べると判定がずれる（§36）。
+  var idx=0;
+  secs.forEach(function(s,i){ if(s&&s.getBoundingClientRect().top<=140) idx=i; });
+  links.forEach(function(a){a.classList.remove('active')});
+  if(links[idx]) links[idx].classList.add('active');
+  var h=document.documentElement.scrollHeight-window.innerHeight;
+  pbar.style.width=(h>0?(window.scrollY/h*100):0)+'%';
+}
+window.addEventListener('scroll',onScroll,{passive:true});
+window.addEventListener('resize',onScroll); onScroll();
+var body=document.body,mb=document.getElementById('menuBtn'),scrim=document.getElementById('scrim');
+mb.addEventListener('click',function(){var o=body.classList.toggle('nav-open');mb.setAttribute('aria-expanded',o)});
+scrim.addEventListener('click',function(){body.classList.remove('nav-open')});
+document.getElementById('toc').addEventListener('click',function(e){if(e.target.closest('a'))body.classList.remove('nav-open')});
+</script>
+<script src="../js/layout.js?v=r65"></script>
+<script src="../js/main.js?v=r65"></script>
+<script src="../js/starfield.js?v=r65"></script>
+</body>
+</html>
