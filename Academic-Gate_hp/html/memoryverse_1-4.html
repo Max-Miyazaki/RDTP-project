@@ -1,0 +1,1265 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第4回 小天体｜メモリーバース | Academic Gates</title>
+<meta name="description" content="小惑星帯からオールトの雲まで。対数目盛の配置図を背骨に、場所と性質で覚える。メモリーバース第4回。">
+<link rel="icon" href="../../favicon.ico" sizes="32x32">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+<!-- ★ ライト/ダーク切替は停止中（DESIGN.md §44）。サイト全体がダーク基調なので、
+     記事だけテーマが変わるのは一貫性を欠くという判断。**復活させるには次の1行の
+     コメントを外すだけでよい**（js/theme.js も css/lesson-theme.css も残してある）。 -->
+<!-- <script src="../js/theme.js?v=r74"></script> -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;500&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+<!-- サイト共通 → 記事固有 → テーマ上書き の順で読む（lesson-theme.css は
+     記事の <style> より後ろに置くこと。css/lesson-theme.css 冒頭の注記どおり） -->
+<link rel="stylesheet" href="../css/style.css?v=r74">
+<!-- MathJax は読み込まない。この記事に数式は1つも無いため（§46.0 の執筆方針は
+     数式の話なので該当しない）。設定ブロックもローダーも置かないこと。 -->
+<style>
+/* メモリーバース v3 第3回 — 記事固有のスタイルのみ。第2回と同じ構成をそのまま使う。
+   共通のリセット・背景・星・ヘッダー/フッター・ボタン・見出し階層・本文リズムは
+   css/style.css が持つ（DESIGN.md §35, §36, §47）。ここに残すのは、この教材の
+   構造（レール／天体カード／演習／図版）と、教育用の色トークンだけ。 */
+:root{
+  /* 教材固有のトークン。本体と同値のもの（--bg --surface --nav-bg --ink --line
+     --line-strong --glow-cool --font(=--font-body) --nav-clear(=--nav-clearance)
+     --ease --dur --radius-lg/md/sm）は css/style.css 側に定義があるので持たない。
+     --ink-soft / --ink-faint は本体より明るい値を「意図的に」維持している。
+     本体値に寄せると 13.5px の補足文が 4.56:1 → 3.66:1 と AA を割るため（§36.2）。
+     --accent / --accent-tint / --glow-cool は元はティール（#2bd9c4）だったが、
+     サイトの青に一本化した。--accent と --glow-cool は本体から継承するので
+     ここには無い。--accent-deep / --accent-tint はダークでの定義が本体にも
+     lesson-theme.css にも無いので、記事が持つ（§47.5）。 */
+  --surface-2:rgba(255,255,255,.045);
+  --ink-soft:rgba(255,255,255,.68);
+  --ink-faint:rgba(255,255,255,.46);
+  --line-soft:rgba(255,255,255,.05);
+  --accent-deep:#a8c9ff;
+  --accent-tint:rgba(77,148,255,.12);
+  --amber:#ffb46b;--amber-tint:rgba(255,160,70,.08);--amber-line:rgba(255,160,70,.32);
+  --good:#72e3ad;--good-tint:rgba(114,227,173,.08);--good-line:rgba(114,227,173,.28);
+  --key:#ff6fa5;--key-tint:rgba(255,61,139,.08);--key-line:rgba(255,61,139,.28);
+  --teach:#a48bff;--teach-tint:rgba(123,77,255,.11);--teach-line:rgba(123,77,255,.38);
+  --mono:ui-monospace,'SFMono-Regular',Menlo,Consolas,monospace;
+  --rail-w:250px;
+}
+body{font-size:15.5px;line-height:1.9;line-break:strict;overflow-x:hidden}
+
+/* --- レイアウト（左に目次レール／右に本文の2カラム）。phys-math_1-1 と同一。 ---
+   style.css の共通記事ルールは `body.is-article main > section:not(.rail)`
+   （詳細度 0,2,3）で 900px と 160px パディングをかけてくる。こちらは `.main` を
+   噛ませて 0,3,2 / 0,4,3 とし、確実に上回る（§36.5 B）。
+   レールの左余白は 1280px → 1440px にかけて 0 → 32px、レール↔本文の間隔は
+   1024px → 1280px にかけて 24 → 56px。狭い画面ではまず余白を削って本文幅に回す（§43.3）。 */
+.wrap{display:flex;padding-top:var(--nav-clearance);
+      padding-left:clamp(0px, calc((100vw - 1280px) * .2), 32px)}
+.rail{width:var(--rail-w);flex:0 0 var(--rail-w);position:sticky;top:var(--nav-clearance);height:calc(100vh - var(--nav-clearance));overflow-y:auto;padding:18px 14px 60px 22px;border-right:1px solid var(--line)}
+.main{flex:1 1 auto;min-width:0;
+      padding:0 clamp(24px, calc(24px + (100vw - 1024px) * .125), 56px) 110px}
+/* 本文列 860px（§43.2）。この記事に数式は無いので 853px という下限の根拠は
+   効かないが、教材どうしで本文幅が割れるほうが害なので phys-math_1-1 に揃える。
+   中央寄せをやめて左揃えにし、余りは右へ流す。 */
+body.is-article .main > .lesson-hero,
+body.is-article .main > section:not(.rail),
+body.is-article .main > .foot{max-width:860px;margin-left:0;margin-right:auto;padding-left:0;padding-right:0}
+.rail .brand{font-weight:400;font-size:15px;line-height:1.45;margin:2px 0 4px}
+.rail .brand small{display:block;font-size:10px;font-weight:500;color:var(--ink-faint);letter-spacing:.2em;margin-top:6px}
+/* --- 上の階層へ戻る導線（§64.1）。レールは sticky なので、読んでいる途中でも
+   親ページへ戻れる。狭い画面はレールが引き出しになるので .float-nav で補う。 --- */
+  .lesson-nav .next,.lesson-nav .mid{text-align:left}}
+.progress-wrap{height:2px;background:var(--line);border-radius:99px;margin:16px 0 18px;overflow:hidden}
+.progress-bar{height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--accent-deep));transition:width .15s linear}
+.toc{list-style:none;margin:0;padding:0;font-size:12.5px}
+.toc .part{font-size:10px;letter-spacing:.2em;color:var(--ink-faint);margin:16px 0 5px;padding-left:2px}
+.toc a{display:block;text-decoration:none;color:var(--ink-soft);padding:4px 10px;border-radius:999px;transition:color var(--dur) var(--ease),background var(--dur) var(--ease)}
+.toc a:hover{color:var(--ink);background:var(--surface-2)}
+.toc a.active{color:var(--ink);background:var(--accent-tint)}
+.toc a .n{font-size:10.5px;color:var(--ink-faint);margin-right:8px;font-variant-numeric:tabular-nums}
+.toc a.active .n{color:var(--accent)}
+/* 衛星は惑星の下の階層。番号を持たず、字下げ・小さめ・薄めで区別する。
+   左のヘアラインが、どの惑星にぶら下がっているかを示す（§85）。 */
+.toc .sub{list-style:none;margin:2px 0 6px;padding:0 0 0 2px;margin-left:12px;border-left:1px solid var(--line)}
+.toc .sub a{padding-left:16px;font-size:11.5px;color:var(--ink-faint)}
+.toc .sub a:hover{color:var(--ink-soft)}
+.toc .sub a.active{color:var(--ink)}
+/* 衛星にいるとき、その親の惑星も同時に示す。現在地（.active）の丸い下地とは
+   競合させず、文字と番号の色だけを上げる。 */
+.toc a.parent{color:var(--ink)}
+.toc a.parent .n{color:var(--accent)}
+
+/* --- 記事の導入部。`.hero` は index.html 専用で、style.css が
+   `.hero h1/.hero p/.hero .eyebrow` に黒い text-shadow をかけるため使えない（§36.5 A）。
+   要素も <header> ではなく <div>（裸の header は浮遊ナビの定義を浴びる）。 --- */
+.lesson-hero{padding:64px 0 34px;border-bottom:1px solid var(--line)}
+.lesson-hero h1{font-weight:300;font-size:clamp(28px,4vw,48px);line-height:1.25;letter-spacing:-.02em;margin:0 0 22px}
+.lesson-hero h1 .sub{display:block;font-size:.52em;font-weight:300;color:var(--ink-soft);letter-spacing:0;margin-top:12px}
+.lesson-hero p{color:var(--ink-soft);margin:0 0 12px}
+.lesson-hero .lead{font-size:16.5px;color:var(--ink-soft)}
+/* .eyebrow 本体は style.css の共通コンポーネント。色と余白だけ上書きする
+   （共通の --text-tertiary は 11px の小さな文字で 3.66:1 と AA を割るため） */
+.eyebrow{color:var(--ink-faint);margin-bottom:18px}
+
+section{border-bottom:1px solid var(--line-soft);scroll-margin-top:var(--nav-clearance)}
+body.is-article .main > section:not(.rail),
+body.is-article .main > section:not(.rail) ~ section:not(.rail){padding-top:56px;padding-bottom:12px}
+.sec-head{display:flex;align-items:baseline;gap:14px;margin-bottom:10px}
+.sec-head .idx{font-size:.72rem;font-weight:500;letter-spacing:.2em;color:var(--ink-faint);padding-top:4px;flex:0 0 auto;font-variant-numeric:tabular-nums}
+.sec-head .idx::after{content:' —'}
+/* 衛星の節は番号を持たない。見出しの文字だけは惑星の見出しと左端を揃えたいので、
+   番号の幅（約37.5px）＋ gap（14px）ぶんだけ寄せる。狭い画面では詰める（§85）。 */
+.sec-head.is-sub{padding-left:51.5px}
+@media (max-width:560px){.sec-head.is-sub{padding-left:20px}}
+body.is-article main h2{font-weight:400;font-size:clamp(21px,2.6vw,28px);line-height:1.3;letter-spacing:-.01em;margin:0}
+body.is-article main h3{font-weight:400;font-size:17px;margin:28px 0 6px;color:var(--ink)}
+body.is-article main p{margin:10px 0;color:var(--ink-soft)}
+body.is-article main ul,body.is-article main ol{margin:10px 0;padding-left:1.3em;color:var(--ink-soft)}
+li{margin:4px 0}
+strong{font-weight:500;color:var(--ink)}
+code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);border-radius:6px;padding:1px 6px;color:var(--accent-deep)}
+
+.box{border-radius:var(--radius-md);padding:16px 20px;margin:18px 0;border:1px solid var(--line);background:var(--surface)}
+.box .lab{font-size:.7rem;letter-spacing:.14em;font-weight:500;display:block;margin-bottom:6px}
+.box p:first-of-type{margin-top:2px}.box p:last-child{margin-bottom:0}
+/* 枠線は必ずトークン経由にすること。ここに直書きすると lesson-theme.css の
+   ライト上書きが効かず、暗い背景用の明るい色がライトでパステルになる（§41.2）。 */
+.box.principle{background:var(--key-tint);border-color:var(--key-line)}.box.principle .lab{color:var(--key)}
+.box.target{background:var(--good-tint);border-color:var(--good-line)}.box.target .lab{color:var(--good)}
+.box.warn{background:var(--amber-tint);border-color:var(--amber-line)}.box.warn .lab{color:var(--amber)}
+.box.teach{background:var(--teach-tint);border-color:var(--teach-line)}.box.teach .lab{color:var(--teach)}
+
+.table-scroll{overflow-x:auto;margin:14px 0}
+.mini-table{width:100%;border-collapse:collapse;font-size:14px;margin:14px 0;color:var(--ink-soft)}
+.mini-table th,.mini-table td{border:1px solid var(--line);padding:9px 11px;text-align:left;vertical-align:top}
+.mini-table th{background:var(--surface-2);font-weight:500;color:var(--ink)}
+/* 根拠の強度バッジ。枠線は tint と同系のトークンへ（上と同じ理由） */
+.g{font-size:10.5px;font-weight:500;border-radius:999px;padding:2px 9px;white-space:nowrap}
+.g.s{background:var(--good-tint);color:var(--good);border:1px solid var(--good-line)}
+.g.m{background:var(--amber-tint);color:var(--amber);border:1px solid var(--amber-line)}
+.g.w{background:var(--key-tint);color:var(--key);border:1px solid var(--key-line)}
+
+.fig{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-lg);padding:18px 18px 12px;margin:20px 0}
+.fig > svg{width:100%;height:auto;display:block}
+.fig svg text{font-family:var(--font-body)}
+.fig figcaption{font-size:13px;color:var(--ink-soft);margin-top:10px;line-height:1.8}
+
+/* --- 到達目標の箱。`.goals` は style.css の `.card`（サイト共通カード。blog /
+   videos / study など6ページで使用中）と衝突したための改名（§47.6）。
+   そのままだと display:flex / gap / .card::before のホバーグロー / .card:hover の
+   背景変化が降ってきて、読むだけの箱がマウスに反応してしまう。 --- */
+.goals{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-lg);padding:20px 24px;margin:18px 0}
+.goals ol{counter-reset:q;list-style:none;padding-left:0;margin:6px 0 0}
+.goals ol li{counter-increment:q;position:relative;padding-left:44px;margin:14px 0}
+.goals ol li::before{content:"G" counter(q);position:absolute;left:0;top:3px;font-size:11px;font-weight:500;color:var(--accent);border:1px solid var(--accent);border-radius:999px;padding:1px 9px}
+.goals ol li b{display:block;font-size:15.5px;font-weight:400;color:var(--ink)}
+.goals ol li span{font-size:14px;color:var(--ink-soft)}
+
+/* --- 天体カード ------------------------------------------------------------
+   画像をクリックすると .mod.open が付き、数値（.stat）が円の周りに放射状に並ぶ。
+   配置は JS（mvPlace / mvLinks）が計算する。CSS は「閉じているときの姿」と
+   「開いたときの入れ物」だけを持つ。 --- */
+.mod{position:relative;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-lg);margin:18px 0;overflow:hidden;transition:border-color var(--dur) var(--ease),background var(--dur) var(--ease)}
+.mod::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,var(--glow-cool),transparent 45%);opacity:0;transition:opacity var(--dur) var(--ease);pointer-events:none}
+.mod:hover{border-color:var(--line-strong);background:var(--surface-2)}
+.mod:hover::before{opacity:.5}
+.mod>*{position:relative}
+.mod-h{display:flex;align-items:center;gap:12px;padding:14px 20px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+/* .no の文字色は lesson-theme.css が var(--on-accent) で持つ（§44.1 の分類表に
+   登録済み）。ここで再宣言しないこと。背景だけが記事の持ち物。 */
+.mod-h .no{font-size:12px;font-weight:500;background:var(--accent);border-radius:999px;padding:3px 12px;flex:0 0 auto}
+.mod-h .ttl{font-weight:400;font-size:17px;flex:1 1 auto;min-width:0}
+.mod-h .tag{font-size:10px;font-weight:500;letter-spacing:.14em;color:var(--ink-faint);border:1px solid var(--line);border-radius:999px;padding:2px 10px}
+.mod-b{padding:16px 20px 18px}
+/* ★ 第2回の .orbit は「外観＝左に球・右に物差し」「地図＝画像に重ねる」の2種類で、
+   第1回の3列グリッド（放射状配置の受け皿）は使わない（§57.1）。
+   位置指定の基準（position:relative）だけが共通の役割。 */
+.orbit{position:relative;margin-bottom:10px}
+.orbit .links{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;overflow:visible}
+/* 引き出し線。青はティールより輝度が低いので、不透明度を .38 → .45 に上げて
+   線としての見えを保つ（黒地 6.34:1 対 11.82:1 の差を埋める。§47.5） */
+.orbit .links line{stroke:rgba(61,139,255,.45);stroke-width:1}
+.orbit .links circle{fill:var(--accent)}
+.orb{position:relative;width:100%}
+.core{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;gap:8px;width:100%;margin:0}
+.img-btn{background:none;border:0;padding:0;cursor:pointer;width:100%;font-family:var(--font-body);color:inherit;display:flex;flex-direction:column}
+.img-btn .hint{order:-1;display:block;font-size:11px;color:var(--ink-faint);margin:0 0 12px;letter-spacing:.06em;position:relative;z-index:3}
+.hint .h-o{display:none}
+.mod.open .hint .h-c{display:none}
+.mod.open .hint .h-o{display:inline}
+.img-btn:hover .frame{border-color:var(--accent);box-shadow:0 0 24px rgba(61,139,255,.24)}
+/* .stat は **<div>**。押しても何も起きない要素なので、<button> のままだと
+   9枚 × 6〜7個 = 62 個の無反応なボタンが Tab 順に入る（§47.9）。mvPlace /
+   mvLinks はセレクタで拾うだけなのでタグに依存しない。数値を押せるようにする
+   日が来たら button に戻すこと — そのときは中身も操作対象になる。 */
+.stat{position:relative;z-index:2;display:block;width:max-content;max-width:100%;text-align:left;background:rgba(12,14,18,.82);backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px);border:1px solid var(--line);border-radius:var(--radius-sm);padding:8px 11px;font-size:13.5px;line-height:1.6;color:var(--ink);font-family:var(--font-body);font-variant-numeric:tabular-nums;transition:opacity .28s var(--ease),transform .28s var(--ease),border-color .2s var(--ease)}
+.stat b{display:block;font-size:10px;color:var(--ink-faint);font-weight:500;letter-spacing:.12em;margin-bottom:2px}
+.stat strong{color:var(--accent-deep)}
+.stat .v{display:block}
+.mod:not(.open) .orbit .stat{display:none}
+.mod:not(.open) .links{display:none}
+
+.mod.open .stat{animation:mvIn .32s var(--ease) both}
+@keyframes mvIn{from{opacity:0}to{opacity:1}}
+@media (prefers-reduced-motion:reduce){.mod.open .stat{animation:none}}
+
+/* 惑星画像。枠の中は宇宙の写真なので、ライトでも黒のまま
+   （lesson-theme.css の注記「.planet-img .frame は変更しない」と対になっている）。 */
+.planet-img{margin:0}
+.planet-img .frame{border-radius:var(--radius-md);background:radial-gradient(circle at 50% 50%,rgba(255,255,255,.04),transparent 70%),#000;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;overflow:hidden}
+.planet-img img{width:100%;height:100%;object-fit:contain;display:block}
+.planet-img .fallback{display:none;padding:14px;text-align:center;font-size:12.5px;color:var(--ink-soft)}
+.planet-img.failed img{display:none}.planet-img.failed .fallback{display:block}
+.planet-img figcaption{position:relative;z-index:3;margin-top:12px;font-size:10.5px;color:var(--ink-faint);line-height:1.5}
+.mod-b .row{display:flex;gap:12px;margin:8px 0;font-size:14.5px;align-items:flex-start}
+.mod-b .row .k{font-size:10.5px;font-weight:500;color:var(--ink-faint);letter-spacing:.14em;flex:0 0 58px;padding-top:4px}
+.mod-b .row .v{flex:1 1 auto;min-width:0;line-height:1.8;color:var(--ink-soft)}
+.mod-b ul{margin:3px 0;padding-left:1.2em}
+.mod-b li{font-size:14.5px;margin:2px 0}
+
+/* --- この回は地図だけを見せる。外観（球）は第1回が持つ（§63.2）。 --- */
+.planet-img .map-img{display:block}
+/* ★ 地図のときは枠を画像そのものの比率に合わせる。球用の正方形の枠に
+   object-fit:contain で入れると上下が大きく空き、地形が半分の大きさになる。
+   高さを auto にして画像に持たせれば、2:1 の惑星図も 4:3 の月の図も等しく収まる。
+   円形の指定は `.planet-img .orb .frame`（0,3,0）なので、こちらは 0,5,0 で勝つ。
+   環は球の周りを回る飾りなので、平面の地図では消す（楕円にならない）。 */
+.mod.map-view .planet-img .orb{aspect-ratio:auto}
+.mod.map-view .planet-img .orb .frame{height:auto;min-height:118px;aspect-ratio:auto;border-radius:var(--radius-md)}
+.mod.map-view .planet-img .map-img{height:auto}
+/* 地球だけの注記。画像の下・キャプションの上に1行（§56.2）。
+   <button> の中なので <p> ではなく span（ボタンの中は phrasing content）。 */
+.map-note{display:none;margin:10px 0 0;font-size:11px;line-height:1.6;color:var(--ink-faint)}
+.mod.map-view .map-note{display:block}
+/* ★ 外観のときは数値欄（.stat）、地図のときは地形ラベル（.stat.geo）。
+   どちらも同じ .stat を使う（見た目の土台を共有する）。
+   閉じているときは第1回どおり両方とも隠れる（.mod:not(.open) .orbit .stat）。 */
+.mod.map-view .orbit .stat:not(.geo){display:none}
+/* ★ 地図のときだけ、線と点を画像の上に出す。共通CSSでは .links が z-index:0、
+   画像を持つ .core が z-index:1 なので、地図の上のピンが画像に隠れてしまう。
+   .stat と同じ z-index:2 にすると、DOM 順（svg → .stat）で線はラベルの下、
+   画像より上に来る。外観のときは第1回のままにしておく（§53.4）。 */
+.mod.map-view .orbit .links{z-index:2}
+
+/* === 地図は「カードの内幅いっぱい」。ラベルは地図の上に重ねる（§54／§55） =====
+   外観（左に球・右に物差し）とは別のレイアウトなので、.orbit をただのブロックに
+   して、中身を JS（mvMap）が絶対座標で置く。
+   ★ 数値（.stat）の開閉とは独立させる。地図の役目は地形の位置を示すことなので、
+   閉じていても大きさ・ピン・ラベル・線はそのまま出す（§55.1）。 */
+.mod.map-view .orbit{display:block;height:auto}
+.mod.map-view .core{grid-area:auto;max-width:none;width:100%;margin:0}
+/* 閉じたカード用の指定（`.mod:not(.open)` 系）のうち、大きさと基準線だけを打ち消す。
+   ★ ピン・ラベル・引き出し線は打ち消さない —— 地図を見て場所を思い出すのが
+   この回の訓練なので、答えにあたるラベルは数値と同じく「開いたときだけ」出す
+   （§56.1）。閉じている地図は、大きさとグリッドだけが見えている状態。 */
+.mod.map-view:not(.open) .core{max-width:none}
+.mod.map-view:not(.open) .grid{display:block}
+/* 900px 以下の `.planet-img .frame{max-width:260px}` と `.core{max-width:200px}`
+   （どちらも地図より弱い詳細度）を、ここで上書きしている。 */
+/* 枠は画像に合わせて縮める。月の図は 1.05:1 で、高さの上限に当たって
+   幅が 463px までしか出ないので、枠を内幅いっぱいのままにすると左右が
+   真っ黒な帯になる。min-width は読み込み前に枠が消えないための下限。 */
+.mod.map-view .planet-img .frame{max-width:100%;width:fit-content;min-width:260px;min-height:160px;margin:0 auto}
+/* 高さは画像に決めさせるが、上限を置く。2:1 の惑星図は内幅いっぱい（818→409px）、
+   1.05:1 の月と 1.75:1 の火星は上限に当たって幅が詰まる。**object-fit ではなく
+   画像そのものの寸法で収める** — 枠に余白が入ると data-x/data-y の基準が
+   画像とずれる（§53.3）。 */
+.mod.map-view .planet-img .map-img{width:auto;height:auto;max-width:100%;max-height:440px;margin:0 auto;object-fit:contain}
+/* 字幕は地図のとき中央に置く（画像が幅いっぱいになるため）。 */
+.mod.map-view .planet-img figcaption{text-align:center}
+
+/* ラベル。地図の上に乗るので pointer-events:none —— これが無いと、ラベルが
+   画像（.img-btn）を覆ってカードの開閉が効かなくなる。背景は .stat の .82 より
+   濃い .88（地図には砂漠や極冠のような明るい面があるため）、罫線は残す。 */
+.mod.map-view .orbit .stat.geo{position:absolute;left:0;top:0;z-index:2;pointer-events:none;
+  width:max-content;max-width:200px;background:rgba(10,12,16,.88);border-color:var(--line-strong);
+  font-size:11.5px;line-height:1.5;padding:4px 7px}
+.mod.map-view .orbit .stat.geo b{font-size:9px;letter-spacing:.08em;margin-bottom:0}
+/* ピンはラベルがすぐ横に来るぶん、白い縁取りで強める（どれがどこを指すかが要点）。
+   引き出し線は 22〜28px と短いので、不透明度を上げて確実に見えるようにする。 */
+.mod.map-view .orbit .links line{stroke:rgba(61,139,255,.9);stroke-width:1.4}
+.mod.map-view .orbit .links circle{fill:var(--accent);stroke:#fff;stroke-width:1.5}
+
+/* 緯度経度の基準線（§55.2）。画像より上・ピンより下に敷く。.links と同じ
+   z-index:2 で、DOM 順（.grid → .links → .stat）が重ね順を決める。 */
+.orbit .grid{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:2;overflow:visible;display:none}
+.mod.map-view .orbit .grid{display:block}
+.orbit .grid line,.orbit .grid path,.orbit .grid circle{fill:none;stroke:rgba(255,255,255,.2);stroke-width:.8}
+.orbit .grid .major{stroke:rgba(255,255,255,.35);stroke-width:1}
+/* 黒地にも砂漠のような明るい面にも乗るので、文字は暗い縁取りを付ける。 */
+.orbit .grid text{fill:rgba(255,255,255,.62);font-family:var(--font-body);font-size:9px;letter-spacing:.04em;
+  paint-order:stroke;stroke:rgba(0,0,0,.55);stroke-width:2.5;stroke-linejoin:round}
+
+/* 番号つきの説明リスト。560px 以下（地図の上にラベルを重ねると読めない）と、
+   狭い画面（560px 以下）で出す。番号は本文の「覚える地形」表と同じ順。 */
+.stat .n{display:none}
+.geo-list{display:none;list-style:none;margin:14px 0 0;padding:0;text-align:left}
+.geo-list li{display:flex;gap:9px;margin:5px 0;font-size:13px;line-height:1.6;color:var(--ink-soft)}
+.geo-list li b{font-weight:500;color:var(--ink)}
+.geo-list .n{display:grid;place-items:center;flex:0 0 auto;width:20px;height:20px;border-radius:50%;
+  background:var(--accent);color:var(--on-accent);font-size:11px;font-style:normal;margin-top:2px}
+
+/* --- 展開図と球の切り替え（§77）-------------------------------------------
+   球は「覚える面」ではなく確かめるためのもう1枚なので、切り替えは控えめに。 */
+.vsw{display:flex;gap:6px;justify-content:center;margin:0 0 12px}
+.vsw-b{font-family:inherit;font-size:12px;letter-spacing:.06em;padding:5px 14px;border-radius:999px;
+  border:1px solid var(--line);background:var(--surface);color:var(--ink-soft);cursor:pointer;
+  transition:color .25s var(--ease),border-color .25s var(--ease),background .25s var(--ease)}
+.vsw-b.is-on{color:var(--ink);border-color:var(--line-strong);background:var(--surface-2)}
+.vsw-b:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+@media (hover:hover){.vsw-b:hover{color:var(--ink);border-color:var(--line-strong)}}
+/* 切り替えが作れないカード（ミランダ）で、トグルがあるはずの位置に置く1行。
+   押せる要素に見せないよう、枠も下地も持たせない。高さは .vsw（29px）に合わせ、
+   1枚だけ欠けていても列がずれないようにする（§87.1）。 */
+.mod-b .vsw-note{display:flex;align-items:center;justify-content:center;min-height:29px;
+  margin:0 0 12px;max-width:none;font-size:12px;line-height:1.5;letter-spacing:.06em;
+  color:var(--ink-faint);text-align:center}
+/* ★ サイト共通の `p{max-width:62ch}` と `body.is-article main p{margin:10px 0}` に
+   負けるので、クラス2つ（.mod-b .vsw-note）まで上げて max-width も戻す。
+   これをしないと幅430pxで折り返し、トグルと高さが揃わない。 */
+
+.mod.globe-view .orbit{display:none}
+.mod:not(.globe-view) .globe{display:none}
+.globe{text-align:center}
+/* ★ touch-action は「指が触れた要素」の値で決まる（継承されない）ので、
+   canvas にも書く。無いと指では回せない（§77.5）。
+   none ではなく pan-y にしてある—— 縦のスワイプはページのスクロールに
+   渡し、横のドラッグだけで回す。球の上でスクロールが止まると、
+   狭い画面では先へ進めなくなるため。 */
+.globe-stage{position:relative;width:100%;max-width:440px;margin:0 auto;aspect-ratio:1/1;
+  touch-action:pan-y;cursor:grab}
+.globe-stage.is-drag{cursor:grabbing}
+.globe-cv{display:block;width:100%;height:100%;touch-action:pan-y}
+.globe-fail{position:absolute;inset:0;display:grid;place-items:center;margin:0;color:var(--ink-faint);font-size:13px}
+/* ★ display を持つクラスは UA の [hidden]{display:none} を上書きするので、
+   hidden を付けても消えない。明示的に消す（§77.4）。 */
+.globe-fail[hidden],.globe-list[hidden],.vsw[hidden],.globe[hidden]{display:none}
+.globe-ctl{display:flex;gap:8px;justify-content:center;margin:10px 0 0}
+.globe-b{font-family:inherit;font-size:12px;padding:5px 13px;border-radius:999px;border:1px solid var(--line);
+  background:var(--surface);color:var(--ink-soft);cursor:pointer;
+  transition:color .25s var(--ease),border-color .25s var(--ease)}
+@media (hover:hover){.globe-b:hover{color:var(--ink);border-color:var(--line-strong)}}
+.globe-b:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.globe-list{list-style:none;margin:12px auto 0;padding:0;max-width:440px;text-align:left;
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:2px 12px}
+.globe-list li{display:flex;gap:7px;font-size:12.5px;line-height:1.6;color:var(--ink-soft)}
+/* 月だけ、球でしか見えない裏側の地形が入る（§78.3）。
+   .geo-far は座標と名前を持つだけの入れ物で、画面には出さない。 */
+.geo-far{display:none}
+.globe-list .far{margin-left:6px;font-size:10px;letter-spacing:.08em;color:var(--ink-faint);
+  border:1px solid var(--line);border-radius:999px;padding:0 6px;align-self:center}
+.globe-list .n{display:grid;place-items:center;flex:0 0 auto;width:18px;height:18px;border-radius:50%;
+  background:var(--accent);color:var(--on-accent);font-size:10px;font-style:normal;margin-top:3px}
+.globe-note{max-width:560px;margin:14px auto 0;font-size:12.5px;line-height:1.7;color:var(--ink-faint);text-align:left}
+.globe-cap{margin:10px 0 0;font-size:11px;line-height:1.7;color:var(--ink-faint)}
+@media (max-width:560px){
+  .globe-stage{max-width:300px}
+  .globe-list{grid-template-columns:1fr}
+}
+
+/* --- 演習。解答は <details> なので、印刷時に開く仕掛けを下の @media print に置く --- */
+.ex{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-lg);padding:18px 22px;margin:18px 0}
+.ex .ex-h{font-weight:400;font-size:16.5px;margin:0 0 6px;color:var(--ink)}
+.ex .ex-h .num{font-size:11px;font-weight:500;color:var(--teach);border:1px solid var(--teach-line);background:var(--teach-tint);border-radius:999px;padding:2px 10px;margin-right:10px;vertical-align:2px}
+.ex details{margin-top:12px;border-top:1px solid var(--line);padding-top:10px}
+.ex summary{cursor:pointer;font-size:12.5px;font-weight:500;color:var(--ink-soft);list-style:none;display:inline-flex;align-items:center;gap:8px;padding:5px 6px 5px 14px;border:1px solid var(--line);border-radius:999px}
+/* ＋/− の丸。白文字は --teach(#a48bff) 上で 2.72:1 しか出ない。--on-accent なら
+   ダーク 7.58:1 / 印刷（--teach が #5a3fc0、--on-accent が #fff）7.29:1 で両立する。 */
+.ex summary::after{content:'+';display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;background:var(--teach);color:var(--on-accent);font-size:13px}
+.ex details[open] summary::after{content:'−'}
+.ex summary:hover{color:var(--ink);border-color:var(--line-strong)}
+.ex summary::-webkit-details-marker{display:none}
+.ex details[open] summary{margin-bottom:8px}
+.ex .ans{font-size:14.5px}
+
+.foot{padding:34px 0 0;color:var(--ink-faint);font-size:12.5px}
+.foot p{color:var(--ink-faint)}
+
+/* モバイル：レールを引き出しに。`.menu-btn` は位置だけを持ち、見た目は
+   共通コンポーネントの `.btn` を併用する。 */
+.menu-btn{display:none}
+.float-nav{display:none}
+.scrim{display:none}
+@media (max-width:900px){
+  .rail{position:fixed;left:0;top:0;height:100vh;z-index:1100;transform:translateX(-100%);transition:transform .25s var(--ease);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);padding-top:28px}
+  body.nav-open .rail{transform:translateX(0)}
+  .main{padding:0 20px 90px}
+  .mod:not(.map-view) .orbit{gap:16px}
+  .orbit .stat{font-size:12.5px;padding:7px 9px}
+  .planet-img .frame{max-width:260px;margin:0 auto}
+  .planet-img figcaption{text-align:center}
+  .mod-b .row{flex-direction:column;gap:2px}
+  .mod-b .row .k{flex:0 0 auto}
+  /* 「戻る」と「目次」を横並びで浮かせる。位置は入れ物が持ち、ボタン自身は
+     見た目だけを持つ（§64.2）。 */
+  .float-nav{display:flex;gap:10px;position:fixed;bottom:18px;right:18px;z-index:1050}
+  .menu-btn,.back-btn{position:static;display:inline-flex;background:var(--nav-bg);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);color:var(--ink);text-decoration:none}
+  .scrim{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:1090}
+  body.nav-open .scrim{display:block}
+  .lesson-hero{padding-top:40px}
+}
+@media (max-width:560px){
+
+  /* 地図の上にラベルを重ねると読めなくなるので、地図には通し番号の丸だけを置き、
+     説明は番号つきのリストにして地図の下へ出す（§54.5）。 */
+  .mod.map-view.open .orbit .stat.geo{width:22px;height:22px;max-width:none;padding:0;border-radius:50%;
+    background:var(--accent);border-color:#fff;color:var(--on-accent);font-size:11px;font-weight:500;
+    display:grid;place-items:center;box-shadow:0 0 0 1px rgba(0,0,0,.55)}
+  .mod.map-view.open .orbit .stat.geo b,.mod.map-view.open .orbit .stat.geo .v{display:none}
+  .mod.map-view.open .orbit .stat.geo .n{display:block}
+  .mod.map-view.open .geo-list{display:block}
+  .orbit{display:flex;flex-direction:column;gap:10px}
+  .orbit .core{order:-1;max-width:240px;align-self:center;margin:0;width:100%}
+  .orbit .links{display:none}
+  .orbit .stat{width:100%;max-width:none;font-size:13.5px;padding:8px 11px}
+}
+@media print{
+  body{background:#fff;color:#000}
+  header,.rail,.menu-btn,.float-nav,.lesson-nav,.scrim,#starfield,footer{display:none!important}
+  .wrap{display:block;padding-top:0}
+  /* ★ 解答（<details>）を開く。元の教材にあった `.ex details>*{display:block}` は
+     **効かない**（実測：閉じた details の中身は ::details-content の
+     content-visibility:hidden で隠れているので、子の display を変えても出てこない）。
+     効くのは次の1行。Chrome 131 / Safari 18.4 / Firefox 139 以降。
+     それ以前のブラウザ向けには、下の beforeprint で open 属性を足している。 */
+  details::details-content{content-visibility:visible!important}
+  .mod .orbit{display:block!important;height:auto!important}
+  .mod .orbit .stat{position:static!important;transform:none!important;max-width:none;margin:6px 0}
+  .mod .orbit .core{position:static!important;transform:none!important;margin:0 auto}
+  .mod .orbit{display:block!important}
+  .links{display:none!important}
+}
+
+/* --- 環の並びの図（土星のカード）------------------------------------------
+   真横から見た並び。横だけが縮尺で、距離は NSSDC の Rings Fact Sheet の
+   「惑星半径の何倍か」をそのまま使う。開閉の規則は断面と同じで、
+   閉じているときは帯の濃淡だけ、開くと環の名前とカッシーニの間隙の名前が出る。
+   ★ 狭い画面では図の中の文字が 5px 台まで縮むので、名前（.lay-lab）も
+     数値と物差し（.ring-num）も畳み、図の下の1行（.ring-narrow）に落とす。
+     断面図で使った「ラベルを畳んで一覧に落とす」のと同じ考え方（§54.5）。 */
+.ring-fig{margin:14px 0 4px;width:100%}
+.ring-svg{width:100%;height:auto;display:block}
+.ring-svg text{font-family:var(--font-body)}
+.ring-svg .lay-lab{opacity:0;visibility:hidden;transition:opacity .3s var(--ease)}
+.mod.open .ring-svg .lay-lab{opacity:1;visibility:visible}
+@media (prefers-reduced-motion:reduce){.ring-svg .lay-lab{transition:none}}
+.ring-fig figcaption{margin-top:10px;font-size:10.5px;color:var(--ink-faint);line-height:1.6}
+/* ★ 環の図にも、それ自体を押して名前を出す入口を付ける。開閉は .mod.open で
+   断面と共有しているが、断面の図は本文のずっと上にあるので、環の図を見ている人が
+   そこまで戻らないと名前が出ない、という状態になっていた。
+   h-c / h-o の入れ替えは共通の `.hint .h-o` 側が持つので、ここは配置だけ。 */
+.ring-btn{background:none;border:0;padding:0;width:100%;cursor:pointer;font-family:var(--font-body);
+  color:inherit;display:flex;flex-direction:column;text-align:left}
+.ring-btn .hint{order:-1;display:block;font-size:11px;color:var(--ink-faint);margin:0 0 10px;letter-spacing:.06em}
+@media (hover:hover){.ring-btn:hover .ring-svg{filter:drop-shadow(0 0 16px rgba(61,139,255,.28))}}
+.ring-narrow{display:none;margin:10px 0 0;font-size:13px;line-height:1.7;color:var(--ink-soft)}
+.ring-narrow b{color:var(--ink);font-weight:500}
+.ring-narrow .ring-names{display:none}
+@media (max-width:560px){
+  .ring-svg .lay-lab,.ring-svg .ring-num{display:none}
+  .ring-narrow{display:block}
+  .mod.open .ring-narrow .ring-names{display:inline}
+}
+
+/* 近赤外の静止画（天王星）。球にはしない1枚 —— 回せる球は「可視光でどう見えるか」
+   を見せる面で、これはその可視光で見えないものを補う証拠として本文に添える。 */
+.fig.ir{max-width:560px;margin:14px 0 4px}
+.fig.ir img{width:100%;height:auto;display:block;border-radius:var(--radius-md)}
+
+/* --- 断面（巨大惑星のカードの「覚える面」）----------------------------------
+   第2回の展開図にあたる位置に入るが、写真ではなく SVG で描く。巨大惑星には
+   固体の表面が無く、貼れる地図が存在しないため。
+   ★ 4枚とも同じ描き方・同じ向き・同じ半径で描くこと。比べられることが目的で、
+     カードごとに縮尺を変えると、この節の意味が失われる。
+   ★ 開閉の規則は地図のピンと同じ —— 閉じているときは層の輪郭だけ、開くと
+     層の名前と数値（.lay-lab）が出る（§56.1 と同じ考え方）。 */
+.cut-fig{margin:0 auto;width:100%;max-width:720px}
+.cut-svg{width:100%;height:auto;display:block}
+.cut-svg text{font-family:var(--font-body)}
+.cut-fig figcaption{position:relative;z-index:3;margin-top:12px;font-size:10.5px;color:var(--ink-faint);line-height:1.6;text-align:center}
+/* ★ opacity だけでなく visibility も落とす。opacity:0 のままだと読み上げと
+   検索の対象に残り、閉じているのに答えが読めてしまう（§56.1 の趣旨）。 */
+.cut-svg .lay-lab{opacity:0;visibility:hidden;transition:opacity .3s var(--ease)}
+.mod.open .cut-svg .lay-lab{opacity:1;visibility:visible}
+@media (prefers-reduced-motion:reduce){.cut-svg .lay-lab{transition:none}}
+@media (hover:hover){.img-btn:hover .cut-svg{filter:drop-shadow(0 0 16px rgba(61,139,255,.28))}}
+/* 層の一覧。狭い画面で、図の中のラベルの代わりに出す（下の @media）。
+   色の四角は図の層の色と対応させる —— 名前だけの一覧にすると、図のどの層の
+   話なのかが分からなくなる。 */
+.cut-list{display:none;list-style:none;margin:16px 0 0;padding:0;text-align:left}
+.cut-list li{display:flex;gap:9px;margin:7px 0;font-size:13px;line-height:1.6;color:var(--ink-soft)}
+.cut-list li b{font-weight:500;color:var(--ink);margin-right:6px}
+.cut-list .c{flex:0 0 auto;width:14px;height:14px;border-radius:4px;margin-top:4px;border:1px solid}
+.cut-list .l-air .c{background:var(--accent-tint);border-color:var(--accent)}
+.cut-list .l-mol .c{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.34)}
+.cut-list .l-met .c{background:rgba(123,77,255,.26);border-color:var(--teach)}
+.cut-list .l-ice .c{background:rgba(114,227,173,.13);border-color:var(--good)}
+.cut-list .l-core .c{background:var(--amber-tint);border-color:var(--amber)}
+
+/* 560px 以下の `.orbit .core{max-width:240px}` は、地図の上に重ねたラベルを
+   読ませるための指定（§54.5）。断面にはラベルの重なりが無いので打ち消す。 */
+@media (max-width:560px){
+  .mod.cut-view .cut-fig{max-width:none}
+  .mod.cut-view .orbit .core{max-width:none;order:0}
+  /* ★ 図の中のラベルは、狭い画面では 5px まで縮んで読めない（実測）。地図で
+     ラベルをやめて番号つきの一覧に落とすのと同じ扱いにする（§54.5）。
+     図はラベル列（viewBox の x=398 から右）を切り落として、扇形だけを幅いっぱいに
+     使う。170% は 640÷375 —— 375 は扇形と「表面＝1気圧の高さ」までの幅。 */
+  .mod.cut-view .cut-svg .lay-lab{display:none}
+  .mod.cut-view .cut-fig{overflow:hidden}
+  .mod.cut-view .cut-svg{width:170%}
+  .mod.cut-view.open .cut-list{display:block}
+}
+</style>
+<link rel="stylesheet" href="../css/lesson-theme.css?v=r74">
+</head>
+<body data-page="study" class="is-article" data-node="memoryverse_1-4">
+<canvas id="starfield" aria-hidden="true"></canvas>
+<div id="site-nav"><noscript><nav class="noscript-nav" aria-label="メインナビゲーション"><a href="index.html">ホーム</a><a href="self-intro.html">自己紹介</a><a href="study.html">勉強の軌跡</a><a href="videos.html">動画</a><a href="blog.html">ブログ</a><a href="sns.html">各種SNS</a></nav></noscript></div>
+<div class="float-nav"><a class="back-btn btn" href="memoryverse.html">戻る <span class="btn-disc" aria-hidden="true">←</span></a><button class="menu-btn btn" id="menuBtn" aria-controls="rail" aria-expanded="false">目次 <span class="btn-disc" aria-hidden="true">≡</span></button></div>
+<div class="scrim" id="scrim"></div>
+<div class="wrap">
+  <nav class="rail" id="rail">
+    <!-- 科目へ戻る導線（レール上部の「← 一つ上」）は layout.js が CRUMBS から書き出す。 -->
+    <div class="brand">第4回　小天体<small>SESSION 04 / SMALL BODIES</small></div>
+    <div class="progress-wrap"><div class="progress-bar" id="pbar"></div></div>
+    <ul class="toc" id="toc">
+      <li class="part">導入</li>
+      <li><a href="#goals"><span class="n">01</span>到達目標</a></li>
+      <li><a href="#view"><span class="n">02</span>この回の見方</a></li>
+      <li class="part">全体の地図</li>
+      <li><a href="#layout"><span class="n">03</span>どこに何が広がっているか</a></li>
+      <li class="part">カード</li>
+      <li><a href="#belt"><span class="n">04</span>小惑星帯</a>
+        <ul class="sub">
+          <li><a href="#ceres">ケレス</a></li>
+        </ul>
+      </li>
+      <li><a href="#rest"><span class="n">05</span>残りのカード</a></li>
+      <li class="part">横断して見る</li>
+      <li><a href="#cross"><span class="n">06</span>横断</a></li>
+      <li class="part">訓練</li>
+      <li><a href="#menu"><span class="n">07</span>訓練メニュー</a></li>
+      <li><a href="#drills"><span class="n">08</span>演習</a></li>
+      <li class="part">付録</li>
+      <li><a href="#plan"><span class="n">A</span>第1〜5回の改訂</a></li>
+      <li><a href="#evidence"><span class="n">B</span>根拠と強度</a></li>
+      <li><a href="#next"><span class="n">C</span>次回の予告</a></li>
+    </ul>
+  </nav>
+
+  <main class="main">
+    <div class="lesson-hero">
+      <h1>第4回　小天体<span class="sub">場所と性質で覚える</span></h1>
+      <p class="lead">第2回は「地面のある天体を地図で」、第3回は「地面のない天体を断面で」覚える回でした。<strong>第4回の対象は、その2つでは分けきれません。</strong>直径900kmの準惑星から、差し渡し1kmに満たない岩まで、数が多すぎて形も揃っていないからです。</p>
+      <p>そこでこの回は、<strong>対象ごとに覚える手がかりを変えます</strong>。地図が作れるものは地図で、形が特徴のものは形で、そして数が多すぎるものは<strong>「どこに広がっているか」</strong>で。分け方は §02 に書きました。</p>
+      <div class="box warn"><span class="lab">いまは配置図と2枚だけです</span>
+      <p>この回はまず<strong>配置図（§03）と、小惑星帯・ケレスの2枚</strong>だけを作りました。見せ方を決めてから残りに進みます。到達目標・残りのカード・横断・訓練メニュー・演習・付録の各節は<strong>まだ枠だけ</strong>です。</p></div>
+    </div>
+
+    <section id="goals">
+      <div class="sec-head"><span class="idx">01</span><h2>この回の到達目標</h2></div>
+      <div class="box warn"><span class="lab">準備中</span>
+      <p>3つの到達目標は、カードが揃った段階で書きます。いまは枠だけです。</p></div>
+    </section>
+
+    <section id="view">
+      <div class="sec-head"><span class="idx">02</span><h2>この回の見方</h2></div>
+      <p>第3回までの分け方は<strong>「地面があるか、ないか」</strong>でした。地面のある天体には地図を重ね、地面のない天体には断面を重ねる。第4回の対象は、これだけでは分けきれません。</p>
+      <p>理由は2つあります。<strong>探査機が行っていないものが多く、地図を作る材料がない</strong>こと。そして<strong>数が多すぎて、1つずつカードにする形が成立しない</strong>ことです。いま見つかっている小惑星だけで150万個を超えます。</p>
+
+      <div class="box principle"><span class="lab">この回は、対象ごとに手がかりを変えます</span>
+      <div class="table-scroll">
+      <table class="mini-table">
+        <tr><th style="width:22%">種類</th><th style="width:30%">対象</th><th style="width:22%">カードの作り</th><th>覚えるもの</th></tr>
+        <tr><td><strong>地図が作れるもの</strong></td><td>ケレス・ベスタ・冥王星・カロン</td><td>［地図］と［球］<br>（第3回と同じ）</td><td>地形の位置。この4天体だけです</td></tr>
+        <tr><td><strong>形が特徴のもの</strong></td><td>リュウグウ・ベンヌ・エロス・チュリュモフ／ゲラシメンコなど</td><td><strong>実画像のみ</strong><br>球にも展開図にもしない</td><td><strong>形そのもの</strong>と、どこにあるか</td></tr>
+        <tr><td><strong>領域</strong></td><td>小惑星帯・カイパーベルト・散乱円盤・オールトの雲</td><td><strong>配置図</strong><br>地図も球もない</td><td>どこに何が広がっているか</td></tr>
+      </table>
+      </div>
+      <p style="margin-top:10px"><strong>この回で覚えるのは「場所と性質」です。</strong>地形の位置まで覚えるのは、地図が作れる4天体だけ。それ以外は、形と位置関係で十分です。1kmの岩に地名を付けて覚える意味はありません。</p></div>
+
+      <div class="box teach"><span class="lab">無理に地図を作らない</span>
+      <p>第3回で、ミランダには全球の展開図が存在しないので［球］を作りませんでした。同じ考え方です。<strong>材料が無いのに形だけ揃えると、覚えたものが実物と食い違います。</strong></p>
+      <p style="margin-top:8px">リュウグウやベンヌには、探査機が撮った精密な形状モデルがあります。それでも地図にしないのは、<strong>この回で覚えるべきことが地形の位置ではないから</strong>です。リュウグウについて覚えるのは「そろばんの玉のような形」「地球近傍小惑星」「はやぶさ2が試料を持ち帰った」——この3つで、クレーターの名前ではありません。</p></div>
+
+      <div class="box warn"><span class="lab">準備中</span>
+      <p>覚える手順（この回の巡り方）は、カードが揃った段階で書きます。いまは分け方だけです。</p></div>
+    </section>
+
+    <section id="layout">
+      <div class="sec-head"><span class="idx">03</span><h2>どこに何が広がっているか</h2></div>
+      <p>この回の<strong>背骨になる図</strong>です。以降のカードは、まずこの図のどこにあたるかを示してから始めます。</p>
+      <p>横軸は<strong>対数目盛</strong>——1目盛で10倍です。ふつうの目盛だと、地球の1 AU と オールトの雲の10万 AU を1本の線に載せられません。対数にすると、10万倍の幅が1枚に収まります。</p>
+
+      <figure class="fig">
+        <svg viewBox="0 0 640 400" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="太陽からの距離を対数目盛で並べた配置図。8惑星、小惑星帯、トロヤ群、カイパーベルト、散乱円盤、オールトの雲、そして約27万AUのプロキシマ・ケンタウリまで">
+          <text x="44" y="22" font-size="12.5" font-weight="500" fill="var(--ink)">太陽からの距離 ― 対数目盛（1目盛で10倍）</text>
+          <text x="44" y="52" font-size="10.5" fill="var(--ink-faint)">8惑星</text>
+          <line x1="54.0" y1="56" x2="54.0" y2="62" stroke="rgba(255,255,255,.22)" stroke-width="1"/>
+          <line x1="54.0" y1="281.0" x2="54.0" y2="286.0" stroke="rgba(255,255,255,.22)" stroke-width="1"/>
+          <circle cx="54.0" cy="68" r="3.2" fill="var(--ink-faint)"/>
+          <text x="54.0" y="86" font-size="10" fill="var(--ink-faint)" text-anchor="middle">水</text>
+          <line x1="78.4" y1="56" x2="78.4" y2="62" stroke="rgba(255,255,255,.22)" stroke-width="1"/>
+          <line x1="78.4" y1="281.0" x2="78.4" y2="286.0" stroke="rgba(255,255,255,.22)" stroke-width="1"/>
+          <circle cx="78.4" cy="68" r="3.2" fill="var(--ink-faint)"/>
+          <text x="78.4" y="86" font-size="10" fill="var(--ink-faint)" text-anchor="middle">金</text>
+          <line x1="91.1" y1="56" x2="91.1" y2="62" stroke="rgba(255,255,255,.22)" stroke-width="1"/>
+          <line x1="91.1" y1="281.0" x2="91.1" y2="286.0" stroke="rgba(255,255,255,.22)" stroke-width="1"/>
+          <circle cx="91.1" cy="68" r="3.2" fill="var(--ink-faint)"/>
+          <text x="91.1" y="86" font-size="10" fill="var(--ink-faint)" text-anchor="middle">地</text>
+          <line x1="107.6" y1="56" x2="107.6" y2="62" stroke="rgba(255,255,255,.22)" stroke-width="1"/>
+          <line x1="107.6" y1="281.0" x2="107.6" y2="286.0" stroke="rgba(255,255,255,.22)" stroke-width="1"/>
+          <circle cx="107.6" cy="68" r="3.2" fill="var(--ink-faint)"/>
+          <text x="107.6" y="86" font-size="10" fill="var(--ink-faint)" text-anchor="middle">火</text>
+          <line x1="155.7" y1="56" x2="155.7" y2="62" stroke="rgba(255,255,255,.22)" stroke-width="1"/>
+          <line x1="155.7" y1="281.0" x2="155.7" y2="286.0" stroke="rgba(255,255,255,.22)" stroke-width="1"/>
+          <circle cx="155.7" cy="68" r="3.2" fill="var(--ink-faint)"/>
+          <text x="155.7" y="86" font-size="10" fill="var(--ink-faint)" text-anchor="middle">木</text>
+          <line x1="179.5" y1="56" x2="179.5" y2="62" stroke="rgba(255,255,255,.22)" stroke-width="1"/>
+          <line x1="179.5" y1="281.0" x2="179.5" y2="286.0" stroke="rgba(255,255,255,.22)" stroke-width="1"/>
+          <circle cx="179.5" cy="68" r="3.2" fill="var(--ink-faint)"/>
+          <text x="179.5" y="86" font-size="10" fill="var(--ink-faint)" text-anchor="middle">土</text>
+          <line x1="206.7" y1="56" x2="206.7" y2="62" stroke="rgba(255,255,255,.22)" stroke-width="1"/>
+          <line x1="206.7" y1="281.0" x2="206.7" y2="286.0" stroke="rgba(255,255,255,.22)" stroke-width="1"/>
+          <circle cx="206.7" cy="68" r="3.2" fill="var(--ink-faint)"/>
+          <text x="206.7" y="86" font-size="10" fill="var(--ink-faint)" text-anchor="middle">天</text>
+          <line x1="224.5" y1="56" x2="224.5" y2="62" stroke="rgba(255,255,255,.22)" stroke-width="1"/>
+          <line x1="224.5" y1="281.0" x2="224.5" y2="286.0" stroke="rgba(255,255,255,.22)" stroke-width="1"/>
+          <circle cx="224.5" cy="68" r="3.2" fill="var(--ink-faint)"/>
+          <text x="224.5" y="86" font-size="10" fill="var(--ink-faint)" text-anchor="middle">海</text>
+          <rect x="120.2" y="110.0" width="17.7" height="16.0" rx="2" fill="var(--amber-tint)" stroke="var(--amber)" stroke-width="1"/>
+          <text x="111.2" y="118.0" font-size="11.5" font-weight="500" fill="var(--amber)" text-anchor="end">小惑星帯</text>
+          <text x="111.2" y="131.0" font-size="9.5" fill="var(--ink-faint)" text-anchor="end">2.1〜3.3 AU</text>
+          <circle cx="155.7" cy="118.0" r="5" fill="none" stroke="var(--good)" stroke-width="2"/>
+          <circle cx="155.7" cy="118.0" r="1.8" fill="var(--good)"/>
+          <text x="166.7" y="115.0" font-size="11.5" font-weight="500" fill="var(--good)">トロヤ群</text>
+          <text x="166.7" y="128.0" font-size="9.5" fill="var(--ink-faint)">木星と同じ 5.2 AU。前後60度の2か所</text>
+          <rect x="224.2" y="158.0" width="20.0" height="16.0" rx="2" fill="rgba(61,139,255,.16)" stroke="var(--accent)" stroke-width="1"/>
+          <text x="215.2" y="166.0" font-size="11.5" font-weight="500" fill="var(--accent-deep)" text-anchor="end">カイパーベルト</text>
+          <text x="215.2" y="179.0" font-size="9.5" fill="var(--ink-faint)" text-anchor="end">30〜50 AU</text>
+          <rect x="224.2" y="192.0" width="47.1" height="12.0" rx="2" fill="rgba(255,255,255,.05)" stroke="var(--line-strong)" stroke-width="1" stroke-dasharray="4 3"/>
+          <text x="281.4" y="202.0" font-size="10.5" fill="var(--ink-soft)">散乱円盤（30 AU 〜 100 AU 超）</text>
+          <rect x="388.6" y="234.0" width="153.1" height="18.0" rx="2" fill="rgba(123,77,255,.14)" stroke="var(--teach)" stroke-width="1" stroke-dasharray="5 4"/>
+          <text x="465.2" y="247.0" font-size="11.5" font-weight="500" fill="var(--teach)" text-anchor="middle">オールトの雲（推定）</text>
+          <text x="465.2" y="227.0" font-size="9.5" fill="var(--ink-faint)" text-anchor="middle">2,000 〜 100,000 AU ― 直接には観測されていない</text>
+          <line x1="44.0" y1="286.0" x2="608.0" y2="286.0" stroke="var(--line-strong)" stroke-width="1.4"/>
+          <line x1="91.1" y1="282.0" x2="91.1" y2="291.0" stroke="var(--line-strong)" stroke-width="1"/>
+          <text x="91.1" y="305.0" font-size="10" fill="var(--ink-faint)" text-anchor="middle">1 AU</text>
+          <line x1="181.2" y1="282.0" x2="181.2" y2="291.0" stroke="var(--line-strong)" stroke-width="1"/>
+          <text x="181.2" y="305.0" font-size="10" fill="var(--ink-faint)" text-anchor="middle">10</text>
+          <line x1="271.4" y1="282.0" x2="271.4" y2="291.0" stroke="var(--line-strong)" stroke-width="1"/>
+          <text x="271.4" y="305.0" font-size="10" fill="var(--ink-faint)" text-anchor="middle">100</text>
+          <line x1="361.5" y1="282.0" x2="361.5" y2="291.0" stroke="var(--line-strong)" stroke-width="1"/>
+          <text x="361.5" y="305.0" font-size="10" fill="var(--ink-faint)" text-anchor="middle">1,000</text>
+          <line x1="451.6" y1="282.0" x2="451.6" y2="291.0" stroke="var(--line-strong)" stroke-width="1"/>
+          <text x="451.6" y="305.0" font-size="10" fill="var(--ink-faint)" text-anchor="middle">1万</text>
+          <line x1="541.7" y1="282.0" x2="541.7" y2="291.0" stroke="var(--line-strong)" stroke-width="1"/>
+          <text x="541.7" y="305.0" font-size="10" fill="var(--ink-faint)" text-anchor="middle">10万</text>
+          <text x="614.0" y="305.0" font-size="10" fill="var(--ink-faint)">AU</text>
+          <line x1="580.3" y1="62.0" x2="580.3" y2="286.0" stroke="var(--key)" stroke-width="1.4" stroke-dasharray="3 3"/>
+          <polygon points="580.3,50.0 585.3,58.0 580.3,66.0 575.3,58.0" fill="var(--key)"/>
+          <text x="570.3" y="40.0" font-size="11" font-weight="500" fill="var(--key)" text-anchor="end">プロキシマ・ケンタウリ</text>
+          <text x="570.3" y="53.0" font-size="9.5" fill="var(--ink-faint)" text-anchor="end">約4.2光年 ＝ 約27万 AU</text>
+          <line x1="44" y1="318.0" x2="608.0" y2="318.0" stroke="var(--line)" stroke-width="1"/>
+          <text x="44" y="340.0" font-size="11.5" fill="var(--ink-soft)">同じ距離を、こんどは<tspan font-weight="500" fill="var(--ink)">ふつうの目盛（線形）</tspan>で ― 0 から 27万 AU まで</text>
+          <rect x="44.0" y="356.0" width="552.0" height="14" rx="2" fill="rgba(255,255,255,.04)" stroke="var(--line)" stroke-width="1"/>
+          <rect x="48.1" y="356.0" width="201.9" height="14" rx="2" fill="rgba(123,77,255,.22)" stroke="var(--teach)" stroke-width="1"/>
+          <circle cx="44.0" cy="363.0" r="2.8" fill="var(--ink)"/>
+          <text x="41.0" y="385.0" font-size="9.5" fill="var(--ink-faint)" text-anchor="start">太陽</text>
+          <polygon points="596.0,355.0 602.0,363.0 596.0,371.0 590.0,363.0" fill="var(--key)"/>
+          <text x="602.0" y="385.0" font-size="9.5" fill="var(--key)" text-anchor="end">プロキシマ</text>
+          <line x1="250.0" y1="370.0" x2="250.0" y2="377.0" stroke="var(--teach)" stroke-width="1"/>
+          <text x="257.0" y="386.0" font-size="10" font-weight="500" fill="var(--teach)" text-anchor="start">← ここまでがオールトの雲（外側 10万 AU）＝ 恒星までの約37%</text>
+        </svg>
+        <figcaption>上段は対数目盛。1目盛が10倍なので、<strong>近いところが引き伸ばされ、遠いところが圧縮されます</strong>。8惑星が左の3分の1に固まって見えるのはそのためで、実際の間隔ではありません。<br>下段は同じ距離を<strong>線形（ふつうの目盛）</strong>で1本にしたもの。こちらが実際の比です。8惑星は左端の1点に潰れて見えなくなります。<br>惑星の距離は NASA Planetary Fact Sheet（軌道長半径）。小惑星帯・カイパーベルト・散乱円盤・オールトの雲の範囲は NASA Science の各ページ、プロキシマ・ケンタウリまでの距離は約4.2光年（＝約27万 AU）です（いずれも2026年9月25日閲覧）。<strong>オールトの雲の内側・外側の値は推定で、直接には観測されていません。</strong></figcaption>
+      </figure>
+
+      <div class="box principle"><span class="lab">太陽系は、思っているよりずっと遠くまで続きます</span>
+      <p><strong>オールトの雲の外側は、いちばん近い恒星までの距離の3分の1を超えたあたりまで広がっていると考えられています</strong>（10万 AU ÷ 27万 AU ＝ 約37%）。図の下段の紫の帯が、そのままその割合です。</p>
+      <p style="margin-top:8px">「太陽系の果て」を海王星（30 AU）だと思っていると、3,000倍以上を取りこぼします。<strong>この図で覚えるのは、個々の数値ではなく、この一点です。</strong></p>
+      <p style="margin-top:8px">ただし、<strong>オールトの雲は直接見えていません。</strong>長周期彗星がどの方向からも同じようにやって来ること、そしてその軌道をさかのぼると数万 AU に行き着くこと——この2つからの推定です。天体を1つも数えられていないので、内側と外側の値には大きな幅があります。</p></div>
+
+      <div class="box teach"><span class="lab">この図に入れた数値</span>
+      <div class="table-scroll">
+      <table class="mini-table">
+        <tr><th style="width:26%">対象</th><th style="width:26%">太陽からの距離</th><th>備考</th></tr>
+        <tr><td>8惑星</td><td>0.39〜30.1 AU</td><td>軌道長半径。水星0.39／金星0.72／地球1.00／火星1.52／木星5.20／土星9.57／天王星19.2／海王星30.2</td></tr>
+        <tr><td><strong>小惑星帯</strong></td><td><strong>約2.1〜3.3 AU</strong></td><td>火星と木星のあいだ</td></tr>
+        <tr><td><strong>木星のトロヤ群</strong></td><td><strong>5.2 AU</strong></td><td>木星と同じ距離。木星の<strong>前後60度</strong>の2か所に溜まっている</td></tr>
+        <tr><td><strong>カイパーベルト</strong></td><td><strong>約30〜50 AU</strong></td><td>海王星の軌道の外側。冥王星もここ</td></tr>
+        <tr><td><strong>散乱円盤</strong></td><td><strong>約30〜100 AU超</strong></td><td>外側の端がはっきりしない。海王星に弾かれて細長い軌道になった天体の集まり</td></tr>
+        <tr><td><strong>オールトの雲</strong></td><td><strong>約2,000〜100,000 AU</strong><br>（<strong>推定</strong>）</td><td>球殻状に太陽系を包んでいると考えられている。<strong>直接には観測されていない</strong></td></tr>
+        <tr><td>プロキシマ・ケンタウリ</td><td>約27万 AU</td><td>いちばん近い恒星。約4.2光年</td></tr>
+      </table>
+      </div>
+      <p style="font-size:12.5px;color:var(--ink-faint);margin:6px 0 0">1 AU（天文単位）＝ 太陽と地球の平均距離 ＝ 約1億4,960万km。1光年 ＝ 約63,241 AU。<strong>覚えるのは桁です</strong>——惑星は1〜30、カイパーベルトは30〜50、オールトの雲は1,000〜10万。</p></div>
+    </section>
+
+    <section id="belt">
+      <div class="sec-head"><span class="idx">04</span><h2>小惑星帯</h2></div>
+      <p><strong>配置図のどこか</strong>——火星（1.52 AU）と木星（5.20 AU）のあいだ、<strong>約2.1〜3.3 AU</strong>。§03 の図でいちばん左寄りの琥珀色の帯です。</p>
+
+      <div class="mod">
+        <div class="mod-h"><span class="no">小惑星帯</span><span class="ttl">まばらで、共鳴で穴が空いている</span><span class="tag">MAIN BELT</span></div>
+        <div class="mod-b">
+          <p class="vsw-note">地図も球もありません。小惑星帯は天体ではなく<strong>領域</strong>なので、覚えるのは「どこに、どれくらいの密度で、どう広がっているか」です</p>
+
+          <figure class="fig" style="margin:0 0 14px">
+            <svg viewBox="0 0 640 256" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="小惑星帯を距離で拡大した図。カークウッドの空隙と主な4天体の位置">
+            <text x="70" y="24" font-size="12.5" font-weight="500" fill="var(--ink)">小惑星帯の中身 ― 太陽からの距離（線形目盛）</text>
+            <text x="70" y="40" font-size="10.5" fill="var(--ink-faint)">帯の中は一様ではなく、木星と軌道が共鳴する距離だけ、すっぽり空いている</text>
+            <rect x="105.3" y="112.0" width="424.0" height="44.0" rx="3" fill="var(--amber-tint)" stroke="var(--amber-line)" stroke-width="1"/>
+            <circle cx="169.3" cy="139.7" r="1.0" fill="rgba(255,180,107,0.56)"/>
+            <circle cx="260.4" cy="117.2" r="1.3" fill="rgba(255,180,107,0.36)"/>
+            <circle cx="289.2" cy="117.7" r="1.0" fill="rgba(255,180,107,0.52)"/>
+            <circle cx="455.9" cy="119.7" r="1.1" fill="rgba(255,180,107,0.60)"/>
+            <circle cx="507.2" cy="136.9" r="1.2" fill="rgba(255,180,107,0.74)"/>
+            <circle cx="125.1" cy="147.6" r="1.1" fill="rgba(255,180,107,0.41)"/>
+            <circle cx="155.3" cy="126.7" r="1.5" fill="rgba(255,180,107,0.42)"/>
+            <circle cx="376.2" cy="129.2" r="1.3" fill="rgba(255,180,107,0.38)"/>
+            <circle cx="130.6" cy="122.8" r="1.4" fill="rgba(255,180,107,0.52)"/>
+            <circle cx="297.5" cy="126.4" r="1.5" fill="rgba(255,180,107,0.63)"/>
+            <circle cx="208.8" cy="136.8" r="1.3" fill="rgba(255,180,107,0.70)"/>
+            <circle cx="227.4" cy="152.2" r="1.0" fill="rgba(255,180,107,0.52)"/>
+            <circle cx="426.4" cy="120.8" r="1.2" fill="rgba(255,180,107,0.37)"/>
+            <circle cx="388.7" cy="144.1" r="1.3" fill="rgba(255,180,107,0.70)"/>
+            <circle cx="298.8" cy="146.9" r="1.6" fill="rgba(255,180,107,0.54)"/>
+            <circle cx="386.9" cy="117.3" r="1.4" fill="rgba(255,180,107,0.61)"/>
+            <circle cx="453.8" cy="125.8" r="1.2" fill="rgba(255,180,107,0.62)"/>
+            <circle cx="114.9" cy="132.5" r="1.0" fill="rgba(255,180,107,0.40)"/>
+            <circle cx="130.3" cy="144.2" r="1.0" fill="rgba(255,180,107,0.45)"/>
+            <circle cx="271.1" cy="148.1" r="1.0" fill="rgba(255,180,107,0.53)"/>
+            <circle cx="338.3" cy="148.6" r="1.5" fill="rgba(255,180,107,0.70)"/>
+            <circle cx="223.4" cy="130.8" r="1.2" fill="rgba(255,180,107,0.70)"/>
+            <circle cx="169.3" cy="121.7" r="1.1" fill="rgba(255,180,107,0.44)"/>
+            <circle cx="311.0" cy="137.4" r="1.1" fill="rgba(255,180,107,0.35)"/>
+            <circle cx="283.0" cy="129.0" r="1.3" fill="rgba(255,180,107,0.73)"/>
+            <circle cx="323.9" cy="138.5" r="1.4" fill="rgba(255,180,107,0.37)"/>
+            <circle cx="486.7" cy="144.6" r="1.5" fill="rgba(255,180,107,0.67)"/>
+            <circle cx="271.7" cy="130.2" r="1.0" fill="rgba(255,180,107,0.60)"/>
+            <circle cx="131.7" cy="117.6" r="1.0" fill="rgba(255,180,107,0.41)"/>
+            <circle cx="127.6" cy="115.0" r="1.0" fill="rgba(255,180,107,0.39)"/>
+            <circle cx="116.1" cy="148.2" r="1.3" fill="rgba(255,180,107,0.41)"/>
+            <circle cx="212.3" cy="128.2" r="1.2" fill="rgba(255,180,107,0.40)"/>
+            <circle cx="465.3" cy="152.7" r="1.2" fill="rgba(255,180,107,0.54)"/>
+            <circle cx="141.7" cy="118.9" r="1.1" fill="rgba(255,180,107,0.46)"/>
+            <circle cx="456.8" cy="121.1" r="0.9" fill="rgba(255,180,107,0.73)"/>
+            <circle cx="329.3" cy="120.6" r="1.3" fill="rgba(255,180,107,0.36)"/>
+            <circle cx="329.3" cy="152.2" r="1.5" fill="rgba(255,180,107,0.63)"/>
+            <circle cx="216.0" cy="128.9" r="1.0" fill="rgba(255,180,107,0.66)"/>
+            <circle cx="331.2" cy="144.6" r="1.1" fill="rgba(255,180,107,0.44)"/>
+            <circle cx="449.4" cy="152.4" r="1.5" fill="rgba(255,180,107,0.67)"/>
+            <circle cx="452.3" cy="143.1" r="1.1" fill="rgba(255,180,107,0.56)"/>
+            <circle cx="117.6" cy="116.1" r="1.1" fill="rgba(255,180,107,0.45)"/>
+            <circle cx="295.0" cy="150.6" r="1.6" fill="rgba(255,180,107,0.73)"/>
+            <circle cx="259.9" cy="123.4" r="1.1" fill="rgba(255,180,107,0.43)"/>
+            <circle cx="192.0" cy="138.7" r="1.5" fill="rgba(255,180,107,0.69)"/>
+            <circle cx="308.6" cy="139.8" r="1.5" fill="rgba(255,180,107,0.38)"/>
+            <circle cx="385.4" cy="149.6" r="1.4" fill="rgba(255,180,107,0.65)"/>
+            <circle cx="308.0" cy="121.8" r="1.5" fill="rgba(255,180,107,0.48)"/>
+            <circle cx="444.9" cy="151.9" r="1.2" fill="rgba(255,180,107,0.51)"/>
+            <circle cx="506.8" cy="142.5" r="1.0" fill="rgba(255,180,107,0.40)"/>
+            <circle cx="169.4" cy="149.4" r="1.5" fill="rgba(255,180,107,0.41)"/>
+            <circle cx="455.8" cy="152.3" r="1.4" fill="rgba(255,180,107,0.49)"/>
+            <circle cx="338.0" cy="120.0" r="0.9" fill="rgba(255,180,107,0.74)"/>
+            <circle cx="380.8" cy="135.0" r="1.6" fill="rgba(255,180,107,0.52)"/>
+            <circle cx="475.0" cy="146.4" r="1.0" fill="rgba(255,180,107,0.45)"/>
+            <circle cx="229.6" cy="124.1" r="1.3" fill="rgba(255,180,107,0.45)"/>
+            <circle cx="283.0" cy="120.0" r="1.5" fill="rgba(255,180,107,0.49)"/>
+            <circle cx="299.6" cy="137.2" r="1.5" fill="rgba(255,180,107,0.52)"/>
+            <circle cx="494.4" cy="134.1" r="1.3" fill="rgba(255,180,107,0.56)"/>
+            <circle cx="113.3" cy="131.7" r="1.0" fill="rgba(255,180,107,0.35)"/>
+            <circle cx="444.2" cy="121.5" r="1.2" fill="rgba(255,180,107,0.64)"/>
+            <circle cx="341.3" cy="127.4" r="1.3" fill="rgba(255,180,107,0.57)"/>
+            <circle cx="437.9" cy="119.0" r="1.3" fill="rgba(255,180,107,0.45)"/>
+            <circle cx="222.7" cy="144.3" r="1.3" fill="rgba(255,180,107,0.57)"/>
+            <circle cx="427.6" cy="149.7" r="1.2" fill="rgba(255,180,107,0.60)"/>
+            <circle cx="319.7" cy="134.5" r="1.4" fill="rgba(255,180,107,0.53)"/>
+            <circle cx="331.4" cy="133.2" r="1.6" fill="rgba(255,180,107,0.63)"/>
+            <circle cx="477.0" cy="150.8" r="1.1" fill="rgba(255,180,107,0.57)"/>
+            <circle cx="505.3" cy="146.9" r="1.0" fill="rgba(255,180,107,0.40)"/>
+            <circle cx="292.8" cy="117.8" r="1.1" fill="rgba(255,180,107,0.38)"/>
+            <circle cx="389.2" cy="144.8" r="1.5" fill="rgba(255,180,107,0.41)"/>
+            <circle cx="385.3" cy="120.4" r="1.5" fill="rgba(255,180,107,0.74)"/>
+            <circle cx="198.4" cy="151.2" r="1.2" fill="rgba(255,180,107,0.54)"/>
+            <circle cx="458.3" cy="121.1" r="1.2" fill="rgba(255,180,107,0.56)"/>
+            <circle cx="188.3" cy="127.1" r="1.4" fill="rgba(255,180,107,0.36)"/>
+            <circle cx="340.3" cy="131.7" r="0.9" fill="rgba(255,180,107,0.48)"/>
+            <circle cx="322.5" cy="117.4" r="1.6" fill="rgba(255,180,107,0.67)"/>
+            <circle cx="149.8" cy="125.1" r="0.9" fill="rgba(255,180,107,0.66)"/>
+            <circle cx="220.0" cy="119.9" r="1.2" fill="rgba(255,180,107,0.71)"/>
+            <circle cx="452.6" cy="124.8" r="1.0" fill="rgba(255,180,107,0.72)"/>
+            <circle cx="347.3" cy="141.6" r="1.0" fill="rgba(255,180,107,0.37)"/>
+            <circle cx="285.7" cy="117.8" r="1.6" fill="rgba(255,180,107,0.60)"/>
+            <circle cx="445.2" cy="118.2" r="1.5" fill="rgba(255,180,107,0.38)"/>
+            <circle cx="471.1" cy="132.2" r="1.1" fill="rgba(255,180,107,0.57)"/>
+            <circle cx="498.2" cy="125.2" r="1.0" fill="rgba(255,180,107,0.56)"/>
+            <circle cx="206.4" cy="119.2" r="1.0" fill="rgba(255,180,107,0.37)"/>
+            <circle cx="190.9" cy="126.9" r="1.1" fill="rgba(255,180,107,0.65)"/>
+            <circle cx="228.3" cy="134.0" r="1.0" fill="rgba(255,180,107,0.49)"/>
+            <circle cx="113.0" cy="124.5" r="0.9" fill="rgba(255,180,107,0.64)"/>
+            <circle cx="339.0" cy="122.2" r="1.2" fill="rgba(255,180,107,0.72)"/>
+            <circle cx="150.4" cy="146.1" r="1.2" fill="rgba(255,180,107,0.55)"/>
+            <circle cx="459.2" cy="129.9" r="1.3" fill="rgba(255,180,107,0.63)"/>
+            <circle cx="458.2" cy="141.9" r="1.3" fill="rgba(255,180,107,0.51)"/>
+            <circle cx="128.4" cy="119.9" r="0.9" fill="rgba(255,180,107,0.65)"/>
+            <circle cx="213.7" cy="121.2" r="1.0" fill="rgba(255,180,107,0.69)"/>
+            <circle cx="474.4" cy="140.5" r="1.1" fill="rgba(255,180,107,0.45)"/>
+            <circle cx="229.6" cy="132.5" r="1.0" fill="rgba(255,180,107,0.53)"/>
+            <circle cx="216.9" cy="151.5" r="1.6" fill="rgba(255,180,107,0.57)"/>
+            <circle cx="209.0" cy="151.7" r="1.1" fill="rgba(255,180,107,0.49)"/>
+            <circle cx="105.8" cy="129.5" r="1.2" fill="rgba(255,180,107,0.55)"/>
+            <circle cx="190.5" cy="134.2" r="0.9" fill="rgba(255,180,107,0.46)"/>
+            <circle cx="143.4" cy="130.2" r="0.9" fill="rgba(255,180,107,0.36)"/>
+            <circle cx="234.3" cy="123.8" r="1.3" fill="rgba(255,180,107,0.56)"/>
+            <circle cx="423.6" cy="140.0" r="1.4" fill="rgba(255,180,107,0.70)"/>
+            <circle cx="270.5" cy="127.4" r="1.6" fill="rgba(255,180,107,0.41)"/>
+            <circle cx="378.1" cy="116.7" r="1.5" fill="rgba(255,180,107,0.71)"/>
+            <circle cx="449.7" cy="120.3" r="1.3" fill="rgba(255,180,107,0.55)"/>
+            <circle cx="459.3" cy="145.6" r="1.5" fill="rgba(255,180,107,0.58)"/>
+            <circle cx="483.9" cy="141.0" r="1.4" fill="rgba(255,180,107,0.44)"/>
+            <circle cx="118.5" cy="120.1" r="1.2" fill="rgba(255,180,107,0.39)"/>
+            <circle cx="459.7" cy="136.2" r="1.3" fill="rgba(255,180,107,0.60)"/>
+            <circle cx="393.9" cy="133.6" r="0.9" fill="rgba(255,180,107,0.67)"/>
+            <circle cx="422.6" cy="134.1" r="1.3" fill="rgba(255,180,107,0.61)"/>
+            <circle cx="133.3" cy="143.0" r="1.1" fill="rgba(255,180,107,0.38)"/>
+            <circle cx="217.9" cy="142.7" r="1.0" fill="rgba(255,180,107,0.65)"/>
+            <circle cx="314.8" cy="129.5" r="1.2" fill="rgba(255,180,107,0.62)"/>
+            <circle cx="430.5" cy="138.4" r="1.3" fill="rgba(255,180,107,0.38)"/>
+            <circle cx="167.8" cy="124.6" r="1.4" fill="rgba(255,180,107,0.47)"/>
+            <circle cx="346.1" cy="115.5" r="0.9" fill="rgba(255,180,107,0.46)"/>
+            <circle cx="390.3" cy="141.3" r="1.4" fill="rgba(255,180,107,0.47)"/>
+            <circle cx="324.3" cy="132.7" r="1.2" fill="rgba(255,180,107,0.40)"/>
+            <circle cx="484.2" cy="122.6" r="1.6" fill="rgba(255,180,107,0.72)"/>
+            <circle cx="112.8" cy="132.4" r="1.5" fill="rgba(255,180,107,0.74)"/>
+            <circle cx="295.9" cy="125.2" r="1.0" fill="rgba(255,180,107,0.73)"/>
+            <circle cx="194.7" cy="137.1" r="1.0" fill="rgba(255,180,107,0.56)"/>
+            <circle cx="509.3" cy="120.0" r="1.5" fill="rgba(255,180,107,0.55)"/>
+            <circle cx="481.4" cy="141.7" r="1.1" fill="rgba(255,180,107,0.71)"/>
+            <circle cx="311.5" cy="115.9" r="0.9" fill="rgba(255,180,107,0.55)"/>
+            <circle cx="296.5" cy="126.5" r="1.0" fill="rgba(255,180,107,0.49)"/>
+            <circle cx="461.6" cy="115.1" r="1.4" fill="rgba(255,180,107,0.69)"/>
+            <circle cx="156.2" cy="150.2" r="1.4" fill="rgba(255,180,107,0.71)"/>
+            <circle cx="228.2" cy="129.1" r="1.2" fill="rgba(255,180,107,0.75)"/>
+            <circle cx="286.8" cy="125.5" r="0.9" fill="rgba(255,180,107,0.39)"/>
+            <circle cx="459.2" cy="125.9" r="1.6" fill="rgba(255,180,107,0.45)"/>
+            <circle cx="218.0" cy="134.4" r="1.0" fill="rgba(255,180,107,0.50)"/>
+            <circle cx="480.3" cy="145.9" r="1.3" fill="rgba(255,180,107,0.72)"/>
+            <circle cx="504.2" cy="135.9" r="1.4" fill="rgba(255,180,107,0.37)"/>
+            <circle cx="296.5" cy="143.6" r="1.4" fill="rgba(255,180,107,0.46)"/>
+            <circle cx="126.1" cy="150.2" r="1.0" fill="rgba(255,180,107,0.54)"/>
+            <circle cx="231.6" cy="143.1" r="1.6" fill="rgba(255,180,107,0.45)"/>
+            <circle cx="383.5" cy="126.4" r="1.3" fill="rgba(255,180,107,0.51)"/>
+            <circle cx="176.3" cy="121.1" r="1.0" fill="rgba(255,180,107,0.71)"/>
+            <circle cx="316.1" cy="123.4" r="1.5" fill="rgba(255,180,107,0.75)"/>
+            <circle cx="296.1" cy="120.3" r="1.0" fill="rgba(255,180,107,0.39)"/>
+            <circle cx="144.0" cy="124.1" r="1.1" fill="rgba(255,180,107,0.58)"/>
+            <circle cx="481.5" cy="143.5" r="1.2" fill="rgba(255,180,107,0.52)"/>
+            <circle cx="327.6" cy="129.3" r="1.1" fill="rgba(255,180,107,0.37)"/>
+            <circle cx="223.0" cy="151.8" r="1.0" fill="rgba(255,180,107,0.55)"/>
+            <circle cx="471.2" cy="123.2" r="1.1" fill="rgba(255,180,107,0.45)"/>
+            <circle cx="274.8" cy="131.9" r="1.6" fill="rgba(255,180,107,0.69)"/>
+            <circle cx="475.4" cy="115.8" r="0.9" fill="rgba(255,180,107,0.63)"/>
+            <circle cx="485.1" cy="133.0" r="1.3" fill="rgba(255,180,107,0.35)"/>
+            <circle cx="271.3" cy="150.2" r="1.5" fill="rgba(255,180,107,0.69)"/>
+            <circle cx="210.7" cy="119.1" r="1.0" fill="rgba(255,180,107,0.56)"/>
+            <circle cx="394.5" cy="150.8" r="1.4" fill="rgba(255,180,107,0.61)"/>
+            <circle cx="429.6" cy="132.4" r="1.3" fill="rgba(255,180,107,0.37)"/>
+            <circle cx="437.0" cy="123.8" r="1.5" fill="rgba(255,180,107,0.61)"/>
+            <circle cx="234.1" cy="119.9" r="1.1" fill="rgba(255,180,107,0.60)"/>
+            <circle cx="152.9" cy="117.7" r="1.3" fill="rgba(255,180,107,0.58)"/>
+            <circle cx="269.9" cy="123.5" r="1.3" fill="rgba(255,180,107,0.35)"/>
+            <circle cx="233.2" cy="132.5" r="1.6" fill="rgba(255,180,107,0.61)"/>
+            <circle cx="480.1" cy="133.1" r="1.1" fill="rgba(255,180,107,0.45)"/>
+            <circle cx="114.6" cy="133.9" r="1.4" fill="rgba(255,180,107,0.52)"/>
+            <circle cx="214.4" cy="140.4" r="1.5" fill="rgba(255,180,107,0.44)"/>
+            <circle cx="119.8" cy="127.8" r="1.2" fill="rgba(255,180,107,0.62)"/>
+            <circle cx="189.3" cy="145.3" r="1.4" fill="rgba(255,180,107,0.55)"/>
+            <circle cx="192.3" cy="151.9" r="1.1" fill="rgba(255,180,107,0.68)"/>
+            <circle cx="203.2" cy="123.4" r="1.4" fill="rgba(255,180,107,0.47)"/>
+            <circle cx="509.0" cy="133.8" r="1.0" fill="rgba(255,180,107,0.44)"/>
+            <circle cx="282.2" cy="140.3" r="1.6" fill="rgba(255,180,107,0.41)"/>
+            <circle cx="272.2" cy="123.1" r="1.6" fill="rgba(255,180,107,0.41)"/>
+            <circle cx="127.3" cy="117.3" r="1.2" fill="rgba(255,180,107,0.71)"/>
+            <circle cx="480.0" cy="142.8" r="1.6" fill="rgba(255,180,107,0.72)"/>
+            <circle cx="184.0" cy="150.6" r="1.4" fill="rgba(255,180,107,0.36)"/>
+            <circle cx="387.1" cy="129.4" r="1.2" fill="rgba(255,180,107,0.48)"/>
+            <circle cx="177.1" cy="115.1" r="1.1" fill="rgba(255,180,107,0.49)"/>
+            <circle cx="157.8" cy="151.6" r="1.0" fill="rgba(255,180,107,0.49)"/>
+            <circle cx="453.7" cy="146.2" r="1.2" fill="rgba(255,180,107,0.37)"/>
+            <circle cx="306.1" cy="129.2" r="1.5" fill="rgba(255,180,107,0.43)"/>
+            <circle cx="259.8" cy="149.1" r="0.9" fill="rgba(255,180,107,0.51)"/>
+            <circle cx="449.5" cy="144.1" r="0.9" fill="rgba(255,180,107,0.36)"/>
+            <circle cx="131.9" cy="150.0" r="1.1" fill="rgba(255,180,107,0.65)"/>
+            <circle cx="486.3" cy="127.9" r="1.1" fill="rgba(255,180,107,0.73)"/>
+            <circle cx="216.5" cy="142.2" r="1.1" fill="rgba(255,180,107,0.46)"/>
+            <circle cx="106.9" cy="143.7" r="1.5" fill="rgba(255,180,107,0.60)"/>
+            <circle cx="505.3" cy="115.9" r="1.1" fill="rgba(255,180,107,0.54)"/>
+            <circle cx="269.2" cy="124.5" r="1.2" fill="rgba(255,180,107,0.55)"/>
+            <circle cx="498.8" cy="122.0" r="1.5" fill="rgba(255,180,107,0.65)"/>
+            <circle cx="454.2" cy="144.4" r="1.3" fill="rgba(255,180,107,0.48)"/>
+            <circle cx="437.0" cy="118.0" r="1.0" fill="rgba(255,180,107,0.65)"/>
+            <circle cx="210.2" cy="117.5" r="0.9" fill="rgba(255,180,107,0.57)"/>
+            <circle cx="479.9" cy="152.5" r="1.1" fill="rgba(255,180,107,0.38)"/>
+            <circle cx="146.2" cy="133.9" r="1.4" fill="rgba(255,180,107,0.53)"/>
+            <circle cx="204.6" cy="130.8" r="1.3" fill="rgba(255,180,107,0.62)"/>
+            <circle cx="422.5" cy="147.2" r="1.4" fill="rgba(255,180,107,0.40)"/>
+            <circle cx="461.9" cy="126.2" r="1.3" fill="rgba(255,180,107,0.50)"/>
+            <circle cx="189.8" cy="124.4" r="1.1" fill="rgba(255,180,107,0.41)"/>
+            <circle cx="480.2" cy="137.0" r="1.1" fill="rgba(255,180,107,0.51)"/>
+            <circle cx="320.4" cy="123.8" r="1.5" fill="rgba(255,180,107,0.61)"/>
+            <circle cx="148.7" cy="133.0" r="1.5" fill="rgba(255,180,107,0.69)"/>
+            <circle cx="493.0" cy="116.5" r="1.1" fill="rgba(255,180,107,0.40)"/>
+            <circle cx="185.7" cy="152.0" r="1.3" fill="rgba(255,180,107,0.72)"/>
+            <circle cx="263.2" cy="147.9" r="1.2" fill="rgba(255,180,107,0.45)"/>
+            <circle cx="435.1" cy="150.9" r="1.0" fill="rgba(255,180,107,0.59)"/>
+            <circle cx="197.6" cy="129.0" r="1.0" fill="rgba(255,180,107,0.43)"/>
+            <circle cx="213.4" cy="137.8" r="1.4" fill="rgba(255,180,107,0.43)"/>
+            <circle cx="110.2" cy="127.4" r="1.4" fill="rgba(255,180,107,0.42)"/>
+            <circle cx="191.6" cy="145.2" r="1.3" fill="rgba(255,180,107,0.38)"/>
+            <circle cx="148.3" cy="130.0" r="1.3" fill="rgba(255,180,107,0.61)"/>
+            <circle cx="144.0" cy="121.2" r="1.4" fill="rgba(255,180,107,0.51)"/>
+            <circle cx="225.5" cy="126.7" r="1.6" fill="rgba(255,180,107,0.47)"/>
+            <circle cx="345.5" cy="128.6" r="1.2" fill="rgba(255,180,107,0.70)"/>
+            <circle cx="188.9" cy="142.7" r="1.0" fill="rgba(255,180,107,0.35)"/>
+            <circle cx="487.6" cy="131.1" r="1.5" fill="rgba(255,180,107,0.51)"/>
+            <circle cx="479.7" cy="132.5" r="1.0" fill="rgba(255,180,107,0.36)"/>
+            <circle cx="339.2" cy="139.3" r="1.5" fill="rgba(255,180,107,0.39)"/>
+            <circle cx="262.6" cy="134.2" r="1.0" fill="rgba(255,180,107,0.46)"/>
+            <circle cx="326.3" cy="150.2" r="1.0" fill="rgba(255,180,107,0.55)"/>
+            <circle cx="446.6" cy="151.7" r="1.0" fill="rgba(255,180,107,0.40)"/>
+            <circle cx="505.2" cy="152.1" r="1.2" fill="rgba(255,180,107,0.37)"/>
+            <circle cx="498.0" cy="129.7" r="1.5" fill="rgba(255,180,107,0.60)"/>
+            <circle cx="454.9" cy="121.1" r="1.5" fill="rgba(255,180,107,0.44)"/>
+            <circle cx="276.8" cy="147.2" r="1.5" fill="rgba(255,180,107,0.42)"/>
+            <circle cx="197.8" cy="130.2" r="1.3" fill="rgba(255,180,107,0.50)"/>
+            <circle cx="157.5" cy="124.4" r="1.4" fill="rgba(255,180,107,0.71)"/>
+            <circle cx="122.8" cy="136.4" r="1.4" fill="rgba(255,180,107,0.37)"/>
+            <circle cx="460.7" cy="119.5" r="1.3" fill="rgba(255,180,107,0.57)"/>
+            <circle cx="283.4" cy="137.1" r="1.2" fill="rgba(255,180,107,0.61)"/>
+            <circle cx="294.8" cy="131.7" r="0.9" fill="rgba(255,180,107,0.60)"/>
+            <circle cx="312.9" cy="123.9" r="1.4" fill="rgba(255,180,107,0.66)"/>
+            <circle cx="299.6" cy="121.8" r="1.2" fill="rgba(255,180,107,0.39)"/>
+            <circle cx="159.8" cy="131.4" r="1.0" fill="rgba(255,180,107,0.53)"/>
+            <circle cx="321.6" cy="116.5" r="1.3" fill="rgba(255,180,107,0.38)"/>
+            <circle cx="435.1" cy="134.4" r="0.9" fill="rgba(255,180,107,0.55)"/>
+            <circle cx="265.5" cy="151.1" r="1.0" fill="rgba(255,180,107,0.69)"/>
+            <circle cx="450.9" cy="122.4" r="1.6" fill="rgba(255,180,107,0.55)"/>
+            <circle cx="493.7" cy="121.3" r="1.5" fill="rgba(255,180,107,0.72)"/>
+            <circle cx="133.1" cy="128.3" r="1.4" fill="rgba(255,180,107,0.41)"/>
+            <circle cx="485.5" cy="125.4" r="1.5" fill="rgba(255,180,107,0.41)"/>
+            <circle cx="318.3" cy="150.0" r="1.0" fill="rgba(255,180,107,0.46)"/>
+            <circle cx="319.9" cy="127.1" r="0.9" fill="rgba(255,180,107,0.42)"/>
+            <circle cx="173.7" cy="150.6" r="1.4" fill="rgba(255,180,107,0.71)"/>
+            <circle cx="176.9" cy="144.8" r="1.0" fill="rgba(255,180,107,0.56)"/>
+            <circle cx="375.1" cy="128.7" r="1.5" fill="rgba(255,180,107,0.57)"/>
+            <circle cx="479.5" cy="119.0" r="1.6" fill="rgba(255,180,107,0.60)"/>
+            <circle cx="272.5" cy="145.3" r="1.1" fill="rgba(255,180,107,0.75)"/>
+            <circle cx="429.5" cy="131.8" r="1.0" fill="rgba(255,180,107,0.65)"/>
+            <circle cx="125.8" cy="146.2" r="1.1" fill="rgba(255,180,107,0.61)"/>
+            <circle cx="386.7" cy="126.9" r="0.9" fill="rgba(255,180,107,0.36)"/>
+            <circle cx="168.7" cy="138.4" r="1.2" fill="rgba(255,180,107,0.56)"/>
+            <circle cx="485.0" cy="120.0" r="1.1" fill="rgba(255,180,107,0.61)"/>
+            <circle cx="114.8" cy="115.1" r="1.1" fill="rgba(255,180,107,0.39)"/>
+            <circle cx="200.4" cy="137.2" r="1.3" fill="rgba(255,180,107,0.43)"/>
+            <circle cx="306.7" cy="120.1" r="1.6" fill="rgba(255,180,107,0.45)"/>
+            <circle cx="168.6" cy="118.6" r="1.3" fill="rgba(255,180,107,0.70)"/>
+            <circle cx="437.0" cy="130.3" r="1.1" fill="rgba(255,180,107,0.35)"/>
+            <circle cx="378.8" cy="136.4" r="1.1" fill="rgba(255,180,107,0.61)"/>
+            <circle cx="293.5" cy="150.6" r="1.4" fill="rgba(255,180,107,0.45)"/>
+            <circle cx="488.4" cy="116.7" r="1.3" fill="rgba(255,180,107,0.51)"/>
+            <circle cx="206.1" cy="117.2" r="1.4" fill="rgba(255,180,107,0.35)"/>
+            <circle cx="338.9" cy="150.8" r="1.0" fill="rgba(255,180,107,0.43)"/>
+            <circle cx="320.3" cy="139.4" r="1.5" fill="rgba(255,180,107,0.42)"/>
+            <circle cx="232.6" cy="116.8" r="1.5" fill="rgba(255,180,107,0.66)"/>
+            <circle cx="108.0" cy="147.1" r="1.4" fill="rgba(255,180,107,0.54)"/>
+            <circle cx="297.2" cy="123.6" r="1.0" fill="rgba(255,180,107,0.44)"/>
+            <circle cx="121.8" cy="127.7" r="1.4" fill="rgba(255,180,107,0.63)"/>
+            <circle cx="463.8" cy="142.0" r="1.1" fill="rgba(255,180,107,0.57)"/>
+            <circle cx="290.2" cy="145.0" r="1.3" fill="rgba(255,180,107,0.46)"/>
+            <circle cx="377.5" cy="151.7" r="1.1" fill="rgba(255,180,107,0.70)"/>
+            <circle cx="111.8" cy="124.9" r="1.1" fill="rgba(255,180,107,0.65)"/>
+            <circle cx="505.9" cy="143.4" r="1.1" fill="rgba(255,180,107,0.70)"/>
+            <circle cx="206.7" cy="149.5" r="1.3" fill="rgba(255,180,107,0.63)"/>
+            <circle cx="387.4" cy="152.2" r="1.2" fill="rgba(255,180,107,0.69)"/>
+            <circle cx="468.9" cy="131.6" r="1.4" fill="rgba(255,180,107,0.58)"/>
+            <circle cx="195.2" cy="138.7" r="1.0" fill="rgba(255,180,107,0.71)"/>
+            <circle cx="166.6" cy="116.0" r="1.0" fill="rgba(255,180,107,0.72)"/>
+            <circle cx="165.5" cy="116.1" r="0.9" fill="rgba(255,180,107,0.63)"/>
+            <circle cx="374.1" cy="141.5" r="1.4" fill="rgba(255,180,107,0.38)"/>
+            <circle cx="452.0" cy="146.1" r="1.5" fill="rgba(255,180,107,0.38)"/>
+            <circle cx="473.3" cy="149.7" r="1.6" fill="rgba(255,180,107,0.39)"/>
+            <circle cx="192.6" cy="119.3" r="0.9" fill="rgba(255,180,107,0.69)"/>
+            <circle cx="449.6" cy="139.1" r="1.5" fill="rgba(255,180,107,0.60)"/>
+            <circle cx="227.2" cy="118.8" r="1.0" fill="rgba(255,180,107,0.65)"/>
+            <circle cx="192.3" cy="127.1" r="1.2" fill="rgba(255,180,107,0.36)"/>
+            <circle cx="214.2" cy="125.7" r="1.4" fill="rgba(255,180,107,0.50)"/>
+            <circle cx="318.9" cy="147.4" r="1.3" fill="rgba(255,180,107,0.36)"/>
+            <circle cx="280.4" cy="131.6" r="1.4" fill="rgba(255,180,107,0.49)"/>
+            <circle cx="333.4" cy="123.2" r="1.5" fill="rgba(255,180,107,0.39)"/>
+            <circle cx="452.9" cy="121.5" r="0.9" fill="rgba(255,180,107,0.43)"/>
+            <circle cx="428.5" cy="152.2" r="0.9" fill="rgba(255,180,107,0.55)"/>
+            <circle cx="313.7" cy="145.3" r="1.0" fill="rgba(255,180,107,0.55)"/>
+            <circle cx="458.0" cy="124.9" r="1.6" fill="rgba(255,180,107,0.46)"/>
+            <circle cx="196.4" cy="141.6" r="1.2" fill="rgba(255,180,107,0.39)"/>
+            <circle cx="375.2" cy="118.1" r="1.5" fill="rgba(255,180,107,0.63)"/>
+            <circle cx="439.0" cy="138.9" r="1.1" fill="rgba(255,180,107,0.51)"/>
+            <circle cx="272.6" cy="148.8" r="1.0" fill="rgba(255,180,107,0.71)"/>
+            <circle cx="116.0" cy="122.8" r="1.1" fill="rgba(255,180,107,0.71)"/>
+            <circle cx="317.8" cy="129.4" r="1.5" fill="rgba(255,180,107,0.44)"/>
+            <circle cx="300.8" cy="135.2" r="1.4" fill="rgba(255,180,107,0.65)"/>
+            <circle cx="379.4" cy="128.2" r="1.1" fill="rgba(255,180,107,0.41)"/>
+            <circle cx="462.8" cy="140.2" r="1.4" fill="rgba(255,180,107,0.42)"/>
+            <circle cx="291.4" cy="144.4" r="1.3" fill="rgba(255,180,107,0.40)"/>
+            <circle cx="301.2" cy="148.6" r="1.1" fill="rgba(255,180,107,0.43)"/>
+            <circle cx="233.2" cy="141.7" r="1.5" fill="rgba(255,180,107,0.41)"/>
+            <circle cx="171.5" cy="124.4" r="1.1" fill="rgba(255,180,107,0.56)"/>
+            <circle cx="173.6" cy="127.5" r="1.0" fill="rgba(255,180,107,0.74)"/>
+            <circle cx="148.5" cy="151.6" r="1.0" fill="rgba(255,180,107,0.50)"/>
+            <circle cx="442.4" cy="142.9" r="1.2" fill="rgba(255,180,107,0.43)"/>
+            <circle cx="375.8" cy="119.1" r="1.0" fill="rgba(255,180,107,0.51)"/>
+            <circle cx="119.7" cy="130.2" r="1.5" fill="rgba(255,180,107,0.63)"/>
+            <circle cx="317.5" cy="139.0" r="1.2" fill="rgba(255,180,107,0.41)"/>
+            <circle cx="276.9" cy="143.2" r="1.5" fill="rgba(255,180,107,0.52)"/>
+            <circle cx="348.7" cy="143.5" r="1.2" fill="rgba(255,180,107,0.44)"/>
+            <circle cx="478.5" cy="144.4" r="1.4" fill="rgba(255,180,107,0.69)"/>
+            <circle cx="393.5" cy="139.4" r="1.2" fill="rgba(255,180,107,0.48)"/>
+            <circle cx="146.8" cy="130.9" r="1.4" fill="rgba(255,180,107,0.64)"/>
+            <circle cx="211.4" cy="131.1" r="1.2" fill="rgba(255,180,107,0.60)"/>
+            <circle cx="278.9" cy="140.7" r="1.6" fill="rgba(255,180,107,0.42)"/>
+            <circle cx="382.8" cy="144.6" r="1.2" fill="rgba(255,180,107,0.55)"/>
+            <circle cx="121.5" cy="135.6" r="1.0" fill="rgba(255,180,107,0.66)"/>
+            <circle cx="504.1" cy="134.7" r="1.0" fill="rgba(255,180,107,0.58)"/>
+            <circle cx="334.7" cy="142.3" r="1.3" fill="rgba(255,180,107,0.61)"/>
+            <circle cx="456.8" cy="134.8" r="1.2" fill="rgba(255,180,107,0.73)"/>
+            <circle cx="194.4" cy="141.0" r="1.2" fill="rgba(255,180,107,0.66)"/>
+            <circle cx="157.2" cy="152.4" r="1.1" fill="rgba(255,180,107,0.37)"/>
+            <circle cx="221.7" cy="130.2" r="0.9" fill="rgba(255,180,107,0.52)"/>
+            <rect x="243.9" y="112.0" width="6.8" height="44.0" fill="rgba(0,0,0,.72)"/>
+            <line x1="247.3" y1="112.0" x2="247.3" y2="100.0" stroke="var(--ink-faint)" stroke-width="1"/>
+            <text x="247.3" y="96.0" font-size="10.5" font-weight="500" fill="var(--ink)" text-anchor="middle">3:1</text>
+            <text x="247.3" y="83.0" font-size="9" fill="var(--ink-faint)" text-anchor="middle">2.50 AU</text>
+            <rect x="358.2" y="112.0" width="6.8" height="44.0" fill="rgba(0,0,0,.72)"/>
+            <line x1="361.6" y1="112.0" x2="361.6" y2="74.0" stroke="var(--ink-faint)" stroke-width="1"/>
+            <text x="361.6" y="70.0" font-size="10.5" font-weight="500" fill="var(--ink)" text-anchor="middle">5:2</text>
+            <text x="361.6" y="57.0" font-size="9" fill="var(--ink-faint)" text-anchor="middle">2.83 AU</text>
+            <rect x="405.1" y="112.0" width="6.8" height="44.0" fill="rgba(0,0,0,.72)"/>
+            <line x1="408.5" y1="112.0" x2="408.5" y2="100.0" stroke="var(--ink-faint)" stroke-width="1"/>
+            <text x="408.5" y="96.0" font-size="10.5" font-weight="500" fill="var(--ink)" text-anchor="middle">7:3</text>
+            <text x="408.5" y="83.0" font-size="9" fill="var(--ink-faint)" text-anchor="middle">2.96 AU</text>
+            <rect x="518.3" y="112.0" width="6.8" height="44.0" fill="rgba(0,0,0,.72)"/>
+            <line x1="521.7" y1="112.0" x2="521.7" y2="74.0" stroke="var(--ink-faint)" stroke-width="1"/>
+            <text x="521.7" y="70.0" font-size="10.5" font-weight="500" fill="var(--ink)" text-anchor="middle">2:1</text>
+            <text x="521.7" y="57.0" font-size="9" fill="var(--ink-faint)" text-anchor="middle">3.28 AU</text>
+            <line x1="197.2" y1="156.0" x2="197.2" y2="162.0" stroke="var(--good)" stroke-width="1.2"/>
+            <circle cx="197.2" cy="156.0" r="3.6" fill="var(--good)" stroke="#000" stroke-width="1.5"/>
+            <text x="197.2" y="172.0" font-size="11" font-weight="500" fill="var(--good)" text-anchor="middle">ベスタ</text>
+            <line x1="342.1" y1="156.0" x2="342.1" y2="184.0" stroke="var(--accent)" stroke-width="1.2"/>
+            <circle cx="342.1" cy="156.0" r="3.6" fill="var(--accent)" stroke="#000" stroke-width="1.5"/>
+            <text x="326.1" y="194.0" font-size="11" font-weight="500" fill="var(--accent)" text-anchor="end">ケレス</text>
+            <line x1="342.1" y1="156.0" x2="342.1" y2="162.0" stroke="var(--teach)" stroke-width="1.2"/>
+            <circle cx="342.1" cy="156.0" r="7" fill="none" stroke="var(--teach)" stroke-width="1.8"/>
+            <text x="358.1" y="172.0" font-size="11" font-weight="500" fill="var(--teach)" text-anchor="start">パラス</text>
+            <line x1="476.3" y1="156.0" x2="476.3" y2="184.0" stroke="var(--key)" stroke-width="1.2"/>
+            <circle cx="476.3" cy="156.0" r="3.6" fill="var(--key)" stroke="#000" stroke-width="1.5"/>
+            <text x="476.3" y="194.0" font-size="11" font-weight="500" fill="var(--key)" text-anchor="middle">ヒギエア</text>
+            <line x1="70.0" y1="214.0" x2="600.0" y2="214.0" stroke="var(--line-strong)" stroke-width="1.2"/>
+            <line x1="70.0" y1="210.0" x2="70.0" y2="218.0" stroke="var(--line-strong)" stroke-width="1"/>
+            <text x="70.0" y="231.0" font-size="10" fill="var(--ink-faint)" text-anchor="middle">2.0</text>
+            <line x1="158.3" y1="210.0" x2="158.3" y2="218.0" stroke="var(--line-strong)" stroke-width="1"/>
+            <text x="158.3" y="231.0" font-size="10" fill="var(--ink-faint)" text-anchor="middle">2.2</text>
+            <line x1="246.7" y1="210.0" x2="246.7" y2="218.0" stroke="var(--line-strong)" stroke-width="1"/>
+            <text x="246.7" y="231.0" font-size="10" fill="var(--ink-faint)" text-anchor="middle">2.5</text>
+            <line x1="335.0" y1="210.0" x2="335.0" y2="218.0" stroke="var(--line-strong)" stroke-width="1"/>
+            <text x="335.0" y="231.0" font-size="10" fill="var(--ink-faint)" text-anchor="middle">2.8</text>
+            <line x1="423.3" y1="210.0" x2="423.3" y2="218.0" stroke="var(--line-strong)" stroke-width="1"/>
+            <text x="423.3" y="231.0" font-size="10" fill="var(--ink-faint)" text-anchor="middle">3.0</text>
+            <line x1="511.7" y1="210.0" x2="511.7" y2="218.0" stroke="var(--line-strong)" stroke-width="1"/>
+            <text x="511.7" y="231.0" font-size="10" fill="var(--ink-faint)" text-anchor="middle">3.2</text>
+            <line x1="600.0" y1="210.0" x2="600.0" y2="218.0" stroke="var(--line-strong)" stroke-width="1"/>
+            <text x="600.0" y="231.0" font-size="10" fill="var(--ink-faint)" text-anchor="middle">3.5</text>
+            <text x="614.0" y="231.0" font-size="10" fill="var(--ink-faint)">AU</text>
+            <text x="4.0" y="138.0" font-size="10" fill="var(--ink-faint)" text-anchor="start">←火星</text>
+            <text x="539.3" y="138.0" font-size="10" fill="var(--ink-faint)">木星 5.20 AU →</text>
+          </svg>
+            <figcaption>帯の中身を、太陽からの距離で拡大したもの（今度は<strong>線形目盛</strong>）。点は小惑星の分布の模式で、実際の位置ではありません。<strong>黒い縦の筋がカークウッドの空隙</strong>——木星と軌道が共鳴する距離だけ、天体がほとんどいません。下の4つが帯で最も大きい天体です。位置は JPL Small-Body Database の軌道長半径（2026年9月25日閲覧）。</figcaption>
+          </figure>
+
+          <div class="row"><span class="k">基本</span><span class="v">火星と木星のあいだ、太陽から<strong>約2.1〜3.3 AU</strong>。いま見つかっている小惑星は<strong>157万2,129個</strong>（うち番号が付いたもの89万5,910個）。<strong>この数は毎月増えます</strong>——覚えるのは「100万個を超えている」という桁だけにしてください<br><span style="font-size:12.5px;color:var(--ink-faint)">出典：IAU小惑星センター（minorplanetcenter.net/mpc/summary、2026年9月25日閲覧）</span></span></div>
+
+          <div class="row"><span class="k">見え方</span><span class="v">映画では岩が密集した海のように描かれますが、<strong>実際はほとんど何もない空間です</strong>。探査機は10機以上がここを通り抜けていますが、小惑星に当たりそうになったことは一度もありません。狙って近づかないかぎり、何も見えないまま通り過ぎます</span></div>
+
+          <div class="row"><span class="k">どれだけ<br>まばらか</span><span class="v"><strong>全部合わせても、月より軽い。</strong>これがこの帯のいちばん大事な事実です。
+          <ul>
+            <li>NASA は「<strong>すべての小惑星の質量を合わせても、地球の月より小さい</strong>」と書いています（science.nasa.gov の Asteroid Facts、2026年9月25日閲覧）</li>
+            <li>実際、上位4つ（ケレス・ベスタ・パラス・ヒギエア）だけで帯の質量のかなりの部分を占めます。JPL の GM から計算すると、<strong>ケレス1つで月の約1.3%</strong>、<strong>4つ合わせても月の約2%</strong>です</li>
+          </ul>
+          <p style="margin:8px 0 0">まばらさを距離で言うとこうなります。帯を内径2.1 AU・外径3.3 AU・厚さ1 AU のドーナツと見なすと体積は約 6.8×10<sup>25</sup> km³。いま見つかっている157万個をそこに等間隔で並べると、<strong>隣の小惑星まで平均で約360万km</strong>——<strong>地球と月の距離（38万km）の約9倍</strong>です。</p>
+          <p style="font-size:12.5px;color:var(--ink-faint);margin:6px 0 0">★ この360万kmは<strong>本教材で計算した概算</strong>で、どこかの発表値ではありません。厚さの取り方で2倍ほど動きますし、見つかっていない小さな天体は数えていません。<strong>桁（百万km台）だけを覚えてください。</strong>言いたいのは「隣が見えないほど離れている」という一点です。</p>
+          </span></div>
+
+          <div class="row"><span class="k">カーク<br>ウッドの<br>空隙</span><span class="v">帯の中は一様ではありません。<strong>木星と軌道が共鳴する距離だけ、天体がほとんどいない</strong>——これが<strong>カークウッドの空隙</strong>です。
+          <div class="table-scroll"><table class="mini-table">
+            <tr><th style="width:18%">共鳴</th><th style="width:20%">距離</th><th>意味</th></tr>
+            <tr><td><strong>3:1</strong></td><td>2.50 AU</td><td>小惑星が3周するあいだに木星が1周する</td></tr>
+            <tr><td><strong>5:2</strong></td><td>2.82 AU</td><td>小惑星5周に対して木星2周</td></tr>
+            <tr><td><strong>7:3</strong></td><td>2.96 AU</td><td>小惑星7周に対して木星3周</td></tr>
+            <tr><td><strong>2:1</strong></td><td>3.28 AU</td><td>小惑星2周に対して木星1周。帯の外縁にあたる</td></tr>
+          </table></div>
+          <p style="margin:8px 0 0">距離はケプラーの第3法則から出せます。木星の軌道長半径を <strong>a<sub>J</sub> ＝ 5.20 AU</strong>、小惑星が <strong>p</strong> 周するあいだに木星が <strong>q</strong> 周するとすると、共鳴の起きる距離は</p>
+          <p style="margin:6px 0;text-align:center;font-size:16px;color:var(--ink)"><strong>a ＝ a<sub>J</sub> ×（q ÷ p）<sup>2/3</sup></strong></p>
+          <p style="margin:4px 0">3:1 なら 5.20 ×（1÷3）<sup>2/3</sup> ＝ 2.50 AU。<strong>覚えるのは4つの数値ではなく、この式と「共鳴した距離が空く」という事実です。</strong></p>
+          </span></div>
+
+          <div class="row"><span class="k">なぜ<br>空くのか</span><span class="v"><strong>第3回で扱ったラプラス共鳴と、同じ仕組みが別の形で現れています。</strong>
+          <ul>
+            <li><strong>第3回（イオ・エウロパ・ガニメデ）</strong>——公転周期が 1:2:4 で揃っているため、3つが<strong>繰り返し同じ配置で引き合い</strong>、軌道が真円になりません。歪んだ軌道が潮汐加熱を生み、イオの火山になりました</li>
+            <li><strong>ここ（カークウッドの空隙）</strong>——同じ「繰り返し同じ配置で引き合う」が、今度は<strong>軌道を歪めて弾き飛ばす</strong>方向に働きます。何度も同じ位置で木星に引かれた小惑星は、軌道が細長くなり、やがて火星や木星に近づいて帯から出ていきます</li>
+          </ul>
+          <p style="margin:8px 0 0"><strong>共鳴そのものは、閉じ込めることも、追い出すこともします。</strong>トロヤ群（木星と 1:1 の共鳴）は閉じ込められた側、カークウッドの空隙は追い出された側です。同じ言葉が正反対の結果を生むので、<strong>「共鳴＝軌道が揃うと効果が積み重なる」</strong>とだけ覚え、結果は場合ごとに見てください。</p>
+          </span></div>
+
+          <div class="row"><span class="k">主な天体</span><span class="v">
+          <div class="table-scroll"><table class="mini-table">
+            <tr><th style="width:20%">名前</th><th style="width:16%">距離</th><th style="width:18%">直径</th><th>覚えどころ</th></tr>
+            <tr><td><strong>ケレス</strong><br>Ceres</td><td>2.77 AU</td><td><strong>939km</strong></td><td>帯で最大。<strong>小惑星帯で唯一の準惑星</strong>。次のカードで扱います</td></tr>
+            <tr><td><strong>ベスタ</strong><br>Vesta</td><td>2.36 AU</td><td>523km</td><td><strong>小惑星としては最大</strong>。表面が溶けて分化しており、地球から肉眼で見えることがある唯一の小惑星</td></tr>
+            <tr><td><strong>パラス</strong><br>Pallas</td><td>2.77 AU</td><td>513km</td><td>軌道が<strong>34.9度も傾いている</strong>。帯の中では異質な軌道</td></tr>
+            <tr><td><strong>ヒギエア</strong><br>Hygiea</td><td>3.15 AU</td><td>407km</td><td>帯の外側寄り。4番目に大きい</td></tr>
+          </table></div>
+          <p style="font-size:12.5px;color:var(--ink-faint);margin:2px 0 0">距離は軌道長半径、直径は JPL Small-Body Database（2026年9月25日閲覧）。ケレスとパラスはどちらも2.77 AU ですが、パラスは軌道の傾きが大きいので、同じ場所にいるわけではありません。</p>
+          </span></div>
+
+          <div class="row"><span class="k">探査</span><span class="v">1991年のガリレオ（ガスプラ）を皮切りに、多くの探査機が通りすがりに小惑星を撮っています。帯そのものを目的にしたのは<strong>ドーン</strong>（2011年ベスタ、2015年ケレス）で、<strong>2つの天体を続けて周回した最初の探査機</strong>です。詳しくは次のカードで</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="ceres">
+      <div class="sec-head is-sub"><h2>ケレス</h2></div>
+      <p><strong>配置図のどこか</strong>——小惑星帯のほぼ真ん中、<strong>2.77 AU</strong>。帯で最も大きく、<strong>この回で「地図が作れる4天体」の1つ</strong>です。</p>
+
+      <div class="mod map-view has-globe" data-globe="../image/memoryverse/ceres-map.jpg?v=r74" data-grid="equi">
+        <div class="mod-h"><span class="no">ケレス</span><span class="ttl">小惑星帯で唯一の準惑星</span><span class="tag">CERES</span></div>
+        <div class="mod-b">
+          <div class="vsw" role="group" aria-label="表示の切り替え" hidden>
+            <button type="button" class="vsw-b is-on" data-view="map" aria-pressed="true">地図</button>
+            <button type="button" class="vsw-b" data-view="globe" aria-pressed="false">球</button>
+          </div>
+          <div class="orbit"><svg class="grid" aria-hidden="true" preserveAspectRatio="none"></svg><svg class="links" aria-hidden="true" preserveAspectRatio="none"></svg><div class="stat geo" data-n="1" data-x="0.1648" data-y="0.3899" data-lat="19.8" data-lon="-120.7"><i class="n">1</i><b>オッカトル・クレーター</b><span class="v">中央に明るい斑点</span></div><div class="stat geo" data-n="2" data-x="0.3783" data-y="0.5582" data-lat="-10.5" data-lon="-43.8"><i class="n">2</i><b>アフナ山</b><span class="v">高さ 約4kmの孤立した山</span></div><div class="stat geo" data-n="3" data-x="0.8444" data-y="0.5598" data-lat="-10.8" data-lon="124.0"><i class="n">3</i><b>ケルワン</b><span class="v">直径 約280kmで最大</span></div><div class="stat geo" data-n="4" data-x="0.3124" data-y="0.7366" data-lat="-42.6" data-lon="-67.5"><i class="n">4</i><b>ヤロデ</b><span class="v">南半球の大きな盆地</span></div><div class="core"><button type="button" class="img-btn" aria-expanded="false"><figure class="planet-img"><div class="orb"><div class="frame"><img class="map-img" src="../image/memoryverse/ceres-map.jpg?v=r74" data-alt="https://astrogeology.usgs.gov/ckan/dataset/6ad84c9a-1fad-4869-b4f6-b52c5c2ace36/resource/9f757a65-8d8a-4349-a72d-8062387574b3/download/ceres_dawn_fc_dlr_global_feb2016_1024.jpg" alt="ケレスの全球地図（ドーン探査機のフレーミングカメラによるモザイク。正距円筒）" loading="lazy" decoding="async" onerror="mvNext(this)"><p class="fallback">画像を読み込めませんでした。<br><a href="https://science.nasa.gov/dwarf-planets/ceres/" target="_blank" rel="noopener">NASAのケレスのページで見る</a></p></div></div><figcaption>USGS Astrogeology「Ceres Dawn FC Global Mosaic 140m」（ドーン探査機のフレーミングカメラ）<br>正距円筒・惑星中心系・<strong>東経が右へ増え、中央が東経0度、左右の端が東経180度</strong>。配布画像の定義域がそのままこの向きなので、ずらしていません<br>線は経度・緯度とも30度ごと（狭い画面は60度ごと）<br><strong>南緯75度より南は約52%が未撮影</strong>（北極域にも数%）。全球の約5.7%。埋める加工はしていません<br>© NASA/JPL-Caltech/UCLA/MPS/DLR/IDA ／ USGS Astrogeology（パブリックドメイン）</figcaption></figure><span class="hint"><span class="h-c">クリックで地形を開く</span><span class="h-o">クリックで閉じる</span></span></button></div></div>
+          <div class="globe" hidden>
+            <div class="globe-stage"><canvas class="globe-cv"></canvas><p class="globe-fail" hidden>球を表示できませんでした。展開図でご覧ください。</p></div>
+            <div class="globe-ctl">
+              <button type="button" class="globe-b globe-home">基準に戻す</button>
+              <button type="button" class="globe-b globe-open" aria-pressed="false">地形を開く</button>
+            </div>
+            <ol class="globe-list" hidden></ol>
+            <p class="globe-note">覚えるのは展開図のほうです。球は、展開図で覚えた位置が実物でどう見えるかを確かめるためのものです。既定の向きは東経0度が正面・北が上です。<strong>南極のまわりは未撮影なので、下のほうに黒い部分が出ます。</strong></p>
+            <p class="globe-cap">USGS Astrogeology「Ceres Dawn FC Global Mosaic 140m」（正距円筒・中央は東経0度、左右の端は東経180度）<br>線は経度・緯度とも30度ごと<br>© NASA/JPL-Caltech/UCLA/MPS/DLR/IDA ／ USGS Astrogeology（パブリックドメイン）</p>
+          </div>
+
+          <div class="row"><span class="k">基本</span><span class="v">平均直径 <strong>939.4km</strong>（半径 約470km。月の約4分の1）。太陽からの距離 <strong>2.766 AU</strong>（近日点2.55／遠日点2.99）。公転周期 <strong>4.60年</strong>、自転周期 <strong>9.07時間</strong>。軌道傾斜角 10.6度。平均密度 2.162 g/cm³、反射率 0.090<br><span style="font-size:12.5px;color:var(--ink-faint)">出典：NASA JPL Small-Body Database（ssd.jpl.nasa.gov、2026年9月25日閲覧）。質量は同データベースの GM=62.63 km³/s² から計算して約9.4×10<sup>20</sup> kg、<strong>月の約1.3%</strong>です</span></span></div>
+
+          <div class="row"><span class="k">準惑星</span><span class="v"><strong>小惑星帯で唯一の準惑星であり、内太陽系で唯一の準惑星です</strong>（NASA、2026年9月25日閲覧）。
+          <ul>
+            <li>1801年、ピアッツィが発見。当初は<strong>惑星</strong>として数えられ、その後、同じ距離に似た天体が次々見つかったため<strong>小惑星</strong>に格下げされました</li>
+            <li>2006年、IAU が準惑星を定義したとき、<strong>自分の重力で丸くなっている</strong>という条件を満たすものとして準惑星になりました。同じ年に冥王星が惑星から準惑星になったのと、同じ定義です</li>
+            <li>2015年、<strong>探査機が訪れた最初の準惑星</strong>になりました（ドーン）。冥王星へのニューホライズンズ到着は同年7月で、ケレスのほうが4か月早い</li>
+          </ul>
+          <p style="margin:8px 0 0"><strong>「惑星 → 小惑星 → 準惑星」と2回分類が変わった天体</strong>です。分類は観測が進むと変わる、という見本として覚えてください。</p></span></div>
+
+          <div class="row"><span class="k">見え方</span><span class="v">反射率0.090の<strong>暗い灰色</strong>。クレーターだらけですが、<strong>直径280kmより大きいクレーターがほとんど見当たりません</strong>——氷を含む地下がゆっくり流れて、古い大きなくぼみをならしてしまったと考えられています。そして何より目を引くのが、<strong>ところどころにある白い斑点</strong>です</span></div>
+
+          <div class="row"><span class="k">覚える地形</span><span class="v">
+          <div class="table-scroll"><table class="mini-table">
+            <tr><th style="width:27%">名前</th><th style="width:33%">何か</th><th>位置の目印</th></tr>
+            <tr><td><strong>オッカトル・クレーター</strong><br>Occator</td><td>直径 約92km。<strong>中央に白い斑点</strong>（ケレアリア・ファキュラ）があり、地図の上でいちばん目立つ</td><td>北緯20度・東経239度。<strong>地図の左寄り、赤道の上</strong>。白い点を探せばすぐ見つかる</td></tr>
+            <tr><td><strong>アフナ山</strong><br>Ahuna Mons</td><td>高さ 約4km、差し渡し 約20kmの<strong>孤立した山</strong>。氷の火山（クライオヴォルケーノ）と考えられている</td><td>南緯10度・東経316度。中央よりやや左、赤道のすぐ下</td></tr>
+            <tr><td><strong>ケルワン</strong><br>Kerwan</td><td>直径 約280km。<strong>ケレス最大のクレーター</strong>。浅く、縁がぼやけている</td><td>南緯11度・東経124度。<strong>地図の右寄り</strong>、赤道のすぐ下</td></tr>
+            <tr><td><strong>ヤロデ</strong><br>Yalode</td><td>直径 約260km。南半球の大きな盆地</td><td>南緯43度・東経292度。中央より少し左の下</td></tr>
+          </table></div>
+          <p style="font-size:12.5px;color:var(--ink-faint);margin:2px 0 0">USGS Gazetteer of Planetary Nomenclature（2026年9月25日閲覧）。ケレスの地名は<strong>惑星中心系・東経0〜360度</strong>で記録されており、地図もその向きです。</p>
+          </span></div>
+
+          <div class="row"><span class="k">白い斑点<br>の正体</span><span class="v"><strong>オッカトル・クレーターの明るい斑点は、塩の堆積です。</strong>ドーンが近づいて分光観測をするまで、何なのか分かっていませんでした。
+          <ul>
+            <li>主成分は<strong>炭酸ナトリウム</strong>（ソーダ灰）。氷ではありません。地球以外でこれだけまとまった量が見つかったのは初めてでした</li>
+            <li>できかたは、<strong>地下の塩水が割れ目から染み出し、水が宇宙空間へ逃げて塩だけが残った</strong>と考えられています。クレーターを作った衝突が地下を暖め、塩水が上がってくる道をつくったという筋書きです</li>
+            <li>斑点が<strong>明るいまま残っている</strong>ことも手がかりです。宇宙塵が降り積もれば数千万年で暗くなるはずなので、<strong>比較的最近まで（あるいは今も）供給が続いている</strong>ことになります</li>
+          </ul>
+          <p style="margin:8px 0 0"><strong>分かっていないこと</strong>——塩水がどれだけの広さで、どれだけの深さに残っているのか。ドーンの重力測定からは<strong>オッカトルの地下に局所的な塩水だまりがある</strong>とされていますが、ケレス全体を覆う海があるのかどうかは<strong>確かめられていません</strong>。いま染み出しが続いているのかも、直接には観測されていません。</p>
+          <p style="font-size:12.5px;color:var(--ink-faint);margin:6px 0 0">確認先：NASA の Ceres ミッションページおよび Dawn の観測結果（science.nasa.gov/dwarf-planets/ceres/、2026年9月25日閲覧）。</p>
+          </span></div>
+
+          <div class="row"><span class="k">探査</span><span class="v"><ul>
+            <li><strong>ハッブル</strong>（2003〜04）——ケレスがほぼ球形で、表面に明暗があることを示した。地図と呼べるものはここが最初</li>
+            <li><strong>ドーン</strong>（2015年3月〜2018年10月）——<strong>ケレスに行った唯一の探査機</strong>。イオンエンジンで<strong>ベスタ（2011〜12）とケレスを続けて周回</strong>した、最初で唯一の探査機でもあります。このカードの地図も、白い斑点の組成も、すべてドーンの成果です</li>
+            <li>その後、ケレスへ向かった探査機はありません（2026年9月時点）</li>
+          </ul></span></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="rest">
+      <div class="sec-head"><span class="idx">05</span><h2>残りのカード</h2></div>
+      <div class="box warn"><span class="lab">準備中</span>
+      <p>ベスタ・冥王星・カロン（地図が作れるもの）、リュウグウ・ベンヌ・エロス・チュリュモフ／ゲラシメンコ（形が特徴のもの）、カイパーベルト・散乱円盤・オールトの雲（領域）を、配置図と小惑星帯の見せ方が決まってから足します。いまは枠だけです。</p></div>
+    </section>
+
+    <section id="cross">
+      <div class="sec-head"><span class="idx">06</span><h2>横断して見る</h2></div>
+      <div class="box warn"><span class="lab">準備中</span>
+      <p>大きさをくらべる／共鳴が閉じ込める場合と追い出す場合／探査の歴史を、カードが揃った段階で書きます。いまは枠だけです。</p></div>
+    </section>
+
+    <section id="menu">
+      <div class="sec-head"><span class="idx">07</span><h2>訓練メニュー</h2></div>
+      <div class="box warn"><span class="lab">準備中</span>
+      <p>3週間ぶんの表を、カードが揃った段階で書きます。いまは枠だけです。</p></div>
+    </section>
+
+    <section id="drills">
+      <div class="sec-head"><span class="idx">08</span><h2>演習</h2></div>
+      <div class="box warn"><span class="lab">準備中</span>
+      <p>演習は、カードが揃った段階で書きます。いまは枠だけです。</p></div>
+    </section>
+
+    <section id="plan">
+      <div class="sec-head"><span class="idx">A</span><h2>第1〜5回の改訂</h2></div>
+      <table class="mini-table">
+        <tr><th style="width:8%">回</th><th style="width:32%">タイトル</th><th>内容</th></tr>
+        <tr><td><strong>1</strong></td><td>太陽系の骨格</td><td>太陽と8惑星の基本情報と特徴。配置図と比較図。天体の巡り方①〜⑤</td></tr>
+        <tr><td><strong>2</strong></td><td>岩石惑星を深める</td><td>水星・金星・地球（外観）・月・火星の地形、大気の違いとその理由、探査の歴史</td></tr>
+        <tr><td><strong>3</strong></td><td>巨大惑星を深める</td><td>木星〜海王星の<strong>断面</strong>と<strong>環</strong>、主要衛星8枚のカード。全12枚</td></tr>
+        <tr><td><strong>4</strong></td><td>小天体</td><td>この教材。<strong>配置図</strong>を背骨に、小惑星帯・カイパーベルト・散乱円盤・オールトの雲（領域）、ケレス・ベスタ・冥王星・カロン（地図）、リュウグウ・ベンヌほか（形）</td></tr>
+        <tr><td><strong>5</strong></td><td>太陽と全体の統合</td><td>恒星としての太陽の詳細、太陽系の形成、全天体の横断比較と巡回</td></tr>
+      </table>
+      <p>第6回以降（地球の回）に入る前に、太陽系の回の全体を1回通して巡る時間を第5回に置きます。</p>
+    </section>
+
+    <section id="evidence">
+      <div class="sec-head"><span class="idx">B</span><h2>根拠と強度</h2></div>
+      <div class="box warn"><span class="lab">準備中</span>
+      <p>第3回の表を引き継ぎ、この回で新しく足した手順（対象ごとに手がかりを変える／対数目盛の配置図を背骨にする）を同じ扱いで足します。カードが揃った段階で書きます。</p></div>
+    </section>
+
+    <section id="next">
+      <div class="sec-head"><span class="idx">C</span><h2>次回の予告</h2></div>
+      <div class="box warn"><span class="lab">準備中</span>
+      <p>第5回「太陽と全体の統合」の予告は、この回が揃った段階で書きます。</p></div>
+    </section>
+
+    <div class="foot"><p>距離・軌道の数値は NASA Planetary Fact Sheet（nssdc.gsfc.nasa.gov/planetary/factsheet）と NASA JPL Small-Body Database（ssd.jpl.nasa.gov、いずれも2026年9月25日閲覧）による概数です。小惑星の総数は IAU小惑星センターの集計（minorplanetcenter.net/mpc/summary、2026年9月25日閲覧）で、<strong>毎月増えます</strong>。小惑星帯・カイパーベルト・散乱円盤・オールトの雲の広がりは NASA Science の各ページによります。<strong>オールトの雲の内側・外側の値は推定であり、直接には観測されていません。</strong>「隣の小惑星まで平均約360万km」は本教材による概算で、発表値ではありません（前提は本文に記載）。カークウッドの空隙の距離は、木星の軌道長半径とケプラーの第3法則から計算した値です。地名の緯度経度は USGS Gazetteer of Planetary Nomenclature（planetarynames.wr.usgs.gov、2026年9月25日閲覧）。ケレスの全球地図は USGS Astrogeology「Ceres Dawn FC Global Mosaic 140m」（© NASA/JPL-Caltech/UCLA/MPS/DLR/IDA、パブリックドメイン）を表示用に縮小したもので、<strong>撮影されていない範囲を埋める加工はしていません</strong>。配置図と小惑星帯の図は本教材で作成しました。</p></div>
+  </main>
+</div>
+<div id="site-footer"><noscript><nav class="noscript-nav" aria-label="フッターナビゲーション"><a href="index.html">ホーム</a><a href="self-intro.html">自己紹介</a><a href="study.html">勉強の軌跡</a><a href="videos.html">動画</a><a href="blog.html">ブログ</a><a href="sns.html">各種SNS</a></nav></noscript></div>
+<script src="../js/memoryverse.js?v=r74"></script>
+<script src="../js/layout.js?v=r74"></script>
+<script src="../js/main.js?v=r74"></script>
+<script src="../js/starfield.js?v=r74"></script>
+</body>
+</html>
