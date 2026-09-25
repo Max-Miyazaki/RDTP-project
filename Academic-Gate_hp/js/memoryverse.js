@@ -677,3 +677,22 @@ window.addEventListener('afterprint',function(){
   if(scrim)scrim.addEventListener('click',function(){body.classList.remove('nav-open')});
   if(toc)toc.addEventListener('click',function(e){if(e.target.closest('a'))body.classList.remove('nav-open')});
 })();
+/* --- 図の横送り（§90.1）------------------------------------------------------
+   `.fig-scroll` は狭い画面で図を縮めず、640 相当の幅のまま横に送って見せる入れ物。
+   ここでは「送れるか」「端に着いたか」をクラスにするだけで、見た目は CSS が持つ。
+     .fig.is-scrollable … 送れる幅しかない（「横に送れます」の1行を出す）
+     .fig-scroll.is-start / .is-end … 左端・右端に着いている（その側のフェードを消す） */
+(function(){
+  [].forEach.call(document.querySelectorAll('.fig-scroll'),function(el){
+    var fig=el.closest('.fig');
+    function upd(){
+      var max=el.scrollWidth-el.clientWidth;
+      el.classList.toggle('is-start',el.scrollLeft<=1);
+      el.classList.toggle('is-end',el.scrollLeft>=max-1);
+      if(fig)fig.classList.toggle('is-scrollable',max>1);
+    }
+    el.addEventListener('scroll',upd,{passive:true});
+    window.addEventListener('resize',upd);
+    upd();
+  });
+})();

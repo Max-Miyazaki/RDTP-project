@@ -11,13 +11,13 @@
 <!-- ★ ライト/ダーク切替は停止中（DESIGN.md §44）。サイト全体がダーク基調なので、
      記事だけテーマが変わるのは一貫性を欠くという判断。**復活させるには次の1行の
      コメントを外すだけでよい**（js/theme.js も css/lesson-theme.css も残してある）。 -->
-<!-- <script src="../js/theme.js?v=r74"></script> -->
+<!-- <script src="../js/theme.js?v=r75"></script> -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;500&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
 <!-- サイト共通 → 記事固有 → テーマ上書き の順で読む（lesson-theme.css は
      記事の <style> より後ろに置くこと。css/lesson-theme.css 冒頭の注記どおり） -->
-<link rel="stylesheet" href="../css/style.css?v=r74">
+<link rel="stylesheet" href="../css/style.css?v=r75">
 <!-- MathJax は読み込まない。この記事に数式は1つも無いため（§46.0 の執筆方針は
      数式の話なので該当しない）。設定ブロックもローダーも置かないこと。 -->
 <style>
@@ -143,7 +143,24 @@ code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border
 .g.w{background:var(--key-tint);color:var(--key);border:1px solid var(--key-line)}
 
 .fig{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-lg);padding:18px 18px 12px;margin:20px 0}
-.fig > svg{width:100%;height:auto;display:block}
+.fig > svg,.fig-scroll > svg{width:100%;height:auto;display:block}
+/* ★ 図は縮めずに横へ送る（§90.1）。viewBox 640 の図を 390px 幅で縮めると、
+   9.5 の注記が実寸 4.6px になって読めない。別の縦長の図は作らない —— 同じ図を
+   2つの形で覚えることになるため。本文の枠が 640px を割ったときだけ送れるようになる。
+   合図は3つ：上の1行（.is-scrollable のときだけ）、送れる側の端のフェード、細いスクロールバー。
+   iOS はスクロールバーを動かすまで出さないので、1行とフェードが主な合図。 */
+.fig-scroll{overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.28) transparent}
+.fig-scroll > svg{min-width:640px}
+.fig-scroll::-webkit-scrollbar{height:6px}
+.fig-scroll::-webkit-scrollbar-thumb{background:rgba(255,255,255,.28);border-radius:99px}
+.fig.is-scrollable .fig-scroll{padding-bottom:8px;
+  -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 28px,#000 calc(100% - 44px),transparent);
+          mask-image:linear-gradient(90deg,transparent 0,#000 28px,#000 calc(100% - 44px),transparent)}
+.fig.is-scrollable .fig-scroll.is-start{-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 44px),transparent);mask-image:linear-gradient(90deg,#000 calc(100% - 44px),transparent)}
+.fig.is-scrollable .fig-scroll.is-end{-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 28px);mask-image:linear-gradient(90deg,transparent 0,#000 28px)}
+.fig.is-scrollable .fig-scroll.is-start.is-end{-webkit-mask-image:none;mask-image:none}
+.fig.is-scrollable::before{content:'横に送ると続きが見られます →';display:block;margin:0 0 8px;font-size:11px;letter-spacing:.06em;color:var(--ink-faint)}
+
 .fig svg text{font-family:var(--font-body)}
 .fig figcaption{font-size:13px;color:var(--ink-soft);margin-top:10px;line-height:1.8}
 
@@ -513,8 +530,56 @@ code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border
   .mod.cut-view .cut-svg{width:170%}
   .mod.cut-view.open .cut-list{display:block}
 }
+/* --- 形が特徴の天体を「同じ縮尺で」並べる（§90.3）-------------------------------
+   リュウグウとベンヌは形が似ているので、1枚ずつではなく並べて比べる。
+   ★ 縮尺を揃えるのがこの図の要点。画像は2枚とも「本体の幅＝画像の幅÷1.08」で
+     切り出してあるので（余白は本体幅の4%ずつ）、画像の幅の比がそのまま赤道の
+     差し渡しの比になる。リュウグウ 1,004m：ベンヌ 505m（JPL SBDB）。
+       リュウグウ 52% → ベンヌ 52 × 505 ÷ 1004 ＝ 26.2%、500m ＝ 52 × 500 ÷ 1084 ＝ 24.0%（段の幅に対して）
+     物差しはリュウグウの本体の左端から始める。段は中央寄せなので画像の左端は (100−52−26.2−8)÷2 ＝ 6.9%、
+     本体はそこから余白 52×0.04÷1.08 ＝ 1.9% 内側で 8.8%。★ 物差しの幅（%）は .pair-scale の幅
+     （＝段の 91.2%）に対する値なので 24.0 ÷ 0.912 ＝ 26.3%。
+     画像を差し替えたら、これらの値を必ず計算し直すこと。
+   ★ 地図のカード（.map-view）とは違い、押しても何も開かない。見るだけの図。 */
+.pair-fig{margin:0 0 14px;background:#000;border:1px solid var(--line);border-radius:var(--radius-md);padding:18px 16px 14px}
+.pair-stage{display:flex;align-items:flex-end;justify-content:center;gap:8%}
+.pair-stage figure{margin:0;text-align:center}
+.pair-stage .p-r{flex:0 0 52%}
+.pair-stage .p-b{flex:0 0 26.2%}
+.pair-stage img{display:block;width:100%;height:auto}
+.pair-stage .nm{display:block;margin-top:8px;font-size:13px;color:var(--ink);font-weight:500;line-height:1.4}
+.pair-stage .sz{display:block;font-size:11px;color:var(--ink-faint);line-height:1.5}
+.pair-scale{display:flex;align-items:center;gap:8px;margin:12px 0 0 8.8%;font-size:11px;color:var(--ink-soft)}
+.pair-scale i{display:block;flex:0 0 26.3%;height:6px;border:1px solid var(--ink-soft);border-top:0}
+.pair-fig figcaption{margin-top:12px;font-size:10.5px;color:var(--ink-faint);line-height:1.6}
+/* 比べる表。左の列は項目、残り2列が天体。狭い画面でも2列を横に並べたまま
+   （縦に積むと「比べる」形でなくなる）。★ 横送りにもしない —— 最初は 520px の
+   最小幅を付けていたが、390px ではベンヌの列が画面の外に出て、1列ずつしか見えず
+   比べられなかった（実測）。狭い画面では文字と余白を詰めて3列を収める。 */
+.pair-table th:not(:first-child){width:40%}
+.pair-table td:first-child{white-space:nowrap;color:var(--ink-faint);font-size:12.5px}
+@media (max-width:560px){
+  .pair-table{font-size:12.5px}
+  .pair-table th,.pair-table td{padding:7px 7px}
+  .pair-table td:first-child{font-size:11px;white-space:normal;width:4.5em}
+}
+/* 分かったこと／分かっていないことの2段。色は既存の箱のトークンだけで作る。 */
+.known{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:10px 0 0}
+.known > div{border:1px solid var(--line);border-radius:var(--radius-sm);padding:10px 13px;background:var(--surface)}
+.known .lab{display:block;font-size:10.5px;font-weight:500;letter-spacing:.12em;margin-bottom:4px}
+.known .k-yes{border-color:var(--good-line);background:var(--good-tint)}.known .k-yes .lab{color:var(--good)}
+.known .k-no{border-color:var(--amber-line);background:var(--amber-tint)}.known .k-no .lab{color:var(--amber)}
+.known .k-unseen{border-color:var(--teach-line);background:var(--teach-tint)}.known .k-unseen .lab{color:var(--teach)}
+.known .k-wide{grid-column:1 / -1}
+.known ul{margin:2px 0 0}
+@media (max-width:560px){.known{grid-template-columns:1fr}}
+/* ★ 900px 以下では .row が縦並び（flex-direction:column）になり、align-items:flex-start の
+   せいで .v が中身の幅まで広がる。最小幅 520px の比べる表を入れると、行ごと画面の外へ
+   はみ出した（390px で右端 561px、実測）。.v を行の幅に揃え、表は .table-scroll の中で送る。 */
+@media (max-width:900px){.mod-b .row > .v{align-self:stretch}}
+
 </style>
-<link rel="stylesheet" href="../css/lesson-theme.css?v=r74">
+<link rel="stylesheet" href="../css/lesson-theme.css?v=r75">
 </head>
 <body data-page="study" class="is-article" data-node="memoryverse_1-4">
 <canvas id="starfield" aria-hidden="true"></canvas>
@@ -536,14 +601,17 @@ code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border
       <li><a href="#belt"><span class="n">04</span>小惑星帯</a>
         <ul class="sub">
           <li><a href="#ceres">ケレス</a></li>
+          <li><a href="#vesta">ベスタ</a></li>
         </ul>
       </li>
-      <li><a href="#rest"><span class="n">05</span>残りのカード</a></li>
+      <li><a href="#ryugu-bennu"><span class="n">05</span>リュウグウとベンヌ</a></li>
+      <li><a href="#trojans"><span class="n">06</span>木星のトロヤ群</a></li>
+      <li><a href="#rest"><span class="n">07</span>残りのカード</a></li>
       <li class="part">横断して見る</li>
-      <li><a href="#cross"><span class="n">06</span>横断</a></li>
+      <li><a href="#cross"><span class="n">08</span>横断</a></li>
       <li class="part">訓練</li>
-      <li><a href="#menu"><span class="n">07</span>訓練メニュー</a></li>
-      <li><a href="#drills"><span class="n">08</span>演習</a></li>
+      <li><a href="#menu"><span class="n">09</span>訓練メニュー</a></li>
+      <li><a href="#drills"><span class="n">10</span>演習</a></li>
       <li class="part">付録</li>
       <li><a href="#plan"><span class="n">A</span>第1〜5回の改訂</a></li>
       <li><a href="#evidence"><span class="n">B</span>根拠と強度</a></li>
@@ -556,8 +624,8 @@ code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border
       <h1>第4回　小天体<span class="sub">場所と性質で覚える</span></h1>
       <p class="lead">第2回は「地面のある天体を地図で」、第3回は「地面のない天体を断面で」覚える回でした。<strong>第4回の対象は、その2つでは分けきれません。</strong>直径900kmの準惑星から、差し渡し1kmに満たない岩まで、数が多すぎて形も揃っていないからです。</p>
       <p>そこでこの回は、<strong>対象ごとに覚える手がかりを変えます</strong>。地図が作れるものは地図で、形が特徴のものは形で、そして数が多すぎるものは<strong>「どこに広がっているか」</strong>で。分け方は §02 に書きました。</p>
-      <div class="box warn"><span class="lab">いまは配置図と2枚だけです</span>
-      <p>この回はまず<strong>配置図（§03）と、小惑星帯・ケレスの2枚</strong>だけを作りました。見せ方を決めてから残りに進みます。到達目標・残りのカード・横断・訓練メニュー・演習・付録の各節は<strong>まだ枠だけ</strong>です。</p></div>
+      <div class="box warn"><span class="lab">いまは配置図と5枚までです</span>
+      <p>この回はいま、<strong>配置図（§03）と、小惑星帯・ケレス・ベスタ・リュウグウとベンヌ・木星のトロヤ群の5枚</strong>までを作りました。形が特徴の天体（リュウグウとベンヌ）の見せ方を決めてから残りに進みます。到達目標・残りのカード・横断・訓練メニュー・演習・付録の各節は<strong>まだ枠だけ</strong>です。</p></div>
     </div>
 
     <section id="goals">
@@ -596,7 +664,7 @@ code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border
       <p>横軸は<strong>対数目盛</strong>——1目盛で10倍です。ふつうの目盛だと、地球の1 AU と オールトの雲の10万 AU を1本の線に載せられません。対数にすると、10万倍の幅が1枚に収まります。</p>
 
       <figure class="fig">
-        <svg viewBox="0 0 640 400" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="太陽からの距離を対数目盛で並べた配置図。8惑星、小惑星帯、トロヤ群、カイパーベルト、散乱円盤、オールトの雲、そして約27万AUのプロキシマ・ケンタウリまで">
+        <div class="fig-scroll"><svg viewBox="0 0 640 400" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="太陽からの距離を対数目盛で並べた配置図。8惑星、小惑星帯、地球近傍小惑星、トロヤ群、カイパーベルト、散乱円盤、オールトの雲、そして約27万AUのプロキシマ・ケンタウリまで">
           <text x="44" y="22" font-size="12.5" font-weight="500" fill="var(--ink)">太陽からの距離 ― 対数目盛（1目盛で10倍）</text>
           <text x="44" y="52" font-size="10.5" fill="var(--ink-faint)">8惑星</text>
           <line x1="54.0" y1="56" x2="54.0" y2="62" stroke="rgba(255,255,255,.22)" stroke-width="1"/>
@@ -643,12 +711,16 @@ code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border
           <text x="215.2" y="179.0" font-size="9.5" fill="var(--ink-faint)" text-anchor="end">30〜50 AU</text>
           <rect x="224.2" y="192.0" width="47.1" height="12.0" rx="2" fill="rgba(255,255,255,.05)" stroke="var(--line-strong)" stroke-width="1" stroke-dasharray="4 3"/>
           <text x="281.4" y="202.0" font-size="10.5" fill="var(--ink-soft)">散乱円盤（30 AU 〜 100 AU 超）</text>
+          <line x1="96.6" y1="236.0" x2="96.6" y2="273.0" stroke="var(--amber)" stroke-width="1.2"/>
+          <polygon points="92.6,272.0 100.6,272.0 96.6,279.0" fill="var(--amber)"/>
+          <text x="104.6" y="245.0" font-size="11.5" font-weight="500" fill="var(--amber)">地球近傍小惑星（リュウグウ・ベンヌ）</text>
+          <text x="104.6" y="259.0" font-size="9.5" fill="var(--ink-faint)">1 AU 前後。地球の軌道の近くを通る</text>
           <rect x="388.6" y="234.0" width="153.1" height="18.0" rx="2" fill="rgba(123,77,255,.14)" stroke="var(--teach)" stroke-width="1" stroke-dasharray="5 4"/>
           <text x="465.2" y="247.0" font-size="11.5" font-weight="500" fill="var(--teach)" text-anchor="middle">オールトの雲（推定）</text>
           <text x="465.2" y="227.0" font-size="9.5" fill="var(--ink-faint)" text-anchor="middle">2,000 〜 100,000 AU ― 直接には観測されていない</text>
           <line x1="44.0" y1="286.0" x2="608.0" y2="286.0" stroke="var(--line-strong)" stroke-width="1.4"/>
           <line x1="91.1" y1="282.0" x2="91.1" y2="291.0" stroke="var(--line-strong)" stroke-width="1"/>
-          <text x="91.1" y="305.0" font-size="10" fill="var(--ink-faint)" text-anchor="middle">1 AU</text>
+          <text x="91.1" y="305.0" font-size="10" fill="var(--ink-faint)" text-anchor="middle">1</text>
           <line x1="181.2" y1="282.0" x2="181.2" y2="291.0" stroke="var(--line-strong)" stroke-width="1"/>
           <text x="181.2" y="305.0" font-size="10" fill="var(--ink-faint)" text-anchor="middle">10</text>
           <line x1="271.4" y1="282.0" x2="271.4" y2="291.0" stroke="var(--line-strong)" stroke-width="1"/>
@@ -671,11 +743,11 @@ code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border
           <circle cx="44.0" cy="363.0" r="2.8" fill="var(--ink)"/>
           <text x="41.0" y="385.0" font-size="9.5" fill="var(--ink-faint)" text-anchor="start">太陽</text>
           <polygon points="596.0,355.0 602.0,363.0 596.0,371.0 590.0,363.0" fill="var(--key)"/>
-          <text x="602.0" y="385.0" font-size="9.5" fill="var(--key)" text-anchor="end">プロキシマ</text>
+          <text x="604.0" y="348.0" font-size="9.5" fill="var(--key)" text-anchor="end">プロキシマ</text>
           <line x1="250.0" y1="370.0" x2="250.0" y2="377.0" stroke="var(--teach)" stroke-width="1"/>
           <text x="257.0" y="386.0" font-size="10" font-weight="500" fill="var(--teach)" text-anchor="start">← ここまでがオールトの雲（外側 10万 AU）＝ 恒星までの約37%</text>
-        </svg>
-        <figcaption>上段は対数目盛。1目盛が10倍なので、<strong>近いところが引き伸ばされ、遠いところが圧縮されます</strong>。8惑星が左の3分の1に固まって見えるのはそのためで、実際の間隔ではありません。<br>下段は同じ距離を<strong>線形（ふつうの目盛）</strong>で1本にしたもの。こちらが実際の比です。8惑星は左端の1点に潰れて見えなくなります。<br>惑星の距離は NASA Planetary Fact Sheet（軌道長半径）。小惑星帯・カイパーベルト・散乱円盤・オールトの雲の範囲は NASA Science の各ページ、プロキシマ・ケンタウリまでの距離は約4.2光年（＝約27万 AU）です（いずれも2026年9月25日閲覧）。<strong>オールトの雲の内側・外側の値は推定で、直接には観測されていません。</strong></figcaption>
+        </svg></div>
+        <figcaption>上段は対数目盛。1目盛が10倍なので、<strong>近いところが引き伸ばされ、遠いところが圧縮されます</strong>。8惑星が左の3分の1に固まって見えるのはそのためで、実際の間隔ではありません。<br>下段は同じ距離を<strong>線形（ふつうの目盛）</strong>で1本にしたもの。こちらが実際の比です。8惑星は左端の1点に潰れて見えなくなります。<br><strong>地球近傍小惑星だけは帯でなく矢印</strong>にしました。決まった範囲に広がる領域ではなく、<strong>地球の軌道の近くを通る小惑星をまとめた呼び名</strong>だからです。もとは小惑星帯にいたものが、木星との共鳴などで軌道を歪められ、内側へ入ってきたと考えられています（NASA CNEOS／Granvik ほか 2017, <i>Astronomy &amp; Astrophysics</i>）。§04 のカークウッドの空隙で見た<strong>「共鳴は追い出す」の、追い出された先</strong>です。<br>惑星の距離は NASA Planetary Fact Sheet（軌道長半径）。小惑星帯・カイパーベルト・散乱円盤・オールトの雲の範囲は NASA Science の各ページ、プロキシマ・ケンタウリまでの距離は約4.2光年（＝約27万 AU）です（いずれも2026年9月25日閲覧）。<strong>オールトの雲の内側・外側の値は推定で、直接には観測されていません。</strong></figcaption>
       </figure>
 
       <div class="box principle"><span class="lab">太陽系は、思っているよりずっと遠くまで続きます</span>
@@ -689,6 +761,7 @@ code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border
         <tr><th style="width:26%">対象</th><th style="width:26%">太陽からの距離</th><th>備考</th></tr>
         <tr><td>8惑星</td><td>0.39〜30.1 AU</td><td>軌道長半径。水星0.39／金星0.72／地球1.00／火星1.52／木星5.20／土星9.57／天王星19.2／海王星30.2</td></tr>
         <tr><td><strong>小惑星帯</strong></td><td><strong>約2.1〜3.3 AU</strong></td><td>火星と木星のあいだ</td></tr>
+        <tr><td><strong>地球近傍小惑星</strong></td><td><strong>1 AU 前後</strong></td><td>地球の軌道の近くを通る小惑星の呼び名で、<strong>帯ではない</strong>。もとは小惑星帯から共鳴で押し出されてきたもの。リュウグウ（1.19 AU）・ベンヌ（1.13 AU）はここ</td></tr>
         <tr><td><strong>木星のトロヤ群</strong></td><td><strong>5.2 AU</strong></td><td>木星と同じ距離。木星の<strong>前後60度</strong>の2か所に溜まっている</td></tr>
         <tr><td><strong>カイパーベルト</strong></td><td><strong>約30〜50 AU</strong></td><td>海王星の軌道の外側。冥王星もここ</td></tr>
         <tr><td><strong>散乱円盤</strong></td><td><strong>約30〜100 AU超</strong></td><td>外側の端がはっきりしない。海王星に弾かれて細長い軌道になった天体の集まり</td></tr>
@@ -709,7 +782,7 @@ code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border
           <p class="vsw-note">地図も球もありません。小惑星帯は天体ではなく<strong>領域</strong>なので、覚えるのは「どこに、どれくらいの密度で、どう広がっているか」です</p>
 
           <figure class="fig" style="margin:0 0 14px">
-            <svg viewBox="0 0 640 256" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="小惑星帯を距離で拡大した図。カークウッドの空隙と主な4天体の位置">
+            <div class="fig-scroll"><svg viewBox="0 0 640 256" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="小惑星帯を距離で拡大した図。カークウッドの空隙と主な4天体の位置">
             <text x="70" y="24" font-size="12.5" font-weight="500" fill="var(--ink)">小惑星帯の中身 ― 太陽からの距離（線形目盛）</text>
             <text x="70" y="40" font-size="10.5" fill="var(--ink-faint)">帯の中は一様ではなく、木星と軌道が共鳴する距離だけ、すっぽり空いている</text>
             <rect x="105.3" y="112.0" width="424.0" height="44.0" rx="3" fill="var(--amber-tint)" stroke="var(--amber-line)" stroke-width="1"/>
@@ -1085,7 +1158,7 @@ code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border
             <text x="614.0" y="231.0" font-size="10" fill="var(--ink-faint)">AU</text>
             <text x="4.0" y="138.0" font-size="10" fill="var(--ink-faint)" text-anchor="start">←火星</text>
             <text x="539.3" y="138.0" font-size="10" fill="var(--ink-faint)">木星 5.20 AU →</text>
-          </svg>
+          </svg></div>
             <figcaption>帯の中身を、太陽からの距離で拡大したもの（今度は<strong>線形目盛</strong>）。点は小惑星の分布の模式で、実際の位置ではありません。<strong>黒い縦の筋がカークウッドの空隙</strong>——木星と軌道が共鳴する距離だけ、天体がほとんどいません。下の4つが帯で最も大きい天体です。位置は JPL Small-Body Database の軌道長半径（2026年9月25日閲覧）。</figcaption>
           </figure>
 
@@ -1127,7 +1200,7 @@ code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border
           <div class="table-scroll"><table class="mini-table">
             <tr><th style="width:20%">名前</th><th style="width:16%">距離</th><th style="width:18%">直径</th><th>覚えどころ</th></tr>
             <tr><td><strong>ケレス</strong><br>Ceres</td><td>2.77 AU</td><td><strong>939km</strong></td><td>帯で最大。<strong>小惑星帯で唯一の準惑星</strong>。次のカードで扱います</td></tr>
-            <tr><td><strong>ベスタ</strong><br>Vesta</td><td>2.36 AU</td><td>523km</td><td><strong>小惑星としては最大</strong>。表面が溶けて分化しており、地球から肉眼で見えることがある唯一の小惑星</td></tr>
+            <tr><td><strong>ベスタ</strong><br>Vesta</td><td>2.36 AU</td><td>523km</td><td><strong>小惑星としては最大</strong>。表面が一度溶けた玄武岩で、地球に落ちる隕石の約6%の出どころ。地球から肉眼で見えることがある唯一の小惑星。ケレスの次のカードで扱います</td></tr>
             <tr><td><strong>パラス</strong><br>Pallas</td><td>2.77 AU</td><td>513km</td><td>軌道が<strong>34.9度も傾いている</strong>。帯の中では異質な軌道</td></tr>
             <tr><td><strong>ヒギエア</strong><br>Hygiea</td><td>3.15 AU</td><td>407km</td><td>帯の外側寄り。4番目に大きい</td></tr>
           </table></div>
@@ -1143,14 +1216,14 @@ code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border
       <div class="sec-head is-sub"><h2>ケレス</h2></div>
       <p><strong>配置図のどこか</strong>——小惑星帯のほぼ真ん中、<strong>2.77 AU</strong>。帯で最も大きく、<strong>この回で「地図が作れる4天体」の1つ</strong>です。</p>
 
-      <div class="mod map-view has-globe" data-globe="../image/memoryverse/ceres-map.jpg?v=r74" data-grid="equi">
+      <div class="mod map-view has-globe" data-globe="../image/memoryverse/ceres-map.jpg?v=r75" data-grid="equi">
         <div class="mod-h"><span class="no">ケレス</span><span class="ttl">小惑星帯で唯一の準惑星</span><span class="tag">CERES</span></div>
         <div class="mod-b">
           <div class="vsw" role="group" aria-label="表示の切り替え" hidden>
             <button type="button" class="vsw-b is-on" data-view="map" aria-pressed="true">地図</button>
             <button type="button" class="vsw-b" data-view="globe" aria-pressed="false">球</button>
           </div>
-          <div class="orbit"><svg class="grid" aria-hidden="true" preserveAspectRatio="none"></svg><svg class="links" aria-hidden="true" preserveAspectRatio="none"></svg><div class="stat geo" data-n="1" data-x="0.1648" data-y="0.3899" data-lat="19.8" data-lon="-120.7"><i class="n">1</i><b>オッカトル・クレーター</b><span class="v">中央に明るい斑点</span></div><div class="stat geo" data-n="2" data-x="0.3783" data-y="0.5582" data-lat="-10.5" data-lon="-43.8"><i class="n">2</i><b>アフナ山</b><span class="v">高さ 約4kmの孤立した山</span></div><div class="stat geo" data-n="3" data-x="0.8444" data-y="0.5598" data-lat="-10.8" data-lon="124.0"><i class="n">3</i><b>ケルワン</b><span class="v">直径 約280kmで最大</span></div><div class="stat geo" data-n="4" data-x="0.3124" data-y="0.7366" data-lat="-42.6" data-lon="-67.5"><i class="n">4</i><b>ヤロデ</b><span class="v">南半球の大きな盆地</span></div><div class="core"><button type="button" class="img-btn" aria-expanded="false"><figure class="planet-img"><div class="orb"><div class="frame"><img class="map-img" src="../image/memoryverse/ceres-map.jpg?v=r74" data-alt="https://astrogeology.usgs.gov/ckan/dataset/6ad84c9a-1fad-4869-b4f6-b52c5c2ace36/resource/9f757a65-8d8a-4349-a72d-8062387574b3/download/ceres_dawn_fc_dlr_global_feb2016_1024.jpg" alt="ケレスの全球地図（ドーン探査機のフレーミングカメラによるモザイク。正距円筒）" loading="lazy" decoding="async" onerror="mvNext(this)"><p class="fallback">画像を読み込めませんでした。<br><a href="https://science.nasa.gov/dwarf-planets/ceres/" target="_blank" rel="noopener">NASAのケレスのページで見る</a></p></div></div><figcaption>USGS Astrogeology「Ceres Dawn FC Global Mosaic 140m」（ドーン探査機のフレーミングカメラ）<br>正距円筒・惑星中心系・<strong>東経が右へ増え、中央が東経0度、左右の端が東経180度</strong>。配布画像の定義域がそのままこの向きなので、ずらしていません<br>線は経度・緯度とも30度ごと（狭い画面は60度ごと）<br><strong>南緯75度より南は約52%が未撮影</strong>（北極域にも数%）。全球の約5.7%。埋める加工はしていません<br>© NASA/JPL-Caltech/UCLA/MPS/DLR/IDA ／ USGS Astrogeology（パブリックドメイン）</figcaption></figure><span class="hint"><span class="h-c">クリックで地形を開く</span><span class="h-o">クリックで閉じる</span></span></button></div></div>
+          <div class="orbit"><svg class="grid" aria-hidden="true" preserveAspectRatio="none"></svg><svg class="links" aria-hidden="true" preserveAspectRatio="none"></svg><div class="stat geo" data-n="1" data-x="0.1648" data-y="0.3899" data-lat="19.8" data-lon="-120.7"><i class="n">1</i><b>オッカトル・クレーター</b><span class="v">中央に明るい斑点</span></div><div class="stat geo" data-n="2" data-x="0.3783" data-y="0.5582" data-lat="-10.5" data-lon="-43.8"><i class="n">2</i><b>アフナ山</b><span class="v">高さ 約4kmの孤立した山</span></div><div class="stat geo" data-n="3" data-x="0.8444" data-y="0.5598" data-lat="-10.8" data-lon="124.0"><i class="n">3</i><b>ケルワン</b><span class="v">直径 約280kmで最大</span></div><div class="stat geo" data-n="4" data-x="0.3124" data-y="0.7366" data-lat="-42.6" data-lon="-67.5"><i class="n">4</i><b>ヤロデ</b><span class="v">南半球の大きな盆地</span></div><div class="core"><button type="button" class="img-btn" aria-expanded="false"><figure class="planet-img"><div class="orb"><div class="frame"><img class="map-img" src="../image/memoryverse/ceres-map.jpg?v=r75" data-alt="https://astrogeology.usgs.gov/ckan/dataset/6ad84c9a-1fad-4869-b4f6-b52c5c2ace36/resource/9f757a65-8d8a-4349-a72d-8062387574b3/download/ceres_dawn_fc_dlr_global_feb2016_1024.jpg" alt="ケレスの全球地図（ドーン探査機のフレーミングカメラによるモザイク。正距円筒）" loading="lazy" decoding="async" onerror="mvNext(this)"><p class="fallback">画像を読み込めませんでした。<br><a href="https://science.nasa.gov/dwarf-planets/ceres/" target="_blank" rel="noopener">NASAのケレスのページで見る</a></p></div></div><figcaption>USGS Astrogeology「Ceres Dawn FC Global Mosaic 140m」（ドーン探査機のフレーミングカメラ）<br>正距円筒・惑星中心系・<strong>東経が右へ増え、中央が東経0度、左右の端が東経180度</strong>。配布画像の定義域がそのままこの向きなので、ずらしていません<br>線は経度・緯度とも30度ごと（狭い画面は60度ごと）<br><strong>南緯75度より南は約52%が未撮影</strong>（北極域にも数%）。全球の約5.7%。埋める加工はしていません<br>© NASA/JPL-Caltech/UCLA/MPS/DLR/IDA ／ USGS Astrogeology（パブリックドメイン）</figcaption></figure><span class="hint"><span class="h-c">クリックで地形を開く</span><span class="h-o">クリックで閉じる</span></span></button></div></div>
           <div class="globe" hidden>
             <div class="globe-stage"><canvas class="globe-cv"></canvas><p class="globe-fail" hidden>球を表示できませんでした。展開図でご覧ください。</p></div>
             <div class="globe-ctl">
@@ -1204,26 +1277,390 @@ code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border
       </div>
     </section>
 
+    <section id="vesta">
+      <div class="sec-head is-sub"><h2>ベスタ</h2></div>
+      <p><strong>配置図のどこか</strong>——小惑星帯の内側寄り、<strong>2.36 AU</strong>。ケレス（2.77 AU）より太陽に近い側です。<strong>「地図が作れる4天体」の2つめ</strong>で、ケレスと同じくドーンが周回して全球を撮りました。</p>
+
+      <div class="mod map-view has-globe" data-globe="../image/memoryverse/vesta-map.jpg?v=r75" data-grid="equi">
+        <div class="mod-h"><span class="no">ベスタ</span><span class="ttl">南極に、天体とほぼ同じ大きさの傷がある</span><span class="tag">VESTA</span></div>
+        <div class="mod-b">
+          <div class="vsw" role="group" aria-label="表示の切り替え" hidden>
+            <button type="button" class="vsw-b is-on" data-view="map" aria-pressed="true">地図</button>
+            <button type="button" class="vsw-b" data-view="globe" aria-pressed="false">球</button>
+          </div>
+          <div class="orbit"><svg class="grid" aria-hidden="true" preserveAspectRatio="none"></svg><svg class="links" aria-hidden="true" preserveAspectRatio="none"></svg><div class="stat geo" data-n="1" data-x="0.7397" data-y="0.8997" data-lat="-72.0" data-lon="86.3"><i class="n">1</i><b>レアシルビア</b><span class="v">南極の巨大な衝突盆地</span></div><div class="stat geo" data-n="2" data-x="0.3491" data-y="0.7663" data-lat="-47.9" data-lon="-54.3"><i class="n">2</i><b>ベネネイア</b><span class="v">レアシルビアの下の古い盆地</span></div><div class="stat geo" data-n="3" data-x="0.4432" data-y="0.4501" data-lat="9.0" data-lon="-20.5"><i class="n">3</i><b>雪だるまクレーター</b><span class="v">3つ並んだクレーター</span></div><div class="stat geo" data-n="4" data-x="0.0451" data-y="0.5503" data-lat="-9.1" data-lon="-163.8"><i class="n">4</i><b>ディヴァリア溝</b><span class="v">赤道を巻く長い溝</span></div><div class="core"><button type="button" class="img-btn" aria-expanded="false"><figure class="planet-img"><div class="orb"><div class="frame"><img class="map-img" src="../image/memoryverse/vesta-map.jpg?v=r75" data-alt="https://astrogeology.usgs.gov/ckan/dataset/ec63e420-a8bd-4a90-9341-a5754b551574/resource/9306febf-0c7a-49ee-b7b0-a1f043297bf7/download/vesta_dawn_fc_hamo_mosaic_global_1024.jpg" alt="ベスタの全球地図（ドーン探査機のフレーミングカメラによるモザイク。正距円筒）" loading="lazy" decoding="async" onerror="mvNext(this)"><p class="fallback">画像を読み込めませんでした。<br><a href="https://science.nasa.gov/solar-system/asteroids/4-vesta/" target="_blank" rel="noopener">NASAのベスタのページで見る</a></p></div></div><figcaption>USGS Astrogeology「Vesta Dawn FC HAMO Global Mosaic 60m」（ドーン探査機のフレーミングカメラ）<br>正距円筒・惑星中心系・<strong>東経が右へ増え、中央が東経0度、左右の端が東経180度</strong>。配布画像の定義域がそのままこの向きなので、ずらしていません<br>経度は IAU の「Claudia Double Prime」系（クラウディア・クレーターが東経146度）。<strong>ドーン初期の論文の経度とは150度ずれます</strong><br>線は経度・緯度とも30度ごと（狭い画面は60度ごと）<br><strong>北緯60度あたりから北は、撮影時に影だった部分が黒く欠けています</strong>（上辺の中央の黒い四角もその1つ）。埋める加工はしていません<br>© NASA/JPL-Caltech/UCLA/MPS/DLR/IDA ／ USGS Astrogeology</figcaption></figure><span class="hint"><span class="h-c">クリックで地形を開く</span><span class="h-o">クリックで閉じる</span></span></button></div></div>
+          <div class="globe" hidden>
+            <div class="globe-stage"><canvas class="globe-cv"></canvas><p class="globe-fail" hidden>球を表示できませんでした。展開図でご覧ください。</p></div>
+            <div class="globe-ctl">
+              <button type="button" class="globe-b globe-home">基準に戻す</button>
+              <button type="button" class="globe-b globe-open" aria-pressed="false">地形を開く</button>
+            </div>
+            <ol class="globe-list" hidden></ol>
+            <p class="globe-note">覚えるのは展開図のほうです。球は、展開図で覚えた位置が実物でどう見えるかを確かめるためのものです。既定の向きは東経0度が正面・北が上です。<strong>ベスタは実際には球ではなく、南極がえぐれた形</strong>（下の「形」の行）なので、球に貼ると形は正しくありません。地形どうしの位置関係だけを見てください。</p>
+            <p class="globe-cap">USGS Astrogeology「Vesta Dawn FC HAMO Global Mosaic 60m」（正距円筒・中央は東経0度、左右の端は東経180度）<br>線は経度・緯度とも30度ごと<br>© NASA/JPL-Caltech/UCLA/MPS/DLR/IDA ／ USGS Astrogeology</p>
+          </div>
+
+          <div class="row"><span class="k">基本</span><span class="v">平均直径 <strong>523km</strong>（569×554×453km）。太陽からの距離 <strong>2.36 AU</strong>。公転周期 <strong>3.63年</strong>、自転周期 <strong>5.34時間</strong>。平均密度 <strong>3.46 g/cm³</strong>——ケレス（2.16）よりずっと重く、岩と金属でできています。反射率 <strong>0.42</strong>——ケレスの約5倍明るく、<strong>地球から肉眼で見えることがある唯一の小惑星</strong>です<br><span style="font-size:12.5px;color:var(--ink-faint)">出典：NASA JPL Small-Body Database（ssd.jpl.nasa.gov、2026年9月25日閲覧。物理値は Park ほか 2025, <i>Nature Astronomy</i> による）。公転周期は同データベースの1,330日を年に直したもの</span></span></div>
+
+          <div class="row"><span class="k">形</span><span class="v"><strong>球ではありません。</strong>3つの軸が569・554・453km で、南北だけが短い——<strong>南極がえぐれている</strong>ためです。小惑星帯の天体としてはケレスに次ぐ大きさですが、<strong>自分の重力で丸くなりきっていない</strong>ので、準惑星ではなく<strong>小惑星</strong>に分類されています。ケレスとの違いはこの1点で覚えてください。</span></div>
+
+          <div class="row"><span class="k">覚える地形</span><span class="v">
+          <div class="table-scroll"><table class="mini-table">
+            <tr><th style="width:27%">名前</th><th style="width:36%">何か</th><th>位置の目印</th></tr>
+            <tr><td><strong>レアシルビア</strong><br>Rheasilvia</td><td>直径 約450〜500km の<strong>衝突盆地</strong>。ベスタの直径とほぼ同じ大きさ。中央の山は高さ<strong>20〜25km</strong>で、太陽系でも最も高い山の1つ</td><td>南緯72度。<strong>地図のいちばん下、右寄り</strong>。正距円筒では南極が下辺いっぱいに引き伸ばされるので、盆地は下の帯全体に広がって見える</td></tr>
+            <tr><td><strong>ベネネイア</strong><br>Veneneia</td><td>直径 約400km。レアシルビアより<strong>古い</strong>もう1つの盆地で、半分がレアシルビアに上書きされている</td><td>南緯48度・東経306度（西経54度）。<strong>地図の左下</strong></td></tr>
+            <tr><td><strong>雪だるまクレーター</strong><br>Marcia・Calpurnia・Minucia</td><td>大・中・小の3つのクレーターが<strong>縦に連なって、雪だるまに見える</strong>。いちばん大きいマルキアで直径 約68km</td><td>北緯9〜20度、東経0度のすぐ西。<strong>地図の中央やや左、赤道の少し上</strong>。明るい肌色の一帯の中</td></tr>
+            <tr><td><strong>ディヴァリア溝</strong><br>Divalia Fossae</td><td>長さ 約550km、<strong>赤道をぐるりと巻く平行な溝</strong>の束</td><td>赤道のすぐ下、東経139〜264度（東経180度をまたぐ）。<strong>地図の左右の端</strong>に横縞として見える</td></tr>
+          </table></div>
+          <p style="font-size:12.5px;color:var(--ink-faint);margin:2px 0 0">USGS Gazetteer of Planetary Nomenclature（2026年9月25日閲覧）。ベスタの地名は<strong>惑星中心系・東経0〜360度</strong>で記録されています。レアシルビアの直径は Gazetteer が450km、NASA の解説が約500km と書いており、ここでは幅で示しました。</p>
+          </span></div>
+
+          <div class="row"><span class="k">南極の<br>2つの傷</span><span class="v"><strong>この地図で覚えるべきことは、南極にある2つの巨大な衝突の跡と、それが残したものです。</strong>
+          <ul>
+            <li><strong>レアシルビアの直径は、ベスタ自身の平均直径の9割を超えます</strong>（NASA は「約95%」と書いています）。天体の差し渡しとほぼ同じ大きさの傷です。その下に、さらに古い<strong>ベネネイア</strong>が埋まっています</li>
+            <li>赤道の<strong>ディヴァリア溝</strong>は、レアシルビアの衝突の衝撃でできたと考えられています。溝の向きが盆地の中心を囲むように並んでいることが根拠です。北半球の<strong>サトゥルナリア溝</strong>（地図の中央右上）は、同じようにベネネイアから来たと考えられています</li>
+            <li>この衝突で飛び散ったかけらが、<strong>いまも地球に落ちてきます</strong>——次の行</li>
+          </ul></span></div>
+
+          <div class="row"><span class="k">地球に<br>届く</span><span class="v"><strong>地球に落ちてくる隕石の約6%は、ベスタから来ています</strong>（JPL、2012年5月9日発表）。HED隕石（ハワーダイト・ユークライト・ダイオジェナイト）と呼ばれるグループで、分光の特徴がベスタの表面と一致します。<br><strong>探査機が行く前から、ベスタのかけらは手元にあった</strong>ことになります。リュウグウやベンヌのように探査機が試料を持ち帰らなくても、成分を調べられた数少ない天体です。</span></div>
+
+          <div class="row"><span class="k">中身</span><span class="v">HED隕石は<strong>玄武岩</strong>——一度溶けた岩が固まったものです。そのため、ベスタは<strong>内部まで溶けて、地球のように地殻・マントル・鉄の核に分かれた</strong>（分化した）天体だと考えられてきました。NASA の解説も「地殻・マントル・核に分かれている」と書いています。
+          <p style="margin:8px 0 0">ただし、<strong>2025年に発表されたドーンのデータの再解析では、「内部はほぼ一様で、鉄の核はとても小さいか、無いかもしれない」</strong>とされました（JPL、2025年5月14日発表。Park ほか 2025, <i>Nature Astronomy</i>）。表面が溶けたことは隕石から確かですが、<strong>核があるかどうかは、まだ確かめられていません</strong>。第3回の演習5の区別でいえば、手がかりはあるのに決め手がない側です。</p></span></div>
+
+          <div class="row"><span class="k">探査</span><span class="v"><ul>
+            <li><strong>ドーン</strong>（2011年7月16日〜2012年9月5日）——<strong>ベスタを周回した唯一の探査機</strong>。このあとケレスへ向かい、<strong>2つの天体を続けて周回した最初の探査機</strong>になりました（ケレスのカード）。このカードの地図も、雪だるまの名前も、すべてドーンの成果です</li>
+            <li>その後、ベスタへ向かった探査機はありません（2026年9月時点）</li>
+          </ul>
+          <p style="font-size:12.5px;color:var(--ink-faint);margin:6px 0 0">確認先：NASA の 4 Vesta のページ（science.nasa.gov/solar-system/asteroids/4-vesta/）、JPL の2012年5月9日・2013年1月・2025年5月14日の発表（jpl.nasa.gov、いずれも2026年9月25日閲覧）。</p></span></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="ryugu-bennu">
+      <div class="sec-head"><span class="idx">05</span><h2>リュウグウとベンヌ</h2></div>
+      <p><strong>配置図のどこか</strong>——<strong>地球のすぐ外側</strong>。軌道長半径はリュウグウ <strong>1.19 AU</strong>、ベンヌ <strong>1.13 AU</strong> で、§03 の図では<strong>軸のすぐ上、「1」の目盛の右にある琥珀色の矢印</strong>です。小惑星帯から外れて、<strong>地球の軌道を横切る軌道</strong>を回っている小惑星（地球近傍小惑星のアポロ群）です。</p>
+      <p>ここから<strong>「形が特徴のもの」</strong>のカードです。地図も球も作りません。<strong>実画像を見て、形と、どこにいるかを覚えます</strong>（§02）。この2つは形がよく似ているので、1枚ずつではなく<strong>並べて比べます</strong>。</p>
+
+      <div class="mod">
+        <div class="mod-h"><span class="no">リュウグウ・ベンヌ</span><span class="ttl">そろばんの玉が2つ。試料を持ち帰った小惑星</span><span class="tag">RYUGU / BENNU</span></div>
+        <div class="mod-b">
+          <p class="vsw-note">地図も球もありません。形そのものが覚えるものなので、2つの実画像を<strong>同じ縮尺</strong>で並べます</p>
+
+          <figure class="pair-fig">
+            <div class="pair-stage">
+              <figure class="p-r"><img src="../image/memoryverse/ryugu.jpg?v=r75" alt="リュウグウ。上下がとがり、赤道が張り出した、そろばんの玉のような形。表面は岩だらけ" loading="lazy" decoding="async" width="499" height="485"><span class="nm">リュウグウ</span><span class="sz">赤道の差し渡し 約1.0km</span></figure>
+              <figure class="p-b"><img src="../image/memoryverse/bennu.jpg?v=r75" alt="ベンヌ。リュウグウと同じくそろばんの玉のような形で、大きさは約半分。表面は岩だらけ" loading="lazy" decoding="async" width="648" height="576"><span class="nm">ベンヌ</span><span class="sz">約0.5km</span></figure>
+            </div>
+            <div class="pair-scale"><i></i>500 m</div>
+            <figcaption><strong>2枚は同じ縮尺です</strong>（赤道の差し渡し リュウグウ 1,004m、ベンヌ 505m。JPL Small-Body Database、2026年9月25日閲覧）。<strong>ベンヌはリュウグウの約半分</strong>で、東京スカイツリー（634m）より小さい。<br><strong>明るさは比べないでください。</strong>2枚とも見やすいように明るさを持ち上げた画像で、その度合いが違います。実際は2つとも反射率 約4〜5%——<strong>炭のように黒い</strong>天体です。<br>リュウグウ：はやぶさ2 光学航法カメラ ONC-T（2018年7月12日）。JAXA/ISAS（DARTS アーカイブ）の画像を Meli thev と Nrco0e が色合成・彩度調整したもの（Wikimedia Commons、CC BY 4.0）。本教材で本体のまわりを切り抜きました<br>ベンヌ：オシリス・レックス PolyCam のモザイク。NASA/Goddard/University of Arizona。本教材で切り抜き・縮小しました</figcaption>
+          </figure>
+
+          <div class="row"><span class="k">共通点</span><span class="v"><strong>どちらも「そろばんの玉」——上下がとがり、赤道がぐるりと張り出しています。</strong>
+          <ul>
+            <li>この形は、<strong>昔いまより速く自転していた時期に、赤道へ物質が寄って膨らんだ</strong>と考えられています（リュウグウ：Watanabe ほか 2019, <i>Science</i>／ベンヌ：Barnouin ほか 2019, <i>Nature Geoscience</i>）。形から推定した過去で、自転が速かったところを見た人はいません</li>
+            <li>どちらも<strong>1つの岩ではなく、大小の岩が重力でゆるく集まった「瓦礫の山」（ラブルパイル）</strong>。密度はどちらも<strong>約1.19 g/cm³</strong>——水（1.0）とほとんど変わらず、岩としては中がすかすかです</li>
+            <li>どちらも<strong>炭素を多く含む暗い小惑星</strong>（C型の仲間。リュウグウは Cb 型、ベンヌは B 型）。<strong>もとは小惑星帯にいた</strong>と考えられています。木星との共鳴などで軌道が細長くなり、地球の近くまで押し出されてきた——小惑星帯のカードの<strong>「共鳴は追い出す」の、追い出された先がここ</strong>です（NASA CNEOS、Granvik ほか 2017）</li>
+          </ul></span></div>
+
+          <div class="row"><span class="k">比べる</span><span class="v">
+          <div class="table-scroll"><table class="mini-table pair-table">
+            <tr><th>項目</th><th>リュウグウ</th><th>ベンヌ</th></tr>
+            <tr><td>大きさ</td><td>赤道 <strong>約1.0km</strong>、南北 約0.88km（平均 0.90km）</td><td>赤道 <strong>約0.5km</strong>、南北 約0.46km（平均 0.48km）</td></tr>
+            <tr><td>自転周期</td><td><strong>7.6時間</strong></td><td><strong>4.3時間</strong>。しかも<strong>少しずつ速くなっている</strong>（Hergenrother ほか 2019）</td></tr>
+            <tr><td>表面の岩</td><td>全体が岩だらけ。最大のオトヒメ岩塊は<strong>長さ 約160m</strong>で、南極の近くにある（Michikami ほか 2019）</td><td>細かい砂の平らな面を<strong>予想していたのに、岩だらけだった</strong>。10mを超える岩が200個以上（Lauretta ほか 2019）。表面から<strong>小石が飛び出す</strong>現象も見つかった。<br>試料を採ったとき、採取装置は<strong>0.5mほど沈み込み</strong>、幅 約8mの穴ができた——<strong>表面はプラスチックのボール・プールのように、ほとんど固まっていない</strong>（NASA、2022年7月7日）</td></tr>
+            <tr><td>探査機</td><td><strong>はやぶさ2</strong>（JAXA）。2018〜19年に滞在し、<strong>2回</strong>着地して試料を採った。2回目は、人工のクレーターを作ったすぐそばで、<strong>地下から掘り出された物質を含む可能性が高い</strong>（JAXA）</td><td><strong>オシリス・レックス</strong>（NASA）。2018〜21年に滞在し、2020年10月20日に<strong>1回</strong>試料を採った</td></tr>
+            <tr><td>持ち帰った量</td><td><strong>5.4g</strong>（目標は0.1g）。カプセルは<strong>2020年12月6日</strong>にオーストラリアで回収（JAXA）</td><td><strong>121.6g</strong>（必要量60gの約2倍）。カプセルは<strong>2023年9月24日</strong>に米国ユタ州で回収（NASA、2024年2月15日発表）</td></tr>
+            <tr><td>試料のいま</td><td>総量の<strong>15%</strong>を、世界の研究者からの公募に配分（JAXA/ISAS）。<strong>量がベンヌの約22分の1</strong>しかないことが、調べられることを限っています（下の表の「糖」）</td><td>NASA は<strong>少なくとも70%を、将来の研究者のために手を付けずに保管</strong>すると決めています（NASA、2024年2月15日）</td></tr>
+          </table></div>
+          <p style="font-size:12.5px;color:var(--ink-faint);margin:2px 0 0">大きさ・自転周期・密度・軌道は NASA JPL Small-Body Database（2026年9月25日閲覧）。リュウグウの試料の量は JAXA/ISAS の試料キュレーションのページ（curation.isas.jaxa.jp、5.424±0.217g、2026年9月25日閲覧）。</p>
+          </span></div>
+
+          <div class="row"><span class="k">試料から<br>分かった<br>こと</span><span class="v"><strong>この節は、研究が今も続いている分野です。</strong>内容は <strong>2026年9月25日時点</strong>で確認したもので、各項目に発表元と日付を付けました。今後、書き換わる可能性があります。
+          <div class="table-scroll"><table class="mini-table pair-table">
+            <tr><th>何が見つかったか</th><th>リュウグウ</th><th>ベンヌ</th></tr>
+            <tr><td>液体の水が<br>関わった痕跡</td><td><strong>液体の水そのもの</strong>が、結晶の中に閉じ込められて見つかった。塩と有機物を含む炭酸水（Nakamura ほか、JAXA 2022年9月23日発表）。岩の大部分も、水と反応してできた鉱物（粘土鉱物・炭酸塩）でできている（Yokoyama ほか、JAXA 2022年6月10日発表）</td><td><strong>塩水が干上がってできた塩</strong>が11種類見つかった。炭酸ナトリウム・リン酸塩・食塩など（McCoy ほか、NASA 2025年1月29日発表）。<strong>ケレスの白い斑点と同じ、炭酸ナトリウムの仲間</strong>がここにもある</td></tr>
+            <tr><td>アミノ酸</td><td><strong>15種類</strong>。タンパク質に使われるもの（グリシンなど）と、使われないものの両方（Naraoka ほか、JAXA 2023年2月24日発表）</td><td>タンパク質に使われる20種類のうち<strong>14種類</strong>（Glavin ほか、NASA 2025年1月29日発表）</td></tr>
+            <tr><td>核酸塩基<br>（DNA・RNAの文字）</td><td>まずウラシル（Oba ほか 2023）、のちに<strong>5種類すべて</strong>（Koga ほか, <i>Nature Astronomy</i>, 2026年3月16日）</td><td><strong>5種類すべて</strong>（Glavin ほか、2025年1月29日）</td></tr>
+            <tr><td>糖</td><td><strong>調べられていない</strong>。分析に約1gが要り、5.4gしかない試料では使えないため（Furukawa、2025年12月18日）</td><td>RNA の材料になる<strong>リボース</strong>と、<strong>グルコース</strong>。地球外の試料でグルコースは初めて。DNA の材料のデオキシリボースは見つかっていない（Furukawa ほか, <i>Nature Geoscience</i>, 2025年12月2日）</td></tr>
+            <tr><td>アンモニア</td><td>—</td><td><strong>リュウグウより多い</strong>（Glavin ほか、2025年1月29日）</td></tr>
+          </table></div>
+          <p style="margin:8px 0 0"><strong>2つの違いは「何があったか」より「どんな水だったか」</strong>に出ています。リュウグウでは水そのものが結晶に残り、ベンヌでは<strong>水が干上がった跡の塩</strong>が並んでいる。どちらも、<strong>大昔に親の天体の中を液体の水が流れていた</strong>ことを示しています。</p>
+          <p style="font-size:12.5px;color:var(--ink-faint);margin:6px 0 0">確認先：JAXA の発表（global.jaxa.jp/press/2022/06/20220610-2_e.html、2022/09/20220923-1_e.html、2023/02/20230224-1_e.html）、NASA の発表（nasa.gov/news-release/nasas-asteroid-bennu-sample-reveals-mix-of-lifes-ingredients/、2025年1月29日）、各論文の要旨（いずれも2026年9月25日閲覧）。2026年の論文は大学・報道機関の解説で確認し、論文本文は読んでいません。</p>
+          </span></div>
+
+          <div class="row"><span class="k">分かって<br>いること<br>いないこと</span><span class="v"><strong>ここは「生命の材料はどこから来たか」という問いにつながる部分です。</strong>だからこそ、どこまで分かっているかを分けて置きます。
+          <div class="known">
+            <div class="k-yes k-wide"><span class="lab">分かっていること</span>
+            <ul>
+              <li><strong>生命の材料になる分子が、地球の外で、生命と関係なくできていた</strong>——アミノ酸・核酸塩基・糖が、地球の汚れを極力避けて持ち帰った試料から見つかった</li>
+              <li>それが<strong>生命の跡ではない</strong>こと。アミノ酸には左手型と右手型があり、地球の生き物は<strong>左手型だけ</strong>を使います。2つの試料のアミノ酸は<strong>左右がほぼ半々</strong>で、生き物が作ったものではない形をしている（JAXA 2023年、NASA 2025年）。NASA は「<strong>生命そのものの証拠ではない</strong>」と明記しています</li>
+              <li>親の天体の中に、<strong>液体の水と塩水があった</strong></li>
+            </ul></div>
+            <div class="k-no"><span class="lab">まだ確かめられていない</span>
+            <ul>
+              <li><strong>地球の生命の材料は、こうした小惑星から届いたのか。</strong>材料が小惑星にあったことは分かったが、それが<strong>実際に地球に届いて生命になったか</strong>は仮説のまま。JAXA も「原始地球に供給した<strong>かもしれない</strong>」と書いています</li>
+              <li><strong>地球の生き物は、なぜ左手型だけを使うのか。</strong>届いた材料が最初から左手型に偏っていた、という説明は、半々だった今回の結果とは合いにくい（Glavin ほか 2025 は「<strong>かもしれない</strong>」と書くにとどめています）。答えはまだない</li>
+            </ul></div>
+            <div class="k-unseen"><span class="lab">まだ誰も見ていない</span>
+            <ul>
+              <li><strong>ベンヌの試料の大部分。</strong>少なくとも70%は将来のために<strong>封を切らずに保管</strong>されています。いまの結果は、多くても30%ぶんからのもの</li>
+              <li><strong>リュウグウの糖。</strong>調べて無かったのではなく、<strong>量が足りずに調べていない</strong></li>
+            </ul></div>
+          </div>
+          <p style="margin:10px 0 0">第3回の演習5で、「分からない」には2種類あると書きました。<strong>手がかりはあるが決め手がない</strong>（まだ確かめられていない）と、<strong>そもそも誰も見ていない</strong>。ここでもそのまま使えます。そして、ここにはもう1つ区別が要ります——<strong>「生命の証拠がない」は「まだ分からない」ではありません。</strong>調べた結果、生き物が作った形をしていなかった。これは<strong>分かっていること</strong>の側に入ります。</p>
+          </span></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="trojans">
+      <div class="sec-head"><span class="idx">06</span><h2>木星のトロヤ群</h2></div>
+      <p><strong>配置図のどこか</strong>——<strong>木星と同じ 5.2 AU</strong>。§03 の図で、木星の真下にある緑の丸です。配置図は太陽からの距離しか表さないので、木星と重なって見えます。<strong>実際は同じ軌道の上で、木星の前後60度に離れています</strong>——それを見るのがこのカードの図です。</p>
+
+      <div class="mod">
+        <div class="mod-h"><span class="no">トロヤ群</span><span class="ttl">共鳴に閉じ込められた側</span><span class="tag">JUPITER TROJANS</span></div>
+        <div class="mod-b">
+          <p class="vsw-note">地図も球もありません。トロヤ群は天体ではなく<strong>領域</strong>なので、覚えるのは「木星に対してどこにいるか」です</p>
+
+          <figure class="fig" style="margin:0 0 14px"><div class="fig-scroll">
+<svg viewBox="0 0 640 400" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="木星のトロヤ群の位置。太陽と木星を結ぶ線から前後60度、木星と同じ軌道の上に2つの群れがある。太陽・木星・L4、太陽・木星・L5 はそれぞれ正三角形">
+<text x="24" y="24" font-size="12.5" font-weight="500" fill="var(--ink)">木星のトロヤ群 ― 北極の側から見た図（模式）</text>
+<text x="24" y="41" font-size="10.5" fill="var(--ink-faint)">群れは木星と同じ軌道の上。点の数と広がりは模式で、実際の個数や位置ではない</text>
+<circle cx="320.0" cy="226.0" r="72.7" fill="none" stroke="var(--amber-tint)" stroke-width="32.3"/>
+<circle cx="320.0" cy="226.0" r="56.5" fill="none" stroke="var(--amber-line)" stroke-width="0.8" stroke-dasharray="2 3"/>
+<circle cx="320.0" cy="226.0" r="88.8" fill="none" stroke="var(--amber-line)" stroke-width="0.8" stroke-dasharray="2 3"/>
+<circle cx="320.0" cy="226.0" r="140.0" fill="none" stroke="var(--line-strong)" stroke-width="1.2"/>
+<circle cx="199.0" cy="149.1" r="1.4" fill="var(--good)" fill-opacity="0.48"/>
+<circle cx="212.0" cy="139.1" r="0.9" fill="var(--good)" fill-opacity="0.65"/>
+<circle cx="187.0" cy="177.2" r="0.9" fill="var(--good)" fill-opacity="0.49"/>
+<circle cx="218.6" cy="121.6" r="1.0" fill="var(--good)" fill-opacity="0.54"/>
+<circle cx="230.7" cy="133.3" r="1.3" fill="var(--good)" fill-opacity="0.61"/>
+<circle cx="195.6" cy="162.4" r="1.5" fill="var(--good)" fill-opacity="0.57"/>
+<circle cx="193.1" cy="161.1" r="1.1" fill="var(--good)" fill-opacity="0.78"/>
+<circle cx="185.8" cy="164.2" r="1.3" fill="var(--good)" fill-opacity="0.60"/>
+<circle cx="203.5" cy="149.6" r="0.9" fill="var(--good)" fill-opacity="0.53"/>
+<circle cx="209.4" cy="150.7" r="1.1" fill="var(--good)" fill-opacity="0.68"/>
+<circle cx="207.9" cy="139.5" r="1.5" fill="var(--good)" fill-opacity="0.73"/>
+<circle cx="190.8" cy="152.8" r="1.3" fill="var(--good)" fill-opacity="0.80"/>
+<circle cx="204.6" cy="156.6" r="1.6" fill="var(--good)" fill-opacity="0.50"/>
+<circle cx="215.3" cy="125.2" r="1.0" fill="var(--good)" fill-opacity="0.65"/>
+<circle cx="183.4" cy="186.0" r="1.4" fill="var(--good)" fill-opacity="0.68"/>
+<circle cx="195.9" cy="170.3" r="1.4" fill="var(--good)" fill-opacity="0.69"/>
+<circle cx="214.2" cy="139.7" r="1.5" fill="var(--good)" fill-opacity="0.83"/>
+<circle cx="217.9" cy="127.9" r="0.9" fill="var(--good)" fill-opacity="0.73"/>
+<circle cx="237.4" cy="134.1" r="1.5" fill="var(--good)" fill-opacity="0.56"/>
+<circle cx="208.9" cy="130.7" r="0.9" fill="var(--good)" fill-opacity="0.63"/>
+<circle cx="193.5" cy="159.7" r="0.9" fill="var(--good)" fill-opacity="0.76"/>
+<circle cx="190.0" cy="165.2" r="1.2" fill="var(--good)" fill-opacity="0.80"/>
+<circle cx="186.0" cy="174.8" r="1.3" fill="var(--good)" fill-opacity="0.80"/>
+<circle cx="201.1" cy="178.0" r="1.1" fill="var(--good)" fill-opacity="0.62"/>
+<circle cx="209.0" cy="124.4" r="1.6" fill="var(--good)" fill-opacity="0.51"/>
+<circle cx="191.4" cy="160.7" r="1.1" fill="var(--good)" fill-opacity="0.64"/>
+<circle cx="209.3" cy="144.7" r="0.9" fill="var(--good)" fill-opacity="0.62"/>
+<circle cx="205.4" cy="135.3" r="1.6" fill="var(--good)" fill-opacity="0.73"/>
+<circle cx="218.4" cy="130.9" r="1.4" fill="var(--good)" fill-opacity="0.47"/>
+<circle cx="192.3" cy="187.8" r="1.5" fill="var(--good)" fill-opacity="0.77"/>
+<circle cx="205.6" cy="138.3" r="1.0" fill="var(--good)" fill-opacity="0.70"/>
+<circle cx="194.1" cy="162.6" r="1.0" fill="var(--good)" fill-opacity="0.51"/>
+<circle cx="199.3" cy="151.5" r="0.9" fill="var(--good)" fill-opacity="0.51"/>
+<circle cx="187.5" cy="170.5" r="0.9" fill="var(--good)" fill-opacity="0.80"/>
+<circle cx="206.0" cy="148.9" r="1.1" fill="var(--good)" fill-opacity="0.59"/>
+<circle cx="200.8" cy="148.0" r="1.5" fill="var(--good)" fill-opacity="0.85"/>
+<circle cx="212.6" cy="133.7" r="1.0" fill="var(--good)" fill-opacity="0.49"/>
+<circle cx="200.5" cy="145.1" r="1.5" fill="var(--good)" fill-opacity="0.51"/>
+<circle cx="178.7" cy="208.9" r="1.3" fill="var(--good)" fill-opacity="0.51"/>
+<circle cx="201.8" cy="151.7" r="1.3" fill="var(--good)" fill-opacity="0.84"/>
+<circle cx="195.9" cy="179.8" r="1.1" fill="var(--good)" fill-opacity="0.60"/>
+<circle cx="181.1" cy="170.2" r="1.3" fill="var(--good)" fill-opacity="0.76"/>
+<circle cx="199.5" cy="147.0" r="1.5" fill="var(--good)" fill-opacity="0.84"/>
+<circle cx="197.0" cy="182.1" r="1.5" fill="var(--good)" fill-opacity="0.75"/>
+<circle cx="189.9" cy="155.9" r="1.1" fill="var(--good)" fill-opacity="0.46"/>
+<circle cx="189.7" cy="172.2" r="1.1" fill="var(--good)" fill-opacity="0.73"/>
+<circle cx="190.3" cy="178.7" r="1.6" fill="var(--good)" fill-opacity="0.85"/>
+<circle cx="191.2" cy="175.7" r="1.1" fill="var(--good)" fill-opacity="0.54"/>
+<circle cx="192.6" cy="158.6" r="1.3" fill="var(--good)" fill-opacity="0.81"/>
+<circle cx="198.0" cy="171.3" r="1.4" fill="var(--good)" fill-opacity="0.77"/>
+<circle cx="182.2" cy="181.3" r="1.5" fill="var(--good)" fill-opacity="0.76"/>
+<circle cx="205.2" cy="159.7" r="1.0" fill="var(--good)" fill-opacity="0.77"/>
+<circle cx="202.4" cy="132.6" r="1.6" fill="var(--good)" fill-opacity="0.61"/>
+<circle cx="221.6" cy="113.9" r="1.4" fill="var(--good)" fill-opacity="0.52"/>
+<circle cx="192.0" cy="163.0" r="1.5" fill="var(--good)" fill-opacity="0.77"/>
+<circle cx="178.7" cy="176.8" r="1.6" fill="var(--good)" fill-opacity="0.71"/>
+<circle cx="203.0" cy="137.6" r="1.0" fill="var(--good)" fill-opacity="0.46"/>
+<circle cx="187.4" cy="186.8" r="1.3" fill="var(--good)" fill-opacity="0.82"/>
+<circle cx="222.0" cy="118.7" r="1.5" fill="var(--good)" fill-opacity="0.53"/>
+<circle cx="194.2" cy="153.1" r="1.1" fill="var(--good)" fill-opacity="0.68"/>
+<circle cx="193.7" cy="151.3" r="1.0" fill="var(--good)" fill-opacity="0.81"/>
+<circle cx="202.7" cy="139.6" r="1.3" fill="var(--good)" fill-opacity="0.81"/>
+<circle cx="222.9" cy="115.7" r="1.3" fill="var(--good)" fill-opacity="0.66"/>
+<circle cx="201.2" cy="152.3" r="1.2" fill="var(--good)" fill-opacity="0.52"/>
+<circle cx="183.3" cy="194.5" r="1.0" fill="var(--good)" fill-opacity="0.64"/>
+<circle cx="208.1" cy="156.4" r="1.1" fill="var(--good)" fill-opacity="0.66"/>
+<circle cx="224.8" cy="128.7" r="1.0" fill="var(--good)" fill-opacity="0.67"/>
+<circle cx="194.1" cy="153.5" r="1.4" fill="var(--good)" fill-opacity="0.65"/>
+<circle cx="223.7" cy="130.2" r="1.5" fill="var(--good)" fill-opacity="0.63"/>
+<circle cx="214.5" cy="141.8" r="1.3" fill="var(--good)" fill-opacity="0.73"/>
+<circle cx="212.9" cy="132.2" r="1.2" fill="var(--good)" fill-opacity="0.83"/>
+<circle cx="217.1" cy="151.0" r="1.6" fill="var(--good)" fill-opacity="0.55"/>
+<circle cx="235.8" cy="121.3" r="1.5" fill="var(--good)" fill-opacity="0.50"/>
+<circle cx="186.3" cy="170.4" r="1.0" fill="var(--good)" fill-opacity="0.55"/>
+<circle cx="182.3" cy="183.0" r="1.4" fill="var(--good)" fill-opacity="0.81"/>
+<circle cx="181.8" cy="171.6" r="1.4" fill="var(--good)" fill-opacity="0.51"/>
+<circle cx="194.0" cy="200.2" r="1.1" fill="var(--good)" fill-opacity="0.83"/>
+<circle cx="207.4" cy="135.4" r="1.6" fill="var(--good)" fill-opacity="0.78"/>
+<circle cx="187.4" cy="165.1" r="1.3" fill="var(--good)" fill-opacity="0.59"/>
+<circle cx="190.7" cy="159.5" r="1.4" fill="var(--good)" fill-opacity="0.46"/>
+<circle cx="214.0" cy="138.2" r="0.9" fill="var(--good)" fill-opacity="0.58"/>
+<circle cx="214.1" cy="143.0" r="0.9" fill="var(--good)" fill-opacity="0.84"/>
+<circle cx="207.5" cy="176.0" r="1.0" fill="var(--good)" fill-opacity="0.56"/>
+<circle cx="181.5" cy="191.5" r="1.1" fill="var(--good)" fill-opacity="0.50"/>
+<circle cx="222.7" cy="116.2" r="1.5" fill="var(--good)" fill-opacity="0.55"/>
+<circle cx="175.2" cy="180.6" r="1.3" fill="var(--good)" fill-opacity="0.73"/>
+<circle cx="194.5" cy="161.4" r="1.4" fill="var(--good)" fill-opacity="0.62"/>
+<circle cx="175.4" cy="200.9" r="1.3" fill="var(--good)" fill-opacity="0.77"/>
+<circle cx="177.8" cy="191.0" r="0.9" fill="var(--good)" fill-opacity="0.80"/>
+<circle cx="208.8" cy="138.2" r="1.3" fill="var(--good)" fill-opacity="0.82"/>
+<circle cx="444.9" cy="155.5" r="1.3" fill="var(--good)" fill-opacity="0.55"/>
+<circle cx="437.6" cy="145.6" r="0.9" fill="var(--good)" fill-opacity="0.53"/>
+<circle cx="449.4" cy="160.3" r="1.4" fill="var(--good)" fill-opacity="0.57"/>
+<circle cx="447.8" cy="168.9" r="1.1" fill="var(--good)" fill-opacity="0.46"/>
+<circle cx="442.2" cy="155.4" r="1.4" fill="var(--good)" fill-opacity="0.67"/>
+<circle cx="441.7" cy="143.9" r="1.6" fill="var(--good)" fill-opacity="0.49"/>
+<circle cx="430.5" cy="150.8" r="1.2" fill="var(--good)" fill-opacity="0.78"/>
+<circle cx="455.0" cy="173.7" r="1.4" fill="var(--good)" fill-opacity="0.84"/>
+<circle cx="461.1" cy="174.3" r="1.4" fill="var(--good)" fill-opacity="0.70"/>
+<circle cx="452.2" cy="170.6" r="0.9" fill="var(--good)" fill-opacity="0.50"/>
+<circle cx="423.8" cy="125.4" r="1.1" fill="var(--good)" fill-opacity="0.52"/>
+<circle cx="422.2" cy="121.3" r="1.5" fill="var(--good)" fill-opacity="0.72"/>
+<circle cx="447.1" cy="156.7" r="1.1" fill="var(--good)" fill-opacity="0.63"/>
+<circle cx="438.5" cy="140.9" r="1.1" fill="var(--good)" fill-opacity="0.83"/>
+<circle cx="423.4" cy="133.7" r="1.1" fill="var(--good)" fill-opacity="0.84"/>
+<circle cx="450.1" cy="160.5" r="0.9" fill="var(--good)" fill-opacity="0.60"/>
+<circle cx="453.6" cy="180.2" r="1.0" fill="var(--good)" fill-opacity="0.65"/>
+<circle cx="431.3" cy="140.8" r="1.0" fill="var(--good)" fill-opacity="0.61"/>
+<circle cx="439.1" cy="151.7" r="1.1" fill="var(--good)" fill-opacity="0.54"/>
+<circle cx="447.7" cy="179.5" r="1.4" fill="var(--good)" fill-opacity="0.71"/>
+<circle cx="434.2" cy="170.6" r="1.2" fill="var(--good)" fill-opacity="0.58"/>
+<circle cx="433.9" cy="145.1" r="1.4" fill="var(--good)" fill-opacity="0.71"/>
+<circle cx="417.1" cy="120.5" r="1.5" fill="var(--good)" fill-opacity="0.70"/>
+<circle cx="432.9" cy="165.4" r="1.0" fill="var(--good)" fill-opacity="0.66"/>
+<circle cx="456.6" cy="197.0" r="1.5" fill="var(--good)" fill-opacity="0.78"/>
+<circle cx="449.8" cy="196.8" r="1.4" fill="var(--good)" fill-opacity="0.73"/>
+<circle cx="442.3" cy="154.5" r="1.0" fill="var(--good)" fill-opacity="0.59"/>
+<circle cx="425.7" cy="123.0" r="1.3" fill="var(--good)" fill-opacity="0.70"/>
+<circle cx="445.0" cy="180.7" r="1.2" fill="var(--good)" fill-opacity="0.45"/>
+<circle cx="426.7" cy="152.3" r="1.3" fill="var(--good)" fill-opacity="0.66"/>
+<circle cx="441.7" cy="161.0" r="1.4" fill="var(--good)" fill-opacity="0.55"/>
+<circle cx="434.2" cy="141.0" r="1.4" fill="var(--good)" fill-opacity="0.53"/>
+<circle cx="427.6" cy="167.9" r="1.2" fill="var(--good)" fill-opacity="0.60"/>
+<circle cx="456.0" cy="187.7" r="1.4" fill="var(--good)" fill-opacity="0.70"/>
+<circle cx="442.2" cy="162.0" r="1.0" fill="var(--good)" fill-opacity="0.55"/>
+<circle cx="436.9" cy="159.5" r="1.3" fill="var(--good)" fill-opacity="0.45"/>
+<circle cx="433.4" cy="140.6" r="1.4" fill="var(--good)" fill-opacity="0.73"/>
+<circle cx="441.0" cy="165.8" r="1.3" fill="var(--good)" fill-opacity="0.64"/>
+<circle cx="447.2" cy="165.8" r="1.5" fill="var(--good)" fill-opacity="0.53"/>
+<circle cx="404.8" cy="117.2" r="0.9" fill="var(--good)" fill-opacity="0.63"/>
+<circle cx="414.6" cy="144.9" r="1.2" fill="var(--good)" fill-opacity="0.56"/>
+<circle cx="446.0" cy="135.4" r="1.0" fill="var(--good)" fill-opacity="0.68"/>
+<circle cx="436.3" cy="137.5" r="1.6" fill="var(--good)" fill-opacity="0.50"/>
+<circle cx="429.2" cy="150.0" r="1.5" fill="var(--good)" fill-opacity="0.73"/>
+<circle cx="449.9" cy="143.7" r="1.2" fill="var(--good)" fill-opacity="0.46"/>
+<circle cx="425.7" cy="133.9" r="1.2" fill="var(--good)" fill-opacity="0.57"/>
+<circle cx="437.7" cy="142.0" r="1.1" fill="var(--good)" fill-opacity="0.79"/>
+<circle cx="417.6" cy="125.5" r="1.5" fill="var(--good)" fill-opacity="0.50"/>
+<circle cx="418.3" cy="132.9" r="1.5" fill="var(--good)" fill-opacity="0.57"/>
+<circle cx="452.8" cy="168.5" r="1.6" fill="var(--good)" fill-opacity="0.69"/>
+<circle cx="453.2" cy="167.9" r="1.1" fill="var(--good)" fill-opacity="0.47"/>
+<circle cx="425.2" cy="122.8" r="1.1" fill="var(--good)" fill-opacity="0.82"/>
+<circle cx="445.6" cy="153.4" r="1.3" fill="var(--good)" fill-opacity="0.53"/>
+<circle cx="467.5" cy="190.9" r="1.5" fill="var(--good)" fill-opacity="0.77"/>
+<circle cx="444.6" cy="191.0" r="1.6" fill="var(--good)" fill-opacity="0.67"/>
+<circle cx="440.2" cy="158.2" r="1.4" fill="var(--good)" fill-opacity="0.63"/>
+<circle cx="432.9" cy="160.2" r="1.1" fill="var(--good)" fill-opacity="0.47"/>
+<circle cx="434.2" cy="147.7" r="1.2" fill="var(--good)" fill-opacity="0.59"/>
+<circle cx="455.7" cy="161.6" r="1.6" fill="var(--good)" fill-opacity="0.55"/>
+<circle cx="442.2" cy="167.6" r="1.3" fill="var(--good)" fill-opacity="0.61"/>
+<polygon points="320.0,226.0 320.0,86.0 198.8,156.0" fill="none" stroke="var(--ink-faint)" stroke-width="0.9" stroke-dasharray="4 3"/>
+<polygon points="320.0,226.0 320.0,86.0 441.2,156.0" fill="none" stroke="var(--ink-faint)" stroke-width="0.9" stroke-dasharray="4 3"/>
+<path d="M320.0,192.0 A34,34 0 0 0 290.6,209.0" fill="none" stroke="var(--ink-soft)" stroke-width="1"/>
+<path d="M320.0,192.0 A34,34 0 0 1 349.4,209.0" fill="none" stroke="var(--ink-soft)" stroke-width="1"/>
+<text x="297.0" y="190.2" font-size="10" fill="var(--ink-soft)" text-anchor="middle">60°</text>
+<text x="343.0" y="190.2" font-size="10" fill="var(--ink-soft)" text-anchor="middle">60°</text>
+<circle cx="320.0" cy="226.0" r="7" fill="var(--amber)"/>
+<text x="320.0" y="248.0" font-size="10.5" fill="var(--ink-soft)" text-anchor="middle">太陽</text>
+<circle cx="320.0" cy="86.0" r="6" fill="var(--accent)"/>
+<text x="332.0" y="70.0" font-size="11.5" font-weight="500" fill="var(--ink)">木星</text>
+<text x="332.0" y="83.0" font-size="9.5" fill="var(--ink-faint)">5.2 AU・12年で1周</text>
+<path d="M336.1,72.8 A154.0,154.0 0 0 0 282.7,76.6" fill="none" stroke="var(--accent)" stroke-width="1.2"/>
+<polygon points="282.7,76.6 288.7,71.5 290.4,78.3" fill="var(--accent)"/>
+<text x="274.2" y="66.4" font-size="9.5" fill="var(--accent-deep)" text-anchor="end">公転の向き</text>
+<text x="174.8" y="126.0" font-size="11.5" font-weight="500" fill="var(--good)" text-anchor="end">L4 ― 前を行く群れ</text>
+<text x="174.8" y="140.0" font-size="9.5" fill="var(--ink-faint)" text-anchor="end">木星の60度前。ギリシャ側の名前</text>
+<text x="465.2" y="126.0" font-size="11.5" font-weight="500" fill="var(--good)">L5 ― 後ろをついていく群れ</text>
+<text x="465.2" y="140.0" font-size="9.5" fill="var(--ink-faint)">木星の60度後ろ。トロイア側の名前</text>
+<text x="292.2" y="330.9" font-size="10" fill="var(--amber)" text-anchor="middle">小惑星帯（2.1〜3.3 AU）</text>
+<text x="24" y="392" font-size="10" fill="var(--ink-soft)">破線の三角形は、どちらも<tspan font-weight="500" fill="var(--ink)">正三角形</tspan>。太陽・木星・群れの中心が、同じ距離で三角形を作る</text>
+</svg>
+</div>
+            <figcaption>太陽系を北極の側から見た模式図。距離は木星の軌道を基準にした縮尺で、小惑星帯（2.1〜3.3 AU）も同じ縮尺です。<strong>点の数と散らばりは模式</strong>で、実際の個数や位置ではありません。L4 の点をL5 より多く描いたのは、実際に L4 のほうが多いため（下の「数」の行）。<br>L4・L5 が太陽・木星と正三角形を作ることは NASA の Lucy の解説（science.nasa.gov/mission/lucy/、2026年9月25日閲覧）による。</figcaption>
+          </figure>
+
+          <div class="row"><span class="k">基本</span><span class="v">木星と<strong>同じ軌道</strong>を、<strong>同じ12年</strong>で回る小惑星の2つの群れ。木星の<strong>60度前（L4）</strong>と<strong>60度後ろ（L5）</strong>に溜まっていて、太陽・木星・群れの中心がそれぞれ<strong>正三角形</strong>を作ります。群れの中の天体は点の上に止まっているのではなく、<strong>点のまわりを細長くゆらゆらと行き来</strong>しています。</span></div>
+
+          <div class="row"><span class="k">数</span><span class="v">見つかっているのは<strong>1万5,765個</strong>（L4 が9,823個、L5 が5,942個。IAU小惑星センターの一覧、2026年5月30日更新分を本教材で数えた値）。<strong>この数も毎月増えます</strong>——覚えるのは「1万個を超えている」という桁だけで十分です。
+          <ul>
+            <li><strong>前の群れ（L4）のほうが多い。</strong>見つけやすさの偏りを補正しても約1.45倍（Vokrouhlický ほか 2024）。なぜ偏っているのかは、はっきりしていません</li>
+            <li>見えていない小さなものまで含めると、<strong>小惑星帯全体に匹敵する数</strong>がいると考えられています（NASA）。「帯の外にある、もう1つの小惑星帯」です</li>
+            <li>最大は<strong>ヘクトル</strong>（直径 約225km）。最初に見つかったのは<strong>アキレス</strong>（1906年、マックス・ヴォルフ）</li>
+          </ul></span></div>
+
+          <div class="row"><span class="k">名前</span><span class="v">トロイア戦争の英雄から名前を取ります。<strong>前の群れ（L4）はギリシャ側、後ろの群れ（L5）はトロイア側</strong>——と決めたのですが、決める前に付いた2つが逆になっています。<strong>ギリシャ側の陣地にトロイアのヘクトル</strong>、<strong>トロイア側の陣地にギリシャのパトロクロス</strong>。NASA は「スパイ」と呼んでいます（NASA、2026年9月25日閲覧）。</span></div>
+
+          <div class="row"><span class="k">なぜ<br>溜まるか</span><span class="v"><strong>木星と 1:1 の共鳴——同じ周期で回っているので、木星との位置関係がいつまでも変わりません。</strong>
+          <ul>
+            <li>L4・L5 は、太陽と木星の引力と、回っていることによる見かけの力がつり合う点です。天体が少しずれても、<strong>回転による見かけの力（コリオリの力）が押し戻し</strong>、点のまわりを回り続けます</li>
+            <li>この安定には条件があり、<strong>大きいほうが小さいほうの約25倍以上重い</strong>こと（NASA）。太陽は木星の約1,050倍なので、余裕で満たします</li>
+          </ul>
+          <p style="margin:8px 0 0"><strong>小惑星帯のカードで、共鳴は「閉じ込めることも、追い出すこともする」と書きました。</strong>カークウッドの空隙は<strong>追い出された側</strong>、トロヤ群は<strong>閉じ込められた側</strong>です。どちらも「軌道が揃うと効果が積み重なる」で、積み重なった効果がどちら向きに働くかが違います。</p></span></div>
+
+          <div class="row"><span class="k">どこから<br>来たか</span><span class="v">色と成分が小惑星帯の天体と違い、<strong>赤く暗いものが多い</strong>——カイパーベルトの天体に似ています（NASA の Lucy の解説）。そこから、有力な説はこうです。
+          <p style="margin:6px 0 0"><strong>太陽系ができてまもなく、木星・土星・天王星・海王星の軌道が動いた時期があり、そのとき外側から散らされてきた天体が、ここに捕まった。</strong>NASA はトロヤ群を「<strong>惑星ができたころの化石</strong>」と呼んでいます。</p>
+          <p style="margin:6px 0 0">ただし<strong>これは有力な説で、確かめられてはいません</strong>。2012年の WISE の観測は「近くの天体がそのまま捕まった」ほうに傾く結果を出しています。<strong>手がかりはあるが決め手がない</strong>——第3回の演習5の「まだ確かめられていない」側です。</p></span></div>
+
+          <div class="row"><span class="k">探査</span><span class="v"><strong>トロヤ群の天体を近くで見た探査機は、まだありません。</strong>ここは「<strong>まだ誰も見ていない</strong>」側です。行けば分かる——そして、いま向かっている探査機があります。
+          <ul>
+            <li><strong>ルーシー</strong>（NASA、2021年10月16日打ち上げ）——<strong>トロヤ群に行く最初の探査機</strong>。名前は人類の祖先の化石「ルーシー」から。地球の重力を2回借りて（2022年10月、2024年12月）加速してきました</li>
+            <li>途中で小惑星帯の2天体を通過。<strong>ディンキネシュ</strong>（2023年11月）では、衛星<strong>セラム</strong>を見つけ、それが2つの球がくっついた形（接触二重天体）だった。<strong>ドナルドジョハンソン</strong>（2025年4月）は長さ約8kmの<strong>落花生の形</strong>で、10.5日ごとにでんぐり返るように回っていた（NASA、2026年6月18日）</li>
+            <li><strong>2027年8月</strong>にエウリュバテス（と衛星ケータ）で、トロヤ群に初めて着きます。続いてポリュメレ（2027年9月）、レウコス（2028年4月）、オルス（2028年11月）、最後に<strong>パトロクロスとメノイティオス</strong>の二重小惑星（2033年3月）——<strong>L4 と L5 の両方の群れを訪れる</strong>計画です</li>
+            <li>2026年9月現在、予定どおり飛行中。2026年春に、遠くから目的の4天体を撮ってカメラの設定を確かめました（NASA、2026年8月6日）</li>
+          </ul>
+          <p style="font-size:12.5px;color:var(--ink-faint);margin:6px 0 0">日付は NASA の Lucy ミッションのページと SwRI の運用ページで、1日ずれているもの（時差）があるため月までにしました。確認先：science.nasa.gov/mission/lucy/、lucy.swri.edu（いずれも2026年9月25日閲覧）。</p></span></div>
+
+          <div class="row"><span class="k">ほかの<br>惑星にも</span><span class="v">トロヤ群は木星だけのものではありません。<strong>海王星</strong>に35個、<strong>火星</strong>に18個、<strong>地球</strong>にも2個（2010 TK7 と 2020 XL5）が見つかっています（IAU小惑星センター、2026年5月30日更新分）。覚えるのは、<strong>木星のものが桁違いに多い</strong>ことだけで十分です。</span></div>
+        </div>
+      </div>
+    </section>
+
     <section id="rest">
-      <div class="sec-head"><span class="idx">05</span><h2>残りのカード</h2></div>
+      <div class="sec-head"><span class="idx">07</span><h2>残りのカード</h2></div>
       <div class="box warn"><span class="lab">準備中</span>
-      <p>ベスタ・冥王星・カロン（地図が作れるもの）、リュウグウ・ベンヌ・エロス・チュリュモフ／ゲラシメンコ（形が特徴のもの）、カイパーベルト・散乱円盤・オールトの雲（領域）を、配置図と小惑星帯の見せ方が決まってから足します。いまは枠だけです。</p></div>
+      <p>冥王星・カロン（地図が作れるもの）、チュリュモフ／ゲラシメンコ（形が特徴のもの。彗星）、カイパーベルト・散乱円盤・オールトの雲（領域）、エリスなどを、リュウグウとベンヌの見せ方が決まってから足します。いまは枠だけです。</p></div>
     </section>
 
     <section id="cross">
-      <div class="sec-head"><span class="idx">06</span><h2>横断して見る</h2></div>
+      <div class="sec-head"><span class="idx">08</span><h2>横断して見る</h2></div>
       <div class="box warn"><span class="lab">準備中</span>
       <p>大きさをくらべる／共鳴が閉じ込める場合と追い出す場合／探査の歴史を、カードが揃った段階で書きます。いまは枠だけです。</p></div>
     </section>
 
     <section id="menu">
-      <div class="sec-head"><span class="idx">07</span><h2>訓練メニュー</h2></div>
+      <div class="sec-head"><span class="idx">09</span><h2>訓練メニュー</h2></div>
       <div class="box warn"><span class="lab">準備中</span>
       <p>3週間ぶんの表を、カードが揃った段階で書きます。いまは枠だけです。</p></div>
     </section>
 
     <section id="drills">
-      <div class="sec-head"><span class="idx">08</span><h2>演習</h2></div>
+      <div class="sec-head"><span class="idx">10</span><h2>演習</h2></div>
       <div class="box warn"><span class="lab">準備中</span>
       <p>演習は、カードが揃った段階で書きます。いまは枠だけです。</p></div>
     </section>
@@ -1253,13 +1690,13 @@ code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border
       <p>第5回「太陽と全体の統合」の予告は、この回が揃った段階で書きます。</p></div>
     </section>
 
-    <div class="foot"><p>距離・軌道の数値は NASA Planetary Fact Sheet（nssdc.gsfc.nasa.gov/planetary/factsheet）と NASA JPL Small-Body Database（ssd.jpl.nasa.gov、いずれも2026年9月25日閲覧）による概数です。小惑星の総数は IAU小惑星センターの集計（minorplanetcenter.net/mpc/summary、2026年9月25日閲覧）で、<strong>毎月増えます</strong>。小惑星帯・カイパーベルト・散乱円盤・オールトの雲の広がりは NASA Science の各ページによります。<strong>オールトの雲の内側・外側の値は推定であり、直接には観測されていません。</strong>「隣の小惑星まで平均約360万km」は本教材による概算で、発表値ではありません（前提は本文に記載）。カークウッドの空隙の距離は、木星の軌道長半径とケプラーの第3法則から計算した値です。地名の緯度経度は USGS Gazetteer of Planetary Nomenclature（planetarynames.wr.usgs.gov、2026年9月25日閲覧）。ケレスの全球地図は USGS Astrogeology「Ceres Dawn FC Global Mosaic 140m」（© NASA/JPL-Caltech/UCLA/MPS/DLR/IDA、パブリックドメイン）を表示用に縮小したもので、<strong>撮影されていない範囲を埋める加工はしていません</strong>。配置図と小惑星帯の図は本教材で作成しました。</p></div>
+    <div class="foot"><p>距離・軌道の数値は NASA Planetary Fact Sheet（nssdc.gsfc.nasa.gov/planetary/factsheet）と NASA JPL Small-Body Database（ssd.jpl.nasa.gov、いずれも2026年9月25日閲覧）による概数です。小惑星の総数は IAU小惑星センターの集計（minorplanetcenter.net/mpc/summary、2026年9月25日閲覧）で、<strong>毎月増えます</strong>。小惑星帯・カイパーベルト・散乱円盤・オールトの雲の広がりは NASA Science の各ページによります。<strong>オールトの雲の内側・外側の値は推定であり、直接には観測されていません。</strong>「隣の小惑星まで平均約360万km」は本教材による概算で、発表値ではありません（前提は本文に記載）。カークウッドの空隙の距離は、木星の軌道長半径とケプラーの第3法則から計算した値です。地名の緯度経度は USGS Gazetteer of Planetary Nomenclature（planetarynames.wr.usgs.gov、2026年9月25日閲覧）。ケレスの全球地図は USGS Astrogeology「Ceres Dawn FC Global Mosaic 140m」（© NASA/JPL-Caltech/UCLA/MPS/DLR/IDA、パブリックドメイン）を表示用に縮小したもので、<strong>撮影されていない範囲を埋める加工はしていません</strong>。ベスタの全球地図は USGS Astrogeology「Vesta Dawn FC HAMO Global Mosaic 60m」（© NASA/JPL-Caltech/UCLA/MPS/DLR/IDA）の配布画像（1024×512）をそのまま使っており、こちらも<strong>欠けた範囲を埋める加工はしていません</strong>。リュウグウの画像は JAXA/ISAS の ONC-T データを Meli thev と Nrco0e が処理したもの（Wikimedia Commons、CC BY 4.0）を、ベンヌの画像は NASA/Goddard/University of Arizona のモザイクを、<strong>本教材で切り抜き・縮小</strong>しました。<strong>試料の分析結果は研究が続いている分野で、本文の内容は2026年9月25日時点で確認したものです。</strong>トロヤ群の数は IAU小惑星センターの一覧（minorplanetcenter.net/iau/lists/JupiterTrojans.html、2026年5月30日更新分）を本教材で数えた値です。配置図・小惑星帯の図・トロヤ群の図は本教材で作成しました。</p></div>
   </main>
 </div>
 <div id="site-footer"><noscript><nav class="noscript-nav" aria-label="フッターナビゲーション"><a href="index.html">ホーム</a><a href="self-intro.html">自己紹介</a><a href="study.html">勉強の軌跡</a><a href="videos.html">動画</a><a href="blog.html">ブログ</a><a href="sns.html">各種SNS</a></nav></noscript></div>
-<script src="../js/memoryverse.js?v=r74"></script>
-<script src="../js/layout.js?v=r74"></script>
-<script src="../js/main.js?v=r74"></script>
-<script src="../js/starfield.js?v=r74"></script>
+<script src="../js/memoryverse.js?v=r75"></script>
+<script src="../js/layout.js?v=r75"></script>
+<script src="../js/main.js?v=r75"></script>
+<script src="../js/starfield.js?v=r75"></script>
 </body>
 </html>
