@@ -11,13 +11,13 @@
 <!-- ★ ライト/ダーク切替は停止中（DESIGN.md §44）。サイト全体がダーク基調なので、
      記事だけテーマが変わるのは一貫性を欠くという判断。**復活させるには次の1行の
      コメントを外すだけでよい**（js/theme.js も css/lesson-theme.css も残してある）。 -->
-<!-- <script src="../js/theme.js?v=r75"></script> -->
+<!-- <script src="../js/theme.js?v=r76"></script> -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;500&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
 <!-- サイト共通 → 記事固有 → テーマ上書き の順で読む（lesson-theme.css は
      記事の <style> より後ろに置くこと。css/lesson-theme.css 冒頭の注記どおり） -->
-<link rel="stylesheet" href="../css/style.css?v=r75">
+<link rel="stylesheet" href="../css/style.css?v=r76">
 <!-- MathJax は読み込まない。この記事に数式は1つも無いため（§46.0 の執筆方針は
      数式の話なので該当しない）。設定ブロックもローダーも置かないこと。 -->
 <style>
@@ -579,7 +579,7 @@ code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border
 @media (max-width:900px){.mod-b .row > .v{align-self:stretch}}
 
 </style>
-<link rel="stylesheet" href="../css/lesson-theme.css?v=r75">
+<link rel="stylesheet" href="../css/lesson-theme.css?v=r76">
 </head>
 <body data-page="study" class="is-article" data-node="memoryverse_1-4">
 <canvas id="starfield" aria-hidden="true"></canvas>
@@ -606,12 +606,19 @@ code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border
       </li>
       <li><a href="#ryugu-bennu"><span class="n">05</span>リュウグウとベンヌ</a></li>
       <li><a href="#trojans"><span class="n">06</span>木星のトロヤ群</a></li>
-      <li><a href="#rest"><span class="n">07</span>残りのカード</a></li>
+      <li><a href="#kuiper"><span class="n">07</span>カイパーベルト</a></li>
+      <li><a href="#pluto-charon"><span class="n">08</span>冥王星とカロン</a>
+        <ul class="sub">
+          <li><a href="#pluto">冥王星</a></li>
+          <li><a href="#charon">カロン</a></li>
+        </ul>
+      </li>
+      <li><a href="#rest"><span class="n">09</span>残りのカード</a></li>
       <li class="part">横断して見る</li>
-      <li><a href="#cross"><span class="n">08</span>横断</a></li>
+      <li><a href="#cross"><span class="n">10</span>横断</a></li>
       <li class="part">訓練</li>
-      <li><a href="#menu"><span class="n">09</span>訓練メニュー</a></li>
-      <li><a href="#drills"><span class="n">10</span>演習</a></li>
+      <li><a href="#menu"><span class="n">11</span>訓練メニュー</a></li>
+      <li><a href="#drills"><span class="n">12</span>演習</a></li>
       <li class="part">付録</li>
       <li><a href="#plan"><span class="n">A</span>第1〜5回の改訂</a></li>
       <li><a href="#evidence"><span class="n">B</span>根拠と強度</a></li>
@@ -624,8 +631,8 @@ code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border
       <h1>第4回　小天体<span class="sub">場所と性質で覚える</span></h1>
       <p class="lead">第2回は「地面のある天体を地図で」、第3回は「地面のない天体を断面で」覚える回でした。<strong>第4回の対象は、その2つでは分けきれません。</strong>直径900kmの準惑星から、差し渡し1kmに満たない岩まで、数が多すぎて形も揃っていないからです。</p>
       <p>そこでこの回は、<strong>対象ごとに覚える手がかりを変えます</strong>。地図が作れるものは地図で、形が特徴のものは形で、そして数が多すぎるものは<strong>「どこに広がっているか」</strong>で。分け方は §02 に書きました。</p>
-      <div class="box warn"><span class="lab">いまは配置図と5枚までです</span>
-      <p>この回はいま、<strong>配置図（§03）と、小惑星帯・ケレス・ベスタ・リュウグウとベンヌ・木星のトロヤ群の5枚</strong>までを作りました。形が特徴の天体（リュウグウとベンヌ）の見せ方を決めてから残りに進みます。到達目標・残りのカード・横断・訓練メニュー・演習・付録の各節は<strong>まだ枠だけ</strong>です。</p></div>
+      <div class="box warn"><span class="lab">いまは配置図と8枚までです</span>
+      <p>この回はいま、<strong>配置図（§03）と、小惑星帯・ケレス・ベスタ・リュウグウとベンヌ・木星のトロヤ群・カイパーベルト・冥王星・カロンの8枚</strong>までを作りました。冥王星とカロンの関係の見せ方を決めてから残りに進みます。到達目標・残りのカード・横断・訓練メニュー・演習・付録の各節は<strong>まだ枠だけ</strong>です。</p></div>
     </div>
 
     <section id="goals">
@@ -1216,14 +1223,14 @@ code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border
       <div class="sec-head is-sub"><h2>ケレス</h2></div>
       <p><strong>配置図のどこか</strong>——小惑星帯のほぼ真ん中、<strong>2.77 AU</strong>。帯で最も大きく、<strong>この回で「地図が作れる4天体」の1つ</strong>です。</p>
 
-      <div class="mod map-view has-globe" data-globe="../image/memoryverse/ceres-map.jpg?v=r75" data-grid="equi">
+      <div class="mod map-view has-globe" data-globe="../image/memoryverse/ceres-map.jpg?v=r76" data-grid="equi">
         <div class="mod-h"><span class="no">ケレス</span><span class="ttl">小惑星帯で唯一の準惑星</span><span class="tag">CERES</span></div>
         <div class="mod-b">
           <div class="vsw" role="group" aria-label="表示の切り替え" hidden>
             <button type="button" class="vsw-b is-on" data-view="map" aria-pressed="true">地図</button>
             <button type="button" class="vsw-b" data-view="globe" aria-pressed="false">球</button>
           </div>
-          <div class="orbit"><svg class="grid" aria-hidden="true" preserveAspectRatio="none"></svg><svg class="links" aria-hidden="true" preserveAspectRatio="none"></svg><div class="stat geo" data-n="1" data-x="0.1648" data-y="0.3899" data-lat="19.8" data-lon="-120.7"><i class="n">1</i><b>オッカトル・クレーター</b><span class="v">中央に明るい斑点</span></div><div class="stat geo" data-n="2" data-x="0.3783" data-y="0.5582" data-lat="-10.5" data-lon="-43.8"><i class="n">2</i><b>アフナ山</b><span class="v">高さ 約4kmの孤立した山</span></div><div class="stat geo" data-n="3" data-x="0.8444" data-y="0.5598" data-lat="-10.8" data-lon="124.0"><i class="n">3</i><b>ケルワン</b><span class="v">直径 約280kmで最大</span></div><div class="stat geo" data-n="4" data-x="0.3124" data-y="0.7366" data-lat="-42.6" data-lon="-67.5"><i class="n">4</i><b>ヤロデ</b><span class="v">南半球の大きな盆地</span></div><div class="core"><button type="button" class="img-btn" aria-expanded="false"><figure class="planet-img"><div class="orb"><div class="frame"><img class="map-img" src="../image/memoryverse/ceres-map.jpg?v=r75" data-alt="https://astrogeology.usgs.gov/ckan/dataset/6ad84c9a-1fad-4869-b4f6-b52c5c2ace36/resource/9f757a65-8d8a-4349-a72d-8062387574b3/download/ceres_dawn_fc_dlr_global_feb2016_1024.jpg" alt="ケレスの全球地図（ドーン探査機のフレーミングカメラによるモザイク。正距円筒）" loading="lazy" decoding="async" onerror="mvNext(this)"><p class="fallback">画像を読み込めませんでした。<br><a href="https://science.nasa.gov/dwarf-planets/ceres/" target="_blank" rel="noopener">NASAのケレスのページで見る</a></p></div></div><figcaption>USGS Astrogeology「Ceres Dawn FC Global Mosaic 140m」（ドーン探査機のフレーミングカメラ）<br>正距円筒・惑星中心系・<strong>東経が右へ増え、中央が東経0度、左右の端が東経180度</strong>。配布画像の定義域がそのままこの向きなので、ずらしていません<br>線は経度・緯度とも30度ごと（狭い画面は60度ごと）<br><strong>南緯75度より南は約52%が未撮影</strong>（北極域にも数%）。全球の約5.7%。埋める加工はしていません<br>© NASA/JPL-Caltech/UCLA/MPS/DLR/IDA ／ USGS Astrogeology（パブリックドメイン）</figcaption></figure><span class="hint"><span class="h-c">クリックで地形を開く</span><span class="h-o">クリックで閉じる</span></span></button></div></div>
+          <div class="orbit"><svg class="grid" aria-hidden="true" preserveAspectRatio="none"></svg><svg class="links" aria-hidden="true" preserveAspectRatio="none"></svg><div class="stat geo" data-n="1" data-x="0.1648" data-y="0.3899" data-lat="19.8" data-lon="-120.7"><i class="n">1</i><b>オッカトル・クレーター</b><span class="v">中央に明るい斑点</span></div><div class="stat geo" data-n="2" data-x="0.3783" data-y="0.5582" data-lat="-10.5" data-lon="-43.8"><i class="n">2</i><b>アフナ山</b><span class="v">高さ 約4kmの孤立した山</span></div><div class="stat geo" data-n="3" data-x="0.8444" data-y="0.5598" data-lat="-10.8" data-lon="124.0"><i class="n">3</i><b>ケルワン</b><span class="v">直径 約280kmで最大</span></div><div class="stat geo" data-n="4" data-x="0.3124" data-y="0.7366" data-lat="-42.6" data-lon="-67.5"><i class="n">4</i><b>ヤロデ</b><span class="v">南半球の大きな盆地</span></div><div class="core"><button type="button" class="img-btn" aria-expanded="false"><figure class="planet-img"><div class="orb"><div class="frame"><img class="map-img" src="../image/memoryverse/ceres-map.jpg?v=r76" data-alt="https://astrogeology.usgs.gov/ckan/dataset/6ad84c9a-1fad-4869-b4f6-b52c5c2ace36/resource/9f757a65-8d8a-4349-a72d-8062387574b3/download/ceres_dawn_fc_dlr_global_feb2016_1024.jpg" alt="ケレスの全球地図（ドーン探査機のフレーミングカメラによるモザイク。正距円筒）" loading="lazy" decoding="async" onerror="mvNext(this)"><p class="fallback">画像を読み込めませんでした。<br><a href="https://science.nasa.gov/dwarf-planets/ceres/" target="_blank" rel="noopener">NASAのケレスのページで見る</a></p></div></div><figcaption>USGS Astrogeology「Ceres Dawn FC Global Mosaic 140m」（ドーン探査機のフレーミングカメラ）<br>正距円筒・惑星中心系・<strong>東経が右へ増え、中央が東経0度、左右の端が東経180度</strong>。配布画像の定義域がそのままこの向きなので、ずらしていません<br>線は経度・緯度とも30度ごと（狭い画面は60度ごと）<br><strong>南緯75度より南は約52%が未撮影</strong>（北極域にも数%）。全球の約5.7%。埋める加工はしていません<br>© NASA/JPL-Caltech/UCLA/MPS/DLR/IDA ／ USGS Astrogeology（パブリックドメイン）</figcaption></figure><span class="hint"><span class="h-c">クリックで地形を開く</span><span class="h-o">クリックで閉じる</span></span></button></div></div>
           <div class="globe" hidden>
             <div class="globe-stage"><canvas class="globe-cv"></canvas><p class="globe-fail" hidden>球を表示できませんでした。展開図でご覧ください。</p></div>
             <div class="globe-ctl">
@@ -1281,14 +1288,14 @@ code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border
       <div class="sec-head is-sub"><h2>ベスタ</h2></div>
       <p><strong>配置図のどこか</strong>——小惑星帯の内側寄り、<strong>2.36 AU</strong>。ケレス（2.77 AU）より太陽に近い側です。<strong>「地図が作れる4天体」の2つめ</strong>で、ケレスと同じくドーンが周回して全球を撮りました。</p>
 
-      <div class="mod map-view has-globe" data-globe="../image/memoryverse/vesta-map.jpg?v=r75" data-grid="equi">
+      <div class="mod map-view has-globe" data-globe="../image/memoryverse/vesta-map.jpg?v=r76" data-grid="equi">
         <div class="mod-h"><span class="no">ベスタ</span><span class="ttl">南極に、天体とほぼ同じ大きさの傷がある</span><span class="tag">VESTA</span></div>
         <div class="mod-b">
           <div class="vsw" role="group" aria-label="表示の切り替え" hidden>
             <button type="button" class="vsw-b is-on" data-view="map" aria-pressed="true">地図</button>
             <button type="button" class="vsw-b" data-view="globe" aria-pressed="false">球</button>
           </div>
-          <div class="orbit"><svg class="grid" aria-hidden="true" preserveAspectRatio="none"></svg><svg class="links" aria-hidden="true" preserveAspectRatio="none"></svg><div class="stat geo" data-n="1" data-x="0.7397" data-y="0.8997" data-lat="-72.0" data-lon="86.3"><i class="n">1</i><b>レアシルビア</b><span class="v">南極の巨大な衝突盆地</span></div><div class="stat geo" data-n="2" data-x="0.3491" data-y="0.7663" data-lat="-47.9" data-lon="-54.3"><i class="n">2</i><b>ベネネイア</b><span class="v">レアシルビアの下の古い盆地</span></div><div class="stat geo" data-n="3" data-x="0.4432" data-y="0.4501" data-lat="9.0" data-lon="-20.5"><i class="n">3</i><b>雪だるまクレーター</b><span class="v">3つ並んだクレーター</span></div><div class="stat geo" data-n="4" data-x="0.0451" data-y="0.5503" data-lat="-9.1" data-lon="-163.8"><i class="n">4</i><b>ディヴァリア溝</b><span class="v">赤道を巻く長い溝</span></div><div class="core"><button type="button" class="img-btn" aria-expanded="false"><figure class="planet-img"><div class="orb"><div class="frame"><img class="map-img" src="../image/memoryverse/vesta-map.jpg?v=r75" data-alt="https://astrogeology.usgs.gov/ckan/dataset/ec63e420-a8bd-4a90-9341-a5754b551574/resource/9306febf-0c7a-49ee-b7b0-a1f043297bf7/download/vesta_dawn_fc_hamo_mosaic_global_1024.jpg" alt="ベスタの全球地図（ドーン探査機のフレーミングカメラによるモザイク。正距円筒）" loading="lazy" decoding="async" onerror="mvNext(this)"><p class="fallback">画像を読み込めませんでした。<br><a href="https://science.nasa.gov/solar-system/asteroids/4-vesta/" target="_blank" rel="noopener">NASAのベスタのページで見る</a></p></div></div><figcaption>USGS Astrogeology「Vesta Dawn FC HAMO Global Mosaic 60m」（ドーン探査機のフレーミングカメラ）<br>正距円筒・惑星中心系・<strong>東経が右へ増え、中央が東経0度、左右の端が東経180度</strong>。配布画像の定義域がそのままこの向きなので、ずらしていません<br>経度は IAU の「Claudia Double Prime」系（クラウディア・クレーターが東経146度）。<strong>ドーン初期の論文の経度とは150度ずれます</strong><br>線は経度・緯度とも30度ごと（狭い画面は60度ごと）<br><strong>北緯60度あたりから北は、撮影時に影だった部分が黒く欠けています</strong>（上辺の中央の黒い四角もその1つ）。埋める加工はしていません<br>© NASA/JPL-Caltech/UCLA/MPS/DLR/IDA ／ USGS Astrogeology</figcaption></figure><span class="hint"><span class="h-c">クリックで地形を開く</span><span class="h-o">クリックで閉じる</span></span></button></div></div>
+          <div class="orbit"><svg class="grid" aria-hidden="true" preserveAspectRatio="none"></svg><svg class="links" aria-hidden="true" preserveAspectRatio="none"></svg><div class="stat geo" data-n="1" data-x="0.7397" data-y="0.8997" data-lat="-72.0" data-lon="86.3"><i class="n">1</i><b>レアシルビア</b><span class="v">南極の巨大な衝突盆地</span></div><div class="stat geo" data-n="2" data-side="right" data-x="0.3491" data-y="0.7663" data-lat="-47.9" data-lon="-54.3"><i class="n">2</i><b>ベネネイア</b><span class="v">レアシルビアの下の古い盆地</span></div><div class="stat geo" data-n="3" data-x="0.4432" data-y="0.4501" data-lat="9.0" data-lon="-20.5"><i class="n">3</i><b>雪だるまクレーター</b><span class="v">3つ並んだクレーター</span></div><div class="stat geo" data-n="4" data-x="0.0451" data-y="0.5503" data-lat="-9.1" data-lon="-163.8"><i class="n">4</i><b>ディヴァリア溝</b><span class="v">赤道を巻く長い溝</span></div><div class="core"><button type="button" class="img-btn" aria-expanded="false"><figure class="planet-img"><div class="orb"><div class="frame"><img class="map-img" src="../image/memoryverse/vesta-map.jpg?v=r76" data-alt="https://astrogeology.usgs.gov/ckan/dataset/ec63e420-a8bd-4a90-9341-a5754b551574/resource/9306febf-0c7a-49ee-b7b0-a1f043297bf7/download/vesta_dawn_fc_hamo_mosaic_global_1024.jpg" alt="ベスタの全球地図（ドーン探査機のフレーミングカメラによるモザイク。正距円筒）" loading="lazy" decoding="async" onerror="mvNext(this)"><p class="fallback">画像を読み込めませんでした。<br><a href="https://science.nasa.gov/solar-system/asteroids/4-vesta/" target="_blank" rel="noopener">NASAのベスタのページで見る</a></p></div></div><figcaption>USGS Astrogeology「Vesta Dawn FC HAMO Global Mosaic 60m」（ドーン探査機のフレーミングカメラ）<br>正距円筒・惑星中心系・<strong>東経が右へ増え、中央が東経0度、左右の端が東経180度</strong>。配布画像の定義域がそのままこの向きなので、ずらしていません<br>経度は IAU の「Claudia Double Prime」系（クラウディア・クレーターが東経146度）。<strong>ドーン初期の論文の経度とは150度ずれます</strong><br>線は経度・緯度とも30度ごと（狭い画面は60度ごと）<br><strong>北緯60度あたりから北は、撮影時に影だった部分が黒く欠けています</strong>（上辺の中央の黒い四角もその1つ）。埋める加工はしていません<br>© NASA/JPL-Caltech/UCLA/MPS/DLR/IDA ／ USGS Astrogeology</figcaption></figure><span class="hint"><span class="h-c">クリックで地形を開く</span><span class="h-o">クリックで閉じる</span></span></button></div></div>
           <div class="globe" hidden>
             <div class="globe-stage"><canvas class="globe-cv"></canvas><p class="globe-fail" hidden>球を表示できませんでした。展開図でご覧ください。</p></div>
             <div class="globe-ctl">
@@ -1348,8 +1355,8 @@ code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border
 
           <figure class="pair-fig">
             <div class="pair-stage">
-              <figure class="p-r"><img src="../image/memoryverse/ryugu.jpg?v=r75" alt="リュウグウ。上下がとがり、赤道が張り出した、そろばんの玉のような形。表面は岩だらけ" loading="lazy" decoding="async" width="499" height="485"><span class="nm">リュウグウ</span><span class="sz">赤道の差し渡し 約1.0km</span></figure>
-              <figure class="p-b"><img src="../image/memoryverse/bennu.jpg?v=r75" alt="ベンヌ。リュウグウと同じくそろばんの玉のような形で、大きさは約半分。表面は岩だらけ" loading="lazy" decoding="async" width="648" height="576"><span class="nm">ベンヌ</span><span class="sz">約0.5km</span></figure>
+              <figure class="p-r"><img src="../image/memoryverse/ryugu.jpg?v=r76" alt="リュウグウ。上下がとがり、赤道が張り出した、そろばんの玉のような形。表面は岩だらけ" loading="lazy" decoding="async" width="499" height="485"><span class="nm">リュウグウ</span><span class="sz">赤道の差し渡し 約1.0km</span></figure>
+              <figure class="p-b"><img src="../image/memoryverse/bennu.jpg?v=r76" alt="ベンヌ。リュウグウと同じくそろばんの玉のような形で、大きさは約半分。表面は岩だらけ" loading="lazy" decoding="async" width="648" height="576"><span class="nm">ベンヌ</span><span class="sz">約0.5km</span></figure>
             </div>
             <div class="pair-scale"><i></i>500 m</div>
             <figcaption><strong>2枚は同じ縮尺です</strong>（赤道の差し渡し リュウグウ 1,004m、ベンヌ 505m。JPL Small-Body Database、2026年9月25日閲覧）。<strong>ベンヌはリュウグウの約半分</strong>で、東京スカイツリー（634m）より小さい。<br><strong>明るさは比べないでください。</strong>2枚とも見やすいように明るさを持ち上げた画像で、その度合いが違います。実際は2つとも反射率 約4〜5%——<strong>炭のように黒い</strong>天体です。<br>リュウグウ：はやぶさ2 光学航法カメラ ONC-T（2018年7月12日）。JAXA/ISAS（DARTS アーカイブ）の画像を Meli thev と Nrco0e が色合成・彩度調整したもの（Wikimedia Commons、CC BY 4.0）。本教材で本体のまわりを切り抜きました<br>ベンヌ：オシリス・レックス PolyCam のモザイク。NASA/Goddard/University of Arizona。本教材で切り抜き・縮小しました</figcaption>
@@ -1641,26 +1648,321 @@ code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border
       </div>
     </section>
 
+    <section id="kuiper">
+      <div class="sec-head"><span class="idx">07</span><h2>カイパーベルト</h2></div>
+      <p><strong>配置図のどこか</strong>——<strong>海王星の外側、約30〜50 AU</strong>。§03 の図で、海王星のすぐ右にある青い箱です。小惑星帯の約10倍遠く、<strong>岩ではなく氷の天体</strong>の帯です。</p>
+
+      <div class="mod">
+        <div class="mod-h"><span class="no">カイパーベルト</span><span class="ttl">海王星の外の、氷の小天体の帯</span><span class="tag">KUIPER BELT</span></div>
+        <div class="mod-b">
+          <p class="vsw-note">地図も球もありません。カイパーベルトは天体ではなく<strong>領域</strong>なので、覚えるのは「どこに、どう広がっているか」です</p>
+
+          <figure class="fig" style="margin:0 0 14px"><div class="fig-scroll">
+<svg viewBox="0 0 640 372" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="カイパーベルトで見つかっている天体の軌道長半径の分布。39.4 AU（海王星と3:2の共鳴）に鋭い山があり、冥王星もそこにいる。42〜48 AU に大きな山、48〜50 AU で急に減る">
+<text x="24" y="24" font-size="12.5" font-weight="500" fill="var(--ink)">カイパーベルトの中身 ― 見つかっている天体の、太陽からの距離（線形目盛）</text>
+<text x="24" y="41" font-size="10.5" fill="var(--ink-faint)">IAU小惑星センターの一覧（2026年9月25日更新）のうち 34〜60 AU の 3,890個を、0.5 AU ごとに数えた実データ</text>
+<rect x="105.7" y="290.0" width="9.1" height="10.0" fill="rgba(61,139,255,.34)" stroke="var(--accent)" stroke-width=".6"/>
+<rect x="167.3" y="153.1" width="9.1" height="146.9" fill="rgba(61,139,255,.34)" stroke="var(--accent)" stroke-width=".6"/>
+<rect x="177.6" y="186.6" width="9.1" height="113.4" fill="rgba(61,139,255,.34)" stroke="var(--accent)" stroke-width=".6"/>
+<rect x="187.8" y="270.1" width="9.1" height="29.9" fill="rgba(61,139,255,.34)" stroke="var(--accent)" stroke-width=".6"/>
+<rect x="208.4" y="260.9" width="9.1" height="39.1" fill="rgba(61,139,255,.34)" stroke="var(--accent)" stroke-width=".6"/>
+<rect x="218.6" y="254.9" width="9.1" height="45.1" fill="rgba(61,139,255,.34)" stroke="var(--accent)" stroke-width=".6"/>
+<rect x="228.9" y="232.1" width="9.1" height="67.9" fill="rgba(61,139,255,.34)" stroke="var(--accent)" stroke-width=".6"/>
+<rect x="239.2" y="185.4" width="9.1" height="114.6" fill="rgba(61,139,255,.34)" stroke="var(--accent)" stroke-width=".6"/>
+<rect x="249.4" y="161.1" width="9.1" height="138.9" fill="rgba(61,139,255,.34)" stroke="var(--accent)" stroke-width=".6"/>
+<rect x="259.7" y="110.0" width="9.1" height="190.0" fill="rgba(61,139,255,.34)" stroke="var(--accent)" stroke-width=".6"/>
+<rect x="270.0" y="155.5" width="9.1" height="144.5" fill="rgba(61,139,255,.34)" stroke="var(--accent)" stroke-width=".6"/>
+<rect x="280.3" y="227.0" width="9.1" height="73.0" fill="rgba(61,139,255,.34)" stroke="var(--accent)" stroke-width=".6"/>
+<rect x="290.5" y="224.6" width="9.1" height="75.4" fill="rgba(61,139,255,.34)" stroke="var(--accent)" stroke-width=".6"/>
+<rect x="300.8" y="209.8" width="9.1" height="90.2" fill="rgba(61,139,255,.34)" stroke="var(--accent)" stroke-width=".6"/>
+<rect x="311.1" y="239.3" width="9.1" height="60.7" fill="rgba(61,139,255,.34)" stroke="var(--accent)" stroke-width=".6"/>
+<rect x="321.3" y="254.5" width="9.1" height="45.5" fill="rgba(61,139,255,.34)" stroke="var(--accent)" stroke-width=".6"/>
+<rect x="331.6" y="262.1" width="9.1" height="37.9" fill="rgba(61,139,255,.34)" stroke="var(--accent)" stroke-width=".6"/>
+<rect x="341.9" y="270.9" width="9.1" height="29.1" fill="rgba(61,139,255,.34)" stroke="var(--accent)" stroke-width=".6"/>
+<rect x="352.1" y="268.5" width="9.1" height="31.5" fill="rgba(61,139,255,.34)" stroke="var(--accent)" stroke-width=".6"/>
+<rect x="362.4" y="286.4" width="9.1" height="13.6" fill="rgba(61,139,255,.34)" stroke="var(--accent)" stroke-width=".6"/>
+<rect x="372.7" y="296.4" width="9.1" height="3.6" fill="rgba(61,139,255,.34)" stroke="var(--accent)" stroke-width=".6"/>
+<rect x="382.9" y="297.2" width="9.1" height="2.8" fill="rgba(61,139,255,.34)" stroke="var(--accent)" stroke-width=".6"/>
+<rect x="393.2" y="296.8" width="9.1" height="3.2" fill="rgba(61,139,255,.34)" stroke="var(--accent)" stroke-width=".6"/>
+<rect x="403.5" y="295.2" width="9.1" height="4.8" fill="rgba(61,139,255,.34)" stroke="var(--accent)" stroke-width=".6"/>
+<rect x="413.8" y="295.6" width="9.1" height="4.4" fill="rgba(61,139,255,.34)" stroke="var(--accent)" stroke-width=".6"/>
+<rect x="424.0" y="296.4" width="9.1" height="3.6" fill="rgba(61,139,255,.34)" stroke="var(--accent)" stroke-width=".6"/>
+<rect x="434.3" y="298.4" width="9.1" height="1.6" fill="rgba(61,139,255,.34)" stroke="var(--accent)" stroke-width=".6"/>
+<rect x="444.6" y="296.0" width="9.1" height="4.0" fill="rgba(61,139,255,.34)" stroke="var(--accent)" stroke-width=".6"/>
+<rect x="454.8" y="296.8" width="9.1" height="3.2" fill="rgba(61,139,255,.34)" stroke="var(--accent)" stroke-width=".6"/>
+<rect x="465.1" y="298.4" width="9.1" height="1.6" fill="rgba(61,139,255,.34)" stroke="var(--accent)" stroke-width=".6"/>
+<rect x="475.4" y="296.4" width="9.1" height="3.6" fill="rgba(61,139,255,.34)" stroke="var(--accent)" stroke-width=".6"/>
+<rect x="485.6" y="298.0" width="9.1" height="2.0" fill="rgba(61,139,255,.34)" stroke="var(--accent)" stroke-width=".6"/>
+<rect x="495.9" y="294.4" width="9.1" height="5.6" fill="rgba(61,139,255,.34)" stroke="var(--accent)" stroke-width=".6"/>
+<rect x="506.2" y="296.4" width="9.1" height="3.6" fill="rgba(61,139,255,.34)" stroke="var(--accent)" stroke-width=".6"/>
+<rect x="516.4" y="299.2" width="9.1" height="0.8" fill="rgba(61,139,255,.34)" stroke="var(--accent)" stroke-width=".6"/>
+<rect x="526.7" y="298.8" width="9.1" height="1.2" fill="rgba(61,139,255,.34)" stroke="var(--accent)" stroke-width=".6"/>
+<rect x="537.0" y="299.2" width="9.1" height="0.8" fill="rgba(61,139,255,.34)" stroke="var(--accent)" stroke-width=".6"/>
+<rect x="547.3" y="299.6" width="9.1" height="0.4" fill="rgba(61,139,255,.34)" stroke="var(--accent)" stroke-width=".6"/>
+<rect x="557.5" y="297.6" width="9.1" height="2.4" fill="rgba(61,139,255,.34)" stroke="var(--accent)" stroke-width=".6"/>
+<rect x="578.1" y="298.0" width="9.1" height="2.0" fill="rgba(61,139,255,.34)" stroke="var(--accent)" stroke-width=".6"/>
+<rect x="588.3" y="299.6" width="9.1" height="0.4" fill="rgba(61,139,255,.34)" stroke="var(--accent)" stroke-width=".6"/>
+<line x1="113.9" y1="84.0" x2="113.9" y2="300.0" stroke="var(--good)" stroke-width="1" stroke-dasharray="3 3"/>
+<text x="109.9" y="94.0" font-size="10.5" font-weight="500" fill="var(--good)" text-anchor="end">4:3</text>
+<line x1="175.0" y1="84.0" x2="175.0" y2="300.0" stroke="var(--good)" stroke-width="1" stroke-dasharray="3 3"/>
+<text x="181.0" y="94.0" font-size="10.5" font-weight="500" fill="var(--good)" text-anchor="start">3:2 ― 冥王星もここ</text>
+<line x1="346.1" y1="84.0" x2="346.1" y2="300.0" stroke="var(--good)" stroke-width="1" stroke-dasharray="3 3"/>
+<text x="352.1" y="94.0" font-size="10.5" font-weight="500" fill="var(--good)" text-anchor="start">2:1</text>
+<line x1="503.3" y1="84.0" x2="503.3" y2="300.0" stroke="var(--good)" stroke-width="1" stroke-dasharray="3 3"/>
+<text x="509.3" y="94.0" font-size="10.5" font-weight="500" fill="var(--good)" text-anchor="start">5:2</text>
+<text x="181.0" y="107.0" font-size="9.5" fill="var(--ink-faint)">39.4 AU</text>
+<text x="352.1" y="107.0" font-size="9.5" fill="var(--ink-faint)">47.7 AU</text>
+<text x="380.3" y="238.0" font-size="10.5" fill="var(--ink-soft)">48〜50 AU で</text>
+<text x="380.3" y="252.0" font-size="10.5" fill="var(--ink-soft)">急に減る</text>
+<text x="380.3" y="266.0" font-size="9.5" fill="var(--ink-faint)">（カイパーの崖）</text>
+<text x="354.1" y="172.0" font-size="10.5" fill="var(--accent-deep)">← 古典的な天体の山</text>
+<text x="354.1" y="186.0" font-size="9.5" fill="var(--ink-faint)">円に近い軌道。42〜48 AU</text>
+<line x1="64.0" y1="300.0" x2="598.0" y2="300.0" stroke="var(--line-strong)" stroke-width="1.2"/>
+<line x1="84.5" y1="300.0" x2="84.5" y2="305.0" stroke="var(--line-strong)" stroke-width="1"/>
+<text x="84.5" y="318.0" font-size="10" fill="var(--ink-faint)" text-anchor="middle">35</text>
+<line x1="187.2" y1="300.0" x2="187.2" y2="305.0" stroke="var(--line-strong)" stroke-width="1"/>
+<text x="187.2" y="318.0" font-size="10" fill="var(--ink-faint)" text-anchor="middle">40</text>
+<line x1="289.9" y1="300.0" x2="289.9" y2="305.0" stroke="var(--line-strong)" stroke-width="1"/>
+<text x="289.9" y="318.0" font-size="10" fill="var(--ink-faint)" text-anchor="middle">45</text>
+<line x1="392.6" y1="300.0" x2="392.6" y2="305.0" stroke="var(--line-strong)" stroke-width="1"/>
+<text x="392.6" y="318.0" font-size="10" fill="var(--ink-faint)" text-anchor="middle">50</text>
+<line x1="495.3" y1="300.0" x2="495.3" y2="305.0" stroke="var(--line-strong)" stroke-width="1"/>
+<text x="495.3" y="318.0" font-size="10" fill="var(--ink-faint)" text-anchor="middle">55</text>
+<line x1="598.0" y1="300.0" x2="598.0" y2="305.0" stroke="var(--line-strong)" stroke-width="1"/>
+<text x="598.0" y="318.0" font-size="10" fill="var(--ink-faint)" text-anchor="middle">60</text>
+<text x="612.0" y="318.0" font-size="10" fill="var(--ink-faint)">AU</text>
+<text x="64.0" y="338.0" font-size="10" fill="var(--ink-soft)">← 海王星は 30 AU（この図の左の外）。緑の破線は、海王星と周期が整数比になる距離（ケプラーの第3法則で計算）</text>
+<text x="64.0" y="356.0" font-size="10" fill="var(--ink-soft)">★ 見つけやすい天体ほど多く数えられている。山の高さは<tspan font-weight="500" fill="var(--ink)">実際の数の比ではない</tspan>が、山の<tspan font-weight="500" fill="var(--ink)">位置</tspan>は読める</text>
+</svg>
+</div>
+            <figcaption>見つかっている天体の軌道長半径を数えたもの（IAU小惑星センター「List Of Transneptunian Objects」、2026年9月25日更新分を本教材で数えた）。<strong>模式ではなく実データ</strong>です。緑の破線は、海王星（30.07 AU）と公転周期が 4:3・3:2・2:1・5:2 になる距離で、小惑星帯のカークウッドの空隙と同じ式 a ＝ a<sub>N</sub> ×（q ÷ p）<sup>2/3</sup> で計算しました。<br><strong>見つけやすさの偏り</strong>——近くて明るい天体ほど見つかりやすいので、山の高さどうしの比は実際の数の比ではありません。<strong>読めるのは山の位置</strong>です。</figcaption>
+          </figure>
+
+          <div class="row"><span class="k">基本</span><span class="v">内側の端は<strong>海王星の軌道（約30 AU）</strong>、主な部分は<strong>約50 AU</strong> まで。形は<strong>ふくらんだ円盤、ドーナツ</strong>のようです（NASA、2025年3月13日更新）。<strong>冥王星はここの天体</strong>で、1930年に見つかった最初のカイパーベルト天体であり、いまもここで最大です（次の節）。</span></div>
+
+          <div class="row"><span class="k">数</span><span class="v">IAU小惑星センターの海王星以遠天体の一覧には<strong>4,103個</strong>（2026年9月25日更新分を本教材で数えた値）。<strong>この数も増え続けます</strong>——覚えるのは「数千個」という桁です。
+          <ul>
+            <li>見えていないものを含めると、<strong>直径100kmを超えるものだけで数十万個</strong>あると考えられています（NASA）</li>
+            <li>それでも<strong>全部合わせた質量は、地球の約10%以下</strong>（NASA）。ある推定では地球の約2%（Pitjeva・Pitjev 2018）。小惑星帯と同じく、数は多くても<strong>軽い</strong></li>
+          </ul></span></div>
+
+          <div class="row"><span class="k">中身は<br>一様でない</span><span class="v"><strong>図の山は、主に2種類です。</strong>
+          <ul>
+            <li><strong>海王星との共鳴に捕まった天体</strong>——39.4 AU の鋭い山。<strong>海王星が3周するあいだに2周する</strong>（3:2）距離で、<strong>冥王星もここ</strong>にいます。同じ共鳴の仲間は、冥王星にちなんで<strong>プルーティーノ</strong>と呼ばれます（NASA）。36.4 AU（4:3）、47.7 AU（2:1）、55.4 AU（5:2）にも小さな山があります</li>
+            <li><strong>古典的な天体</strong>——42〜48 AU の大きな山。円に近く、あまり傾いていない軌道の<strong>「冷たい」</strong>ものと、細長く傾いた<strong>「熱い」</strong>ものに分けられます（NASA）</li>
+          </ul>
+          <p style="margin:8px 0 0">そして<strong>約48〜50 AU から先で、数が急に減ります</strong>。見つけやすさの偏りを補正しても、外縁は <strong>47±1 AU</strong> と測られています（Trujillo・Brown 2001）。「カイパーの崖」と呼ばれることがあります。その先には、細長い軌道の散乱円盤が広がっています（のちのカード）。</p></span></div>
+
+          <div class="row"><span class="k">共鳴<br>ふたたび</span><span class="v"><strong>小惑星帯では、木星との共鳴の距離がすっぽり空いていました。ここでは逆に、海王星との共鳴の距離に天体が溜まっています。</strong>
+          <ul>
+            <li>式はまったく同じです（カークウッドの空隙の行）。違うのは<strong>結果の向き</strong>だけ。共鳴は<strong>閉じ込めることも、追い出すこともする</strong>——トロヤ群に続いて、閉じ込める側の2つめの例です</li>
+            <li><strong>冥王星の軌道は海王星の軌道の内側に入り込みます</strong>が、ぶつかりません。3:2 の共鳴のおかげで、冥王星が海王星の軌道を横切るときには、海王星はいつも遠くにいるからです。NASA は「<strong>冥王星は、海王星よりも天王星のほうに近づく</strong>」と書いています</li>
+          </ul></span></div>
+
+          <div class="row"><span class="k">彗星の<br>ふるさと</span><span class="v">公転周期が200年より短い彗星の多くは、<strong>ここから来た</strong>と考えられています。海王星などに押されて内側へ入ってきたものが、木星の近くを回る<strong>木星族彗星</strong>になります（NASA）。——地球近傍小惑星が小惑星帯から押し出されてきたのと、同じ構図です。</span></div>
+
+          <div class="row"><span class="k">見つかる<br>まで</span><span class="v"><ul>
+            <li><strong>1940年代・1951年</strong>——エッジワースとカイパーが、海王星の外に小天体の集まりがあると考えた。名前は後者から</li>
+            <li><strong>1992年</strong>——ジューイットとルーが、冥王星のあとで最初のカイパーベルト天体 <strong>1992 QB1</strong>（のちのアルビオン）を見つけた。5年間探した末でした</li>
+            <li>その後、<strong>ハウメア</strong>・<strong>マケマケ</strong>などの準惑星もここで見つかりました。<strong>クワオアー</strong>には、ふつうは環が保てないはずの遠さに環があることが2023年に分かっています（Morgado ほか, <i>Nature</i>）</li>
+          </ul></span></div>
+
+          <div class="row"><span class="k">探査</span><span class="v"><strong>ニューホライズンズ</strong>（NASA、2006年打ち上げ）が、<strong>カイパーベルトを訪れた唯一の探査機</strong>です。
+          <ul>
+            <li>2015年7月に冥王星を通過（次の節）</li>
+            <li><strong>2019年1月1日、アロコスを通過</strong>——長さ約35kmの、2つの塊がくっついた<strong>雪だるまの形</strong>。冥王星より赤く、<strong>探査機が訪れたなかで最も遠く、最も原始的な天体</strong>です（NASA）。名前はポウハタン族の言葉で「空」</li>
+            <li>2026年6月に、過去最長321日の休眠から目覚めました。いまは太陽から<strong>約66 AU</strong>（2026年9月25日、JPL Horizons で本教材が確認）。次に近づく天体は<strong>まだ決まっていません</strong></li>
+          </ul>
+          <p style="font-size:12.5px;color:var(--ink-faint);margin:6px 0 0">確認先：NASA の Kuiper Belt Facts（science.nasa.gov/solar-system/kuiper-belt/facts/、2025年3月13日更新）、NASA の Arrokoth のページ、NASA の New Horizons の発表（2026年7月7日）。いずれも2026年9月25日閲覧。</p></span></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="pluto-charon">
+      <div class="sec-head"><span class="idx">08</span><h2>冥王星とカロン</h2></div>
+      <p><strong>配置図のどこか</strong>——<strong>カイパーベルトの中、39.5 AU</strong>。§07 の分布の図で、いちばん鋭い山（海王星と 3:2 の共鳴）にいます。軌道は細長く、太陽に<strong>約29.7 AU</strong>まで近づき、<strong>約48.8 AU</strong>まで離れます。<strong>「地図が作れる4天体」の3つめと4つめ</strong>です。</p>
+      <p><strong>この節だけ、2つを同じ高さに並べます。</strong>第3回では、衛星は惑星の下の階層に置きました（目次の字下げ）。カロンも公式には冥王星の衛星ですが、<strong>2つの関係は、第3回の衛星たちとは違います</strong>。まずそれを図で見てから、1枚ずつ地図に入ります。</p>
+
+      <div class="box teach"><span class="lab">カロンは冥王星のまわりを回っているのではない</span>
+      <p><strong>2つは、2つのあいだにある1点のまわりを、互いに回り合っています。</strong>その点——<strong>共通重心</strong>——が、冥王星の表面より外にあります。</p>
+      <figure class="fig" style="margin:12px 0 10px"><div class="fig-scroll">
+<svg viewBox="0 0 640 384" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="共通重心の位置の比較。冥王星とカロンでは重心が冥王星の外、地球と月では重心が地球の中にある。2つの組は天体どうしの距離を同じ長さにそろえて描いている">
+<text x="24" y="24" font-size="12.5" font-weight="500" fill="var(--ink)">2つの天体は、どこを中心に回っているか ― 共通重心の位置</text>
+<text x="24" y="41" font-size="10.5" fill="var(--ink-faint)">2組とも「天体どうしの距離」を同じ長さにそろえた。天体の大きさと重心の位置は、それぞれの組の中で縮尺どおり</text>
+<text x="24" y="80" font-size="11.5" font-weight="500" fill="var(--ink)">冥王星とカロン</text>
+<text x="24" y="94" font-size="9.5" fill="var(--ink-faint)">距離 19,596km。カロンの直径は冥王星の約半分</text>
+<line x1="110.0" y1="160" x2="540.0" y2="160" stroke="var(--line-strong)" stroke-width="1" stroke-dasharray="3 3"/>
+<circle cx="156.8" cy="160" r="46.8" fill="none" stroke="var(--amber)" stroke-width="1" stroke-dasharray="2 3" opacity=".8"/>
+<circle cx="110.0" cy="160" r="26.1" fill="var(--amber)" fill-opacity=".30" stroke="var(--amber)" stroke-width="1.2"/>
+<circle cx="540.0" cy="160" r="13.3" fill="var(--ink-soft)" fill-opacity=".30" stroke="var(--ink-soft)" stroke-width="1.2"/>
+<path d="M152.3,155.5 L161.3,164.5 M152.3,164.5 L161.3,155.5" stroke="var(--key)" stroke-width="2"/>
+<text x="75.9" y="164" font-size="11" fill="var(--ink)" text-anchor="end">冥王星</text>
+<text x="540.0" y="189.3" font-size="11" fill="var(--ink)" text-anchor="middle">カロン</text>
+<text x="215.5" y="136" font-size="11" font-weight="500" fill="var(--key)">共通重心 ― 冥王星の中心から約2,130km</text>
+<text x="215.5" y="150" font-size="9.5" fill="var(--ink-faint)">冥王星の表面より外（半径は1,188km）</text>
+<text x="24" y="242" font-size="11.5" font-weight="500" fill="var(--ink)">地球と月（くらべるため）</text>
+<text x="24" y="256" font-size="9.5" fill="var(--ink-faint)">距離 384,400km。月の直径は地球の約4分の1</text>
+<line x1="110.0" y1="322" x2="540.0" y2="322" stroke="var(--line-strong)" stroke-width="1" stroke-dasharray="3 3"/>
+<circle cx="115.2" cy="322" r="5.2" fill="none" stroke="var(--accent)" stroke-width="1" stroke-dasharray="2 3" opacity=".8"/>
+<circle cx="110.0" cy="322" r="7.1" fill="var(--accent)" fill-opacity=".30" stroke="var(--accent)" stroke-width="1.2"/>
+<circle cx="540.0" cy="322" r="1.9" fill="var(--ink-soft)" fill-opacity=".30" stroke="var(--ink-soft)" stroke-width="1.2"/>
+<path d="M112.2,319 L118.2,325 M112.2,325 L118.2,319" stroke="var(--key)" stroke-width="2"/>
+<text x="94.9" y="326" font-size="11" fill="var(--ink)" text-anchor="end">地球</text>
+<text x="540.0" y="346.0" font-size="11" fill="var(--ink)" text-anchor="middle">月</text>
+<text x="134.4" y="298" font-size="11" font-weight="500" fill="var(--key)">共通重心 ― 地球の中心から約4,670km</text>
+<text x="134.4" y="312" font-size="9.5" fill="var(--ink-faint)">地球の中（半径は6,371km）</text>
+<text x="24" y="374" font-size="10" fill="var(--ink-soft)">点線の小さな円は、<tspan font-weight="500" fill="var(--ink)">主星そのものが重心のまわりに描く円</tspan>。冥王星は、自分の外にある点のまわりを回っている</text>
+</svg>
+</div>
+        <figcaption>距離と半径は NASA Pluto Fact Sheet と JPL の衛星の物理定数（いずれも2026年9月25日閲覧）。<strong>共通重心の位置は本教材で計算しました</strong>——冥王星とカロン：距離 19,596km × カロンの GM 106.1 ÷ 冥王星系の GM 975.5 ＝ <strong>約2,130km</strong>（冥王星の表面から約940km 外）。地球と月：384,400km ÷（1 ＋ 地球と月の質量比 81.3）＝ <strong>約4,670km</strong>（地球の表面から約1,700km 内側）。</figcaption>
+      </figure>
+      <ul>
+        <li><strong>理由は2つ重なっている。</strong>①<strong>重さの比</strong>——カロンは冥王星の<strong>約12%</strong>、月は地球の約1.2%で、<strong>10倍違う</strong>。②<strong>近さ</strong>——カロンは冥王星の半径の<strong>約16倍</strong>の距離にいるが、月は地球の半径の約60倍離れている。重心が主星の中心からどれだけ離れるかを半径で測ると、冥王星は<strong>約1.8</strong>（表面の外）、地球は約0.7（中）になります</li>
+        <li><strong>互いに同じ面を向け合っている。</strong>カロンが1周する時間（6.387日）と、冥王星の自転、カロンの自転が<strong>すべて同じ</strong>。月は地球に同じ面を向けていますが、地球は月に同じ面を向けていません。冥王星とカロンは<strong>お互いに</strong>向け合っています（NASA）。冥王星の片側からは、カロンが空の同じ場所に<strong>止まって見え</strong>、反対側からは<strong>一度も見えません</strong></li>
+        <li><strong>ほかの4つの小さな衛星</strong>（ステュクス・ニクス・ケルベロス・ヒドラ）も、冥王星ではなく<strong>この共通重心のまわり</strong>を回っています（NASA／ハッブル）</li>
+      </ul>
+      <p style="margin-top:8px"><strong>覚えるのは「重心が冥王星の外にある」の1点です。</strong>そこから、互いに回り合うこと、ほかの衛星も同じ点を回ることが、全部ついてきます。</p></div>
+    </section>
+
+    <section id="pluto">
+      <div class="sec-head is-sub"><h2>冥王星</h2></div>
+      <p>カイパーベルトで最大の天体。<strong>地図の中央にある白いハート</strong>を起点に覚えます。</p>
+
+      <div class="mod map-view has-globe" data-globe="../image/memoryverse/pluto-map.jpg?v=r76" data-grid="equi" data-lonc="180" data-home="180">
+        <div class="mod-h"><span class="no">冥王星</span><span class="ttl">白いハートは、窒素の氷の海</span><span class="tag">PLUTO</span></div>
+        <div class="mod-b">
+          <div class="vsw" role="group" aria-label="表示の切り替え" hidden>
+            <button type="button" class="vsw-b is-on" data-view="map" aria-pressed="true">地図</button>
+            <button type="button" class="vsw-b" data-view="globe" aria-pressed="false">球</button>
+          </div>
+          <div class="orbit"><svg class="grid" aria-hidden="true" preserveAspectRatio="none"></svg><svg class="links" aria-hidden="true" preserveAspectRatio="none"></svg><div class="stat geo" data-n="1" data-side="up" data-x="0.4964" data-y="0.3916" data-lat="19.5" data-lon="178.7"><i class="n">1</i><b>スプートニク平原</b><span class="v">ハートの左半分。窒素の氷</span></div><div class="stat geo" data-n="2" data-side="left" data-x="0.2539" data-y="0.5512" data-lat="-9.2" data-lon="91.4"><i class="n">2</i><b>ベルトン地域</b><span class="v">赤道の黒い帯（旧称クトゥルフ）</span></div><div class="stat geo" data-n="3" data-side="down" data-x="0.4812" data-y="0.6187" data-lat="-21.4" data-lon="173.2"><i class="n">3</i><b>ライト山</b><span class="v">頂上がくぼんだ山</span></div><div class="stat geo" data-n="4" data-side="right" data-x="0.6475" data-y="0.4528" data-lat="8.5" data-lon="-126.9"><i class="n">4</i><b>タルタロス尾根</b><span class="v">刃のように並ぶ氷の尾根</span></div><div class="core"><button type="button" class="img-btn" aria-expanded="false"><figure class="planet-img"><div class="orb"><div class="frame"><img class="map-img" src="../image/memoryverse/pluto-map.jpg?v=r76" data-alt="https://astrogeology.usgs.gov/ckan/dataset/a5f1b7f4-9822-4697-a201-e23ef4bd3e16/resource/96be2aa1-f384-4a9f-9458-a8431a0e7956/download/pluto_newhorizons_global_mosaic_300m_jul2017_1024.jpg" alt="冥王星の全球地図（ニューホライズンズのモザイク。正距円筒）。中央に白いハート形の平原、下半分は未撮影で黒い" loading="lazy" decoding="async" onerror="mvNext(this)"><p class="fallback">画像を読み込めませんでした。<br><a href="https://science.nasa.gov/dwarf-planets/pluto/" target="_blank" rel="noopener">NASAの冥王星のページで見る</a></p></div></div><figcaption>USGS Astrogeology「Pluto New Horizons LORRI MVIC Global Mosaic 300m」（ニューホライズンズの望遠カメラ LORRI とカラーカメラ MVIC）<br>正距円筒・惑星中心系・東経が右へ増える。<strong>★ この地図だけ、中央が東経180度、左右の端が東経0度</strong>。配布画像のままで、ずらしていません（既定の向きに回すと、ハートが左右の端で割れるため）<br>線は経度・緯度とも30度ごと（狭い画面は60度ごと）<br><strong>南緯30〜40度より南は写っていません</strong>（全球の約25%。2015年の通過時、南半球は冬の闇だった）。左右の端のぼやけた部分は、遠くからしか撮れなかった側です。埋める加工はしていません<br>© NASA/JHUAPL/SwRI/LPI ／ USGS Astrogeology</figcaption></figure><span class="hint"><span class="h-c">クリックで地形を開く</span><span class="h-o">クリックで閉じる</span></span></button></div></div>
+          <div class="globe" hidden>
+            <div class="globe-stage"><canvas class="globe-cv"></canvas><p class="globe-fail" hidden>球を表示できませんでした。展開図でご覧ください。</p></div>
+            <div class="globe-ctl">
+              <button type="button" class="globe-b globe-home">基準に戻す</button>
+              <button type="button" class="globe-b globe-open" aria-pressed="false">地形を開く</button>
+            </div>
+            <ol class="globe-list" hidden></ol>
+            <p class="globe-note">覚えるのは展開図のほうです。球は、展開図で覚えた位置が実物でどう見えるかを確かめるためのものです。<strong>冥王星だけ、既定の向きは東経180度（ハート）が正面</strong>・北が上です。<strong>南半球は写っていないので、下のほうが黒くなります。</strong></p>
+            <p class="globe-cap">USGS Astrogeology「Pluto New Horizons LORRI MVIC Global Mosaic 300m」（正距円筒・中央は東経180度、左右の端は東経0度）<br>線は経度・緯度とも30度ごと<br>© NASA/JHUAPL/SwRI/LPI ／ USGS Astrogeology</p>
+          </div>
+
+          <div class="row"><span class="k">基本</span><span class="v">半径 <strong>1,188km</strong>——<strong>月（1,737km）より小さい</strong>。平均密度 1.85 g/cm³（岩と氷）。太陽からの距離 <strong>39.5 AU</strong>（近日点29.7／遠日点48.8）、公転周期 <strong>248年</strong>、軌道傾斜角 <strong>17度</strong>。自転周期 <strong>6.39日</strong>で、向きは<strong>逆回り</strong>。自転軸は約120度傾いています<br><span style="font-size:12.5px;color:var(--ink-faint)">出典：NASA Pluto Fact Sheet（nssdc.gsfc.nasa.gov、2024年1月11日更新）と JPL の惑星の物理定数（ssd.jpl.nasa.gov）、いずれも2026年9月25日閲覧。近日点・遠日点は NASA の解説ページでは「30 AU・49.3 AU」と丸めてあり、ここでは Fact Sheet の値にしました</span></span></div>
+
+          <div class="row"><span class="k">覚える地形</span><span class="v">
+          <div class="table-scroll"><table class="mini-table">
+            <tr><th style="width:27%">名前</th><th style="width:36%">何か</th><th>位置の目印</th></tr>
+            <tr><td><strong>スプートニク平原</strong><br>Sputnik Planitia</td><td>差し渡し 約1,500km の、<strong>窒素の氷でできた平らな盆地</strong>。クレーターが1つも見つかっていない</td><td>北緯20度・東経179度。<strong>ハートの左半分</strong>。地図のど真ん中の白い面</td></tr>
+            <tr><td><strong>トンボー地域</strong><br>Tombaugh Regio</td><td><strong>ハート全体</strong>の名前。差し渡し 約2,300km。冥王星を見つけたトンボーから</td><td>スプートニク平原を左半分に含む。<strong>右半分</strong>は起伏のある明るい地形</td></tr>
+            <tr><td><strong>ベルトン地域</strong><br>Belton Regio</td><td>赤道に沿う<strong>黒く長い帯</strong>。長さ 約3,300km。<strong>以前は「クトゥルフ」という非公式の名前</strong>で呼ばれていた（2023年9月に正式名）</td><td>南緯9度・東経91度。<strong>ハートの左、地図の左寄り</strong>の黒い帯</td></tr>
+            <tr><td><strong>ライト山</strong><br>Wright Mons</td><td>差し渡し 約160km、高さ 約4km。<strong>頂上に大きなくぼみ</strong>がある</td><td>南緯21度・東経173度。<strong>ハートの左下のすぐ外</strong></td></tr>
+            <tr><td><strong>タルタロス尾根</strong><br>Tartarus Dorsa</td><td>高い氷の尾根が<strong>刃のように並ぶ</strong>地形。長さ 約850km</td><td>北緯9度・東経233度。<strong>ハートの右</strong></td></tr>
+          </table></div>
+          <p style="font-size:12.5px;color:var(--ink-faint);margin:2px 0 0">USGS Gazetteer of Planetary Nomenclature（2026年9月25日閲覧）。冥王星の地名は<strong>惑星中心系・東経0〜360度</strong>。北は「右手の法則」で決めた側で、2015年に日が当たっていた半球です。</p>
+          </span></div>
+
+          <div class="row"><span class="k">ハートの<br>正体</span><span class="v"><strong>スプートニク平原は、窒素の氷の分厚い層です。</strong>
+          <ul>
+            <li>表面は差し渡し16〜48km の<strong>区画に分かれていて、それぞれが下からゆっくり湧き上がる対流</strong>でできています。表面はおよそ50万年ごとに入れ替わり、<strong>100万年より新しい</strong>——だからクレーターが無い（NASA、2016年6月2日発表）</li>
+            <li>盆地そのものは、約40億年前の衝突でできたと考えられています（NASA、2020年7月14日）</li>
+            <li><strong>2026年8月</strong>、平原の北の縁で<strong>液体の窒素が割れ目から染み出した跡</strong>が報告されました。冥王星で「最近まで液体が流れた」ことを示す初めての証拠です（NASA、2026年8月5日）。<strong>これは地下の海の証拠ではありません</strong>——氷河の底が融けたものです</li>
+          </ul></span></div>
+
+          <div class="row"><span class="k">分かって<br>いないこと</span><span class="v">
+          <ul>
+            <li><strong>地下に液体の水の海があるか——まだ確かめられていない。</strong>スプートニク平原の位置や重さの偏り、周りの断層、冥王星が膨らんだ跡が、海があると考えると説明がつきます。NASA も「あれば冥王星は『海の世界』になる」と<strong>条件つき</strong>で書いています。<strong>手がかりはあるが決め手がない</strong>——第3回のエウロパの海と同じ側です</li>
+            <li><strong>ライト山が氷の火山か——まだ確かめられていない。</strong>NASA は「氷の火山の噴出でできた<strong>可能性がある</strong>」としています</li>
+            <li><strong>南半球——まだ誰も見ていない。</strong>地図の下の黒い部分です。通過したとき冬の闇でした。<strong>第3回のトリトンの北半球と同じ</strong>——手がかりがそもそも無く、行けば分かるが、誰も行っていない</li>
+          </ul></span></div>
+
+          <div class="row"><span class="k">空</span><span class="v">薄い窒素の大気があり、<strong>青いもやが何層にも重なっています</strong>（NASA、2015年10月8日）。もやの正体は、日光で窒素とメタンから作られた赤茶色の粒（ソリン）で、粒が小さいため光を散らして青く見えます。</span></div>
+
+          <div class="row"><span class="k">分類</span><span class="v">1930年の発見から76年間は<strong>惑星</strong>、2006年から<strong>準惑星</strong>です。<strong>ただし変わったのは定義のほうで、冥王星そのものは何も変わっていません。</strong>何が決められ、何が変わっていないのかは、散乱円盤とエリスの節のあとに独立した枠で扱います。</span></div>
+
+          <div class="row"><span class="k">探査</span><span class="v"><ul>
+            <li><strong>ニューホライズンズ</strong>（NASA）——<strong>2015年7月14日</strong>に通過。<strong>冥王星に行った唯一の探査機</strong>で、周回はせず、1度だけ近くを通り抜けました。このカードの地図も、ハートの名前も、すべてこの1回の通過の成果です。だから<strong>見えたのは片側の、しかも北半球だけ</strong>です</li>
+            <li>その後、冥王星へ向かった探査機はありません（2026年9月時点）</li>
+          </ul>
+          <p style="font-size:12.5px;color:var(--ink-faint);margin:6px 0 0">確認先：NASA の発表（nasa.gov、2015年10月8日・2016年6月2日・2020年7月14日）、NASA Science のブログ（2026年8月5日）、NASA の Pluto のページ（science.nasa.gov/dwarf-planets/pluto/）。いずれも2026年9月25日閲覧。</p></span></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="charon">
+      <div class="sec-head is-sub"><h2>カロン</h2></div>
+      <p>冥王星の相方。直径は冥王星の<strong>約半分</strong>。第3回のどの衛星よりも、主星に対して大きい相方です。<strong>赤い北極と、赤道を横切る割れ目の帯</strong>を起点に覚えます。</p>
+
+      <div class="mod map-view has-globe" data-globe="../image/memoryverse/charon-map.jpg?v=r76" data-grid="equi">
+        <div class="mod-h"><span class="no">カロン</span><span class="ttl">冥王星に赤く塗られた北極</span><span class="tag">CHARON</span></div>
+        <div class="mod-b">
+          <div class="vsw" role="group" aria-label="表示の切り替え" hidden>
+            <button type="button" class="vsw-b is-on" data-view="map" aria-pressed="true">地図</button>
+            <button type="button" class="vsw-b" data-view="globe" aria-pressed="false">球</button>
+          </div>
+          <div class="orbit"><svg class="grid" aria-hidden="true" preserveAspectRatio="none"></svg><svg class="links" aria-hidden="true" preserveAspectRatio="none"></svg><div class="stat geo" data-n="1" data-x="0.6667" data-y="0.0278" data-lat="85.0" data-lon="60.0"><i class="n">1</i><b>ネバーランド地域</b><span class="v">赤い北極（旧称モルドール）</span></div><div class="stat geo" data-n="2" data-side="left" data-x="0.3178" data-y="0.4733" data-lat="4.8" data-lon="-65.6"><i class="n">2</i><b>マンジェト谷</b><span class="v">割れ目の帯の西の端</span></div><div class="stat geo" data-n="3" data-side="right" data-x="0.7233" data-y="0.3456" data-lat="27.8" data-lon="80.4"><i class="n">3</i><b>アルゴ谷</b><span class="v">割れ目の帯の東の端</span></div><div class="stat geo" data-n="4" data-side="down" data-x="0.5856" data-y="0.4800" data-lat="3.6" data-lon="30.8"><i class="n">4</i><b>キューブリック山</b><span class="v">堀に囲まれた山</span></div><div class="core"><button type="button" class="img-btn" aria-expanded="false"><figure class="planet-img"><div class="orb"><div class="frame"><img class="map-img" src="../image/memoryverse/charon-map.jpg?v=r76" data-alt="https://astrogeology.usgs.gov/ckan/dataset/93827f6c-8feb-42b6-98e6-b0ce57c7d2c8/resource/1abf318c-3290-4aa0-932e-a34f32d7f6ad/download/charon_newhorizons_global_mosaic_300m_jul2017_1024.jpg" alt="カロンの全球地図（ニューホライズンズのモザイク。正距円筒）。上端に暗い北極、赤道の上を割れ目の帯が横切る。下半分は未撮影で黒い" loading="lazy" decoding="async" onerror="mvNext(this)"><p class="fallback">画像を読み込めませんでした。<br><a href="https://science.nasa.gov/dwarf-planets/pluto/moons/charon/" target="_blank" rel="noopener">NASAのカロンのページで見る</a></p></div></div><figcaption>USGS Astrogeology「Charon New Horizons LORRI MVIC Global Mosaic 300m」（ニューホライズンズ）<br>正距円筒・惑星中心系・<strong>東経が右へ増え、中央が東経0度、左右の端が東経180度</strong>。配布画像の向きがこのサイトの既定と同じなので、ずらしていません<br>線は経度・緯度とも30度ごと（狭い画面は60度ごと）<br><strong>南緯20〜40度より南は写っていません</strong>（全球の約27%。冥王星と同じく冬の闇）。埋める加工はしていません。白黒の画像なので、北極の<strong>赤さはこの地図では見えません</strong>（暗い帯として写っています）<br>© NASA/JHUAPL/SwRI/LPI ／ USGS Astrogeology</figcaption></figure><span class="hint"><span class="h-c">クリックで地形を開く</span><span class="h-o">クリックで閉じる</span></span></button></div></div>
+          <div class="globe" hidden>
+            <div class="globe-stage"><canvas class="globe-cv"></canvas><p class="globe-fail" hidden>球を表示できませんでした。展開図でご覧ください。</p></div>
+            <div class="globe-ctl">
+              <button type="button" class="globe-b globe-home">基準に戻す</button>
+              <button type="button" class="globe-b globe-open" aria-pressed="false">地形を開く</button>
+            </div>
+            <ol class="globe-list" hidden></ol>
+            <p class="globe-note">覚えるのは展開図のほうです。球は、展開図で覚えた位置が実物でどう見えるかを確かめるためのものです。既定の向きは東経0度が正面・北が上です。<strong>南半球は写っていないので、下のほうが黒くなります。</strong></p>
+            <p class="globe-cap">USGS Astrogeology「Charon New Horizons LORRI MVIC Global Mosaic 300m」（正距円筒・中央は東経0度、左右の端は東経180度）<br>線は経度・緯度とも30度ごと<br>© NASA/JHUAPL/SwRI/LPI ／ USGS Astrogeology</p>
+          </div>
+
+          <div class="row"><span class="k">基本</span><span class="v">半径 <strong>606km</strong>——<strong>冥王星の約半分</strong>。重さは冥王星の約12%。平均密度 1.70 g/cm³。冥王星と共通重心のまわりを <strong>6.387日</strong>で1周し、その間に1回自転します。冥王星もちょうど同じ6.387日で自転するので、<strong>2つはいつも同じ面を向け合っています</strong><br><span style="font-size:12.5px;color:var(--ink-faint)">出典：JPL の衛星の物理定数と軌道要素（ssd.jpl.nasa.gov/sats/、2026年9月25日閲覧）</span></span></div>
+
+          <div class="row"><span class="k">覚える地形</span><span class="v">
+          <div class="table-scroll"><table class="mini-table">
+            <tr><th style="width:27%">名前</th><th style="width:36%">何か</th><th>位置の目印</th></tr>
+            <tr><td><strong>ネバーランド地域</strong><br>Neverland Regio</td><td><strong>赤茶色の北極</strong>。差し渡し 約470km。<strong>以前は「モルドール」という非公式の名前</strong>で呼ばれていた（2026年2月に正式名）</td><td>北緯85度。<strong>地図の上の端</strong>。正距円筒では極が横に引き伸ばされるので、上辺に沿った暗い帯に見える</td></tr>
+            <tr><td><strong>マンジェト谷</strong><br>Mandjet Chasma</td><td><strong>割れ目の帯</strong>の一部。長さ 約390km</td><td>北緯5度・東経294度（西経66度）。<strong>地図の左寄り</strong>、赤道のすぐ上</td></tr>
+            <tr><td><strong>アルゴ谷</strong><br>Argo Chasma</td><td>割れ目の帯の東側。長さ 約360km</td><td>北緯28度・東経80度。<strong>地図の右寄り</strong>、よく写っている範囲の右の端</td></tr>
+            <tr><td><strong>キューブリック山</strong><br>Kubrick Mons</td><td>山が、<strong>堀のような溝に囲まれて</strong>沈み込んでいる</td><td>北緯4度・東経31度。<strong>中央やや右、赤道の上</strong>。帯の南の平らな面にある</td></tr>
+          </table></div>
+          <p style="font-size:12.5px;color:var(--ink-faint);margin:2px 0 0">USGS Gazetteer of Planetary Nomenclature（2026年9月25日閲覧）。カロンの地名は<strong>惑星中心系・東経0〜360度</strong>で記録されているので、東経180度を超えるものは地図では西経に読み替えています。よく使われる「セレニティ谷」「ヴァルカン平原」は<strong>非公式の名前</strong>で、Gazetteer に座標がないため地図には置いていません。</p>
+          </span></div>
+
+          <div class="row"><span class="k">赤い北極</span><span class="v"><strong>カロンの北極を赤く塗ったのは、冥王星です。</strong>
+          <ul>
+            <li>冥王星の大気から逃げたメタンがカロンまで届き、冬の北極（約−257℃）の冷たい地面に<strong>凍りついて捕まる</strong></li>
+            <li>春になって日が当たると、紫外線でメタンが<strong>赤茶色の粒（ソリン）</strong>に変わって残る（NASA、2016年9月14日発表）</li>
+          </ul>
+          <p style="margin:8px 0 0">互いに回り合う2つは、<strong>物質のやりとりまでしている</strong>ことになります。冥王星の空の青いもやと、カロンの赤い北極は、同じソリンです。</p></span></div>
+
+          <div class="row"><span class="k">割れ目の<br>帯</span><span class="v">赤道の北を、長さ<strong>1,800km 以上</strong>、深さ最大<strong>7.5km</strong>の割れ目が横切っています。
+          <ul>
+            <li>考えられている成り立ち：昔、カロンの地下に<strong>水の海があり、それが凍って膨らみ、表面を内側から引き裂いた</strong>（NASA、2016年2月18日）</li>
+            <li>ただし NASA の書き方は「<strong>〜だったかもしれない</strong>」。<strong>まだ確かめられていない</strong>側です</li>
+          </ul></span></div>
+
+          <div class="row"><span class="k">探査</span><span class="v">冥王星と同じく、<strong>2015年7月14日のニューホライズンズの通過1回だけ</strong>です。見えたのは片側の北半球だけで、<strong>南半球はまだ誰も見ていません</strong>。
+          <p style="font-size:12.5px;color:var(--ink-faint);margin:6px 0 0">確認先：NASA の Charon のページ（science.nasa.gov/dwarf-planets/pluto/moons/charon/、2024年11月3日更新）、NASA の発表（2016年2月18日・2016年9月14日）。正式名の承認日は USGS Gazetteer による。いずれも2026年9月25日閲覧。</p></span></div>
+        </div>
+      </div>
+    </section>
+
     <section id="rest">
-      <div class="sec-head"><span class="idx">07</span><h2>残りのカード</h2></div>
+      <div class="sec-head"><span class="idx">09</span><h2>残りのカード</h2></div>
       <div class="box warn"><span class="lab">準備中</span>
-      <p>冥王星・カロン（地図が作れるもの）、チュリュモフ／ゲラシメンコ（形が特徴のもの。彗星）、カイパーベルト・散乱円盤・オールトの雲（領域）、エリスなどを、リュウグウとベンヌの見せ方が決まってから足します。いまは枠だけです。</p></div>
+      <p>散乱円盤とエリスなど、冥王星の分類の変更（独立した枠）、彗星（チュリュモフ／ゲラシメンコ）、オールトの雲を、冥王星とカロンの見せ方が決まってから足します。いまは枠だけです。</p></div>
     </section>
 
     <section id="cross">
-      <div class="sec-head"><span class="idx">08</span><h2>横断して見る</h2></div>
+      <div class="sec-head"><span class="idx">10</span><h2>横断して見る</h2></div>
       <div class="box warn"><span class="lab">準備中</span>
       <p>大きさをくらべる／共鳴が閉じ込める場合と追い出す場合／探査の歴史を、カードが揃った段階で書きます。いまは枠だけです。</p></div>
     </section>
 
     <section id="menu">
-      <div class="sec-head"><span class="idx">09</span><h2>訓練メニュー</h2></div>
+      <div class="sec-head"><span class="idx">11</span><h2>訓練メニュー</h2></div>
       <div class="box warn"><span class="lab">準備中</span>
       <p>3週間ぶんの表を、カードが揃った段階で書きます。いまは枠だけです。</p></div>
     </section>
 
     <section id="drills">
-      <div class="sec-head"><span class="idx">10</span><h2>演習</h2></div>
+      <div class="sec-head"><span class="idx">12</span><h2>演習</h2></div>
       <div class="box warn"><span class="lab">準備中</span>
       <p>演習は、カードが揃った段階で書きます。いまは枠だけです。</p></div>
     </section>
@@ -1690,13 +1992,13 @@ code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border
       <p>第5回「太陽と全体の統合」の予告は、この回が揃った段階で書きます。</p></div>
     </section>
 
-    <div class="foot"><p>距離・軌道の数値は NASA Planetary Fact Sheet（nssdc.gsfc.nasa.gov/planetary/factsheet）と NASA JPL Small-Body Database（ssd.jpl.nasa.gov、いずれも2026年9月25日閲覧）による概数です。小惑星の総数は IAU小惑星センターの集計（minorplanetcenter.net/mpc/summary、2026年9月25日閲覧）で、<strong>毎月増えます</strong>。小惑星帯・カイパーベルト・散乱円盤・オールトの雲の広がりは NASA Science の各ページによります。<strong>オールトの雲の内側・外側の値は推定であり、直接には観測されていません。</strong>「隣の小惑星まで平均約360万km」は本教材による概算で、発表値ではありません（前提は本文に記載）。カークウッドの空隙の距離は、木星の軌道長半径とケプラーの第3法則から計算した値です。地名の緯度経度は USGS Gazetteer of Planetary Nomenclature（planetarynames.wr.usgs.gov、2026年9月25日閲覧）。ケレスの全球地図は USGS Astrogeology「Ceres Dawn FC Global Mosaic 140m」（© NASA/JPL-Caltech/UCLA/MPS/DLR/IDA、パブリックドメイン）を表示用に縮小したもので、<strong>撮影されていない範囲を埋める加工はしていません</strong>。ベスタの全球地図は USGS Astrogeology「Vesta Dawn FC HAMO Global Mosaic 60m」（© NASA/JPL-Caltech/UCLA/MPS/DLR/IDA）の配布画像（1024×512）をそのまま使っており、こちらも<strong>欠けた範囲を埋める加工はしていません</strong>。リュウグウの画像は JAXA/ISAS の ONC-T データを Meli thev と Nrco0e が処理したもの（Wikimedia Commons、CC BY 4.0）を、ベンヌの画像は NASA/Goddard/University of Arizona のモザイクを、<strong>本教材で切り抜き・縮小</strong>しました。<strong>試料の分析結果は研究が続いている分野で、本文の内容は2026年9月25日時点で確認したものです。</strong>トロヤ群の数は IAU小惑星センターの一覧（minorplanetcenter.net/iau/lists/JupiterTrojans.html、2026年5月30日更新分）を本教材で数えた値です。配置図・小惑星帯の図・トロヤ群の図は本教材で作成しました。</p></div>
+    <div class="foot"><p>距離・軌道の数値は NASA Planetary Fact Sheet（nssdc.gsfc.nasa.gov/planetary/factsheet）と NASA JPL Small-Body Database（ssd.jpl.nasa.gov、いずれも2026年9月25日閲覧）による概数です。小惑星の総数は IAU小惑星センターの集計（minorplanetcenter.net/mpc/summary、2026年9月25日閲覧）で、<strong>毎月増えます</strong>。小惑星帯・カイパーベルト・散乱円盤・オールトの雲の広がりは NASA Science の各ページによります。<strong>オールトの雲の内側・外側の値は推定であり、直接には観測されていません。</strong>「隣の小惑星まで平均約360万km」は本教材による概算で、発表値ではありません（前提は本文に記載）。カークウッドの空隙の距離は、木星の軌道長半径とケプラーの第3法則から計算した値です。地名の緯度経度は USGS Gazetteer of Planetary Nomenclature（planetarynames.wr.usgs.gov、2026年9月25日閲覧）。ケレスの全球地図は USGS Astrogeology「Ceres Dawn FC Global Mosaic 140m」（© NASA/JPL-Caltech/UCLA/MPS/DLR/IDA、パブリックドメイン）を表示用に縮小したもので、<strong>撮影されていない範囲を埋める加工はしていません</strong>。ベスタの全球地図は USGS Astrogeology「Vesta Dawn FC HAMO Global Mosaic 60m」（© NASA/JPL-Caltech/UCLA/MPS/DLR/IDA）の配布画像（1024×512）をそのまま使っており、こちらも<strong>欠けた範囲を埋める加工はしていません</strong>。リュウグウの画像は JAXA/ISAS の ONC-T データを Meli thev と Nrco0e が処理したもの（Wikimedia Commons、CC BY 4.0）を、ベンヌの画像は NASA/Goddard/University of Arizona のモザイクを、<strong>本教材で切り抜き・縮小</strong>しました。<strong>試料の分析結果は研究が続いている分野で、本文の内容は2026年9月25日時点で確認したものです。</strong>トロヤ群の数は IAU小惑星センターの一覧（minorplanetcenter.net/iau/lists/JupiterTrojans.html、2026年5月30日更新分）を本教材で数えた値です。冥王星とカロンの全球地図は USGS Astrogeology「Pluto／Charon New Horizons LORRI MVIC Global Mosaic 300m」（© NASA/JHUAPL/SwRI/LPI）の配布画像（1024×512）をそのまま使っており、<strong>写っていない南半球を埋める加工はしていません</strong>。カイパーベルトの分布の図は、IAU小惑星センターの海王星以遠天体の一覧（minorplanetcenter.net/iau/lists/TNOs.html、2026年9月25日更新分）の軌道長半径を本教材で数えたもので、<strong>見つけやすさの偏りは補正していません</strong>。冥王星とカロン、地球と月の共通重心の位置は、JPL と NASA の値から本教材で計算しました。配置図・小惑星帯の図・トロヤ群の図・カイパーベルトの図・共通重心の図は本教材で作成しました。</p></div>
   </main>
 </div>
 <div id="site-footer"><noscript><nav class="noscript-nav" aria-label="フッターナビゲーション"><a href="index.html">ホーム</a><a href="self-intro.html">自己紹介</a><a href="study.html">勉強の軌跡</a><a href="videos.html">動画</a><a href="blog.html">ブログ</a><a href="sns.html">各種SNS</a></nav></noscript></div>
-<script src="../js/memoryverse.js?v=r75"></script>
-<script src="../js/layout.js?v=r75"></script>
-<script src="../js/main.js?v=r75"></script>
-<script src="../js/starfield.js?v=r75"></script>
+<script src="../js/memoryverse.js?v=r76"></script>
+<script src="../js/layout.js?v=r76"></script>
+<script src="../js/main.js?v=r76"></script>
+<script src="../js/starfield.js?v=r76"></script>
 </body>
 </html>

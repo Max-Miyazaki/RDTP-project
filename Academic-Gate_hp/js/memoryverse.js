@@ -203,9 +203,12 @@ function mvGrid(mod){
     }
     return;
   }
-  var P=MVGRID[kind==='mars'?'mars':'equi'],n=360/step;
+  /* data-lonc＝地図の中央の経度（東経）。無ければ 0（左端が東経180度、このサイトの既定）。
+     ★ 冥王星だけ 180。配布画像の中央が東経180度で、回して既定に揃えると、覚える中心の
+     スプートニク平原（東経179度）が左右の端で割れるため（§91.3）。 */
+  var P=MVGRID[kind==='mars'?'mars':'equi'],n=360/step,c0=parseFloat(mod.dataset.lonc)||0;
   for(var k=0;k<=n;k++){                                 /* 経線 */
-    var fx=P.x0+P.xw*k/n,X=x0+w*fx,lonE=(180+step*k)%360;
+    var fx=P.x0+P.xw*k/n,X=x0+w*fx,lonE=(180+c0+step*k)%360;
     mvSvg(svg,'line',{x1:X,y1:y0+h*P.y(P.maxLat),x2:X,y2:y0+h*P.y(-P.maxLat)},lonE===0?'major':null);
   }
   for(var la2=-60;la2<=60;la2+=step){                    /* 緯線 */
@@ -216,7 +219,7 @@ function mvGrid(mod){
   if(narrow)return;                                      /* 狭いときは文字を出さない */
   var yb=y0+h*P.y(-P.maxLat);
   for(var k2=0;k2<=n;k2+=(step===30?2:1)){               /* 経度のラベルは60度ごと */
-    var lon=(180+step*k2)%360,fx2=P.x0+P.xw*k2/n,X2=x0+w*fx2,an='middle';
+    var lon=(180+c0+step*k2)%360,fx2=P.x0+P.xw*k2/n,X2=x0+w*fx2,an='middle';
     if(k2===0){an='start';X2+=3}
     if(k2===n){an='end';X2-=3}
     var t=mod.dataset.lon==='we'?(lon===0?'0°':lon===180?'180°':lon<180?lon+'°E':(360-lon)+'°W'):lon+'°';
@@ -468,7 +471,10 @@ window.addEventListener('resize',onScroll); onScroll();
     if(!src.length){bOpen.hidden=true;}      /* 地球は地形名を置かない（§56.2） */
 
     var G=null,loading=false,raf=0;
-    var rotX=0,rotY=0,vx=0,vy=0,drag=false,px=0,py=0;
+    /* 既定の向き。data-home＝正面に出す経度（東経）。無ければ東経0度。
+       ピンは P(lat,lon) で lon=0 が正面なので、東経 L を正面へ出すには −L 回す。 */
+    var H0=-(parseFloat(mod.dataset.home)||0)*DEG;
+    var rotX=0,rotY=H0,vx=0,vy=0,drag=false,px=0,py=0;
 
     function setView(v){
       mod.classList.toggle('globe-view',v==='globe');
@@ -483,11 +489,11 @@ window.addEventListener('resize',onScroll); onScroll();
 
     function home(instant){
       vx=vy=0;
-      if(instant||reduce.matches){rotX=0;rotY=0;apply();return;}
+      if(instant||reduce.matches){rotX=0;rotY=H0;apply();return;}
       var x0=rotX,y0=rotY,t0=performance.now(),D=420;
       (function step(t){
         var k=Math.min(1,(t-t0)/D),e=1-Math.pow(1-k,3);
-        rotX=x0*(1-e);rotY=y0*(1-e);apply();
+        rotX=x0*(1-e);rotY=y0+(H0-y0)*e;apply();
         if(k<1)requestAnimationFrame(step);
       })(t0);
     }
@@ -569,6 +575,10 @@ window.addEventListener('resize',onScroll); onScroll();
         var tex=new T.TextureLoader().load(mod.dataset.globe);
         tex.colorSpace=T.SRGBColorSpace;
         tex.anisotropy=Math.min(8,rn.capabilities.getMaxAnisotropy());
+        /* 画像の中央が東経0度でないとき（data-lonc）は、テクスチャをずらして
+           既定（左端が東経180度）と同じ貼り方にする。画像のほうは回さない。 */
+        var lonc=parseFloat(mod.dataset.lonc)||0;
+        if(lonc){tex.wrapS=T.RepeatWrapping;tex.offset.x=((-lonc/360)%1+1)%1;}
         /* テクスチャの u=0 は経度−180度。東経0度を正面へ出すため球だけ −90度回す
            （ピンとグリッドは回さない側に置くので、素直な式のまま書ける）。 */
         var ball=new T.Mesh(new T.SphereGeometry(R,96,64),new T.MeshBasicMaterial({map:tex}));
