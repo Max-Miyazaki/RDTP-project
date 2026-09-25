@@ -1,0 +1,1351 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第5回 太陽と全体の統合｜メモリーバース | Academic Gates</title>
+<meta name="description" content="太陽の中身を断面で覚え、太陽風で4回ぶんをつなぎ直す。メモリーバース第5回。">
+<link rel="icon" href="../../favicon.ico" sizes="32x32">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+<!-- ★ ライト/ダーク切替は停止中（DESIGN.md §44）。サイト全体がダーク基調なので、
+     記事だけテーマが変わるのは一貫性を欠くという判断。**復活させるには次の1行の
+     コメントを外すだけでよい**（js/theme.js も css/lesson-theme.css も残してある）。 -->
+<!-- <script src="../js/theme.js?v=r82"></script> -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;500&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+<!-- サイト共通 → 記事固有 → テーマ上書き の順で読む（lesson-theme.css は
+     記事の <style> より後ろに置くこと。css/lesson-theme.css 冒頭の注記どおり） -->
+<link rel="stylesheet" href="../css/style.css?v=r82">
+<!-- MathJax: 物理数学のページと同じ設定・同じ版（mathjax@3 の tex-svg）。メモリーバース全体で
+     読み込む（第5回以降でも式を書くため。§94）。設定ブロックはローダーより「前」に置く、
+     フォールバックは this.src= ではなく createElement 方式（どちらも DESIGN.md §11b）。
+     式の無い回では何も組版されず、表示は変わらない（§94 で DOM を突き合わせて確認）。 -->
+<script>
+window.MathJax={tex:{inlineMath:[['\\(','\\)']],displayMath:[['\\[','\\]']],tags:'none'},svg:{fontCache:'global'},options:{skipHtmlTags:['script','noscript','style','textarea','pre','code']}};
+</script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"
+        onerror="this.onerror=null;var s=document.createElement('script');s.async=true;s.src='https://unpkg.com/mathjax@3/es5/tex-svg.js';document.head.appendChild(s);"></script>
+<style>
+/* メモリーバース v3 第5回 — 記事固有のスタイルのみ。第4回の構成をそのまま使う（§95）。
+   共通のリセット・背景・星・ヘッダー/フッター・ボタン・見出し階層・本文リズムは
+   css/style.css が持つ（DESIGN.md §35, §36, §47）。ここに残すのは、この教材の
+   構造（レール／天体カード／演習／図版）と、教育用の色トークンだけ。 */
+:root{
+  /* 教材固有のトークン。本体と同値のもの（--bg --surface --nav-bg --ink --line
+     --line-strong --glow-cool --font(=--font-body) --nav-clear(=--nav-clearance)
+     --ease --dur --radius-lg/md/sm）は css/style.css 側に定義があるので持たない。
+     --ink-soft / --ink-faint は本体より明るい値を「意図的に」維持している。
+     本体値に寄せると 13.5px の補足文が 4.56:1 → 3.66:1 と AA を割るため（§36.2）。
+     --accent / --accent-tint / --glow-cool は元はティール（#2bd9c4）だったが、
+     サイトの青に一本化した。--accent と --glow-cool は本体から継承するので
+     ここには無い。--accent-deep / --accent-tint はダークでの定義が本体にも
+     lesson-theme.css にも無いので、記事が持つ（§47.5）。 */
+  --surface-2:rgba(255,255,255,.045);
+  --ink-soft:rgba(255,255,255,.68);
+  --ink-faint:rgba(255,255,255,.46);
+  --line-soft:rgba(255,255,255,.05);
+  --accent-deep:#a8c9ff;
+  --accent-tint:rgba(77,148,255,.12);
+  --amber:#ffb46b;--amber-tint:rgba(255,160,70,.08);--amber-line:rgba(255,160,70,.32);
+  --good:#72e3ad;--good-tint:rgba(114,227,173,.08);--good-line:rgba(114,227,173,.28);
+  --key:#ff6fa5;--key-tint:rgba(255,61,139,.08);--key-line:rgba(255,61,139,.28);
+  --teach:#a48bff;--teach-tint:rgba(123,77,255,.11);--teach-line:rgba(123,77,255,.38);
+  --mono:ui-monospace,'SFMono-Regular',Menlo,Consolas,monospace;
+  --rail-w:250px;
+}
+body{font-size:15.5px;line-height:1.9;line-break:strict;overflow-x:hidden}
+
+/* --- レイアウト（左に目次レール／右に本文の2カラム）。phys-math_1-1 と同一。 ---
+   style.css の共通記事ルールは `body.is-article main > section:not(.rail)`
+   （詳細度 0,2,3）で 900px と 160px パディングをかけてくる。こちらは `.main` を
+   噛ませて 0,3,2 / 0,4,3 とし、確実に上回る（§36.5 B）。
+   レールの左余白は 1280px → 1440px にかけて 0 → 32px、レール↔本文の間隔は
+   1024px → 1280px にかけて 24 → 56px。狭い画面ではまず余白を削って本文幅に回す（§43.3）。 */
+.wrap{display:flex;padding-top:var(--nav-clearance);
+      padding-left:clamp(0px, calc((100vw - 1280px) * .2), 32px)}
+.rail{width:var(--rail-w);flex:0 0 var(--rail-w);position:sticky;top:var(--nav-clearance);height:calc(100vh - var(--nav-clearance));overflow-y:auto;padding:18px 14px 60px 22px;border-right:1px solid var(--line)}
+.main{flex:1 1 auto;min-width:0;
+      padding:0 clamp(24px, calc(24px + (100vw - 1024px) * .125), 56px) 110px}
+/* 本文列 860px（§43.2）。この記事に数式は無いので 853px という下限の根拠は
+   効かないが、教材どうしで本文幅が割れるほうが害なので phys-math_1-1 に揃える。
+   中央寄せをやめて左揃えにし、余りは右へ流す。 */
+body.is-article .main > .lesson-hero,
+body.is-article .main > section:not(.rail),
+body.is-article .main > .foot{max-width:860px;margin-left:0;margin-right:auto;padding-left:0;padding-right:0}
+.rail .brand{font-weight:400;font-size:15px;line-height:1.45;margin:2px 0 4px}
+.rail .brand small{display:block;font-size:10px;font-weight:500;color:var(--ink-faint);letter-spacing:.2em;margin-top:6px}
+/* --- 上の階層へ戻る導線（§64.1）。レールは sticky なので、読んでいる途中でも
+   親ページへ戻れる。狭い画面はレールが引き出しになるので .float-nav で補う。 --- */
+  .lesson-nav .next,.lesson-nav .mid{text-align:left}}
+.progress-wrap{height:2px;background:var(--line);border-radius:99px;margin:16px 0 18px;overflow:hidden}
+.progress-bar{height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--accent-deep));transition:width .15s linear}
+.toc{list-style:none;margin:0;padding:0;font-size:12.5px}
+.toc .part{font-size:10px;letter-spacing:.2em;color:var(--ink-faint);margin:16px 0 5px;padding-left:2px}
+.toc a{display:block;text-decoration:none;color:var(--ink-soft);padding:4px 10px;border-radius:999px;transition:color var(--dur) var(--ease),background var(--dur) var(--ease)}
+.toc a:hover{color:var(--ink);background:var(--surface-2)}
+.toc a.active{color:var(--ink);background:var(--accent-tint)}
+.toc a .n{font-size:10.5px;color:var(--ink-faint);margin-right:8px;font-variant-numeric:tabular-nums}
+.toc a.active .n{color:var(--accent)}
+/* 衛星は惑星の下の階層。番号を持たず、字下げ・小さめ・薄めで区別する。
+   左のヘアラインが、どの惑星にぶら下がっているかを示す（§85）。 */
+.toc .sub{list-style:none;margin:2px 0 6px;padding:0 0 0 2px;margin-left:12px;border-left:1px solid var(--line)}
+.toc .sub a{padding-left:16px;font-size:11.5px;color:var(--ink-faint)}
+.toc .sub a:hover{color:var(--ink-soft)}
+.toc .sub a.active{color:var(--ink)}
+/* 衛星にいるとき、その親の惑星も同時に示す。現在地（.active）の丸い下地とは
+   競合させず、文字と番号の色だけを上げる。 */
+.toc a.parent{color:var(--ink)}
+.toc a.parent .n{color:var(--accent)}
+
+/* --- 記事の導入部。`.hero` は index.html 専用で、style.css が
+   `.hero h1/.hero p/.hero .eyebrow` に黒い text-shadow をかけるため使えない（§36.5 A）。
+   要素も <header> ではなく <div>（裸の header は浮遊ナビの定義を浴びる）。 --- */
+.lesson-hero{padding:64px 0 34px;border-bottom:1px solid var(--line)}
+.lesson-hero h1{font-weight:300;font-size:clamp(28px,4vw,48px);line-height:1.25;letter-spacing:-.02em;margin:0 0 22px}
+.lesson-hero h1 .sub{display:block;font-size:.52em;font-weight:300;color:var(--ink-soft);letter-spacing:0;margin-top:12px}
+.lesson-hero p{color:var(--ink-soft);margin:0 0 12px}
+.lesson-hero .lead{font-size:16.5px;color:var(--ink-soft)}
+/* .eyebrow 本体は style.css の共通コンポーネント。色と余白だけ上書きする
+   （共通の --text-tertiary は 11px の小さな文字で 3.66:1 と AA を割るため） */
+.eyebrow{color:var(--ink-faint);margin-bottom:18px}
+
+section{border-bottom:1px solid var(--line-soft);scroll-margin-top:var(--nav-clearance)}
+body.is-article .main > section:not(.rail),
+body.is-article .main > section:not(.rail) ~ section:not(.rail){padding-top:56px;padding-bottom:12px}
+.sec-head{display:flex;align-items:baseline;gap:14px;margin-bottom:10px}
+.sec-head .idx{font-size:.72rem;font-weight:500;letter-spacing:.2em;color:var(--ink-faint);padding-top:4px;flex:0 0 auto;font-variant-numeric:tabular-nums}
+.sec-head .idx::after{content:' —'}
+/* 衛星の節は番号を持たない。見出しの文字だけは惑星の見出しと左端を揃えたいので、
+   番号の幅（約37.5px）＋ gap（14px）ぶんだけ寄せる。狭い画面では詰める（§85）。 */
+.sec-head.is-sub{padding-left:51.5px}
+@media (max-width:560px){.sec-head.is-sub{padding-left:20px}}
+body.is-article main h2{font-weight:400;font-size:clamp(21px,2.6vw,28px);line-height:1.3;letter-spacing:-.01em;margin:0}
+body.is-article main h3{font-weight:400;font-size:17px;margin:28px 0 6px;color:var(--ink)}
+body.is-article main p{margin:10px 0;color:var(--ink-soft)}
+body.is-article main ul,body.is-article main ol{margin:10px 0;padding-left:1.3em;color:var(--ink-soft)}
+li{margin:4px 0}
+strong{font-weight:500;color:var(--ink)}
+code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);border-radius:6px;padding:1px 6px;color:var(--accent-deep)}
+
+.box{border-radius:var(--radius-md);padding:16px 20px;margin:18px 0;border:1px solid var(--line);background:var(--surface)}
+.box .lab{font-size:.7rem;letter-spacing:.14em;font-weight:500;display:block;margin-bottom:6px}
+.box p:first-of-type{margin-top:2px}.box p:last-child{margin-bottom:0}
+/* 枠線は必ずトークン経由にすること。ここに直書きすると lesson-theme.css の
+   ライト上書きが効かず、暗い背景用の明るい色がライトでパステルになる（§41.2）。 */
+.box.principle{background:var(--key-tint);border-color:var(--key-line)}.box.principle .lab{color:var(--key)}
+.box.target{background:var(--good-tint);border-color:var(--good-line)}.box.target .lab{color:var(--good)}
+.box.warn{background:var(--amber-tint);border-color:var(--amber-line)}.box.warn .lab{color:var(--amber)}
+.box.teach{background:var(--teach-tint);border-color:var(--teach-line)}.box.teach .lab{color:var(--teach)}
+
+.table-scroll{overflow-x:auto;margin:14px 0}
+.mini-table{width:100%;border-collapse:collapse;font-size:14px;margin:14px 0;color:var(--ink-soft)}
+.mini-table th,.mini-table td{border:1px solid var(--line);padding:9px 11px;text-align:left;vertical-align:top}
+.mini-table th{background:var(--surface-2);font-weight:500;color:var(--ink)}
+/* 根拠の強度バッジ。枠線は tint と同系のトークンへ（上と同じ理由） */
+.g{font-size:10.5px;font-weight:500;border-radius:999px;padding:2px 9px;white-space:nowrap}
+.g.s{background:var(--good-tint);color:var(--good);border:1px solid var(--good-line)}
+.g.m{background:var(--amber-tint);color:var(--amber);border:1px solid var(--amber-line)}
+.g.w{background:var(--key-tint);color:var(--key);border:1px solid var(--key-line)}
+
+.fig{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-lg);padding:18px 18px 12px;margin:20px 0}
+.fig > svg,.fig-scroll > svg{width:100%;height:auto;display:block}
+/* ★ 図は縮めずに横へ送る（§90.1）。viewBox 640 の図を 390px 幅で縮めると、
+   9.5 の注記が実寸 4.6px になって読めない。別の縦長の図は作らない —— 同じ図を
+   2つの形で覚えることになるため。本文の枠が 640px を割ったときだけ送れるようになる。
+   合図は3つ：上の1行（.is-scrollable のときだけ）、送れる側の端のフェード、細いスクロールバー。
+   iOS はスクロールバーを動かすまで出さないので、1行とフェードが主な合図。 */
+.fig-scroll{overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.28) transparent}
+.fig-scroll > svg{min-width:640px}
+.fig-scroll::-webkit-scrollbar{height:6px}
+.fig-scroll::-webkit-scrollbar-thumb{background:rgba(255,255,255,.28);border-radius:99px}
+.fig.is-scrollable .fig-scroll{padding-bottom:8px;
+  -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 28px,#000 calc(100% - 44px),transparent);
+          mask-image:linear-gradient(90deg,transparent 0,#000 28px,#000 calc(100% - 44px),transparent)}
+.fig.is-scrollable .fig-scroll.is-start{-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 44px),transparent);mask-image:linear-gradient(90deg,#000 calc(100% - 44px),transparent)}
+.fig.is-scrollable .fig-scroll.is-end{-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 28px);mask-image:linear-gradient(90deg,transparent 0,#000 28px)}
+.fig.is-scrollable .fig-scroll.is-start.is-end{-webkit-mask-image:none;mask-image:none}
+.fig.is-scrollable::before{content:'横に送ると続きが見られます →';display:block;margin:0 0 8px;font-size:11px;letter-spacing:.06em;color:var(--ink-faint)}
+
+.fig svg text{font-family:var(--font-body)}
+.fig figcaption{font-size:13px;color:var(--ink-soft);margin-top:10px;line-height:1.8}
+/* 式のすぐ後ろの句読点を行頭へ送らない（§94.3）。インライン数式は lesson-theme.css で
+   inline-block になっているので、式と「、」「。」のあいだで改行できてしまう。 */
+.nb{white-space:nowrap}
+
+/* --- 到達目標の箱。`.goals` は style.css の `.card`（サイト共通カード。blog /
+   videos / study など6ページで使用中）と衝突したための改名（§47.6）。
+   そのままだと display:flex / gap / .card::before のホバーグロー / .card:hover の
+   背景変化が降ってきて、読むだけの箱がマウスに反応してしまう。 --- */
+.goals{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-lg);padding:20px 24px;margin:18px 0}
+.goals ol{counter-reset:q;list-style:none;padding-left:0;margin:6px 0 0}
+.goals ol li{counter-increment:q;position:relative;padding-left:44px;margin:14px 0}
+.goals ol li::before{content:"G" counter(q);position:absolute;left:0;top:3px;font-size:11px;font-weight:500;color:var(--accent);border:1px solid var(--accent);border-radius:999px;padding:1px 9px}
+.goals ol li b{display:block;font-size:15.5px;font-weight:400;color:var(--ink)}
+.goals ol li span{font-size:14px;color:var(--ink-soft)}
+
+/* --- 天体カード ------------------------------------------------------------
+   画像をクリックすると .mod.open が付き、数値（.stat）が円の周りに放射状に並ぶ。
+   配置は JS（mvPlace / mvLinks）が計算する。CSS は「閉じているときの姿」と
+   「開いたときの入れ物」だけを持つ。 --- */
+.mod{position:relative;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-lg);margin:18px 0;overflow:hidden;transition:border-color var(--dur) var(--ease),background var(--dur) var(--ease)}
+.mod::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,var(--glow-cool),transparent 45%);opacity:0;transition:opacity var(--dur) var(--ease);pointer-events:none}
+.mod:hover{border-color:var(--line-strong);background:var(--surface-2)}
+.mod:hover::before{opacity:.5}
+.mod>*{position:relative}
+.mod-h{display:flex;align-items:center;gap:12px;padding:14px 20px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+/* .no の文字色は lesson-theme.css が var(--on-accent) で持つ（§44.1 の分類表に
+   登録済み）。ここで再宣言しないこと。背景だけが記事の持ち物。 */
+.mod-h .no{font-size:12px;font-weight:500;background:var(--accent);border-radius:999px;padding:3px 12px;flex:0 0 auto}
+.mod-h .ttl{font-weight:400;font-size:17px;flex:1 1 auto;min-width:0}
+.mod-h .tag{font-size:10px;font-weight:500;letter-spacing:.14em;color:var(--ink-faint);border:1px solid var(--line);border-radius:999px;padding:2px 10px}
+.mod-b{padding:16px 20px 18px}
+/* ★ 第2回の .orbit は「外観＝左に球・右に物差し」「地図＝画像に重ねる」の2種類で、
+   第1回の3列グリッド（放射状配置の受け皿）は使わない（§57.1）。
+   位置指定の基準（position:relative）だけが共通の役割。 */
+.orbit{position:relative;margin-bottom:10px}
+.orbit .links{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;overflow:visible}
+/* 引き出し線。青はティールより輝度が低いので、不透明度を .38 → .45 に上げて
+   線としての見えを保つ（黒地 6.34:1 対 11.82:1 の差を埋める。§47.5） */
+.orbit .links line{stroke:rgba(61,139,255,.45);stroke-width:1}
+.orbit .links circle{fill:var(--accent)}
+.orb{position:relative;width:100%}
+.core{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;gap:8px;width:100%;margin:0}
+.img-btn{background:none;border:0;padding:0;cursor:pointer;width:100%;font-family:var(--font-body);color:inherit;display:flex;flex-direction:column}
+.img-btn .hint{order:-1;display:block;font-size:11px;color:var(--ink-faint);margin:0 0 12px;letter-spacing:.06em;position:relative;z-index:3}
+.hint .h-o{display:none}
+.mod.open .hint .h-c{display:none}
+.mod.open .hint .h-o{display:inline}
+.img-btn:hover .frame{border-color:var(--accent);box-shadow:0 0 24px rgba(61,139,255,.24)}
+/* .stat は **<div>**。押しても何も起きない要素なので、<button> のままだと
+   9枚 × 6〜7個 = 62 個の無反応なボタンが Tab 順に入る（§47.9）。mvPlace /
+   mvLinks はセレクタで拾うだけなのでタグに依存しない。数値を押せるようにする
+   日が来たら button に戻すこと — そのときは中身も操作対象になる。 */
+.stat{position:relative;z-index:2;display:block;width:max-content;max-width:100%;text-align:left;background:rgba(12,14,18,.82);backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px);border:1px solid var(--line);border-radius:var(--radius-sm);padding:8px 11px;font-size:13.5px;line-height:1.6;color:var(--ink);font-family:var(--font-body);font-variant-numeric:tabular-nums;transition:opacity .28s var(--ease),transform .28s var(--ease),border-color .2s var(--ease)}
+.stat b{display:block;font-size:10px;color:var(--ink-faint);font-weight:500;letter-spacing:.12em;margin-bottom:2px}
+.stat strong{color:var(--accent-deep)}
+.stat .v{display:block}
+.mod:not(.open) .orbit .stat{display:none}
+.mod:not(.open) .links{display:none}
+
+.mod.open .stat{animation:mvIn .32s var(--ease) both}
+@keyframes mvIn{from{opacity:0}to{opacity:1}}
+@media (prefers-reduced-motion:reduce){.mod.open .stat{animation:none}}
+
+/* 惑星画像。枠の中は宇宙の写真なので、ライトでも黒のまま
+   （lesson-theme.css の注記「.planet-img .frame は変更しない」と対になっている）。 */
+.planet-img{margin:0}
+.planet-img .frame{border-radius:var(--radius-md);background:radial-gradient(circle at 50% 50%,rgba(255,255,255,.04),transparent 70%),#000;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;overflow:hidden}
+.planet-img img{width:100%;height:100%;object-fit:contain;display:block}
+.planet-img .fallback{display:none;padding:14px;text-align:center;font-size:12.5px;color:var(--ink-soft)}
+.planet-img.failed img{display:none}.planet-img.failed .fallback{display:block}
+.planet-img figcaption{position:relative;z-index:3;margin-top:12px;font-size:10.5px;color:var(--ink-faint);line-height:1.5}
+.mod-b .row{display:flex;gap:12px;margin:8px 0;font-size:14.5px;align-items:flex-start}
+.mod-b .row .k{font-size:10.5px;font-weight:500;color:var(--ink-faint);letter-spacing:.14em;flex:0 0 58px;padding-top:4px}
+.mod-b .row .v{flex:1 1 auto;min-width:0;line-height:1.8;color:var(--ink-soft)}
+.mod-b ul{margin:3px 0;padding-left:1.2em}
+.mod-b li{font-size:14.5px;margin:2px 0}
+
+/* --- この回は地図だけを見せる。外観（球）は第1回が持つ（§63.2）。 --- */
+.planet-img .map-img{display:block}
+/* ★ 地図のときは枠を画像そのものの比率に合わせる。球用の正方形の枠に
+   object-fit:contain で入れると上下が大きく空き、地形が半分の大きさになる。
+   高さを auto にして画像に持たせれば、2:1 の惑星図も 4:3 の月の図も等しく収まる。
+   円形の指定は `.planet-img .orb .frame`（0,3,0）なので、こちらは 0,5,0 で勝つ。
+   環は球の周りを回る飾りなので、平面の地図では消す（楕円にならない）。 */
+.mod.map-view .planet-img .orb{aspect-ratio:auto}
+.mod.map-view .planet-img .orb .frame{height:auto;min-height:118px;aspect-ratio:auto;border-radius:var(--radius-md)}
+.mod.map-view .planet-img .map-img{height:auto}
+/* 地球だけの注記。画像の下・キャプションの上に1行（§56.2）。
+   <button> の中なので <p> ではなく span（ボタンの中は phrasing content）。 */
+.map-note{display:none;margin:10px 0 0;font-size:11px;line-height:1.6;color:var(--ink-faint)}
+.mod.map-view .map-note{display:block}
+/* ★ 外観のときは数値欄（.stat）、地図のときは地形ラベル（.stat.geo）。
+   どちらも同じ .stat を使う（見た目の土台を共有する）。
+   閉じているときは第1回どおり両方とも隠れる（.mod:not(.open) .orbit .stat）。 */
+.mod.map-view .orbit .stat:not(.geo){display:none}
+/* ★ 地図のときだけ、線と点を画像の上に出す。共通CSSでは .links が z-index:0、
+   画像を持つ .core が z-index:1 なので、地図の上のピンが画像に隠れてしまう。
+   .stat と同じ z-index:2 にすると、DOM 順（svg → .stat）で線はラベルの下、
+   画像より上に来る。外観のときは第1回のままにしておく（§53.4）。 */
+.mod.map-view .orbit .links{z-index:2}
+
+/* === 地図は「カードの内幅いっぱい」。ラベルは地図の上に重ねる（§54／§55） =====
+   外観（左に球・右に物差し）とは別のレイアウトなので、.orbit をただのブロックに
+   して、中身を JS（mvMap）が絶対座標で置く。
+   ★ 数値（.stat）の開閉とは独立させる。地図の役目は地形の位置を示すことなので、
+   閉じていても大きさ・ピン・ラベル・線はそのまま出す（§55.1）。 */
+.mod.map-view .orbit{display:block;height:auto}
+.mod.map-view .core{grid-area:auto;max-width:none;width:100%;margin:0}
+/* 閉じたカード用の指定（`.mod:not(.open)` 系）のうち、大きさと基準線だけを打ち消す。
+   ★ ピン・ラベル・引き出し線は打ち消さない —— 地図を見て場所を思い出すのが
+   この回の訓練なので、答えにあたるラベルは数値と同じく「開いたときだけ」出す
+   （§56.1）。閉じている地図は、大きさとグリッドだけが見えている状態。 */
+.mod.map-view:not(.open) .core{max-width:none}
+.mod.map-view:not(.open) .grid{display:block}
+/* 900px 以下の `.planet-img .frame{max-width:260px}` と `.core{max-width:200px}`
+   （どちらも地図より弱い詳細度）を、ここで上書きしている。 */
+/* 枠は画像に合わせて縮める。月の図は 1.05:1 で、高さの上限に当たって
+   幅が 463px までしか出ないので、枠を内幅いっぱいのままにすると左右が
+   真っ黒な帯になる。min-width は読み込み前に枠が消えないための下限。 */
+.mod.map-view .planet-img .frame{max-width:100%;width:fit-content;min-width:260px;min-height:160px;margin:0 auto}
+/* 高さは画像に決めさせるが、上限を置く。2:1 の惑星図は内幅いっぱい（818→409px）、
+   1.05:1 の月と 1.75:1 の火星は上限に当たって幅が詰まる。**object-fit ではなく
+   画像そのものの寸法で収める** — 枠に余白が入ると data-x/data-y の基準が
+   画像とずれる（§53.3）。 */
+.mod.map-view .planet-img .map-img{width:auto;height:auto;max-width:100%;max-height:440px;margin:0 auto;object-fit:contain}
+/* 字幕は地図のとき中央に置く（画像が幅いっぱいになるため）。 */
+.mod.map-view .planet-img figcaption{text-align:center}
+
+/* ラベル。地図の上に乗るので pointer-events:none —— これが無いと、ラベルが
+   画像（.img-btn）を覆ってカードの開閉が効かなくなる。背景は .stat の .82 より
+   濃い .88（地図には砂漠や極冠のような明るい面があるため）、罫線は残す。 */
+.mod.map-view .orbit .stat.geo{position:absolute;left:0;top:0;z-index:2;pointer-events:none;
+  width:max-content;max-width:200px;background:rgba(10,12,16,.88);border-color:var(--line-strong);
+  font-size:11.5px;line-height:1.5;padding:4px 7px}
+.mod.map-view .orbit .stat.geo b{font-size:9px;letter-spacing:.08em;margin-bottom:0}
+/* ピンはラベルがすぐ横に来るぶん、白い縁取りで強める（どれがどこを指すかが要点）。
+   引き出し線は 22〜28px と短いので、不透明度を上げて確実に見えるようにする。 */
+.mod.map-view .orbit .links line{stroke:rgba(61,139,255,.9);stroke-width:1.4}
+.mod.map-view .orbit .links circle{fill:var(--accent);stroke:#fff;stroke-width:1.5}
+
+/* 緯度経度の基準線（§55.2）。画像より上・ピンより下に敷く。.links と同じ
+   z-index:2 で、DOM 順（.grid → .links → .stat）が重ね順を決める。 */
+.orbit .grid{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:2;overflow:visible;display:none}
+.mod.map-view .orbit .grid{display:block}
+.orbit .grid line,.orbit .grid path,.orbit .grid circle{fill:none;stroke:rgba(255,255,255,.2);stroke-width:.8}
+.orbit .grid .major{stroke:rgba(255,255,255,.35);stroke-width:1}
+/* 黒地にも砂漠のような明るい面にも乗るので、文字は暗い縁取りを付ける。 */
+.orbit .grid text{fill:rgba(255,255,255,.62);font-family:var(--font-body);font-size:9px;letter-spacing:.04em;
+  paint-order:stroke;stroke:rgba(0,0,0,.55);stroke-width:2.5;stroke-linejoin:round}
+
+/* 番号つきの説明リスト。560px 以下（地図の上にラベルを重ねると読めない）と、
+   狭い画面（560px 以下）で出す。番号は本文の「覚える地形」表と同じ順。 */
+.stat .n{display:none}
+.geo-list{display:none;list-style:none;margin:14px 0 0;padding:0;text-align:left}
+.geo-list li{display:flex;gap:9px;margin:5px 0;font-size:13px;line-height:1.6;color:var(--ink-soft)}
+.geo-list li b{font-weight:500;color:var(--ink)}
+.geo-list .n{display:grid;place-items:center;flex:0 0 auto;width:20px;height:20px;border-radius:50%;
+  background:var(--accent);color:var(--on-accent);font-size:11px;font-style:normal;margin-top:2px}
+
+/* --- 展開図と球の切り替え（§77）-------------------------------------------
+   球は「覚える面」ではなく確かめるためのもう1枚なので、切り替えは控えめに。 */
+.vsw{display:flex;gap:6px;justify-content:center;margin:0 0 12px}
+.vsw-b{font-family:inherit;font-size:12px;letter-spacing:.06em;padding:5px 14px;border-radius:999px;
+  border:1px solid var(--line);background:var(--surface);color:var(--ink-soft);cursor:pointer;
+  transition:color .25s var(--ease),border-color .25s var(--ease),background .25s var(--ease)}
+.vsw-b.is-on{color:var(--ink);border-color:var(--line-strong);background:var(--surface-2)}
+.vsw-b:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+@media (hover:hover){.vsw-b:hover{color:var(--ink);border-color:var(--line-strong)}}
+/* 切り替えが作れないカード（ミランダ）で、トグルがあるはずの位置に置く1行。
+   押せる要素に見せないよう、枠も下地も持たせない。高さは .vsw（29px）に合わせ、
+   1枚だけ欠けていても列がずれないようにする（§87.1）。 */
+.mod-b .vsw-note{display:flex;align-items:center;justify-content:center;min-height:29px;
+  margin:0 0 12px;max-width:none;font-size:12px;line-height:1.5;letter-spacing:.06em;
+  color:var(--ink-faint);text-align:center}
+/* ★ サイト共通の `p{max-width:62ch}` と `body.is-article main p{margin:10px 0}` に
+   負けるので、クラス2つ（.mod-b .vsw-note）まで上げて max-width も戻す。
+   これをしないと幅430pxで折り返し、トグルと高さが揃わない。 */
+
+.mod.globe-view .orbit{display:none}
+.mod:not(.globe-view) .globe{display:none}
+.globe{text-align:center}
+/* ★ touch-action は「指が触れた要素」の値で決まる（継承されない）ので、
+   canvas にも書く。無いと指では回せない（§77.5）。
+   none ではなく pan-y にしてある—— 縦のスワイプはページのスクロールに
+   渡し、横のドラッグだけで回す。球の上でスクロールが止まると、
+   狭い画面では先へ進めなくなるため。 */
+.globe-stage{position:relative;width:100%;max-width:440px;margin:0 auto;aspect-ratio:1/1;
+  touch-action:pan-y;cursor:grab}
+.globe-stage.is-drag{cursor:grabbing}
+.globe-cv{display:block;width:100%;height:100%;touch-action:pan-y}
+.globe-fail{position:absolute;inset:0;display:grid;place-items:center;margin:0;color:var(--ink-faint);font-size:13px}
+/* ★ display を持つクラスは UA の [hidden]{display:none} を上書きするので、
+   hidden を付けても消えない。明示的に消す（§77.4）。 */
+.globe-fail[hidden],.globe-list[hidden],.vsw[hidden],.globe[hidden]{display:none}
+.globe-ctl{display:flex;gap:8px;justify-content:center;margin:10px 0 0}
+.globe-b{font-family:inherit;font-size:12px;padding:5px 13px;border-radius:999px;border:1px solid var(--line);
+  background:var(--surface);color:var(--ink-soft);cursor:pointer;
+  transition:color .25s var(--ease),border-color .25s var(--ease)}
+@media (hover:hover){.globe-b:hover{color:var(--ink);border-color:var(--line-strong)}}
+.globe-b:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.globe-list{list-style:none;margin:12px auto 0;padding:0;max-width:440px;text-align:left;
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:2px 12px}
+.globe-list li{display:flex;gap:7px;font-size:12.5px;line-height:1.6;color:var(--ink-soft)}
+/* 月だけ、球でしか見えない裏側の地形が入る（§78.3）。
+   .geo-far は座標と名前を持つだけの入れ物で、画面には出さない。 */
+.geo-far{display:none}
+.globe-list .far{margin-left:6px;font-size:10px;letter-spacing:.08em;color:var(--ink-faint);
+  border:1px solid var(--line);border-radius:999px;padding:0 6px;align-self:center}
+.globe-list .n{display:grid;place-items:center;flex:0 0 auto;width:18px;height:18px;border-radius:50%;
+  background:var(--accent);color:var(--on-accent);font-size:10px;font-style:normal;margin-top:3px}
+.globe-note{max-width:560px;margin:14px auto 0;font-size:12.5px;line-height:1.7;color:var(--ink-faint);text-align:left}
+.globe-cap{margin:10px 0 0;font-size:11px;line-height:1.7;color:var(--ink-faint)}
+@media (max-width:560px){
+  .globe-stage{max-width:300px}
+  .globe-list{grid-template-columns:1fr}
+}
+
+/* --- 演習。解答は <details> なので、印刷時に開く仕掛けを下の @media print に置く --- */
+.ex{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-lg);padding:18px 22px;margin:18px 0}
+.ex .ex-h{font-weight:400;font-size:16.5px;margin:0 0 6px;color:var(--ink)}
+.ex .ex-h .num{font-size:11px;font-weight:500;color:var(--teach);border:1px solid var(--teach-line);background:var(--teach-tint);border-radius:999px;padding:2px 10px;margin-right:10px;vertical-align:2px}
+.ex details{margin-top:12px;border-top:1px solid var(--line);padding-top:10px}
+.ex summary{cursor:pointer;font-size:12.5px;font-weight:500;color:var(--ink-soft);list-style:none;display:inline-flex;align-items:center;gap:8px;padding:5px 6px 5px 14px;border:1px solid var(--line);border-radius:999px}
+/* ＋/− の丸。白文字は --teach(#a48bff) 上で 2.72:1 しか出ない。--on-accent なら
+   ダーク 7.58:1 / 印刷（--teach が #5a3fc0、--on-accent が #fff）7.29:1 で両立する。 */
+.ex summary::after{content:'+';display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;background:var(--teach);color:var(--on-accent);font-size:13px}
+.ex details[open] summary::after{content:'−'}
+.ex summary:hover{color:var(--ink);border-color:var(--line-strong)}
+.ex summary::-webkit-details-marker{display:none}
+.ex details[open] summary{margin-bottom:8px}
+.ex .ans{font-size:14.5px}
+
+.foot{padding:34px 0 0;color:var(--ink-faint);font-size:12.5px}
+.foot p{color:var(--ink-faint)}
+
+/* モバイル：レールを引き出しに。`.menu-btn` は位置だけを持ち、見た目は
+   共通コンポーネントの `.btn` を併用する。 */
+.menu-btn{display:none}
+.float-nav{display:none}
+.scrim{display:none}
+@media (max-width:900px){
+  .rail{position:fixed;left:0;top:0;height:100vh;z-index:1100;transform:translateX(-100%);transition:transform .25s var(--ease);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);padding-top:28px}
+  body.nav-open .rail{transform:translateX(0)}
+  .main{padding:0 20px 90px}
+  .mod:not(.map-view) .orbit{gap:16px}
+  .orbit .stat{font-size:12.5px;padding:7px 9px}
+  .planet-img .frame{max-width:260px;margin:0 auto}
+  .planet-img figcaption{text-align:center}
+  .mod-b .row{flex-direction:column;gap:2px}
+  .mod-b .row .k{flex:0 0 auto}
+  /* 「戻る」と「目次」を横並びで浮かせる。位置は入れ物が持ち、ボタン自身は
+     見た目だけを持つ（§64.2）。 */
+  .float-nav{display:flex;gap:10px;position:fixed;bottom:18px;right:18px;z-index:1050}
+  .menu-btn,.back-btn{position:static;display:inline-flex;background:var(--nav-bg);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);color:var(--ink);text-decoration:none}
+  .scrim{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:1090}
+  body.nav-open .scrim{display:block}
+  .lesson-hero{padding-top:40px}
+}
+@media (max-width:560px){
+
+  /* 地図の上にラベルを重ねると読めなくなるので、地図には通し番号の丸だけを置き、
+     説明は番号つきのリストにして地図の下へ出す（§54.5）。 */
+  .mod.map-view.open .orbit .stat.geo{width:22px;height:22px;max-width:none;padding:0;border-radius:50%;
+    background:var(--accent);border-color:#fff;color:var(--on-accent);font-size:11px;font-weight:500;
+    display:grid;place-items:center;box-shadow:0 0 0 1px rgba(0,0,0,.55)}
+  .mod.map-view.open .orbit .stat.geo b,.mod.map-view.open .orbit .stat.geo .v{display:none}
+  .mod.map-view.open .orbit .stat.geo .n{display:block}
+  .mod.map-view.open .geo-list{display:block}
+  .orbit{display:flex;flex-direction:column;gap:10px}
+  .orbit .core{order:-1;max-width:240px;align-self:center;margin:0;width:100%}
+  .orbit .links{display:none}
+  .orbit .stat{width:100%;max-width:none;font-size:13.5px;padding:8px 11px}
+}
+@media print{
+  body{background:#fff;color:#000}
+  header,.rail,.menu-btn,.float-nav,.lesson-nav,.scrim,#starfield,footer{display:none!important}
+  .wrap{display:block;padding-top:0}
+  /* ★ 解答（<details>）を開く。元の教材にあった `.ex details>*{display:block}` は
+     **効かない**（実測：閉じた details の中身は ::details-content の
+     content-visibility:hidden で隠れているので、子の display を変えても出てこない）。
+     効くのは次の1行。Chrome 131 / Safari 18.4 / Firefox 139 以降。
+     それ以前のブラウザ向けには、下の beforeprint で open 属性を足している。 */
+  details::details-content{content-visibility:visible!important}
+  .mod .orbit{display:block!important;height:auto!important}
+  .mod .orbit .stat{position:static!important;transform:none!important;max-width:none;margin:6px 0}
+  .mod .orbit .core{position:static!important;transform:none!important;margin:0 auto}
+  .mod .orbit{display:block!important}
+  .links{display:none!important}
+}
+
+/* --- 環の並びの図（土星のカード）------------------------------------------
+   真横から見た並び。横だけが縮尺で、距離は NSSDC の Rings Fact Sheet の
+   「惑星半径の何倍か」をそのまま使う。開閉の規則は断面と同じで、
+   閉じているときは帯の濃淡だけ、開くと環の名前とカッシーニの間隙の名前が出る。
+   ★ 狭い画面では図の中の文字が 5px 台まで縮むので、名前（.lay-lab）も
+     数値と物差し（.ring-num）も畳み、図の下の1行（.ring-narrow）に落とす。
+     断面図で使った「ラベルを畳んで一覧に落とす」のと同じ考え方（§54.5）。 */
+.ring-fig{margin:14px 0 4px;width:100%}
+.ring-svg{width:100%;height:auto;display:block}
+.ring-svg text{font-family:var(--font-body)}
+.ring-svg .lay-lab{opacity:0;visibility:hidden;transition:opacity .3s var(--ease)}
+.mod.open .ring-svg .lay-lab{opacity:1;visibility:visible}
+@media (prefers-reduced-motion:reduce){.ring-svg .lay-lab{transition:none}}
+.ring-fig figcaption{margin-top:10px;font-size:10.5px;color:var(--ink-faint);line-height:1.6}
+/* ★ 環の図にも、それ自体を押して名前を出す入口を付ける。開閉は .mod.open で
+   断面と共有しているが、断面の図は本文のずっと上にあるので、環の図を見ている人が
+   そこまで戻らないと名前が出ない、という状態になっていた。
+   h-c / h-o の入れ替えは共通の `.hint .h-o` 側が持つので、ここは配置だけ。 */
+.ring-btn{background:none;border:0;padding:0;width:100%;cursor:pointer;font-family:var(--font-body);
+  color:inherit;display:flex;flex-direction:column;text-align:left}
+.ring-btn .hint{order:-1;display:block;font-size:11px;color:var(--ink-faint);margin:0 0 10px;letter-spacing:.06em}
+@media (hover:hover){.ring-btn:hover .ring-svg{filter:drop-shadow(0 0 16px rgba(61,139,255,.28))}}
+.ring-narrow{display:none;margin:10px 0 0;font-size:13px;line-height:1.7;color:var(--ink-soft)}
+.ring-narrow b{color:var(--ink);font-weight:500}
+.ring-narrow .ring-names{display:none}
+@media (max-width:560px){
+  .ring-svg .lay-lab,.ring-svg .ring-num{display:none}
+  .ring-narrow{display:block}
+  .mod.open .ring-narrow .ring-names{display:inline}
+}
+
+/* 近赤外の静止画（天王星）。球にはしない1枚 —— 回せる球は「可視光でどう見えるか」
+   を見せる面で、これはその可視光で見えないものを補う証拠として本文に添える。 */
+.fig.ir{max-width:560px;margin:14px 0 4px}
+.fig.ir img{width:100%;height:auto;display:block;border-radius:var(--radius-md)}
+
+/* --- 断面（巨大惑星のカードの「覚える面」）----------------------------------
+   第2回の展開図にあたる位置に入るが、写真ではなく SVG で描く。巨大惑星には
+   固体の表面が無く、貼れる地図が存在しないため。
+   ★ 4枚とも同じ描き方・同じ向き・同じ半径で描くこと。比べられることが目的で、
+     カードごとに縮尺を変えると、この節の意味が失われる。
+   ★ 開閉の規則は地図のピンと同じ —— 閉じているときは層の輪郭だけ、開くと
+     層の名前と数値（.lay-lab）が出る（§56.1 と同じ考え方）。 */
+.cut-fig{margin:0 auto;width:100%;max-width:720px}
+.cut-svg{width:100%;height:auto;display:block}
+.cut-svg text{font-family:var(--font-body)}
+.cut-fig figcaption{position:relative;z-index:3;margin-top:12px;font-size:10.5px;color:var(--ink-faint);line-height:1.6;text-align:center}
+/* ★ opacity だけでなく visibility も落とす。opacity:0 のままだと読み上げと
+   検索の対象に残り、閉じているのに答えが読めてしまう（§56.1 の趣旨）。 */
+.cut-svg .lay-lab{opacity:0;visibility:hidden;transition:opacity .3s var(--ease)}
+.mod.open .cut-svg .lay-lab{opacity:1;visibility:visible}
+@media (prefers-reduced-motion:reduce){.cut-svg .lay-lab{transition:none}}
+@media (hover:hover){.img-btn:hover .cut-svg{filter:drop-shadow(0 0 16px rgba(61,139,255,.28))}}
+/* 層の一覧。狭い画面で、図の中のラベルの代わりに出す（下の @media）。
+   色の四角は図の層の色と対応させる —— 名前だけの一覧にすると、図のどの層の
+   話なのかが分からなくなる。 */
+.cut-list{display:none;list-style:none;margin:16px 0 0;padding:0;text-align:left}
+.cut-list li{display:flex;gap:9px;margin:7px 0;font-size:13px;line-height:1.6;color:var(--ink-soft)}
+.cut-list li b{font-weight:500;color:var(--ink);margin-right:6px}
+.cut-list .c{flex:0 0 auto;width:14px;height:14px;border-radius:4px;margin-top:4px;border:1px solid}
+.cut-list .l-air .c{background:var(--accent-tint);border-color:var(--accent)}
+.cut-list .l-mol .c{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.34)}
+.cut-list .l-met .c{background:rgba(123,77,255,.26);border-color:var(--teach)}
+.cut-list .l-ice .c{background:rgba(114,227,173,.13);border-color:var(--good)}
+.cut-list .l-core .c{background:var(--amber-tint);border-color:var(--amber)}
+
+/* 560px 以下の `.orbit .core{max-width:240px}` は、地図の上に重ねたラベルを
+   読ませるための指定（§54.5）。断面にはラベルの重なりが無いので打ち消す。 */
+@media (max-width:560px){
+  .mod.cut-view .cut-fig{max-width:none}
+  .mod.cut-view .orbit .core{max-width:none;order:0}
+  /* ★ 図の中のラベルは、狭い画面では 5px まで縮んで読めない（実測）。地図で
+     ラベルをやめて番号つきの一覧に落とすのと同じ扱いにする（§54.5）。
+     図はラベル列（viewBox の x=398 から右）を切り落として、扇形だけを幅いっぱいに
+     使う。170% は 640÷375 —— 375 は扇形と「表面＝1気圧の高さ」までの幅。 */
+  .mod.cut-view .cut-svg .lay-lab{display:none}
+  .mod.cut-view .cut-fig{overflow:hidden}
+  .mod.cut-view .cut-svg{width:170%}
+  .mod.cut-view.open .cut-list{display:block}
+}
+/* 分かったこと／分かっていないことの2段。色は既存の箱のトークンだけで作る。 */
+.known{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:10px 0 0}
+.known > div{border:1px solid var(--line);border-radius:var(--radius-sm);padding:10px 13px;background:var(--surface)}
+.known .lab{display:block;font-size:10.5px;font-weight:500;letter-spacing:.12em;margin-bottom:4px}
+.known .k-yes{border-color:var(--good-line);background:var(--good-tint)}.known .k-yes .lab{color:var(--good)}
+.known .k-no{border-color:var(--amber-line);background:var(--amber-tint)}.known .k-no .lab{color:var(--amber)}
+.known .k-unseen{border-color:var(--teach-line);background:var(--teach-tint)}.known .k-unseen .lab{color:var(--teach)}
+.known .k-wide{grid-column:1 / -1}
+.known ul{margin:2px 0 0}
+@media (max-width:560px){.known{grid-template-columns:1fr}}
+/* ★ 900px 以下では .row が縦並び（flex-direction:column）になり、align-items:flex-start の
+   せいで .v が中身の幅まで広がる。最小幅 520px の比べる表を入れると、行ごと画面の外へ
+   はみ出した（390px で右端 561px、実測）。.v を行の幅に揃え、表は .table-scroll の中で送る。 */
+@media (max-width:900px){.mod-b .row > .v{align-self:stretch}}
+
+/* --- 太陽の断面の層の一覧（狭い画面で図のラベルの代わりに出す）。色は図の層と対応。 --- */
+.cut-list .l-corona .c{background:rgba(123,77,255,.14);border-color:var(--teach)}
+.cut-list .l-chromo .c{background:var(--key-tint);border-color:var(--key)}
+.cut-list .l-photo .c{background:rgba(255,212,138,.35);border-color:#ffd48a}
+.cut-list .l-conv .c{background:rgba(255,160,70,.20);border-color:var(--amber)}
+.cut-list .l-rad .c{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.34)}
+.cut-list .l-suncore .c{background:rgba(255,236,190,.45);border-color:#ffe3a6}
+/* 巡回の表で、取り違えやすい組の境目に下線（§96.3）。 */
+.pairmark{border-bottom:1.5px solid var(--key);padding-bottom:1px}
+/* 3分類の全体一覧で、オールトの雲の行だけ色を付ける（両方の列に入ることを見せる）。 */
+.known-all tr.both td{background:var(--teach-tint)}
+</style>
+<link rel="stylesheet" href="../css/lesson-theme.css?v=r82">
+</head>
+<body data-page="study" class="is-article" data-node="memoryverse_1-5">
+<canvas id="starfield" aria-hidden="true"></canvas>
+<div id="site-nav"><noscript><nav class="noscript-nav" aria-label="メインナビゲーション"><a href="index.html">ホーム</a><a href="self-intro.html">自己紹介</a><a href="study.html">勉強の軌跡</a><a href="videos.html">動画</a><a href="blog.html">ブログ</a><a href="sns.html">各種SNS</a></nav></noscript></div>
+<div class="float-nav"><a class="back-btn btn" href="memoryverse.html">戻る <span class="btn-disc" aria-hidden="true">←</span></a><button class="menu-btn btn" id="menuBtn" aria-controls="rail" aria-expanded="false">目次 <span class="btn-disc" aria-hidden="true">≡</span></button></div>
+<div class="scrim" id="scrim"></div>
+<div class="wrap">
+  <nav class="rail" id="rail">
+    <!-- 科目へ戻る導線（レール上部の「← 一つ上」）は layout.js が CRUMBS から書き出す。 -->
+    <div class="brand">第5回　太陽と全体の統合<small>SESSION 05 / THE SUN AND THE WHOLE</small></div>
+    <div class="progress-wrap"><div class="progress-bar" id="pbar"></div></div>
+    <ul class="toc" id="toc">
+      <li class="part">導入</li>
+      <li><a href="#goals"><span class="n">01</span>到達目標</a></li>
+      <li><a href="#view"><span class="n">02</span>この回の見方</a></li>
+      <li class="part">太陽</li>
+      <li><a href="#sun"><span class="n">03</span>太陽</a></li>
+      <li><a href="#wind"><span class="n">04</span>太陽風</a></li>
+      <li class="part">統合</li>
+      <li><a href="#whole-map"><span class="n">05</span>統合の配置図</a></li>
+      <li><a href="#pushed"><span class="n">06</span>押し出されてきたもの</a></li>
+      <li><a href="#tour"><span class="n">07</span>全カードの巡回</a></li>
+      <li><a href="#known-all"><span class="n">08</span>3分類の全体一覧</a></li>
+      <li class="part">訓練</li>
+      <li><a href="#menu"><span class="n">09</span>訓練メニュー</a></li>
+      <li><a href="#drills"><span class="n">10</span>演習</a></li>
+      <li class="part">付録</li>
+      <li><a href="#plan"><span class="n">A</span>改訂と第6回以降</a></li>
+      <li><a href="#evidence"><span class="n">B</span>根拠と強度</a></li>
+      <li><a href="#next"><span class="n">C</span>次回の予告</a></li>
+    </ul>
+  </nav>
+
+  <main class="main">
+    <div class="lesson-hero">
+      <h1>第5回　太陽と全体の統合<span class="sub">真ん中の星から、4回ぶんをつなぎ直す</span></h1>
+      <p class="lead">第1〜4回で、太陽のまわりを内から外まで一通り見ました。第5回は、<strong>その真ん中にある太陽の中身</strong>を覚え、<strong>4回ぶんを1枚につなぎ直す</strong>回です。</p>
+    </div>
+
+    <section id="goals">
+      <div class="sec-head"><span class="idx">01</span><h2>この回の到達目標</h2></div>
+      <div class="goals">
+        <ol>
+          <li><b>統合の配置図を白紙に描き、38枚すべてをその上に置ける</b><span>対数の横線と目盛を引き、太陽から8惑星、衛星（母惑星の下）、小天体、太陽圏の境界、オールトの雲、プロキシマ・ケンタウリまで。<strong>数値ではなく、桁と並び順が合っていれば正解</strong>です（§05、演習1）。</span></li>
+          <li><b>太陽の断面を層の順で言い、太陽風が4回ぶんのどこに効いているかを説明できる</b><span>中心核 → 放射層 → 対流層 → 光球 → 彩層 → コロナ。コロナがなぜ熱いかは分かっていないこと、光が出るまでの時間は「数万年〜100万年、よく言われるのは17万年」という幅で言えることを含みます。太陽風は6か所（水星・金星・火星・地球・彗星の尾・オールトの雲）について、何をしているかを1文ずつ（§03・§04）。</span></li>
+          <li><b>取り違えやすい7組について、見分けどころを言える</b><span>ガニメデとカリスト、エウロパとエンケラドゥス、タイタンとトリトン、ケレスとベスタ、カイパーベルトと散乱円盤、イオとエンケラドゥス、天王星と海王星。1組につき1つ以上。<strong>母惑星や位置で見分けられる組は、それを最初に言う</strong>（§07）。</span></li>
+        </ol>
+      </div>
+      <div class="box warn"><span class="lab">前提の確認</span>
+      <p>第1〜4回の到達目標が、それぞれの回で満たせている状態で入ってください。この回は新しいことをほとんど足さず、<strong>4回ぶんを1周できるか</strong>を確かめる回です。どこかの回で止まったカードがあれば、先にその回に戻るほうが近道です。</p></div>
+    </section>
+
+    <section id="view">
+      <div class="sec-head"><span class="idx">02</span><h2>この回の見方</h2></div>
+      <div class="box principle"><span class="lab">この回は、新しい天体を増やす回ではありません</span>
+      <p><strong>第1〜4回は、覚える天体を増やしていく回でした。</strong>8惑星（第1回）、岩石惑星の地形（第2回）、巨大惑星と衛星（第3回）、小天体（第4回）。</p>
+      <p style="margin-top:8px"><strong>第5回は違います。新しく覚えるのは、太陽の中身だけです。</strong>あとは、4回ぶんに散らばっていた話を<strong>つなぎ直す</strong>回です。</p>
+      <p style="margin-top:8px">つなぎ目になるのが<strong>太陽風</strong>です（§04）。水星の薄い大気、火星の薄くなった大気、地球のオーロラ、彗星の尾、ボイジャーが越えた境界——別々の回で別々に覚えたものが、太陽から吹き出す1つの流れで説明できます。</p></div>
+
+      <div class="box teach"><span class="lab">太陽のカードは、第3回の巨大惑星と同じ作り</span>
+      <p>太陽には固体の表面がありません。第3回の巨大惑星と同じく、<strong>［断面］で中心から外への層の順番</strong>を覚え、<strong>［球］は見るだけ</strong>（ピンを置かない）にします。数値は第1回のカードにあるので、この回では繰り返しません。</p></div>
+    </section>
+    <section id="sun">
+      <div class="sec-head"><span class="idx">03</span><h2>太陽</h2></div>
+      <p><strong>配置図のどこか</strong>——すべての配置図の<strong>いちばん左の点</strong>。第4回の対数目盛では目盛の外（半径は約0.005 AU）ですが、この回の太陽風の図（§04）では、左端の縦線が太陽の表面です。</p>
+
+      <div class="mod cut-view has-globe" data-globe="../image/memoryverse/sun-map.jpg?v=r82" data-lonc="180">
+        <div class="mod-h"><span class="no">太陽</span><span class="ttl">中心で生まれた光が、表面に出るまで</span><span class="tag">THE SUN</span></div>
+        <div class="mod-b">
+          <div class="vsw" role="group" aria-label="表示の切り替え" hidden>
+            <button type="button" class="vsw-b is-on" data-view="cut" aria-pressed="true">断面</button>
+            <button type="button" class="vsw-b" data-view="globe" aria-pressed="false">球</button>
+          </div>
+          <div class="orbit"><div class="core"><button type="button" class="img-btn" aria-expanded="false"><figure class="cut-fig">
+<svg class="cut-svg" viewBox="0 0 640 420" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="太陽の断面（中心から外へ6層）">
+<defs><radialGradient id="sun-corona" cx="64" cy="356" r="320" gradientUnits="userSpaceOnUse"><stop offset="0.72" stop-color="#a48bff" stop-opacity=".30"/><stop offset="1" stop-color="#a48bff" stop-opacity="0"/></radialGradient></defs>
+<path d="M384.0 356.0A320 320 0 0 0 64.0 36.0L64.0 110.0A246.0 246.0 0 0 1 310.0 356.0Z" fill="url(#sun-corona)"/>
+<path d="M364.0 356.0A300 300 0 0 0 64.0 56.0" fill="none" stroke="var(--teach)" stroke-width="1" stroke-dasharray="3 5" opacity=".7"/>
+<line x1="64.0" y1="356.0" x2="394.0" y2="356.0" stroke="var(--line-strong)" stroke-width="1"/>
+<line x1="64.0" y1="356.0" x2="64.0" y2="26.0" stroke="var(--line-strong)" stroke-width="1"/>
+<path d="M310.0 356.0A246.0 246.0 0 0 0 64.0 110.0L64.0 116.0A240.0 240.0 0 0 1 304.0 356.0Z" fill="var(--key-tint)" stroke="var(--key)" stroke-width="1.2"/>
+<path d="M304.0 356.0A240.0 240.0 0 0 0 64.0 116.0L64.0 120.0A236.0 236.0 0 0 1 300.0 356.0Z" fill="rgba(255,212,138,.55)" stroke="#ffd48a" stroke-width="1.2"/>
+<path d="M300.0 356.0A236.0 236.0 0 0 0 64.0 120.0L64.0 190.8A165.2 165.2 0 0 1 229.2 356.0Z" fill="rgba(255,160,70,.20)" stroke="var(--amber)" stroke-width="1.4"/>
+<path d="M229.2 356.0A165.2 165.2 0 0 0 64.0 190.8L64.0 297.0A59.0 59.0 0 0 1 123.0 356.0Z" fill="rgba(255,255,255,.06)" stroke="rgba(255,255,255,.34)" stroke-width="1.4"/>
+<path d="M123.0 356.0A59.0 59.0 0 0 0 64.0 297.0L64.0 356.0Z" fill="rgba(255,236,190,.45)" stroke="#ffe3a6" stroke-width="1.4"/>
+<circle cx="260.2" cy="314.3" r="29.4" fill="none" stroke="rgba(255,180,107,.35)" stroke-width="1" stroke-dasharray="3 3"/>
+<circle cx="241.1" cy="261.8" r="29.4" fill="none" stroke="rgba(255,180,107,.35)" stroke-width="1" stroke-dasharray="3 3"/>
+<circle cx="208.3" cy="216.7" r="29.4" fill="none" stroke="rgba(255,180,107,.35)" stroke-width="1" stroke-dasharray="3 3"/>
+<circle cx="164.3" cy="182.3" r="29.4" fill="none" stroke="rgba(255,180,107,.35)" stroke-width="1" stroke-dasharray="3 3"/>
+<circle cx="112.5" cy="161.4" r="29.4" fill="none" stroke="rgba(255,180,107,.35)" stroke-width="1" stroke-dasharray="3 3"/>
+<circle cx="64.0" cy="356.0" r="3.5" fill="var(--ink-faint)"/>
+<text x="72.0" y="370.0" font-size="10" fill="var(--ink-faint)">中心</text>
+<line x1="123.0" y1="356.0" x2="123.0" y2="361.0" stroke="var(--line-strong)"/>
+<text x="123.0" y="373.0" font-size="9.5" fill="var(--ink-faint)" text-anchor="middle">0.25</text>
+<line x1="229.2" y1="356.0" x2="229.2" y2="361.0" stroke="var(--line-strong)"/>
+<text x="229.2" y="373.0" font-size="9.5" fill="var(--ink-faint)" text-anchor="middle">0.7</text>
+<line x1="300.0" y1="356.0" x2="300.0" y2="361.0" stroke="var(--line-strong)"/>
+<text x="300.0" y="373.0" font-size="9.5" fill="var(--ink-faint)" text-anchor="middle">1</text>
+<text x="336.0" y="373.0" font-size="9.5" fill="var(--ink-faint)">← 半径の何割か</text>
+<g class="lay-lab">
+<polyline points="193.6,112.3 384.0,36.0 394.0,36.0" fill="none" stroke="rgba(255,255,255,.34)" stroke-width="1"/>
+<circle cx="193.6" cy="112.3" r="3" fill="var(--teach)"/>
+<text x="398.0" y="40.0" font-size="13" fill="var(--ink)">コロナ</text>
+<text x="398.0" y="55.0" font-size="10.5" fill="var(--ink-faint)">最も外側。100万℃を超え、200万℃ほどに達する</text>
+<text x="398.0" y="68.0" font-size="10.5" fill="var(--ink-faint)">光球より数百倍熱い理由は、まだ分かっていない</text>
+</g>
+<g class="lay-lab">
+<polyline points="220.2,169.9 384.0,88.0 394.0,88.0" fill="none" stroke="rgba(255,255,255,.34)" stroke-width="1"/>
+<circle cx="220.2" cy="169.9" r="3" fill="var(--key)"/>
+<text x="398.0" y="92.0" font-size="13" fill="var(--ink)">彩層</text>
+<text x="398.0" y="107.0" font-size="10.5" fill="var(--ink-faint)">光球の外の薄い層（厚さ1,000〜2,000km）</text>
+<text x="398.0" y="120.0" font-size="10.5" fill="var(--ink-faint)">外へ行くほど温度が上がる</text>
+</g>
+<g class="lay-lab">
+<polyline points="251.5,209.5 384.0,136.0 394.0,136.0" fill="none" stroke="rgba(255,255,255,.34)" stroke-width="1"/>
+<circle cx="251.5" cy="209.5" r="3" fill="#ffd48a"/>
+<text x="398.0" y="140.0" font-size="13" fill="var(--ink)">光球</text>
+<text x="398.0" y="155.0" font-size="10.5" fill="var(--ink-faint)">目に見える「表面」。約5,500℃（5,772K）</text>
+<text x="398.0" y="168.0" font-size="10.5" fill="var(--ink-faint)">上端（彩層との境目）で温度が最も低くなる</text>
+</g>
+<g class="lay-lab">
+<polyline points="247.3,274.4 384.0,192.0 394.0,192.0" fill="none" stroke="rgba(255,255,255,.34)" stroke-width="1"/>
+<circle cx="247.3" cy="274.4" r="3" fill="var(--amber)"/>
+<text x="398.0" y="196.0" font-size="13" fill="var(--ink)">対流層</text>
+<text x="398.0" y="211.0" font-size="10.5" fill="var(--ink-faint)">半径の約0.7から表面まで。熱い気体が湧き上がる</text>
+<text x="398.0" y="224.0" font-size="10.5" fill="var(--ink-faint)">表面の粒状斑（1つ約1,000km）はこの上端</text>
+</g>
+<g class="lay-lab">
+<polyline points="161.1,299.9 384.0,254.0 394.0,254.0" fill="none" stroke="rgba(255,255,255,.34)" stroke-width="1"/>
+<circle cx="161.1" cy="299.9" r="3" fill="rgba(255,255,255,.34)"/>
+<text x="398.0" y="258.0" font-size="13" fill="var(--ink)">放射層</text>
+<text x="398.0" y="273.0" font-size="10.5" fill="var(--ink-faint)">半径の約0.25〜0.7。光が吸収と放出を</text>
+<text x="398.0" y="286.0" font-size="10.5" fill="var(--ink-faint)">数えきれないほど繰り返しながら、少しずつ外へ</text>
+</g>
+<g class="lay-lab">
+<polyline points="88.9,335.1 384.0,312.0 394.0,312.0" fill="none" stroke="rgba(255,255,255,.34)" stroke-width="1"/>
+<circle cx="88.9" cy="335.1" r="3" fill="#ffe3a6"/>
+<text x="398.0" y="316.0" font-size="13" fill="var(--ink)">中心核</text>
+<text x="398.0" y="331.0" font-size="10.5" fill="var(--ink-faint)">半径の約1/4まで。約1,500万℃</text>
+<text x="398.0" y="344.0" font-size="10.5" fill="var(--ink-faint)">水素がヘリウムに変わる核融合が起きている</text>
+</g>
+<text x="20.0" y="22" font-size="12.5" font-weight="500" fill="var(--ink)">太陽の断面（中心から外へ6層）</text>
+<text x="20.0" y="404" font-size="10" fill="var(--ink-faint)">中心核・放射層・対流層は縮尺どおり。光球と彩層は薄すぎる（半径の0.3%未満）ので厚みを誇張。コロナの広がりは模式</text>
+</svg>
+            <figcaption>閉じたまま「中心から順に何があるか」を言ってから開いてください。</figcaption>
+          </figure><span class="hint"><span class="h-c">クリックで層を開く</span><span class="h-o">クリックで閉じる</span></span></button><ol class="cut-list"><li class="l-suncore"><i class="c" aria-hidden="true"></i><span><b>中心核</b>半径の約1/4まで。約1,500万℃。水素がヘリウムに変わる核融合が起きている</span></li><li class="l-rad"><i class="c" aria-hidden="true"></i><span><b>放射層</b>半径の約0.25〜0.7。光が吸収と放出を数えきれないほど繰り返しながら、少しずつ外へ</span></li><li class="l-conv"><i class="c" aria-hidden="true"></i><span><b>対流層</b>半径の約0.7から表面まで。熱い気体が湧き上がる。表面の粒状斑（1つ約1,000km）はこの上端</span></li><li class="l-photo"><i class="c" aria-hidden="true"></i><span><b>光球</b>目に見える「表面」。約5,500℃（5,772K）。上端（彩層との境目）で温度が最も低くなる</span></li><li class="l-chromo"><i class="c" aria-hidden="true"></i><span><b>彩層</b>光球の外の薄い層（厚さ1,000〜2,000km）。外へ行くほど温度が上がる</span></li><li class="l-corona"><i class="c" aria-hidden="true"></i><span><b>コロナ</b>最も外側。100万℃を超え、200万℃ほどに達する。光球より数百倍熱い理由は、まだ分かっていない</span></li></ol></div></div>
+          <div class="globe" hidden>
+            <div class="globe-stage"><canvas class="globe-cv"></canvas><p class="globe-fail" hidden>球を表示できませんでした。断面でご覧ください。</p></div>
+            <div class="globe-ctl">
+              <button type="button" class="globe-b globe-home">基準に戻す</button>
+              <button type="button" class="globe-b globe-open" aria-pressed="false">地形を開く</button>
+            </div>
+            <ol class="globe-list" hidden></ol>
+            <p class="globe-note">覚えるのは断面のほうです。球は<strong>黒点がどこに出るかを見るため</strong>のもので、ピンは置いていません——<strong>黒点は数日から数か月で現れては消え、場所も動く</strong>ので、第3回の木星の大赤斑と同じく、指させる場所になりません。見てほしいのは、黒点が<strong>赤道の両側の帯</strong>（北緯・南緯おおむね30度以内）に並んでいて、極の近くには無いことです。</p>
+            <p class="globe-cap">SDO の HMI（可視光）の画像222枚（2024年6月2〜30日、3時間ごと）から、<strong>太陽が1回自転するあいだに正面に来た部分を継ぎ合わせて</strong>本教材で作った全球図（正距円筒）。<strong>一瞬の姿ではありません</strong>——場所ごとに撮った日が違い、継ぎ目の両側では約4週間ずれています。そのため、継ぎ目のそばでは<strong>同じ黒点が両側に2回写っていたり、片側にしか写っていなかったりする</strong>ことがあります（黒点の位置は覚える対象にしていないので、見るうえでの支障はありません）<br>色は SDO の見やすい着色で、<strong>実際の太陽は白く</strong>見えます。極のまわり（全球の約6%）は地球から見えにくく写っていないので、灰色のままです<br>Courtesy of NASA/SDO and the AIA, EVE, and HMI science teams</p>
+          </div>
+
+          <div class="row"><span class="k">基本</span><span class="v">質量・半径・距離・温度・組成・自転などの数値は、<strong>第1回の太陽のカード</strong>にあります。この回では繰り返しません。</span></div>
+
+          <div class="row"><span class="k">光が<br>出るまで</span><span class="v"><strong>中心で生まれたエネルギーが表面に出てくるまで、数万年から100万年ほどかかります。</strong>よく引かれるのは<strong>約17万年</strong>です。
+          <ul>
+            <li>NASA の太陽の解説は「中心核から対流層の上まで<strong>約17万年</strong>」、ESA も「放射層を抜けるのに約17万年」と書いています。この値のもとの1つは Mitalas・Sills 1992（<i>The Astrophysical Journal</i>）の計算です</li>
+            <li>一方で、NASA の別のページは「<strong>約100万年</strong>」、NASA の映像資料は「<strong>約4万年</strong>」と書いています。<strong>同じ NASA の中でも25倍の幅があります</strong></li>
+            <li><strong>幅がある理由</strong>——1つの光が同じまま外へ出ていくのではなく、吸収されては放出される、を数えきれないほど繰り返します。1回に進む距離（何cm か）を太陽の内部のモデルからどう見積もるか、どこを出口とするかで、答えが桁で変わります</li>
+          </ul>
+          <p style="margin:8px 0 0">対照的に、<strong>表面を出た光が地球に届くまでは約8分20秒</strong>。いま見ている太陽の光は、<strong>数万年以上前に中心で生まれたエネルギー</strong>が、8分前に表面を出たものです。<strong>覚えるのは「数万年〜100万年、よく言われるのは17万年」という幅ごと</strong>で、1つの数値ではありません。</p>
+          <p style="font-size:12.5px;color:var(--ink-faint);margin:6px 0 0">確認先：NASA Sun Facts（science.nasa.gov/sun/facts/、2026年9月17日更新）、ESA「Anatomy of the Sun」（2020年1月22日）、NASA MSFC の Solar Interior、NASA SVS「Journey of Light」（2014年5月22日）。いずれも2026年9月25日閲覧。</p></span></div>
+
+          <div class="row"><span class="k">コロナの<br>熱さ</span><span class="v"><strong>光球が約5,500℃なのに、その外のコロナは100万℃を超えます。</strong>熱源から遠ざかるほど熱くなるという、ふつうとは逆のことが起きています。<strong>なぜなのかは、分かっていません</strong>——「コロナ加熱問題」と呼ばれ、NASA は「宇宙物理学で最も大きな未解決問題の1つ」と書いています。
+          <ul>
+            <li>有力な考えは2つ：磁場に沿って伝わる<strong>波</strong>がエネルギーを運ぶ説と、<strong>小さな爆発（ナノフレア）</strong>が無数に起きている説。両方が働いている可能性もあります（NASA）</li>
+            <li>パーカー・ソーラー・プローブは2024年12月24日に太陽の表面から約610万km まで近づき、その後も同じ距離を通り続けています（2026年9月4日が29回目の最接近）。ソーラー・オービターは2020年、小さな爆発「キャンプファイア」を撮りました（ESA）。<strong>手がかりは増えていますが、決着はしていません</strong></li>
+          </ul>
+          <p style="margin:8px 0 0">分類でいえば<strong>「まだ確かめられていない」</strong>——手がかり（観測も説も）はあるのに、決め手がない。<strong>この回でいちばん大きな「まだ確かめられていない」</strong>です。</p>
+          <p style="font-size:12.5px;color:var(--ink-faint);margin:6px 0 0">確認先：NASA「Parker Solar Probe and the Curious Case of the Hot Corona」（2023年7月26日更新）、NASA の Parker Solar Probe の発表とブログ（2026年9月10日）、ESA「Solar Orbiter's first images reveal 'campfires' on the Sun」（2020年7月16日）。いずれも2026年9月25日閲覧。</p></span></div>
+
+          <div class="row"><span class="k">黒点</span><span class="v">光球にできる<strong>黒い斑点</strong>。まわりより温度が低い（約3,500〜4,500K）ので暗く見えます。<strong>強い磁場が、下からの熱の運び上げ（対流）を妨げている</strong>ためです。大きさは地球より小さいものから何倍もあるものまで、数日から数か月で現れては消えます（NASA）。
+          <ul>
+            <li><strong>数は約11年の周期で増えたり減ったりします。</strong>いちばん多い時期には、太陽の磁場の北と南が入れ替わります。向きまで元に戻るのは2周期、約22年です</li>
+            <li>いまの周期（第25周期）は、<strong>2024年10月に黒点の数がいちばん多い時期を迎えた</strong>とされ（ベルギー王立天文台 SILSO の集計、2025年発表）、2026年は減っていく時期に入っています</li>
+          </ul>
+          <p style="font-size:12.5px;color:var(--ink-faint);margin:6px 0 0">確認先：NASA の Sunspots のページ（2026年9月17日更新）、NASA・NOAA の発表（2024年10月15日）、SILSO「Solar cycle 25 reached its maximum in October 2024」。いずれも2026年9月25日閲覧。</p></span></div>
+
+          <div class="row"><span class="k">太陽風</span><span class="v">コロナからは、電気を帯びた粒が<strong>宇宙へ吹き出し続けて</strong>います。これが<strong>太陽風</strong>で、8惑星をすべて包み、約120 AU まで届いています。<strong>第2回と第4回に散らばっていた話が、これで1つにつながります</strong>——次の節（§04）。</span></div>
+
+          <div class="row"><span class="k">分かって<br>いること</span><span class="v">
+          <div class="known">
+            <div class="k-yes"><span class="lab">分かっていること</span>
+            <ul>
+              <li>層の順番と、それぞれの境目のおよその位置（内部は、表面の揺れを調べる<strong>日震学</strong>で測られている）</li>
+              <li>中心核で水素がヘリウムに変わる核融合が起きていること</li>
+              <li>黒点が約11年の周期で増減すること</li>
+            </ul></div>
+            <div class="k-no"><span class="lab">まだ確かめられていない</span>
+            <ul>
+              <li><strong>コロナがなぜ光球より熱いか</strong>（コロナ加熱問題）</li>
+              <li>光が出るまでの時間の、1つの決まった値（見積もりで桁が変わる）</li>
+            </ul></div>
+          </div>
+          <p style="font-size:13px;color:var(--ink-faint);margin:8px 0 0">「まだ誰も見ていない」にあたるものは、このカードでは置いていません。太陽の中は光で直接見ることはできませんが、揺れ（日震学）や、中心から直接飛んでくる素粒子（ニュートリノ）で調べられているので、手がかりが無いわけではないからです。</p></span></div>
+        </div>
+      </div>
+    </section>
+    <section id="wind">
+      <div class="sec-head"><span class="idx">04</span><h2>太陽風 ― 4回ぶんをつなぐ流れ</h2></div>
+      <p><strong>この回の要になる節です。</strong>第2回と第4回で別々に出てきた話が、ここで1つの流れにつながります。</p>
+
+      <h3>太陽風とは何か</h3>
+      <p><strong>コロナから宇宙へ吹き出し続けている、電気を帯びた粒（主に陽子と電子）の流れ</strong>です。遅い流れで秒速約400km、速い流れで秒速500〜800km。速い流れは、コロナの中でも暗く見える<strong>コロナホール</strong>から吹き出します（NOAA 宇宙天気予報センター）。<strong>秒速400kmでも、地球まで4日ほど</strong>で届きます。</p>
+
+      <h3>どこまで届くか</h3>
+      <figure class="fig"><div class="fig-scroll">
+<svg viewBox="0 0 640 420" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="太陽の表面から太陽圏の境界（ヘリオポーズ）までを対数目盛で並べた図。惑星はすべて太陽風の中にあり、ボイジャー1号と2号はヘリオポーズの外に出ている。オールトの雲はさらに外">
+<defs><linearGradient id="hw-wind" x1="0" x2="1" y1="0" y2="0"><stop offset="0" stop-color="#ffb46b" stop-opacity=".30"/><stop offset="1" stop-color="#ffb46b" stop-opacity=".06"/></linearGradient></defs>
+<rect x="59.8" y="48" width="398.0" height="236" fill="url(#hw-wind)"/>
+<line x1="59.8" y1="48" x2="59.8" y2="300" stroke="#ffc47a" stroke-width="2"/>
+<circle cx="149.4" cy="102" r="3" fill="var(--key)"/>
+<circle cx="232.9" cy="146" r="3" fill="var(--ink-faint)"/>
+<circle cx="257.3" cy="146" r="3" fill="var(--ink-faint)"/>
+<circle cx="270.0" cy="146" r="3" fill="var(--ink-faint)"/>
+<circle cx="286.5" cy="146" r="3" fill="var(--ink-faint)"/>
+<circle cx="334.5" cy="146" r="3" fill="var(--ink-faint)"/>
+<circle cx="358.2" cy="146" r="3" fill="var(--ink-faint)"/>
+<circle cx="385.6" cy="146" r="3" fill="var(--ink-faint)"/>
+<circle cx="403.2" cy="146" r="3" fill="var(--ink-faint)"/>
+<line x1="447.8" y1="191" x2="447.8" y2="201" stroke="var(--amber)" stroke-width="1.4"/>
+<line x1="443.2" y1="207" x2="443.2" y2="217" stroke="var(--amber)" stroke-width="1.4"/>
+<line x1="457.9" y1="48" x2="457.9" y2="300" stroke="var(--teach)" stroke-width="1.6" stroke-dasharray="5 3"/>
+<line x1="457.0" y1="226" x2="457.0" y2="300" stroke="var(--teach)" stroke-width="1" stroke-dasharray="2 2"/>
+<polygon points="471.4,116 475.4,108 467.4,108" fill="var(--key)"/>
+<polygon points="464.5,136 468.5,128 460.5,128" fill="var(--key)"/>
+<rect x="567.4" y="176" width="36.6" height="18" fill="rgba(123,77,255,.12)" stroke="var(--teach)" stroke-dasharray="5 4"/>
+<line x1="40" y1="300" x2="604" y2="300" stroke="var(--line-strong)" stroke-width="1.4"/>
+<line x1="89.8" y1="296" x2="89.8" y2="305" stroke="var(--line-strong)"/>
+<line x1="179.9" y1="296" x2="179.9" y2="305" stroke="var(--line-strong)"/>
+<line x1="270.0" y1="296" x2="270.0" y2="305" stroke="var(--line-strong)"/>
+<line x1="360.1" y1="296" x2="360.1" y2="305" stroke="var(--line-strong)"/>
+<line x1="450.2" y1="296" x2="450.2" y2="305" stroke="var(--line-strong)"/>
+<line x1="540.3" y1="296" x2="540.3" y2="305" stroke="var(--line-strong)"/>
+<text x="24.0" y="22.0" font-size="12.5" fill="var(--ink)" text-anchor="start" font-weight="500">太陽風はどこまで届くか ― 対数目盛（1目盛で10倍。第4回の配置図と同じ間隔）</text>
+<text x="65.8" y="64.0" font-size="10.5" fill="var(--amber)" text-anchor="start" font-weight="500">太陽圏 ― 太陽風が吹いている範囲</text>
+<text x="463.9" y="64.0" font-size="10.5" fill="var(--teach)" text-anchor="start" font-weight="500">星間空間</text>
+<text x="64.8" y="294.0" font-size="9.5" fill="#ffc47a" text-anchor="start">太陽の表面</text>
+<text x="156.4" y="98.0" font-size="9.5" fill="var(--key)" text-anchor="start">パーカー・ソーラー・プローブの最接近</text>
+<text x="156.4" y="110.0" font-size="9.5" fill="var(--ink-faint)" text-anchor="start">太陽の表面から約610万km（2024年12月）</text>
+<text x="232.9" y="162.0" font-size="9.5" fill="var(--ink-faint)" text-anchor="middle">水</text>
+<text x="257.3" y="162.0" font-size="9.5" fill="var(--ink-faint)" text-anchor="middle">金</text>
+<text x="270.0" y="162.0" font-size="9.5" fill="var(--ink-faint)" text-anchor="middle">地</text>
+<text x="286.5" y="162.0" font-size="9.5" fill="var(--ink-faint)" text-anchor="middle">火</text>
+<text x="334.5" y="162.0" font-size="9.5" fill="var(--ink-faint)" text-anchor="middle">木</text>
+<text x="358.2" y="162.0" font-size="9.5" fill="var(--ink-faint)" text-anchor="middle">土</text>
+<text x="385.6" y="162.0" font-size="9.5" fill="var(--ink-faint)" text-anchor="middle">天</text>
+<text x="403.2" y="162.0" font-size="9.5" fill="var(--ink-faint)" text-anchor="middle">海</text>
+<text x="224.9" y="150.0" font-size="9.5" fill="var(--ink-faint)" text-anchor="end">8惑星</text>
+<text x="437.2" y="200.0" font-size="10" fill="var(--amber)" text-anchor="end" font-weight="500">末端衝撃波</text>
+<text x="437.2" y="213.0" font-size="9.5" fill="var(--ink-faint)" text-anchor="end">太陽風が急に遅くなる（V1 94・V2 84）</text>
+<text x="451.9" y="240.0" font-size="10" fill="var(--teach)" text-anchor="end" font-weight="500">ヘリオポーズ（太陽圏の境界）</text>
+<text x="451.9" y="253.0" font-size="9.5" fill="var(--ink-faint)" text-anchor="end">V1 122 AU（2012年8月）・V2 119 AU（2018年11月）</text>
+<text x="479.4" y="116.0" font-size="10" fill="var(--key)" text-anchor="start" font-weight="500">ボイジャー1号 172 AU</text>
+<text x="472.5" y="136.0" font-size="10" fill="var(--key)" text-anchor="start" font-weight="500">ボイジャー2号 144 AU</text>
+<text x="472.5" y="152.0" font-size="9.5" fill="var(--ink-faint)" text-anchor="start">（2026年9月の位置）</text>
+<text x="600.0" y="170.0" font-size="10" fill="var(--teach)" text-anchor="end">オールトの雲（推定）</text>
+<text x="89.8" y="318.0" font-size="10" fill="var(--ink-faint)" text-anchor="middle">0.01</text>
+<text x="179.9" y="318.0" font-size="10" fill="var(--ink-faint)" text-anchor="middle">0.1</text>
+<text x="270.0" y="318.0" font-size="10" fill="var(--ink-faint)" text-anchor="middle">1</text>
+<text x="360.1" y="318.0" font-size="10" fill="var(--ink-faint)" text-anchor="middle">10</text>
+<text x="450.2" y="318.0" font-size="10" fill="var(--ink-faint)" text-anchor="middle">100</text>
+<text x="540.3" y="318.0" font-size="10" fill="var(--ink-faint)" text-anchor="middle">1,000</text>
+<text x="610.0" y="318.0" font-size="10" fill="var(--ink-faint)" text-anchor="start">AU</text>
+<text x="24.0" y="346.0" font-size="10" fill="var(--ink-soft)" text-anchor="start">地球も含めて、8惑星はすべて太陽風の中を回っている。太陽風が届かなくなる境界（ヘリオポーズ）は約120 AU で、</text>
+<text x="24.0" y="362.0" font-size="10" fill="var(--ink-soft)" text-anchor="start">2機のボイジャーはすでにその外、星間空間にいる。オールトの雲は、さらにその10倍以上外にある（推定）</text>
+<text x="24.0" y="386.0" font-size="9.5" fill="var(--ink-faint)" text-anchor="start">V1・V2 はボイジャー1号・2号。位置は JPL Horizons による2026年9月25日の値。通過の日付と距離は NASA と各論文による</text>
+</svg>
+</div>
+        <figcaption>第4回の配置図と同じ間隔の対数目盛（本教材で作成）。太陽圏の形は球ではなく、どんな形かはまだ議論が続いています（彗星のように尾を引く形、丸い泡、クロワッサン形などの説）。図は距離だけを示す模式です。</figcaption>
+      </figure>
+      <ul>
+        <li><strong>末端衝撃波</strong>——太陽風が急に遅くなるところ。ボイジャー1号は2004年12月16日（94 AU）、2号は2007年8月30日（84 AU）に通過しました（Stone ほか 2005, <i>Science</i>／Richardson ほか 2008, <i>Nature</i>）</li>
+        <li><strong>ヘリオポーズ（太陽圏の境界）</strong>——太陽風が届かなくなり、星間空間が始まるところ。<strong>ボイジャー1号は2012年8月25日（約122 AU）</strong>、<strong>2号は2018年11月5日（約119 AU）</strong>に越えました（NASA、2013年9月12日・2018年12月10日発表）。2機で距離が違うのは、通過した方向と、太陽の活動の11年周期の時期が違ったためで、<strong>境界は太陽の活動に合わせて膨らんだり縮んだりしています</strong>（JPL、2019年11月4日）</li>
+        <li>2026年9月25日には、1号が太陽から<strong>約172 AU</strong>、2号が<strong>約144 AU</strong>（JPL Horizons で本教材が確認）。どちらも電力の不足で観測装置を順に止めていて、1号で動いている装置は2つです（NASA、2026年4月17日）</li>
+      </ul>
+
+      <h3>4回ぶんへの接続</h3>
+      <p>太陽風は、これまでの回で何度も出てきていました。並べると、<strong>「磁場があるか」「どこにあるか」</strong>で結果が分かれているのが見えます。</p>
+      <div class="table-scroll">
+      <table class="mini-table">
+        <tr><th style="width:17%">どこで</th><th style="width:13%">回</th><th>太陽風が何をしているか</th></tr>
+        <tr><td><strong>水星の外気圏</strong></td><td>第2回</td><td>表面から原子を<strong>叩き出して</strong>、薄い外気圏を作る働きの1つ。ただし飛び出させる仕組みは元素によって違い、ナトリウムは主に<strong>太陽の紫外線</strong>、マグネシウムやカルシウムは主に<strong>微小隕石の衝突</strong>で出ている（NASA 2017年、Cassidy ほか 2015。どちらも MESSENGER の観測）。太陽風は原因の1つ</td></tr>
+        <tr><td><strong>金星</strong></td><td>この回で足す</td><td>全体を包む磁場が無いので、太陽風が大気の上の層に<strong>直接</strong>当たる。厚い大気がまるごと剥がされているのではなく、<strong>水素と酸素が 2:1 の割合で宇宙へ逃げている</strong>——<strong>水が失われ続けている</strong>（ESA ビーナス・エクスプレス）。第2回の「水が失われた」の続き</td></tr>
+        <tr><td><strong>火星</strong></td><td>第2回</td><td>全体を包む磁場が無く、大気が<strong>はぎ取られてきた</strong>。MAVEN が2014〜2025年に流出を測った——毎秒約100g、太陽の嵐のときは大きく増える（NASA、2015年11月5日）。<strong>MAVEN は2025年12月6日に通信が途絶え、NASA は2026年6月3日に運用終了を発表</strong>。測った結果は残っている</td></tr>
+        <tr><td><strong>地球</strong></td><td>第2回・この回で足す</td><td><strong>磁場が太陽風を逸らしている</strong>（第2回）。逸らされた粒の一部が磁力線に沿って極のまわりの上空に流れ込み、大気を光らせるのが<strong>オーロラ</strong>。2024年5月の磁気嵐では、ふだん見えない低い緯度でも見えた（NASA）</td></tr>
+        <tr><td><strong>彗星のイオンの尾</strong></td><td>第4回</td><td>太陽風に流されて、<strong>太陽と正反対</strong>へまっすぐ伸びる。彗星がどちらへ進んでいても同じ</td></tr>
+        <tr><td><strong>オールトの雲</strong></td><td>第4回</td><td><strong>太陽圏の外</strong>にある。ヘリオポーズ（約120 AU）の、さらに10倍以上外（内側の端の推定 2,000〜5,000 AU）。太陽風は届いていない</td></tr>
+      </table>
+      </div>
+      <div class="box principle"><span class="lab">並べると見えること</span>
+      <p><strong>岩石惑星の大気の違い（第2回）の半分は、太陽風に対する「盾」があるかどうかで説明できます。</strong>磁場のある地球は太陽風を逸らし、磁場のない火星と金星は、少しずつ削られてきました。そして太陽風の届く範囲（太陽圏）の端を越えたところに、第4回のオールトの雲が置かれています。</p>
+      <p style="margin-top:8px">ただし、<strong>大気の違いは太陽風だけでは決まりません</strong>。第2回で書いたとおり、重力の強さ・太陽からの距離・二酸化炭素を回収する仕組みも効いています。太陽風は4つの条件の1つです。</p></div>
+      <p style="font-size:12.5px;color:var(--ink-faint)">確認先：NOAA SWPC「Solar Wind」、NASA の Voyager の Interstellar Mission のページと発表（2013年9月12日・2018年12月10日）、JPL（2019年11月4日）、NASA「Small Collisions Make Big Impact on Mercury's Thin Atmosphere」（2017年）、ESA「Where did Venus's water go?」、NASA の MAVEN の発表（2015年11月5日・2026年6月3日）、NASA「What NASA Is Learning from the Biggest Geomagnetic Storm in 20 Years」、NASA の Oort Cloud Facts（2025年1月2日更新）。いずれも2026年9月25日閲覧。</p>
+    </section>
+    <section id="whole-map">
+      <div class="sec-head"><span class="idx">05</span><h2>統合の配置図</h2></div>
+      <p>第1回の配置図（8惑星）と第4回の配置図（小天体）を、<strong>1枚にまとめました</strong>。目盛は第4回の配置図、§04 の太陽風の図と<strong>同じ間隔</strong>（1目盛で10倍）です。第3回の衛星は母惑星の下に、太陽風の届く範囲（太陽圏）は背景の色で重ねています。</p>
+      <figure class="fig"><div class="fig-scroll">
+<svg viewBox="0 0 800 578" style="min-width:800px" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="5回ぶんの全カードを1枚の対数目盛の配置図に置いたもの。太陽から8惑星とその衛星、小惑星帯、トロヤ群、カイパーベルト、散乱円盤、太陽圏の境界、オールトの雲、プロキシマ・ケンタウリまで">
+<defs><linearGradient id="wh-wind" x1="0" x2="1" y1="0" y2="0"><stop offset="0" stop-color="#ffb46b" stop-opacity=".18"/><stop offset="1" stop-color="#ffb46b" stop-opacity=".03"/></linearGradient></defs>
+<rect x="20" y="34" width="10" height="10" rx="2" fill="var(--ink)" opacity=".85"/>
+<rect x="86" y="34" width="10" height="10" rx="2" fill="var(--amber)" opacity=".85"/>
+<rect x="152" y="34" width="10" height="10" rx="2" fill="var(--accent-deep)" opacity=".85"/>
+<rect x="218" y="34" width="10" height="10" rx="2" fill="var(--good)" opacity=".85"/>
+<rect x="284" y="34" width="10" height="10" rx="2" fill="var(--key)" opacity=".85"/>
+<rect x="39.8" y="56" width="398.0" height="448" fill="url(#wh-wind)"/>
+<line x1="437.9" y1="56" x2="437.9" y2="504" stroke="var(--teach)" stroke-width="1.2" stroke-dasharray="5 3"/>
+<line x1="39.8" y1="56" x2="39.8" y2="504" stroke="#ffc47a" stroke-width="2.4"/>
+<circle cx="212.9" cy="150" r="3.6" fill="var(--ink)"/>
+<circle cx="237.3" cy="150" r="3.6" fill="var(--ink)"/>
+<circle cx="250.0" cy="150" r="3.6" fill="var(--ink)"/>
+<line x1="250.0" y1="172" x2="250.0" y2="187" stroke="var(--accent-deep)" stroke-width="1" opacity=".7"/>
+<circle cx="266.5" cy="150" r="3.6" fill="var(--ink)"/>
+<circle cx="314.5" cy="150" r="3.6" fill="var(--ink)"/>
+<line x1="314.5" y1="172" x2="314.5" y2="243" stroke="var(--accent-deep)" stroke-width="1" opacity=".7"/>
+<circle cx="338.2" cy="150" r="3.6" fill="var(--ink)"/>
+<line x1="338.2" y1="172" x2="338.2" y2="215" stroke="var(--accent-deep)" stroke-width="1" opacity=".7"/>
+<circle cx="365.6" cy="150" r="3.6" fill="var(--ink)"/>
+<line x1="365.6" y1="172" x2="365.6" y2="201" stroke="var(--accent-deep)" stroke-width="1" opacity=".7"/>
+<circle cx="383.2" cy="150" r="3.6" fill="var(--ink)"/>
+<line x1="383.2" y1="172" x2="383.2" y2="187" stroke="var(--accent-deep)" stroke-width="1" opacity=".7"/>
+<circle cx="254.8" cy="276" r="2.6" fill="var(--good)"/>
+<circle cx="256.8" cy="276" r="2.6" fill="var(--good)"/>
+<rect x="279.0" y="295.0" width="17.7" height="10" rx="2" fill="rgba(114,227,173,.08)" stroke="var(--good)" stroke-width="1"/>
+<circle cx="283.6" cy="300" r="3" fill="var(--good)"/>
+<circle cx="289.9" cy="300" r="3" fill="var(--good)"/>
+<circle cx="314.5" cy="324" r="3.4" fill="none" stroke="var(--good)" stroke-width="1.6"/>
+<line x1="257.5" y1="348" x2="318.2" y2="348" stroke="var(--good)" stroke-width="1.6"/>
+<line x1="257.5" y1="344" x2="257.5" y2="352" stroke="var(--good)" stroke-width="1.2"/>
+<line x1="318.2" y1="344" x2="318.2" y2="352" stroke="var(--good)" stroke-width="1.2"/>
+<rect x="383.1" y="372.0" width="20.0" height="12" rx="2" fill="rgba(114,227,173,.08)" stroke="var(--good)" stroke-width="1"/>
+<line x1="382.7" y1="394" x2="402.1" y2="394" stroke="var(--good)" stroke-width="1.6"/>
+<line x1="382.7" y1="390" x2="382.7" y2="398" stroke="var(--good)" stroke-width="1.2"/>
+<line x1="402.1" y1="390" x2="402.1" y2="398" stroke="var(--good)" stroke-width="1.2"/>
+<circle cx="393.9" cy="394" r="3" fill="var(--good)"/>
+<rect x="383.1" y="411.0" width="50.8" height="10" rx="2" fill="none" stroke="var(--good)" stroke-width="1" stroke-dasharray="4 3"/>
+<line x1="392.5" y1="430" x2="429.3" y2="430" stroke="var(--good)" stroke-width="1.6"/>
+<line x1="392.5" y1="426" x2="392.5" y2="434" stroke="var(--good)" stroke-width="1.2"/>
+<line x1="429.3" y1="426" x2="429.3" y2="434" stroke="var(--good)" stroke-width="1.2"/>
+<circle cx="415.1" cy="430" r="3" fill="var(--good)"/>
+<polygon points="451.4,322 455.4,314 447.4,314" fill="var(--key)"/>
+<polygon points="444.5,344 448.5,336 440.5,336" fill="var(--key)"/>
+<rect x="547.4" y="456.0" width="153.1" height="16" rx="2" fill="rgba(123,77,255,.12)" stroke="var(--good)" stroke-width="1" stroke-dasharray="5 4"/>
+<line x1="664.6" y1="486" x2="277.1" y2="486" stroke="var(--good)" stroke-width="1" stroke-dasharray="1 3"/>
+<polygon points="277.1,486 284.1,482.5 284.1,489.5" fill="var(--good)"/>
+<line x1="739.4" y1="56" x2="739.4" y2="504" stroke="var(--key)" stroke-width="1.2" stroke-dasharray="3 3"/>
+<line x1="29.8" y1="518" x2="776" y2="518" stroke="var(--line-strong)" stroke-width="1.4"/>
+<line x1="69.8" y1="514" x2="69.8" y2="523" stroke="var(--line-strong)"/>
+<line x1="159.9" y1="514" x2="159.9" y2="523" stroke="var(--line-strong)"/>
+<line x1="250.0" y1="514" x2="250.0" y2="523" stroke="var(--line-strong)"/>
+<line x1="340.1" y1="514" x2="340.1" y2="523" stroke="var(--line-strong)"/>
+<line x1="430.2" y1="514" x2="430.2" y2="523" stroke="var(--line-strong)"/>
+<line x1="520.3" y1="514" x2="520.3" y2="523" stroke="var(--line-strong)"/>
+<line x1="610.4" y1="514" x2="610.4" y2="523" stroke="var(--line-strong)"/>
+<line x1="700.5" y1="514" x2="700.5" y2="523" stroke="var(--line-strong)"/>
+<text x="20.0" y="22.0" font-size="12.5" fill="var(--ink)" text-anchor="start" font-weight="500">5回ぶんを1枚に ― 対数目盛（1目盛で10倍。第4回の配置図・§04 の太陽風の図と同じ間隔）</text>
+<text x="34.0" y="43.0" font-size="10" fill="var(--ink)" text-anchor="start">第1回</text>
+<text x="100.0" y="43.0" font-size="10" fill="var(--amber)" text-anchor="start">第2回</text>
+<text x="166.0" y="43.0" font-size="10" fill="var(--accent-deep)" text-anchor="start">第3回</text>
+<text x="232.0" y="43.0" font-size="10" fill="var(--good)" text-anchor="start">第4回</text>
+<text x="298.0" y="43.0" font-size="10" fill="var(--key)" text-anchor="start">第5回</text>
+<text x="356.0" y="43.0" font-size="10" fill="var(--ink-faint)" text-anchor="start">＝そのカードが出てきた回</text>
+<text x="442.9" y="68.0" font-size="9.5" fill="var(--teach)" text-anchor="start">ヘリオポーズ（約120）</text>
+<text x="44.8" y="68.0" font-size="9.5" fill="var(--amber)" text-anchor="start">太陽圏（太陽風の届く範囲）</text>
+<text x="45.8" y="92.0" font-size="11.5" fill="var(--ink)" text-anchor="start" font-weight="500">太陽</text>
+<text x="45.8" y="106.0" font-size="9.5" fill="var(--key)" text-anchor="start">第1回・第5回</text>
+<text x="212.9" y="140.0" font-size="10" fill="var(--ink)" text-anchor="middle" font-weight="500">水星</text>
+<text x="237.3" y="168.0" font-size="10" fill="var(--ink)" text-anchor="middle" font-weight="500">金星</text>
+<text x="250.0" y="140.0" font-size="10" fill="var(--ink)" text-anchor="middle" font-weight="500">地球</text>
+<text x="253.0" y="191.0" font-size="9.5" fill="var(--accent-deep)" text-anchor="start">月</text>
+<text x="266.5" y="168.0" font-size="10" fill="var(--ink)" text-anchor="middle" font-weight="500">火星</text>
+<text x="314.5" y="140.0" font-size="10" fill="var(--ink)" text-anchor="middle" font-weight="500">木星</text>
+<text x="317.5" y="247.0" font-size="9.5" fill="var(--accent-deep)" text-anchor="start">イオ・エウロパ</text>
+<text x="317.5" y="260.0" font-size="9.5" fill="var(--accent-deep)" text-anchor="start">ガニメデ・カリスト</text>
+<text x="338.2" y="168.0" font-size="10" fill="var(--ink)" text-anchor="middle" font-weight="500">土星</text>
+<text x="341.2" y="219.0" font-size="9.5" fill="var(--accent-deep)" text-anchor="start">エンケラドゥス</text>
+<text x="341.2" y="232.0" font-size="9.5" fill="var(--accent-deep)" text-anchor="start">タイタン</text>
+<text x="365.6" y="140.0" font-size="10" fill="var(--ink)" text-anchor="middle" font-weight="500">天王星</text>
+<text x="368.6" y="205.0" font-size="9.5" fill="var(--accent-deep)" text-anchor="start">ミランダ</text>
+<text x="383.2" y="168.0" font-size="10" fill="var(--ink)" text-anchor="middle" font-weight="500">海王星</text>
+<text x="386.2" y="191.0" font-size="9.5" fill="var(--accent-deep)" text-anchor="start">トリトン</text>
+<text x="202.9" y="154.0" font-size="9.5" fill="var(--ink)" text-anchor="end">8惑星（第1回）</text>
+<text x="202.9" y="167.0" font-size="9.5" fill="var(--amber)" text-anchor="end">水金地火は第2回、</text>
+<text x="202.9" y="180.0" font-size="9.5" fill="var(--accent-deep)" text-anchor="end">木土天海は第3回にも</text>
+<text x="202.9" y="206.0" font-size="9.5" fill="var(--accent-deep)" text-anchor="end">衛星は母惑星の下</text>
+<text x="263.8" y="280.0" font-size="10" fill="var(--good)" text-anchor="start">リュウグウ・ベンヌ</text>
+<text x="273.0" y="304.0" font-size="10" fill="var(--good)" text-anchor="end" font-weight="500">小惑星帯</text>
+<text x="303.7" y="304.0" font-size="10" fill="var(--good)" text-anchor="start">ベスタ・ケレス</text>
+<text x="322.5" y="328.0" font-size="10" fill="var(--good)" text-anchor="start">木星のトロヤ群</text>
+<text x="326.2" y="352.0" font-size="10" fill="var(--good)" text-anchor="start">彗星（67P）の軌道</text>
+<text x="377.1" y="382.0" font-size="10" fill="var(--good)" text-anchor="end" font-weight="500">カイパーベルト</text>
+<text x="376.7" y="398.0" font-size="10" fill="var(--good)" text-anchor="end">冥王星・カロン（29.7〜48.8）</text>
+<text x="377.1" y="420.0" font-size="10" fill="var(--good)" text-anchor="end" font-weight="500">散乱円盤</text>
+<text x="441.9" y="420.0" font-size="10" fill="var(--good)" text-anchor="start">エリス</text>
+<text x="459.4" y="322.0" font-size="9.5" fill="var(--key)" text-anchor="start">ボイジャー1号</text>
+<text x="452.5" y="344.0" font-size="9.5" fill="var(--key)" text-anchor="start">ボイジャー2号</text>
+<text x="624.0" y="468.0" font-size="10.5" fill="var(--teach)" text-anchor="middle" font-weight="500">オールトの雲（推定）</text>
+<text x="664.6" y="500.0" font-size="9.5" fill="var(--good)" text-anchor="end">長周期彗星は、ここから</text>
+<text x="734.4" y="68.0" font-size="9.5" fill="var(--key)" text-anchor="end">プロキシマ・ケンタウリ（27万）</text>
+<text x="69.8" y="536.0" font-size="10" fill="var(--ink-faint)" text-anchor="middle">0.01</text>
+<text x="159.9" y="536.0" font-size="10" fill="var(--ink-faint)" text-anchor="middle">0.1</text>
+<text x="250.0" y="536.0" font-size="10" fill="var(--ink-faint)" text-anchor="middle">1</text>
+<text x="340.1" y="536.0" font-size="10" fill="var(--ink-faint)" text-anchor="middle">10</text>
+<text x="430.2" y="536.0" font-size="10" fill="var(--ink-faint)" text-anchor="middle">100</text>
+<text x="520.3" y="536.0" font-size="10" fill="var(--ink-faint)" text-anchor="middle">1,000</text>
+<text x="610.4" y="536.0" font-size="10" fill="var(--ink-faint)" text-anchor="middle">1万</text>
+<text x="700.5" y="536.0" font-size="10" fill="var(--ink-faint)" text-anchor="middle">10万</text>
+<text x="780.0" y="536.0" font-size="10" fill="var(--ink-faint)" text-anchor="start">AU</text>
+<text x="20.0" y="562.0" font-size="9.5" fill="var(--ink-soft)" text-anchor="start">38枚のカードの対象が、すべてこの1本の横線の上にある。位置は軌道長半径（範囲は近日点〜遠日点）。衛星は母惑星と同じ距離に縦に並べた</text>
+</svg>
+</div>
+        <figcaption>本教材で作成。位置は各回のカードで使った値（軌道長半径、範囲は近日点〜遠日点）。色は、そのカードが出てきた回。水星・金星・地球・火星は第1回と第2回、木星・土星・天王星・海王星は第1回と第3回、太陽は第1回と第5回にカードがあります。<strong>5回ぶんの38枚は、すべてこの1本の横線の上のどこかに置けます</strong>。この図だけ、ほかの図より横に長い（8桁ぶん）ので、狭い画面では横に送って見てください。</figcaption>
+      </figure>
+      <div class="box principle"><span class="lab">この1枚で覚えること</span>
+      <p><strong>38枚の中身ではなく、38枚の「置き場所」</strong>です。どのカードを思い出すときも、まずこの図のどこにあるかを指してから中身に入ります（第4回の「配置図のどこか」と同じ）。第1回の巡り方の<strong>①位置</strong>が、全カードでこの1枚に揃いました。</p>
+      <p style="margin-top:8px">そして、この図には<strong>太陽風の境界（約120 AU）</strong>が入っています。8惑星も、小惑星帯も、カイパーベルトも、太陽風の中。オールトの雲だけが、その外です。</p></div>
+    </section>
+
+    <section id="pushed">
+      <div class="sec-head"><span class="idx">06</span><h2>押し出されてきたもの</h2></div>
+      <p>第4回 §12 で、小天体はどれも「どこかから押し出されてきたもの」として並ぶ、とまとめました。ここではそれを<strong>太陽系のでき方</strong>につなぎます。押し出したのは、ほとんどが<strong>巨大惑星の重力と、共鳴</strong>です。</p>
+
+      <div class="table-scroll">
+      <table class="mini-table">
+        <tr><th style="width:17%">何が</th><th style="width:22%">押し出した力</th><th style="width:25%">どこから → どこへ</th><th style="width:22%">いつ</th><th>分類</th></tr>
+        <tr><td><strong>小惑星帯</strong>（惑星にならなかった）</td><td>できたばかりの<strong>木星の重力</strong></td><td>火星と木星のあいだで、惑星づくりが止まった。小天体はぶつかり合って砕けた</td><td>太陽系ができてまもなく</td><td>まだ確かめられていない（NASA の説明。直接は見ていない）</td></tr>
+        <tr><td><strong>地球近傍小惑星</strong></td><td><strong>木星との共鳴</strong>（カークウッドの空隙）</td><td>小惑星帯 → 地球の近く</td><td><strong>いまも続いている</strong></td><td>分かっている</td></tr>
+        <tr><td><strong>オールトの雲</strong></td><td>巨大惑星（とくに木星）の重力</td><td>巨大惑星のまわり → 2,000〜10万 AU（推定）</td><td>太陽系ができてまもなく</td><td>まだ確かめられていない（雲そのものが推定）</td></tr>
+        <tr><td><strong>木星のトロヤ群</strong></td><td>巨大惑星の軌道が動いた時期の重力</td><td>太陽系の外のほうで散らされた天体 → 木星の前後60度に捕まった</td><td>巨大惑星の軌道が動いた時期（いつかは議論中）</td><td>まだ確かめられていない（有力説。ルーシーが2027年から確かめる）</td></tr>
+        <tr><td><strong>冥王星と仲間</strong>（プルーティーノ）</td><td>外へ移動していく<strong>海王星との共鳴</strong>（3:2）</td><td>もとは円に近い軌道 → 海王星と 3:2 の細長い軌道へ引き込まれた</td><td>同上</td><td>まだ確かめられていない（有力説、Malhotra 1993）</td></tr>
+        <tr><td><strong>散乱円盤</strong></td><td><strong>海王星の重力</strong></td><td>海王星の近く → 細長く傾いた軌道で外へ</td><td>いまも続いている</td><td>分かっている</td></tr>
+        <tr><td><strong>短周期彗星</strong></td><td>海王星などの重力</td><td>カイパーベルト・散乱円盤 → 木星の近くを回る軌道へ</td><td>いまも続いている</td><td>分かっている</td></tr>
+        <tr><td><strong>長周期彗星</strong></td><td>近くを通る恒星など、太陽系の外からの力（オールト、エピックの考え）</td><td>オールトの雲 → 内側へ、ほぼあらゆる方向から</td><td>いまも続いている</td><td>彗星が来ることは分かっている。出どころの雲は推定</td></tr>
+      </table>
+      </div>
+
+      <h3>1本の流れにすると</h3>
+      <ol>
+        <li><strong>太陽系ができてまもなく</strong>——木星ができ、その重力で火星と木星のあいだの惑星づくりが止まる（小惑星帯）。巨大惑星のまわりの氷の小天体が、重力で遠くへ弾き飛ばされる（オールトの雲のもと）</li>
+        <li><strong>巨大惑星の軌道が動いた時期</strong>——木星・土星・天王星・海王星の軌道が大きく動き、そのとき散らされた天体の一部が木星の前後に捕まり（トロヤ群）、外へ移動する海王星の共鳴に冥王星が引き込まれた、と考えられています（Tsiganis ほか 2005, <i>Nature</i> の「ニース・モデル」、Malhotra 1993, <i>Nature</i>）。<strong>この時期がいつだったのか、どう動いたのかは議論が続いています</strong></li>
+        <li><strong>いま</strong>——共鳴と重力による押し出しは、いまも続いています。小惑星帯から地球近傍小惑星が、カイパーベルトと散乱円盤から短周期彗星が、オールトの雲から長周期彗星が、内側へ入ってきます</li>
+      </ol>
+      <div class="box warn"><span class="lab">この節は「まだ確かめられていない」が多い</span>
+      <p>表の右の列を見ると、<strong>「いまも続いている」ものは分かっている側、「太陽系ができたころ」のものは確かめられていない側</strong>にほぼ分かれています。いま起きていることは観測できますが、46億年前に起きたことは、いまの配置から逆算するしかないからです。<strong>第1回からの配置は分かっていること、そのでき方は推定</strong>——この区別を持ったまま、第6回以降（地球の回）に進みます。</p></div>
+      <p style="font-size:12.5px;color:var(--ink-faint)">確認先：NASA の Asteroid Facts・Kuiper Belt Facts・Oort Cloud Facts、NASA の Lucy の解説、Granvik ほか 2017（<i>Astronomy &amp; Astrophysics</i>）、Tsiganis ほか 2005（<i>Nature</i> 435）、Malhotra 1993（<i>Nature</i> 365）。いずれも2026年9月25日閲覧。</p>
+    </section>
+
+    <section id="tour">
+      <div class="sec-head"><span class="idx">07</span><h2>全カードの巡回</h2></div>
+      <p>38枚を、<strong>統合の配置図（§05）の上で、太陽から外へ</strong>1周します。1枚ごとには第1回の巡り方（①位置 ②周り ③外観 ④断面 ⑤重さ）で近づきます。地形を覚えたカード（第2回5枚・第3回8枚・第4回4枚）は、そこで白紙に地図を描きます。</p>
+
+      <h3>巡る順番</h3>
+      <div class="table-scroll">
+      <table class="mini-table">
+        <tr><th style="width:17%">区間</th><th>順（太陽から外へ）</th></tr>
+        <tr><td><strong>太陽と内側</strong></td><td>太陽 → 水星 → 金星 → 地球 → 月 → リュウグウ・ベンヌ → 火星</td></tr>
+        <tr><td><strong>小惑星帯</strong></td><td>小惑星帯 → ベスタ（2.36） → <span class="pairmark">ケレス（2.77）</span></td></tr>
+        <tr><td><strong>木星のまわり</strong></td><td>木星 → イオ → エウロパ → ガニメデ → <span class="pairmark">カリスト</span> → 木星のトロヤ群 → 彗星（67P。1.2〜5.7 AU を行き来する木星族）</td></tr>
+        <tr><td><strong>土星から海王星</strong></td><td>土星 → エンケラドゥス → タイタン → 天王星 → ミランダ → <span class="pairmark">海王星</span> → トリトン</td></tr>
+        <tr><td><strong>外側</strong></td><td>カイパーベルト → 冥王星 → カロン → <span class="pairmark">散乱円盤とエリス</span> →（ヘリオポーズ）→ オールトの雲</td></tr>
+      </table>
+      </div>
+      <p><strong>逆（外から太陽へ）</strong>も同じ列を逆にたどります。逆に巡ると、「オールトの雲から入ってくる長周期彗星」「カイパーベルトから入ってくる短周期彗星」「小惑星帯から入ってくる地球近傍小惑星」が、進む向きと一緒になります（§06）。</p>
+
+      <h3>取り違えやすい7組をどう置くか</h3>
+      <div class="box principle"><span class="lab">並べ替えない。配置図の順のまま巡る</span>
+      <p><strong>取り違えやすい組のために、巡る順番は変えません。</strong>順番を決めているのは配置図（太陽からの距離）で、これがこの教材の背骨だからです。組のために並べ替えると、「配置図のどこか」から思い出すという足場が崩れます。</p>
+      <p style="margin-top:8px">その結果、7組は<strong>隣に来る組</strong>と<strong>離れる組</strong>に分かれます。扱いを変えます。</p>
+      <ul>
+        <li><strong>隣に来る4組</strong>（ガニメデとカリスト、ケレスとベスタ、天王星と海王星、カイパーベルトと散乱円盤）——<strong>境目で立ち止まって、見分けどころを1つ言ってから次へ進みます</strong>。隣にあることを、比べる機会として使います。上の表で下線を引いた天体が、その境目です</li>
+        <li><strong>離れる3組</strong>（エウロパとエンケラドゥス、タイタンとトリトン、イオとエンケラドゥス）——<strong>場所そのものが見分けどころ</strong>です。木星のまわりか、土星のまわりか、海王星のまわりか。巡回の中では比べず、<strong>1周し終えたあとで、3組だけを並べて見分けを言います</strong>。離れているものを巡回の途中で行き来すると、順番が崩れるためです</li>
+      </ul></div>
+
+      <h3>見分けどころ</h3>
+      <div class="table-scroll">
+      <table class="mini-table">
+        <tr><th style="width:17%">組</th><th style="width:10%">巡回で</th><th style="width:36%">どちらも</th><th>見分けどころ</th></tr>
+        <tr><td><strong>ガニメデとカリスト</strong></td><td>隣</td><td>木星の外側の大きな衛星。クレーターが多い</td><td><strong>ガニメデ</strong>は太陽系最大の衛星で、自前の磁場を持つ。暗く古い地域と、<strong>明るく筋の入った新しい地形</strong>の2種類がある。<strong>カリスト</strong>は全面がクレーターで埋まり（飽和）、ガリレオ衛星で最も暗い。ラプラス共鳴の外にいて、潮汐で熱せられなかった</td></tr>
+        <tr><td><strong>ケレスとベスタ</strong></td><td>隣</td><td>小惑星帯の2大天体。どちらもドーンが周回した</td><td><strong>ケレス</strong>は丸い準惑星で、暗い（反射率0.09）。白い斑点（炭酸ナトリウム）。<strong>ベスタ</strong>は丸くない小惑星で、明るい（0.42）。南極の巨大な盆地と、地球に落ちる隕石の約6%</td></tr>
+        <tr><td><strong>天王星と海王星</strong></td><td>隣</td><td>同じ3層の巨大氷惑星。どちらも青緑</td><td><strong>色では見分けない</strong>（補正すると近い色、Irwin ほか 2024）。<strong>天王星</strong>は約98度の横倒しで、可視光では模様がほとんど見えない。<strong>海王星</strong>は太陽系で最も速い風が吹き、白い雲や暗い斑点が現れては変わる。天王星より小さいが重い</td></tr>
+        <tr><td><strong>カイパーベルトと散乱円盤</strong></td><td>隣</td><td>海王星の外の氷の天体。範囲が重なる</td><td><strong>軌道の形</strong>で見分ける。<strong>カイパーベルト</strong>は円に近い軌道（30〜50 AU）と、海王星との共鳴の山。<strong>散乱円盤</strong>は近日点が海王星のそばのまま、遠日点だけが100 AU を超えて伸びる細長く傾いた軌道（エリス）</td></tr>
+        <tr><td><strong>エウロパとエンケラドゥス</strong></td><td>離れる</td><td>氷の下に海があると考えられる。噴出</td><td><strong>母惑星</strong>が違う（木星／土星）。<strong>エウロパ</strong>は月ほどの大きさで、赤褐色の筋が走る。噴出は「らしきもの」を捉えただけで、<strong>繰り返しては確認できていない</strong>。<strong>エンケラドゥス</strong>は差し渡し約500kmと小さく、真っ白（反射率1.0）。<strong>南極の虎縞から水が噴き出していることは、カッシーニが確かめた</strong></td></tr>
+        <tr><td><strong>タイタンとトリトン</strong></td><td>離れる</td><td>名前が似ている。どちらも窒素の大気</td><td><strong>母惑星</strong>が違う（土星／海王星）。<strong>タイタン</strong>は太陽系で2番目に大きい衛星で、<strong>厚い</strong>大気ともやに覆われ、メタンの湖がある。<strong>トリトン</strong>は海王星の自転と<strong>逆向き</strong>に回る捕まえられた天体で、大気は<strong>ごく薄い</strong>（地球の約7万分の1）。氷の下から吹き上げる噴気</td></tr>
+        <tr><td><strong>イオとエンケラドゥス</strong></td><td>離れる</td><td>潮汐加熱でいまも活動している</td><td><strong>噴き出すものが違う</strong>。<strong>イオ</strong>は岩石の衛星で、<strong>溶岩と硫黄</strong>の火山（太陽系で最も火山が活発）。<strong>エンケラドゥス</strong>は氷の衛星で、<strong>水</strong>を噴く。「火のイオ、水のエンケラドゥス」</td></tr>
+      </table>
+      </div>
+      <p style="font-size:13px;color:var(--ink-faint)">見分けどころは各回のカードの記述から取りました。数値はカードにあるものだけで、ここで新しい数値は足していません。</p>
+    </section>
+
+    <section id="known-all">
+      <div class="sec-head"><span class="idx">08</span><h2>3分類の全体一覧</h2></div>
+      <p>第3回の演習5で2つに分け、第4回で「分かっていること」を足して3つにした分類を、<strong>5回ぶんの全対象</strong>に当てはめます（38枚、対象としては29）。分け方の意味は第4回 §13 のとおりです——<strong>まだ確かめられていない</strong>＝手がかりはあるが決め手がない、<strong>まだ誰も見ていない</strong>＝手がかりがそもそも無い。</p>
+      <div class="table-scroll">
+      <table class="mini-table known-all">
+        <tr><th style="width:14%">対象</th><th style="width:7%">回</th><th style="width:29%">分かっていること</th><th style="width:26%">まだ確かめられていない</th><th>まだ誰も見ていない</th></tr>
+        <tr><td><strong>太陽</strong></td><td>1・5</td><td>層の順番（日震学）。中心核の核融合。黒点の約11年周期</td><td><strong>コロナがなぜ光球より熱いか</strong>。光が出るまでの時間の決まった値</td><td>—</td></tr>
+        <tr><td><strong>水星</strong></td><td>1・2</td><td>外気圏は表面から飛び出した原子（元素ごとに仕組みが違う）。縮んでできた断層崖</td><td>—</td><td>—</td></tr>
+        <tr><td><strong>金星</strong></td><td>1・2</td><td>厚い二酸化炭素の温室効果で約464℃。いまも水素と酸素が宇宙へ逃げている</td><td>水と炭素の循環が働かなくなった筋書き（考えられている）</td><td>—</td></tr>
+        <tr><td><strong>地球</strong></td><td>1・2</td><td>磁場が太陽風を逸らす。酸素は生物が作った</td><td>—</td><td>—</td></tr>
+        <tr><td><strong>月</strong></td><td>2</td><td>地形の位置（表側も裏側も撮影済み）</td><td><strong>月がどうできたか</strong>（決着していない）</td><td>—</td></tr>
+        <tr><td><strong>火星</strong></td><td>1・2</td><td>大気が太陽風に削られてきた（MAVEN が2014〜2025年に測った）。昔は液体の水があった地形</td><td>いつ、どれだけの速さで大気が失われたか</td><td>—</td></tr>
+        <tr><td><strong>木星</strong></td><td>1・3</td><td>4層の順番。金属水素の層</td><td>核の大きさ（希薄な核と考えられる）</td><td>—</td></tr>
+        <tr><td><strong>イオ</strong></td><td>3</td><td>潮汐加熱による火山。ラプラス共鳴</td><td>—</td><td>—</td></tr>
+        <tr><td><strong>エウロパ</strong></td><td>3</td><td>誘導磁場（電気を通す層がある）。表面が若い</td><td><strong>氷の下の海</strong>があるか、厚さと深さ。噴出（繰り返し確認できていない）</td><td>—</td></tr>
+        <tr><td><strong>ガニメデ</strong></td><td>3</td><td>太陽系最大の衛星。自前の磁場</td><td>地下の海（考えられている）</td><td>両極の一部（未撮影 約3.6%）</td></tr>
+        <tr><td><strong>カリスト</strong></td><td>3</td><td>全面がクレーター。ラプラス共鳴の外</td><td>内部が熱せられなかった理由</td><td>両極の一部（未撮影 約3.8%）</td></tr>
+        <tr><td><strong>土星</strong></td><td>1・3</td><td>4層の順番。環の薄さ</td><td>ヘリウムの雨（考えられている）。環の起源</td><td>—</td></tr>
+        <tr><td><strong>エンケラドゥス</strong></td><td>3</td><td>南極から水が噴き出す（カッシーニ）。噴出物に塩とシリカ</td><td>海の広さと深さ</td><td>—</td></tr>
+        <tr><td><strong>タイタン</strong></td><td>3</td><td>厚い大気ともや。メタンの湖</td><td>地下の海</td><td>—</td></tr>
+        <tr><td><strong>天王星</strong></td><td>1・3</td><td>3層。約98度の横倒し</td><td>環の組成</td><td>—</td></tr>
+        <tr><td><strong>ミランダ</strong></td><td>3</td><td>継ぎはぎの地形（南半球）</td><td><strong>その地形がどうできたか</strong></td><td><strong>北半球</strong>（1986年の通過時、日が当たっていなかった）</td></tr>
+        <tr><td><strong>海王星</strong></td><td>1・3</td><td>3層。最も速い風</td><td>アダムズ環の弧が散らばらない理由</td><td>—</td></tr>
+        <tr><td><strong>トリトン</strong></td><td>3</td><td>逆向きに回る。ごく薄い窒素の大気と噴気</td><td>捕まえられたか。地下の海</td><td><strong>北半球</strong>（約38.5%が未撮影）</td></tr>
+        <tr><td><strong>小惑星帯</strong></td><td>4</td><td>全部合わせても月より軽い。共鳴の距離が空く</td><td>—</td><td>見つかっていない小さな天体の大部分</td></tr>
+        <tr><td><strong>ケレス</strong></td><td>4</td><td>白い斑点は炭酸ナトリウム。オッカトルの地下に局所的な塩水</td><td>全体を覆う海があるか</td><td>南極のまわりの一部</td></tr>
+        <tr><td><strong>ベスタ</strong></td><td>4</td><td>表面は一度溶けた（HED 隕石）。南極の2つの盆地</td><td>鉄の核があるか</td><td>北極のまわりの影の部分</td></tr>
+        <tr><td><strong>リュウグウ・ベンヌ</strong></td><td>4</td><td>生命の材料になる分子が、生命と無関係にできていた。<strong>生命の跡ではない</strong></td><td>それが地球に届いて生命になったか。なぜ左手型だけか</td><td>ベンヌの試料の70%以上（保管）。リュウグウの糖（量が足りず未分析）</td></tr>
+        <tr><td><strong>木星のトロヤ群</strong></td><td>4</td><td>木星と 1:1。前の群れのほうが多い</td><td>どこから来たか（捕まった説が有力）</td><td>近くで見た探査機がない（2027年8月まで）</td></tr>
+        <tr><td><strong>カイパーベルト</strong></td><td>4</td><td>共鳴の距離に山がある。外縁は約47 AU</td><td>冥王星が 3:2 に入った経緯（海王星の移動説）</td><td>冥王星の系とアロコス以外の、近くの姿</td></tr>
+        <tr><td><strong>冥王星</strong></td><td>4</td><td>ハートは窒素の氷で、対流していて若い</td><td>地下に海があるか。ライト山は氷の火山か</td><td><strong>南半球</strong></td></tr>
+        <tr><td><strong>カロン</strong></td><td>4</td><td>赤い北極は冥王星から来たメタン</td><td>割れ目の帯は、昔の海が凍って膨らんだ跡か</td><td><strong>南半球</strong></td></tr>
+        <tr><td><strong>散乱円盤・エリス</strong></td><td>4</td><td>エリスは冥王星より重い（衛星の動きから）</td><td>—</td><td>エリスの表面（探査機が行っていない）</td></tr>
+        <tr><td><strong>彗星（67P）</strong></td><td>4</td><td>酸素分子とグリシンを含む。水に浮くほど軽い</td><td>地球の海の水は彗星から来たか（結論が行き来）</td><td>—</td></tr>
+        <tr class="both"><td><strong>オールトの雲</strong></td><td>4</td><td>長周期彗星が、ほぼあらゆる方向から来る</td><td><strong>そこに天体の殻があること自体</strong></td><td><strong>その場所の天体を、その場所で見たことが一度もない</strong></td></tr>
+      </table>
+      </div>
+      <div class="box principle"><span class="lab">縦に見ると</span>
+      <ul>
+        <li><strong>「まだ誰も見ていない」は、「探査機の通り方」で決まっているものが多い。</strong><strong>半球ごと</strong>欠けているミランダ・トリトン・冥王星・カロンは、どれも探査機が<strong>1度通り過ぎただけ</strong>だから（ボイジャー2号、ニューホライズンズ）。周回した探査機でも、ガニメデ・カリスト・ケレス・ベスタのように<strong>極のまわり</strong>は光の当たり方で撮れていないことがあります。どちらも、天体の性質ではなく探査の側に理由があります</li>
+        <li><strong>「まだ確かめられていない」には「海」が多い。</strong>エウロパ・ガニメデ・タイタン・エンケラドゥス（広さと深さ）・ケレス・冥王星・カロン——氷の下の液体の水は、手がかりは多くても、直接には確かめにくい</li>
+        <li><strong>オールトの雲だけが、2つの列の両方に入ります。</strong>存在そのものが推定で、しかも行って確かめる手段がない。5回ぶんを通して、最も深く「分かっていない」対象です</li>
+        <li><strong>「分かっていること」の列が空の行はありません。</strong>どの天体にも確かなことがあり、分かっていないことは、その先に置かれています</li>
+      </ul></div>
+      <p style="font-size:13px;color:var(--ink-faint)">各行の中身は、各回のカードと第4回 §13 の表から取りました。この一覧のために新しく足した事実はありません。「—」は、カードでその分類にあたることを扱っていないという意味で、「その天体に分かっていないことが無い」という意味ではありません。</p>
+    </section>
+
+    <section id="menu">
+      <div class="sec-head"><span class="idx">09</span><h2>訓練メニュー</h2></div>
+      <p>1日20分、3週間。<strong>新しいカードは太陽の1枚だけ</strong>なので、これまでと配分を変えます。中心は<strong>統合の配置図を毎日描くこと</strong>と、<strong>38枚の巡回</strong>です。</p>
+      <div class="goals">
+        <ol>
+          <li><b>A 構築（12分）</b><span><strong>最初の3分——毎日、統合の配置図を白紙に描く。</strong>太陽から8惑星、衛星、小天体、太陽圏の境界、オールトの雲まで。描き終えたら §05 の図と照らし、抜けたものに印をつけます。第4回の「最初の2分」を、38枚ぶんに広げたものです。<br><strong>残りの9分——巡回を1区間。</strong>§07 の表の5つの区間を、1日に1区間ずつ進みます。1枚ごとに①位置〜⑤重さで近づき、地形を覚えたカードでは白紙に3項目だけ書きます。<strong>隣に来る組の境目では、見分けどころを1つ言ってから次へ</strong>。</span></li>
+          <li><b>B 観察（5分）</b><span>その日の区間から1枚選び、画像・地図・断面のどれかを30秒見て、閉じて、見えたものを言葉にする。もう一度30秒見て、言い落としを足す。</span></li>
+          <li><b>メモ（3分）</b><span>配置図で抜けたもの、巡回で詰まったカード、言えなかった見分けどころを書き留める。翌日のAの最初の3分は、ここに書いたものを最初に置いてから描き始めます。</span></li>
+        </ol>
+      </div>
+      <div class="box teach"><span class="lab">1周に何日かかるか</span>
+      <p><strong>1周＝5日</strong>で見積もっています。区間ごとのカードの枚数と、そのうち地形を書くカードの数は次のとおりです。</p>
+      <div class="table-scroll">
+      <table class="mini-table">
+        <tr><th style="width:26%">区間</th><th style="width:16%">カード</th><th style="width:18%">うち地形を書く</th><th>9分に収めるための目安</th></tr>
+        <tr><td>太陽と内側</td><td>12枚（太陽・水星・金星・地球・火星は2枚ずつ）</td><td>5（水・金・地・月・火）</td><td>いちばん重い区間。地形は各3項目まで、数値は言わない</td></tr>
+        <tr><td>小惑星帯</td><td>3枚</td><td>2（ベスタ・ケレス）</td><td>軽い区間。ケレスとベスタの見分けに時間を使う</td></tr>
+        <tr><td>木星のまわり</td><td>8枚（木星は第1回・第3回）</td><td>4（ガリレオ衛星）</td><td>断面は層の名前だけ。ガニメデとカリストの境目で止まる</td></tr>
+        <tr><td>土星から海王星</td><td>10枚（3惑星は第1回・第3回）</td><td>4（エンケラドゥス・タイタン・ミランダ・トリトン）</td><td>重い区間。天王星と海王星の境目で止まる</td></tr>
+        <tr><td>外側</td><td>5枚</td><td>2（冥王星・カロン）</td><td>カイパーベルトと散乱円盤の境目で止まる。最後にオールトの雲</td></tr>
+      </table>
+      </div>
+      <p style="margin-top:8px">合計38枚。同じ天体に2枚あるもの（太陽・8惑星）は、巡回では1回にまとめ、第1回の数値と第2・3回の地形・断面を続けて言います。<strong>3週間で約3周</strong>——1周目は順、2周目は逆、3周目は区間を2つずつ進める速い周です。</p></div>
+      <div class="table-scroll">
+      <table class="mini-table">
+        <tr><th style="width:11%">日</th><th style="width:30%">第1週：太陽と、1周目（順）</th><th style="width:30%">第2週：1周目の終わりと、2周目（逆）</th><th>第3週：3周目（速く）と、確かめ</th></tr>
+        <tr><td><strong>1日目</strong></td><td>教材を読む（40〜50分）。<strong>統合の配置図を初めて描く</strong></td><td>1周目 ⑤外側。<strong>1周目が終わる</strong></td><td>2周目 ①太陽と内側（逆の最後）。<strong>2周目が終わる</strong></td></tr>
+        <tr><td><strong>2日目</strong></td><td>太陽の断面（§03）。<strong>演習2</strong></td><td>離れる3組を並べて見分けを言う。<strong>演習4</strong></td><td>3分類の全体一覧（§08）。<strong>演習6</strong></td></tr>
+        <tr><td><strong>3日目</strong></td><td>太陽風（§04）の表を白紙に再現。<strong>演習3</strong></td><td>押し出されてきたもの（§06）。<strong>演習5</strong></td><td>3周目 ①太陽と内側＋②小惑星帯</td></tr>
+        <tr><td><strong>4日目</strong></td><td>1周目 ①太陽と内側</td><td>2周目 ⑤外側（ここから逆）</td><td>3周目 ③木星のまわり＋④土星から海王星</td></tr>
+        <tr><td><strong>5日目</strong></td><td>1周目 ②小惑星帯</td><td>2周目 ④土星から海王星</td><td>3周目 ⑤外側。<strong>演習1</strong>（統合の配置図の採点）</td></tr>
+        <tr><td><strong>6日目</strong></td><td>1周目 ③木星のまわり</td><td>2周目 ③木星のまわり</td><td>7組の見分けを全部。<strong>演習4</strong>をもう一度</td></tr>
+        <tr><td><strong>7日目</strong></td><td>1周目 ④土星から海王星</td><td>2周目 ②小惑星帯</td><td><strong>到達目標①②③</strong>を確かめる</td></tr>
+      </table>
+      </div>
+      <p style="font-size:13px;color:var(--ink-faint)">どの日も、Aの最初の3分は統合の配置図です。表には書いていませんが、省かないでください。3周目の2区間の日は、地形を各2項目に減らして時間に収めます。</p>
+      <div class="box warn"><span class="lab">進んでよい条件（第6回へ）</span>
+      <ul>
+        <li><strong>統合の配置図</strong>——38枚すべてを、桁を外さずに置けること（演習1で満点の9割以上）</li>
+        <li><strong>巡回</strong>——順・逆の両方で、止まらずに1周できること。止まるカードがあれば、その回に戻ってそのカードだけを数日続けてください</li>
+        <li><strong>7組</strong>——どの組も見分けどころが1つ以上すぐ出ること</li>
+      </ul>
+      <p>3週間で3周できなくても構いません。<strong>1周目を丁寧に、が優先</strong>です。3周目を省いて第6回に進むより、2周目を2回やるほうが確かです。</p></div>
+    </section>
+
+    <section id="drills">
+      <div class="sec-head"><span class="idx">10</span><h2>演習</h2></div>
+      <p>すべて<strong>カード・図を見ずに</strong>答え、答えたあとで開いてください。間違えた項目は控えておき、翌日その区間から巡ります。</p>
+
+      <div class="ex">
+        <p class="ex-h"><span class="num">演習1</span>統合の配置図を白紙から再現する</p>
+        <p>白紙に横線を1本引き、左から <strong>0.01・0.1・1・10・100・1,000・1万・10万 AU</strong> の目盛を等間隔に打ってください（対数目盛）。そこへ38枚の対象をすべて置きます。衛星は母惑星の下に書きます。最後に、太陽風の届く範囲（太陽圏）の境界を1本の縦線で引いてください。</p>
+        <details><summary>採点のしかた</summary><div class="ans">
+          <p>§05 の図と照らします。<strong>対象1つを1点</strong>とし、29点満点（38枚を対象の数で数える）に、太陽圏の境界の1点を足して<strong>30点満点</strong>です。</p>
+          <ul>
+            <li><strong>正しい桁の区間に入っていれば1点</strong>。範囲を持つもの（小惑星帯・カイパーベルト・散乱円盤・オールトの雲）は、始まりと終わりの両方が正しい区間で1点、片方だけなら0.5点</li>
+            <li><strong>衛星は、正しい母惑星の下に書けていれば1点</strong>（月・イオ・エウロパ・ガニメデ・カリスト・エンケラドゥス・タイタン・ミランダ・トリトンで9点）。惑星の順と、衛星の母惑星の組み合わせを確かめる採点です</li>
+            <li>トロヤ群は<strong>木星と同じ位置</strong>、リュウグウ・ベンヌは<strong>地球のすぐ右</strong>、冥王星とカロンは<strong>同じ点</strong>で1点ずつ</li>
+            <li>オールトの雲は「推定」と書くか破線で描いて1点（書いていなければ0.5点）</li>
+            <li><strong>太陽圏の境界</strong>が 100〜1,000 AU の区間に引けていて、<strong>オールトの雲がその外</strong>にあれば1点</li>
+          </ul>
+          <p>到達目標①の目安は<strong>27点以上</strong>（9割）です。<strong>数値は採点しません</strong>。何度も外すものは、惑星を目印にして覚え直してください——「トロヤ群は木星と同じ」「カイパーベルトは海王星のすぐ外」「太陽圏の境界は100を少し越えたところ」。</p></div></details>
+      </div>
+
+      <div class="ex">
+        <p class="ex-h"><span class="num">演習2</span>太陽の断面と、光が出るまでの時間</p>
+        <p>(1) 太陽の層を、<strong>中心から外へ</strong>順に言ってください。それぞれ1つずつ特徴を添えてください。<br>(2) 中心で生まれたエネルギーが表面に出るまで、どれくらいかかりますか。<strong>1つの数値ではなく、幅と、幅がある理由</strong>で答えてください。<br>(3) この回でいちばん大きな「まだ確かめられていない」は何ですか。</p>
+        <details><summary>解答</summary><div class="ans">
+          <ul>
+            <li><strong>(1)</strong> 中心核（半径の約1/4まで。核融合）→ 放射層（約0.25〜0.7。光が吸収と放出を繰り返して少しずつ外へ）→ 対流層（約0.7〜表面。熱い気体が湧き上がる。粒状斑はこの上端）→ 光球（目に見える表面。約5,500℃。上端で温度が最も低くなる）→ 彩層（薄い層。外へ行くほど温度が上がる）→ コロナ（最も外側。100万℃を超える）</li>
+            <li><strong>(2)</strong> <strong>数万年〜100万年ほど。よく引かれるのは約17万年</strong>（NASA Sun Facts・ESA）。同じ NASA の中でも約4万年から約100万年まで25倍の幅がある。1つの光が同じまま出ていくのではなく、吸収と放出を数えきれないほど繰り返すので、1回に進む距離の見積もりと、どこを出口とするかで答えが桁で変わる。<strong>表面を出た光が地球に届くのは約8分20秒</strong></li>
+            <li><strong>(3)</strong> <strong>コロナ加熱問題</strong>——光球より外のコロナのほうが数百倍熱い理由。波の説とナノフレアの説があり、観測も進んでいるが、決着していない</li>
+          </ul>
+          <p style="font-size:13px;color:var(--ink-faint)">(1)で「光球が最も温度の低い層」と答えた場合は、半分だけ正解です。温度がいちばん低いのは光球の<strong>上端</strong>（彩層との境目）で、光球の中では下から上へ温度が下がっていきます。</p></div></details>
+      </div>
+
+      <div class="ex">
+        <p class="ex-h"><span class="num">演習3</span>太陽風が何をしているか</p>
+        <p>次の6か所で、太陽風が何をしているかを1文ずつ言ってください。そのうえで、<strong>岩石惑星の大気の違いに太陽風がどう効いているか</strong>を、磁場という言葉を使って説明してください。</p>
+        <p>水星／金星／火星／地球／彗星のイオンの尾／オールトの雲</p>
+        <details><summary>解答</summary><div class="ans">
+          <ul>
+            <li><strong>水星</strong>——表面から原子を叩き出して、薄い外気圏を作る働きの1つ。ただし元素によって主な仕組みが違い、ナトリウムは主に太陽の紫外線、マグネシウムやカルシウムは主に微小隕石の衝突</li>
+            <li><strong>金星</strong>——全体を包む磁場が無いので、大気の上の層に直接当たる。水素と酸素が 2:1 で宇宙へ逃げている＝<strong>水が失われ続けている</strong>（厚い大気がまるごと剥がれているのではない）</li>
+            <li><strong>火星</strong>——全体を包む磁場が無く、大気がはぎ取られてきた。MAVEN が2014〜2025年に測った（毎秒約100g。太陽の嵐のときに増える）</li>
+            <li><strong>地球</strong>——磁場が太陽風を逸らしている。逸らされた粒の一部が極のまわりの上空に流れ込み、大気を光らせるのがオーロラ</li>
+            <li><strong>彗星のイオンの尾</strong>——太陽風に流されて、太陽と正反対へまっすぐ伸びる</li>
+            <li><strong>オールトの雲</strong>——太陽風は届いていない。太陽圏の境界（約120 AU）の、さらに10倍以上外にある（推定）</li>
+          </ul>
+          <p><strong>大気の違い：</strong>磁場のある地球は太陽風を逸らし、磁場の無い火星と金星は少しずつ削られてきた。ただし太陽風は4つの条件（重力・太陽からの距離・磁場・二酸化炭素を回収する仕組み）の<strong>1つ</strong>で、これだけでは決まらない。</p></div></details>
+      </div>
+
+      <div class="ex">
+        <p class="ex-h"><span class="num">演習4</span>取り違えやすい7組</p>
+        <p>次の7組について、<strong>どちらも</strong>に当たる共通点を1つ、<strong>見分けどころ</strong>を1つ以上言ってください。母惑星や位置で見分けられる組は、それを最初に言ってください。</p>
+        <p>ガニメデとカリスト／エウロパとエンケラドゥス／タイタンとトリトン／ケレスとベスタ／カイパーベルトと散乱円盤／イオとエンケラドゥス／天王星と海王星</p>
+        <details><summary>解答</summary><div class="ans">
+          <p>§07 の「見分けどころ」の表のとおりです。要点だけ挙げます。</p>
+          <ul>
+            <li><strong>ガニメデとカリスト</strong>——ガニメデは最大・磁場・明るい新しい地形がある。カリストは全面クレーター・最も暗い・共鳴の外</li>
+            <li><strong>エウロパとエンケラドゥス</strong>——<strong>木星と土星</strong>。エンケラドゥスは噴出が確かめられている、エウロパはまだ</li>
+            <li><strong>タイタンとトリトン</strong>——<strong>土星と海王星</strong>。タイタンは大気が厚い、トリトンはごく薄く、逆向きに回る</li>
+            <li><strong>ケレスとベスタ</strong>——ケレスは丸い準惑星で暗い、ベスタは丸くない小惑星で明るい</li>
+            <li><strong>カイパーベルトと散乱円盤</strong>——軌道の形。円に近いか、近日点は海王星のそばのまま遠くへ伸びるか</li>
+            <li><strong>イオとエンケラドゥス</strong>——<strong>木星と土星</strong>。溶岩と硫黄の火山か、水の噴出か</li>
+            <li><strong>天王星と海王星</strong>——色では見分けない。横倒しで模様が見えないか、風が最も速く雲が変わるか</li>
+          </ul></div></details>
+      </div>
+
+      <div class="ex">
+        <p class="ex-h"><span class="num">演習5</span>押し出されてきたもの</p>
+        <p>次の5つについて、<strong>何の力で、どこからどこへ</strong>押し出されたかを答え、それが<strong>いまも続いていることか、太陽系ができたころのことか</strong>を分けてください。</p>
+        <p>地球近傍小惑星／短周期彗星／長周期彗星／冥王星（3:2 の軌道）／オールトの雲</p>
+        <details><summary>解答</summary><div class="ans">
+          <ul>
+            <li><strong>地球近傍小惑星</strong>——木星との共鳴で、小惑星帯から地球の近くへ。<strong>いまも続いている</strong>（分かっている）</li>
+            <li><strong>短周期彗星</strong>——海王星などの重力で、カイパーベルト・散乱円盤から木星の近くを回る軌道へ。<strong>いまも続いている</strong></li>
+            <li><strong>長周期彗星</strong>——近くを通る恒星など、太陽系の外からの力で、オールトの雲から内側へ。<strong>いまも続いている</strong>（ただし出どころの雲は推定）</li>
+            <li><strong>冥王星</strong>——外へ移動していく海王星の共鳴に、円に近い軌道から 3:2 の細長い軌道へ引き込まれた。<strong>太陽系ができたころ</strong>（有力説、まだ確かめられていない）</li>
+            <li><strong>オールトの雲</strong>——巨大惑星（とくに木星）の重力で、巨大惑星のまわりから遠くへ弾き飛ばされた。<strong>太陽系ができたころ</strong>（まだ確かめられていない）</li>
+          </ul>
+          <p>「いまも続いている」ものは観測できるので分かっている側、「できたころ」のものは、いまの配置から逆算するしかないので確かめられていない側に入ります（§06）。</p></div></details>
+      </div>
+
+      <div class="ex">
+        <p class="ex-h"><span class="num">演習6</span>3分類で置く</p>
+        <p>次の10の対象について、<strong>分かっていること／まだ確かめられていない／まだ誰も見ていない</strong>のうち、あてはまるものを<strong>中身つきで</strong>1つ以上言ってください。<strong>2つ以上に入るものもあります。</strong></p>
+        <p>太陽／月／火星／エウロパ／ミランダ／トリトン／ケレス／リュウグウ・ベンヌ／冥王星／オールトの雲</p>
+        <details><summary>解答</summary><div class="ans">
+          <p>§08 の表のとおりです。いちばん取り違えやすいものだけ挙げます。</p>
+          <ul>
+            <li><strong>太陽</strong>——<strong>まだ確かめられていない</strong>：コロナ加熱問題。「まだ誰も見ていない」には入れない（中は光では見えないが、日震学とニュートリノで調べられている）</li>
+            <li><strong>月</strong>——<strong>まだ確かめられていない</strong>：どうできたか</li>
+            <li><strong>ミランダ・トリトン・冥王星</strong>——<strong>まだ誰も見ていない</strong>：北半球（ミランダ・トリトン）、南半球（冥王星）。探査機が1度通り過ぎただけ。そのうえで<strong>まだ確かめられていない</strong>もある（ミランダの地形の成因、トリトンが捕まえられたか、冥王星の地下の海）</li>
+            <li><strong>リュウグウ・ベンヌ</strong>——<strong>分かっている</strong>：生命の跡ではない（「証拠がない」は分かっている側）。<strong>まだ誰も見ていない</strong>：リュウグウの糖（調べていない）</li>
+            <li><strong>オールトの雲</strong>——<strong>まだ確かめられていない</strong>（存在そのものが推定）と<strong>まだ誰も見ていない</strong>（その場所の天体を見たことが一度もない）の<strong>両方</strong></li>
+          </ul>
+          <p>分類を言うだけでなく、<strong>中身</strong>（何が分かっていないのか）まで言えて正解です。「冥王星＝まだ誰も見ていない」だけでは半分で、「南半球」まで言います。</p></div></details>
+      </div>
+    </section>
+
+    <section id="plan">
+      <div class="sec-head"><span class="idx">A</span><h2>第1〜5回の改訂と、第6回以降の構成</h2></div>
+      <h3>第1〜5回（太陽系の回）——実際の中身</h3>
+      <div class="table-scroll">
+      <table class="mini-table">
+        <tr><th style="width:8%">回</th><th style="width:20%">タイトル</th><th style="width:38%">中身</th><th>できた型</th></tr>
+        <tr><td><strong>1</strong></td><td>太陽系の骨格</td><td>太陽と8惑星のカード。配置図と比較図</td><td><strong>配置図で位置を決める</strong>。巡り方①〜⑤</td></tr>
+        <tr><td><strong>2</strong></td><td>岩石惑星を深める</td><td>水星・金星・地球（外観）・月・火星の地図と球、大気の違い</td><td><strong>地図と球</strong>（地図で覚えて球で確かめる）。<strong>月のティコ</strong>を接続点に決めた</td></tr>
+        <tr><td><strong>3</strong></td><td>巨大惑星を深める</td><td>木星〜海王星の断面と環、主要衛星8枚。全12枚</td><td><strong>断面</strong>。「知らない」と「まだ誰も見ていない」の区別（演習5）</td></tr>
+        <tr><td><strong>4</strong></td><td>小天体</td><td>配置図を背骨に、地図・形・領域の11枚。準惑星の区分は独立した節</td><td><strong>3分類</strong>。<strong>横断する軸</strong>（共鳴の5例）。実データの分布図</td></tr>
+        <tr><td><strong>5</strong></td><td>太陽と全体の統合</td><td>太陽の断面と球、太陽風、統合の配置図、全38枚の巡回、3分類の全体一覧</td><td><strong>統合</strong>（1枚の配置図、1本の巡回路、1つの表）。取り違えやすい組の扱い</td></tr>
+      </table>
+      </div>
+      <p style="font-size:13px;color:var(--ink-faint)">第3回の予告にあった「冥王星やケレスも断面で」は、第4回・第5回とも実行していません（第4回の付録Aに記録）。小天体の断面を扱うかどうかは、まだ決めていません。</p>
+
+      <h3>第6回以降（地球の回）</h3>
+      <p>このシリーズの目的は、<strong>現実の世界を、ありのまま頭の中に再現すること</strong>です。太陽系の5回は、その土台——<strong>地球がどこにあるか</strong>——を作る回でした。第6回からは、地球の地図の上に、地名・気候・産物・民族・企業・観光地を対応させていきます。構成の案は次のとおりです（地球の回に入る直前に、もう一度見直します）。</p>
+      <div class="table-scroll">
+      <table class="mini-table">
+        <tr><th style="width:8%">回</th><th style="width:22%">タイトル（案）</th><th>中身</th></tr>
+        <tr><td><strong>6</strong></td><td>地球の骨格</td><td><strong>ティコから地球へ</strong>。大陸と海洋、大きな山脈と川を、全球の地図と球に置く。第1回の「骨格」にあたる回</td></tr>
+        <tr><td><strong>7</strong></td><td>気候</td><td>緯度と太陽の高さ、大気と海の流れから、気候帯を地図に置く。第5回の太陽から、地球の上へ降りてくる回</td></tr>
+        <tr><td><strong>8</strong></td><td>国と地名</td><td>国・首都・主な都市を、地図の上の位置から覚える</td></tr>
+        <tr><td><strong>9</strong></td><td>産物と資源</td><td>気候と地形に重ねて、何がどこで採れ、作られるか</td></tr>
+        <tr><td><strong>10</strong></td><td>人びと</td><td>民族・言語・宗教の分布</td></tr>
+        <tr><td><strong>11</strong></td><td>企業と観光地</td><td>主な企業の本拠地と、観光地を地図に置く</td></tr>
+        <tr><td><strong>12</strong></td><td>地球の統合</td><td>第5回と同じく、1枚の地図・1本の巡回路・1つの表にまとめる</td></tr>
+      </table>
+      </div>
+
+      <h3>太陽系の回で作った型は、地球でこう使う</h3>
+      <div class="table-scroll">
+      <table class="mini-table">
+        <tr><th style="width:22%">型</th><th style="width:30%">太陽系の回で</th><th>地球の回で</th></tr>
+        <tr><td><strong>配置図で位置を決めてから中身へ</strong></td><td>「配置図のどこか」から各カードに入る（第4回）</td><td>「地図のどこか」から、国・都市・産物に入る。<strong>名前より先に場所</strong></td></tr>
+        <tr><td><strong>地図と球</strong></td><td>正距円筒の地図で覚え、球で確かめる（第2回〜）</td><td>そのまま使う。ただし地球の地図は面積や形が歪む図法が多いので、<strong>高緯度の国の大きさは球で確かめる</strong></td></tr>
+        <tr><td><strong>3分類</strong></td><td>分かっていること／まだ確かめられていない／まだ誰も見ていない（第4回〜）</td><td>「<strong>確かな数字</strong>」と「<strong>推計・議論のあるもの</strong>」と「<strong>時点で変わるもの</strong>」を分ける。人口・企業・産物の順位は年ごとに変わるので、第4回の試料の分析と同じく<strong>出典と日付</strong>を必ず添える</td></tr>
+        <tr><td><strong>横断する軸</strong></td><td>共鳴（第4回）、太陽風（第5回）——1つの仕組みが別々の場所をつなぐ</td><td>「<strong>緯度と太陽の高さ</strong>」（気候→産物→暮らし）、「<strong>プレートの境界</strong>」（山脈・火山・地震）、「<strong>海流</strong>」のように、1つの仕組みで複数の回をつなぐ軸を先に決める</td></tr>
+        <tr><td><strong>取り違えやすい組</strong></td><td>並べ替えず、隣なら境目で、離れていれば位置で見分ける（第5回）</td><td>名前の似た国や都市でも同じ扱い。<strong>まず位置が違うことを言ってから</strong>中身の違いへ</td></tr>
+        <tr><td><strong>統合</strong></td><td>1枚の配置図・1本の巡回路・1つの表（第5回）</td><td>第12回で同じ形にまとめる</td></tr>
+      </table>
+      </div>
+
+      <div class="box teach"><span class="lab">接続点は、月のティコ</span>
+      <p>第2回で決めたとおり、<strong>太陽系の回と地球の回を行き来するときは、必ず月のティコ・クレーターを経由します</strong>。ティコには地形以外の情報を置きません。どこから入ってどこへ戻るかが決まっていれば、太陽系の配置図と地球の地図が、頭の中で混ざらずに済みます。</p>
+      <p style="margin-top:8px">統合の配置図（§05）の上では、ティコは<strong>地球の下の「月」</strong>にあります。38枚を巡る途中で地球の回へ出るときも、戻るときも、ここを通ります。</p></div>
+    </section>
+
+    <section id="evidence">
+      <div class="sec-head"><span class="idx">B</span><h2>根拠と強度——5回ぶん</h2></div>
+      <p>第1〜5回で使った手順を1つの表にまとめました。上の5行は研究の裏づけがある一般的な方法、それより下は<strong>この教材の設計判断</strong>です。</p>
+      <div class="table-scroll">
+      <table class="mini-table">
+        <tr><th style="width:22%">要素</th><th style="width:7%">回</th><th style="width:34%">主な根拠</th><th style="width:29%">示していないこと</th><th style="width:8%">強度</th></tr>
+        <tr><td>見ずに思い出す（演習・前日想起）</td><td>全回</td><td>検索練習効果。読み返しより想起のほうが長く残ることが多数の研究で繰り返し示されている（Roediger &amp; Butler 2011 の総説ほか）</td><td>理解や応用が自動的に伸びること</td><td><span class="g s">強</span></td></tr>
+        <tr><td>間隔を空けて繰り返す（前日・3日前・巡回の周）</td><td>全回</td><td>分散学習の効果（Cepeda et al. 2006 のメタ分析ほか）</td><td>この教材の間隔が最適であること</td><td><span class="g s">強</span></td></tr>
+        <tr><td>実画像・地図・図と文章を一緒に使う</td><td>全回</td><td>言葉と図を組み合わせると、言葉だけより学習成績がよいことが多い（Mayer のマルチメディア学習研究）</td><td>頭の中で像を再構成する手順そのものの効果</td><td><span class="g s">強</span></td></tr>
+        <tr><td>地図の上に事実を結びつける</td><td>2〜4</td><td>地図と一緒に学んだ文章の事実が思い出しやすくなる（Kulhavy らの一連の研究）</td><td>多くは短い教材と短い保持期間での結果。頭の中だけの地図で同じ効果が出るか</td><td><span class="g m">中</span></td></tr>
+        <tr><td>観察の言語化（Bトラック）</td><td>2〜5</td><td>Naghshineh et al. 2008／Gurwin et al. 2018。観察訓練で記述の量と質が向上</td><td>記憶力が伸びること</td><td><span class="g m">中</span></td></tr>
+        <tr><td>場所法を知識の学習に使う</td><td>全回</td><td>場所法の効果（Dresler et al. 2017 ほか）は<strong>無関係な語リスト</strong>で示されたもの</td><td>意味のある知識の長期定着に場所法が効くこと</td><td><span class="g w">弱</span></td></tr>
+        <tr><td>天体に近づく順番を揃える（巡り方①〜⑤）</td><td>1</td><td>検証した研究は確認できていない。思い出すときの足場を一定にするための設計判断</td><td>この順番が最適であること</td><td><span class="g w">弱</span></td></tr>
+        <tr><td>地図を区画に割ってから名前を入れる／地形を隣接関係で覚える</td><td>2〜4</td><td>手がかりを増やすと想起が助けられるという一般的な知見と整合する。この具体的なやり方を検証した研究は確認できていない</td><td>単独で覚えるより優れていること</td><td><span class="g w">弱</span></td></tr>
+        <tr><td>断面を重ねる</td><td>3・5</td><td>検証した研究は確認できていない。地面の無い天体に「中心から外へ」の並びを手がかりにするための設計判断</td><td>箇条書きで層を覚えるより優れていること</td><td><span class="g w">弱</span></td></tr>
+        <tr><td>衛星を母惑星の直後に、軌道の順で置く</td><td>3</td><td>検証した研究は確認できていない</td><td>別立てでまとめるより優れていること</td><td><span class="g w">弱</span></td></tr>
+        <tr><td>作れない図は作らない／撮影されていない範囲を埋めない</td><td>3〜5</td><td>検証した研究は確認できていない。見ていないものを見たように覚えないための設計判断</td><td>欠けた図のほうが覚えやすいこと</td><td><span class="g w">弱</span></td></tr>
+        <tr><td>配置図を背骨にし、毎日描く</td><td>4</td><td>検証した研究は確認できていない。位置で束ねるための設計判断。毎日描くのは上の「見ずに思い出す」「間隔を空ける」を配置図に当てはめたもの</td><td>対数目盛の図が表や一覧より優れていること</td><td><span class="g w">弱</span></td></tr>
+        <tr><td>対象ごとに手がかりを変える（地図／形／領域）</td><td>4</td><td>検証した研究は確認できていない</td><td>手がかりの種類が違っても混乱しないこと</td><td><span class="g w">弱</span></td></tr>
+        <tr><td>模式図でなく実データの分布図を使う</td><td>4</td><td>検証した研究は確認できていない</td><td>模式図より覚えやすいこと。見つけやすさの偏りが誤解を生まないこと</td><td><span class="g w">弱</span></td></tr>
+        <tr><td>形の似た天体を同じ縮尺で並べる</td><td>4</td><td>検証した研究は確認できていない</td><td>並べることで違いの記憶が強まること</td><td><span class="g w">弱</span></td></tr>
+        <tr><td>推定のものを、破線・幅・「推定」の3つで置く</td><td>4</td><td>検証した研究は確認できていない</td><td>この置き方で「推定である」ことが記憶に残ること</td><td><span class="g w">弱</span></td></tr>
+        <tr><td>横断する軸（共鳴・太陽風）で別々の回をつなぐ</td><td>4・5</td><td>検証した研究は確認できていない。1つの仕組みで複数の事実を説明できる形にするための設計判断</td><td>軸を立てたほうが個々の事実が残ること</td><td><span class="g w">弱</span></td></tr>
+        <tr><td><strong>統合の配置図を背骨にする</strong>（この回で新しく足した手順）</td><td>5</td><td><strong>検証した研究は確認できていない。</strong>5回ぶんの置き場所を1枚に揃え、巡回の順番もそこから決めるための設計判断</td><td>38枚を1枚に載せても混み合わずに使えること</td><td><span class="g w">弱</span></td></tr>
+        <tr><td><strong>取り違えやすい組を並べ替えずに扱う</strong>（この回で新しく足した手順）</td><td>5</td><td>似たものを並べて比べると見分けやすくなるという交互練習の研究（Birnbaum et al. 2013 ほか）と、隣に来る組の扱いは部分的に整合する。<strong>「並べ替えない」判断そのものは検証されていない</strong>——配置図の順を崩さないための設計判断</td><td>離れた組を巡回の後で比べるやり方が、途中で比べるより優れていること</td><td><span class="g w">弱</span></td></tr>
+        <tr><td><strong>3分類を全体に適用する</strong>（この回で新しく足した手順）</td><td>4・5</td><td>検証した研究は確認できていない。「知らない」の種類を分けて、次に何をすれば分かるかを見えるようにするための設計判断</td><td>3分類が記憶や理解を助けること</td><td><span class="g w">弱</span></td></tr>
+        <tr><td><strong>配布されていない全球図を、実写を継いで作る</strong>（太陽の球）</td><td>5</td><td>検証した研究は確認できていない。描かれた絵で代用するより、実写を継いだほうが正しい、という判断</td><td>継ぎ合わせの図が、一瞬の姿と誤解されないこと（但し書きで補っている）</td><td><span class="g w">弱</span></td></tr>
+      </table>
+      </div>
+      <p style="font-size:13px;color:var(--ink-faint)">研究の記述は要約です。効果量や条件は原論文で確認してください。<strong>「弱」の行は、どれも設計判断であって、効果が確かめられたものではありません</strong>。5回ぶんを並べると、研究で裏づけのある部分（思い出す・間隔を空ける・図と文章）は土台にあたり、この教材らしさ（配置図・3分類・横断する軸）はほとんどが弱の側にあります。</p>
+    </section>
+
+    <section id="next">
+      <div class="sec-head"><span class="idx">C</span><h2>次回の予告</h2></div>
+      <div class="box teach"><span class="lab">第6回の予告　地球の骨格——ティコから地球へ</span>
+      <p>第1〜5回で、<strong>地球がどこにあるか</strong>を作りました。太陽から3番目、1 AU、太陽風の中、磁場という盾を持ち、すぐ外を地球近傍小惑星が通る——統合の配置図の上の、1つの点です。</p>
+      <p>第6回は、その点の中に入ります。入口は<strong>月のティコ</strong>です。第2回で決めたとおり、太陽系の配置図から地球の地図へは、必ずティコを経由して移ります。ティコから地球を見下ろし、<strong>大陸と海洋、大きな山脈と川</strong>を、全球の地図と球に置くところから始めます。</p>
+      <p>持ち越す型は、太陽系の回と同じです。<strong>名前より先に場所</strong>、<strong>地図で覚えて球で確かめる</strong>、<strong>分かっていること・推計・時点で変わるものを分ける</strong>、そして<strong>1つの仕組みで複数の事実をつなぐ軸</strong>。第2回で火星の地形を置いたのと同じ手つきで、今度は地球の地形を置きます。</p></div>
+    </section>
+
+    <div class="foot"><p>太陽の数値は NASA（Sun Facts、2026年9月17日更新）・NASA MSFC・ESA（Anatomy of the Sun、2020年1月22日）によります。層の境目の位置（半径の約0.25・約0.7）と温度はおよその値で、<strong>資料によって幅があります</strong>。中心で生まれたエネルギーが表面に出るまでの時間は、見積もりによって約4万年から約100万年まで幅があり、よく引かれる約17万年は Mitalas・Sills 1992 などによるものです。太陽の全球図は、SDO/HMI の可視光の画像（Courtesy of NASA/SDO and the AIA, EVE, and HMI science teams）222枚から、1回の自転（2024年6月2〜30日）のあいだに正面に来た部分を<strong>本教材で継ぎ合わせて</strong>作ったもので、一瞬の姿ではありません。写っていない極のまわりは灰色のままにしており、<strong>埋める加工はしていません</strong>。ボイジャー1号・2号の位置は JPL Horizons による2026年9月25日の値です。末端衝撃波とヘリオポーズの通過の日付と距離は NASA の発表と各論文（Stone ほか 2005・2013・2019、Richardson ほか 2008）によります。太陽の断面図・太陽風の図・統合の配置図は本教材で作成しました。統合の配置図と3分類の全体一覧の中身は、第1〜4回の各カードの値と記述から取ったもので、この回のために新しく足した事実はありません。</p></div>
+  </main>
+</div>
+<div id="site-footer"><noscript><nav class="noscript-nav" aria-label="フッターナビゲーション"><a href="index.html">ホーム</a><a href="self-intro.html">自己紹介</a><a href="study.html">勉強の軌跡</a><a href="videos.html">動画</a><a href="blog.html">ブログ</a><a href="sns.html">各種SNS</a></nav></noscript></div>
+<script src="../js/memoryverse.js?v=r82"></script>
+<script src="../js/layout.js?v=r82"></script>
+<script src="../js/main.js?v=r82"></script>
+<script src="../js/starfield.js?v=r82"></script>
+</body>
+</html>

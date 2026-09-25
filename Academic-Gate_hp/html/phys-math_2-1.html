@@ -16,13 +16,13 @@
      端末が勝手にライトになり、戻す手段が無くなる（§44.2）。
      復活時の挙動: テーマは描画前に同期で決まり（FOUC 防止）、ボタンの設置は
      layout.js がヘッダーを書き出したあと DOMContentLoaded で行われる。 -->
-<!-- <script src="../js/theme.js?v=r81"></script> -->
+<!-- <script src="../js/theme.js?v=r82"></script> -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;500&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
 <!-- サイト共通 → 記事固有 → テーマ上書き の順で読む（lesson-theme.css は
      記事の <style> より後ろに置くこと。css/lesson-theme.css 冒頭の注記どおり） -->
-<link rel="stylesheet" href="../css/style.css?v=r81">
+<link rel="stylesheet" href="../css/style.css?v=r82">
 <!-- MathJax: 設定ブロックはローダーより「前」に置く（DESIGN.md §11b）。
      フォールバックは this.src= ではなく createElement 方式（同§）。 -->
 <script>
@@ -224,7 +224,7 @@ mjx-container[display="true"]{margin:14px 0!important;overflow-x:auto;overflow-y
   .hint,.sol{display:block!important}
 }
 </style>
-<link rel="stylesheet" href="../css/lesson-theme.css?v=r81">
+<link rel="stylesheet" href="../css/lesson-theme.css?v=r82">
 </head>
 <body data-page="study" class="is-article" data-node="phys-math_2-1">
 <canvas id="starfield" aria-hidden="true"></canvas>
@@ -697,8 +697,8 @@ mb.addEventListener('click',function(){var o=body.classList.toggle('nav-open');m
 scrim.addEventListener('click',function(){body.classList.remove('nav-open')});
 document.getElementById('toc').addEventListener('click',function(e){if(e.target.closest('a'))body.classList.remove('nav-open')});
 </script>
-<script src="../js/layout.js?v=r81"></script>
-<script src="../js/main.js?v=r81"></script>
-<script src="../js/starfield.js?v=r81"></script>
+<script src="../js/layout.js?v=r82"></script>
+<script src="../js/main.js?v=r82"></script>
+<script src="../js/starfield.js?v=r82"></script>
 </body>
 </html>

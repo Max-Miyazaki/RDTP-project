@@ -69,6 +69,8 @@
                              title: '第3回　巨大惑星を深める' },
         'memoryverse_1-4': { label: '第4回',        href: 'memoryverse_1-4.html',  parent: 'memoryverse:ch1',
                              title: '第4回　小天体' },
+        'memoryverse_1-5': { label: '第5回',        href: 'memoryverse_1-5.html',  parent: 'memoryverse:ch1',
+                             title: '第5回　太陽と全体の統合' },
     };
 
     // node から根までの並び（根が先頭）。
