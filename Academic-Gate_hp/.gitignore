@@ -14,3 +14,10 @@
 
 # Logs / scratch
 *.log
+
+# メモリーバース 国のカード：取ってきたデータと途中のファイル（サイズと ODbL のため入れない。
+# 生成物の SVG・国のページだけを入れる。DESIGN.md §100）
+tools/memoryverse-cards/data/
+*.osm.pbf
+*.geojsonseq
+__pycache__/

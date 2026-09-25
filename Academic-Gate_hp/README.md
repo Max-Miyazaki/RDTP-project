@@ -130,7 +130,7 @@ but no error and no broken link. Same if you forget `data-node`.
 ## Conventions
 
 - **Assets are cache-busted** with `?v=rNN` query strings in the HTML. Bump the number when
-  editing `css`/`js` so browsers refetch. (Current: **`r85`**.) **Do not do this by hand:**
+  editing `css`/`js` so browsers refetch. (Current: **`r90`**.) **Do not do this by hand:**
 
       sh Academic-Gate_hp/tools/bump.sh        # r53 → r54, every page + this README
       sh Academic-Gate_hp/tools/bump.sh 60     # or jump to a specific number

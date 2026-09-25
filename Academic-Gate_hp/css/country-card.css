@@ -1,0 +1,116 @@
+/* メモリーバース 3章 国のカード（DESIGN.md §100）
+   国のページ（html/country/*.html、tools/memoryverse-cards/draw.py が生成）と、あとで地域の記事に
+   差し込むカードの両方で使う。部品名はすべて cc- で始め、記事の部品と混ざらないようにしてある。
+   図（SVG）の中の色は SVG 自身が持つ（層1〜3の色は §100）。ここはカードの枠・ボタン・注記だけ。 */
+
+.cc-page {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 var(--gutter) var(--space-16);
+}
+.cc-card {
+    border: 1px solid var(--line, var(--hairline));
+    border-radius: var(--radius-lg, 14px);
+    padding: 16px;
+    background: var(--surface);
+}
+
+/* --- 層のボタン（上の段）と、その中身のボタン（下の段） --------------------- */
+.cc-ctl { display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px; }
+.cc-row { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.cc-sep { width: 1px; height: 20px; background: var(--line, var(--hairline)); margin: 0 6px; }
+.cc-card button {
+    font: inherit;
+    font-size: 13px;
+    color: var(--ink-soft, var(--text-secondary));
+    background: transparent;
+    border: 1px solid var(--line, var(--hairline));
+    border-radius: var(--radius-pill);
+    padding: 4px 13px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    line-height: 1.6;
+}
+.cc-card button[aria-pressed="true"] { color: var(--ink, #fff); border-color: var(--accent); background: rgba(61, 139, 255, .16); }
+.cc-card button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.cc-card .cc-lay { font-weight: 700; font-size: 14px; padding: 5px 16px; }
+.cc-card .cc-sub { font-size: 12px; padding: 3px 11px; }
+.cc-sw { display: inline-block; width: 18px; height: 0; border-top: 2px solid; }
+.cc-sw.dash { border-top-style: dashed; }
+/* 0のもの：薄く・破線の枠・「なし」。押せない（disabled）。図には何も足さない（§100） */
+.cc-card .cc-zero { opacity: .55; cursor: not-allowed; border-style: dashed; }
+.cc-zero em { font-style: normal; font-size: 11px; color: #ff9b9b; margin-left: 2px; }
+.cc-zeros { margin: 2px 0 0; font-size: 12.5px; color: var(--ink-soft, var(--text-secondary)); }
+.cc-zeros b { color: var(--ink, #fff); }
+
+/* --- 図：枠だけを先に置き、SVG は country-card.js が取ってきて差し込む ----- */
+.cc-maps { display: flex; flex-wrap: wrap; gap: 18px; align-items: flex-start; }
+/* 狭い画面では図を縮めずに横へ送る（§90.1）。枠の縦横比は --w / --h（SVG の寸法）で先に決まる */
+.cc-scroll {
+    max-width: 100%;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, .28) transparent;
+}
+.cc-scroll::-webkit-scrollbar { height: 6px; }
+.cc-scroll::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, .28); border-radius: 99px; }
+.cc-fig {
+    position: relative;
+    width: calc(var(--w) * 1px);
+    max-width: 100%;
+    aspect-ratio: var(--w) / var(--h);
+}
+.cc-fig > svg { display: block; width: 100%; height: auto; }
+.cc-status, .cc-fallback {
+    position: absolute;
+    inset: 0;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 14px;
+    text-align: center;
+    font-size: 12.5px;
+    color: var(--ink-soft, var(--text-secondary));
+    border: 1px dashed var(--line, var(--hairline));
+    border-radius: var(--radius-md, 10px);
+}
+.cc-fallback { display: none; }
+.cc-fig.is-loaded .cc-status, .cc-fig.is-failed .cc-status { display: none; }
+.cc-fig.is-failed .cc-fallback { display: flex; }
+@media (max-width: 760px) {
+    /* 文字が読める大きさ（図の中の 9px が約8px）を保って横に送る */
+    .cc-fig { max-width: none; width: calc(var(--w) * .88px); }
+}
+
+.cc-side { flex: 1 1 300px; min-width: 0; display: flex; flex-direction: column; gap: 14px; }
+.cc-note {
+    font-size: 12.5px;
+    color: var(--ink-soft, var(--text-secondary));
+    border-left: 2px solid var(--line, var(--hairline));
+    padding-left: 10px;
+    margin: 0;
+}
+.cc-note b { color: var(--ink, #fff); }
+
+/* --- 出典（ODbL は表示が条件。見える形で置く） ------------------------------ */
+.cc-src {
+    margin-top: 18px;
+    border-top: 1px solid var(--line, var(--hairline));
+    padding-top: 12px;
+    font-size: 12px;
+    line-height: 1.7;
+    color: var(--ink-faint, var(--text-tertiary));
+}
+.cc-src p { margin: 0 0 6px; }
+.cc-src b { color: var(--ink-soft, var(--text-secondary)); font-weight: 600; }
+.cc-src a { color: inherit; }
+
+/* --- 層と中身の表示（country-card.js がカードに off-* を付け外しする） ------- */
+.cc-card.off-L1 .L1, .cc-card.off-L2 .L2, .cc-card.off-L3 .L3,
+.cc-card.off-river .k-river, .cc-card.off-lake .k-lake, .cc-card.off-motorway .k-motorway,
+.cc-card.off-trunk .k-trunk, .cc-card.off-hsr .k-hsr, .cc-card.off-main .k-main,
+.cc-card.off-region .k-region, .cc-card.off-prefname .k-prefname, .cc-card.off-city .k-city { display: none; }
