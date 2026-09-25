@@ -57,6 +57,8 @@
         'phys-math:ch5':   { label: '5章 常微分方程式',                            parent: 'phys-math' },
         'phys-math_5-1':   { label: 'SECTION 5-1',  href: 'phys-math_5-1.html',    parent: 'phys-math:ch5',
                              title: '5-1　1階の微分方程式' },
+        'phys-math_5-2':   { label: 'SECTION 5-2',  href: 'phys-math_5-2.html',    parent: 'phys-math:ch5',
+                             title: '5-2　2階線形微分方程式' },
         'skills':          { label: '精神の圏域',   href: 'study_skills.html',     parent: 'study' },
         'mnemonics':       { label: '記憶術',       href: 'skills_mnemonics.html', parent: 'skills' },
         'memoryverse':     { label: 'メモリーバース', href: 'memoryverse.html',    parent: 'mnemonics', unit: '回' },

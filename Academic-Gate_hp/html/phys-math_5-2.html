@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>5-2 2階線形微分方程式｜物理数学I 5章 | Academic Gates</title>
+<meta name="description" content="特性方程式で運動方程式を解く。単振動から減衰振動・臨界減衰・過減衰まで、判別式が運動の質を決める。物理数学I 5章／5-2。">
+<link rel="icon" href="../../favicon.ico" sizes="32x32">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+<!-- ★ ライト/ダーク切替は停止中（DESIGN.md §44）。サイト全体がダーク基調なので、
+     記事だけテーマが変わるのは一貫性を欠くという判断。**復活させるには次の1行の
+     コメントを外すだけでよい**（js/theme.js も css/lesson-theme.css も残してある）。
+     data-theme を付ける主体がこれしか無いので、外しておけば :root[data-theme="light"]
+     は構造的にマッチしない。逆に読み込んだままボタンだけ消すと、OS がライト設定の
+     端末が勝手にライトになり、戻す手段が無くなる（§44.2）。
+     復活時の挙動: テーマは描画前に同期で決まり（FOUC 防止）、ボタンの設置は
+     layout.js がヘッダーを書き出したあと DOMContentLoaded で行われる。 -->
+<!-- <script src="../js/theme.js?v=r84"></script> -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;500&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+<!-- サイト共通 → 記事固有 → テーマ上書き の順で読む（lesson-theme.css は
+     記事の <style> より後ろに置くこと。css/lesson-theme.css 冒頭の注記どおり） -->
+<link rel="stylesheet" href="../css/style.css?v=r84">
+<!-- MathJax: 設定ブロックはローダーより「前」に置く（DESIGN.md §11b）。
+     フォールバックは this.src= ではなく createElement 方式（同§）。 -->
+<script>
+window.MathJax={tex:{inlineMath:[['\\(','\\)']],displayMath:[['\\[','\\]']],tags:'none'},svg:{fontCache:'global'},options:{skipHtmlTags:['script','noscript','style','textarea','pre','code']}};
+</script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"
+        onerror="this.onerror=null;var s=document.createElement('script');s.async=true;s.src='https://unpkg.com/mathjax@3/es5/tex-svg.js';document.head.appendChild(s);"></script>
+<style>
+/* 5-2 2階線形微分方程式 — 記事固有のスタイルのみ。5-1 と同じ構成をそのまま使う。
+   共通のリセット・背景・星・ヘッダー/フッター・ボタン・見出し階層・本文リズムは
+   css/style.css が持つ（DESIGN.md §35, §36）。ここに残すのは、この教材の
+   構造（レール／演習ブロック／図版）と、教育用の色トークンだけ。 */
+:root{
+  /* 教材固有のトークン。本体と同値のもの（--bg --surface --nav-bg --ink --line
+     --line-strong --glow-cool --font --nav-clear --ease --radius-lg/md）は
+     css/style.css 側に定義があるので、ここでは持たない。
+     --ink-soft / --ink-faint は本体より明るい値を「意図的に」維持している。
+     本体値に寄せると 13.5px の解説文が 4.56:1 → 3.66:1 と AA を割るため（§36）。 */
+  --surface-2:rgba(255,255,255,.045);
+  --ink-soft:rgba(255,255,255,.68);
+  --ink-faint:rgba(255,255,255,.46);
+  --line-soft:rgba(255,255,255,.05);
+  --accent-deep:#a8c9ff;
+  --accent-tint:rgba(77,148,255,.12);
+  --amber:#ffb46b;--amber-tint:rgba(255,160,70,.08);--amber-line:rgba(255,160,70,.32);
+  --good:#72e3ad;--good-tint:rgba(114,227,173,.08);--good-line:rgba(114,227,173,.28);
+  --key:#ff6fa5;--key-tint:rgba(255,61,139,.08);--key-line:rgba(255,61,139,.28);
+  --teach:#a48bff;--teach-tint:rgba(123,77,255,.11);--teach-line:rgba(123,77,255,.38);
+  --mono:ui-monospace,'SFMono-Regular',Menlo,Consolas,monospace;
+  --rail-w:250px;
+}
+body{font-size:15.5px;line-height:1.9;line-break:strict;overflow-x:hidden}
+
+/* --- レイアウト（左に目次レール／右に本文の2カラム） ------------------------
+   本文列 760px は日本語の長文＋数式に合わせた measure。style.css の共通記事
+   ルールは `body.is-article main > section:not(.rail)`（詳細度 0,2,3）と
+   `… ~ section:not(.rail)`（0,3,4）で 900px と 160px パディングをかけてくる。
+   こちらは `.main` を噛ませて 0,3,2 / 0,4,3 とし、確実に上回る（§36）。 */
+/* 全幅。左寄せのレイアウトで、余った幅は右に流す（§43）。
+   §40 で一度 max-width を外して差し戻しているが、あれは「中央寄せのまま左右を
+   対称にする」変更で、本文の位置も幅も変わらなかったため戻した。今回は本文を
+   860px に広げて左揃えにするので、目的も結果も違う。
+   レールの左余白は 1280px → 1440px にかけて 0 → 32px。狭い画面ではまず余白を
+   削って本文幅に回す（レール幅 250px は目次の文字量で決まるので触らない）。 */
+.wrap{display:flex;padding-top:var(--nav-clearance);
+      padding-left:clamp(0px, calc((100vw - 1280px) * .2), 32px)}
+.rail{width:var(--rail-w);flex:0 0 var(--rail-w);position:sticky;top:var(--nav-clearance);height:calc(100vh - var(--nav-clearance));overflow-y:auto;padding:18px 14px 60px 22px;border-right:1px solid var(--line)}
+/* 左パディング＝レールと本文の間隔。1024px → 1280px にかけて 24 → 56px。
+   これも狭い画面では縮めて本文幅に回す。 */
+.main{flex:1 1 auto;min-width:0;
+      padding:0 clamp(24px, calc(24px + (100vw - 1024px) * .125), 56px) 110px}
+/* 本文列 860px。760px では display 数式が 6 本はみ出していた（解答の入れ子
+   パディングで、.sol の中は本文列より 132px 狭い箱になる）。全 82 本が収まる
+   最小幅は実測 853px（§43.2）。中央寄せをやめて左揃えにし、余りは右へ。 */
+body.is-article .main > .lesson-hero,
+body.is-article .main > section:not(.rail),
+body.is-article .main > .foot{max-width:860px;margin-left:0;margin-right:auto;padding-left:0;padding-right:0}
+.rail .brand{font-weight:400;font-size:15px;line-height:1.45;margin:2px 0 4px}
+.rail .brand small{display:block;font-size:10px;font-weight:500;color:var(--ink-faint);letter-spacing:.2em;margin-top:6px}
+.progress-wrap{height:2px;background:var(--line);border-radius:99px;margin:16px 0 18px;overflow:hidden}
+.progress-bar{height:100%;width:0;background:linear-gradient(90deg,var(--accent),#a8c9ff);transition:width .15s linear}
+.toc{list-style:none;margin:0;padding:0;font-size:12.5px}
+.toc .part{font-size:10px;letter-spacing:.2em;color:var(--ink-faint);margin:16px 0 5px;padding-left:2px}
+.toc a{display:block;text-decoration:none;color:var(--ink-soft);padding:4px 10px;border-radius:999px;transition:color var(--dur) var(--ease),background var(--dur) var(--ease)}
+.toc a:hover{color:var(--ink);background:var(--surface-2)}
+.toc a.active{color:var(--ink);background:var(--accent-tint)}
+.toc a .n{font-size:10.5px;color:var(--ink-faint);margin-right:8px;font-variant-numeric:tabular-nums}
+.toc a.active .n{color:var(--accent)}
+
+/* --- 記事の導入部。`.hero` は index.html 専用で、style.css が
+   `.hero h1/.hero p/.hero .eyebrow` に黒い text-shadow をかけるため使えない（§36）。 --- */
+.lesson-hero{padding:64px 0 34px;border-bottom:1px solid var(--line)}
+.lesson-hero h1{font-weight:300;font-size:clamp(28px,4vw,48px);line-height:1.25;letter-spacing:-.02em;margin:0 0 22px}
+.lesson-hero h1 .sub{display:block;font-size:.52em;font-weight:300;color:var(--ink-soft);letter-spacing:0;margin-top:12px}
+.lesson-hero p{color:var(--ink-soft);margin:0 0 12px}
+.lesson-hero .lead{font-size:16.5px;color:var(--ink-soft)}
+/* .eyebrow 本体は style.css の共通コンポーネント。色と余白だけ上書きする
+   （共通の --text-tertiary は 11px の小さな文字で 3.66:1 と AA を割るため） */
+.eyebrow{color:var(--ink-faint);margin-bottom:18px}
+
+section{border-bottom:1px solid var(--line-soft);scroll-margin-top:var(--nav-clearance)}
+/* 縦の余白も共通ルールに勝つ必要がある（先頭セクションも2つ目以降も同じ 56px） */
+body.is-article .main > section:not(.rail),
+body.is-article .main > section:not(.rail) ~ section:not(.rail){padding-top:56px;padding-bottom:12px}
+.sec-head{display:flex;align-items:baseline;gap:14px;margin-bottom:10px}
+.sec-head .idx{font-size:.72rem;font-weight:500;letter-spacing:.2em;color:var(--ink-faint);padding-top:4px;flex:0 0 auto;font-variant-numeric:tabular-nums}
+.sec-head .idx::after{content:' —'}
+body.is-article main h2{font-weight:400;font-size:clamp(21px,2.6vw,28px);line-height:1.3;letter-spacing:-.01em;margin:0}
+body.is-article main h3{font-weight:400;font-size:17px;margin:30px 0 6px;color:var(--ink)}
+body.is-article main h4{font-weight:500;font-size:14.5px;margin:18px 0 4px;color:var(--ink)}
+body.is-article main p{margin:10px 0;color:var(--ink-soft)}
+body.is-article main ul,body.is-article main ol{margin:10px 0;padding-left:1.3em;color:var(--ink-soft)}
+li{margin:4px 0}
+strong{font-weight:500;color:var(--ink)}
+code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);border-radius:6px;padding:1px 6px;color:var(--accent-deep)}
+mjx-container{color:var(--ink)}
+mjx-container[display="true"]{margin:14px 0!important;overflow-x:auto;overflow-y:hidden;padding:2px 0}
+
+/* 別行立て数式だけ、入れ子のパディングの外へ広げる（§46）。
+   解答や色付きボックスの中の数式は、section → .drill(20) → .attempt(22) →
+   .sol(20) と積み上がるパディングで、本文列より最大 132px 狭い箱に入っていた。
+   1024px では 82本中 6本がはみ出し、最大 +127px。**文章の字下げはそのまま**に、
+   数式だけを外へ出す。
+   値は「祖先のパディングの合計 − 8px」。8px 残すのは枠線に重ねないため。
+   全量（合計そのまま）だと .sol 左端の青いアクセントバーの上に分数が乗る。
+   はみ出しが無い幅では見た目が変わらない（箱が左右対称に広がるだけで中身は
+   中央揃えのまま。1440px で適用前後のピクセル差 0 を確認済み）。
+   !important は既存の margin:14px 0!important を上書きするため。
+   新しい入れ子を足すときは、この表に1行足すこと（現在 .hint の中に別行立ては無い）。
+     .box 20 / .drill 20 / .attempt 22 / .sol 20 */
+.box mjx-container[display="true"],
+.drill > mjx-container[display="true"]{margin:14px -12px!important}
+.attempt mjx-container[display="true"]{margin:14px -14px!important}
+.drill .attempt mjx-container[display="true"],
+.attempt .sol mjx-container[display="true"]{margin:14px -34px!important}
+.drill .attempt .sol mjx-container[display="true"]{margin:14px -54px!important}
+
+.box{border-radius:var(--radius-md);padding:16px 20px;margin:18px 0;border:1px solid var(--line);background:var(--surface)}
+.box .lab{font-size:.7rem;letter-spacing:.14em;font-weight:500;display:block;margin-bottom:6px}
+.box p{max-width:none}
+.box p:first-of-type{margin-top:2px}.box p:last-child{margin-bottom:0}
+/* 枠線は必ずトークン経由にすること。ここに直書きすると lesson-theme.css の
+   ライト上書きが効かず、暗い背景用の明るい色がライトでパステルになる（§41）。 */
+.box.principle{background:var(--key-tint);border-color:var(--key-line)}.box.principle .lab{color:var(--key)}
+.box.target{background:var(--good-tint);border-color:var(--good-line)}.box.target .lab{color:var(--good)}
+.box.warn{background:var(--amber-tint);border-color:var(--amber-line)}.box.warn .lab{color:var(--amber)}
+.box.teach{background:var(--teach-tint);border-color:var(--teach-line)}.box.teach .lab{color:var(--teach)}
+.box.teach .lab::before{content:"◎ "}
+
+.table-scroll{overflow-x:auto;margin:14px 0}
+.mini-table{width:100%;border-collapse:collapse;font-size:14px;margin:0;color:var(--ink-soft)}
+.mini-table th,.mini-table td{border:1px solid var(--line);padding:9px 11px;text-align:left;vertical-align:top}
+.mini-table th{background:var(--surface-2);font-weight:500;color:var(--ink)}
+
+.fig{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-lg);padding:18px 18px 12px;margin:20px 0}
+.fig > svg{width:100%;height:auto;display:block}
+.fig svg text{font-family:var(--font-body)}
+.fig figcaption{font-size:13px;color:var(--ink-soft);margin-top:10px;line-height:1.8;max-width:none}
+
+/* --- 演習まわり。`.ctl-btn` は style.css の `.btn`（サイト CTA。
+   `.btn::before` のホバーグローを持つ）と衝突しないよう改名したもの（§36）。 --- */
+.attempt{background:var(--surface);border:1px solid var(--amber-line);border-radius:var(--radius-lg);padding:18px 22px;margin:20px 0}
+.attempt .lab{font-size:.7rem;letter-spacing:.14em;color:var(--amber);font-weight:500;display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.attempt .lab::before{content:"✎"}
+.attempt p{max-width:none}
+.controls{display:flex;flex-wrap:wrap;gap:10px;margin:14px 0 4px}
+.ctl-btn{font-family:var(--font-body);font-size:12.5px;font-weight:500;border:1px solid var(--line);background:transparent;color:var(--ink-soft);padding:7px 16px;border-radius:var(--radius-pill);cursor:pointer;transition:color var(--dur) var(--ease),border-color var(--dur) var(--ease),background var(--dur) var(--ease)}
+.ctl-btn:hover{color:var(--ink);border-color:var(--line-strong);background:var(--surface-2)}
+.ctl-btn.amber{color:var(--amber);border-color:var(--amber-line)}
+.ctl-btn.amber:hover{background:var(--amber-tint)}
+.ctl-btn:disabled{opacity:.4;cursor:default;background:transparent}
+.hint{display:none;border-left:2px solid var(--amber);background:var(--amber-tint);border-radius:0 var(--radius-sm) var(--radius-sm) 0;padding:12px 16px;margin:10px 0}
+.hint .hn{font-size:.68rem;letter-spacing:.14em;color:var(--amber);font-weight:500;display:block;margin-bottom:3px}
+.hint p{max-width:none}.hint p:last-child{margin-bottom:0}.hint p:first-child{margin-top:0}
+.sol{display:none;border:1px solid var(--line);border-left:2px solid var(--accent);border-radius:0 var(--radius-md) var(--radius-md) 0;background:var(--surface-2);padding:8px 20px 16px;margin:12px 0}
+.sol p{max-width:none}
+.step{margin:18px 0}
+.step .sh{display:flex;gap:10px;align-items:baseline;font-weight:500;color:var(--ink);margin-bottom:2px}
+.step .sn{font-size:11px;font-weight:500;color:#06142e;background:var(--accent);border-radius:999px;padding:1px 10px;flex:0 0 auto}
+.step .why{font-size:13.5px;color:var(--ink-faint);border-left:1px solid var(--line);padding-left:12px;margin:5px 0 5px 2px;max-width:none}
+.transfer{background:var(--surface-2);border:1px solid var(--line);border-radius:var(--radius-md);padding:14px 18px;margin:18px 0}
+.transfer .lab{font-size:.7rem;letter-spacing:.14em;color:var(--accent);font-weight:500;display:block;margin-bottom:5px}
+.transfer p{max-width:none}
+.drill{background:var(--surface);border:1px solid var(--line);border-left:2px solid var(--accent);border-radius:0 var(--radius-md) var(--radius-md) 0;padding:14px 20px;margin:16px 0}
+.drill .qn{font-size:11px;font-weight:500;color:#06142e;background:var(--accent);border-radius:999px;padding:2px 11px;margin-right:8px}
+.drill p{max-width:none}
+.drill p:first-child{margin-top:2px}
+.drill .attempt{background:transparent;border-style:dashed}
+.foot{padding:34px 0 0;color:var(--ink-faint);font-size:12.5px}
+.foot p{color:var(--ink-faint);max-width:none}
+
+/* モバイル：レールを引き出しに。`.menu-btn` は位置だけを持ち、見た目は
+   共通コンポーネントの `.btn` を併用する。 */
+.menu-btn{display:none}
+.scrim{display:none}
+@media (max-width:900px){
+  .rail{position:fixed;left:0;top:0;height:100vh;z-index:1100;transform:translateX(-100%);transition:transform .25s var(--ease);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);padding-top:28px}
+  body.nav-open .rail{transform:translateX(0)}
+  .main{padding:0 20px 90px}
+  .menu-btn{display:inline-flex;position:fixed;bottom:18px;right:18px;z-index:1050;background:var(--nav-bg);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);color:var(--ink)}
+  .scrim{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:1090}
+  body.nav-open .scrim{display:block}
+  .lesson-hero{padding-top:40px}
+  /* 案A（§46.1）の負マージンをここで切る。マージンは固定 px なので、箱そのものが
+     狭いこの帯では数式が .sol の枠を大きく飛び出し、点線の .attempt 枠まで越えて
+     見える。390px では 28本が枠を横切っていた。はみ出し本数は 36→42 に増えるが、
+     どれも数式ごとの横スクロールで読める。§46.4 */
+  .box mjx-container[display="true"],
+  .drill > mjx-container[display="true"],
+  .attempt mjx-container[display="true"],
+  .drill .attempt mjx-container[display="true"],
+  .attempt .sol mjx-container[display="true"],
+  .drill .attempt .sol mjx-container[display="true"]{margin:14px 0!important}
+}
+@media print{
+  body{background:#fff;color:#000}
+  header,.rail,.menu-btn,.scrim,#starfield,footer{display:none!important}
+  .wrap{display:block;padding-top:0}
+  .hint,.sol{display:block!important}
+}
+</style>
+<link rel="stylesheet" href="../css/lesson-theme.css?v=r84">
+</head>
+<body data-page="study" class="is-article" data-node="phys-math_5-2">
+<canvas id="starfield" aria-hidden="true"></canvas>
+<div id="site-nav"><noscript><nav class="noscript-nav" aria-label="メインナビゲーション"><a href="index.html">ホーム</a><a href="self-intro.html">自己紹介</a><a href="study.html">勉強の軌跡</a><a href="videos.html">動画</a><a href="blog.html">ブログ</a><a href="sns.html">各種SNS</a></nav></noscript></div>
+<button class="menu-btn btn" id="menuBtn" aria-controls="rail" aria-expanded="false">目次 <span class="btn-disc" aria-hidden="true">≡</span></button>
+<div class="scrim" id="scrim"></div>
+<div class="wrap">
+  <nav class="rail" id="rail">
+    <!-- 科目へ戻る導線（レール上部の「← 一つ上」）は layout.js が CRUMBS から書き出す。 -->
+    <div class="brand">5-2　2階線形微分方程式<small>SECTION 5-2 / 2ND-ORDER ODE</small></div>
+    <div class="progress-wrap"><div class="progress-bar" id="pbar"></div></div>
+    <ul class="toc" id="toc">
+      <li class="part">導入</li>
+      <li><a href="#m0"><span class="n">01</span>なぜ2階なのか</a></li>
+      <li class="part">解き方</li>
+      <li><a href="#d1"><span class="n">02</span>特性方程式</a></li>
+      <li><a href="#d2"><span class="n">03</span>単振動</a></li>
+      <li><a href="#d3"><span class="n">04</span>減衰振動</a></li>
+      <li class="part">仕上げ</li>
+      <li><a href="#howto"><span class="n">05</span>チェックリストと次回予告</a></li>
+    </ul>
+  </nav>
+
+  <main class="main">
+    <div class="lesson-hero">
+      <div class="eyebrow">物理数学 I ／ 5章 常微分方程式 ／ SECTION 5-2</div>
+      <h1>5-2　2階線形微分方程式<span class="sub">運動方程式を、実際に解く</span></h1>
+      <p class="lead">ニュートンの運動方程式 \(m\ddot x=F\) は、2回微分が入った微分方程式です。つまり<strong>力学の問題を解くとは、2階の微分方程式を解くこと</strong>にほかなりません。5-1 で1階を扱ったので、いよいよ本丸に入ります。</p>
+      <p>そして2階になると、新しいことが起こります。1階では解が指数関数一択でしたが、2階では<strong>振動が現れる</strong>のです。しかもそれは、4章で作った複素数を経由して姿を見せます。指数関数と三角関数がオイラーの公式でつながっていたことが、ここで実際に効いてきます。</p>
+      <p>読み方：解答は必ず閉じたまま、紙で挑戦してください。</p>
+    </div>
+
+    <!-- §01 -->
+    <section id="m0">
+      <div class="sec-head"><span class="idx">§01</span><h2>なぜ2階なのか</h2></div>
+
+      <p>ばねにつながれた物体を考えます。ばねは伸びた分だけ引き戻そうとするので、力は \(F=-kx\)。運動方程式に入れると</p>
+      \[ m\frac{d^2x}{dt^2}=-kx \]
+      <p>未知の関数 \(x(t)\) と、その<strong>2回微分</strong>が同じ式に現れました。これが2階の微分方程式です。</p>
+      <p>なぜ2階になるかといえば、運動方程式が「力が加速度を決める」という形をしているからです。加速度は位置の2回微分なので、力が位置や速度で決まる限り、方程式は必ず2階になります。<strong>力学を扱う以上、2階は避けて通れません。</strong></p>
+
+      <div class="box target"><span class="lab">この記事で扱う形</span>
+      <p>次の形の方程式を扱います。</p>
+      \[ m\frac{d^2x}{dt^2}+\gamma\frac{dx}{dt}+kx=0 \]
+      <p>\(m\) は質量、\(k\) はばねの強さ、\(\gamma\) は抵抗の強さで、どれも定数です。右辺が 0 なのは、外から揺さぶる力がない場合を扱うという意味です（外力がある場合は 5-3 で扱います）。</p>
+      <p style="margin-top:8px">この形には名前がついています。未知の関数 \(x\) について<strong>1次式</strong>になっているので<strong>線形</strong>、係数が定数なので<strong>定数係数</strong>、右辺が 0 なので<strong>斉次</strong>。まとめて「定数係数の2階線形斉次微分方程式」と呼ばれます。</p></div>
+
+      <div class="box teach"><span class="lab">線形だと何が嬉しいのか</span>
+      <p>\(x_1\) と \(x_2\) がどちらもこの方程式の解だとします。このとき、それらを足し合わせた</p>
+      \[ x=C_1x_1+C_2x_2 \]
+      <p>も、また解になります。微分が線形だった（1-2 §04）ので、代入すればそのまま確かめられます。</p>
+      <p style="margin-top:8px">これを<strong>重ね合わせの原理</strong>といいます。<strong>解を2つ見つけさえすれば、そこから作れる組み合わせがすべて解になる</strong>——この性質が、これから使う解き方の土台です。</p></div>
+
+      <h3>任意定数は2つ</h3>
+      <p>5-1 で「\(n\) 階の方程式の一般解には任意定数が \(n\) 個現れる」と見ました。2階なら2つです。</p>
+      <p>物理的な意味ははっきりしています。<strong>初期位置と初期速度</strong>。この2つを与えて初めて、その後の運動が1つに決まります。同じばねでも、静かに手を離すか、勢いをつけて放すかで運動は変わる——それを指定するのが2つの定数です。</p>
+
+      <div class="box teach"><span class="lab">この記事の到達目標</span>
+      <ul style="margin:6px 0 0">
+        <li>2階の方程式に \(x=e^{\lambda t}\) を代入し、特性方程式を導ける</li>
+        <li>重ね合わせの原理を使って、一般解を組み立てられる</li>
+        <li>単振動 \(m\ddot x=-kx\) を解き、\(\omega_0=\sqrt{k/m}\) を導ける</li>
+        <li>特性方程式の解が虚数のとき、オイラーの公式で振動に戻せる</li>
+        <li>判別式の符号で、減衰振動・臨界減衰・過減衰の3つに分かれる理由を説明できる</li>
+      </ul></div>
+
+      <div class="box principle"><span class="lab">前提として使うもの</span>
+      <ul style="margin:6px 0 0">
+        <li><strong>5-1</strong>：一般解と初期条件、任意定数の意味</li>
+        <li><strong>4章 複素数</strong>：オイラーの公式 \(e^{i\theta}=\cos\theta+i\sin\theta\)、複素振幅</li>
+        <li><strong>1章 微分</strong>：連鎖律（\(e^{\lambda t}\) の微分に使います）</li>
+      </ul></div>
+    </section>
+
+    <!-- §02 -->
+    <section id="d1">
+      <div class="sec-head"><span class="idx">§02</span><h2>解の形を仮定する — 特性方程式</h2></div>
+
+      <p>5-1 では、変数分離という手順を踏んで解にたどり着きました。しかし2階の方程式では、\(x\) と \(\dot x\) と \(\ddot x\) が混ざっているので、変数を左右に分けることができません。<strong>別の作戦が要ります。</strong></p>
+      <p>そこで、少し大胆な手を使います。<strong>答えの形を先に仮定して、代入してみる。</strong></p>
+
+      <div class="box principle"><span class="lab">なぜ指数関数を試すのか</span>
+      <p>5-1 で解いた1階の方程式の答えは、どれも \(e^{-kt}\) の形でした。指数関数には「微分しても形が変わらず、定数が前に出るだけ」という性質があるからです（1-2）。</p>
+      <p style="margin-top:8px">2階でも事情は同じです。\(x\)、\(\dot x\)、\(\ddot x\) が混ざった式を1つにまとめるには、<strong>微分しても同じ形のままでいてくれる関数</strong>が都合がいい。だから指数関数を試すのは、当てずっぽうではなく理にかなった選択です。</p></div>
+
+      <div class="attempt"><span class="lab">まず自力で</span>
+      <p>\(x=e^{\lambda t}\)（\(\lambda\) は定数）と仮定して、方程式</p>
+      \[ m\frac{d^2x}{dt^2}+\gamma\frac{dx}{dt}+kx=0 \]
+      <p>に代入してください。\(\lambda\) が満たすべき条件を求めること。</p>
+      <div class="controls">
+        <button class="ctl-btn amber" data-hint>ヒントを表示</button>
+        <button class="ctl-btn" data-sol>解答を見る</button>
+      </div>
+      <div class="hint"><span class="hn">HINT 1</span><p>連鎖律より \(\dfrac{d}{dt}e^{\lambda t}=\lambda e^{\lambda t}\)。もう一度微分すれば \(\lambda^2e^{\lambda t}\) です。</p></div>
+      <div class="hint"><span class="hn">HINT 2</span><p>代入するとすべての項に \(e^{\lambda t}\) が共通して現れます。指数関数は決して 0 にならないので、割ってしまえます。</p></div>
+      <div class="sol">
+        <div class="step"><div class="sh"><span class="sn">1</span>微分する</div>
+        <div class="why">なぜ：指数関数は微分するたびに \(\lambda\) が前に出るだけで、形が変わりません。</div>
+        \[ \frac{dx}{dt}=\lambda e^{\lambda t},\qquad \frac{d^2x}{dt^2}=\lambda^2e^{\lambda t} \]
+        </div>
+        <div class="step"><div class="sh"><span class="sn">2</span>代入してくくり出す</div>
+        <div class="why">なぜ：3つの項すべてに \(e^{\lambda t}\) が共通しています。</div>
+        \[ \left(m\lambda^2+\gamma\lambda+k\right)e^{\lambda t}=0 \]
+        </div>
+        <div class="step"><div class="sh"><span class="sn">3</span>\(e^{\lambda t}\) で割る</div>
+        <div class="why">なぜ：指数関数は決して 0 になりません（1-2 のグラフを思い出してください）。だから両辺を割ることができます。</div>
+        \[ m\lambda^2+\gamma\lambda+k=0 \]
+        <p style="font-size:13.5px;color:var(--ink-faint);margin:6px 0 0"><strong>微分が1つも残っていません。</strong>残ったのは \(\lambda\) についての、ただの2次方程式です。4-2 で予告した「微分方程式が代数方程式になる」が、ここで現実になりました。</p></div>
+      </div>
+      </div>
+
+      <div class="box target"><span class="lab">特性方程式</span>
+      \[ m\lambda^2+\gamma\lambda+k=0 \]
+      <p>これを元の微分方程式の<strong>特性方程式</strong>といいます。解の公式で \(\lambda\) が2つ求まり、それぞれが \(e^{\lambda t}\) という解を与えます。</p>
+      <p style="margin-top:8px">解が2つ手に入れば、重ね合わせの原理から一般解が組み立てられます。</p>
+      \[ x(t)=C_1e^{\lambda_1t}+C_2e^{\lambda_2t} \]
+      <p>任意定数がちょうど2つ。2階の方程式として辻褄が合っています。</p></div>
+
+      <h3>計算ドリル（§02・全2問）</h3>
+
+      <div class="drill"><p><span class="qn">問1</span>\(\dfrac{d^2x}{dt^2}-5\dfrac{dx}{dt}+6x=0\) の一般解を求めよ。</p>
+      <div class="attempt" style="margin:10px 0 4px"><span class="lab">自分の答えを出してから</span>
+      <div class="controls"><button class="ctl-btn" data-sol>解答を見る</button></div>
+      <div class="sol"><p>特性方程式は \(\lambda^2-5\lambda+6=0\)。因数分解して \((\lambda-2)(\lambda-3)=0\) なので \(\lambda=2,\ 3\)。</p>
+      \[ x(t)=C_1e^{2t}+C_2e^{3t} \]
+      <p style="font-size:13.5px;color:var(--ink-faint)">検算：\(e^{2t}\) を代入すると \(4-10+6=0\) で確かに満たします。<strong>微分方程式の答えは代入で確かめられる</strong>ので、特性方程式を解き間違えていないかは、その場で分かります。</p></div></div></div>
+
+      <div class="drill"><p><span class="qn">問2</span>特性方程式を作るとき、両辺を \(e^{\lambda t}\) で割った。この操作が許されるのはなぜか。</p>
+      <div class="attempt" style="margin:10px 0 4px"><span class="lab">自分の答えを出してから</span>
+      <div class="controls"><button class="ctl-btn" data-sol>解答を見る</button></div>
+      <div class="sol"><p>0 で割ることはできませんが、<strong>指数関数は決して 0 にならない</strong>からです。\(e^{\lambda t}>0\) がすべての \(t\) で成り立つので、安心して割れます。</p>
+      <p style="font-size:13.5px;color:var(--ink-faint)">1-2 で \(e^x\) のグラフを描いたとき、どれだけ \(x\) を小さくしても曲線が横軸に触れなかったことを思い出してください。<strong>「0 に近づくが 0 にはならない」という性質が、ここで効いています。</strong>もし途中で 0 になる関数を仮定していたら、この割り算はできませんでした。</p></div></div></div>
+    </section>
+
+    <!-- §03 -->
+    <section id="d2">
+      <div class="sec-head"><span class="idx">§03</span><h2>単振動 — 虚数が振動を生む</h2></div>
+
+      <p>いちばん基本的な場合から始めます。抵抗がない（\(\gamma=0\)）ばねの運動です。</p>
+      \[ m\frac{d^2x}{dt^2}=-kx \]
+      <p>特性方程式は \(m\lambda^2+k=0\)、つまり</p>
+      \[ \lambda^2=-\frac{k}{m} \]
+      <p>ここで手が止まります。<strong>2乗して負になる数</strong>が必要だからです。実数の範囲では、そんな \(\lambda\) はありません。</p>
+      <p>しかし私たちは4章で、まさにそういう数を用意しました。\(\omega_0=\sqrt{k/m}\) と置けば</p>
+      \[ \lambda=\pm i\omega_0 \]
+      <p>特性方程式の解が<strong>純虚数</strong>になりました。一般解は</p>
+      \[ x(t)=C_1e^{i\omega_0t}+C_2e^{-i\omega_0t} \]
+      <p>ですが、このままでは物理量としておかしい。位置は実数のはずなのに、式に \(i\) が入っています。</p>
+
+      <div class="box target"><span class="lab">実数の解に直す</span>
+      <p>オイラーの公式で、2つの指数関数を書き直します。</p>
+      \[ e^{\pm i\omega_0t}=\cos\omega_0t\pm i\sin\omega_0t \]
+      <p>これを一般解に代入します。</p>
+      \[ \begin{aligned} x=\;&C_1(\cos\omega_0t+i\sin\omega_0t)\\ +\;&C_2(\cos\omega_0t-i\sin\omega_0t) \end{aligned} \]
+      <p>\(\cos\omega_0t\) が掛かっている項どうし、\(\sin\omega_0t\) が掛かっている項どうしをまとめます。</p>
+      \[ \begin{aligned} x=\;&(C_1+C_2)\cos\omega_0t\\ +\;&i(C_1-C_2)\sin\omega_0t \end{aligned} \]
+      <p>ここで、\(\cos\) と \(\sin\) の前にある<strong>かたまりを、新しい定数と見なします</strong>。</p>
+      \[ A=C_1+C_2,\qquad B=i(C_1-C_2) \]
+      <p>すると、式はすっきりした形になります。</p>
+      \[ x(t)=A\cos\omega_0t+B\sin\omega_0t \]
+      <p style="margin-top:8px">\(A,\ B\) が実数でありさえすれば、\(x\) は実数です。そして \(C_1\) と \(C_2\) を<strong>互いに共役な複素数</strong>に選べば、実際に \(A,\ B\) は実数になります（\(C_1+C_2\) は共役どうしの和なので実数、\(C_1-C_2\) は純虚数なので、\(i\) を掛ければ実数）。</p>
+      <p style="margin-top:8px">最後に三角関数の合成を使えば、1つの \(\cos\) にまとめられます。</p>
+      \[ x(t)=A_0\cos(\omega_0t+\varphi) \]
+      <p>ここで \(A_0=\sqrt{A^2+B^2}\) が振幅、\(\varphi\) が位相です。</p>
+      <p style="margin-top:8px"><strong>虚数から出発して、振動にたどり着きました。</strong></p></div>
+
+      <p>4-2 で「回る点の影が振動」という見方を作りましたが、それがそのまま現れた形です。特性方程式の解が虚軸の上にあることと、解が振動することは、同じ事実の言い換えになっています。</p>
+
+      <figure class="fig">
+        <svg viewBox="0 0 640 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="単振動の波形">
+          <line x1="60" y1="140" x2="600" y2="140" stroke="var(--ink-faint)" stroke-width="1.3"/>
+          <polygon points="608,140 594,134 594,146" fill="var(--ink-faint)"/>
+          <line x1="90" y1="230" x2="90" y2="45" stroke="var(--ink-faint)" stroke-width="1.3"/>
+          <polygon points="90,37 84,51 96,51" fill="var(--ink-faint)"/>
+          <text x="604" y="160" font-size="12" fill="var(--ink)" font-style="italic">t</text>
+          <text x="70" y="48" font-size="12" fill="var(--ink)" font-style="italic">x</text>
+          <line x1="90" y1="70" x2="560" y2="70" stroke="var(--line)" stroke-width="1" stroke-dasharray="4 4"/>
+          <line x1="90" y1="210" x2="560" y2="210" stroke="var(--line)" stroke-width="1" stroke-dasharray="4 4"/>
+          <polyline points="90.0,70.0 92.0,70.2 94.0,70.7 96.0,71.5 98.0,72.6 100.0,74.0 102.0,75.8 104.0,77.8 106.0,80.2 108.0,82.8 110.0,85.7 112.0,88.8 114.0,92.2 116.0,95.8 118.0,99.6 120.0,103.6 122.0,107.8 124.0,112.1 126.0,116.6 128.0,121.1 130.0,125.8 132.0,130.5 134.0,135.2 136.0,140.0 138.0,144.8 140.0,149.5 142.0,154.2 144.0,158.9 146.0,163.4 148.0,167.9 150.0,172.2 152.0,176.4 154.0,180.4 156.0,184.2 158.0,187.8 160.0,191.2 162.0,194.3 164.0,197.2 166.0,199.8 168.0,202.2 170.0,204.2 172.0,206.0 174.0,207.4 176.0,208.5 178.0,209.3 180.0,209.8 182.0,210.0 184.0,209.8 186.0,209.3 188.0,208.5 190.0,207.4 192.0,206.0 194.0,204.2 196.0,202.2 198.0,199.8 200.0,197.2 202.0,194.3 204.0,191.2 206.0,187.8 208.0,184.2 210.0,180.4 212.0,176.4 214.0,172.2 216.0,167.9 218.0,163.4 220.0,158.9 222.0,154.2 224.0,149.5 226.0,144.8 228.0,140.0 230.0,135.2 232.0,130.5 234.0,125.8 236.0,121.1 238.0,116.6 240.0,112.1 242.0,107.8 244.0,103.6 246.0,99.6 248.0,95.8 250.0,92.2 252.0,88.8 254.0,85.7 256.0,82.8 258.0,80.2 260.0,77.8 262.0,75.8 264.0,74.0 266.0,72.6 268.0,71.5 270.0,70.7 272.0,70.2 274.0,70.0 276.0,70.2 278.0,70.7 280.0,71.5 282.0,72.6 284.0,74.0 286.0,75.8 288.0,77.8 290.0,80.2 292.0,82.8 294.0,85.7 296.0,88.8 298.0,92.2 300.0,95.8 302.0,99.6 304.0,103.6 306.0,107.8 308.0,112.1 310.0,116.6 312.0,121.1 314.0,125.8 316.0,130.5 318.0,135.2 320.0,140.0 322.0,144.8 324.0,149.5 326.0,154.2 328.0,158.9 330.0,163.4 332.0,167.9 334.0,172.2 336.0,176.4 338.0,180.4 340.0,184.2 342.0,187.8 344.0,191.2 346.0,194.3 348.0,197.2 350.0,199.8 352.0,202.2 354.0,204.2 356.0,206.0 358.0,207.4 360.0,208.5 362.0,209.3 364.0,209.8 366.0,210.0 368.0,209.8 370.0,209.3 372.0,208.5 374.0,207.4 376.0,206.0 378.0,204.2 380.0,202.2 382.0,199.8 384.0,197.2 386.0,194.3 388.0,191.2 390.0,187.8 392.0,184.2 394.0,180.4 396.0,176.4 398.0,172.2 400.0,167.9 402.0,163.4 404.0,158.9 406.0,154.2 408.0,149.5 410.0,144.8 412.0,140.0 414.0,135.2 416.0,130.5 418.0,125.8 420.0,121.1 422.0,116.6 424.0,112.1 426.0,107.8 428.0,103.6 430.0,99.6 432.0,95.8 434.0,92.2 436.0,88.8 438.0,85.7 440.0,82.8 442.0,80.2 444.0,77.8 446.0,75.8 448.0,74.0 450.0,72.6 452.0,71.5 454.0,70.7 456.0,70.2 458.0,70.0 460.0,70.2 462.0,70.7 464.0,71.5 466.0,72.6 468.0,74.0 470.0,75.8 472.0,77.8 474.0,80.2 476.0,82.8 478.0,85.7 480.0,88.8 482.0,92.2 484.0,95.8 486.0,99.6 488.0,103.6 490.0,107.8 492.0,112.1 494.0,116.6 496.0,121.1 498.0,125.8 500.0,130.5 502.0,135.2 504.0,140.0 506.0,144.8 508.0,149.5 510.0,154.2 512.0,158.9 514.0,163.4 516.0,167.9 518.0,172.2 520.0,176.4 522.0,180.4 524.0,184.2 526.0,187.8 528.0,191.2 530.0,194.3 532.0,197.2 534.0,199.8 536.0,202.2 538.0,204.2 540.0,206.0 542.0,207.4 544.0,208.5 546.0,209.3 548.0,209.8 550.0,210.0 552.0,209.8 554.0,209.3 556.0,208.5 558.0,207.4 560.0,206.0 562.0,204.2 564.0,202.2 566.0,199.8" fill="none" stroke="var(--accent)" stroke-width="2.8"/>
+          <line x1="150" y1="70" x2="150" y2="140" stroke="var(--good)" stroke-width="1.8"/>
+          <polygon points="150,68 146,80 154,80" fill="var(--good)"/>
+          <polygon points="150,142 146,130 154,130" fill="var(--good)"/>
+          <text x="158" y="108" font-size="12.5" font-weight="500" fill="var(--good)">振幅 A</text>
+          <line x1="90" y1="234" x2="274" y2="234" stroke="var(--amber)" stroke-width="1.8"/>
+          <polygon points="88,234 100,230 100,238" fill="var(--amber)"/>
+          <polygon points="276,234 264,230 264,238" fill="var(--amber)"/>
+          <text x="182" y="228" font-size="12.5" font-weight="500" fill="var(--amber)" text-anchor="middle">周期 T</text>
+          <text x="470" y="60" font-size="12.5" font-weight="500" fill="var(--accent-deep)">x = A cos(ω₀t + φ)</text>
+        </svg>
+        <figcaption>抵抗のないばねの運動は、いつまでも同じ振幅で続く<strong>単振動</strong>になります。角振動数は \(\omega_0=\sqrt{k/m}\) で、ばねの硬さ \(k\) と質量 \(m\) だけで決まります。<strong>振幅 \(A\) はどこにも入っていません</strong>——大きく揺らしても小さく揺らしても、1往復にかかる時間は変わらない。これを<strong>等時性</strong>といい、振り子時計が時計として使える理由でもあります。</figcaption>
+      </figure>
+      <div class="box teach"><span class="lab">角振動数に振幅が入らない</span>
+      <p>\(\omega_0=\sqrt{k/m}\) を見てください。ばねの強さ \(k\) と質量 \(m\) だけで決まり、<strong>どれだけ大きく揺らしたかは関係ありません</strong>。</p>
+      <p style="margin-top:8px">周期は \(T=\dfrac{2\pi}{\omega_0}=2\pi\sqrt{\dfrac mk}\)。大きく振れても小さく振れても、1往復にかかる時間は同じです。これを<strong>等時性</strong>といいます。</p>
+      <p style="margin-top:8px">振り子がこの性質を持つのは、\(\sin\theta\simeq\theta\) という近似（3-1）が効く小さな振れ角に限られます。振れ角が大きくなると等時性は崩れ、周期が長くなります。<strong>「振り子は等時性を持つ」という有名な事実も、近似の上に成り立っている</strong>わけです。</p></div>
+
+      <h3>計算ドリル（§03・全2問）</h3>
+
+      <div class="drill"><p><span class="qn">問1</span>単振動の一般解 \(x=A\cos\omega_0t+B\sin\omega_0t\) について、初期条件 \(x(0)=x_0\)、\(\dot x(0)=0\) のもとで \(A,\ B\) を決めよ。</p>
+      <div class="attempt" style="margin:10px 0 4px"><span class="lab">自分の答えを出してから</span>
+      <div class="controls"><button class="ctl-btn" data-sol>解答を見る</button></div>
+      <div class="sol"><p>\(t=0\) を代入すると \(x(0)=A=x_0\)。次に微分します。</p>
+      \[ \dot x=-A\omega_0\sin\omega_0t+B\omega_0\cos\omega_0t \]
+      <p>\(t=0\) を入れると \(\dot x(0)=B\omega_0=0\)、つまり \(B=0\)。したがって</p>
+      \[ x(t)=x_0\cos\omega_0t \]
+      <p style="font-size:13.5px;color:var(--ink-faint)">「静かに手を離す」という状況です。\(\cos\) だけが残るのは、\(t=0\) で最大変位にいて速度が 0 だから。<strong>初期条件が2つあって初めて、定数が2つとも決まる</strong>——2階の方程式であることが、ここで具体的に効いています。</p></div></div></div>
+
+      <div class="drill"><p><span class="qn">問2</span>ばねの強さを4倍にすると、振動の周期はどう変わるか。質量を4倍にした場合はどうか。</p>
+      <div class="attempt" style="margin:10px 0 4px"><span class="lab">自分の答えを出してから</span>
+      <div class="controls"><button class="ctl-btn" data-sol>解答を見る</button></div>
+      <div class="sol"><p>周期は \(T=2\pi\sqrt{m/k}\) です。</p>
+      <p><strong>\(k\) を4倍</strong>：分母が4倍になるので \(T\) は \(\dfrac12\) 倍。硬いばねほど速く振動します。</p>
+      <p><strong>\(m\) を4倍</strong>：分子が4倍になるので \(T\) は2倍。重いほどゆっくり振動します。</p>
+      <p style="font-size:13.5px;color:var(--ink-faint)">どちらも平方根の中にあるので、<strong>4倍にしても周期は2倍（または半分）にしかなりません</strong>。周期を2倍にしたければ質量を4倍にする必要がある、ということです。平方根が入る量を扱うときの感覚として、覚えておくと役に立ちます。</p></div></div></div>
+    </section>
+
+    <!-- §04 -->
+    <section id="d3">
+      <div class="sec-head"><span class="idx">§04</span><h2>減衰振動 — 判別式が運動の質を決める</h2></div>
+
+      <p>現実の振動は、いつまでも続きません。空気や摩擦が働いて、やがて止まります。これを方程式に入れるところから始めます。</p>
+
+      <h3>抵抗を含めて運動方程式を立てる</h3>
+      <p>物体に働く力は2つです。</p>
+      <ul>
+        <li><strong>ばねの復元力</strong>：\(-kx\)。伸びた向きと逆に引き戻すので、符号はマイナス</li>
+        <li><strong>抵抗力</strong>：\(-\gamma\dfrac{dx}{dt}\)。速度に比例し、<strong>運動を妨げる向き</strong>に働くので、こちらもマイナス（\(\gamma>0\) は抵抗の強さを表す定数）</li>
+      </ul>
+      <p>抵抗が速度に比例するというのは、5-1 の空気抵抗で使ったのと同じ仮定です。物体がゆっくり動くときによく成り立ちます。この2つを足したものが、運動方程式の右辺になります。</p>
+      \[ m\frac{d^2x}{dt^2}=-kx-\gamma\frac{dx}{dt} \]
+      <p>右辺をすべて左辺に移せば、§01 で挙げた形になります。</p>
+      \[ m\frac{d^2x}{dt^2}+\gamma\frac{dx}{dt}+kx=0 \]
+      <p>\(\gamma=0\) と置けば §03 の単振動に戻ることも確かめておいてください。<strong>抵抗の項が増えただけで、骨格は同じ</strong>です。</p>
+
+      <h3>特性方程式を解く</h3>
+      <p>§02 で作った手順をそのまま使います。\(x=e^{\lambda t}\) と仮定して代入すれば、特性方程式は</p>
+      \[ m\lambda^2+\gamma\lambda+k=0 \]
+      <p>今度は \(\lambda\) の1次の項があるので、因数分解ではなく解の公式を使います。</p>
+      \[ \lambda=\frac{-\gamma\pm\sqrt{\gamma^2-4mk}}{2m} \]
+      <p>ここで決定的なのが<strong>ルートの中身の符号</strong>です。2次方程式の判別式が、そのまま運動の性質を決めます。</p>
+
+      <div class="box target"><span class="lab">3つの場合</span>
+      <div class="table-scroll"><table class="mini-table">
+        <tr><th style="width:22%">判別式</th><th style="width:22%">\(\lambda\)</th><th style="width:20%">名前</th><th>運動</th></tr>
+        <tr><td>\(\gamma^2<4mk\)</td><td>複素数（共役な2つ）</td><td>減衰振動</td><td>振動しながら、振幅が減っていく</td></tr>
+        <tr><td>\(\gamma^2=4mk\)</td><td>実数（重解）</td><td>臨界減衰</td><td>振動せずに、最も速く静止位置へ戻る</td></tr>
+        <tr><td>\(\gamma^2>4mk\)</td><td>実数（異なる2つ）</td><td>過減衰</td><td>振動せずに、ゆっくり戻る</td></tr>
+      </table></div></div>
+
+      <figure class="fig">
+        <svg viewBox="0 0 640 280" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="減衰振動・臨界減衰・過減衰の比較">
+          <line x1="60" y1="150" x2="590" y2="150" stroke="var(--ink-faint)" stroke-width="1.3"/>
+          <polygon points="598,150 584,144 584,156" fill="var(--ink-faint)"/>
+          <line x1="90" y1="235" x2="90" y2="45" stroke="var(--ink-faint)" stroke-width="1.3"/>
+          <polygon points="90,37 84,51 96,51" fill="var(--ink-faint)"/>
+          <text x="594" y="170" font-size="12" fill="var(--ink)" font-style="italic">t</text>
+          <text x="70" y="48" font-size="12" fill="var(--ink)" font-style="italic">x</text>
+          <line x1="84" y1="62" x2="96" y2="62" stroke="var(--ink-faint)" stroke-width="1"/>
+          <text x="80" y="66" font-size="11" fill="var(--ink-faint)" text-anchor="end">x₀</text>
+          <polyline points="90.0,62.0 91.2,62.0 92.3,62.2 93.5,62.4 94.6,62.6 95.8,63.0 96.9,63.4 98.0,63.9 99.2,64.5 100.3,65.1 101.5,65.8 102.7,66.6 103.8,67.5 105.0,68.4 106.1,69.4 107.2,70.4 108.4,71.5 109.5,72.7 110.7,73.9 111.9,75.2 113.0,76.6 114.2,78.0 115.3,79.5 116.5,81.0 117.6,82.5 118.8,84.1 119.9,85.8 121.1,87.5 122.2,89.2 123.4,91.0 124.5,92.8 125.7,94.7 126.8,96.6 128.0,98.5 129.1,100.5 130.2,102.4 131.4,104.4 132.6,106.5 133.7,108.5 134.9,110.6 136.0,112.7 137.2,114.8 138.3,117.0 139.5,119.1 140.6,121.3 141.8,123.4 142.9,125.6 144.1,127.8 145.2,129.9 146.4,132.1 147.5,134.3 148.7,136.5 149.8,138.6 151.0,140.8 152.1,142.9 153.3,145.1 154.4,147.2 155.6,149.3 156.7,151.4 157.9,153.5 159.0,155.5 160.2,157.6 161.3,159.6 162.5,161.6 163.6,163.5 164.8,165.5 165.9,167.4 167.1,169.3 168.2,171.1 169.4,172.9 170.5,174.7 171.7,176.4 172.8,178.1 174.0,179.8 175.1,181.4 176.3,183.0 177.4,184.5 178.6,186.0 179.7,187.5 180.9,188.9 182.0,190.2 183.2,191.6 184.3,192.8 185.5,194.0 186.6,195.2 187.8,196.3 188.9,197.4 190.1,198.4 191.2,199.4 192.4,200.3 193.5,201.1 194.7,202.0 195.8,202.7 197.0,203.4 198.1,204.1 199.3,204.7 200.4,205.2 201.6,205.7 202.7,206.1 203.9,206.5 205.0,206.8 206.2,207.1 207.3,207.3 208.5,207.5 209.6,207.6 210.8,207.7 211.9,207.7 213.1,207.6 214.2,207.5 215.4,207.4 216.5,207.2 217.7,206.9 218.8,206.6 220.0,206.3 221.1,205.9 222.3,205.5 223.4,205.0 224.6,204.5 225.7,203.9 226.9,203.3 228.0,202.6 229.2,201.9 230.3,201.2 231.5,200.4 232.6,199.6 233.8,198.7 234.9,197.8 236.1,196.9 237.2,195.9 238.4,194.9 239.5,193.9 240.7,192.8 241.8,191.7 243.0,190.6 244.1,189.4 245.3,188.3 246.4,187.1 247.6,185.8 248.7,184.6 249.9,183.3 251.0,182.0 252.2,180.7 253.3,179.4 254.5,178.1 255.6,176.7 256.8,175.3 257.9,174.0 259.1,172.6 260.2,171.2 261.4,169.8 262.5,168.4 263.7,166.9 264.8,165.5 266.0,164.1 267.1,162.7 268.3,161.2 269.4,159.8 270.6,158.4 271.7,157.0 272.9,155.6 274.0,154.2 275.2,152.8 276.3,151.4 277.5,150.0 278.6,148.6 279.8,147.3 280.9,145.9 282.1,144.6 283.2,143.3 284.4,142.0 285.5,140.7 286.7,139.4 287.8,138.2 289.0,137.0 290.1,135.8 291.3,134.6 292.4,133.4 293.6,132.3 294.7,131.2 295.9,130.1 297.0,129.1 298.2,128.0 299.3,127.0 300.5,126.1 301.6,125.1 302.8,124.2 303.9,123.3 305.1,122.5 306.2,121.7 307.4,120.9 308.5,120.1 309.7,119.4 310.8,118.7 312.0,118.1 313.1,117.4 314.3,116.9 315.4,116.3 316.6,115.8 317.7,115.3 318.9,114.9 320.0,114.4 321.2,114.1 322.3,113.7 323.5,113.4 324.6,113.1 325.8,112.9 326.9,112.7 328.0,112.5 329.2,112.4 330.3,112.3 331.5,112.2 332.6,112.2 333.8,112.2 334.9,112.3 336.1,112.3 337.2,112.4 338.4,112.6 339.5,112.7 340.7,113.0 341.8,113.2 343.0,113.5 344.1,113.8 345.3,114.1 346.4,114.4 347.6,114.8 348.7,115.2 349.9,115.7 351.0,116.1 352.2,116.6 353.3,117.2 354.5,117.7 355.6,118.3 356.8,118.9 357.9,119.5 359.1,120.1 360.2,120.8 361.4,121.5 362.5,122.2 363.7,122.9 364.8,123.7 366.0,124.4 367.1,125.2 368.3,126.0 369.4,126.8 370.6,127.6 371.7,128.4 372.9,129.3 374.0,130.2 375.2,131.0 376.3,131.9 377.5,132.8 378.6,133.7 379.8,134.6 380.9,135.5 382.1,136.4 383.2,137.4 384.4,138.3 385.5,139.2 386.7,140.1 387.8,141.1 389.0,142.0 390.1,142.9 391.3,143.9 392.4,144.8 393.6,145.7 394.7,146.7 395.9,147.6 397.0,148.5 398.2,149.4 399.3,150.3 400.5,151.2 401.6,152.1 402.8,153.0 403.9,153.8 405.1,154.7 406.2,155.5 407.4,156.4 408.5,157.2 409.7,158.0 410.8,158.8 412.0,159.6 413.1,160.4 414.3,161.1 415.4,161.8 416.6,162.6 417.7,163.3 418.9,163.9 420.0,164.6 421.2,165.3 422.3,165.9 423.5,166.5 424.6,167.1 425.8,167.7 426.9,168.2 428.1,168.7 429.2,169.3 430.4,169.7 431.5,170.2 432.7,170.6 433.8,171.1 435.0,171.5 436.1,171.8 437.3,172.2 438.4,172.5 439.6,172.8 440.7,173.1 441.9,173.4 443.0,173.6 444.2,173.8 445.3,174.0 446.5,174.2 447.6,174.4 448.8,174.5 449.9,174.6 451.1,174.7 452.2,174.7 453.4,174.8 454.5,174.8 455.7,174.8 456.8,174.7 458.0,174.7 459.1,174.6 460.3,174.5 461.4,174.4 462.6,174.2 463.7,174.1 464.9,173.9 466.0,173.7 467.2,173.5 468.3,173.2 469.5,173.0 470.6,172.7 471.8,172.4 472.9,172.1 474.1,171.7 475.2,171.4 476.4,171.0 477.5,170.7 478.7,170.3 479.8,169.8 481.0,169.4 482.1,169.0 483.3,168.5 484.4,168.1 485.6,167.6 486.7,167.1 487.9,166.6 489.0,166.1 490.2,165.6 491.3,165.0 492.5,164.5 493.6,163.9 494.8,163.4 495.9,162.8 497.1,162.2 498.2,161.7 499.4,161.1 500.5,160.5 501.7,159.9 502.8,159.3 504.0,158.7 505.1,158.1 506.3,157.5 507.4,156.9 508.6,156.3 509.7,155.6 510.9,155.0 512.0,154.4 513.2,153.8 514.3,153.2 515.5,152.6 516.6,152.0 517.8,151.4 518.9,150.8 520.1,150.2 521.2,149.6 522.4,149.0 523.5,148.4 524.7,147.9 525.8,147.3 527.0,146.7 528.1,146.2 529.3,145.6 530.4,145.1 531.6,144.6 532.7,144.1 533.9,143.5 535.0,143.0 536.2,142.6 537.3,142.1 538.5,141.6 539.6,141.2 540.8,140.7 541.9,140.3 543.1,139.9 544.2,139.4 545.4,139.1 546.5,138.7 547.7,138.3 548.8,137.9 550.0,137.6" fill="none" stroke="var(--accent)" stroke-width="2.6"/>
+          <polyline points="90.0,62.0 91.2,62.0 92.3,62.2 93.5,62.3 94.6,62.6 95.8,62.9 96.9,63.3 98.0,63.7 99.2,64.2 100.3,64.7 101.5,65.3 102.7,65.9 103.8,66.5 105.0,67.2 106.1,67.9 107.2,68.6 108.4,69.4 109.5,70.2 110.7,71.0 111.9,71.9 113.0,72.7 114.2,73.6 115.3,74.5 116.5,75.4 117.6,76.3 118.8,77.3 119.9,78.2 121.1,79.1 122.2,80.1 123.4,81.1 124.5,82.0 125.7,83.0 126.8,84.0 128.0,84.9 129.1,85.9 130.2,86.9 131.4,87.8 132.6,88.8 133.7,89.8 134.9,90.7 136.0,91.7 137.2,92.6 138.3,93.6 139.5,94.5 140.6,95.5 141.8,96.4 142.9,97.3 144.1,98.2 145.2,99.1 146.4,100.0 147.5,100.9 148.7,101.8 149.8,102.7 151.0,103.5 152.1,104.4 153.3,105.2 154.4,106.0 155.6,106.9 156.7,107.7 157.9,108.5 159.0,109.3 160.2,110.1 161.3,110.8 162.5,111.6 163.6,112.3 164.8,113.1 165.9,113.8 167.1,114.5 168.2,115.2 169.4,115.9 170.5,116.6 171.7,117.3 172.8,117.9 174.0,118.6 175.1,119.2 176.3,119.9 177.4,120.5 178.6,121.1 179.7,121.7 180.9,122.3 182.0,122.9 183.2,123.4 184.3,124.0 185.5,124.5 186.6,125.1 187.8,125.6 188.9,126.1 190.1,126.6 191.2,127.1 192.4,127.6 193.5,128.1 194.7,128.6 195.8,129.1 197.0,129.5 198.1,130.0 199.3,130.4 200.4,130.8 201.6,131.3 202.7,131.7 203.9,132.1 205.0,132.5 206.2,132.9 207.3,133.2 208.5,133.6 209.6,134.0 210.8,134.4 211.9,134.7 213.1,135.0 214.2,135.4 215.4,135.7 216.5,136.0 217.7,136.4 218.8,136.7 220.0,137.0 221.1,137.3 222.3,137.6 223.4,137.9 224.6,138.1 225.7,138.4 226.9,138.7 228.0,138.9 229.2,139.2 230.3,139.4 231.5,139.7 232.6,139.9 233.8,140.2 234.9,140.4 236.1,140.6 237.2,140.8 238.4,141.1 239.5,141.3 240.7,141.5 241.8,141.7 243.0,141.9 244.1,142.1 245.3,142.3 246.4,142.4 247.6,142.6 248.7,142.8 249.9,143.0 251.0,143.1 252.2,143.3 253.3,143.5 254.5,143.6 255.6,143.8 256.8,143.9 257.9,144.1 259.1,144.2 260.2,144.4 261.4,144.5 262.5,144.6 263.7,144.8 264.8,144.9 266.0,145.0 267.1,145.1 268.3,145.2 269.4,145.4 270.6,145.5 271.7,145.6 272.9,145.7 274.0,145.8 275.2,145.9 276.3,146.0 277.5,146.1 278.6,146.2 279.8,146.3 280.9,146.4 282.1,146.5 283.2,146.6 284.4,146.6 285.5,146.7 286.7,146.8 287.8,146.9 289.0,147.0 290.1,147.0 291.3,147.1 292.4,147.2 293.6,147.3 294.7,147.3 295.9,147.4 297.0,147.5 298.2,147.5 299.3,147.6 300.5,147.6 301.6,147.7 302.8,147.8 303.9,147.8 305.1,147.9 306.2,147.9 307.4,148.0 308.5,148.0 309.7,148.1 310.8,148.1 312.0,148.2 313.1,148.2 314.3,148.3 315.4,148.3 316.6,148.4 317.7,148.4 318.9,148.4 320.0,148.5 321.2,148.5 322.3,148.5 323.5,148.6 324.6,148.6 325.8,148.7 326.9,148.7 328.0,148.7 329.2,148.8 330.3,148.8 331.5,148.8 332.6,148.9 333.8,148.9 334.9,148.9 336.1,148.9 337.2,149.0 338.4,149.0 339.5,149.0 340.7,149.0 341.8,149.1 343.0,149.1 344.1,149.1 345.3,149.1 346.4,149.2 347.6,149.2 348.7,149.2 349.9,149.2 351.0,149.2 352.2,149.3 353.3,149.3 354.5,149.3 355.6,149.3 356.8,149.3 357.9,149.4 359.1,149.4 360.2,149.4 361.4,149.4 362.5,149.4 363.7,149.4 364.8,149.4 366.0,149.5 367.1,149.5 368.3,149.5 369.4,149.5 370.6,149.5 371.7,149.5 372.9,149.5 374.0,149.6 375.2,149.6 376.3,149.6 377.5,149.6 378.6,149.6 379.8,149.6 380.9,149.6 382.1,149.6 383.2,149.6 384.4,149.6 385.5,149.7 386.7,149.7 387.8,149.7 389.0,149.7 390.1,149.7 391.3,149.7 392.4,149.7 393.6,149.7 394.7,149.7 395.9,149.7 397.0,149.7 398.2,149.7 399.3,149.8 400.5,149.8 401.6,149.8 402.8,149.8 403.9,149.8 405.1,149.8 406.2,149.8 407.4,149.8 408.5,149.8 409.7,149.8 410.8,149.8 412.0,149.8 413.1,149.8 414.3,149.8 415.4,149.8 416.6,149.8 417.7,149.8 418.9,149.8 420.0,149.8 421.2,149.8 422.3,149.9 423.5,149.9 424.6,149.9 425.8,149.9 426.9,149.9 428.1,149.9 429.2,149.9 430.4,149.9 431.5,149.9 432.7,149.9 433.8,149.9 435.0,149.9 436.1,149.9 437.3,149.9 438.4,149.9 439.6,149.9 440.7,149.9 441.9,149.9 443.0,149.9 444.2,149.9 445.3,149.9 446.5,149.9 447.6,149.9 448.8,149.9 449.9,149.9 451.1,149.9 452.2,149.9 453.4,149.9 454.5,149.9 455.7,149.9 456.8,149.9 458.0,149.9 459.1,149.9 460.3,149.9 461.4,149.9 462.6,149.9 463.7,149.9 464.9,149.9 466.0,149.9 467.2,149.9 468.3,150.0 469.5,150.0 470.6,150.0 471.8,150.0 472.9,150.0 474.1,150.0 475.2,150.0 476.4,150.0 477.5,150.0 478.7,150.0 479.8,150.0 481.0,150.0 482.1,150.0 483.3,150.0 484.4,150.0 485.6,150.0 486.7,150.0 487.9,150.0 489.0,150.0 490.2,150.0 491.3,150.0 492.5,150.0 493.6,150.0 494.8,150.0 495.9,150.0 497.1,150.0 498.2,150.0 499.4,150.0 500.5,150.0 501.7,150.0 502.8,150.0 504.0,150.0 505.1,150.0 506.3,150.0 507.4,150.0 508.6,150.0 509.7,150.0 510.9,150.0 512.0,150.0 513.2,150.0 514.3,150.0 515.5,150.0 516.6,150.0 517.8,150.0 518.9,150.0 520.1,150.0 521.2,150.0 522.4,150.0 523.5,150.0 524.7,150.0 525.8,150.0 527.0,150.0 528.1,150.0 529.3,150.0 530.4,150.0 531.6,150.0 532.7,150.0 533.9,150.0 535.0,150.0 536.2,150.0 537.3,150.0 538.5,150.0 539.6,150.0 540.8,150.0 541.9,150.0 543.1,150.0 544.2,150.0 545.4,150.0 546.5,150.0 547.7,150.0 548.8,150.0 550.0,150.0" fill="none" stroke="var(--good)" stroke-width="2.6"/>
+          <polyline points="90.0,62.0 91.2,62.0 92.3,62.1 93.5,62.3 94.6,62.6 95.8,62.8 96.9,63.2 98.0,63.6 99.2,64.0 100.3,64.4 101.5,64.9 102.7,65.4 103.8,65.9 105.0,66.5 106.1,67.1 107.2,67.6 108.4,68.2 109.5,68.9 110.7,69.5 111.9,70.1 113.0,70.8 114.2,71.4 115.3,72.1 116.5,72.7 117.6,73.4 118.8,74.1 119.9,74.7 121.1,75.4 122.2,76.1 123.4,76.7 124.5,77.4 125.7,78.1 126.8,78.7 128.0,79.4 129.1,80.1 130.2,80.7 131.4,81.4 132.6,82.0 133.7,82.7 134.9,83.3 136.0,83.9 137.2,84.6 138.3,85.2 139.5,85.8 140.6,86.5 141.8,87.1 142.9,87.7 144.1,88.3 145.2,88.9 146.4,89.5 147.5,90.1 148.7,90.7 149.8,91.2 151.0,91.8 152.1,92.4 153.3,93.0 154.4,93.5 155.6,94.1 156.7,94.6 157.9,95.2 159.0,95.7 160.2,96.3 161.3,96.8 162.5,97.3 163.6,97.8 164.8,98.3 165.9,98.9 167.1,99.4 168.2,99.9 169.4,100.4 170.5,100.9 171.7,101.3 172.8,101.8 174.0,102.3 175.1,102.8 176.3,103.2 177.4,103.7 178.6,104.2 179.7,104.6 180.9,105.1 182.0,105.5 183.2,106.0 184.3,106.4 185.5,106.8 186.6,107.3 187.8,107.7 188.9,108.1 190.1,108.5 191.2,108.9 192.4,109.3 193.5,109.8 194.7,110.2 195.8,110.5 197.0,110.9 198.1,111.3 199.3,111.7 200.4,112.1 201.6,112.5 202.7,112.8 203.9,113.2 205.0,113.6 206.2,113.9 207.3,114.3 208.5,114.7 209.6,115.0 210.8,115.4 211.9,115.7 213.1,116.0 214.2,116.4 215.4,116.7 216.5,117.0 217.7,117.4 218.8,117.7 220.0,118.0 221.1,118.3 222.3,118.7 223.4,119.0 224.6,119.3 225.7,119.6 226.9,119.9 228.0,120.2 229.2,120.5 230.3,120.8 231.5,121.1 232.6,121.4 233.8,121.6 234.9,121.9 236.1,122.2 237.2,122.5 238.4,122.7 239.5,123.0 240.7,123.3 241.8,123.6 243.0,123.8 244.1,124.1 245.3,124.3 246.4,124.6 247.6,124.8 248.7,125.1 249.9,125.3 251.0,125.6 252.2,125.8 253.3,126.1 254.5,126.3 255.6,126.5 256.8,126.8 257.9,127.0 259.1,127.2 260.2,127.5 261.4,127.7 262.5,127.9 263.7,128.1 264.8,128.3 266.0,128.6 267.1,128.8 268.3,129.0 269.4,129.2 270.6,129.4 271.7,129.6 272.9,129.8 274.0,130.0 275.2,130.2 276.3,130.4 277.5,130.6 278.6,130.8 279.8,131.0 280.9,131.2 282.1,131.4 283.2,131.5 284.4,131.7 285.5,131.9 286.7,132.1 287.8,132.3 289.0,132.4 290.1,132.6 291.3,132.8 292.4,133.0 293.6,133.1 294.7,133.3 295.9,133.5 297.0,133.6 298.2,133.8 299.3,134.0 300.5,134.1 301.6,134.3 302.8,134.4 303.9,134.6 305.1,134.7 306.2,134.9 307.4,135.0 308.5,135.2 309.7,135.3 310.8,135.5 312.0,135.6 313.1,135.8 314.3,135.9 315.4,136.1 316.6,136.2 317.7,136.3 318.9,136.5 320.0,136.6 321.2,136.7 322.3,136.9 323.5,137.0 324.6,137.1 325.8,137.3 326.9,137.4 328.0,137.5 329.2,137.6 330.3,137.8 331.5,137.9 332.6,138.0 333.8,138.1 334.9,138.2 336.1,138.4 337.2,138.5 338.4,138.6 339.5,138.7 340.7,138.8 341.8,138.9 343.0,139.0 344.1,139.1 345.3,139.2 346.4,139.4 347.6,139.5 348.7,139.6 349.9,139.7 351.0,139.8 352.2,139.9 353.3,140.0 354.5,140.1 355.6,140.2 356.8,140.3 357.9,140.4 359.1,140.5 360.2,140.6 361.4,140.7 362.5,140.7 363.7,140.8 364.8,140.9 366.0,141.0 367.1,141.1 368.3,141.2 369.4,141.3 370.6,141.4 371.7,141.5 372.9,141.5 374.0,141.6 375.2,141.7 376.3,141.8 377.5,141.9 378.6,142.0 379.8,142.0 380.9,142.1 382.1,142.2 383.2,142.3 384.4,142.3 385.5,142.4 386.7,142.5 387.8,142.6 389.0,142.6 390.1,142.7 391.3,142.8 392.4,142.9 393.6,142.9 394.7,143.0 395.9,143.1 397.0,143.1 398.2,143.2 399.3,143.3 400.5,143.3 401.6,143.4 402.8,143.5 403.9,143.5 405.1,143.6 406.2,143.7 407.4,143.7 408.5,143.8 409.7,143.9 410.8,143.9 412.0,144.0 413.1,144.0 414.3,144.1 415.4,144.2 416.6,144.2 417.7,144.3 418.9,144.3 420.0,144.4 421.2,144.4 422.3,144.5 423.5,144.6 424.6,144.6 425.8,144.7 426.9,144.7 428.1,144.8 429.2,144.8 430.4,144.9 431.5,144.9 432.7,145.0 433.8,145.0 435.0,145.1 436.1,145.1 437.3,145.2 438.4,145.2 439.6,145.3 440.7,145.3 441.9,145.4 443.0,145.4 444.2,145.5 445.3,145.5 446.5,145.5 447.6,145.6 448.8,145.6 449.9,145.7 451.1,145.7 452.2,145.8 453.4,145.8 454.5,145.8 455.7,145.9 456.8,145.9 458.0,146.0 459.1,146.0 460.3,146.0 461.4,146.1 462.6,146.1 463.7,146.2 464.9,146.2 466.0,146.2 467.2,146.3 468.3,146.3 469.5,146.3 470.6,146.4 471.8,146.4 472.9,146.5 474.1,146.5 475.2,146.5 476.4,146.6 477.5,146.6 478.7,146.6 479.8,146.7 481.0,146.7 482.1,146.7 483.3,146.8 484.4,146.8 485.6,146.8 486.7,146.9 487.9,146.9 489.0,146.9 490.2,147.0 491.3,147.0 492.5,147.0 493.6,147.0 494.8,147.1 495.9,147.1 497.1,147.1 498.2,147.2 499.4,147.2 500.5,147.2 501.7,147.2 502.8,147.3 504.0,147.3 505.1,147.3 506.3,147.3 507.4,147.4 508.6,147.4 509.7,147.4 510.9,147.5 512.0,147.5 513.2,147.5 514.3,147.5 515.5,147.6 516.6,147.6 517.8,147.6 518.9,147.6 520.1,147.6 521.2,147.7 522.4,147.7 523.5,147.7 524.7,147.7 525.8,147.8 527.0,147.8 528.1,147.8 529.3,147.8 530.4,147.9 531.6,147.9 532.7,147.9 533.9,147.9 535.0,147.9 536.2,148.0 537.3,148.0 538.5,148.0 539.6,148.0 540.8,148.0 541.9,148.1 543.1,148.1 544.2,148.1 545.4,148.1 546.5,148.1 547.7,148.2 548.8,148.2 550.0,148.2" fill="none" stroke="var(--key)" stroke-width="2.6"/>
+          <text x="330" y="232" font-size="11.5" fill="var(--ink-faint)" text-anchor="middle">どれも同じ位置から、静かに手を離した場合</text>
+          <line x1="96" y1="258" x2="120" y2="258" stroke="var(--accent)" stroke-width="2.6"/>
+          <text x="126" y="262" font-size="12" font-weight="500" fill="var(--accent-deep)">減衰振動（抵抗が弱い）</text>
+          <line x1="268" y1="258" x2="292" y2="258" stroke="var(--good)" stroke-width="2.6"/>
+          <text x="298" y="262" font-size="12" font-weight="500" fill="var(--good)">臨界減衰（境目）</text>
+          <line x1="406" y1="258" x2="430" y2="258" stroke="var(--key)" stroke-width="2.6"/>
+          <text x="436" y="262" font-size="12" font-weight="500" fill="var(--key)">過減衰（抵抗が強い）</text>
+        </svg>
+        <figcaption>同じばねに、強さの違う抵抗を加えたときの運動です。<strong>抵抗が弱いと振動しながら減衰し（青）、強いと振動せずにゆっくり戻ります（ピンク）。</strong>その境目が<strong>臨界減衰</strong>（緑）で、振動せずに最も速く静止位置へ戻ります。抵抗を強くすればするほど速く止まる、というわけではない点に注意してください。</figcaption>
+      </figure>
+      <h3>抵抗が弱いとき — 減衰振動</h3>
+      <p>\(\gamma^2<4mk\) なら、ルートの中が負なので \(\lambda\) は複素数になります。</p>
+      \[ \lambda=-\frac{\gamma}{2m}\pm i\,\omega_d \]
+      <p>ここで \(\omega_d\) は、ルートの中身の絶対値から決まる正の数です。この \(\lambda\) を \(e^{\lambda t}\) に入れると、指数法則で2つに分かれます。</p>
+      \[ e^{\lambda t}=e^{-\gamma t/2m}\cdot e^{\pm i\omega_dt} \]
+      <p>前半は<strong>だんだん小さくなる因子</strong>、後半は<strong>振動する因子</strong>。§03 と同じ手順で実数の形に直すと</p>
+      \[ x(t)=A_0\,e^{-\gamma t/2m}\cos(\omega_dt+\varphi) \]
+      <p>振動しながら、振幅が指数関数的にしぼんでいく運動です。<strong>複素数の実部が減衰を、虚部が振動を担っている</strong>——この対応が、そのまま式に出ています。</p>
+
+      <h3>抵抗が強いとき — 過減衰と臨界減衰</h3>
+      <p>抵抗を強くしていくと、ある時点でルートの中身が 0 になり、そこを越えると正になります。\(\lambda\) は実数になり、<strong>虚部が消えるので振動もなくなります</strong>。</p>
+      <p>その境目が<strong>臨界減衰</strong>です。ここでは特性方程式が重解を持つので、解が1つしか出てきません。2階なのに解が1つでは足りないので、もう1つは次の形になります。</p>
+      \[ x(t)=(C_1+C_2t)\,e^{-\gamma t/2m} \]
+      <p>\(t\) を掛けたものが2つ目の解になる、というのは代入して確かめられます（下のドリル）。</p>
+
+      <figure class="fig">
+        <svg viewBox="0 0 640 280" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="特性方程式の解の位置">
+          <line x1="140" y1="150" x2="520" y2="150" stroke="var(--ink-faint)" stroke-width="1.2"/>
+          <line x1="330" y1="245" x2="330" y2="50" stroke="var(--ink-faint)" stroke-width="1.2"/>
+          <text x="526" y="168" font-size="11.5" fill="var(--ink-soft)">実部</text>
+          <text x="342" y="56" font-size="11.5" fill="var(--ink-soft)">虚部</text>
+          <circle cx="267.6" cy="66.8" r="5" fill="var(--accent)" stroke="#000" stroke-width="2"/>
+          <circle cx="267.6" cy="233.2" r="5" fill="var(--accent)" stroke="#000" stroke-width="2"/>
+          <text x="277.6" y="60.8" font-size="11.5" font-weight="500" fill="var(--accent-deep)">減衰振動</text>
+          <circle cx="226.0" cy="150" r="6" fill="var(--good)" stroke="#000" stroke-width="2"/>
+          <text x="226.0" y="134" font-size="11.5" font-weight="500" fill="var(--good)" text-anchor="middle">臨界減衰（重解）</text>
+          <circle cx="298.8" cy="150" r="5" fill="var(--key)" stroke="#000" stroke-width="2"/>
+          <circle cx="163.6" cy="150" r="5" fill="var(--key)" stroke="#000" stroke-width="2"/>
+          <text x="298.8" y="176" font-size="11.5" font-weight="500" fill="var(--key)" text-anchor="middle">過減衰</text>
+          <text x="163.6" y="176" font-size="11.5" font-weight="500" fill="var(--key)" text-anchor="middle">過減衰</text>
+          <text x="150" y="90" font-size="11.5" fill="var(--ink-soft)">実部が負 → 時間とともに減る</text>
+          <text x="150" y="112" font-size="11.5" fill="var(--ink-soft)">虚部があり → 振動する</text>
+          <text x="330" y="266" font-size="11.5" fill="var(--ink-faint)" text-anchor="middle">抵抗を強くしていくと、2つの解は虚軸から離れ、実軸の上を左右に分かれていく</text>
+        </svg>
+        <figcaption>特性方程式の解 \(\lambda\) を複素平面に打った図です。<strong>実部は「減り方の速さ」、虚部は「振動の速さ」</strong>を表します。抵抗が弱いうちは解が複素数（青）なので、減りながら振動する。抵抗を強くすると2つの解は近づいて実軸上で重なり（緑・臨界減衰）、さらに強くすると実軸上で左右に分かれます（ピンク・過減衰）。<strong>虚部が消えた瞬間に、振動そのものが消える</strong>わけです。</figcaption>
+      </figure>
+      <div class="box teach"><span class="lab">なぜ臨界減衰がいちばん速いのか</span>
+      <p>「抵抗が強いほど速く止まる」と思いたくなりますが、図を見ると違います。過減衰（抵抗が強い）のほうが、静止位置に戻るのが<strong>遅い</strong>のです。</p>
+      <p style="margin-top:8px">抵抗が強すぎると、戻ろうとする動き自体が妨げられるからです。水あめの中でばねを動かすことを想像してください。振動はしませんが、戻るのに時間がかかります。</p>
+      <p style="margin-top:8px">振動もせず、かつ最速で戻る——その境目が臨界減衰です。<strong>2つの望ましくない振る舞い（行き過ぎと、遅すぎ）のちょうど中間</strong>にあたります。</p></div>
+
+      <h3>計算ドリル（§04・全3問）</h3>
+
+      <div class="drill"><p><span class="qn">問1</span>臨界減衰のとき、\(x=t\,e^{\lambda t}\)（\(\lambda\) は重解）が方程式の解になることを、代入して確かめよ。</p>
+      <div class="attempt" style="margin:10px 0 4px"><span class="lab">自分の答えを出してから</span>
+      <div class="controls">
+        <button class="ctl-btn amber" data-hint>ヒントを表示</button>
+        <button class="ctl-btn" data-sol>解答を見る</button>
+      </div>
+      <div class="hint"><span class="hn">HINT 1</span><p>積の微分を使います。\(\dfrac{d}{dt}\left(te^{\lambda t}\right)=e^{\lambda t}+\lambda te^{\lambda t}\)。</p></div>
+      <div class="hint"><span class="hn">HINT 2</span><p>重解のとき、解の公式から \(\lambda=-\dfrac{\gamma}{2m}\)、つまり \(2m\lambda+\gamma=0\) が成り立ちます。</p></div>
+      <div class="sol"><p>微分を2回計算します。</p>
+      \[ \begin{aligned} \dot x&=(1+\lambda t)e^{\lambda t}\\[2pt] \ddot x&=(2\lambda+\lambda^2t)e^{\lambda t} \end{aligned} \]
+      <p>代入して \(e^{\lambda t}\) でくくると</p>
+      \[ \Big[m(2\lambda+\lambda^2t)+\gamma(1+\lambda t)+kt\Big]e^{\lambda t} \]
+      <p>中身を \(t\) の有無で整理します。</p>
+      \[ \underbrace{(2m\lambda+\gamma)}_{t\text{ なし}}+\underbrace{(m\lambda^2+\gamma\lambda+k)}_{t\text{ の係数}}\,t \]
+      <p>第2項は特性方程式そのものなので 0。第1項も、重解の条件 \(\lambda=-\dfrac{\gamma}{2m}\) から 0。よって全体が 0 になり、確かに解です。</p>
+      <p style="font-size:13.5px;color:var(--ink-faint)"><strong>重解のときだけ \(2m\lambda+\gamma=0\) が成り立つ</strong>ことが鍵でした。だから \(t\) を掛けたものが解になるのは、重解の場合に限られます。異なる2解のときに同じことを試しても、第1項が残ってうまくいきません。</p></div></div></div>
+
+      <div class="drill"><p><span class="qn">問2</span>\(m=1,\ k=4\) のばねについて、減衰振動・臨界減衰・過減衰になる \(\gamma\) の範囲をそれぞれ求めよ。</p>
+      <div class="attempt" style="margin:10px 0 4px"><span class="lab">自分の答えを出してから</span>
+      <div class="controls"><button class="ctl-btn" data-sol>解答を見る</button></div>
+      <div class="sol"><p>判別式は \(\gamma^2-4mk=\gamma^2-16\)。境目は \(\gamma=4\) です（\(\gamma>0\) とします）。</p>
+      <div class="table-scroll"><table class="mini-table">
+        <tr><th style="width:34%">\(\gamma\) の範囲</th><th>運動</th></tr>
+        <tr><td>\(0<\gamma<4\)</td><td>減衰振動</td></tr>
+        <tr><td>\(\gamma=4\)</td><td>臨界減衰</td></tr>
+        <tr><td>\(\gamma>4\)</td><td>過減衰</td></tr>
+      </table></div>
+      <p style="font-size:13.5px;color:var(--ink-faint)">\(\gamma=4\) はちょうど \(2\sqrt{mk}\) です。一般に臨界減衰の条件は \(\gamma=2\sqrt{mk}\)、言い換えれば \(\dfrac{\gamma}{2m}=\omega_0\)。<strong>減衰の速さと、もともとの振動の速さが一致したところが境目</strong>だと読めます。</p></div></div></div>
+
+      <div class="drill"><p><span class="qn">問3</span><strong>口頭試問形式</strong>：次の3つを、公式を見ずに自分の言葉で説明せよ。<br>①2階の方程式で \(x=e^{\lambda t}\) と仮定すると、何が起きるか。なぜ指数関数を選ぶのか。<br>②特性方程式の解が虚数になったとき、なぜ振動が現れるのか。<br>③判別式の符号で運動の質が変わるのはなぜか。</p>
+      <div class="attempt" style="margin:10px 0 4px"><span class="lab">自分の答えを出してから</span>
+      <div class="controls"><button class="ctl-btn" data-sol>解答例を見る</button></div>
+      <div class="sol"><p><strong>①</strong> 指数関数は微分しても形が変わらず、\(\lambda\) が前に出るだけ。だから \(x,\ \dot x,\ \ddot x\) がすべて \(e^{\lambda t}\) の定数倍になり、共通因子としてくくり出せる。\(e^{\lambda t}\) は決して 0 にならないので割ることができ、\(\lambda\) についての2次方程式（特性方程式）が残る。微分方程式が代数方程式に変わる。</p>
+      <p><strong>②</strong> \(\lambda=\pm i\omega\) のとき、解は \(e^{\pm i\omega t}\)。オイラーの公式より \(e^{i\omega t}=\cos\omega t+i\sin\omega t\) なので、これは複素平面上を回る点であり、その実部が振動になる。定数をうまく選べば実数の \(A\cos(\omega t+\varphi)\) にまとまる。</p>
+      <p><strong>③</strong> 判別式が負なら \(\lambda\) に虚部が生まれ、虚部は振動を担うので振動が現れる。正なら \(\lambda\) は実数となり虚部がないので振動しない。実部は減衰の速さを表すので、どちらの場合も振幅は減っていく。0 の場合が両者の境目で、臨界減衰。</p>
+      <p style="font-size:13.5px;color:var(--ink-faint)">この3つが澱みなく言えれば、この記事は通過です。特に②は、4章で作ったオイラーの公式が実際に働く場面なので、式を書きながら説明できるか確かめてください。</p></div></div></div>
+    </section>
+
+    <!-- §05 -->
+    <section id="howto">
+      <div class="sec-head"><span class="idx">§05</span><h2>チェックリストと次回予告</h2></div>
+
+      <h3>この記事で答えられるようになるべき問い</h3>
+      <div class="box principle"><span class="lab">最終チェック</span>
+      <ul style="margin:8px 0 0">
+        <li>運動方程式が2階の微分方程式になる理由を説明できるか（§01）</li>
+        <li>重ね合わせの原理を述べ、なぜ成り立つか言えるか（§01）</li>
+        <li>\(x=e^{\lambda t}\) を代入して特性方程式を導けるか（§02）</li>
+        <li>\(e^{\lambda t}\) で割ってよい理由を言えるか（§02）</li>
+        <li>単振動を解き、\(\omega_0=\sqrt{k/m}\) を導けるか（§03）</li>
+        <li>虚数の \(\lambda\) を、オイラーの公式で実数の振動に直せるか（§03）</li>
+        <li>周期が振幅によらないこと（等時性）を説明できるか（§03）</li>
+        <li>判別式の符号で3つの場合に分かれる理由を言えるか（§04）</li>
+        <li>減衰振動の解が \(e^{-\gamma t/2m}\cos(\omega_dt+\varphi)\) になる理由を説明できるか（§04）</li>
+        <li>臨界減衰で \(te^{\lambda t}\) が現れる理由を言えるか（§04）</li>
+      </ul></div>
+
+      <h3>次節（5-3 強制振動と共鳴）への接続</h3>
+      <p>ここまでは、外から力を加えない場合を扱ってきました。最初に与えた勢いが、抵抗によって失われていくだけの運動です。</p>
+      <p>次は、<strong>外から周期的に揺さぶり続ける</strong>場合を扱います。方程式の右辺に外力が入り</p>
+      \[ m\ddot x+\gamma\dot x+kx=F_0\cos\omega t \]
+      <p>となります。このとき、揺さぶる速さ \(\omega\) をばね固有の \(\omega_0\) に近づけると、振幅が劇的に大きくなる——<strong>共鳴</strong>が起こります。</p>
+      <p>そしてこの計算こそ、4-2 で予告した「複素数を使うと微分方程式が割り算になる」が最大の威力を発揮する場面です。</p>
+      <div class="box teach"><span class="lab">5-3 で扱う問い（予習用）</span>
+      <ul style="margin:6px 0 0">
+        <li>右辺が 0 でない方程式は、どう解くのか</li>
+        <li>なぜ揺さぶる速さを合わせると、振幅が大きくなるのか</li>
+        <li>抵抗がないと、振幅は無限に大きくなってしまうのか</li>
+        <li>揺さぶり方と振動のあいだに生じる「位相の遅れ」とは何か</li>
+      </ul>
+      <p style="margin-top:8px"><strong>鍵となる一言</strong>：外力を \(F_0e^{i\omega t}\) と複素数で書けば、微分はすべて \(i\omega\) の掛け算になり、答えは割り算1回で出ます。</p></div>
+
+      <h3>学習サイクルの推奨手順</h3>
+      <ol>
+        <li><strong>解答を開かず、紙で挑戦</strong>。詰まっても5分は粘ってください。詰まるのは失敗ではなく、<strong>まだ腑に落ちていない一点が表に出た合図</strong>です。そこを自分の手で越えた経験が、そのまま次に進む力になります。</li>
+        <li><strong>ヒントを1つずつ</strong>開き、詰まりが解けたら閉じて自力で続行。</li>
+        <li>解が出たら、<strong>必ず元の方程式に代入して確かめる</strong>。特性方程式を解き間違えていないか、その場で分かります。</li>
+        <li>翌日、何も見ずに §04 問3（口頭試問）を再現する。特に②の「虚数が振動を生む」を、オイラーの公式を書きながら説明できるか確かめてください。</li>
+      </ol>
+
+      <div class="box warn"><span class="lab">この教材の立ち位置</span>
+      <p>本節は<strong>定数係数の場合</strong>に絞っています。係数が時間によって変わる方程式（係数が \(t\) を含む場合）は、指数関数を仮定する方法では解けず、級数解法など別の技術が必要になります。ベッセル関数やルジャンドル関数といった特殊関数は、そこから生まれたものです。</p>
+      <p style="margin-top:8px">物理数学IIで扱う内容ですが、<strong>学部の力学と電磁気で出会う振動の問題は、ほぼすべてこの記事の範囲で解けます</strong>。まずはここを確実にしてください。</p></div>
+
+      <div class="foot"><p>Academic Gates ／ 物理数学I 5章 常微分方程式 ／ 5-2「2階線形微分方程式」。演習問題は本教材独自の構成です。続編：5-3「強制振動と共鳴」。</p></div>
+    </section>
+  </main>
+</div>
+
+<div id="site-footer"><noscript><nav class="noscript-nav" aria-label="フッターナビゲーション"><a href="index.html">ホーム</a><a href="self-intro.html">自己紹介</a><a href="study.html">勉強の軌跡</a><a href="videos.html">動画</a><a href="blog.html">ブログ</a><a href="sns.html">各種SNS</a></nav></noscript></div>
+
+<script>
+/* ヒント／解答トグル */
+document.querySelectorAll('[data-hint]').forEach(function(btn){
+  var box=btn.closest('.attempt');
+  var hints=[].slice.call(box.querySelectorAll('.hint'));
+  if(!hints.length){ btn.style.display='none'; return; }
+  var hideBtn=document.createElement('button');
+  hideBtn.type='button';hideBtn.className='ctl-btn amber';hideBtn.textContent='ヒントを隠す';hideBtn.style.display='none';
+  btn.after(hideBtn);
+  btn.addEventListener('click',function(){
+    var hidden=hints.filter(function(h){return h.style.display!=='block'});
+    if(hidden.length){ hidden[0].style.display='block'; hideBtn.style.display='';
+      if(hidden.length===1){ btn.textContent='ヒントは以上'; btn.disabled=true; }
+      else { btn.textContent='次のヒント ('+(hints.length-hidden.length+1)+'/'+hints.length+')'; }
+    }
+  });
+  hideBtn.addEventListener('click',function(){
+    hints.forEach(function(h){h.style.display='none'});
+    hideBtn.style.display='none';btn.disabled=false;btn.textContent='ヒントを表示';
+  });
+});
+document.querySelectorAll('[data-sol]').forEach(function(btn){
+  btn.addEventListener('click',function(){
+    var sol=btn.closest('.attempt').querySelector('.sol');
+    var open=sol.style.display==='block';
+    sol.style.display=open?'none':'block';
+    if(!btn.dataset.show) btn.dataset.show=btn.textContent;
+    btn.textContent=open?btn.dataset.show:'閉じる';
+    if(!open && window.MathJax && MathJax.typesetPromise) MathJax.typesetPromise([sol]);
+  });
+});
+
+/* 目次の追従 */
+var links=[].slice.call(document.querySelectorAll('.toc a[href^="#"]'));
+var secs=links.map(function(a){return document.querySelector(a.getAttribute('href'))});
+var pbar=document.getElementById('pbar');
+function onScroll(){
+  // getBoundingClientRect を使う（offsetTop ではない）。style.css の
+  // `main{position:relative}` で <main> が offsetParent になり、offsetTop が
+  // 文書基準でなくなるため、scrollY と直接比べると判定がずれる（§36）。
+  var idx=0;
+  secs.forEach(function(s,i){ if(s&&s.getBoundingClientRect().top<=140) idx=i; });
+  links.forEach(function(a){a.classList.remove('active')});
+  if(links[idx]) links[idx].classList.add('active');
+  var h=document.documentElement.scrollHeight-window.innerHeight;
+  pbar.style.width=(h>0?(window.scrollY/h*100):0)+'%';
+}
+window.addEventListener('scroll',onScroll,{passive:true});
+window.addEventListener('resize',onScroll); onScroll();
+var body=document.body,mb=document.getElementById('menuBtn'),scrim=document.getElementById('scrim');
+mb.addEventListener('click',function(){var o=body.classList.toggle('nav-open');mb.setAttribute('aria-expanded',o)});
+scrim.addEventListener('click',function(){body.classList.remove('nav-open')});
+document.getElementById('toc').addEventListener('click',function(e){if(e.target.closest('a'))body.classList.remove('nav-open')});
+</script>
+<script src="../js/layout.js?v=r84"></script>
+<script src="../js/main.js?v=r84"></script>
+<script src="../js/starfield.js?v=r84"></script>
+</body>
+</html>
