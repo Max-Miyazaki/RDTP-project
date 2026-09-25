@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>5-3 強制振動と共鳴｜物理数学I 5章 | Academic Gates</title>
+<meta name="description" content="2階線形非斉次微分方程式の解き方。未定係数法と複素数による特解、一般解の組み立て、共鳴まで。物理数学I 5章／5-3。">
+<link rel="icon" href="../../favicon.ico" sizes="32x32">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+<!-- ★ ライト/ダーク切替は停止中（DESIGN.md §44）。サイト全体がダーク基調なので、
+     記事だけテーマが変わるのは一貫性を欠くという判断。**復活させるには次の1行の
+     コメントを外すだけでよい**（js/theme.js も css/lesson-theme.css も残してある）。
+     data-theme を付ける主体がこれしか無いので、外しておけば :root[data-theme="light"]
+     は構造的にマッチしない。逆に読み込んだままボタンだけ消すと、OS がライト設定の
+     端末が勝手にライトになり、戻す手段が無くなる（§44.2）。
+     復活時の挙動: テーマは描画前に同期で決まり（FOUC 防止）、ボタンの設置は
+     layout.js がヘッダーを書き出したあと DOMContentLoaded で行われる。 -->
+<!-- <script src="../js/theme.js?v=r86"></script> -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;500&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+<!-- サイト共通 → 記事固有 → テーマ上書き の順で読む（lesson-theme.css は
+     記事の <style> より後ろに置くこと。css/lesson-theme.css 冒頭の注記どおり） -->
+<link rel="stylesheet" href="../css/style.css?v=r86">
+<!-- MathJax: 設定ブロックはローダーより「前」に置く（DESIGN.md §11b）。
+     フォールバックは this.src= ではなく createElement 方式（同§）。 -->
+<script>
+window.MathJax={tex:{inlineMath:[['\\(','\\)']],displayMath:[['\\[','\\]']],tags:'none'},svg:{fontCache:'global'},options:{skipHtmlTags:['script','noscript','style','textarea','pre','code']}};
+</script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"
+        onerror="this.onerror=null;var s=document.createElement('script');s.async=true;s.src='https://unpkg.com/mathjax@3/es5/tex-svg.js';document.head.appendChild(s);"></script>
+<style>
+/* 5-3 強制振動と共鳴 — 記事固有のスタイルのみ。5-2 と同じ構成をそのまま使う。
+   共通のリセット・背景・星・ヘッダー/フッター・ボタン・見出し階層・本文リズムは
+   css/style.css が持つ（DESIGN.md §35, §36）。ここに残すのは、この教材の
+   構造（レール／演習ブロック／図版）と、教育用の色トークンだけ。 */
+:root{
+  /* 教材固有のトークン。本体と同値のもの（--bg --surface --nav-bg --ink --line
+     --line-strong --glow-cool --font --nav-clear --ease --radius-lg/md）は
+     css/style.css 側に定義があるので、ここでは持たない。
+     --ink-soft / --ink-faint は本体より明るい値を「意図的に」維持している。
+     本体値に寄せると 13.5px の解説文が 4.56:1 → 3.66:1 と AA を割るため（§36）。 */
+  --surface-2:rgba(255,255,255,.045);
+  --ink-soft:rgba(255,255,255,.68);
+  --ink-faint:rgba(255,255,255,.46);
+  --line-soft:rgba(255,255,255,.05);
+  --accent-deep:#a8c9ff;
+  --accent-tint:rgba(77,148,255,.12);
+  --amber:#ffb46b;--amber-tint:rgba(255,160,70,.08);--amber-line:rgba(255,160,70,.32);
+  --good:#72e3ad;--good-tint:rgba(114,227,173,.08);--good-line:rgba(114,227,173,.28);
+  --key:#ff6fa5;--key-tint:rgba(255,61,139,.08);--key-line:rgba(255,61,139,.28);
+  --teach:#a48bff;--teach-tint:rgba(123,77,255,.11);--teach-line:rgba(123,77,255,.38);
+  --mono:ui-monospace,'SFMono-Regular',Menlo,Consolas,monospace;
+  --rail-w:250px;
+}
+body{font-size:15.5px;line-height:1.9;line-break:strict;overflow-x:hidden}
+
+/* --- レイアウト（左に目次レール／右に本文の2カラム） ------------------------
+   本文列 760px は日本語の長文＋数式に合わせた measure。style.css の共通記事
+   ルールは `body.is-article main > section:not(.rail)`（詳細度 0,2,3）と
+   `… ~ section:not(.rail)`（0,3,4）で 900px と 160px パディングをかけてくる。
+   こちらは `.main` を噛ませて 0,3,2 / 0,4,3 とし、確実に上回る（§36）。 */
+/* 全幅。左寄せのレイアウトで、余った幅は右に流す（§43）。
+   §40 で一度 max-width を外して差し戻しているが、あれは「中央寄せのまま左右を
+   対称にする」変更で、本文の位置も幅も変わらなかったため戻した。今回は本文を
+   860px に広げて左揃えにするので、目的も結果も違う。
+   レールの左余白は 1280px → 1440px にかけて 0 → 32px。狭い画面ではまず余白を
+   削って本文幅に回す（レール幅 250px は目次の文字量で決まるので触らない）。 */
+.wrap{display:flex;padding-top:var(--nav-clearance);
+      padding-left:clamp(0px, calc((100vw - 1280px) * .2), 32px)}
+.rail{width:var(--rail-w);flex:0 0 var(--rail-w);position:sticky;top:var(--nav-clearance);height:calc(100vh - var(--nav-clearance));overflow-y:auto;padding:18px 14px 60px 22px;border-right:1px solid var(--line)}
+/* 左パディング＝レールと本文の間隔。1024px → 1280px にかけて 24 → 56px。
+   これも狭い画面では縮めて本文幅に回す。 */
+.main{flex:1 1 auto;min-width:0;
+      padding:0 clamp(24px, calc(24px + (100vw - 1024px) * .125), 56px) 110px}
+/* 本文列 860px。760px では display 数式が 6 本はみ出していた（解答の入れ子
+   パディングで、.sol の中は本文列より 132px 狭い箱になる）。全 82 本が収まる
+   最小幅は実測 853px（§43.2）。中央寄せをやめて左揃えにし、余りは右へ。 */
+body.is-article .main > .lesson-hero,
+body.is-article .main > section:not(.rail),
+body.is-article .main > .foot{max-width:860px;margin-left:0;margin-right:auto;padding-left:0;padding-right:0}
+.rail .brand{font-weight:400;font-size:15px;line-height:1.45;margin:2px 0 4px}
+.rail .brand small{display:block;font-size:10px;font-weight:500;color:var(--ink-faint);letter-spacing:.2em;margin-top:6px}
+.progress-wrap{height:2px;background:var(--line);border-radius:99px;margin:16px 0 18px;overflow:hidden}
+.progress-bar{height:100%;width:0;background:linear-gradient(90deg,var(--accent),#a8c9ff);transition:width .15s linear}
+.toc{list-style:none;margin:0;padding:0;font-size:12.5px}
+.toc .part{font-size:10px;letter-spacing:.2em;color:var(--ink-faint);margin:16px 0 5px;padding-left:2px}
+.toc a{display:block;text-decoration:none;color:var(--ink-soft);padding:4px 10px;border-radius:999px;transition:color var(--dur) var(--ease),background var(--dur) var(--ease)}
+.toc a:hover{color:var(--ink);background:var(--surface-2)}
+.toc a.active{color:var(--ink);background:var(--accent-tint)}
+.toc a .n{font-size:10.5px;color:var(--ink-faint);margin-right:8px;font-variant-numeric:tabular-nums}
+.toc a.active .n{color:var(--accent)}
+
+/* --- 記事の導入部。`.hero` は index.html 専用で、style.css が
+   `.hero h1/.hero p/.hero .eyebrow` に黒い text-shadow をかけるため使えない（§36）。 --- */
+.lesson-hero{padding:64px 0 34px;border-bottom:1px solid var(--line)}
+.lesson-hero h1{font-weight:300;font-size:clamp(28px,4vw,48px);line-height:1.25;letter-spacing:-.02em;margin:0 0 22px}
+.lesson-hero h1 .sub{display:block;font-size:.52em;font-weight:300;color:var(--ink-soft);letter-spacing:0;margin-top:12px}
+.lesson-hero p{color:var(--ink-soft);margin:0 0 12px}
+.lesson-hero .lead{font-size:16.5px;color:var(--ink-soft)}
+/* .eyebrow 本体は style.css の共通コンポーネント。色と余白だけ上書きする
+   （共通の --text-tertiary は 11px の小さな文字で 3.66:1 と AA を割るため） */
+.eyebrow{color:var(--ink-faint);margin-bottom:18px}
+
+section{border-bottom:1px solid var(--line-soft);scroll-margin-top:var(--nav-clearance)}
+/* 縦の余白も共通ルールに勝つ必要がある（先頭セクションも2つ目以降も同じ 56px） */
+body.is-article .main > section:not(.rail),
+body.is-article .main > section:not(.rail) ~ section:not(.rail){padding-top:56px;padding-bottom:12px}
+.sec-head{display:flex;align-items:baseline;gap:14px;margin-bottom:10px}
+.sec-head .idx{font-size:.72rem;font-weight:500;letter-spacing:.2em;color:var(--ink-faint);padding-top:4px;flex:0 0 auto;font-variant-numeric:tabular-nums}
+.sec-head .idx::after{content:' —'}
+body.is-article main h2{font-weight:400;font-size:clamp(21px,2.6vw,28px);line-height:1.3;letter-spacing:-.01em;margin:0}
+body.is-article main h3{font-weight:400;font-size:17px;margin:30px 0 6px;color:var(--ink)}
+body.is-article main h4{font-weight:500;font-size:14.5px;margin:18px 0 4px;color:var(--ink)}
+body.is-article main p{margin:10px 0;color:var(--ink-soft)}
+body.is-article main ul,body.is-article main ol{margin:10px 0;padding-left:1.3em;color:var(--ink-soft)}
+li{margin:4px 0}
+strong{font-weight:500;color:var(--ink)}
+code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);border-radius:6px;padding:1px 6px;color:var(--accent-deep)}
+mjx-container{color:var(--ink)}
+mjx-container[display="true"]{margin:14px 0!important;overflow-x:auto;overflow-y:hidden;padding:2px 0}
+
+/* 別行立て数式だけ、入れ子のパディングの外へ広げる（§46）。
+   解答や色付きボックスの中の数式は、section → .drill(20) → .attempt(22) →
+   .sol(20) と積み上がるパディングで、本文列より最大 132px 狭い箱に入っていた。
+   1024px では 82本中 6本がはみ出し、最大 +127px。**文章の字下げはそのまま**に、
+   数式だけを外へ出す。
+   値は「祖先のパディングの合計 − 8px」。8px 残すのは枠線に重ねないため。
+   全量（合計そのまま）だと .sol 左端の青いアクセントバーの上に分数が乗る。
+   はみ出しが無い幅では見た目が変わらない（箱が左右対称に広がるだけで中身は
+   中央揃えのまま。1440px で適用前後のピクセル差 0 を確認済み）。
+   !important は既存の margin:14px 0!important を上書きするため。
+   新しい入れ子を足すときは、この表に1行足すこと（現在 .hint の中に別行立ては無い）。
+     .box 20 / .drill 20 / .attempt 22 / .sol 20 */
+.box mjx-container[display="true"],
+.drill > mjx-container[display="true"]{margin:14px -12px!important}
+.attempt mjx-container[display="true"]{margin:14px -14px!important}
+.drill .attempt mjx-container[display="true"],
+.attempt .sol mjx-container[display="true"]{margin:14px -34px!important}
+.drill .attempt .sol mjx-container[display="true"]{margin:14px -54px!important}
+
+.box{border-radius:var(--radius-md);padding:16px 20px;margin:18px 0;border:1px solid var(--line);background:var(--surface)}
+.box .lab{font-size:.7rem;letter-spacing:.14em;font-weight:500;display:block;margin-bottom:6px}
+.box p{max-width:none}
+.box p:first-of-type{margin-top:2px}.box p:last-child{margin-bottom:0}
+/* 枠線は必ずトークン経由にすること。ここに直書きすると lesson-theme.css の
+   ライト上書きが効かず、暗い背景用の明るい色がライトでパステルになる（§41）。 */
+.box.principle{background:var(--key-tint);border-color:var(--key-line)}.box.principle .lab{color:var(--key)}
+.box.target{background:var(--good-tint);border-color:var(--good-line)}.box.target .lab{color:var(--good)}
+.box.warn{background:var(--amber-tint);border-color:var(--amber-line)}.box.warn .lab{color:var(--amber)}
+.box.teach{background:var(--teach-tint);border-color:var(--teach-line)}.box.teach .lab{color:var(--teach)}
+.box.teach .lab::before{content:"◎ "}
+
+.table-scroll{overflow-x:auto;margin:14px 0}
+.mini-table{width:100%;border-collapse:collapse;font-size:14px;margin:0;color:var(--ink-soft)}
+.mini-table th,.mini-table td{border:1px solid var(--line);padding:9px 11px;text-align:left;vertical-align:top}
+.mini-table th{background:var(--surface-2);font-weight:500;color:var(--ink)}
+
+.fig{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-lg);padding:18px 18px 12px;margin:20px 0}
+.fig > svg{width:100%;height:auto;display:block}
+.fig svg text{font-family:var(--font-body)}
+.fig figcaption{font-size:13px;color:var(--ink-soft);margin-top:10px;line-height:1.8;max-width:none}
+
+/* --- 演習まわり。`.ctl-btn` は style.css の `.btn`（サイト CTA。
+   `.btn::before` のホバーグローを持つ）と衝突しないよう改名したもの（§36）。 --- */
+.attempt{background:var(--surface);border:1px solid var(--amber-line);border-radius:var(--radius-lg);padding:18px 22px;margin:20px 0}
+.attempt .lab{font-size:.7rem;letter-spacing:.14em;color:var(--amber);font-weight:500;display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.attempt .lab::before{content:"✎"}
+.attempt p{max-width:none}
+.controls{display:flex;flex-wrap:wrap;gap:10px;margin:14px 0 4px}
+.ctl-btn{font-family:var(--font-body);font-size:12.5px;font-weight:500;border:1px solid var(--line);background:transparent;color:var(--ink-soft);padding:7px 16px;border-radius:var(--radius-pill);cursor:pointer;transition:color var(--dur) var(--ease),border-color var(--dur) var(--ease),background var(--dur) var(--ease)}
+.ctl-btn:hover{color:var(--ink);border-color:var(--line-strong);background:var(--surface-2)}
+.ctl-btn.amber{color:var(--amber);border-color:var(--amber-line)}
+.ctl-btn.amber:hover{background:var(--amber-tint)}
+.ctl-btn:disabled{opacity:.4;cursor:default;background:transparent}
+.hint{display:none;border-left:2px solid var(--amber);background:var(--amber-tint);border-radius:0 var(--radius-sm) var(--radius-sm) 0;padding:12px 16px;margin:10px 0}
+.hint .hn{font-size:.68rem;letter-spacing:.14em;color:var(--amber);font-weight:500;display:block;margin-bottom:3px}
+.hint p{max-width:none}.hint p:last-child{margin-bottom:0}.hint p:first-child{margin-top:0}
+.sol{display:none;border:1px solid var(--line);border-left:2px solid var(--accent);border-radius:0 var(--radius-md) var(--radius-md) 0;background:var(--surface-2);padding:8px 20px 16px;margin:12px 0}
+.sol p{max-width:none}
+.step{margin:18px 0}
+.step .sh{display:flex;gap:10px;align-items:baseline;font-weight:500;color:var(--ink);margin-bottom:2px}
+.step .sn{font-size:11px;font-weight:500;color:#06142e;background:var(--accent);border-radius:999px;padding:1px 10px;flex:0 0 auto}
+.step .why{font-size:13.5px;color:var(--ink-faint);border-left:1px solid var(--line);padding-left:12px;margin:5px 0 5px 2px;max-width:none}
+.transfer{background:var(--surface-2);border:1px solid var(--line);border-radius:var(--radius-md);padding:14px 18px;margin:18px 0}
+.transfer .lab{font-size:.7rem;letter-spacing:.14em;color:var(--accent);font-weight:500;display:block;margin-bottom:5px}
+.transfer p{max-width:none}
+.drill{background:var(--surface);border:1px solid var(--line);border-left:2px solid var(--accent);border-radius:0 var(--radius-md) var(--radius-md) 0;padding:14px 20px;margin:16px 0}
+.drill .qn{font-size:11px;font-weight:500;color:#06142e;background:var(--accent);border-radius:999px;padding:2px 11px;margin-right:8px}
+.drill p{max-width:none}
+.drill p:first-child{margin-top:2px}
+.drill .attempt{background:transparent;border-style:dashed}
+.foot{padding:34px 0 0;color:var(--ink-faint);font-size:12.5px}
+.foot p{color:var(--ink-faint);max-width:none}
+
+/* モバイル：レールを引き出しに。`.menu-btn` は位置だけを持ち、見た目は
+   共通コンポーネントの `.btn` を併用する。 */
+.menu-btn{display:none}
+.scrim{display:none}
+@media (max-width:900px){
+  .rail{position:fixed;left:0;top:0;height:100vh;z-index:1100;transform:translateX(-100%);transition:transform .25s var(--ease);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);padding-top:28px}
+  body.nav-open .rail{transform:translateX(0)}
+  .main{padding:0 20px 90px}
+  .menu-btn{display:inline-flex;position:fixed;bottom:18px;right:18px;z-index:1050;background:var(--nav-bg);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);color:var(--ink)}
+  .scrim{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:1090}
+  body.nav-open .scrim{display:block}
+  .lesson-hero{padding-top:40px}
+  /* 案A（§46.1）の負マージンをここで切る。マージンは固定 px なので、箱そのものが
+     狭いこの帯では数式が .sol の枠を大きく飛び出し、点線の .attempt 枠まで越えて
+     見える。390px では 28本が枠を横切っていた。はみ出し本数は 36→42 に増えるが、
+     どれも数式ごとの横スクロールで読める。§46.4 */
+  .box mjx-container[display="true"],
+  .drill > mjx-container[display="true"],
+  .attempt mjx-container[display="true"],
+  .drill .attempt mjx-container[display="true"],
+  .attempt .sol mjx-container[display="true"],
+  .drill .attempt .sol mjx-container[display="true"]{margin:14px 0!important}
+}
+@media print{
+  body{background:#fff;color:#000}
+  header,.rail,.menu-btn,.scrim,#starfield,footer{display:none!important}
+  .wrap{display:block;padding-top:0}
+  .hint,.sol{display:block!important}
+}
+</style>
+<link rel="stylesheet" href="../css/lesson-theme.css?v=r86">
+</head>
+<body data-page="study" class="is-article" data-node="phys-math_5-3">
+<canvas id="starfield" aria-hidden="true"></canvas>
+<div id="site-nav"><noscript><nav class="noscript-nav" aria-label="メインナビゲーション"><a href="index.html">ホーム</a><a href="self-intro.html">自己紹介</a><a href="study.html">勉強の軌跡</a><a href="videos.html">動画</a><a href="blog.html">ブログ</a><a href="sns.html">各種SNS</a></nav></noscript></div>
+<button class="menu-btn btn" id="menuBtn" aria-controls="rail" aria-expanded="false">目次 <span class="btn-disc" aria-hidden="true">≡</span></button>
+<div class="scrim" id="scrim"></div>
+<div class="wrap">
+  <nav class="rail" id="rail">
+    <!-- 科目へ戻る導線（レール上部の「← 一つ上」）は layout.js が CRUMBS から書き出す。 -->
+    <div class="brand">5-3　強制振動と共鳴<small>SECTION 5-3 / RESONANCE</small></div>
+    <div class="progress-wrap"><div class="progress-bar" id="pbar"></div></div>
+    <ul class="toc" id="toc">
+      <li class="part">導入</li>
+      <li><a href="#m0"><span class="n">01</span>外から揺さぶり続ける</a></li>
+      <li class="part">解く</li>
+      <li><a href="#d1"><span class="n">02</span>複素数で解く</a></li>
+      <li><a href="#d2"><span class="n">03</span>一般解を組み立てる</a></li>
+      <li class="part">読み取る</li>
+      <li><a href="#d3"><span class="n">04</span>共鳴</a></li>
+      <li class="part">仕上げ</li>
+      <li><a href="#howto"><span class="n">05</span>チェックリストと次回予告</a></li>
+    </ul>
+  </nav>
+
+  <main class="main">
+    <div class="lesson-hero">
+      <div class="eyebrow">物理数学 I ／ 5章 常微分方程式 ／ SECTION 5-3</div>
+      <h1>5-3　強制振動と共鳴<span class="sub">右辺が 0 でない方程式を解く</span></h1>
+      <p class="lead">5-2 では、最初に与えた勢いが抵抗によって失われていくだけの運動を扱いました。今度は<strong>外から揺さぶり続ける</strong>場合です。方程式の右辺に外力が現れ、これまでの手順がそのままでは使えなくなります。</p>
+      <p>そしてここが、4-2 で予告した場面です。外力を複素数で書くと微分がすべて \(i\omega\) の掛け算になり、<strong>答えが割り算1回で出ます</strong>。しかも得られた1つの複素数から、振幅と位相の遅れが同時に読み取れる。複素数を導入した見返りが、いちばん分かりやすい形で現れます。</p>
+      <p>読み方：解答は必ず閉じたまま、紙で挑戦してください。</p>
+    </div>
+
+    <!-- §01 -->
+    <section id="m0">
+      <div class="sec-head"><span class="idx">§01</span><h2>外から揺さぶり続ける</h2></div>
+
+      <p>5-2 で扱ったのは、右辺が 0 の方程式でした。この記事で扱うのは、右辺に何かがある場合です。</p>
+      \[ a\frac{d^2x}{dt^2}+b\frac{dx}{dt}+cx=f(t) \]
+      <p>右辺が 0 でないこのような方程式を<strong>非斉次</strong>といい、右辺 \(f(t)\) を<strong>非斉次項</strong>と呼びます。物理では、外から加える力や入力にあたるものです。</p>
+      <p>この記事では、非斉次項が<strong>三角関数の場合</strong>を中心に扱います。物理で最もよく現れる形であり、しかも4章で作った複素数がそのまま使えるからです。定数や指数関数の場合も §03 で扱います。具体例としては、ばねにつながれた物体を外から周期的に揺さぶる場合を考えます。</p>
+      \[ m\frac{d^2x}{dt^2}+\gamma\frac{dx}{dt}+kx=F_0\cos\omega t \]
+      <p>左辺は 5-2 と同じで、右辺に外力が加わった形です。<strong>以降の議論は、この具体例を題材にしていますが、手順そのものは同じ形の方程式すべてに使えます。</strong></p>
+
+      <div class="box warn"><span class="lab">2つの「振動の速さ」が登場する</span>
+      <p>この式には、似て非なる2つの量が現れます。混同すると先に進めなくなるので、最初に区別しておきます。</p>
+      <div class="table-scroll"><table class="mini-table">
+        <tr><th style="width:24%">記号</th><th style="width:30%">意味</th><th>決めるもの</th></tr>
+        <tr><td>\(\omega_0=\sqrt{k/m}\)</td><td>固有角振動数</td><td>ばねと物体の性質。<strong>系が自分で持っている</strong>振動の速さ</td></tr>
+        <tr><td>\(\omega\)</td><td>外力の角振動数</td><td>揺さぶる人が自由に決める。<strong>外から与える</strong>速さ</td></tr>
+      </table></div>
+      <p style="margin-top:8px"><strong>この2つを混同しないこと</strong>が、解を読むときの前提になります。</p></div>
+
+      <h3>解は2つの部分からできている</h3>
+      <p>非斉次方程式には、便利な構造があります。</p>
+
+      <div class="box target"><span class="lab">一般解 ＝ 斉次解 ＋ 特解</span>
+      <p>右辺を 0 にした方程式（斉次方程式）の一般解を \(x_h\)、元の方程式を満たす解を1つだけ見つけたものを \(x_p\)（特解）とすると</p>
+      \[ x=x_h+x_p \]
+      <p>が、元の方程式の一般解になります。</p>
+      <p style="margin-top:8px">実際に代入して確かめます。微分は線形なので、\(x_h+x_p\) の微分は、それぞれの微分の和です。だから左辺は項ごとに2つに分けられます。</p>
+      \[ \begin{aligned} &m\ddot x+\gamma\dot x+kx\\[2pt] &=\big(m\ddot x_h+\gamma\dot x_h+kx_h\big)\\[2pt] &\quad+\big(m\ddot x_p+\gamma\dot x_p+kx_p\big) \end{aligned} \]
+      <p>第1の括弧は、\(x_h\) が斉次方程式の解であることから 0。第2の括弧は、\(x_p\) が元の方程式の解であることから \(F_0\cos\omega t\)。したがって</p>
+      \[ m\ddot x+\gamma\dot x+kx=0+F_0\cos\omega t \]
+      <p>となり、\(x=x_h+x_p\) は確かに元の方程式を満たします。<strong>微分が線形だからこそ、こう分けられます。</strong></p>
+      <p style="margin-top:8px">しかも \(x_h\) は任意定数を2つ含んでいるので、和も2つ含みます。2階の方程式の一般解として過不足がありません。</p></div>
+
+      <p>\(x_h\) は 5-2 ですでに求めてあります。抵抗があるかぎり特性方程式の解の実部はどれも負なので、\(x_h\) は<strong>時間が経てば消えてしまいます</strong>。</p>
+      <p>したがって、しばらく待ったあとに残るのは \(x_p\) だけ。<strong>定常状態だけを知りたいなら、特解を1つ見つければ足ります</strong>。</p>
+      <p>ただし、与えられた初期条件から運動そのものを決めるには、斉次解も含めた一般解が必要です。特解の求め方を §02 で、一般解の組み立て方を §03 で扱います。</p>
+
+      <figure class="fig">
+        <svg viewBox="0 0 640 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="過渡状態から定常状態へ">
+          <rect x="90" y="45" width="208.8" height="190" fill="var(--amber-tint)" stroke="none"/>
+          <line x1="60" y1="150" x2="600" y2="150" stroke="var(--ink-faint)" stroke-width="1.3"/>
+          <polygon points="608,150 594,144 594,156" fill="var(--ink-faint)"/>
+          <line x1="90" y1="238" x2="90" y2="48" stroke="var(--ink-faint)" stroke-width="1.3"/>
+          <text x="604" y="170" font-size="12" fill="var(--ink)" font-style="italic">t</text>
+          <text x="70" y="52" font-size="12" fill="var(--ink)" font-style="italic">x</text>
+          <polyline points="90.0,105.8 91.2,105.8 92.3,105.8 93.5,105.9 94.6,105.9 95.8,106.0 97.0,106.1 98.1,106.2 99.3,106.3 100.4,106.4 101.6,106.5 102.8,106.7 103.9,106.8 105.1,107.0 106.2,107.2 107.4,107.4 108.6,107.6 109.7,107.9 110.9,108.1 112.0,108.4 113.2,108.6 114.4,108.9 115.5,109.2 116.7,109.5 117.8,109.9 119.0,110.2 120.2,110.6 121.3,110.9 122.5,111.3 123.6,111.7 124.8,112.1 126.0,112.5 127.1,112.9 128.3,113.4 129.4,113.8 130.6,114.3 131.8,114.8 132.9,115.2 134.1,115.7 135.2,116.3 136.4,116.8 137.6,117.3 138.7,117.8 139.9,118.4 141.0,119.0 142.2,119.5 143.4,120.1 144.5,120.7 145.7,121.3 146.8,121.9 148.0,122.5 149.2,123.2 150.3,123.8 151.5,124.4 152.6,125.1 153.8,125.7 155.0,126.4 156.1,127.1 157.3,127.8 158.4,128.5 159.6,129.2 160.8,129.9 161.9,130.6 163.1,131.3 164.2,132.0 165.4,132.8 166.6,133.5 167.7,134.2 168.9,135.0 170.0,135.7 171.2,136.5 172.4,137.2 173.5,138.0 174.7,138.8 175.8,139.5 177.0,140.3 178.2,141.1 179.3,141.9 180.5,142.7 181.6,143.4 182.8,144.2 184.0,145.0 185.1,145.8 186.3,146.6 187.4,147.4 188.6,148.2 189.8,149.0 190.9,149.8 192.1,150.6 193.2,151.4 194.4,152.2 195.6,153.0 196.7,153.8 197.9,154.6 199.0,155.3 200.2,156.1 201.4,156.9 202.5,157.7 203.7,158.5 204.8,159.3 206.0,160.0 207.2,160.8 208.3,161.6 209.5,162.4 210.6,163.1 211.8,163.9 213.0,164.6 214.1,165.4 215.3,166.1 216.4,166.9 217.6,167.6 218.8,168.3 219.9,169.0 221.1,169.7 222.2,170.5 223.4,171.2 224.6,171.9 225.7,172.5 226.9,173.2 228.0,173.9 229.2,174.6 230.4,175.2 231.5,175.9 232.7,176.5 233.8,177.1 235.0,177.8 236.2,178.4 237.3,179.0 238.5,179.6 239.6,180.2 240.8,180.7 242.0,181.3 243.1,181.9 244.3,182.4 245.4,182.9 246.6,183.5 247.8,184.0 248.9,184.5 250.1,185.0 251.2,185.5 252.4,185.9 253.6,186.4 254.7,186.8 255.9,187.3 257.0,187.7 258.2,188.1 259.4,188.5 260.5,188.9 261.7,189.3 262.8,189.6 264.0,190.0 265.2,190.3 266.3,190.6 267.5,190.9 268.6,191.2 269.8,191.5 271.0,191.8 272.1,192.0 273.3,192.3 274.4,192.5 275.6,192.7 276.8,192.9 277.9,193.1 279.1,193.3 280.2,193.4 281.4,193.6 282.6,193.7 283.7,193.8 284.9,193.9 286.0,194.0 287.2,194.1 288.4,194.1 289.5,194.2 290.7,194.2 291.8,194.2 293.0,194.2 294.2,194.2 295.3,194.2 296.5,194.1 297.6,194.1 298.8,194.0 300.0,193.9 301.1,193.8 302.3,193.7 303.4,193.6 304.6,193.4 305.8,193.3 306.9,193.1 308.1,192.9 309.2,192.7 310.4,192.5 311.6,192.3 312.7,192.0 313.9,191.8 315.0,191.5 316.2,191.2 317.4,190.9 318.5,190.6 319.7,190.3 320.8,190.0 322.0,189.6 323.2,189.3 324.3,188.9 325.5,188.5 326.6,188.1 327.8,187.7 329.0,187.3 330.1,186.9 331.3,186.4 332.4,186.0 333.6,185.5 334.8,185.0 335.9,184.5 337.1,184.0 338.2,183.5 339.4,183.0 340.6,182.4 341.7,181.9 342.9,181.3 344.0,180.8 345.2,180.2 346.4,179.6 347.5,179.0 348.7,178.4 349.8,177.8 351.0,177.2 352.2,176.6 353.3,175.9 354.5,175.3 355.6,174.6 356.8,173.9 358.0,173.3 359.1,172.6 360.3,171.9 361.4,171.2 362.6,170.5 363.8,169.8 364.9,169.1 366.1,168.4 367.2,167.6 368.4,166.9 369.6,166.2 370.7,165.4 371.9,164.7 373.0,163.9 374.2,163.2 375.4,162.4 376.5,161.6 377.7,160.9 378.8,160.1 380.0,159.3 381.2,158.5 382.3,157.8 383.5,157.0 384.6,156.2 385.8,155.4 387.0,154.6 388.1,153.8 389.3,153.0 390.4,152.2 391.6,151.4 392.8,150.6 393.9,149.8 395.1,149.0 396.2,148.2 397.4,147.5 398.6,146.7 399.7,145.9 400.9,145.1 402.0,144.3 403.2,143.5 404.4,142.7 405.5,141.9 406.7,141.1 407.8,140.4 409.0,139.6 410.2,138.8 411.3,138.1 412.5,137.3 413.6,136.5 414.8,135.8 416.0,135.0 417.1,134.3 418.3,133.5 419.4,132.8 420.6,132.1 421.8,131.3 422.9,130.6 424.1,129.9 425.2,129.2 426.4,128.5 427.6,127.8 428.7,127.1 429.9,126.5 431.0,125.8 432.2,125.1 433.4,124.5 434.5,123.8 435.7,123.2 436.8,122.6 438.0,121.9 439.2,121.3 440.3,120.7 441.5,120.1 442.6,119.6 443.8,119.0 445.0,118.4 446.1,117.9 447.3,117.3 448.4,116.8 449.6,116.3 450.8,115.8 451.9,115.3 453.1,114.8 454.2,114.3 455.4,113.9 456.6,113.4 457.7,113.0 458.9,112.5 460.0,112.1 461.2,111.7 462.4,111.3 463.5,110.9 464.7,110.6 465.8,110.2 467.0,109.9 468.2,109.6 469.3,109.2 470.5,108.9 471.6,108.7 472.8,108.4 474.0,108.1 475.1,107.9 476.3,107.6 477.4,107.4 478.6,107.2 479.8,107.0 480.9,106.8 482.1,106.7 483.2,106.5 484.4,106.4 485.6,106.3 486.7,106.2 487.9,106.1 489.0,106.0 490.2,105.9 491.4,105.9 492.5,105.8 493.7,105.8 494.8,105.8 496.0,105.8 497.2,105.8 498.3,105.9 499.5,105.9 500.6,106.0 501.8,106.1 503.0,106.1 504.1,106.2 505.3,106.4 506.4,106.5 507.6,106.7 508.8,106.8 509.9,107.0 511.1,107.2 512.2,107.4 513.4,107.6 514.6,107.8 515.7,108.1 516.9,108.3 518.0,108.6 519.2,108.9 520.4,109.2 521.5,109.5 522.7,109.8 523.8,110.2 525.0,110.5 526.2,110.9 527.3,111.3 528.5,111.7 529.6,112.1 530.8,112.5 532.0,112.9 533.1,113.3 534.3,113.8 535.4,114.3 536.6,114.7 537.8,115.2 538.9,115.7 540.1,116.2 541.2,116.7 542.4,117.3 543.6,117.8 544.7,118.4 545.9,118.9 547.0,119.5 548.2,120.1 549.4,120.7 550.5,121.3 551.7,121.9 552.8,122.5 554.0,123.1 555.2,123.7 556.3,124.4 557.5,125.0 558.6,125.7 559.8,126.4 561.0,127.0 562.1,127.7 563.3,128.4 564.4,129.1 565.6,129.8 566.8,130.5 567.9,131.3 569.1,132.0 570.2,132.7 571.4,133.4 572.6,134.2 573.7,134.9 574.9,135.7 576.0,136.4 577.2,137.2" fill="none" stroke="var(--good)" stroke-width="2" stroke-dasharray="6 5"/>
+          <polyline points="90.0,165.6 91.2,165.0 92.3,164.4 93.5,163.6 94.6,162.8 95.8,161.9 97.0,160.9 98.1,159.9 99.3,158.8 100.4,157.6 101.6,156.4 102.8,155.1 103.9,153.8 105.1,152.5 106.2,151.1 107.4,149.6 108.6,148.1 109.7,146.6 110.9,145.1 112.0,143.5 113.2,142.0 114.4,140.4 115.5,138.8 116.7,137.2 117.8,135.6 119.0,134.0 120.2,132.4 121.3,130.8 122.5,129.2 123.6,127.6 124.8,126.0 126.0,124.5 127.1,123.0 128.3,121.5 129.4,120.1 130.6,118.7 131.8,117.3 132.9,116.0 134.1,114.7 135.2,113.4 136.4,112.2 137.6,111.1 138.7,110.0 139.9,108.9 141.0,107.9 142.2,107.0 143.4,106.1 144.5,105.3 145.7,104.6 146.8,103.9 148.0,103.3 149.2,102.7 150.3,102.2 151.5,101.8 152.6,101.5 153.8,101.2 155.0,101.0 156.1,100.8 157.3,100.8 158.4,100.8 159.6,100.8 160.8,101.0 161.9,101.2 163.1,101.5 164.2,101.8 165.4,102.2 166.6,102.7 167.7,103.3 168.9,103.9 170.0,104.5 171.2,105.3 172.4,106.1 173.5,106.9 174.7,107.9 175.8,108.8 177.0,109.9 178.2,111.0 179.3,112.1 180.5,113.3 181.6,114.5 182.8,115.8 184.0,117.2 185.1,118.5 186.3,119.9 187.4,121.4 188.6,122.9 189.8,124.4 190.9,126.0 192.1,127.6 193.2,129.2 194.4,130.8 195.6,132.5 196.7,134.2 197.9,135.9 199.0,137.6 200.2,139.3 201.4,141.1 202.5,142.8 203.7,144.6 204.8,146.4 206.0,148.1 207.2,149.9 208.3,151.7 209.5,153.4 210.6,155.2 211.8,156.9 213.0,158.7 214.1,160.4 215.3,162.1 216.4,163.8 217.6,165.5 218.8,167.2 219.9,168.9 221.1,170.5 222.2,172.1 223.4,173.7 224.6,175.2 225.7,176.7 226.9,178.2 228.0,179.7 229.2,181.1 230.4,182.5 231.5,183.8 232.7,185.2 233.8,186.5 235.0,187.7 236.2,188.9 237.3,190.1 238.5,191.2 239.6,192.3 240.8,193.4 242.0,194.4 243.1,195.3 244.3,196.3 245.4,197.1 246.6,198.0 247.8,198.8 248.9,199.5 250.1,200.2 251.2,200.9 252.4,201.5 253.6,202.1 254.7,202.7 255.9,203.1 257.0,203.6 258.2,204.0 259.4,204.4 260.5,204.7 261.7,205.0 262.8,205.3 264.0,205.5 265.2,205.6 266.3,205.8 267.5,205.9 268.6,205.9 269.8,205.9 271.0,205.9 272.1,205.9 273.3,205.8 274.4,205.7 275.6,205.5 276.8,205.4 277.9,205.2 279.1,204.9 280.2,204.7 281.4,204.4 282.6,204.0 283.7,203.7 284.9,203.3 286.0,202.9 287.2,202.5 288.4,202.1 289.5,201.6 290.7,201.2 291.8,200.7 293.0,200.2 294.2,199.7 295.3,199.1 296.5,198.6 297.6,198.0 298.8,197.4 300.0,196.8 301.1,196.2 302.3,195.6 303.4,195.0 304.6,194.4 305.8,193.7 306.9,193.1 308.1,192.4 309.2,191.8 310.4,191.1 311.6,190.5 312.7,189.8 313.9,189.2 315.0,188.5 316.2,187.8 317.4,187.2 318.5,186.5 319.7,185.8 320.8,185.2 322.0,184.5 323.2,183.8 324.3,183.2 325.5,182.5 326.6,181.9 327.8,181.2 329.0,180.6 330.1,180.0 331.3,179.3 332.4,178.7 333.6,178.1 334.8,177.4 335.9,176.8 337.1,176.2 338.2,175.6 339.4,175.0 340.6,174.4 341.7,173.8 342.9,173.2 344.0,172.7 345.2,172.1 346.4,171.5 347.5,171.0 348.7,170.4 349.8,169.8 351.0,169.3 352.2,168.7 353.3,168.2 354.5,167.7 355.6,167.1 356.8,166.6 358.0,166.1 359.1,165.6 360.3,165.0 361.4,164.5 362.6,164.0 363.8,163.5 364.9,163.0 366.1,162.5 367.2,161.9 368.4,161.4 369.6,160.9 370.7,160.4 371.9,159.9 373.0,159.4 374.2,158.9 375.4,158.4 376.5,157.9 377.7,157.4 378.8,156.8 380.0,156.3 381.2,155.8 382.3,155.3 383.5,154.8 384.6,154.2 385.8,153.7 387.0,153.2 388.1,152.6 389.3,152.1 390.4,151.5 391.6,151.0 392.8,150.4 393.9,149.9 395.1,149.3 396.2,148.8 397.4,148.2 398.6,147.6 399.7,147.0 400.9,146.5 402.0,145.9 403.2,145.3 404.4,144.7 405.5,144.1 406.7,143.5 407.8,142.9 409.0,142.2 410.2,141.6 411.3,141.0 412.5,140.4 413.6,139.7 414.8,139.1 416.0,138.5 417.1,137.8 418.3,137.2 419.4,136.5 420.6,135.9 421.8,135.2 422.9,134.6 424.1,133.9 425.2,133.2 426.4,132.6 427.6,131.9 428.7,131.3 429.9,130.6 431.0,129.9 432.2,129.3 433.4,128.6 434.5,127.9 435.7,127.3 436.8,126.6 438.0,126.0 439.2,125.3 440.3,124.7 441.5,124.0 442.6,123.4 443.8,122.7 445.0,122.1 446.1,121.4 447.3,120.8 448.4,120.2 449.6,119.6 450.8,119.0 451.9,118.4 453.1,117.8 454.2,117.2 455.4,116.6 456.6,116.0 457.7,115.5 458.9,114.9 460.0,114.4 461.2,113.9 462.4,113.3 463.5,112.8 464.7,112.3 465.8,111.9 467.0,111.4 468.2,110.9 469.3,110.5 470.5,110.0 471.6,109.6 472.8,109.2 474.0,108.8 475.1,108.4 476.3,108.1 477.4,107.7 478.6,107.4 479.8,107.1 480.9,106.8 482.1,106.5 483.2,106.2 484.4,106.0 485.6,105.8 486.7,105.5 487.9,105.3 489.0,105.2 490.2,105.0 491.4,104.8 492.5,104.7 493.7,104.6 494.8,104.5 496.0,104.4 497.2,104.4 498.3,104.3 499.5,104.3 500.6,104.3 501.8,104.3 503.0,104.4 504.1,104.4 505.3,104.5 506.4,104.6 507.6,104.7 508.8,104.8 509.9,105.0 511.1,105.1 512.2,105.3 513.4,105.5 514.6,105.7 515.7,106.0 516.9,106.2 518.0,106.5 519.2,106.8 520.4,107.1 521.5,107.4 522.7,107.8 523.8,108.1 525.0,108.5 526.2,108.9 527.3,109.3 528.5,109.7 529.6,110.1 530.8,110.6 532.0,111.0 533.1,111.5 534.3,112.0 535.4,112.5 536.6,113.1 537.8,113.6 538.9,114.1 540.1,114.7 541.2,115.3 542.4,115.9 543.6,116.5 544.7,117.1 545.9,117.7 547.0,118.3 548.2,119.0 549.4,119.6 550.5,120.3 551.7,121.0 552.8,121.7 554.0,122.4 555.2,123.1 556.3,123.8 557.5,124.5 558.6,125.2 559.8,126.0 561.0,126.7 562.1,127.5 563.3,128.2 564.4,129.0 565.6,129.7 566.8,130.5 567.9,131.3 569.1,132.1 570.2,132.9 571.4,133.7 572.6,134.5 573.7,135.3 574.9,136.1 576.0,136.9 577.2,137.7" fill="none" stroke="var(--accent)" stroke-width="2.8"/>
+          <text x="194.4" y="36" font-size="11.5" font-weight="500" fill="var(--amber)" text-anchor="middle">過渡状態</text>
+          <text x="438.8" y="36" font-size="11.5" font-weight="500" fill="var(--good)" text-anchor="middle">定常状態</text>
+          <line x1="298.8" y1="45" x2="298.8" y2="235" stroke="var(--amber)" stroke-width="1.2" stroke-dasharray="4 4"/>
+          <line x1="96" y1="252" x2="120" y2="252" stroke="var(--accent)" stroke-width="2.6"/>
+          <text x="126" y="256" font-size="12" font-weight="500" fill="var(--accent-deep)">実際の運動</text>
+          <line x1="250" y1="252" x2="274" y2="252" stroke="var(--good)" stroke-width="2.4" stroke-dasharray="6 5"/>
+          <text x="280" y="256" font-size="12" font-weight="500" fill="var(--good)">定常解（外力と同じ速さの振動）</text>
+        </svg>
+        <figcaption>外から揺さぶり続けたときの運動です。はじめのうちは、最初に与えた勢い（斉次解）と外力による振動（特解）が混ざって複雑に動きますが、<strong>斉次解は減衰して消えるので、やがて外力と同じ速さの規則正しい振動だけが残ります</strong>。青い線が実際の運動、破線が外力と同じ速さの振動（特解）です。</figcaption>
+      </figure>
+      <div class="box teach"><span class="lab">過渡状態と定常状態</span>
+      <p>斉次解が生きているあいだの複雑な動きを<strong>過渡状態</strong>、それが消えて外力と同じ速さの振動だけが残った状態を<strong>定常状態</strong>といいます。</p>
+      <p style="margin-top:8px">定常状態では、物体は<strong>外力と同じ角振動数 \(\omega\) で振動します</strong>。固有の \(\omega_0\) ではありません。揺さぶる速さに、物体が付き合わされている状態です。</p>
+      <p style="margin-top:8px">ただし、振幅がどれだけになるかは \(\omega\) と \(\omega_0\) の関係で決まります。それを調べるのが §04 です。外力からどれだけ遅れるか（位相の遅れ）については、本節では偏角がそれを表すことに触れるだけにし、詳しい振る舞いは力学のセクションで扱います。</p></div>
+
+      <div class="box teach"><span class="lab">この記事の到達目標</span>
+      <ul style="margin:6px 0 0">
+        <li>非斉次方程式の一般解が「斉次解 ＋ 特解」になる理由を説明できる</li>
+        <li>外力を複素数で書き、方程式を代数方程式に変えられる</li>
+        <li>複素振幅 \(A\) を割り算1回で求められる</li>
+        <li>非斉次項の形（定数・指数関数・三角関数）に応じて、仮定する特解の形を選べる</li>
+        <li>仮定した形が斉次解と重なるとき、\(t\) を掛けて解ける</li>
+        <li>斉次解と特解を合わせ、初期条件から任意定数を決められる</li>
+        <li>\(|A|\) が振幅、\(A\) の偏角が位相の遅れであることを説明できる</li>
+        <li>共鳴が起こる理由を、分母の振る舞いから説明できる</li>
+      </ul></div>
+
+      <div class="box principle"><span class="lab">前提として使うもの</span>
+      <ul style="margin:6px 0 0">
+        <li><strong>5-2</strong>：斉次方程式の解、\(\omega_0=\sqrt{k/m}\)</li>
+        <li><strong>4-2</strong>：複素振幅、微分が \(i\omega\) の掛け算になること</li>
+        <li><strong>4-1</strong>：複素数の絶対値と偏角</li>
+      </ul></div>
+    </section>
+
+    <!-- §02 -->
+    <section id="d1">
+      <div class="sec-head"><span class="idx">§02</span><h2>複素数で解く — 割り算1回で答えが出る</h2></div>
+
+      <p>特解を1つ見つけます。ここで使うのは、5-2 と同じ<strong>「解の形を仮定して代入する」</strong>という手です。</p>
+
+      <div class="box principle"><span class="lab">未定係数法</span>
+      <p>非斉次項 \(f(t)\) が指数関数・三角関数・多項式のような<strong>微分しても形が大きく変わらない関数</strong>のとき、特解も同じ形をしていると予想して代入し、係数を決める。この方法を<strong>未定係数法</strong>といいます。</p>
+      <div class="table-scroll"><table class="mini-table">
+        <tr><th style="width:36%">非斉次項 \(f(t)\)</th><th>仮定する特解の形</th></tr>
+        <tr><td>定数</td><td>\(x_p=a\)（定数）</td></tr>
+        <tr><td>\(n\) 次の多項式</td><td>同じ \(n\) 次の多項式</td></tr>
+        <tr><td>\(e^{kt}\)</td><td>\(x_p=ae^{kt}\)</td></tr>
+        <tr><td>\(\cos\omega t\) や \(\sin\omega t\)</td><td>\(x_p=a\cos\omega t+b\sin\omega t\)</td></tr>
+      </table></div>
+      <p style="margin-top:8px">どれも「微分しても同じ仲間の関数のままでいる」ことが理由です。多項式は微分すると次数が下がるだけ、指数関数は定数倍になるだけ、三角関数は \(\sin\) と \(\cos\) を行き来するだけ。だから<strong>同じ形を仮定すれば、代入したときに左右で形が揃います</strong>。</p></div>
+
+      <p>さて、今回の非斉次項は \(F_0\cos\omega t\) なので、表に従えば特解も同じ角振動数の振動だと予想できます。物理的にも、定常状態では外力と同じ速さで振動するはずだ、と読めます。</p>
+
+      <p>そこで \(x=a\cos(\omega t-\varphi)\) と置いて代入する——という方法も取れますが、加法定理で展開して \(\cos\omega t\) と \(\sin\omega t\) の係数を比べる作業になり、かなり煩雑です。</p>
+      <p>そこで、4-2 で用意した道具を使います。</p>
+
+      <div class="box target"><span class="lab">複素数に置き換える</span>
+      <p>外力は、複素数の実部として書けます。</p>
+      \[ F_0\cos\omega t=\mathrm{Re}\big[F_0e^{i\omega t}\big] \]
+      <p>そこで、元の方程式の代わりに<strong>複素数のままの方程式</strong>を解きます。</p>
+      \[ m\frac{d^2z}{dt^2}+\gamma\frac{dz}{dt}+kz=F_0e^{i\omega t} \]
+      <p>この \(z(t)\) が求まれば、実部を取ったもの \(x=\mathrm{Re}[z]\) が元の方程式の解です。</p>
+      <p style="margin-top:8px"><strong>なぜこれが許されるのか</strong>：方程式が線形だからです。実部を取る操作は、微分とも足し算とも順序を入れ替えられます。だから複素数のまま計算を進めて、最後に実部を取ってよい。4-2 の最後で触れた注意が、ここで効いています。</p></div>
+
+      <div class="attempt"><span class="lab">まず自力で</span>
+      <p>定常解を \(z=Ae^{i\omega t}\)（\(A\) は複素数の定数）と仮定して、上の複素数の方程式に代入し、\(A\) を求めてください。</p>
+      <div class="controls">
+        <button class="ctl-btn amber" data-hint>ヒントを表示</button>
+        <button class="ctl-btn" data-sol>解答を見る</button>
+      </div>
+      <div class="hint"><span class="hn">HINT 1</span><p>4-2 で見たとおり、\(e^{i\omega t}\) を微分すると \(i\omega\) が掛かるだけです。2回微分すれば \((i\omega)^2=-\omega^2\)。</p></div>
+      <div class="hint"><span class="hn">HINT 2</span><p>代入するとすべての項に \(e^{i\omega t}\) が共通して現れます。これで割ってしまえば、残るのは \(A\) についての1次方程式です。</p></div>
+      <div class="sol">
+        <div class="step"><div class="sh"><span class="sn">1</span>微分を掛け算に置き換える</div>
+        <div class="why">なぜ：指数関数の微分は \(i\omega\) を掛けるだけ。これが複素数で書く最大の利点です。</div>
+        \[ \frac{dz}{dt}=i\omega A e^{i\omega t},\qquad \frac{d^2z}{dt^2}=-\omega^2Ae^{i\omega t} \]
+        </div>
+        <div class="step"><div class="sh"><span class="sn">2</span>代入してくくり出す</div>
+        <div class="why">なぜ：3つの項すべてに \(Ae^{i\omega t}\) が共通しています。</div>
+        \[ \left(-m\omega^2+i\gamma\omega+k\right)Ae^{i\omega t}=F_0e^{i\omega t} \]
+        </div>
+        <div class="step"><div class="sh"><span class="sn">3</span>\(e^{i\omega t}\) で割る</div>
+        <div class="why">なぜ：指数関数は 0 になりません。<strong>微分が1つも残らず、ただの1次方程式になりました。</strong></div>
+        \[ \left(k-m\omega^2+i\gamma\omega\right)A=F_0 \]
+        </div>
+        <div class="step"><div class="sh"><span class="sn">4</span>割り算する</div>
+        <div class="why">なぜ：\(A\) について解くだけです。</div>
+        \[ A=\frac{F_0}{k-m\omega^2+i\gamma\omega} \]
+        <p style="font-size:13.5px;color:var(--ink-faint);margin:6px 0 0">微分方程式を解く作業が、本当に<strong>割り算1回</strong>で終わりました。4-2 で「微分方程式を解く作業が、割り算に化ける」と書いた場面が、これです。</p></div>
+      </div>
+      </div>
+
+      <h3>1つの複素数から、2つの情報を読む</h3>
+      <p>得られた \(A\) は複素数です。4-1 で見たとおり、複素数は<strong>長さと角度</strong>の2つの情報を持っています。そしてその2つが、そのまま物理的な意味を持ちます。</p>
+
+      <div class="box principle"><span class="lab">複素振幅の読み取り方</span>
+      <p>\(A\) を極形式で \(A=|A|\,e^{-i\varphi}\) と書くと、定常解は</p>
+      \[ z=Ae^{i\omega t}=|A|\,e^{i(\omega t-\varphi)} \]
+      <p>実部を取って</p>
+      \[ x(t)=|A|\cos(\omega t-\varphi) \]
+      <div class="table-scroll"><table class="mini-table">
+        <tr><th style="width:30%">\(A\) の情報</th><th>物理的な意味</th></tr>
+        <tr><td>絶対値 \(|A|\)</td><td>定常振動の<strong>振幅</strong></td></tr>
+        <tr><td>偏角（の符号を変えたもの）\(\varphi\)</td><td>外力に対する<strong>位相の遅れ</strong></td></tr>
+      </table></div>
+      <p style="margin-top:8px">実数のまま計算していたら、振幅と位相を別々に求める必要がありました。<strong>複素数で解くと、1つの数に両方が入って出てくる</strong>のです。</p></div>
+
+      <h3>計算ドリル（§02・全1問）</h3>
+
+      <div class="drill"><p><span class="qn">問1</span>複素数のまま計算して最後に実部を取る、という手続きが許されるのはなぜか。またこの方法が使えない場面はあるか。</p>
+      <div class="attempt" style="margin:10px 0 4px"><span class="lab">自分の答えを出してから</span>
+      <div class="controls"><button class="ctl-btn" data-sol>解答を見る</button></div>
+      <div class="sol"><p>方程式が<strong>線形</strong>だからです。実部を取る操作は、微分とも定数倍とも足し算とも順序を入れ替えられます。だから複素数のまま微分・整理を行い、最後に実部を取っても結果は変わりません。</p>
+      <p><strong>使えない場面</strong>：掛け算が入ると成り立ちません。一般に \(\mathrm{Re}[z_1z_2]\neq\mathrm{Re}[z_1]\cdot\mathrm{Re}[z_2]\) だからです。</p>
+      <p style="font-size:13.5px;color:var(--ink-faint)">たとえばエネルギーのように<strong>振幅の2乗</strong>が出てくる量を計算するときは、先に実部を取って実数に戻してから2乗する必要があります。4-2 の最後で触れた注意そのものです。<strong>線形な操作のあいだは複素数のまま、非線形な操作をする前に実数へ</strong>——これが原則です。</p></div></div></div>
+    </section>
+
+    <!-- §03 -->
+    <section id="d2">
+      <div class="sec-head"><span class="idx">§03</span><h2>一般解を組み立てる</h2></div>
+
+      <p>§02 で特解 \(x_p\) が求まりました。しかしこれは解の一部にすぎません。§01 で見たとおり、一般解は</p>
+      \[ x=x_h+x_p \]
+      <p>です。\(x_h\) は 5-2 で求めた斉次解で、任意定数を2つ含んでいます。ここまで揃えて初めて、<strong>初期条件を与えて運動を1つに決める</strong>ことができます。</p>
+
+      <div class="box warn"><span class="lab">よくある間違い</span>
+      <p>初期条件は、<strong>一般解全体に課します</strong>。特解だけに課してはいけません。</p>
+      <p style="margin-top:8px">特解は「たまたま見つけた1つの解」であって、初期条件を満たす義務はないからです。\(t=0\) での位置や速度を合わせる役目は、任意定数を持つ斉次解が担います。</p></div>
+
+      <div class="box target"><span class="lab">解く手順</span>
+      <ol style="margin:6px 0 0">
+        <li>右辺を 0 にして特性方程式を解き、斉次解 \(x_h\) を求める（5-2）</li>
+        <li>非斉次項と同じ形を仮定して、特解 \(x_p\) を求める（§02）</li>
+        <li>足して一般解 \(x=x_h+x_p\) を作る</li>
+        <li>初期条件を代入して、任意定数を決める</li>
+      </ol></div>
+
+      <h3>非斉次項の形ごとの当てはめ方</h3>
+      <p>手順2の「特解を求める」を、§02 の表に沿って具体的に見ておきます。どれも<strong>仮定した形を代入して、係数を決める</strong>だけです。</p>
+
+      <div class="box teach"><span class="lab">(a) 非斉次項が定数のとき</span>
+      <p>特解も定数 \(x_p=a\) と仮定します。定数を微分すると 0 なので、微分の項はすべて消えます。</p>
+      \[ m\cdot0+\gamma\cdot0+ka=f_0\quad\Longrightarrow\quad a=\frac{f_0}{k} \]
+      <p>残るのは \(x\) の項だけ。<strong>一定の力を加えたときの新しい釣り合い位置</strong>にあたります。</p></div>
+
+      <div class="box teach"><span class="lab">(b) 非斉次項が指数関数のとき</span>
+      <p>\(f(t)=f_0e^{\kappa t}\) なら \(x_p=ae^{\kappa t}\) と仮定します（ばね定数の \(k\) と紛らわしいので、肩の定数は \(\kappa\) と書きます）。微分すると \(\kappa\) が前に出るだけなので、代入すれば \(e^{\kappa t}\) が共通因子になって割れます。</p>
+      \[ \left(m\kappa^2+\gamma\kappa+k\right)a=f_0 \]
+      <p>括弧の中は<strong>特性方程式の左辺に \(\lambda=\kappa\) を入れたもの</strong>です。この事実が、このあとの「斉次解と重なるとき」で効いてきます。</p></div>
+
+      <div class="box teach"><span class="lab">(c) 非斉次項が三角関数のとき</span>
+      <p>\(f(t)=F_0\cos\omega t\) なら、実数のまま \(x_p=a\cos\omega t+b\sin\omega t\) と仮定してもよいのですが、§02 で見たとおり<strong>複素数にして \(z=Ae^{i\omega t}\) と置くほうが速い</strong>。微分が \(i\omega\) の掛け算になり、割り算1回で終わります。</p></div>
+
+      <h3>仮定した形が斉次解と重なるとき</h3>
+      <p>ここに1つだけ落とし穴があります。<strong>仮定しようとした形が、すでに斉次解に含まれている場合</strong>です。</p>
+      <p>たとえば \(\dfrac{d^2x}{dt^2}+3\dfrac{dx}{dt}+2x=e^{-t}\) を考えます。斉次解は \(\lambda=-1,-2\) から \(C_1e^{-t}+C_2e^{-2t}\)。ここで (b) に従って \(x_p=ae^{-t}\) と仮定すると、上で見たとおり係数は「特性方程式に \(\lambda=-1\) を入れたもの」になりますが、\(-1\) は特性方程式の解なので<strong>その値は 0</strong>。つまり</p>
+      \[ 0\cdot a=1 \]
+      <p>という、満たしようのない式が出てしまいます。斉次解は代入すると 0 になる関数なのだから、当然です。</p>
+
+      <div class="box target"><span class="lab">\(t\) を掛ける</span>
+      <p>このときは、仮定する形に \(t\) を掛けます。</p>
+      \[ x_p=a\,t\,e^{-t} \]
+      <p>それでもまだ斉次解に含まれるなら（重解の場合など）、さらに \(t\) を掛けます。5-2 の臨界減衰で \(te^{\lambda t}\) が現れたのと、まったく同じ事情です。</p></div>
+
+      <p>実際に確かめます。積の微分で</p>
+      \[ \dot x_p=a(1-t)e^{-t},\qquad \ddot x_p=a(t-2)e^{-t} \]
+      <p>これを代入して \(e^{-t}\) でくくると、括弧の中は</p>
+      \[ a\big[(t-2)+3(1-t)+2t\big]=a\big[t-2+3-3t+2t\big]=a \]
+      <p>\(t\) を含む項がきれいに消えて、\(a=1\)。したがって特解は \(x_p=te^{-t}\) です。</p>
+      <p><strong>\(t\) を掛けると、なぜうまくいくのか。</strong>\(te^{-t}\) を微分すると \(e^{-t}\) と \(te^{-t}\) の両方が現れます。\(te^{-t}\) の側は斉次解と同じ理由で打ち消し合い、<strong>残った \(e^{-t}\) の側が右辺と釣り合う</strong>——これが仕組みです。</p>
+
+      <div class="box warn"><span class="lab">代入する前に確認すること</span>
+      <p>未定係数法を使うときは、<strong>仮定した形が斉次解に含まれていないかを必ず先に確かめてください</strong>。含まれていれば \(t\) を掛ける。この確認を飛ばすと、計算の途中で \(0=\)（0 でない何か）という式に出会って行き詰まります。</p></div>
+
+      <div class="attempt"><span class="lab">まず自力で</span>
+      <p>次の方程式を、初期条件 \(x(0)=0,\ \dot x(0)=0\) のもとで完全に解いてください。</p>
+      \[ \frac{d^2x}{dt^2}+3\frac{dx}{dt}+2x=10\cos t \]
+      <div class="controls">
+        <button class="ctl-btn amber" data-hint>ヒントを表示</button>
+        <button class="ctl-btn" data-sol>解答を見る</button>
+      </div>
+      <div class="hint"><span class="hn">HINT 1</span><p>まず右辺を 0 にして特性方程式 \(\lambda^2+3\lambda+2=0\) を解きます。因数分解できます。</p></div>
+      <div class="hint"><span class="hn">HINT 2</span><p>特解は \(z=Ae^{it}\)（\(\omega=1\)）と置いて代入します。\(A\) を求めたら、\(a+bi\) の形に直してから実部を取ってください。</p></div>
+      <div class="sol">
+        <div class="step"><div class="sh"><span class="sn">1</span>斉次解を求める</div>
+        <div class="why">なぜ：右辺を 0 にした方程式を、5-2 の手順で解きます。</div>
+        \[ \lambda^2+3\lambda+2=(\lambda+1)(\lambda+2)=0 \]
+        <p style="margin:4px 0">\(\lambda=-1,\ -2\) なので</p>
+        \[ x_h=C_1e^{-t}+C_2e^{-2t} \]
+        </div>
+        <div class="step"><div class="sh"><span class="sn">2</span>特解を求める</div>
+        <div class="why">なぜ：非斉次項が \(\cos t\) なので \(\omega=1\)。複素数で \(z=Ae^{it}\) と置いて代入します。</div>
+        <p style="margin:4px 0">微分は \(i\) を掛けるだけ、2回微分は \(i^2=-1\) を掛けるだけなので</p>
+        \[ (-1+3i+2)A=10 \]
+        \[ A=\frac{10}{1+3i} \]
+        <p style="margin:4px 0">分母を実数にするため、分母の共役 \(1-3i\) を分母と分子に掛けます。</p>
+        \[ A=\frac{10(1-3i)}{(1+3i)(1-3i)}=\frac{10(1-3i)}{10}=1-3i \]
+        <p style="margin:4px 0">実部を取れば特解です。オイラーの公式で \(e^{it}=\cos t+i\sin t\) と書いて展開します。</p>
+        \[ (1-3i)(\cos t+i\sin t) \]
+        \[ =(\cos t+3\sin t)+i(\sin t-3\cos t) \]
+        <p style="margin:4px 0">\(i^2=-1\) から、\(-3i\cdot i\sin t\) が \(+3\sin t\) となって実部に回る点に注意してください。実部だけ取れば</p>
+        \[ x_p=\cos t+3\sin t \]
+        </div>
+        <div class="step"><div class="sh"><span class="sn">3</span>一般解を作る</div>
+        <div class="why">なぜ：斉次解と特解を足すだけです。</div>
+        \[ x=C_1e^{-t}+C_2e^{-2t}+\cos t+3\sin t \]
+        </div>
+        <div class="step"><div class="sh"><span class="sn">4</span>初期条件で定数を決める</div>
+        <div class="why">なぜ：一般解<strong>全体</strong>に条件を課します。速度も必要なので、微分しておきます。</div>
+        \[ \dot x=-C_1e^{-t}-2C_2e^{-2t}-\sin t+3\cos t \]
+        <p style="margin:4px 0">\(t=0\) を代入すると、2つの式が得られます。</p>
+        \[ \begin{aligned} C_1+C_2+1&=0\\[2pt] -C_1-2C_2+3&=0 \end{aligned} \]
+        <p style="margin:4px 0">2式を足すと \(-C_2+4=0\) より \(C_2=4\)、第1式から \(C_1=-5\)。</p>
+        \[ x(t)=-5e^{-t}+4e^{-2t}+\cos t+3\sin t \]
+        <p style="font-size:13.5px;color:var(--ink-faint);margin:6px 0 0">検算：\(t=0\) で \(-5+4+1=0\)、\(\dot x(0)=5-8+3=0\)。どちらも初期条件を満たします。前の2項は時間とともに消え、<strong>残るのは \(\cos t+3\sin t\) という定常振動</strong>。図で見た過渡状態から定常状態への移行が、式の上でも確認できます。</p></div>
+      </div>
+      </div>
+
+      <h3>計算ドリル（§03・全4問）</h3>
+
+      <div class="drill"><p><span class="qn">問1</span>\(\dfrac{d^2x}{dt^2}+4x=5\cos 3t\) の特解を求めよ。</p>
+      <div class="attempt" style="margin:10px 0 4px"><span class="lab">自分の答えを出してから</span>
+      <div class="controls"><button class="ctl-btn" data-sol>解答を見る</button></div>
+      <div class="sol"><p>抵抗の項がないので、\(z=Ae^{3it}\) と置いて代入すると \(A\) は実数になります。</p>
+      \[ \left(-9+4\right)A=5\quad\Longrightarrow\quad A=-1 \]
+      <p>したがって特解は</p>
+      \[ x_p=-\cos 3t \]
+      <p style="font-size:13.5px;color:var(--ink-faint)">\(A\) が負になりました。これは<strong>外力と逆向きに振動する</strong>ことを意味します。この系の固有角振動数は \(\omega_0=2\) で、外力の \(\omega=3\) はそれより速い。抵抗がない場合、\(A\) は実数になるので、符号が正なら外力と同じ向き、負なら逆向きに振動します。<strong>\(\omega\) が \(\omega_0\) をまたぐと、この符号が入れ替わります</strong>。符号の反転は位相が \(\pi\) ずれることにあたりますが、位相の詳しい扱いは力学のセクションに譲ります。</p></div></div></div>
+
+      <div class="drill"><p><span class="qn">問2</span>\(\dfrac{d^2x}{dt^2}+2\dfrac{dx}{dt}+5x=8\cos t\) の一般解を求めよ（初期条件は与えない）。</p>
+      <div class="attempt" style="margin:10px 0 4px"><span class="lab">自分の答えを出してから</span>
+      <div class="controls">
+        <button class="ctl-btn amber" data-hint>ヒントを表示</button>
+        <button class="ctl-btn" data-sol>解答を見る</button>
+      </div>
+      <div class="hint"><span class="hn">HINT 1</span><p>特性方程式 \(\lambda^2+2\lambda+5=0\) の判別式は負です。5-2 の減衰振動の場合にあたります。</p></div>
+      <div class="sol"><p><strong>斉次解</strong>：\(\lambda=\dfrac{-2\pm\sqrt{4-20}}{2}=-1\pm2i\) なので、減衰振動の形です。</p>
+      \[ x_h=e^{-t}\left(C_1\cos 2t+C_2\sin 2t\right) \]
+      <p><strong>特解</strong>：\(\omega=1\) として \(z=Ae^{it}\) を代入します。</p>
+      \[ (-1+2i+5)A=8\quad\Longrightarrow\quad A=\frac{8}{4+2i} \]
+      <p>分母の共役を掛けて整理すると</p>
+      \[ A=\frac{8(4-2i)}{20}=\frac{8}{5}-\frac45i \]
+      \[ x_p=\frac85\cos t+\frac45\sin t \]
+      <p><strong>一般解</strong>は、この2つの和です。</p>
+      \[ x=e^{-t}\left(C_1\cos 2t+C_2\sin 2t\right)+x_p \]
+      <p style="font-size:13.5px;color:var(--ink-faint)">斉次解の角振動数は 2、特解の角振動数は 1。<strong>過渡状態では2つの振動数が混ざり、定常状態では外力の 1 だけが残ります</strong>。§01 の図で見た複雑な動きは、この2つの重なりだったわけです。</p></div></div></div>
+
+      <div class="drill"><p><span class="qn">問3</span>次の特解を求めよ。非斉次項の形に応じて、仮定する関数を選ぶこと。<br>(a) \(\dfrac{d^2x}{dt^2}+2\dfrac{dx}{dt}+5x=10\)　(b) \(\dfrac{d^2x}{dt^2}+3\dfrac{dx}{dt}+2x=e^{-3t}\)</p>
+      <div class="attempt" style="margin:10px 0 4px"><span class="lab">自分の答えを出してから</span>
+      <div class="controls">
+        <button class="ctl-btn amber" data-hint>ヒントを表示</button>
+        <button class="ctl-btn" data-sol>解答を見る</button>
+      </div>
+      <div class="hint"><span class="hn">HINT 1</span><p>(a) 非斉次項が定数なので、特解も定数 \(x_p=a\) と仮定します。定数を微分すると 0 です。</p></div>
+      <div class="hint"><span class="hn">HINT 2</span><p>(b) 特解を \(x_p=ae^{-3t}\) と仮定します。代入する前に、\(e^{-3t}\) が斉次解に含まれていないか確認してください。</p></div>
+      <div class="sol"><p><strong>(a)</strong> \(x_p=a\) と置くと、微分はすべて 0 なので</p>
+      \[ 5a=10\quad\Longrightarrow\quad a=2 \]
+      <p>したがって \(x_p=2\)。</p>
+      <p style="font-size:13.5px;color:var(--ink-faint)">これは物理的には<strong>一定の力を加え続けたときの、新しい釣り合い位置</strong>です。重力の下でばねに重りを吊るすと、自然長より下に釣り合い点が移る——あの現象にあたります。振動はその点のまわりで起こります。</p>
+      <p style="margin-top:10px"><strong>(b)</strong> 斉次解は \(\lambda^2+3\lambda+2=0\) より \(\lambda=-1,-2\)。\(e^{-3t}\) は含まれていないので、そのまま \(x_p=ae^{-3t}\) と仮定できます。</p>
+      \[ (9-9+2)a=1\quad\Longrightarrow\quad a=\frac12 \]
+      <p>したがって \(x_p=\dfrac12e^{-3t}\)。</p>
+      <p style="font-size:13.5px;color:var(--ink-faint)">もし非斉次項が \(e^{-t}\) だったら、それは斉次解に含まれているので \(x_p=ate^{-t}\) と仮定する必要がありました。<strong>代入する前に、斉次解と重なっていないか確かめる</strong>のが、未定係数法を使うときの決まりごとです。</p></div></div></div>
+
+      <div class="drill"><p><span class="qn">問4</span>\(\dfrac{d^2x}{dt^2}+4x=\cos 2t\) の特解を求めよ。まず \(x_p=a\cos 2t+b\sin 2t\) を試し、うまくいかない理由を確かめてから進めること。</p>
+      <div class="attempt" style="margin:10px 0 4px"><span class="lab">自分の答えを出してから</span>
+      <div class="controls">
+        <button class="ctl-btn amber" data-hint>ヒントを表示</button>
+        <button class="ctl-btn" data-sol>解答を見る</button>
+      </div>
+      <div class="hint"><span class="hn">HINT 1</span><p>斉次方程式 \(\ddot x+4x=0\) の解は \(C_1\cos 2t+C_2\sin 2t\)。仮定しようとした形が、これに含まれていないか確認してください。</p></div>
+      <div class="hint"><span class="hn">HINT 2</span><p>重なっている場合は \(t\) を掛けます。本来は \(x_p=t(a\cos 2t+b\sin 2t)\) と置きますが、代入すると \(\cos\) 側の係数は 0 と決まるので、はじめから \(x_p=at\sin 2t\) として構いません。</p></div>
+      <div class="sol"><p><strong>まず素直に試すと</strong>：斉次解は \(C_1\cos 2t+C_2\sin 2t\) です。\(x_p=a\cos 2t+b\sin 2t\) はこれに完全に含まれているので、代入すると左辺が 0 になり</p>
+      \[ 0=\cos 2t \]
+      <p>という意味のない式が出ます。<strong>仮定した形が斉次解と重なっている</strong>ためです。</p>
+      <p style="margin-top:10px"><strong>\(t\) を掛けて試す</strong>：\(x_p=at\sin 2t\) と置きます。積の微分で</p>
+      \[ \dot x_p=a\sin 2t+2at\cos 2t \]
+      \[ \ddot x_p=4a\cos 2t-4at\sin 2t \]
+      <p>代入すると、\(t\) を含む項がきれいに打ち消し合います。</p>
+      \[ 4a\cos 2t-4at\sin 2t+4at\sin 2t=\cos 2t \]
+      \[ 4a\cos 2t=\cos 2t\quad\Longrightarrow\quad a=\frac14 \]
+      <p>したがって特解は</p>
+      \[ x_p=\frac{t}{4}\sin 2t \]
+      <p style="font-size:13.5px;color:var(--ink-faint)">この解は、\(t\) が掛かっているため<strong>時間とともに振幅が増大していきます</strong>。抵抗がない系を、ちょうど固有振動数で揺さぶり続けた場合にあたります。§04 で「抵抗がないと振幅が発散する」と述べるのは、この解のことです。<strong>特解の形が斉次解と重なるという数学的な事情が、そのまま物理的な発散に対応している</strong>わけです。</p></div></div></div>
+    </section>
+
+    <!-- §04 -->
+    <section id="d3">
+      <div class="sec-head"><span class="idx">§04</span><h2>解を読む — 共鳴</h2></div>
+
+      <p>ここまでで、非斉次方程式を解く手順は完成しました。最後に、得られた複素振幅 \(A\) から<strong>何が読み取れるか</strong>を見ておきます。</p>
+      \[ A=\frac{F_0}{k-m\omega^2+i\gamma\omega} \]
+      <p>この1つの複素数に、定常振動の振幅と位相の両方が入っているのでした。まず振幅を取り出します（位相については、この節の最後で触れます）。</p>
+
+      <h3>絶対値を取る — 振幅</h3>
+      <p>分数の絶対値は「分子の絶対値 ÷ 分母の絶対値」です。分母は実部が \(k-m\omega^2\)、虚部が \(\gamma\omega\) の複素数なので、その絶対値は \(\sqrt{(\text{実部})^2+(\text{虚部})^2}\)。したがって</p>
+      \[ |A|=\frac{F_0}{\sqrt{(k-m\omega^2)^2+(\gamma\omega)^2}} \]
+      <p>分子の \(F_0\) は \(\omega\) によらないので、<strong>振幅の振る舞いはすべて分母が決めます</strong>。そして分母の第1項は、\(\omega\) を動かすと 0 になることがあります。</p>
+      \[ k-m\omega^2=0\quad\Longleftrightarrow\quad \omega=\sqrt{\frac km}=\omega_0 \]
+      <p>このとき分母は \(\gamma\omega\) の項だけになり、ぐっと小さくなります。\(\omega\) を \(\omega_0\) に近づけると振幅が大きくなるこの現象を<strong>共鳴</strong>といいます。</p>
+
+      <figure class="fig">
+        <svg viewBox="0 0 640 280" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="共鳴曲線">
+          <line x1="70" y1="225" x2="600" y2="225" stroke="var(--ink-faint)" stroke-width="1.3"/>
+          <polygon points="608,225 594,219 594,231" fill="var(--ink-faint)"/>
+          <line x1="95" y1="240" x2="95" y2="40" stroke="var(--ink-faint)" stroke-width="1.3"/>
+          <polygon points="95,32 89,46 101,46" fill="var(--ink-faint)"/>
+          <text x="600" y="246" font-size="12" fill="var(--ink)" font-style="italic">ω</text>
+          <text x="60" y="42" font-size="12" fill="var(--ink)">振幅</text>
+          <line x1="285" y1="225" x2="285" y2="48" stroke="var(--line)" stroke-width="1.2" stroke-dasharray="5 5"/>
+          <text x="285" y="244" font-size="11.5" fill="var(--ink-soft)" text-anchor="middle">ω₀</text>
+          <polyline points="95.0,199.0 95.8,199.0 96.5,199.0 97.3,199.0 98.0,199.0 98.8,199.0 99.6,199.0 100.3,199.0 101.1,199.0 101.8,199.0 102.6,199.0 103.4,199.0 104.1,198.9 104.9,198.9 105.6,198.9 106.4,198.9 107.2,198.9 107.9,198.9 108.7,198.9 109.4,198.9 110.2,198.8 111.0,198.8 111.7,198.8 112.5,198.8 113.2,198.8 114.0,198.7 114.8,198.7 115.5,198.7 116.3,198.7 117.0,198.7 117.8,198.6 118.6,198.6 119.3,198.6 120.1,198.5 120.8,198.5 121.6,198.5 122.4,198.5 123.1,198.4 123.9,198.4 124.6,198.4 125.4,198.3 126.2,198.3 126.9,198.3 127.7,198.2 128.4,198.2 129.2,198.1 130.0,198.1 130.7,198.1 131.5,198.0 132.2,198.0 133.0,197.9 133.8,197.9 134.5,197.8 135.3,197.8 136.0,197.7 136.8,197.7 137.6,197.6 138.3,197.6 139.1,197.5 139.8,197.5 140.6,197.4 141.4,197.4 142.1,197.3 142.9,197.3 143.6,197.2 144.4,197.1 145.2,197.1 145.9,197.0 146.7,197.0 147.4,196.9 148.2,196.8 149.0,196.8 149.7,196.7 150.5,196.6 151.2,196.5 152.0,196.5 152.8,196.4 153.5,196.3 154.3,196.2 155.0,196.2 155.8,196.1 156.6,196.0 157.3,195.9 158.1,195.8 158.8,195.7 159.6,195.7 160.4,195.6 161.1,195.5 161.9,195.4 162.6,195.3 163.4,195.2 164.2,195.1 164.9,195.0 165.7,194.9 166.4,194.8 167.2,194.7 168.0,194.6 168.7,194.5 169.5,194.4 170.2,194.3 171.0,194.1 171.8,194.0 172.5,193.9 173.3,193.8 174.0,193.7 174.8,193.5 175.6,193.4 176.3,193.3 177.1,193.1 177.8,193.0 178.6,192.9 179.4,192.7 180.1,192.6 180.9,192.5 181.6,192.3 182.4,192.2 183.2,192.0 183.9,191.9 184.7,191.7 185.4,191.5 186.2,191.4 187.0,191.2 187.7,191.1 188.5,190.9 189.2,190.7 190.0,190.5 190.8,190.3 191.5,190.2 192.3,190.0 193.0,189.8 193.8,189.6 194.6,189.4 195.3,189.2 196.1,189.0 196.8,188.8 197.6,188.6 198.4,188.4 199.1,188.1 199.9,187.9 200.6,187.7 201.4,187.4 202.2,187.2 202.9,187.0 203.7,186.7 204.4,186.5 205.2,186.2 206.0,185.9 206.7,185.7 207.5,185.4 208.2,185.1 209.0,184.8 209.8,184.5 210.5,184.2 211.3,183.9 212.0,183.6 212.8,183.3 213.6,183.0 214.3,182.6 215.1,182.3 215.8,182.0 216.6,181.6 217.4,181.2 218.1,180.9 218.9,180.5 219.6,180.1 220.4,179.7 221.2,179.3 221.9,178.9 222.7,178.5 223.4,178.0 224.2,177.6 225.0,177.1 225.7,176.7 226.5,176.2 227.2,175.7 228.0,175.2 228.8,174.7 229.5,174.2 230.3,173.6 231.0,173.1 231.8,172.5 232.6,171.9 233.3,171.3 234.1,170.7 234.8,170.1 235.6,169.4 236.4,168.7 237.1,168.0 237.9,167.3 238.6,166.6 239.4,165.8 240.2,165.1 240.9,164.3 241.7,163.5 242.4,162.6 243.2,161.7 244.0,160.8 244.7,159.9 245.5,159.0 246.2,158.0 247.0,157.0 247.8,155.9 248.5,154.8 249.3,153.7 250.0,152.5 250.8,151.3 251.6,150.1 252.3,148.8 253.1,147.5 253.8,146.1 254.6,144.7 255.4,143.2 256.1,141.7 256.9,140.1 257.6,138.4 258.4,136.7 259.2,135.0 259.9,133.1 260.7,131.2 261.4,129.3 262.2,127.2 263.0,125.1 263.7,122.9 264.5,120.7 265.2,118.4 266.0,115.9 266.8,113.5 267.5,110.9 268.3,108.3 269.0,105.6 269.8,102.8 270.6,100.0 271.3,97.1 272.1,94.2 272.8,91.2 273.6,88.3 274.4,85.4 275.1,82.5 275.9,79.6 276.6,76.9 277.4,74.2 278.2,71.8 278.9,69.5 279.7,67.5 280.4,65.7 281.2,64.2 282.0,63.1 282.7,62.4 283.5,62.0 284.2,62.1 285.0,62.5 285.8,63.3 286.5,64.6 287.3,66.2 288.0,68.1 288.8,70.4 289.6,72.9 290.3,75.6 291.1,78.5 291.8,81.5 292.6,84.7 293.4,88.0 294.1,91.2 294.9,94.5 295.6,97.8 296.4,101.1 297.2,104.3 297.9,107.5 298.7,110.6 299.4,113.7 300.2,116.6 301.0,119.5 301.7,122.3 302.5,125.0 303.2,127.6 304.0,130.1 304.8,132.5 305.5,134.9 306.3,137.2 307.0,139.3 307.8,141.4 308.6,143.5 309.3,145.4 310.1,147.3 310.8,149.1 311.6,150.9 312.4,152.6 313.1,154.2 313.9,155.8 314.6,157.3 315.4,158.7 316.2,160.1 316.9,161.5 317.7,162.8 318.4,164.1 319.2,165.3 320.0,166.5 320.7,167.6 321.5,168.7 322.2,169.8 323.0,170.8 323.8,171.8 324.5,172.8 325.3,173.8 326.0,174.7 326.8,175.6 327.6,176.4 328.3,177.3 329.1,178.1 329.8,178.9 330.6,179.6 331.4,180.4 332.1,181.1 332.9,181.8 333.6,182.5 334.4,183.1 335.2,183.8 335.9,184.4 336.7,185.0 337.4,185.6 338.2,186.2 339.0,186.8 339.7,187.3 340.5,187.9 341.2,188.4 342.0,188.9 342.8,189.4 343.5,189.9 344.3,190.4 345.0,190.9 345.8,191.3 346.6,191.8 347.3,192.2 348.1,192.6 348.8,193.0 349.6,193.4 350.4,193.8 351.1,194.2 351.9,194.6 352.6,195.0 353.4,195.4 354.2,195.7 354.9,196.1 355.7,196.4 356.4,196.7 357.2,197.1 358.0,197.4 358.7,197.7 359.5,198.0 360.2,198.3 361.0,198.6 361.8,198.9 362.5,199.2 363.3,199.5 364.0,199.8 364.8,200.0 365.6,200.3 366.3,200.6 367.1,200.8 367.8,201.1 368.6,201.3 369.4,201.6 370.1,201.8 370.9,202.0 371.6,202.3 372.4,202.5 373.2,202.7 373.9,202.9 374.7,203.2 375.4,203.4 376.2,203.6 377.0,203.8 377.7,204.0 378.5,204.2 379.2,204.4 380.0,204.6 380.8,204.8 381.5,204.9 382.3,205.1 383.0,205.3 383.8,205.5 384.6,205.7 385.3,205.8 386.1,206.0 386.8,206.2 387.6,206.3 388.4,206.5 389.1,206.7 389.9,206.8 390.6,207.0 391.4,207.1 392.2,207.3 392.9,207.4 393.7,207.6 394.4,207.7 395.2,207.9 396.0,208.0 396.7,208.1 397.5,208.3 398.2,208.4 399.0,208.6 399.8,208.7 400.5,208.8 401.3,208.9 402.0,209.1 402.8,209.2 403.6,209.3 404.3,209.4 405.1,209.6 405.8,209.7 406.6,209.8 407.4,209.9 408.1,210.0 408.9,210.1 409.6,210.2 410.4,210.4 411.2,210.5 411.9,210.6 412.7,210.7 413.4,210.8 414.2,210.9 415.0,211.0 415.7,211.1 416.5,211.2 417.2,211.3 418.0,211.4 418.8,211.5 419.5,211.6 420.3,211.7 421.0,211.8 421.8,211.9 422.6,211.9 423.3,212.0 424.1,212.1 424.8,212.2 425.6,212.3 426.4,212.4 427.1,212.5 427.9,212.6 428.6,212.6 429.4,212.7 430.2,212.8 430.9,212.9 431.7,213.0 432.4,213.0 433.2,213.1 434.0,213.2 434.7,213.3 435.5,213.3 436.2,213.4 437.0,213.5 437.8,213.6 438.5,213.6 439.3,213.7 440.0,213.8 440.8,213.8 441.6,213.9 442.3,214.0 443.1,214.0 443.8,214.1 444.6,214.2 445.4,214.2 446.1,214.3 446.9,214.4 447.6,214.4 448.4,214.5 449.2,214.6 449.9,214.6 450.7,214.7 451.4,214.8 452.2,214.8 453.0,214.9 453.7,214.9 454.5,215.0 455.2,215.0 456.0,215.1 456.8,215.2 457.5,215.2 458.3,215.3 459.0,215.3 459.8,215.4 460.6,215.4 461.3,215.5 462.1,215.5 462.8,215.6 463.6,215.7 464.4,215.7 465.1,215.8 465.9,215.8 466.6,215.9 467.4,215.9 468.2,216.0 468.9,216.0 469.7,216.1 470.4,216.1 471.2,216.1 472.0,216.2 472.7,216.2 473.5,216.3 474.2,216.3 475.0,216.4 475.8,216.4 476.5,216.5 477.3,216.5 478.0,216.6 478.8,216.6 479.6,216.6 480.3,216.7 481.1,216.7 481.8,216.8 482.6,216.8 483.4,216.9 484.1,216.9 484.9,216.9 485.6,217.0 486.4,217.0 487.2,217.1 487.9,217.1 488.7,217.1 489.4,217.2 490.2,217.2 491.0,217.3 491.7,217.3 492.5,217.3 493.2,217.4 494.0,217.4 494.8,217.4 495.5,217.5 496.3,217.5 497.0,217.6 497.8,217.6 498.6,217.6 499.3,217.7 500.1,217.7 500.8,217.7 501.6,217.8 502.4,217.8 503.1,217.8 503.9,217.9 504.6,217.9 505.4,217.9 506.2,218.0 506.9,218.0 507.7,218.0 508.4,218.1 509.2,218.1 510.0,218.1 510.7,218.2 511.5,218.2 512.2,218.2 513.0,218.3 513.8,218.3 514.5,218.3 515.3,218.3 516.0,218.4 516.8,218.4 517.6,218.4 518.3,218.5 519.1,218.5 519.8,218.5 520.6,218.6 521.4,218.6 522.1,218.6 522.9,218.6 523.6,218.7 524.4,218.7 525.2,218.7 525.9,218.7 526.7,218.8 527.4,218.8 528.2,218.8 529.0,218.9 529.7,218.9 530.5,218.9 531.2,218.9 532.0,219.0 532.8,219.0 533.5,219.0 534.3,219.0 535.0,219.1 535.8,219.1 536.6,219.1 537.3,219.1 538.1,219.2 538.8,219.2 539.6,219.2 540.4,219.2 541.1,219.3 541.9,219.3 542.6,219.3 543.4,219.3 544.2,219.4 544.9,219.4 545.7,219.4 546.4,219.4 547.2,219.4 548.0,219.5 548.7,219.5 549.5,219.5 550.2,219.5 551.0,219.6 551.8,219.6 552.5,219.6 553.3,219.6 554.0,219.6 554.8,219.7 555.6,219.7 556.3,219.7 557.1,219.7 557.8,219.7 558.6,219.8 559.4,219.8 560.1,219.8 560.9,219.8 561.6,219.8 562.4,219.9 563.2,219.9 563.9,219.9 564.7,219.9 565.4,219.9 566.2,220.0 567.0,220.0 567.7,220.0 568.5,220.0 569.2,220.0 570.0,220.1 570.8,220.1 571.5,220.1 572.3,220.1 573.0,220.1 573.8,220.2 574.6,220.2 575.3,220.2 576.1,220.2 576.8,220.2 577.6,220.2 578.4,220.3 579.1,220.3" fill="none" stroke="var(--accent)" stroke-width="2.6"/>
+          <polyline points="95.0,199.0 95.8,199.0 96.5,199.0 97.3,199.0 98.0,199.0 98.8,199.0 99.6,199.0 100.3,199.0 101.1,199.0 101.8,199.0 102.6,199.0 103.4,199.0 104.1,198.9 104.9,198.9 105.6,198.9 106.4,198.9 107.2,198.9 107.9,198.9 108.7,198.9 109.4,198.9 110.2,198.8 111.0,198.8 111.7,198.8 112.5,198.8 113.2,198.8 114.0,198.8 114.8,198.7 115.5,198.7 116.3,198.7 117.0,198.7 117.8,198.7 118.6,198.6 119.3,198.6 120.1,198.6 120.8,198.6 121.6,198.5 122.4,198.5 123.1,198.5 123.9,198.4 124.6,198.4 125.4,198.4 126.2,198.3 126.9,198.3 127.7,198.3 128.4,198.2 129.2,198.2 130.0,198.2 130.7,198.1 131.5,198.1 132.2,198.1 133.0,198.0 133.8,198.0 134.5,197.9 135.3,197.9 136.0,197.9 136.8,197.8 137.6,197.8 138.3,197.7 139.1,197.7 139.8,197.6 140.6,197.6 141.4,197.5 142.1,197.5 142.9,197.4 143.6,197.4 144.4,197.3 145.2,197.2 145.9,197.2 146.7,197.1 147.4,197.1 148.2,197.0 149.0,197.0 149.7,196.9 150.5,196.8 151.2,196.8 152.0,196.7 152.8,196.6 153.5,196.6 154.3,196.5 155.0,196.4 155.8,196.4 156.6,196.3 157.3,196.2 158.1,196.1 158.8,196.1 159.6,196.0 160.4,195.9 161.1,195.8 161.9,195.7 162.6,195.7 163.4,195.6 164.2,195.5 164.9,195.4 165.7,195.3 166.4,195.2 167.2,195.1 168.0,195.0 168.7,194.9 169.5,194.8 170.2,194.7 171.0,194.6 171.8,194.5 172.5,194.4 173.3,194.3 174.0,194.2 174.8,194.1 175.6,194.0 176.3,193.9 177.1,193.8 177.8,193.7 178.6,193.6 179.4,193.5 180.1,193.3 180.9,193.2 181.6,193.1 182.4,193.0 183.2,192.8 183.9,192.7 184.7,192.6 185.4,192.5 186.2,192.3 187.0,192.2 187.7,192.0 188.5,191.9 189.2,191.8 190.0,191.6 190.8,191.5 191.5,191.3 192.3,191.2 193.0,191.0 193.8,190.9 194.6,190.7 195.3,190.5 196.1,190.4 196.8,190.2 197.6,190.0 198.4,189.9 199.1,189.7 199.9,189.5 200.6,189.3 201.4,189.2 202.2,189.0 202.9,188.8 203.7,188.6 204.4,188.4 205.2,188.2 206.0,188.0 206.7,187.8 207.5,187.6 208.2,187.4 209.0,187.2 209.8,187.0 210.5,186.8 211.3,186.6 212.0,186.3 212.8,186.1 213.6,185.9 214.3,185.6 215.1,185.4 215.8,185.2 216.6,184.9 217.4,184.7 218.1,184.4 218.9,184.2 219.6,183.9 220.4,183.7 221.2,183.4 221.9,183.1 222.7,182.8 223.4,182.6 224.2,182.3 225.0,182.0 225.7,181.7 226.5,181.4 227.2,181.1 228.0,180.8 228.8,180.5 229.5,180.2 230.3,179.9 231.0,179.6 231.8,179.3 232.6,179.0 233.3,178.6 234.1,178.3 234.8,178.0 235.6,177.6 236.4,177.3 237.1,176.9 237.9,176.6 238.6,176.2 239.4,175.9 240.2,175.5 240.9,175.2 241.7,174.8 242.4,174.4 243.2,174.1 244.0,173.7 244.7,173.3 245.5,173.0 246.2,172.6 247.0,172.2 247.8,171.8 248.5,171.4 249.3,171.1 250.0,170.7 250.8,170.3 251.6,169.9 252.3,169.5 253.1,169.2 253.8,168.8 254.6,168.4 255.4,168.0 256.1,167.7 256.9,167.3 257.6,167.0 258.4,166.6 259.2,166.3 259.9,165.9 260.7,165.6 261.4,165.3 262.2,165.0 263.0,164.7 263.7,164.4 264.5,164.1 265.2,163.8 266.0,163.5 266.8,163.3 267.5,163.1 268.3,162.9 269.0,162.7 269.8,162.5 270.6,162.3 271.3,162.2 272.1,162.0 272.8,161.9 273.6,161.8 274.4,161.8 275.1,161.7 275.9,161.7 276.6,161.7 277.4,161.7 278.2,161.7 278.9,161.8 279.7,161.9 280.4,162.0 281.2,162.1 282.0,162.3 282.7,162.4 283.5,162.6 284.2,162.9 285.0,163.1 285.8,163.4 286.5,163.6 287.3,163.9 288.0,164.2 288.8,164.6 289.6,164.9 290.3,165.3 291.1,165.7 291.8,166.1 292.6,166.5 293.4,166.9 294.1,167.4 294.9,167.8 295.6,168.3 296.4,168.7 297.2,169.2 297.9,169.7 298.7,170.2 299.4,170.7 300.2,171.2 301.0,171.7 301.7,172.2 302.5,172.7 303.2,173.2 304.0,173.8 304.8,174.3 305.5,174.8 306.3,175.3 307.0,175.9 307.8,176.4 308.6,176.9 309.3,177.4 310.1,177.9 310.8,178.5 311.6,179.0 312.4,179.5 313.1,180.0 313.9,180.5 314.6,181.0 315.4,181.5 316.2,182.0 316.9,182.4 317.7,182.9 318.4,183.4 319.2,183.9 320.0,184.3 320.7,184.8 321.5,185.2 322.2,185.7 323.0,186.1 323.8,186.6 324.5,187.0 325.3,187.4 326.0,187.9 326.8,188.3 327.6,188.7 328.3,189.1 329.1,189.5 329.8,189.9 330.6,190.3 331.4,190.6 332.1,191.0 332.9,191.4 333.6,191.8 334.4,192.1 335.2,192.5 335.9,192.8 336.7,193.2 337.4,193.5 338.2,193.8 339.0,194.2 339.7,194.5 340.5,194.8 341.2,195.1 342.0,195.5 342.8,195.8 343.5,196.1 344.3,196.4 345.0,196.7 345.8,196.9 346.6,197.2 347.3,197.5 348.1,197.8 348.8,198.1 349.6,198.3 350.4,198.6 351.1,198.8 351.9,199.1 352.6,199.4 353.4,199.6 354.2,199.8 354.9,200.1 355.7,200.3 356.4,200.6 357.2,200.8 358.0,201.0 358.7,201.2 359.5,201.5 360.2,201.7 361.0,201.9 361.8,202.1 362.5,202.3 363.3,202.5 364.0,202.7 364.8,202.9 365.6,203.1 366.3,203.3 367.1,203.5 367.8,203.7 368.6,203.9 369.4,204.1 370.1,204.3 370.9,204.4 371.6,204.6 372.4,204.8 373.2,205.0 373.9,205.1 374.7,205.3 375.4,205.5 376.2,205.6 377.0,205.8 377.7,206.0 378.5,206.1 379.2,206.3 380.0,206.4 380.8,206.6 381.5,206.7 382.3,206.9 383.0,207.0 383.8,207.2 384.6,207.3 385.3,207.4 386.1,207.6 386.8,207.7 387.6,207.9 388.4,208.0 389.1,208.1 389.9,208.2 390.6,208.4 391.4,208.5 392.2,208.6 392.9,208.8 393.7,208.9 394.4,209.0 395.2,209.1 396.0,209.2 396.7,209.4 397.5,209.5 398.2,209.6 399.0,209.7 399.8,209.8 400.5,209.9 401.3,210.0 402.0,210.1 402.8,210.2 403.6,210.3 404.3,210.4 405.1,210.5 405.8,210.6 406.6,210.8 407.4,210.8 408.1,210.9 408.9,211.0 409.6,211.1 410.4,211.2 411.2,211.3 411.9,211.4 412.7,211.5 413.4,211.6 414.2,211.7 415.0,211.8 415.7,211.9 416.5,212.0 417.2,212.0 418.0,212.1 418.8,212.2 419.5,212.3 420.3,212.4 421.0,212.5 421.8,212.5 422.6,212.6 423.3,212.7 424.1,212.8 424.8,212.9 425.6,212.9 426.4,213.0 427.1,213.1 427.9,213.2 428.6,213.2 429.4,213.3 430.2,213.4 430.9,213.5 431.7,213.5 432.4,213.6 433.2,213.7 434.0,213.7 434.7,213.8 435.5,213.9 436.2,213.9 437.0,214.0 437.8,214.1 438.5,214.1 439.3,214.2 440.0,214.3 440.8,214.3 441.6,214.4 442.3,214.4 443.1,214.5 443.8,214.6 444.6,214.6 445.4,214.7 446.1,214.8 446.9,214.8 447.6,214.9 448.4,214.9 449.2,215.0 449.9,215.0 450.7,215.1 451.4,215.2 452.2,215.2 453.0,215.3 453.7,215.3 454.5,215.4 455.2,215.4 456.0,215.5 456.8,215.5 457.5,215.6 458.3,215.6 459.0,215.7 459.8,215.7 460.6,215.8 461.3,215.8 462.1,215.9 462.8,215.9 463.6,216.0 464.4,216.0 465.1,216.1 465.9,216.1 466.6,216.2 467.4,216.2 468.2,216.3 468.9,216.3 469.7,216.3 470.4,216.4 471.2,216.4 472.0,216.5 472.7,216.5 473.5,216.6 474.2,216.6 475.0,216.7 475.8,216.7 476.5,216.7 477.3,216.8 478.0,216.8 478.8,216.9 479.6,216.9 480.3,216.9 481.1,217.0 481.8,217.0 482.6,217.1 483.4,217.1 484.1,217.1 484.9,217.2 485.6,217.2 486.4,217.3 487.2,217.3 487.9,217.3 488.7,217.4 489.4,217.4 490.2,217.4 491.0,217.5 491.7,217.5 492.5,217.5 493.2,217.6 494.0,217.6 494.8,217.7 495.5,217.7 496.3,217.7 497.0,217.8 497.8,217.8 498.6,217.8 499.3,217.9 500.1,217.9 500.8,217.9 501.6,218.0 502.4,218.0 503.1,218.0 503.9,218.1 504.6,218.1 505.4,218.1 506.2,218.1 506.9,218.2 507.7,218.2 508.4,218.2 509.2,218.3 510.0,218.3 510.7,218.3 511.5,218.4 512.2,218.4 513.0,218.4 513.8,218.4 514.5,218.5 515.3,218.5 516.0,218.5 516.8,218.6 517.6,218.6 518.3,218.6 519.1,218.6 519.8,218.7 520.6,218.7 521.4,218.7 522.1,218.8 522.9,218.8 523.6,218.8 524.4,218.8 525.2,218.9 525.9,218.9 526.7,218.9 527.4,218.9 528.2,219.0 529.0,219.0 529.7,219.0 530.5,219.0 531.2,219.1 532.0,219.1 532.8,219.1 533.5,219.1 534.3,219.2 535.0,219.2 535.8,219.2 536.6,219.2 537.3,219.3 538.1,219.3 538.8,219.3 539.6,219.3 540.4,219.3 541.1,219.4 541.9,219.4 542.6,219.4 543.4,219.4 544.2,219.5 544.9,219.5 545.7,219.5 546.4,219.5 547.2,219.5 548.0,219.6 548.7,219.6 549.5,219.6 550.2,219.6 551.0,219.7 551.8,219.7 552.5,219.7 553.3,219.7 554.0,219.7 554.8,219.8 555.6,219.8 556.3,219.8 557.1,219.8 557.8,219.8 558.6,219.9 559.4,219.9 560.1,219.9 560.9,219.9 561.6,219.9 562.4,220.0 563.2,220.0 563.9,220.0 564.7,220.0 565.4,220.0 566.2,220.1 567.0,220.1 567.7,220.1 568.5,220.1 569.2,220.1 570.0,220.1 570.8,220.2 571.5,220.2 572.3,220.2 573.0,220.2 573.8,220.2 574.6,220.3 575.3,220.3 576.1,220.3 576.8,220.3 577.6,220.3 578.4,220.3 579.1,220.4" fill="none" stroke="var(--good)" stroke-width="2.6"/>
+          <polyline points="95.0,199.0 95.8,199.0 96.5,199.0 97.3,199.0 98.0,199.0 98.8,199.0 99.6,199.0 100.3,199.0 101.1,199.0 101.8,199.0 102.6,199.0 103.4,199.0 104.1,199.0 104.9,199.0 105.6,199.0 106.4,199.0 107.2,198.9 107.9,198.9 108.7,198.9 109.4,198.9 110.2,198.9 111.0,198.9 111.7,198.9 112.5,198.9 113.2,198.9 114.0,198.9 114.8,198.9 115.5,198.8 116.3,198.8 117.0,198.8 117.8,198.8 118.6,198.8 119.3,198.8 120.1,198.8 120.8,198.8 121.6,198.7 122.4,198.7 123.1,198.7 123.9,198.7 124.6,198.7 125.4,198.7 126.2,198.7 126.9,198.6 127.7,198.6 128.4,198.6 129.2,198.6 130.0,198.6 130.7,198.5 131.5,198.5 132.2,198.5 133.0,198.5 133.8,198.5 134.5,198.4 135.3,198.4 136.0,198.4 136.8,198.4 137.6,198.4 138.3,198.3 139.1,198.3 139.8,198.3 140.6,198.3 141.4,198.2 142.1,198.2 142.9,198.2 143.6,198.2 144.4,198.1 145.2,198.1 145.9,198.1 146.7,198.1 147.4,198.0 148.2,198.0 149.0,198.0 149.7,198.0 150.5,197.9 151.2,197.9 152.0,197.9 152.8,197.8 153.5,197.8 154.3,197.8 155.0,197.7 155.8,197.7 156.6,197.7 157.3,197.7 158.1,197.6 158.8,197.6 159.6,197.6 160.4,197.5 161.1,197.5 161.9,197.5 162.6,197.4 163.4,197.4 164.2,197.4 164.9,197.3 165.7,197.3 166.4,197.3 167.2,197.2 168.0,197.2 168.7,197.2 169.5,197.1 170.2,197.1 171.0,197.1 171.8,197.0 172.5,197.0 173.3,196.9 174.0,196.9 174.8,196.9 175.6,196.8 176.3,196.8 177.1,196.8 177.8,196.7 178.6,196.7 179.4,196.7 180.1,196.6 180.9,196.6 181.6,196.6 182.4,196.5 183.2,196.5 183.9,196.4 184.7,196.4 185.4,196.4 186.2,196.3 187.0,196.3 187.7,196.3 188.5,196.2 189.2,196.2 190.0,196.2 190.8,196.1 191.5,196.1 192.3,196.0 193.0,196.0 193.8,196.0 194.6,195.9 195.3,195.9 196.1,195.9 196.8,195.8 197.6,195.8 198.4,195.8 199.1,195.7 199.9,195.7 200.6,195.7 201.4,195.6 202.2,195.6 202.9,195.6 203.7,195.6 204.4,195.5 205.2,195.5 206.0,195.5 206.7,195.4 207.5,195.4 208.2,195.4 209.0,195.4 209.8,195.3 210.5,195.3 211.3,195.3 212.0,195.3 212.8,195.2 213.6,195.2 214.3,195.2 215.1,195.2 215.8,195.2 216.6,195.1 217.4,195.1 218.1,195.1 218.9,195.1 219.6,195.1 220.4,195.1 221.2,195.0 221.9,195.0 222.7,195.0 223.4,195.0 224.2,195.0 225.0,195.0 225.7,195.0 226.5,195.0 227.2,195.0 228.0,195.0 228.8,195.0 229.5,195.0 230.3,195.0 231.0,195.0 231.8,195.0 232.6,195.0 233.3,195.0 234.1,195.0 234.8,195.0 235.6,195.0 236.4,195.0 237.1,195.0 237.9,195.1 238.6,195.1 239.4,195.1 240.2,195.1 240.9,195.1 241.7,195.2 242.4,195.2 243.2,195.2 244.0,195.2 244.7,195.3 245.5,195.3 246.2,195.3 247.0,195.4 247.8,195.4 248.5,195.4 249.3,195.5 250.0,195.5 250.8,195.6 251.6,195.6 252.3,195.6 253.1,195.7 253.8,195.7 254.6,195.8 255.4,195.8 256.1,195.9 256.9,195.9 257.6,196.0 258.4,196.1 259.2,196.1 259.9,196.2 260.7,196.2 261.4,196.3 262.2,196.4 263.0,196.4 263.7,196.5 264.5,196.6 265.2,196.7 266.0,196.7 266.8,196.8 267.5,196.9 268.3,197.0 269.0,197.0 269.8,197.1 270.6,197.2 271.3,197.3 272.1,197.4 272.8,197.5 273.6,197.6 274.4,197.6 275.1,197.7 275.9,197.8 276.6,197.9 277.4,198.0 278.2,198.1 278.9,198.2 279.7,198.3 280.4,198.4 281.2,198.5 282.0,198.6 282.7,198.7 283.5,198.8 284.2,198.9 285.0,199.0 285.8,199.1 286.5,199.2 287.3,199.3 288.0,199.4 288.8,199.5 289.6,199.6 290.3,199.7 291.1,199.9 291.8,200.0 292.6,200.1 293.4,200.2 294.1,200.3 294.9,200.4 295.6,200.5 296.4,200.6 297.2,200.8 297.9,200.9 298.7,201.0 299.4,201.1 300.2,201.2 301.0,201.3 301.7,201.4 302.5,201.6 303.2,201.7 304.0,201.8 304.8,201.9 305.5,202.0 306.3,202.1 307.0,202.2 307.8,202.4 308.6,202.5 309.3,202.6 310.1,202.7 310.8,202.8 311.6,202.9 312.4,203.1 313.1,203.2 313.9,203.3 314.6,203.4 315.4,203.5 316.2,203.6 316.9,203.7 317.7,203.9 318.4,204.0 319.2,204.1 320.0,204.2 320.7,204.3 321.5,204.4 322.2,204.5 323.0,204.7 323.8,204.8 324.5,204.9 325.3,205.0 326.0,205.1 326.8,205.2 327.6,205.3 328.3,205.4 329.1,205.5 329.8,205.7 330.6,205.8 331.4,205.9 332.1,206.0 332.9,206.1 333.6,206.2 334.4,206.3 335.2,206.4 335.9,206.5 336.7,206.6 337.4,206.7 338.2,206.8 339.0,206.9 339.7,207.0 340.5,207.1 341.2,207.2 342.0,207.3 342.8,207.4 343.5,207.5 344.3,207.6 345.0,207.7 345.8,207.8 346.6,207.9 347.3,208.0 348.1,208.1 348.8,208.2 349.6,208.3 350.4,208.4 351.1,208.5 351.9,208.6 352.6,208.7 353.4,208.8 354.2,208.9 354.9,209.0 355.7,209.1 356.4,209.2 357.2,209.2 358.0,209.3 358.7,209.4 359.5,209.5 360.2,209.6 361.0,209.7 361.8,209.8 362.5,209.9 363.3,209.9 364.0,210.0 364.8,210.1 365.6,210.2 366.3,210.3 367.1,210.4 367.8,210.4 368.6,210.5 369.4,210.6 370.1,210.7 370.9,210.8 371.6,210.8 372.4,210.9 373.2,211.0 373.9,211.1 374.7,211.2 375.4,211.2 376.2,211.3 377.0,211.4 377.7,211.5 378.5,211.5 379.2,211.6 380.0,211.7 380.8,211.8 381.5,211.8 382.3,211.9 383.0,212.0 383.8,212.0 384.6,212.1 385.3,212.2 386.1,212.3 386.8,212.3 387.6,212.4 388.4,212.5 389.1,212.5 389.9,212.6 390.6,212.7 391.4,212.7 392.2,212.8 392.9,212.9 393.7,212.9 394.4,213.0 395.2,213.1 396.0,213.1 396.7,213.2 397.5,213.2 398.2,213.3 399.0,213.4 399.8,213.4 400.5,213.5 401.3,213.5 402.0,213.6 402.8,213.7 403.6,213.7 404.3,213.8 405.1,213.8 405.8,213.9 406.6,214.0 407.4,214.0 408.1,214.1 408.9,214.1 409.6,214.2 410.4,214.2 411.2,214.3 411.9,214.3 412.7,214.4 413.4,214.5 414.2,214.5 415.0,214.6 415.7,214.6 416.5,214.7 417.2,214.7 418.0,214.8 418.8,214.8 419.5,214.9 420.3,214.9 421.0,215.0 421.8,215.0 422.6,215.1 423.3,215.1 424.1,215.2 424.8,215.2 425.6,215.3 426.4,215.3 427.1,215.4 427.9,215.4 428.6,215.5 429.4,215.5 430.2,215.6 430.9,215.6 431.7,215.6 432.4,215.7 433.2,215.7 434.0,215.8 434.7,215.8 435.5,215.9 436.2,215.9 437.0,216.0 437.8,216.0 438.5,216.0 439.3,216.1 440.0,216.1 440.8,216.2 441.6,216.2 442.3,216.2 443.1,216.3 443.8,216.3 444.6,216.4 445.4,216.4 446.1,216.5 446.9,216.5 447.6,216.5 448.4,216.6 449.2,216.6 449.9,216.6 450.7,216.7 451.4,216.7 452.2,216.8 453.0,216.8 453.7,216.8 454.5,216.9 455.2,216.9 456.0,216.9 456.8,217.0 457.5,217.0 458.3,217.1 459.0,217.1 459.8,217.1 460.6,217.2 461.3,217.2 462.1,217.2 462.8,217.3 463.6,217.3 464.4,217.3 465.1,217.4 465.9,217.4 466.6,217.4 467.4,217.5 468.2,217.5 468.9,217.5 469.7,217.6 470.4,217.6 471.2,217.6 472.0,217.7 472.7,217.7 473.5,217.7 474.2,217.8 475.0,217.8 475.8,217.8 476.5,217.9 477.3,217.9 478.0,217.9 478.8,217.9 479.6,218.0 480.3,218.0 481.1,218.0 481.8,218.1 482.6,218.1 483.4,218.1 484.1,218.1 484.9,218.2 485.6,218.2 486.4,218.2 487.2,218.3 487.9,218.3 488.7,218.3 489.4,218.3 490.2,218.4 491.0,218.4 491.7,218.4 492.5,218.5 493.2,218.5 494.0,218.5 494.8,218.5 495.5,218.6 496.3,218.6 497.0,218.6 497.8,218.6 498.6,218.7 499.3,218.7 500.1,218.7 500.8,218.7 501.6,218.8 502.4,218.8 503.1,218.8 503.9,218.8 504.6,218.9 505.4,218.9 506.2,218.9 506.9,218.9 507.7,219.0 508.4,219.0 509.2,219.0 510.0,219.0 510.7,219.1 511.5,219.1 512.2,219.1 513.0,219.1 513.8,219.1 514.5,219.2 515.3,219.2 516.0,219.2 516.8,219.2 517.6,219.3 518.3,219.3 519.1,219.3 519.8,219.3 520.6,219.3 521.4,219.4 522.1,219.4 522.9,219.4 523.6,219.4 524.4,219.5 525.2,219.5 525.9,219.5 526.7,219.5 527.4,219.5 528.2,219.6 529.0,219.6 529.7,219.6 530.5,219.6 531.2,219.6 532.0,219.7 532.8,219.7 533.5,219.7 534.3,219.7 535.0,219.7 535.8,219.8 536.6,219.8 537.3,219.8 538.1,219.8 538.8,219.8 539.6,219.9 540.4,219.9 541.1,219.9 541.9,219.9 542.6,219.9 543.4,219.9 544.2,220.0 544.9,220.0 545.7,220.0 546.4,220.0 547.2,220.0 548.0,220.1 548.7,220.1 549.5,220.1 550.2,220.1 551.0,220.1 551.8,220.1 552.5,220.2 553.3,220.2 554.0,220.2 554.8,220.2 555.6,220.2 556.3,220.2 557.1,220.3 557.8,220.3 558.6,220.3 559.4,220.3 560.1,220.3 560.9,220.3 561.6,220.4 562.4,220.4 563.2,220.4 563.9,220.4 564.7,220.4 565.4,220.4 566.2,220.5 567.0,220.5 567.7,220.5 568.5,220.5 569.2,220.5 570.0,220.5 570.8,220.5 571.5,220.6 572.3,220.6 573.0,220.6 573.8,220.6 574.6,220.6 575.3,220.6 576.1,220.6 576.8,220.7 577.6,220.7 578.4,220.7 579.1,220.7" fill="none" stroke="var(--key)" stroke-width="2.6"/>
+          <text x="316" y="62" font-size="12" font-weight="500" fill="var(--accent-deep)">抵抗が弱い（鋭い共鳴）</text>
+          <text x="340" y="120" font-size="12" font-weight="500" fill="var(--good)">抵抗が中くらい</text>
+          <text x="360" y="186" font-size="12" font-weight="500" fill="var(--key)">抵抗が強い（山が低く広い）</text>
+          <text x="330" y="268" font-size="11.5" fill="var(--ink-faint)" text-anchor="middle">揺さぶる速さ ω を固有の ω₀ に近づけると、振幅が大きくなる</text>
+        </svg>
+        <figcaption>揺さぶる速さ \(\omega\) を横軸に、定常状態での振幅を縦軸に取ったグラフです。<strong>\(\omega\) が固有の \(\omega_0\) に近づくと振幅が大きくなり、山ができます</strong>。これが共鳴です。抵抗が弱いほど山は鋭く高くなり、抵抗を強くすると低くなだらかになります。抵抗が 0 の極限では、\(\omega=\omega_0\) で振幅が無限大に発散します。</figcaption>
+      </figure>
+      <div class="box principle"><span class="lab">応答関数という見方</span>
+      <p>\(A\) を外力の強さ \(F_0\) で割ったもの</p>
+      \[ \chi(\omega)=\frac{A}{F_0}=\frac{1}{k-m\omega^2+i\gamma\omega} \]
+      <p>は、<strong>単位の大きさの入力に対して、系がどれだけ応答するか</strong>を表します。これを<strong>応答関数</strong>といいます。</p>
+      <p style="margin-top:8px">この見方をすると、共鳴は力学に固有の話ではなくなります。<strong>線形な系に周期的な入力を与えたとき、出力は入力に応答関数を掛けたもの。そして応答関数の分母が小さくなる振動数で、応答が際立って大きくなる</strong>——これが共鳴の数学的な正体です。</p></div>
+
+      <div class="box teach"><span class="lab">同じ形の式が現れる例</span>
+      <p>方程式が同じ形なら、答えも同じ形になります。ここで得た \(\chi(\omega)\) と同型の式は、力学以外でも現れます。</p>
+      <ul style="margin:6px 0 0">
+        <li><strong>ローレンツ振動子モデル</strong>（光学・物性）：原子の中の電子を、ばねにつながれた荷電粒子と見なすモデルです。光の電場が外力になり、方程式はこの記事のものとまったく同じ形になります。そこから得られる吸収の曲線を<strong>ローレンツ型</strong>と呼びます</li>
+        <li><strong>ブライト・ウィグナーの公式</strong>（原子核・素粒子）：粒子を当てたときの反応の起こりやすさが、共鳴の近くでは入射エネルギーに対して \(|\chi|^2\) と同じ形の山を描きます</li>
+      </ul>
+      <p style="margin-top:8px">なお、それぞれの分野で共鳴が<strong>物理的に何を意味するか</strong>——エネルギーがどう流れ込むのか、山の幅が何を教えるのか——は、各分野のセクションで扱います。</p></div>
+
+      <div class="box warn"><span class="lab">抵抗がないと発散する</span>
+      <p>\(\gamma=0\) と置くと、分母は \(|k-m\omega^2|\) だけになります。\(\omega=\omega_0\) ではこれが 0 になるので \(|A|\to\infty\)。振幅が無限大に発散してしまいます。</p>
+      <p style="margin-top:8px">もちろん現実にはそうなりません。<strong>この発散は、方程式が現実を写しきれていないことの現れ</strong>です。振幅が大きくなるとばねがフックの法則から外れたり、抵抗が速度に比例しなくなったりして、前提が崩れます。5-1 で「止まらない物体」を扱ったときと同じ教訓です。</p>
+      <p style="margin-top:8px">なお \(\gamma=0,\ \omega=\omega_0\) の場合は、§03 問4 で実際に解いたケースにあたります。特解は \(\dfrac{t}{4}\sin 2t\) の形になり、\(t\) が掛かっているぶん<strong>振幅が時間とともに際限なく増大します</strong>。上の発散は、その結果を別の言い方で述べたものです。</p></div>
+
+      <div class="box teach"><span class="lab">偏角のほうは何を表すか</span>
+      <p>§02 の表で見たとおり、\(A\) のもう一つの情報である偏角は<strong>位相の遅れ</strong>を表します。分母が複素数であるかぎり \(A\) も複素数になるので、振動はつねに外力から遅れることになります。</p>
+      <p style="margin-top:8px">この遅れが \(\omega\) によってどう変わるか、そこから何が読み取れるかは、<strong>力学のセクションで扱います</strong>。本節の目的は解法なので、ここでは「1つの複素数に振幅と位相の両方が入っている」ことを確認するにとどめます。</p></div>
+
+      <h3>計算ドリル（§04・全2問）</h3>
+
+      <div class="drill"><p><span class="qn">問1</span>\(m=1,\ k=4,\ \gamma=0.5,\ F_0=1\) のとき、\(\omega=\omega_0\) での振幅を求めよ。また \(\omega=0\) のときと比べて何倍か。</p>
+      <div class="attempt" style="margin:10px 0 4px"><span class="lab">自分の答えを出してから</span>
+      <div class="controls"><button class="ctl-btn" data-sol>解答を見る</button></div>
+      <div class="sol"><p>\(\omega_0=\sqrt{4/1}=2\)。共鳴点では \(k-m\omega^2=0\) なので、分母は \(\gamma\omega_0\) だけです。</p>
+      \[ |A|=\frac{1}{0.5\times2}=1 \]
+      <p>一方 \(\omega=0\) では \(|A|=\dfrac{F_0}{k}=\dfrac14=0.25\)。したがって<strong>4倍</strong>です。</p>
+      <p style="font-size:13.5px;color:var(--ink-faint)">\(\omega\to0\) の値 \(F_0/k\) は、力とばねの釣り合いそのもの。ゆっくり押せば、ばねはその力に見合うだけ縮む——という当たり前の結果です。<strong>極端な場合を入れて確かめる</strong>のは、式の検算として有効です。抵抗を \(\gamma=0.1\) にすれば共鳴点の振幅は 5 になり、20倍になります。</p></div></div></div>
+
+      <div class="drill"><p><span class="qn">問2</span><strong>口頭試問形式</strong>：次の3つを、公式を見ずに自分の言葉で説明せよ。<br>①非斉次方程式の一般解はどういう構造か。初期条件はどこに課すか。<br>②未定係数法で複素数を使うと、なぜ割り算だけで特解が求まるのか。<br>③共鳴が起こる理由を、式の上で説明せよ。</p>
+      <div class="attempt" style="margin:10px 0 4px"><span class="lab">自分の答えを出してから</span>
+      <div class="controls"><button class="ctl-btn" data-sol>解答例を見る</button></div>
+      <div class="sol"><p><strong>①</strong> 一般解 ＝ 斉次解 ＋ 特解。方程式が線形なので、斉次解を足しても左辺への寄与は 0 のまま。任意定数は斉次解が持つ2つで、初期条件は<strong>一般解全体</strong>に課して定数を決める。特解だけに課してはいけない。抵抗があれば斉次解は減衰して消え、長時間後には特解だけが残る（定常状態）。</p>
+      <p><strong>②</strong> 非斉次項が三角関数なら、特解も同じ角振動数の振動だと予想できる。それを \(Ae^{i\omega t}\) と複素数で書くと、微分はすべて \(i\omega\) の掛け算になる。全部の項に \(e^{i\omega t}\) が共通して現れるので割ることができ、残るのは \(A\) についての1次方程式。あとは割り算するだけ。</p>
+      <p><strong>③</strong> 振幅は \(|A|=F_0/\sqrt{(k-m\omega^2)^2+(\gamma\omega)^2}\) で、分子は \(\omega\) によらないので振幅は分母だけで決まる。\(\omega=\omega_0\) のとき第1項が 0 になり分母が小さくなるので、振幅が大きくなる。抵抗が小さいほど残る項 \(\gamma\omega\) も小さく、山は鋭くなる。</p>
+      <p style="font-size:13.5px;color:var(--ink-faint)">この3つが澱みなく言えれば、この記事は通過です。特に①は、5章全体を通して使ってきた「一般解と初期条件」の考え方の総まとめにあたります。</p></div></div></div>
+    </section>
+
+    <!-- §05 -->
+    <section id="howto">
+      <div class="sec-head"><span class="idx">§05</span><h2>チェックリストと次回予告</h2></div>
+
+      <h3>この記事で答えられるようになるべき問い</h3>
+      <div class="box principle"><span class="lab">最終チェック</span>
+      <ul style="margin:8px 0 0">
+        <li>\(\omega\) と \(\omega_0\) の違いを言えるか（§01）</li>
+        <li>一般解が「斉次解 ＋ 特解」になる理由を、代入して示せるか（§01）</li>
+        <li>過渡状態と定常状態の違いを言えるか（§01）</li>
+        <li>未定係数法とは何か、なぜ指数関数を仮定するのか言えるか（§02）</li>
+        <li>\(z=Ae^{i\omega t}\) を代入して \(A\) を割り算で求められるか（§02）</li>
+        <li>複素数のまま計算してよい理由と、使えない場面を言えるか（§02）</li>
+        <li>非斉次項が定数・指数関数・三角関数のとき、仮定する特解の形を選べるか（§03）</li>
+        <li>仮定した形が斉次解と重なるとき、\(t\) を掛けて解けるか（§03）</li>
+        <li>斉次解・特解・初期条件の順に、非斉次方程式を完全に解けるか（§03）</li>
+        <li>初期条件を一般解全体に課す理由を言えるか（§03）</li>
+        <li>\(|A|\) を計算し、共鳴が起こる理由を分母から説明できるか（§04）</li>
+      </ul></div>
+
+      <h3>次章（6-1 偏微分と全微分）への接続</h3>
+      <p>これで5章が終わり、<strong>1変数の微分積分と、それを使った微分方程式</strong>がひととおり揃いました。ここまでの道具で、力学の基本的な問題は解けるようになっています。</p>
+      <p>しかし、物理が扱う量の多くは<strong>1つの変数では決まりません</strong>。温度は場所と時刻の両方で変わり、電場は空間の3方向に広がり、熱力学の状態量は圧力と体積と温度で決まります。</p>
+      <p>そこで6章では、変数が複数ある場合の微分を扱います。やることは意外に単純で、<strong>「1つだけ動かして、残りは止めておく」</strong>——それが偏微分です。</p>
+      <div class="box teach"><span class="lab">6-1 で扱う問い（予習用）</span>
+      <ul style="margin:6px 0 0">
+        <li>変数が2つ以上あるとき、「変化率」はどう定義するのか</li>
+        <li>偏微分 \(\dfrac{\partial f}{\partial x}\) と、常微分 \(\dfrac{df}{dx}\) は何が違うのか</li>
+        <li>すべての変数がいっせいに変わるときの変化は、どう書くのか（全微分）</li>
+        <li>多変数版の連鎖律は、どんな形になるのか</li>
+      </ul>
+      <p style="margin-top:8px"><strong>鍵となる一言</strong>：偏微分そのものは、1章の微分をそのまま使うだけです。難しいのは計算ではなく、<strong>「何を止めて何を動かしているか」を見失わないこと</strong>です。</p></div>
+
+      <h3>学習サイクルの推奨手順</h3>
+      <ol>
+        <li><strong>解答を開かず、紙で挑戦</strong>。詰まっても5分は粘ってください。詰まるのは失敗ではなく、<strong>まだ腑に落ちていない一点が表に出た合図</strong>です。そこを自分の手で越えた経験が、そのまま次に進む力になります。</li>
+        <li><strong>ヒントを1つずつ</strong>開き、詰まりが解けたら閉じて自力で続行。</li>
+        <li>複素数で計算したら、<strong>絶対値と偏角がそれぞれ何を表すか</strong>を確かめる。式を出して終わりにせず、極端な場合を入れて検算してください。</li>
+        <li>翌日、何も見ずに §04 問2（口頭試問）を再現する。特に①は5章全体の総まとめなので、式を書きながら説明できるか確かめてください。</li>
+      </ol>
+
+      <div class="box warn"><span class="lab">この教材の立ち位置</span>
+      <p>本節で扱ったのは、非斉次項が<strong>定数・指数関数・三角関数</strong>のいずれか（およびそれらが斉次解と重なる場合）という範囲です。いずれも未定係数法で解けます。一方、非斉次項がこの表に当てはまらない形をしている場合や、周期的ですらない一般の関数である場合には、別の手法（定数変化法、グリーン関数、ラプラス変換）が必要になります。これらは物理数学IIの範囲です。</p>
+      <p style="margin-top:8px">とはいえ、<strong>周期的な外力は特別に重要です</strong>。どんな外力もフーリエ変換で三角関数の重ね合わせに分解でき、線形な方程式なら1つずつ解いて足し合わせればよいからです。つまりこの記事で扱った \(F_0\cos\omega t\) の場合は、一般の外力を扱うための基本単位になっています。</p>
+      <p style="margin-top:8px">また共鳴については、<strong>「分母が小さくなる現象」</strong>として、式の振る舞いの側から扱いました。物理数学の目的は解法を身につけることなので、ここではそこまでにしています。</p>
+      <p style="margin-top:8px">解から読み取れることのうち<strong>位相の遅れ</strong>については、本節では「偏角がそれを表す」と述べるにとどめました。遅れが \(\omega\) とともにどう変わるか、共鳴のエネルギー的な意味、共鳴の鋭さを表す \(Q\) 値、具体的な現象の解釈——これらは<strong>それぞれの分野のセクションで扱います</strong>。</p>
+      <p style="margin-top:8px">同じ現象を、数式の構造からも、エネルギーの流れからも説明できる——その両方を持つことが、物理を理解するということです。</p></div>
+
+      <div class="foot"><p>Academic Gates ／ 物理数学I 5章 常微分方程式 ／ 5-3「強制振動と共鳴」。演習問題は本教材独自の構成です。続編：6章 多変数関数の微分 ／ 6-1「偏微分と全微分」。</p></div>
+    </section>
+  </main>
+</div>
+
+<div id="site-footer"><noscript><nav class="noscript-nav" aria-label="フッターナビゲーション"><a href="index.html">ホーム</a><a href="self-intro.html">自己紹介</a><a href="study.html">勉強の軌跡</a><a href="videos.html">動画</a><a href="blog.html">ブログ</a><a href="sns.html">各種SNS</a></nav></noscript></div>
+
+<script>
+/* ヒント／解答トグル */
+document.querySelectorAll('[data-hint]').forEach(function(btn){
+  var box=btn.closest('.attempt');
+  var hints=[].slice.call(box.querySelectorAll('.hint'));
+  if(!hints.length){ btn.style.display='none'; return; }
+  var hideBtn=document.createElement('button');
+  hideBtn.type='button';hideBtn.className='ctl-btn amber';hideBtn.textContent='ヒントを隠す';hideBtn.style.display='none';
+  btn.after(hideBtn);
+  btn.addEventListener('click',function(){
+    var hidden=hints.filter(function(h){return h.style.display!=='block'});
+    if(hidden.length){ hidden[0].style.display='block'; hideBtn.style.display='';
+      if(hidden.length===1){ btn.textContent='ヒントは以上'; btn.disabled=true; }
+      else { btn.textContent='次のヒント ('+(hints.length-hidden.length+1)+'/'+hints.length+')'; }
+    }
+  });
+  hideBtn.addEventListener('click',function(){
+    hints.forEach(function(h){h.style.display='none'});
+    hideBtn.style.display='none';btn.disabled=false;btn.textContent='ヒントを表示';
+  });
+});
+document.querySelectorAll('[data-sol]').forEach(function(btn){
+  btn.addEventListener('click',function(){
+    var sol=btn.closest('.attempt').querySelector('.sol');
+    var open=sol.style.display==='block';
+    sol.style.display=open?'none':'block';
+    if(!btn.dataset.show) btn.dataset.show=btn.textContent;
+    btn.textContent=open?btn.dataset.show:'閉じる';
+    if(!open && window.MathJax && MathJax.typesetPromise) MathJax.typesetPromise([sol]);
+  });
+});
+
+/* 目次の追従 */
+var links=[].slice.call(document.querySelectorAll('.toc a[href^="#"]'));
+var secs=links.map(function(a){return document.querySelector(a.getAttribute('href'))});
+var pbar=document.getElementById('pbar');
+function onScroll(){
+  // getBoundingClientRect を使う（offsetTop ではない）。style.css の
+  // `main{position:relative}` で <main> が offsetParent になり、offsetTop が
+  // 文書基準でなくなるため、scrollY と直接比べると判定がずれる（§36）。
+  var idx=0;
+  secs.forEach(function(s,i){ if(s&&s.getBoundingClientRect().top<=140) idx=i; });
+  links.forEach(function(a){a.classList.remove('active')});
+  if(links[idx]) links[idx].classList.add('active');
+  var h=document.documentElement.scrollHeight-window.innerHeight;
+  pbar.style.width=(h>0?(window.scrollY/h*100):0)+'%';
+}
+window.addEventListener('scroll',onScroll,{passive:true});
+window.addEventListener('resize',onScroll); onScroll();
+var body=document.body,mb=document.getElementById('menuBtn'),scrim=document.getElementById('scrim');
+mb.addEventListener('click',function(){var o=body.classList.toggle('nav-open');mb.setAttribute('aria-expanded',o)});
+scrim.addEventListener('click',function(){body.classList.remove('nav-open')});
+document.getElementById('toc').addEventListener('click',function(e){if(e.target.closest('a'))body.classList.remove('nav-open')});
+</script>
+<script src="../js/layout.js?v=r86"></script>
+<script src="../js/main.js?v=r86"></script>
+<script src="../js/starfield.js?v=r86"></script>
+</body>
+</html>

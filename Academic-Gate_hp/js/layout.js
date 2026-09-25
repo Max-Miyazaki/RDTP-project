@@ -59,6 +59,8 @@
                              title: '5-1　1階の微分方程式' },
         'phys-math_5-2':   { label: 'SECTION 5-2',  href: 'phys-math_5-2.html',    parent: 'phys-math:ch5',
                              title: '5-2　2階線形微分方程式' },
+        'phys-math_5-3':   { label: 'SECTION 5-3',  href: 'phys-math_5-3.html',    parent: 'phys-math:ch5',
+                             title: '5-3　強制振動と共鳴' },
         'skills':          { label: '精神の圏域',   href: 'study_skills.html',     parent: 'study' },
         'mnemonics':       { label: '記憶術',       href: 'skills_mnemonics.html', parent: 'skills' },
         'memoryverse':     { label: 'メモリーバース', href: 'memoryverse.html',    parent: 'mnemonics', unit: '回' },
