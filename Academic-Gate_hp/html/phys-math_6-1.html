@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>6-1 偏微分と全微分｜物理数学I 6章 | Academic Gates</title>
+<meta name="description" content="変数が複数あるときの微分。偏微分の定義と計算、1次近似から導く全微分、多変数の連鎖律まで。物理数学I 6章／6-1。">
+<link rel="icon" href="../../favicon.ico" sizes="32x32">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+<!-- ★ ライト/ダーク切替は停止中（DESIGN.md §44）。サイト全体がダーク基調なので、
+     記事だけテーマが変わるのは一貫性を欠くという判断。**復活させるには次の1行の
+     コメントを外すだけでよい**（js/theme.js も css/lesson-theme.css も残してある）。
+     data-theme を付ける主体がこれしか無いので、外しておけば :root[data-theme="light"]
+     は構造的にマッチしない。逆に読み込んだままボタンだけ消すと、OS がライト設定の
+     端末が勝手にライトになり、戻す手段が無くなる（§44.2）。
+     復活時の挙動: テーマは描画前に同期で決まり（FOUC 防止）、ボタンの設置は
+     layout.js がヘッダーを書き出したあと DOMContentLoaded で行われる。 -->
+<!-- <script src="../js/theme.js?v=r89"></script> -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;500&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+<!-- サイト共通 → 記事固有 → テーマ上書き の順で読む（lesson-theme.css は
+     記事の <style> より後ろに置くこと。css/lesson-theme.css 冒頭の注記どおり） -->
+<link rel="stylesheet" href="../css/style.css?v=r89">
+<!-- MathJax: 設定ブロックはローダーより「前」に置く（DESIGN.md §11b）。
+     フォールバックは this.src= ではなく createElement 方式（同§）。 -->
+<script>
+window.MathJax={tex:{inlineMath:[['\\(','\\)']],displayMath:[['\\[','\\]']],tags:'none'},svg:{fontCache:'global'},options:{skipHtmlTags:['script','noscript','style','textarea','pre','code']}};
+</script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"
+        onerror="this.onerror=null;var s=document.createElement('script');s.async=true;s.src='https://unpkg.com/mathjax@3/es5/tex-svg.js';document.head.appendChild(s);"></script>
+<style>
+/* 6-1 偏微分と全微分 — 記事固有のスタイルのみ。5-3 と同じ構成をそのまま使う。
+   共通のリセット・背景・星・ヘッダー/フッター・ボタン・見出し階層・本文リズムは
+   css/style.css が持つ（DESIGN.md §35, §36）。ここに残すのは、この教材の
+   構造（レール／演習ブロック／図版）と、教育用の色トークンだけ。 */
+:root{
+  /* 教材固有のトークン。本体と同値のもの（--bg --surface --nav-bg --ink --line
+     --line-strong --glow-cool --font --nav-clear --ease --radius-lg/md）は
+     css/style.css 側に定義があるので、ここでは持たない。
+     --ink-soft / --ink-faint は本体より明るい値を「意図的に」維持している。
+     本体値に寄せると 13.5px の解説文が 4.56:1 → 3.66:1 と AA を割るため（§36）。 */
+  --surface-2:rgba(255,255,255,.045);
+  --ink-soft:rgba(255,255,255,.68);
+  --ink-faint:rgba(255,255,255,.46);
+  --line-soft:rgba(255,255,255,.05);
+  --accent-deep:#a8c9ff;
+  --accent-tint:rgba(77,148,255,.12);
+  --amber:#ffb46b;--amber-tint:rgba(255,160,70,.08);--amber-line:rgba(255,160,70,.32);
+  --good:#72e3ad;--good-tint:rgba(114,227,173,.08);--good-line:rgba(114,227,173,.28);
+  --key:#ff6fa5;--key-tint:rgba(255,61,139,.08);--key-line:rgba(255,61,139,.28);
+  --teach:#a48bff;--teach-tint:rgba(123,77,255,.11);--teach-line:rgba(123,77,255,.38);
+  --mono:ui-monospace,'SFMono-Regular',Menlo,Consolas,monospace;
+  --rail-w:250px;
+}
+body{font-size:15.5px;line-height:1.9;line-break:strict;overflow-x:hidden}
+
+/* --- レイアウト（左に目次レール／右に本文の2カラム） ------------------------
+   本文列 760px は日本語の長文＋数式に合わせた measure。style.css の共通記事
+   ルールは `body.is-article main > section:not(.rail)`（詳細度 0,2,3）と
+   `… ~ section:not(.rail)`（0,3,4）で 900px と 160px パディングをかけてくる。
+   こちらは `.main` を噛ませて 0,3,2 / 0,4,3 とし、確実に上回る（§36）。 */
+/* 全幅。左寄せのレイアウトで、余った幅は右に流す（§43）。
+   §40 で一度 max-width を外して差し戻しているが、あれは「中央寄せのまま左右を
+   対称にする」変更で、本文の位置も幅も変わらなかったため戻した。今回は本文を
+   860px に広げて左揃えにするので、目的も結果も違う。
+   レールの左余白は 1280px → 1440px にかけて 0 → 32px。狭い画面ではまず余白を
+   削って本文幅に回す（レール幅 250px は目次の文字量で決まるので触らない）。 */
+.wrap{display:flex;padding-top:var(--nav-clearance);
+      padding-left:clamp(0px, calc((100vw - 1280px) * .2), 32px)}
+.rail{width:var(--rail-w);flex:0 0 var(--rail-w);position:sticky;top:var(--nav-clearance);height:calc(100vh - var(--nav-clearance));overflow-y:auto;padding:18px 14px 60px 22px;border-right:1px solid var(--line)}
+/* 左パディング＝レールと本文の間隔。1024px → 1280px にかけて 24 → 56px。
+   これも狭い画面では縮めて本文幅に回す。 */
+.main{flex:1 1 auto;min-width:0;
+      padding:0 clamp(24px, calc(24px + (100vw - 1024px) * .125), 56px) 110px}
+/* 本文列 860px。760px では display 数式が 6 本はみ出していた（解答の入れ子
+   パディングで、.sol の中は本文列より 132px 狭い箱になる）。全 82 本が収まる
+   最小幅は実測 853px（§43.2）。中央寄せをやめて左揃えにし、余りは右へ。 */
+body.is-article .main > .lesson-hero,
+body.is-article .main > section:not(.rail),
+body.is-article .main > .foot{max-width:860px;margin-left:0;margin-right:auto;padding-left:0;padding-right:0}
+.rail .brand{font-weight:400;font-size:15px;line-height:1.45;margin:2px 0 4px}
+.rail .brand small{display:block;font-size:10px;font-weight:500;color:var(--ink-faint);letter-spacing:.2em;margin-top:6px}
+.progress-wrap{height:2px;background:var(--line);border-radius:99px;margin:16px 0 18px;overflow:hidden}
+.progress-bar{height:100%;width:0;background:linear-gradient(90deg,var(--accent),#a8c9ff);transition:width .15s linear}
+.toc{list-style:none;margin:0;padding:0;font-size:12.5px}
+.toc .part{font-size:10px;letter-spacing:.2em;color:var(--ink-faint);margin:16px 0 5px;padding-left:2px}
+.toc a{display:block;text-decoration:none;color:var(--ink-soft);padding:4px 10px;border-radius:999px;transition:color var(--dur) var(--ease),background var(--dur) var(--ease)}
+.toc a:hover{color:var(--ink);background:var(--surface-2)}
+.toc a.active{color:var(--ink);background:var(--accent-tint)}
+.toc a .n{font-size:10.5px;color:var(--ink-faint);margin-right:8px;font-variant-numeric:tabular-nums}
+.toc a.active .n{color:var(--accent)}
+
+/* --- 記事の導入部。`.hero` は index.html 専用で、style.css が
+   `.hero h1/.hero p/.hero .eyebrow` に黒い text-shadow をかけるため使えない（§36）。 --- */
+.lesson-hero{padding:64px 0 34px;border-bottom:1px solid var(--line)}
+.lesson-hero h1{font-weight:300;font-size:clamp(28px,4vw,48px);line-height:1.25;letter-spacing:-.02em;margin:0 0 22px}
+.lesson-hero h1 .sub{display:block;font-size:.52em;font-weight:300;color:var(--ink-soft);letter-spacing:0;margin-top:12px}
+.lesson-hero p{color:var(--ink-soft);margin:0 0 12px}
+.lesson-hero .lead{font-size:16.5px;color:var(--ink-soft)}
+/* .eyebrow 本体は style.css の共通コンポーネント。色と余白だけ上書きする
+   （共通の --text-tertiary は 11px の小さな文字で 3.66:1 と AA を割るため） */
+.eyebrow{color:var(--ink-faint);margin-bottom:18px}
+
+section{border-bottom:1px solid var(--line-soft);scroll-margin-top:var(--nav-clearance)}
+/* 縦の余白も共通ルールに勝つ必要がある（先頭セクションも2つ目以降も同じ 56px） */
+body.is-article .main > section:not(.rail),
+body.is-article .main > section:not(.rail) ~ section:not(.rail){padding-top:56px;padding-bottom:12px}
+.sec-head{display:flex;align-items:baseline;gap:14px;margin-bottom:10px}
+.sec-head .idx{font-size:.72rem;font-weight:500;letter-spacing:.2em;color:var(--ink-faint);padding-top:4px;flex:0 0 auto;font-variant-numeric:tabular-nums}
+.sec-head .idx::after{content:' —'}
+body.is-article main h2{font-weight:400;font-size:clamp(21px,2.6vw,28px);line-height:1.3;letter-spacing:-.01em;margin:0}
+body.is-article main h3{font-weight:400;font-size:17px;margin:30px 0 6px;color:var(--ink)}
+body.is-article main h4{font-weight:500;font-size:14.5px;margin:18px 0 4px;color:var(--ink)}
+body.is-article main p{margin:10px 0;color:var(--ink-soft)}
+body.is-article main ul,body.is-article main ol{margin:10px 0;padding-left:1.3em;color:var(--ink-soft)}
+li{margin:4px 0}
+strong{font-weight:500;color:var(--ink)}
+code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);border-radius:6px;padding:1px 6px;color:var(--accent-deep)}
+mjx-container{color:var(--ink)}
+mjx-container[display="true"]{margin:14px 0!important;overflow-x:auto;overflow-y:hidden;padding:2px 0}
+
+/* 別行立て数式だけ、入れ子のパディングの外へ広げる（§46）。
+   解答や色付きボックスの中の数式は、section → .drill(20) → .attempt(22) →
+   .sol(20) と積み上がるパディングで、本文列より最大 132px 狭い箱に入っていた。
+   1024px では 82本中 6本がはみ出し、最大 +127px。**文章の字下げはそのまま**に、
+   数式だけを外へ出す。
+   値は「祖先のパディングの合計 − 8px」。8px 残すのは枠線に重ねないため。
+   全量（合計そのまま）だと .sol 左端の青いアクセントバーの上に分数が乗る。
+   はみ出しが無い幅では見た目が変わらない（箱が左右対称に広がるだけで中身は
+   中央揃えのまま。1440px で適用前後のピクセル差 0 を確認済み）。
+   !important は既存の margin:14px 0!important を上書きするため。
+   新しい入れ子を足すときは、この表に1行足すこと（現在 .hint の中に別行立ては無い）。
+     .box 20 / .drill 20 / .attempt 22 / .sol 20 */
+.box mjx-container[display="true"],
+.drill > mjx-container[display="true"]{margin:14px -12px!important}
+.attempt mjx-container[display="true"]{margin:14px -14px!important}
+.drill .attempt mjx-container[display="true"],
+.attempt .sol mjx-container[display="true"]{margin:14px -34px!important}
+.drill .attempt .sol mjx-container[display="true"]{margin:14px -54px!important}
+
+.box{border-radius:var(--radius-md);padding:16px 20px;margin:18px 0;border:1px solid var(--line);background:var(--surface)}
+.box .lab{font-size:.7rem;letter-spacing:.14em;font-weight:500;display:block;margin-bottom:6px}
+.box p{max-width:none}
+.box p:first-of-type{margin-top:2px}.box p:last-child{margin-bottom:0}
+/* 枠線は必ずトークン経由にすること。ここに直書きすると lesson-theme.css の
+   ライト上書きが効かず、暗い背景用の明るい色がライトでパステルになる（§41）。 */
+.box.principle{background:var(--key-tint);border-color:var(--key-line)}.box.principle .lab{color:var(--key)}
+.box.target{background:var(--good-tint);border-color:var(--good-line)}.box.target .lab{color:var(--good)}
+.box.warn{background:var(--amber-tint);border-color:var(--amber-line)}.box.warn .lab{color:var(--amber)}
+.box.teach{background:var(--teach-tint);border-color:var(--teach-line)}.box.teach .lab{color:var(--teach)}
+.box.teach .lab::before{content:"◎ "}
+
+.table-scroll{overflow-x:auto;margin:14px 0}
+.mini-table{width:100%;border-collapse:collapse;font-size:14px;margin:0;color:var(--ink-soft)}
+.mini-table th,.mini-table td{border:1px solid var(--line);padding:9px 11px;text-align:left;vertical-align:top}
+.mini-table th{background:var(--surface-2);font-weight:500;color:var(--ink)}
+
+.fig{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-lg);padding:18px 18px 12px;margin:20px 0}
+.fig > svg{width:100%;height:auto;display:block}
+.fig svg text{font-family:var(--font-body)}
+.fig figcaption{font-size:13px;color:var(--ink-soft);margin-top:10px;line-height:1.8;max-width:none}
+
+/* --- 演習まわり。`.ctl-btn` は style.css の `.btn`（サイト CTA。
+   `.btn::before` のホバーグローを持つ）と衝突しないよう改名したもの（§36）。 --- */
+.attempt{background:var(--surface);border:1px solid var(--amber-line);border-radius:var(--radius-lg);padding:18px 22px;margin:20px 0}
+.attempt .lab{font-size:.7rem;letter-spacing:.14em;color:var(--amber);font-weight:500;display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.attempt .lab::before{content:"✎"}
+.attempt p{max-width:none}
+.controls{display:flex;flex-wrap:wrap;gap:10px;margin:14px 0 4px}
+.ctl-btn{font-family:var(--font-body);font-size:12.5px;font-weight:500;border:1px solid var(--line);background:transparent;color:var(--ink-soft);padding:7px 16px;border-radius:var(--radius-pill);cursor:pointer;transition:color var(--dur) var(--ease),border-color var(--dur) var(--ease),background var(--dur) var(--ease)}
+.ctl-btn:hover{color:var(--ink);border-color:var(--line-strong);background:var(--surface-2)}
+.ctl-btn.amber{color:var(--amber);border-color:var(--amber-line)}
+.ctl-btn.amber:hover{background:var(--amber-tint)}
+.ctl-btn:disabled{opacity:.4;cursor:default;background:transparent}
+.hint{display:none;border-left:2px solid var(--amber);background:var(--amber-tint);border-radius:0 var(--radius-sm) var(--radius-sm) 0;padding:12px 16px;margin:10px 0}
+.hint .hn{font-size:.68rem;letter-spacing:.14em;color:var(--amber);font-weight:500;display:block;margin-bottom:3px}
+.hint p{max-width:none}.hint p:last-child{margin-bottom:0}.hint p:first-child{margin-top:0}
+.sol{display:none;border:1px solid var(--line);border-left:2px solid var(--accent);border-radius:0 var(--radius-md) var(--radius-md) 0;background:var(--surface-2);padding:8px 20px 16px;margin:12px 0}
+.sol p{max-width:none}
+.step{margin:18px 0}
+.step .sh{display:flex;gap:10px;align-items:baseline;font-weight:500;color:var(--ink);margin-bottom:2px}
+.step .sn{font-size:11px;font-weight:500;color:#06142e;background:var(--accent);border-radius:999px;padding:1px 10px;flex:0 0 auto}
+.step .why{font-size:13.5px;color:var(--ink-faint);border-left:1px solid var(--line);padding-left:12px;margin:5px 0 5px 2px;max-width:none}
+.transfer{background:var(--surface-2);border:1px solid var(--line);border-radius:var(--radius-md);padding:14px 18px;margin:18px 0}
+.transfer .lab{font-size:.7rem;letter-spacing:.14em;color:var(--accent);font-weight:500;display:block;margin-bottom:5px}
+.transfer p{max-width:none}
+.drill{background:var(--surface);border:1px solid var(--line);border-left:2px solid var(--accent);border-radius:0 var(--radius-md) var(--radius-md) 0;padding:14px 20px;margin:16px 0}
+.drill .qn{font-size:11px;font-weight:500;color:#06142e;background:var(--accent);border-radius:999px;padding:2px 11px;margin-right:8px}
+.drill p{max-width:none}
+.drill p:first-child{margin-top:2px}
+.drill .attempt{background:transparent;border-style:dashed}
+.foot{padding:34px 0 0;color:var(--ink-faint);font-size:12.5px}
+.foot p{color:var(--ink-faint);max-width:none}
+
+/* モバイル：レールを引き出しに。`.menu-btn` は位置だけを持ち、見た目は
+   共通コンポーネントの `.btn` を併用する。 */
+.menu-btn{display:none}
+.scrim{display:none}
+@media (max-width:900px){
+  .rail{position:fixed;left:0;top:0;height:100vh;z-index:1100;transform:translateX(-100%);transition:transform .25s var(--ease);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);padding-top:28px}
+  body.nav-open .rail{transform:translateX(0)}
+  .main{padding:0 20px 90px}
+  .menu-btn{display:inline-flex;position:fixed;bottom:18px;right:18px;z-index:1050;background:var(--nav-bg);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);color:var(--ink)}
+  .scrim{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:1090}
+  body.nav-open .scrim{display:block}
+  .lesson-hero{padding-top:40px}
+  /* 案A（§46.1）の負マージンをここで切る。マージンは固定 px なので、箱そのものが
+     狭いこの帯では数式が .sol の枠を大きく飛び出し、点線の .attempt 枠まで越えて
+     見える。390px では 28本が枠を横切っていた。はみ出し本数は 36→42 に増えるが、
+     どれも数式ごとの横スクロールで読める。§46.4 */
+  .box mjx-container[display="true"],
+  .drill > mjx-container[display="true"],
+  .attempt mjx-container[display="true"],
+  .drill .attempt mjx-container[display="true"],
+  .attempt .sol mjx-container[display="true"],
+  .drill .attempt .sol mjx-container[display="true"]{margin:14px 0!important}
+}
+@media print{
+  body{background:#fff;color:#000}
+  header,.rail,.menu-btn,.scrim,#starfield,footer{display:none!important}
+  .wrap{display:block;padding-top:0}
+  .hint,.sol{display:block!important}
+}
+</style>
+<link rel="stylesheet" href="../css/lesson-theme.css?v=r89">
+</head>
+<body data-page="study" class="is-article" data-node="phys-math_6-1">
+<canvas id="starfield" aria-hidden="true"></canvas>
+<div id="site-nav"><noscript><nav class="noscript-nav" aria-label="メインナビゲーション"><a href="index.html">ホーム</a><a href="self-intro.html">自己紹介</a><a href="study.html">勉強の軌跡</a><a href="videos.html">動画</a><a href="blog.html">ブログ</a><a href="sns.html">各種SNS</a></nav></noscript></div>
+<button class="menu-btn btn" id="menuBtn" aria-controls="rail" aria-expanded="false">目次 <span class="btn-disc" aria-hidden="true">≡</span></button>
+<div class="scrim" id="scrim"></div>
+<div class="wrap">
+  <nav class="rail" id="rail">
+    <!-- 科目へ戻る導線（レール上部の「← 一つ上」）は layout.js が CRUMBS から書き出す。 -->
+    <div class="brand">6-1　偏微分と全微分<small>SECTION 6-1 / PARTIAL DERIV.</small></div>
+    <div class="progress-wrap"><div class="progress-bar" id="pbar"></div></div>
+    <ul class="toc" id="toc">
+      <li class="part">導入</li>
+      <li><a href="#m0"><span class="n">01</span>変数が2つ以上あるとき</a></li>
+      <li class="part">道具をつくる</li>
+      <li><a href="#d1"><span class="n">02</span>偏微分</a></li>
+      <li><a href="#d2"><span class="n">03</span>全微分</a></li>
+      <li><a href="#d3"><span class="n">04</span>多変数の連鎖律</a></li>
+      <li class="part">仕上げ</li>
+      <li><a href="#howto"><span class="n">05</span>チェックリストと次回予告</a></li>
+    </ul>
+  </nav>
+
+  <main class="main">
+    <div class="lesson-hero">
+      <div class="eyebrow">物理数学 I ／ 6章 多変数関数の微分 ／ SECTION 6-1</div>
+      <h1>6-1　偏微分と全微分<span class="sub">1つだけ動かして、残りは止めておく</span></h1>
+      <p class="lead">ここまで扱ってきたのは、変数が1つの関数でした。しかし物理が相手にする量の多くは、<strong>1つの変数では決まりません</strong>。部屋の温度は場所と時刻の両方で変わり、電位は空間の3方向に広がり、気体の圧力は体積と温度で決まります。</p>
+      <p>変数が増えると、「変化率」という言葉の意味から考え直す必要があります。同じ地点に立っていても、<strong>どちらへ進むかで斜面の傾きは違う</strong>からです。この記事では、その扱い方を身につけます。</p>
+      <p>計算そのものは1章の微分と変わりません。難しいのは<strong>「いま何を止めて、何を動かしているか」を見失わないこと</strong>のほうです。</p>
+      <p>読み方：解答は必ず閉じたまま、紙で挑戦してください。</p>
+    </div>
+
+    <!-- §01 -->
+    <section id="m0">
+      <div class="sec-head"><span class="idx">§01</span><h2>変数が2つ以上あるとき</h2></div>
+
+      <p>金属の板を熱している場面を考えます。板の温度は、場所によって違います。位置を \((x,y)\) で表せば、温度は</p>
+      \[ T=T(x,y) \]
+      <p>という<strong>2変数の関数</strong>です。時間とともに変わるなら \(T(x,y,t)\) と3変数になります。</p>
+      <p>物理ではこの種の量が至るところに出てきます。電位 \(V(x,y,z)\)、気体の圧力 \(p(V,T)\)、波の変位 \(u(x,t)\)。</p>
+      <p>1章から5章まで1変数で通してきたのは、<strong>まず本質だけを取り出して考えるため</strong>です。落下運動を \(x(t)\) だけで書けたのは、鉛直方向の運動に注目すると決めたから。実際の現象が1変数で尽くされているわけではありません。ここからは、その制限を外します。</p>
+
+      <h3>「変化率」が1つに決まらない</h3>
+      <p>1変数のときは、変化率の意味に迷いがありませんでした。\(x\) を少し増やしたときに \(f\) がどれだけ変わるか——それだけです。</p>
+      <p>ところが2変数では、話が変わります。ある点での温度の変化率を聞かれても、<strong>どちらへ動くのかを決めないと答えようがない</strong>のです。</p>
+
+      <div class="box principle"><span class="lab">山の斜面で考える</span>
+      <p>山の中腹に立っているとします。「ここの傾きは？」と聞かれても、答えは1つに決まりません。</p>
+      <ul style="margin:6px 0 0">
+        <li>斜面を<strong>まっすぐ登る</strong>向きなら、急な上り</li>
+        <li>等高線に<strong>沿って進む</strong>向きなら、傾きは 0</li>
+        <li>その中間なら、緩やかな上り</li>
+      </ul>
+      <p style="margin-top:8px">同じ地点でも、向きによって傾きが違う。<strong>だから、まず向きを決めてから測る</strong>ことになります。</p></div>
+
+      <figure class="fig">
+        <svg viewBox="0 0 640 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="丘の上で、向きによって傾きが変わる様子">
+          <polyline points="250.0,39.0 253.2,40.7 256.4,42.5 259.6,44.2 262.7,45.8 265.9,47.5 269.1,49.1 272.3,50.8 275.5,52.4 278.7,53.9 281.9,55.5 285.1,57.0 288.2,58.5 291.4,60.1 294.6,61.5 297.8,63.0 301.0,64.5 304.2,66.0 307.4,67.4 310.6,68.9 313.7,70.4 316.9,71.9 320.1,73.4 323.3,75.0 326.5,76.5 329.7,78.1 332.9,79.8 336.0,81.5 339.2,83.2 342.4,84.9 345.6,86.8 348.8,88.6 352.0,90.5 355.2,92.5 358.4,94.5 361.5,96.5 364.7,98.6 367.9,100.7 371.1,102.8 374.3,105.0 377.5,107.2 380.7,109.4 383.8,111.6 387.0,113.8 390.2,116.0 393.4,118.2 396.6,120.4 399.8,122.6 403.0,124.8 406.2,126.9 409.3,129.1 412.5,131.2 415.7,133.3 418.9,135.4 422.1,137.5 425.3,139.5 428.5,141.5 431.7,143.5 434.8,145.5 438.0,147.5 441.2,149.4" fill="none" stroke="var(--good)" stroke-opacity=".55" stroke-width="1.3"/><polyline points="226.1,51.6 229.3,53.1 232.5,54.5 235.7,55.9 238.8,57.2 242.0,58.5 245.2,59.7 248.4,60.9 251.6,61.9 254.8,63.0 258.0,63.9 261.2,64.8 264.3,65.6 267.5,66.4 270.7,67.2 273.9,67.9 277.1,68.6 280.3,69.2 283.5,69.9 286.6,70.6 289.8,71.3 293.0,72.1 296.2,72.9 299.4,73.8 302.6,74.8 305.8,75.9 309.0,77.1 312.1,78.5 315.3,79.9 318.5,81.6 321.7,83.3 324.9,85.2 328.1,87.3 331.3,89.5 334.5,91.8 337.6,94.3 340.8,96.9 344.0,99.6 347.2,102.3 350.4,105.2 353.6,108.1 356.8,111.1 359.9,114.1 363.1,117.1 366.3,120.1 369.5,123.1 372.7,126.0 375.9,129.0 379.1,131.9 382.3,134.7 385.4,137.5 388.6,140.2 391.8,142.9 395.0,145.5 398.2,148.0 401.4,150.5 404.6,152.9 407.8,155.2 410.9,157.5 414.1,159.8 417.3,162.0" fill="none" stroke="var(--good)" stroke-opacity=".55" stroke-width="1.3"/><polyline points="202.2,63.0 205.4,64.1 208.6,65.0 211.8,65.9 214.9,66.5 218.1,67.1 221.3,67.5 224.5,67.8 227.7,67.9 230.9,67.9 234.1,67.7 237.3,67.4 240.4,67.0 243.6,66.4 246.8,65.8 250.0,65.0 253.2,64.3 256.4,63.5 259.6,62.7 262.7,61.9 265.9,61.2 269.1,60.6 272.3,60.1 275.5,59.9 278.7,59.8 281.9,59.9 285.1,60.4 288.2,61.1 291.4,62.1 294.6,63.5 297.8,65.1 301.0,67.1 304.2,69.5 307.4,72.1 310.6,75.1 313.7,78.3 316.9,81.9 320.1,85.6 323.3,89.6 326.5,93.7 329.7,98.0 332.9,102.4 336.0,106.8 339.2,111.3 342.4,115.8 345.6,120.2 348.8,124.6 352.0,129.0 355.2,133.2 358.4,137.3 361.5,141.3 364.7,145.2 367.9,148.9 371.1,152.4 374.3,155.8 377.5,159.1 380.7,162.2 383.8,165.2 387.0,168.1 390.2,170.8 393.4,173.4" fill="none" stroke="var(--good)" stroke-opacity=".55" stroke-width="1.3"/><polyline points="178.3,74.2 181.5,74.7 184.7,75.1 187.9,75.3 191.0,75.3 194.2,75.0 197.4,74.5 200.6,73.8 203.8,72.8 207.0,71.6 210.2,70.2 213.4,68.5 216.5,66.6 219.7,64.6 222.9,62.3 226.1,60.0 229.3,57.5 232.5,55.1 235.7,52.6 238.8,50.2 242.0,47.9 245.2,45.7 248.4,43.8 251.6,42.2 254.8,40.9 258.0,40.0 261.2,39.5 264.3,39.5 267.5,40.0 270.7,41.1 273.9,42.6 277.1,44.7 280.3,47.4 283.5,50.6 286.6,54.2 289.8,58.4 293.0,63.0 296.2,67.9 299.4,73.2 302.6,78.8 305.8,84.7 309.0,90.6 312.1,96.7 315.3,102.9 318.5,109.1 321.7,115.2 324.9,121.2 328.1,127.1 331.3,132.9 334.5,138.4 337.6,143.8 340.8,148.9 344.0,153.8 347.2,158.4 350.4,162.8 353.6,167.0 356.8,170.9 359.9,174.7 363.1,178.2 366.3,181.5 369.5,184.6" fill="none" stroke="var(--good)" stroke-opacity=".55" stroke-width="1.3"/><polyline points="154.4,86.8 157.6,87.1 160.8,87.2 164.0,87.1 167.1,86.7 170.3,86.1 173.5,85.2 176.7,84.0 179.9,82.6 183.1,80.8 186.3,78.8 189.4,76.5 192.6,73.9 195.8,71.2 199.0,68.2 202.2,65.1 205.4,61.9 208.6,58.7 211.8,55.4 214.9,52.3 218.1,49.2 221.3,46.4 224.5,43.8 227.7,41.6 230.9,39.7 234.1,38.3 237.3,37.5 240.4,37.1 243.6,37.4 246.8,38.3 250.0,39.8 253.2,42.0 256.4,44.8 259.6,48.2 262.7,52.2 265.9,56.7 269.1,61.8 272.3,67.3 275.5,73.2 278.7,79.5 281.9,86.0 285.1,92.7 288.2,99.6 291.4,106.5 294.6,113.5 297.8,120.3 301.0,127.1 304.2,133.7 307.4,140.2 310.6,146.4 313.7,152.4 316.9,158.1 320.1,163.5 323.3,168.7 326.5,173.5 329.7,178.1 332.9,182.4 336.0,186.5 339.2,190.3 342.4,193.8 345.6,197.2" fill="none" stroke="var(--good)" stroke-opacity=".55" stroke-width="1.3"/><polyline points="130.5,101.8 133.7,102.3 136.9,102.7 140.1,102.9 143.2,102.9 146.4,102.6 149.6,102.1 152.8,101.4 156.0,100.4 159.2,99.2 162.4,97.8 165.5,96.1 168.7,94.2 171.9,92.2 175.1,89.9 178.3,87.6 181.5,85.1 184.7,82.7 187.9,80.2 191.0,77.8 194.2,75.5 197.4,73.3 200.6,71.4 203.8,69.8 207.0,68.5 210.2,67.6 213.4,67.1 216.5,67.1 219.7,67.6 222.9,68.7 226.1,70.2 229.3,72.3 232.5,75.0 235.7,78.2 238.8,81.8 242.0,86.0 245.2,90.6 248.4,95.5 251.6,100.8 254.8,106.4 258.0,112.3 261.2,118.2 264.3,124.3 267.5,130.5 270.7,136.7 273.9,142.8 277.1,148.8 280.3,154.7 283.5,160.5 286.6,166.0 289.8,171.4 293.0,176.5 296.2,181.4 299.4,186.0 302.6,190.4 305.8,194.6 309.0,198.5 312.1,202.3 315.3,205.8 318.5,209.1 321.7,212.2" fill="none" stroke="var(--good)" stroke-opacity=".55" stroke-width="1.3"/><polyline points="106.6,118.2 109.8,119.3 113.0,120.2 116.2,121.1 119.3,121.7 122.5,122.3 125.7,122.7 128.9,123.0 132.1,123.1 135.3,123.1 138.5,122.9 141.6,122.6 144.8,122.2 148.0,121.6 151.2,121.0 154.4,120.2 157.6,119.5 160.8,118.7 164.0,117.9 167.1,117.1 170.3,116.4 173.5,115.8 176.7,115.3 179.9,115.1 183.1,115.0 186.3,115.1 189.4,115.6 192.6,116.3 195.8,117.3 199.0,118.7 202.2,120.3 205.4,122.3 208.6,124.7 211.8,127.3 214.9,130.3 218.1,133.5 221.3,137.1 224.5,140.8 227.7,144.8 230.9,148.9 234.1,153.2 237.3,157.6 240.4,162.0 243.6,166.5 246.8,171.0 250.0,175.4 253.2,179.8 256.4,184.2 259.6,188.4 262.7,192.5 265.9,196.5 269.1,200.4 272.3,204.1 275.5,207.6 278.7,211.0 281.9,214.3 285.1,217.4 288.2,220.4 291.4,223.3 294.6,226.0 297.8,228.6" fill="none" stroke="var(--good)" stroke-opacity=".55" stroke-width="1.3"/><polyline points="82.7,134.4 85.9,135.9 89.1,137.3 92.2,138.7 95.4,140.0 98.6,141.3 101.8,142.5 105.0,143.7 108.2,144.7 111.4,145.8 114.6,146.7 117.7,147.6 120.9,148.4 124.1,149.2 127.3,150.0 130.5,150.7 133.7,151.4 136.9,152.0 140.1,152.7 143.2,153.4 146.4,154.1 149.6,154.9 152.8,155.7 156.0,156.6 159.2,157.6 162.4,158.7 165.5,159.9 168.7,161.3 171.9,162.7 175.1,164.4 178.3,166.1 181.5,168.0 184.7,170.1 187.9,172.3 191.0,174.6 194.2,177.1 197.4,179.7 200.6,182.4 203.8,185.1 207.0,188.0 210.2,190.9 213.4,193.9 216.5,196.9 219.7,199.9 222.9,202.9 226.1,205.9 229.3,208.8 232.5,211.8 235.7,214.7 238.8,217.5 242.0,220.3 245.2,223.0 248.4,225.7 251.6,228.3 254.8,230.8 258.0,233.3 261.2,235.7 264.3,238.0 267.5,240.3 270.7,242.6 273.9,244.8" fill="none" stroke="var(--good)" stroke-opacity=".55" stroke-width="1.3"/><polyline points="58.8,149.4 62.0,151.1 65.2,152.9 68.3,154.6 71.5,156.2 74.7,157.9 77.9,159.5 81.1,161.2 84.3,162.8 87.5,164.3 90.7,165.9 93.8,167.4 97.0,168.9 100.2,170.5 103.4,171.9 106.6,173.4 109.8,174.9 113.0,176.4 116.2,177.8 119.3,179.3 122.5,180.8 125.7,182.3 128.9,183.8 132.1,185.4 135.3,186.9 138.5,188.5 141.6,190.2 144.8,191.9 148.0,193.6 151.2,195.3 154.4,197.2 157.6,199.0 160.8,200.9 164.0,202.9 167.1,204.9 170.3,206.9 173.5,209.0 176.7,211.1 179.9,213.2 183.1,215.4 186.3,217.6 189.4,219.8 192.6,222.0 195.8,224.2 199.0,226.4 202.2,228.6 205.4,230.8 208.6,233.0 211.8,235.2 214.9,237.3 218.1,239.5 221.3,241.6 224.5,243.7 227.7,245.8 230.9,247.9 234.1,249.9 237.3,251.9 240.4,253.9 243.6,255.9 246.8,257.9 250.0,259.8" fill="none" stroke="var(--good)" stroke-opacity=".55" stroke-width="1.3"/><polyline points="250.0,39.0 246.8,40.7 243.6,42.5 240.4,44.2 237.3,45.8 234.1,47.5 230.9,49.1 227.7,50.8 224.5,52.4 221.3,53.9 218.1,55.5 214.9,57.0 211.8,58.5 208.6,60.1 205.4,61.5 202.2,63.0 199.0,64.5 195.8,66.0 192.6,67.4 189.4,68.9 186.3,70.4 183.1,71.9 179.9,73.4 176.7,75.0 173.5,76.5 170.3,78.1 167.1,79.8 164.0,81.5 160.8,83.2 157.6,84.9 154.4,86.8 151.2,88.6 148.0,90.5 144.8,92.5 141.6,94.5 138.5,96.5 135.3,98.6 132.1,100.7 128.9,102.8 125.7,105.0 122.5,107.2 119.3,109.4 116.2,111.6 113.0,113.8 109.8,116.0 106.6,118.2 103.4,120.4 100.2,122.6 97.0,124.8 93.8,126.9 90.7,129.1 87.5,131.2 84.3,133.3 81.1,135.4 77.9,137.5 74.7,139.5 71.5,141.5 68.3,143.5 65.2,145.5 62.0,147.5 58.8,149.4" fill="none" stroke="var(--good)" stroke-opacity=".38" stroke-width="1.1"/><polyline points="273.9,51.6 270.7,53.1 267.5,54.5 264.3,55.9 261.2,57.2 258.0,58.5 254.8,59.7 251.6,60.9 248.4,61.9 245.2,63.0 242.0,63.9 238.8,64.8 235.7,65.6 232.5,66.4 229.3,67.2 226.1,67.9 222.9,68.6 219.7,69.2 216.5,69.9 213.4,70.6 210.2,71.3 207.0,72.1 203.8,72.9 200.6,73.8 197.4,74.8 194.2,75.9 191.0,77.1 187.9,78.5 184.7,79.9 181.5,81.6 178.3,83.3 175.1,85.2 171.9,87.3 168.7,89.5 165.5,91.8 162.4,94.3 159.2,96.9 156.0,99.6 152.8,102.3 149.6,105.2 146.4,108.1 143.2,111.1 140.1,114.1 136.9,117.1 133.7,120.1 130.5,123.1 127.3,126.0 124.1,129.0 120.9,131.9 117.7,134.7 114.6,137.5 111.4,140.2 108.2,142.9 105.0,145.5 101.8,148.0 98.6,150.5 95.4,152.9 92.2,155.2 89.1,157.5 85.9,159.8 82.7,162.0" fill="none" stroke="var(--good)" stroke-opacity=".38" stroke-width="1.1"/><polyline points="297.8,63.0 294.6,64.1 291.4,65.0 288.2,65.9 285.1,66.5 281.9,67.1 278.7,67.5 275.5,67.8 272.3,67.9 269.1,67.9 265.9,67.7 262.7,67.4 259.6,67.0 256.4,66.4 253.2,65.8 250.0,65.0 246.8,64.3 243.6,63.5 240.4,62.7 237.3,61.9 234.1,61.2 230.9,60.6 227.7,60.1 224.5,59.9 221.3,59.8 218.1,59.9 214.9,60.4 211.8,61.1 208.6,62.1 205.4,63.5 202.2,65.1 199.0,67.1 195.8,69.5 192.6,72.1 189.4,75.1 186.3,78.3 183.1,81.9 179.9,85.6 176.7,89.6 173.5,93.7 170.3,98.0 167.1,102.4 164.0,106.8 160.8,111.3 157.6,115.8 154.4,120.2 151.2,124.6 148.0,129.0 144.8,133.2 141.6,137.3 138.5,141.3 135.3,145.2 132.1,148.9 128.9,152.4 125.7,155.8 122.5,159.1 119.3,162.2 116.2,165.2 113.0,168.1 109.8,170.8 106.6,173.4" fill="none" stroke="var(--good)" stroke-opacity=".38" stroke-width="1.1"/><polyline points="321.7,74.2 318.5,74.7 315.3,75.1 312.1,75.3 309.0,75.3 305.8,75.0 302.6,74.5 299.4,73.8 296.2,72.8 293.0,71.6 289.8,70.2 286.6,68.5 283.5,66.6 280.3,64.6 277.1,62.3 273.9,60.0 270.7,57.5 267.5,55.1 264.3,52.6 261.2,50.2 258.0,47.9 254.8,45.7 251.6,43.8 248.4,42.2 245.2,40.9 242.0,40.0 238.8,39.5 235.7,39.5 232.5,40.0 229.3,41.1 226.1,42.6 222.9,44.7 219.7,47.4 216.5,50.6 213.4,54.2 210.2,58.4 207.0,63.0 203.8,67.9 200.6,73.2 197.4,78.8 194.2,84.7 191.0,90.6 187.9,96.7 184.7,102.9 181.5,109.1 178.3,115.2 175.1,121.2 171.9,127.1 168.7,132.9 165.5,138.4 162.4,143.8 159.2,148.9 156.0,153.8 152.8,158.4 149.6,162.8 146.4,167.0 143.2,170.9 140.1,174.7 136.9,178.2 133.7,181.5 130.5,184.6" fill="none" stroke="var(--good)" stroke-opacity=".38" stroke-width="1.1"/><polyline points="345.6,86.8 342.4,87.1 339.2,87.2 336.0,87.1 332.9,86.7 329.7,86.1 326.5,85.2 323.3,84.0 320.1,82.6 316.9,80.8 313.7,78.8 310.6,76.5 307.4,73.9 304.2,71.2 301.0,68.2 297.8,65.1 294.6,61.9 291.4,58.7 288.2,55.4 285.1,52.3 281.9,49.2 278.7,46.4 275.5,43.8 272.3,41.6 269.1,39.7 265.9,38.3 262.7,37.5 259.6,37.1 256.4,37.4 253.2,38.3 250.0,39.8 246.8,42.0 243.6,44.8 240.4,48.2 237.3,52.2 234.1,56.7 230.9,61.8 227.7,67.3 224.5,73.2 221.3,79.5 218.1,86.0 214.9,92.7 211.8,99.6 208.6,106.5 205.4,113.5 202.2,120.3 199.0,127.1 195.8,133.7 192.6,140.2 189.4,146.4 186.3,152.4 183.1,158.1 179.9,163.5 176.7,168.7 173.5,173.5 170.3,178.1 167.1,182.4 164.0,186.5 160.8,190.3 157.6,193.8 154.4,197.2" fill="none" stroke="var(--good)" stroke-opacity=".38" stroke-width="1.1"/><polyline points="369.5,101.8 366.3,102.3 363.1,102.7 359.9,102.9 356.8,102.9 353.6,102.6 350.4,102.1 347.2,101.4 344.0,100.4 340.8,99.2 337.6,97.8 334.5,96.1 331.3,94.2 328.1,92.2 324.9,89.9 321.7,87.6 318.5,85.1 315.3,82.7 312.1,80.2 309.0,77.8 305.8,75.5 302.6,73.3 299.4,71.4 296.2,69.8 293.0,68.5 289.8,67.6 286.6,67.1 283.5,67.1 280.3,67.6 277.1,68.7 273.9,70.2 270.7,72.3 267.5,75.0 264.3,78.2 261.2,81.8 258.0,86.0 254.8,90.6 251.6,95.5 248.4,100.8 245.2,106.4 242.0,112.3 238.8,118.2 235.7,124.3 232.5,130.5 229.3,136.7 226.1,142.8 222.9,148.8 219.7,154.7 216.5,160.5 213.4,166.0 210.2,171.4 207.0,176.5 203.8,181.4 200.6,186.0 197.4,190.4 194.2,194.6 191.0,198.5 187.9,202.3 184.7,205.8 181.5,209.1 178.3,212.2" fill="none" stroke="var(--good)" stroke-opacity=".38" stroke-width="1.1"/><polyline points="393.4,118.2 390.2,119.3 387.0,120.2 383.8,121.1 380.7,121.7 377.5,122.3 374.3,122.7 371.1,123.0 367.9,123.1 364.7,123.1 361.5,122.9 358.4,122.6 355.2,122.2 352.0,121.6 348.8,121.0 345.6,120.2 342.4,119.5 339.2,118.7 336.0,117.9 332.9,117.1 329.7,116.4 326.5,115.8 323.3,115.3 320.1,115.1 316.9,115.0 313.7,115.1 310.6,115.6 307.4,116.3 304.2,117.3 301.0,118.7 297.8,120.3 294.6,122.3 291.4,124.7 288.2,127.3 285.1,130.3 281.9,133.5 278.7,137.1 275.5,140.8 272.3,144.8 269.1,148.9 265.9,153.2 262.7,157.6 259.6,162.0 256.4,166.5 253.2,171.0 250.0,175.4 246.8,179.8 243.6,184.2 240.4,188.4 237.3,192.5 234.1,196.5 230.9,200.4 227.7,204.1 224.5,207.6 221.3,211.0 218.1,214.3 214.9,217.4 211.8,220.4 208.6,223.3 205.4,226.0 202.2,228.6" fill="none" stroke="var(--good)" stroke-opacity=".38" stroke-width="1.1"/><polyline points="417.3,134.4 414.1,135.9 410.9,137.3 407.8,138.7 404.6,140.0 401.4,141.3 398.2,142.5 395.0,143.7 391.8,144.7 388.6,145.8 385.4,146.7 382.3,147.6 379.1,148.4 375.9,149.2 372.7,150.0 369.5,150.7 366.3,151.4 363.1,152.0 359.9,152.7 356.8,153.4 353.6,154.1 350.4,154.9 347.2,155.7 344.0,156.6 340.8,157.6 337.6,158.7 334.5,159.9 331.3,161.3 328.1,162.7 324.9,164.4 321.7,166.1 318.5,168.0 315.3,170.1 312.1,172.3 309.0,174.6 305.8,177.1 302.6,179.7 299.4,182.4 296.2,185.1 293.0,188.0 289.8,190.9 286.6,193.9 283.5,196.9 280.3,199.9 277.1,202.9 273.9,205.9 270.7,208.8 267.5,211.8 264.3,214.7 261.2,217.5 258.0,220.3 254.8,223.0 251.6,225.7 248.4,228.3 245.2,230.8 242.0,233.3 238.8,235.7 235.7,238.0 232.5,240.3 229.3,242.6 226.1,244.8" fill="none" stroke="var(--good)" stroke-opacity=".38" stroke-width="1.1"/><polyline points="441.2,149.4 438.0,151.1 434.8,152.9 431.7,154.6 428.5,156.2 425.3,157.9 422.1,159.5 418.9,161.2 415.7,162.8 412.5,164.3 409.3,165.9 406.2,167.4 403.0,168.9 399.8,170.5 396.6,171.9 393.4,173.4 390.2,174.9 387.0,176.4 383.8,177.8 380.7,179.3 377.5,180.8 374.3,182.3 371.1,183.8 367.9,185.4 364.7,186.9 361.5,188.5 358.4,190.2 355.2,191.9 352.0,193.6 348.8,195.3 345.6,197.2 342.4,199.0 339.2,200.9 336.0,202.9 332.9,204.9 329.7,206.9 326.5,209.0 323.3,211.1 320.1,213.2 316.9,215.4 313.7,217.6 310.6,219.8 307.4,222.0 304.2,224.2 301.0,226.4 297.8,228.6 294.6,230.8 291.4,233.0 288.2,235.2 285.1,237.3 281.9,239.5 278.7,241.6 275.5,243.7 272.3,245.8 269.1,247.9 265.9,249.9 262.7,251.9 259.6,253.9 256.4,255.9 253.2,257.9 250.0,259.8" fill="none" stroke="var(--good)" stroke-opacity=".38" stroke-width="1.1"/>
+          <circle cx="250.0" cy="39.8" r="4" fill="var(--good)"/>
+          <text x="250.0" y="27.8" font-size="11.5" fill="var(--good)" text-anchor="middle" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">頂上</text>
+          <polyline points="267.1,132.3 266.1,132.5 265.1,132.6 264.1,132.8 263.1,132.9 262.1,133.0 261.1,133.1 260.1,133.2 259.0,133.3 258.0,133.3 257.0,133.4 256.0,133.5 254.9,133.5 253.9,133.5 252.9,133.6 251.9,133.6 250.8,133.6 249.8,133.6 248.8,133.6 247.7,133.6 246.7,133.6 245.7,133.5 244.6,133.5 243.6,133.4 242.6,133.4 241.6,133.3 240.6,133.2 239.5,133.1 238.5,133.0 237.5,132.9 236.5,132.8 235.5,132.7 234.5,132.6 233.5,132.4 232.5,132.3 231.5,132.1 230.5,132.0 229.5,131.8 228.5,131.6 227.5,131.4 226.6,131.2 225.6,131.0" fill="none" stroke="var(--key)" stroke-width="3"/><polygon points="225.6,131.0 236.4,128.9 234.7,137.2" fill="var(--key)"/><polyline points="267.1,132.3 266.6,131.6 266.0,130.9 265.4,130.2 264.9,129.4 264.3,128.7 263.8,128.0 263.3,127.2 262.7,126.5 262.2,125.7 261.7,125.0 261.2,124.2 260.7,123.5 260.2,122.7 259.7,121.9 259.2,121.2 258.7,120.4 258.2,119.6 257.8,118.8 257.3,118.1 256.9,117.3 256.4,116.5 256.0,115.7 255.5,114.9 255.1,114.2 254.7,113.4 254.2,112.6 253.8,111.8 253.4,111.0 253.0,110.2 252.6,109.4 252.2,108.6 251.8,107.8 251.5,107.0 251.1,106.2 250.7,105.4 250.4,104.6 250.0,103.8 249.7,103.0 249.3,102.2 249.0,101.4 248.7,100.6 248.4,99.8 248.0,99.0 247.7,98.2 247.4,97.4 247.1,96.7 246.9,95.9 246.6,95.1 246.3,94.3 246.0,93.5" fill="none" stroke="var(--amber)" stroke-width="3"/><polygon points="246.0,93.5 253.4,101.7 245.3,104.5" fill="var(--amber)"/><polyline points="267.1,132.3 266.8,130.5 266.6,128.6 266.3,126.7 266.0,124.8 265.7,122.9 265.4,121.0 265.2,119.1 264.9,117.2 264.6,115.3 264.3,113.4 264.0,111.5 263.8,109.6 263.5,107.7 263.2,105.8 262.9,103.9 262.6,102.0 262.4,100.2 262.1,98.3 261.8,96.4 261.5,94.6 261.2,92.8 260.9,90.9 260.7,89.1 260.4,87.3 260.1,85.6 259.8,83.8 259.5,82.1 259.3,80.3 259.0,78.6 258.7,76.9 258.4,75.3 258.1,73.6 257.9,72.0 257.6,70.4 257.3,68.9 257.0,67.3 256.7,65.8" fill="none" stroke="var(--accent)" stroke-width="3"/><polygon points="256.7,65.8 262.8,75.0 254.3,76.6" fill="var(--accent)"/>
+          <circle cx="267.1" cy="132.3" r="6.5" fill="var(--ink)" stroke="#000" stroke-width="2"/>
+          <text x="280.0" y="153.0" font-size="12" font-weight="500" fill="var(--ink)" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">いる場所</text>
+          <text x="238.0" y="50.0" font-size="11.5" font-weight="500" fill="var(--accent-deep)" text-anchor="end" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">急な上り</text>
+          <text x="226.0" y="94.0" font-size="11.5" font-weight="500" fill="var(--amber)" text-anchor="end" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">緩やかな上り</text>
+          <text x="210.0" y="126.0" font-size="11.5" font-weight="500" fill="var(--key)" text-anchor="end" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">傾き 0</text>
+          <text x="210.0" y="142.0" font-size="11" fill="var(--key)" text-anchor="end" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">（高さが変わらない）</text>
+          <text x="250" y="290" font-size="11.5" fill="var(--ink-faint)" text-anchor="middle">同じ場所に立っていても、進む向きで斜面の傾きは違う</text>
+        </svg>
+        <figcaption>丘を斜めから見た図です。黒い点の位置に立っているとき、<strong>頂上へ向かえば急な上り、斜面を横切るように進めば高さが変わらず傾きは 0</strong>、その中間なら緩やかな上りになります。同じ地点でも、<strong>向きを決めなければ「傾き」は1つに決まりません</strong>。だからまず向きを決めてから測ることになり、いちばん素直な選び方が「座標軸に沿った向き」です。</figcaption>
+      </figure>
+      <p>そこで取る方針は単純です。</p>
+      <ol>
+        <li>まず<strong>座標軸に沿った方向</strong>だけを調べる。\(x\) 方向と \(y\) 方向、それぞれ別々に。これが<strong>偏微分</strong>（§02）</li>
+        <li>両方が同時に動いた場合は、それぞれの寄与を<strong>足し合わせる</strong>。これが<strong>全微分</strong>（§03）</li>
+      </ol>
+      <p>複雑に見えたものを、1変数の問題に分解してから組み立て直す——という進め方です。</p>
+
+      <div class="box teach"><span class="lab">この記事の到達目標</span>
+      <ul style="margin:6px 0 0">
+        <li>偏微分の定義を書き、1変数の微分との違いを説明できる</li>
+        <li>\(\partial\) と \(d\) を使い分けられる</li>
+        <li>具体的な関数の偏微分を計算できる</li>
+        <li>全微分 \(df=\dfrac{\partial f}{\partial x}dx+\dfrac{\partial f}{\partial y}dy\) がどこから来たか説明できる</li>
+        <li>多変数の連鎖律を書き、変数が時間に依存する場合に使える</li>
+      </ul></div>
+
+      <div class="box principle"><span class="lab">前提として使うもの</span>
+      <ul style="margin:6px 0 0">
+        <li><strong>1章 微分</strong>：導関数の定義、基本関数の微分、連鎖律</li>
+        <li><strong>3章 近似と展開</strong>：1次近似（全微分の導出に使います）</li>
+      </ul></div>
+    </section>
+
+    <!-- §02 -->
+    <section id="d1">
+      <div class="sec-head"><span class="idx">§02</span><h2>偏微分 — 1つだけ動かす</h2></div>
+
+      <p>方針どおり、まず \(x\) 方向だけを調べます。<strong>\(y\) は動かさず、定数として固定しておく</strong>のがポイントです。</p>
+      <p>こうすると、\(f(x,y)\) はもう2変数の関数ではありません。\(y\) が動かない以上、変わりうるのは \(x\) だけ——<strong>ただの1変数の関数</strong>です。だったら、1章の定義がそのまま使えます。</p>
+
+      <div class="box target"><span class="lab">偏微分の定義</span>
+      \[ \frac{\partial f}{\partial x}=\lim_{h\to0}\frac{f(x+h,\,y)-f(x,\,y)}{h} \]
+      <p>1章の導関数の定義と見比べてください。<strong>違いは、第2引数の \(y\) が両方とも同じであること</strong>だけです。\(y\) は動かしていません。</p>
+      <p style="margin-top:8px">同じように、\(y\) 方向は \(x\) を止めて測ります。</p>
+      \[ \frac{\partial f}{\partial y}=\lim_{h\to0}\frac{f(x,\,y+h)-f(x,\,y)}{h} \]</div>
+
+      <figure class="fig">
+        <svg viewBox="0 0 640 280" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="断面を取ると1変数の微分になる">
+          <text x="85" y="28" font-size="12.5" font-weight="500" fill="var(--accent-deep)">y を止めて、x だけ動かす</text>
+          <line x1="70" y1="210" x2="300" y2="210" stroke="var(--ink-faint)" stroke-width="1.2"/>
+          <line x1="85" y1="228" x2="85" y2="55" stroke="var(--ink-faint)" stroke-width="1.2"/>
+          <text x="306" y="214" font-size="12" fill="var(--ink)" font-style="italic">x</text>
+          <text x="66" y="58" font-size="12" fill="var(--ink)" font-style="italic">f</text>
+          <polyline points="85.0,170.4 86.2,169.9 87.3,169.4 88.5,169.0 89.6,168.5 90.8,168.0 92.0,167.6 93.1,167.1 94.3,166.6 95.4,166.2 96.6,165.7 97.8,165.3 98.9,164.8 100.1,164.4 101.2,164.0 102.4,163.5 103.6,163.1 104.7,162.7 105.9,162.3 107.0,161.8 108.2,161.4 109.4,161.0 110.5,160.6 111.7,160.2 112.8,159.8 114.0,159.4 115.2,159.0 116.3,158.6 117.5,158.2 118.6,157.8 119.8,157.5 121.0,157.1 122.1,156.7 123.3,156.3 124.4,156.0 125.6,155.6 126.8,155.3 127.9,154.9 129.1,154.5 130.2,154.2 131.4,153.9 132.6,153.5 133.7,153.2 134.9,152.8 136.0,152.5 137.2,152.2 138.4,151.9 139.5,151.5 140.7,151.2 141.8,150.9 143.0,150.6 144.2,150.3 145.3,150.0 146.5,149.7 147.6,149.4 148.8,149.1 150.0,148.8 151.1,148.5 152.3,148.2 153.4,148.0 154.6,147.7 155.8,147.4 156.9,147.2 158.1,146.9 159.2,146.6 160.4,146.4 161.6,146.1 162.7,145.9 163.9,145.6 165.0,145.4 166.2,145.1 167.4,144.9 168.5,144.7 169.7,144.4 170.8,144.2 172.0,144.0 173.2,143.8 174.3,143.6 175.5,143.4 176.6,143.1 177.8,142.9 179.0,142.7 180.1,142.5 181.3,142.4 182.4,142.2 183.6,142.0 184.8,141.8 185.9,141.6 187.1,141.4 188.2,141.3 189.4,141.1 190.6,140.9 191.7,140.8 192.9,140.6 194.0,140.5 195.2,140.3 196.4,140.2 197.5,140.0 198.7,139.9 199.8,139.7 201.0,139.6 202.2,139.5 203.3,139.3 204.5,139.2 205.6,139.1 206.8,139.0 208.0,138.9 209.1,138.8 210.3,138.7 211.4,138.6 212.6,138.5 213.8,138.4 214.9,138.3 216.1,138.2 217.2,138.1 218.4,138.0 219.6,137.9 220.7,137.9 221.9,137.8 223.0,137.7 224.2,137.7 225.4,137.6 226.5,137.5 227.7,137.5 228.8,137.4 230.0,137.4 231.2,137.4 232.3,137.3 233.5,137.3 234.6,137.3 235.8,137.2 237.0,137.2 238.1,137.2 239.3,137.2 240.4,137.1 241.6,137.1 242.8,137.1 243.9,137.1 245.1,137.1 246.2,137.1 247.4,137.1 248.6,137.1 249.7,137.2 250.9,137.2 252.0,137.2 253.2,137.2 254.4,137.3 255.5,137.3 256.7,137.3 257.8,137.4 259.0,137.4 260.2,137.4 261.3,137.5 262.5,137.5 263.6,137.6 264.8,137.7 266.0,137.7 267.1,137.8 268.3,137.9 269.4,137.9 270.6,138.0 271.8,138.1 272.9,138.2 274.1,138.3 275.2,138.4 276.4,138.5 277.6,138.6 278.7,138.7 279.9,138.8 281.0,138.9 282.2,139.0 283.4,139.1 284.5,139.2 285.7,139.3 286.8,139.5 288.0,139.6 289.2,139.7 290.3,139.9 291.5,140.0 292.6,140.2 293.8,140.3" fill="none" stroke="var(--accent)" stroke-width="2.8"/>
+          <polyline points="117.8,153.4 237.8,132.5" fill="none" stroke="var(--good)" stroke-width="2" stroke-dasharray="6 5"/>
+          <circle cx="177.8" cy="142.9" r="5" fill="var(--good)" stroke="#000" stroke-width="2"/>
+          <text x="235.8" y="180.9" font-size="12" fill="var(--good)" text-anchor="end" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">接線の傾き＝</text>
+          <text x="249.8" y="171.9" font-size="12" fill="var(--good)" text-anchor="middle" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">∂f</text><line x1="239.6" y1="176.9" x2="260.0" y2="176.9" stroke="var(--good)" stroke-width="1.4"/><text x="249.8" y="190.9" font-size="12" fill="var(--good)" text-anchor="middle" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">∂x</text>
+          <text x="185" y="252" font-size="11.5" fill="var(--ink-faint)" text-anchor="middle">y = 一定 での切り口</text>
+
+          <text x="370" y="28" font-size="12.5" font-weight="500" fill="var(--key)">x を止めて、y だけ動かす</text>
+          <line x1="355" y1="210" x2="590" y2="210" stroke="var(--ink-faint)" stroke-width="1.2"/>
+          <line x1="370" y1="228" x2="370" y2="55" stroke="var(--ink-faint)" stroke-width="1.2"/>
+          <text x="596" y="214" font-size="12" fill="var(--ink)" font-style="italic">y</text>
+          <text x="351" y="58" font-size="12" fill="var(--ink)" font-style="italic">f</text>
+          <polyline points="370.0,188.0 371.2,187.9 372.3,187.8 373.5,187.7 374.6,187.6 375.8,187.5 377.0,187.4 378.1,187.2 379.3,187.1 380.4,187.0 381.6,186.8 382.8,186.7 383.9,186.5 385.1,186.4 386.2,186.2 387.4,186.0 388.6,185.9 389.7,185.7 390.9,185.5 392.0,185.3 393.2,185.1 394.4,184.9 395.5,184.7 396.7,184.5 397.8,184.3 399.0,184.0 400.2,183.8 401.3,183.6 402.5,183.3 403.6,183.1 404.8,182.8 406.0,182.6 407.1,182.3 408.3,182.0 409.4,181.8 410.6,181.5 411.8,181.2 412.9,180.9 414.1,180.6 415.2,180.3 416.4,180.0 417.6,179.7 418.7,179.3 419.9,179.0 421.0,178.7 422.2,178.3 423.4,178.0 424.5,177.6 425.7,177.3 426.8,176.9 428.0,176.6 429.2,176.2 430.3,175.8 431.5,175.4 432.6,175.0 433.8,174.6 435.0,174.2 436.1,173.8 437.3,173.4 438.4,173.0 439.6,172.6 440.8,172.2 441.9,171.7 443.1,171.3 444.2,170.8 445.4,170.4 446.6,169.9 447.7,169.5 448.9,169.0 450.0,168.5 451.2,168.0 452.4,167.6 453.5,167.1 454.7,166.6 455.8,166.1 457.0,165.6 458.2,165.0 459.3,164.5 460.5,164.0 461.6,163.5 462.8,162.9 464.0,162.4 465.1,161.8 466.3,161.3 467.4,160.7 468.6,160.2 469.8,159.6 470.9,159.0 472.1,158.4 473.2,157.9 474.4,157.3 475.6,156.7 476.7,156.1 477.9,155.5 479.0,154.8 480.2,154.2 481.4,153.6 482.5,153.0 483.7,152.3 484.8,151.7 486.0,151.0 487.2,150.4 488.3,149.7 489.5,149.1 490.6,148.4 491.8,147.7 493.0,147.0 494.1,146.3 495.3,145.7 496.4,145.0 497.6,144.2 498.8,143.5 499.9,142.8 501.1,142.1 502.2,141.4 503.4,140.6 504.6,139.9 505.7,139.2 506.9,138.4 508.0,137.7 509.2,136.9 510.4,136.1 511.5,135.4 512.7,134.6 513.8,133.8 515.0,133.0 516.2,132.2 517.3,131.4 518.5,130.6 519.6,129.8 520.8,129.0 522.0,128.1 523.1,127.3 524.3,126.5 525.4,125.6 526.6,124.8 527.8,123.9 528.9,123.1 530.1,122.2 531.2,121.4 532.4,120.5 533.6,119.6 534.7,118.7 535.9,117.8 537.0,116.9 538.2,116.0 539.4,115.1 540.5,114.2 541.7,113.3 542.8,112.4 544.0,111.4 545.2,110.5 546.3,109.6 547.5,108.6 548.6,107.7 549.8,106.7 551.0,105.7 552.1,104.8 553.3,103.8 554.4,102.8 555.6,101.8 556.8,100.8 557.9,99.8 559.1,98.8 560.2,97.8 561.4,96.8 562.6,95.8 563.7,94.8 564.9,93.7 566.0,92.7 567.2,91.7 568.4,90.6 569.5,89.6 570.7,88.5 571.8,87.4 573.0,86.4 574.2,85.3 575.3,84.2 576.5,83.1 577.6,82.0 578.8,80.9" fill="none" stroke="var(--key)" stroke-width="2.8"/>
+          <polyline points="442.6,177.8 552.6,110.7" fill="none" stroke="var(--amber)" stroke-width="2" stroke-dasharray="6 5"/>
+          <circle cx="497.6" cy="144.2" r="5" fill="var(--amber)" stroke="#000" stroke-width="2"/>
+          <text x="445.6" y="124.2" font-size="12" fill="var(--amber)" text-anchor="end" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">接線の傾き＝</text>
+          <text x="459.6" y="115.2" font-size="12" fill="var(--amber)" text-anchor="middle" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">∂f</text><line x1="449.4" y1="120.2" x2="469.8" y2="120.2" stroke="var(--amber)" stroke-width="1.4"/><text x="459.6" y="134.2" font-size="12" fill="var(--amber)" text-anchor="middle" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">∂y</text>
+          <text x="470" y="252" font-size="11.5" fill="var(--ink-faint)" text-anchor="middle">x = 一定 での切り口</text>
+        </svg>
+        <figcaption>2変数の関数 \(f(x,y)\) は、変数を1つ止めると<strong>ただの1変数の関数になります</strong>。左は \(y\) を固定して \(x\) だけを動かしたときの切り口、右は \(x\) を固定したときの切り口。それぞれの接線の傾きが、偏微分 \(\dfrac{\partial f}{\partial x}\) と \(\dfrac{\partial f}{\partial y}\) です。<strong>同じ点でも、どちらに動くかで傾きは違います</strong>。</figcaption>
+      </figure>
+      <div class="box teach"><span class="lab">記号 \(\partial\) の読み方</span>
+      <p>この記号には<strong>決まった呼び名がありません</strong>。よく使われるのは次の3つです。</p>
+      <ul style="margin:6px 0 0">
+        <li><strong>ラウンドディー</strong>、または縮めて<strong>ラウンド</strong>：「丸みを帯びた \(d\)」という意味（rounded d）</li>
+        <li><strong>デル</strong>：日本語入力で「デル」と打つと変換される読みで、JIS の文字名称にもなっています</li>
+        <li><strong>パーシャル</strong>、<strong>パーシャルディー</strong>：偏微分（partial derivative）から</li>
+      </ul>
+      <p style="margin-top:8px">\(\dfrac{\partial f}{\partial x}\) なら「ラウンドエフ・ラウンドエックス」「デルエフ・デルエックス」のように、<strong>分子から順に</strong>読みます。どれも正しいので、講義や研究室で使われている読みに合わせれば十分です。</p>
+      <p style="margin-top:8px">ひとつ注意があります。<strong>「デル」は、8章で出てくる \(\nabla\)（ナブラ）の呼び名でもあります</strong>。混同を避けたい場面では「ラウンド」と読むほうが安全です。</p></div>
+
+      <div class="box teach"><span class="lab">なぜ \(d\) と区別するのか</span>
+      <p><strong>「他の変数を止めている」という情報を、記号自体に持たせるため</strong>です。</p>
+      <p style="margin-top:8px">\(\dfrac{df}{dx}\) と書いてあれば「\(f\) は \(x\) だけの関数」、\(\dfrac{\partial f}{\partial x}\) と書いてあれば「他にも変数があるが、それらは止めた」と読めます。<strong>式を見ただけで、背後の状況が分かる</strong>ようになっているわけです。</p>
+      <p style="margin-top:8px">この使い分けは §04 の連鎖律で実際に効いてきます。同じ式の中に \(d\) と \(\partial\) が混在し、それぞれが違う意味を担うからです。</p></div>
+
+      <h3>計算のしかたは1章と同じ</h3>
+      <p>定義に戻る必要はありません。<strong>止めている変数を、ただの定数だと思って微分するだけ</strong>です。</p>
+      <p>例として \(f(x,y)=x^2y+3y^2\) を微分してみます。</p>
+      <div class="table-scroll"><table class="mini-table">
+        <tr><th style="width:30%">操作</th><th style="width:30%">\(x\) で偏微分</th><th>\(y\) で偏微分</th></tr>
+        <tr><td>\(y\)（または \(x\)）の扱い</td><td>\(y\) は定数</td><td>\(x\) は定数</td></tr>
+        <tr><td>\(x^2y\) の項</td><td>\(2xy\)</td><td>\(x^2\)</td></tr>
+        <tr><td>\(3y^2\) の項</td><td>\(0\)（\(x\) を含まない定数）</td><td>\(6y\)</td></tr>
+        <tr><td>結果</td><td>\(\dfrac{\partial f}{\partial x}=2xy\)</td><td>\(\dfrac{\partial f}{\partial y}=x^2+6y\)</td></tr>
+      </table></div>
+      <p style="margin-top:8px">\(x\) で微分するとき、\(3y^2\) が消えることに注目してください。\(x\) を含まないので、\(x\) から見れば<strong>ただの定数</strong>だからです。</p>
+
+      <div class="box warn"><span class="lab">何を止めているかを書く必要がある場面</span>
+      <p>ふつうは \(\dfrac{\partial f}{\partial x}\) と書けば、残りの変数を止めていることが分かります。しかし<strong>変数の取り方が何通りもある</strong>場合には、それだけでは足りません。</p>
+      <p style="margin-top:8px">熱力学がその代表です。気体の内部エネルギーは、\((T,V)\) の関数とも \((T,p)\) の関数とも書けます。すると「温度で偏微分する」と言っても、体積を止めるのか圧力を止めるのかで、答えが変わってしまいます。</p>
+      <p style="margin-top:8px">そこで熱力学では、止めている変数を右下に添えて書きます。</p>
+      \[ \left(\frac{\partial U}{\partial T}\right)_V,\qquad \left(\frac{\partial U}{\partial T}\right)_p \]
+      <p>この2つは<strong>別のもの</strong>です。記号が煩わしく見えますが、必要があって付いています。</p></div>
+
+      <h3>計算ドリル（§02・全3問）</h3>
+
+      <div class="drill"><p><span class="qn">問1</span>\(f(x,y)=3x^2y^3-2xy+5y\) について、\(\dfrac{\partial f}{\partial x}\) と \(\dfrac{\partial f}{\partial y}\) を求めよ。</p>
+      <div class="attempt" style="margin:10px 0 4px"><span class="lab">自分の答えを出してから</span>
+      <div class="controls"><button class="ctl-btn" data-sol>解答を見る</button></div>
+      <div class="sol"><p><strong>\(x\) で偏微分</strong>：\(y\) を定数と見ます。第3項 \(5y\) は \(x\) を含まないので消えます。</p>
+      \[ \frac{\partial f}{\partial x}=6xy^3-2y \]
+      <p><strong>\(y\) で偏微分</strong>：\(x\) を定数と見ます。</p>
+      \[ \frac{\partial f}{\partial y}=9x^2y^2-2x+5 \]
+      <p style="font-size:13.5px;color:var(--ink-faint)">第1項では、\(x\) で微分するときは \(y^3\) が係数、\(y\) で微分するときは \(3x^2\) が係数になります。<strong>止めた側は、ただの数として前に出るだけ</strong>。1章の「定数倍はそのまま外に出る」という性質そのものです。</p></div></div></div>
+
+      <div class="drill"><p><span class="qn">問2</span>\(f(x,y)=e^{xy}\) について、\(\dfrac{\partial f}{\partial x}\) と \(\dfrac{\partial f}{\partial y}\) を求めよ。</p>
+      <div class="attempt" style="margin:10px 0 4px"><span class="lab">自分の答えを出してから</span>
+      <div class="controls">
+        <button class="ctl-btn amber" data-hint>ヒントを表示</button>
+        <button class="ctl-btn" data-sol>解答を見る</button>
+      </div>
+      <div class="hint"><span class="hn">HINT 1</span><p>連鎖律を使います。\(y\) を定数と見れば、肩に乗っているのは「\(y\) 倍された \(x\)」です。中身の微分は何になりますか。</p></div>
+      <div class="sol"><p><strong>\(x\) で偏微分</strong>：中身 \(xy\) を \(x\) で微分すると \(y\) なので</p>
+      \[ \frac{\partial f}{\partial x}=y\,e^{xy} \]
+      <p><strong>\(y\) で偏微分</strong>：中身を \(y\) で微分すると \(x\) なので</p>
+      \[ \frac{\partial f}{\partial y}=x\,e^{xy} \]
+      <p style="font-size:13.5px;color:var(--ink-faint)">連鎖律は1変数のときとまったく同じように使えます。<strong>止めている変数は、中身の微分をするときも定数のまま</strong>。この問題なら、\(x\) で微分するときの \(xy\) は「\(y\) という定数 × \(x\)」なので、微分すれば \(y\) が残ります。</p></div></div></div>
+
+      <div class="drill"><p><span class="qn">問3</span>理想気体の圧力は \(p=\dfrac{nRT}{V}\) と書ける（\(n,R\) は定数）。\(\left(\dfrac{\partial p}{\partial T}\right)_V\) と \(\left(\dfrac{\partial p}{\partial V}\right)_T\) を求め、それぞれが何を表すか述べよ。</p>
+      <div class="attempt" style="margin:10px 0 4px"><span class="lab">自分の答えを出してから</span>
+      <div class="controls"><button class="ctl-btn" data-sol>解答を見る</button></div>
+      <div class="sol"><p><strong>体積を止めて温度で微分</strong>：\(V\) が定数なので、\(p\) は \(T\) の1次式です。</p>
+      \[ \left(\frac{\partial p}{\partial T}\right)_V=\frac{nR}{V} \]
+      <p>容器の大きさを変えずに温めたとき、圧力がどれだけ上がるかを表します。</p>
+      <p><strong>温度を止めて体積で微分</strong>：\(T\) が定数なので、\(p\) は \(1/V\) に比例します。</p>
+      \[ \left(\frac{\partial p}{\partial V}\right)_T=-\frac{nRT}{V^2} \]
+      <p>温度を保ったまま容器を広げたとき、圧力がどれだけ下がるかを表します。負号は「広げると下がる」ことを示しています。</p>
+      <p style="font-size:13.5px;color:var(--ink-faint)">同じ \(p\) という量でも、<strong>何を止めるかで意味も答えも変わります</strong>。熱力学で添字を付けて書く理由が、この例で分かると思います。</p></div></div></div>
+    </section>
+
+    <!-- §03 -->
+    <section id="d2">
+      <div class="sec-head"><span class="idx">§03</span><h2>全微分 — すべてが同時に変わるとき</h2></div>
+
+      <p>偏微分で、軸に沿った方向の変化率が分かりました。では<strong>両方が同時に少し動いた</strong>ら、\(f\) はどれだけ変わるでしょうか。</p>
+      <p>ここで使うのが、3-1 の1次近似です。「小さい変化に対しては、変化率 × 動いた量」で済む、というあの考え方を、方向ごとに当てはめます。</p>
+
+      <div class="box principle"><span class="lab">2段階に分けて考える</span>
+      <p>いきなり斜めに動くと考えにくいので、<strong>2回に分けて動きます</strong>。</p>
+      <ol style="margin:6px 0 0">
+        <li>まず \(x\) だけ \(dx\) 動かす。このとき \(f\) は およそ \(\dfrac{\partial f}{\partial x}dx\) だけ変わる</li>
+        <li>次に \(y\) だけ \(dy\) 動かす。このとき \(f\) は およそ \(\dfrac{\partial f}{\partial y}dy\) だけ変わる</li>
+      </ol>
+      <p style="margin-top:8px">合計すれば、両方動いたときの変化になります。</p></div>
+
+      <figure class="fig">
+        <svg viewBox="0 0 640 280" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="全微分は各方向の寄与の和">
+          <line x1="90" y1="210" x2="400" y2="210" stroke="var(--ink-faint)" stroke-width="1.2"/>
+          <line x1="130" y1="240" x2="130" y2="60" stroke="var(--ink-faint)" stroke-width="1.2"/>
+          <text x="406" y="214" font-size="12" fill="var(--ink)" font-style="italic">x</text>
+          <text x="112" y="62" font-size="12" fill="var(--ink)" font-style="italic">y</text>
+          <rect x="190" y="110" width="110" height="60" fill="none" stroke="var(--line)" stroke-width="1.3" stroke-dasharray="5 4"/>
+          <line x1="190" y1="170" x2="298" y2="170" stroke="var(--accent)" stroke-width="3"/>
+          <polygon points="306,170 293,164 293,176" fill="var(--accent)"/>
+          <line x1="300" y1="170" x2="300" y2="112" stroke="var(--key)" stroke-width="3"/>
+          <polygon points="300,104 294,117 306,117" fill="var(--key)"/>
+          <line x1="190" y1="170" x2="300" y2="110" stroke="var(--good)" stroke-width="2.6" stroke-dasharray="7 5"/>
+          <circle cx="190" cy="170" r="5" fill="var(--ink)" stroke="#000" stroke-width="2"/>
+          <circle cx="300" cy="110" r="5" fill="var(--good)" stroke="#000" stroke-width="2"/>
+          <text x="180" y="190" font-size="12" font-weight="500" fill="var(--ink)" text-anchor="end" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">(x, y)</text>
+          <text x="310" y="100" font-size="12" font-weight="500" fill="var(--good)" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">(x+dx, y+dy)</text>
+          <text x="245" y="192" font-size="12" font-weight="500" fill="var(--accent-deep)" text-anchor="middle" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">dx</text>
+          <text x="314" y="146" font-size="12" font-weight="500" fill="var(--key)" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">dy</text>
+          <text x="440" y="90" font-size="12.5" font-weight="500" fill="var(--ink)">f の変化は</text>
+          <line x1="440" y1="118" x2="464" y2="118" stroke="var(--accent)" stroke-width="3"/>
+          <text x="472" y="122" font-size="12.5" fill="var(--accent-deep)">x のぶん …</text>
+          <text x="546.0" y="117.0" font-size="12" fill="var(--accent-deep)" text-anchor="middle" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">∂f</text><line x1="535.8" y1="122.0" x2="556.2" y2="122.0" stroke="var(--accent-deep)" stroke-width="1.4"/><text x="546.0" y="136.0" font-size="12" fill="var(--accent-deep)" text-anchor="middle" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">∂x</text>
+          <text x="566" y="126" font-size="12.5" fill="var(--accent-deep)">dx</text>
+          <line x1="440" y1="160" x2="464" y2="160" stroke="var(--key)" stroke-width="3"/>
+          <text x="472" y="164" font-size="12.5" fill="var(--key)">y のぶん …</text>
+          <text x="546.0" y="159.0" font-size="12" fill="var(--key)" text-anchor="middle" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">∂f</text><line x1="535.8" y1="164.0" x2="556.2" y2="164.0" stroke="var(--key)" stroke-width="1.4"/><text x="546.0" y="178.0" font-size="12" fill="var(--key)" text-anchor="middle" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">∂y</text>
+          <text x="566" y="168" font-size="12.5" fill="var(--key)">dy</text>
+          <text x="440" y="204" font-size="12.5" font-weight="500" fill="var(--good)">合計が df</text>
+          <text x="440" y="226" font-size="11.5" fill="var(--ink-faint)">（どちらも小さいときに限る）</text>
+        </svg>
+        <figcaption>点 \((x,y)\) から、\(x\) 方向に \(dx\)、\(y\) 方向に \(dy\) だけ動いたとします。このとき \(f\) の変化は、<strong>「\(x\) だけ動いたぶん」と「\(y\) だけ動いたぶん」を足したもの</strong>になります。それぞれの寄与が偏微分で書けるので、合計は \(df=\dfrac{\partial f}{\partial x}dx+\dfrac{\partial f}{\partial y}dy\)。3-1 の1次近似を、方向ごとに使って足し合わせた形です。</figcaption>
+      </figure>
+      <div class="box target"><span class="lab">全微分</span>
+      \[ df=\frac{\partial f}{\partial x}dx+\frac{\partial f}{\partial y}dy \]
+      <p>これを \(f\) の<strong>全微分</strong>といいます。「全」は<strong>すべての変数の寄与を含めた</strong>という意味です。</p>
+      <p style="margin-top:8px">変数が3つ以上でも同じで、項が増えるだけです。</p>
+      \[ df=\frac{\partial f}{\partial x}dx+\frac{\partial f}{\partial y}dy+\frac{\partial f}{\partial z}dz \]</div>
+
+      <div class="box warn"><span class="lab">なぜ足すだけでよいのか</span>
+      <p>2段階に分けたとき、2番目の移動は「\(x\) がすでに \(dx\) 動いた地点」で行っています。その地点の \(\dfrac{\partial f}{\partial y}\) は、元の地点の値とわずかに違うはずです。</p>
+      <p style="margin-top:8px">しかしその差は \(dx\) に比例し、それに \(dy\) が掛かるので、<strong>ズレは \(dx\,dy\) の大きさ</strong>になります。\(dx\) と \(dy\) がどちらも小さければ、これは1次の項に比べて桁違いに小さい。だから捨ててよいのです。</p>
+      <p style="margin-top:8px">3-1 で「1次まで取り、2次以上は落とす」と述べたことが、ここでも効いています。<strong>全微分は1次近似の式</strong>であって、厳密な等式ではありません。</p></div>
+
+      <h3>計算ドリル（§03・全2問）</h3>
+
+      <div class="drill"><p><span class="qn">問1</span>\(f(x,y)=x^2y\) の全微分を書け。また \(x=2,\ y=3\) の点で \(dx=0.01,\ dy=-0.02\) だけ動いたときの \(df\) を計算せよ。</p>
+      <div class="attempt" style="margin:10px 0 4px"><span class="lab">自分の答えを出してから</span>
+      <div class="controls"><button class="ctl-btn" data-sol>解答を見る</button></div>
+      <div class="sol"><p>偏微分は \(\dfrac{\partial f}{\partial x}=2xy\)、\(\dfrac{\partial f}{\partial y}=x^2\) なので</p>
+      \[ df=2xy\,dx+x^2\,dy \]
+      <p>\(x=2,\ y=3\) を入れると \(2xy=12\)、\(x^2=4\)。したがって</p>
+      \[ df=12\times0.01+4\times(-0.02)=0.04 \]
+      <p style="font-size:13.5px;color:var(--ink-faint)">確かめてみます。正確な変化は \(f(2.01,\,2.98)-f(2,\,3)=12.0399\cdots-12=0.0399\cdots\)。近似値 \(0.04\) とほぼ一致しました。<strong>捨てた2次の項が効いていない</strong>ことが、数値でも確認できます。</p></div></div></div>
+
+      <div class="drill"><p><span class="qn">問2</span>円柱の体積は \(V=\pi r^2h\) である。半径と高さをわずかに変えたときの \(dV\) を求め、さらに両辺を \(V\) で割って<strong>相対変化</strong>の式を作れ。</p>
+      <div class="attempt" style="margin:10px 0 4px"><span class="lab">自分の答えを出してから</span>
+      <div class="controls">
+        <button class="ctl-btn amber" data-hint>ヒントを表示</button>
+        <button class="ctl-btn" data-sol>解答を見る</button>
+      </div>
+      <div class="hint"><span class="hn">HINT 1</span><p>まず \(\dfrac{\partial V}{\partial r}\) と \(\dfrac{\partial V}{\partial h}\) を求めて全微分を書きます。そのあと、各項を \(V=\pi r^2h\) で割って整理してください。</p></div>
+      <div class="sol"><p>偏微分は \(\dfrac{\partial V}{\partial r}=2\pi rh\)、\(\dfrac{\partial V}{\partial h}=\pi r^2\) なので</p>
+      \[ dV=2\pi rh\,dr+\pi r^2\,dh \]
+      <p>両辺を \(V=\pi r^2h\) で割ります。第1項は \(\dfrac{2\pi rh}{\pi r^2h}=\dfrac2r\)、第2項は \(\dfrac{\pi r^2}{\pi r^2h}=\dfrac1h\)。</p>
+      \[ \frac{dV}{V}=2\frac{dr}{r}+\frac{dh}{h} \]
+      <p style="font-size:13.5px;color:var(--ink-faint)">この形は実験で頻繁に使います。<strong>半径を 1 % 測り間違えると体積は 2 % ずれ、高さを 1 % 間違えると体積は 1 % ずれる</strong>と読めるからです。2乗で効く量のほうが、誤差への影響が大きい。<strong>どの測定を丁寧にすべきか</strong>を、この式が教えてくれます。</p></div></div></div>
+    </section>
+
+    <!-- §04 -->
+    <section id="d3">
+      <div class="sec-head"><span class="idx">§04</span><h2>多変数の連鎖律</h2></div>
+
+      <p>物理でよくあるのは、<strong>変数そのものが別の変数で決まっている</strong>状況です。</p>
+      <p>たとえば、板の上を虫が這っているとします。板の温度は場所で決まり \(T(x,y)\)、虫の位置は時刻で決まり \(x(t),\ y(t)\)。このとき<strong>虫が感じる温度</strong>は、時刻だけの関数になります。</p>
+      \[ T\big(x(t),\,y(t)\big) \]
+      <p>では、虫が感じる温度は1秒あたりどれだけ変わるでしょうか。</p>
+
+      <figure class="fig">
+        <svg viewBox="0 0 640 290" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="連鎖律の読み方">
+          <line x1="215.2" y1="217.8" x2="148.8" y2="162.2" stroke="var(--good)" stroke-width="2.4"/><polygon points="148.8,162.2 159.3,165.6 154.0,171.8" fill="var(--good)"/><line x1="248.8" y1="217.8" x2="315.2" y2="162.2" stroke="var(--key)" stroke-width="2.4"/><polygon points="315.2,162.2 310.0,171.8 304.7,165.6" fill="var(--key)"/><line x1="148.4" y1="133.3" x2="214.2" y2="74.1" stroke="var(--good)" stroke-width="2.4"/><polygon points="214.2,74.1 209.3,83.9 203.8,77.9" fill="var(--good)"/><line x1="315.6" y1="133.3" x2="249.8" y2="74.1" stroke="var(--key)" stroke-width="2.4"/><polygon points="249.8,74.1 260.2,77.9 254.7,83.9" fill="var(--key)"/>
+          <circle cx="232" cy="58" r="24" fill="var(--accent-tint)" stroke="var(--accent)" stroke-width="2"/>
+          <text x="232" y="64" font-size="15" font-weight="500" fill="var(--ink)" text-anchor="middle" font-style="italic">f</text>
+          <text x="232" y="26" font-size="11.5" fill="var(--accent-deep)" text-anchor="middle">温度</text>
+          <circle cx="132" cy="148" r="22" fill="var(--surface)" stroke="var(--good)" stroke-width="2"/>
+          <text x="132" y="154" font-size="14" font-weight="500" fill="var(--ink)" text-anchor="middle" font-style="italic">x</text>
+          <circle cx="332" cy="148" r="22" fill="var(--surface)" stroke="var(--key)" stroke-width="2"/>
+          <text x="332" y="154" font-size="14" font-weight="500" fill="var(--ink)" text-anchor="middle" font-style="italic">y</text>
+          <text x="232" y="152" font-size="11.5" fill="var(--ink-faint)" text-anchor="middle">位置</text>
+          <circle cx="232" cy="232" r="22" fill="var(--surface)" stroke="var(--amber)" stroke-width="2"/>
+          <text x="232" y="238" font-size="14" font-weight="500" fill="var(--ink)" text-anchor="middle" font-style="italic">t</text>
+          <text x="232" y="268" font-size="11.5" fill="var(--amber)" text-anchor="middle">時刻</text>
+          <text x="150.0" y="95.0" font-size="12" fill="var(--good)" text-anchor="middle" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">∂f</text><line x1="139.8" y1="100.0" x2="160.2" y2="100.0" stroke="var(--good)" stroke-width="1.4"/><text x="150.0" y="114.0" font-size="12" fill="var(--good)" text-anchor="middle" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">∂x</text><text x="314.0" y="95.0" font-size="12" fill="var(--key)" text-anchor="middle" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">∂f</text><line x1="303.8" y1="100.0" x2="324.2" y2="100.0" stroke="var(--key)" stroke-width="1.4"/><text x="314.0" y="114.0" font-size="12" fill="var(--key)" text-anchor="middle" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">∂y</text><text x="146.0" y="195.0" font-size="12" fill="var(--good)" text-anchor="middle" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">dx</text><line x1="135.8" y1="200.0" x2="156.2" y2="200.0" stroke="var(--good)" stroke-width="1.4"/><text x="146.0" y="214.0" font-size="12" fill="var(--good)" text-anchor="middle" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">dt</text><text x="318.0" y="195.0" font-size="12" fill="var(--key)" text-anchor="middle" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">dy</text><line x1="307.8" y1="200.0" x2="328.2" y2="200.0" stroke="var(--key)" stroke-width="1.4"/><text x="318.0" y="214.0" font-size="12" fill="var(--key)" text-anchor="middle" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">dt</text>
+          <text x="424" y="46" font-size="12" font-weight="500" fill="var(--good)">x を通る道</text>
+          <text x="452.0" y="75.0" font-size="12" fill="var(--good)" text-anchor="middle" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">∂f</text><line x1="441.8" y1="80.0" x2="462.2" y2="80.0" stroke="var(--good)" stroke-width="1.4"/><text x="452.0" y="94.0" font-size="12" fill="var(--good)" text-anchor="middle" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">∂x</text><text x="492" y="86" font-size="13" fill="var(--ink-soft)" text-anchor="middle">×</text><text x="534.0" y="75.0" font-size="12" fill="var(--good)" text-anchor="middle" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">dx</text><line x1="523.8" y1="80.0" x2="544.2" y2="80.0" stroke="var(--good)" stroke-width="1.4"/><text x="534.0" y="94.0" font-size="12" fill="var(--good)" text-anchor="middle" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">dt</text>
+          <text x="424" y="132" font-size="12" font-weight="500" fill="var(--key)">y を通る道</text>
+          <text x="452.0" y="161.0" font-size="12" fill="var(--key)" text-anchor="middle" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">∂f</text><line x1="441.8" y1="166.0" x2="462.2" y2="166.0" stroke="var(--key)" stroke-width="1.4"/><text x="452.0" y="180.0" font-size="12" fill="var(--key)" text-anchor="middle" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">∂y</text><text x="492" y="172" font-size="13" fill="var(--ink-soft)" text-anchor="middle">×</text><text x="534.0" y="161.0" font-size="12" fill="var(--key)" text-anchor="middle" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">dy</text><line x1="523.8" y1="166.0" x2="544.2" y2="166.0" stroke="var(--key)" stroke-width="1.4"/><text x="534.0" y="180.0" font-size="12" fill="var(--key)" text-anchor="middle" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">dt</text>
+          <line x1="418" y1="196" x2="600" y2="196" stroke="var(--line)" stroke-width="1.4"/>
+          <text x="424" y="222" font-size="12" font-weight="500" fill="var(--ink)">2つを足すと</text>
+          <text x="534.0" y="217.0" font-size="13" fill="var(--accent-deep)" text-anchor="middle" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">df</text><line x1="523.2" y1="222.0" x2="544.8" y2="222.0" stroke="var(--accent-deep)" stroke-width="1.4"/><text x="534.0" y="236.0" font-size="13" fill="var(--accent-deep)" text-anchor="middle" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">dt</text>
+        </svg>
+        <figcaption>矢印は<strong>「どれが決まると、どれが決まるか」</strong>を表しています。時刻 \(t\) が決まると位置 \(x,y\) が決まり、位置が決まると温度 \(f\) が決まる。\(t\) から \(f\) へ行くには<strong>2本の道</strong>があり、それぞれの道について<strong>通り道に書かれた微分を掛け合わせ</strong>、最後に<strong>2本を足す</strong>——これが多変数の連鎖律です。</figcaption>
+      </figure>
+      <div class="box target"><span class="lab">多変数の連鎖律</span>
+      \[ \frac{df}{dt}=\frac{\partial f}{\partial x}\frac{dx}{dt}+\frac{\partial f}{\partial y}\frac{dy}{dt} \]
+      <p>\(t\) から \(f\) へ至る道が2本あるので、<strong>それぞれの道の寄与を足します</strong>。各道の寄与は、その道に並んでいる微分を掛け合わせたものです。</p></div>
+
+      <div class="box teach"><span class="lab">全微分を \(dt\) で割った形</span>
+      <p>この式は、覚え直す必要がありません。§03 の全微分</p>
+      \[ df=\frac{\partial f}{\partial x}dx+\frac{\partial f}{\partial y}dy \]
+      <p>の両辺を \(dt\) で割っただけの形をしています。1章で連鎖律を「\(du\) が約分されるように見える」と述べたのと同じで、<strong>ライプニッツ記法がそう見えるように設計されている</strong>おかげです。</p>
+      <p style="margin-top:8px">左辺が \(\dfrac{df}{dt}\) と丸くない \(d\) なのは、\(f\) が最終的に \(t\) だけの関数になっているからです。<strong>記号の使い分けが、ここで効いてきます。</strong></p></div>
+
+      <h3>変数変換の場合</h3>
+      <p>行き先が \(t\) ではなく、2つの変数 \(u,v\) であることもあります。座標変換がその代表で、\(x=x(u,v),\ y=y(u,v)\) のように書けるときです。この場合も考え方は同じで、<strong>道が2本あるので足す</strong>だけです。</p>
+      \[ \frac{\partial f}{\partial u}=\frac{\partial f}{\partial x}\frac{\partial x}{\partial u}+\frac{\partial f}{\partial y}\frac{\partial y}{\partial u} \]
+      <p>今度は左辺も偏微分になります。\(u\) で微分するときには \(v\) を止めているからです。7章で極座標や球座標を扱うとき、この形を繰り返し使うことになります。</p>
+
+      <h3>計算ドリル（§04・全2問）</h3>
+
+      <div class="drill"><p><span class="qn">問1</span>\(f(x,y)=x^2y\) で、\(x=\cos t,\ y=\sin t\) のとき、\(\dfrac{df}{dt}\) を求めよ。</p>
+      <div class="attempt" style="margin:10px 0 4px"><span class="lab">自分の答えを出してから</span>
+      <div class="controls"><button class="ctl-btn" data-sol>解答を見る</button></div>
+      <div class="sol"><p>必要な4つの微分を用意します。</p>
+      \[ \frac{\partial f}{\partial x}=2xy,\qquad \frac{\partial f}{\partial y}=x^2 \]
+      \[ \frac{dx}{dt}=-\sin t,\qquad \frac{dy}{dt}=\cos t \]
+      <p>連鎖律に入れて、\(x,y\) を \(t\) の式に戻します。</p>
+      \[ \begin{aligned} \frac{df}{dt}&=2xy(-\sin t)+x^2\cos t\\[2pt] &=-2\cos t\sin^2t+\cos^3t \end{aligned} \]
+      <p style="font-size:13.5px;color:var(--ink-faint)">検算：先に代入して \(f=\cos^2t\sin t\) とし、積の微分で直接計算しても同じ結果になります。<strong>どちらの道を通っても答えは同じ</strong>。連鎖律は、代入してから微分する手間を省くための道具です。今回は代入も簡単ですが、\(f\) が複雑な場合には連鎖律のほうが早くなります。</p></div></div></div>
+
+      <div class="drill"><p><span class="qn">問2</span>全微分の式 \(df=\dfrac{\partial f}{\partial x}dx+\dfrac{\partial f}{\partial y}dy\) において、\(y\) を止めた（\(dy=0\)）とすると何が得られるか。この結果は何を意味するか。</p>
+      <div class="attempt" style="margin:10px 0 4px"><span class="lab">自分の答えを出してから</span>
+      <div class="controls"><button class="ctl-btn" data-sol>解答を見る</button></div>
+      <div class="sol"><p>\(dy=0\) を入れると第2項が消えて</p>
+      \[ df=\frac{\partial f}{\partial x}dx \]
+      <p>両辺を \(dx\) で割れば \(\dfrac{df}{dx}=\dfrac{\partial f}{\partial x}\)。つまり<strong>偏微分の定義そのもの</strong>に戻ります。</p>
+      <p style="font-size:13.5px;color:var(--ink-faint)">全微分は偏微分から作った式なので、逆に特別な場合を入れれば偏微分に戻る——という確認です。<strong>一般的な式を作ったら、特別な場合を入れて元に戻るか確かめる</strong>のは、式の妥当性を点検する基本的な方法です。3-1 で近似式を極端な場合で検算したのと、同じ発想です。</p></div></div></div>
+    </section>
+
+    <!-- §05 -->
+    <section id="howto">
+      <div class="sec-head"><span class="idx">§05</span><h2>チェックリストと次回予告</h2></div>
+
+      <h3>この記事で答えられるようになるべき問い</h3>
+      <div class="box principle"><span class="lab">最終チェック</span>
+      <ul style="margin:8px 0 0">
+        <li>変数が2つ以上だと「変化率」が1つに決まらない理由を説明できるか（§01）</li>
+        <li>偏微分の定義式を書けるか。1変数の定義とどこが違うか言えるか（§02）</li>
+        <li>\(\partial\) と \(d\) を使い分ける理由を言えるか（§02）</li>
+        <li>多項式・指数関数の偏微分を計算できるか（§02）</li>
+        <li>熱力学で \(\left(\dfrac{\partial U}{\partial T}\right)_V\) のように添字を付ける理由を説明できるか（§02）</li>
+        <li>全微分の式を、1次近似から導けるか（§03）</li>
+        <li>なぜ各方向の寄与を足すだけでよいのか説明できるか（§03）</li>
+        <li>相対変化の式 \(\dfrac{dV}{V}=2\dfrac{dr}{r}+\dfrac{dh}{h}\) を導き、意味を言えるか（§03）</li>
+        <li>多変数の連鎖律を書けるか。全微分とどう関係するか言えるか（§04）</li>
+        <li>変数変換のときに左辺が偏微分になる理由を言えるか（§04）</li>
+      </ul></div>
+
+      <h3>次節（6-2 多変数微分の応用）への接続</h3>
+      <p>偏微分と全微分という道具ができました。次はこれを使って、物理でよく使う結果を導きます。</p>
+      <p>鍵になるのは、<strong>全微分の形をした式が特別な意味を持つ</strong>という事実です。ある量の変化が \(df=A\,dx+B\,dy\) という形に書けたとき、\(A\) と \(B\) は勝手な関数ではいられません。どちらも同じ \(f\) から作られている以上、両者のあいだに関係が生まれるからです。</p>
+      <p>この関係が、熱力学のマクスウェルの関係式や、力学の保存力とポテンシャルの議論につながります。</p>
+      <div class="box teach"><span class="lab">6-2 で扱う問い（予習用）</span>
+      <ul style="margin:6px 0 0">
+        <li>偏微分を2回するとき、順序を入れ替えてよいのはなぜか</li>
+        <li>\(A\,dx+B\,dy\) が、ある関数の全微分になっている条件は何か（完全微分）</li>
+        <li>その条件から、熱力学のマクスウェルの関係式がどう出てくるのか</li>
+        <li>制約がある中での最大・最小は、どう求めるのか（ラグランジュの未定乗数法）</li>
+      </ul>
+      <p style="margin-top:8px"><strong>鍵となる一言</strong>：偏微分の順序が入れ替えられることが、思いがけず強い結果を生みます。</p></div>
+
+      <h3>学習サイクルの推奨手順</h3>
+      <ol>
+        <li><strong>解答を開かず、紙で挑戦</strong>。詰まっても5分は粘ってください。詰まるのは失敗ではなく、<strong>まだ腑に落ちていない一点が表に出た合図</strong>です。そこを自分の手で越えた経験が、そのまま次に進む力になります。</li>
+        <li><strong>ヒントを1つずつ</strong>開き、詰まりが解けたら閉じて自力で続行。</li>
+        <li>偏微分を計算するときは、<strong>いま何を止めているかを紙に書いてから</strong>始める。計算自体は1章と同じなので、間違いはほとんどここから生まれます。</li>
+        <li>翌日、何も見ずに全微分の式を1次近似から導き直す。§03 の「なぜ足すだけでよいのか」まで説明できるか確かめてください。</li>
+      </ol>
+
+      <div class="box warn"><span class="lab">この教材の立ち位置</span>
+      <p>本節は<strong>計算のための偏微分</strong>に絞っています。多変数関数の連続性と微分可能性の関係、偏微分可能でも全微分可能とは限らない例、方向微分と勾配ベクトルの一般論などには踏み込んでいません。</p>
+      <p style="margin-top:8px">とくに<strong>方向微分</strong>——軸に沿わない斜めの方向についての変化率——は、8章のベクトル解析で \(\mathrm{grad}\) を導入するときに扱います。この記事で軸方向だけを調べたのは、そこへ進むための下ごしらえでもあります。</p></div>
+
+      <div class="foot"><p>Academic Gates ／ 物理数学I 6章 多変数関数の微分 ／ 6-1「偏微分と全微分」。演習問題は本教材独自の構成です。続編：6-2「多変数微分の応用」。</p></div>
+    </section>
+  </main>
+</div>
+
+<div id="site-footer"><noscript><nav class="noscript-nav" aria-label="フッターナビゲーション"><a href="index.html">ホーム</a><a href="self-intro.html">自己紹介</a><a href="study.html">勉強の軌跡</a><a href="videos.html">動画</a><a href="blog.html">ブログ</a><a href="sns.html">各種SNS</a></nav></noscript></div>
+
+<script>
+/* ヒント／解答トグル */
+document.querySelectorAll('[data-hint]').forEach(function(btn){
+  var box=btn.closest('.attempt');
+  var hints=[].slice.call(box.querySelectorAll('.hint'));
+  if(!hints.length){ btn.style.display='none'; return; }
+  var hideBtn=document.createElement('button');
+  hideBtn.type='button';hideBtn.className='ctl-btn amber';hideBtn.textContent='ヒントを隠す';hideBtn.style.display='none';
+  btn.after(hideBtn);
+  btn.addEventListener('click',function(){
+    var hidden=hints.filter(function(h){return h.style.display!=='block'});
+    if(hidden.length){ hidden[0].style.display='block'; hideBtn.style.display='';
+      if(hidden.length===1){ btn.textContent='ヒントは以上'; btn.disabled=true; }
+      else { btn.textContent='次のヒント ('+(hints.length-hidden.length+1)+'/'+hints.length+')'; }
+    }
+  });
+  hideBtn.addEventListener('click',function(){
+    hints.forEach(function(h){h.style.display='none'});
+    hideBtn.style.display='none';btn.disabled=false;btn.textContent='ヒントを表示';
+  });
+});
+document.querySelectorAll('[data-sol]').forEach(function(btn){
+  btn.addEventListener('click',function(){
+    var sol=btn.closest('.attempt').querySelector('.sol');
+    var open=sol.style.display==='block';
+    sol.style.display=open?'none':'block';
+    if(!btn.dataset.show) btn.dataset.show=btn.textContent;
+    btn.textContent=open?btn.dataset.show:'閉じる';
+    if(!open && window.MathJax && MathJax.typesetPromise) MathJax.typesetPromise([sol]);
+  });
+});
+
+/* 目次の追従 */
+var links=[].slice.call(document.querySelectorAll('.toc a[href^="#"]'));
+var secs=links.map(function(a){return document.querySelector(a.getAttribute('href'))});
+var pbar=document.getElementById('pbar');
+function onScroll(){
+  // getBoundingClientRect を使う（offsetTop ではない）。style.css の
+  // `main{position:relative}` で <main> が offsetParent になり、offsetTop が
+  // 文書基準でなくなるため、scrollY と直接比べると判定がずれる（§36）。
+  var idx=0;
+  secs.forEach(function(s,i){ if(s&&s.getBoundingClientRect().top<=140) idx=i; });
+  links.forEach(function(a){a.classList.remove('active')});
+  if(links[idx]) links[idx].classList.add('active');
+  var h=document.documentElement.scrollHeight-window.innerHeight;
+  pbar.style.width=(h>0?(window.scrollY/h*100):0)+'%';
+}
+window.addEventListener('scroll',onScroll,{passive:true});
+window.addEventListener('resize',onScroll); onScroll();
+var body=document.body,mb=document.getElementById('menuBtn'),scrim=document.getElementById('scrim');
+mb.addEventListener('click',function(){var o=body.classList.toggle('nav-open');mb.setAttribute('aria-expanded',o)});
+scrim.addEventListener('click',function(){body.classList.remove('nav-open')});
+document.getElementById('toc').addEventListener('click',function(e){if(e.target.closest('a'))body.classList.remove('nav-open')});
+</script>
+<script src="../js/layout.js?v=r89"></script>
+<script src="../js/main.js?v=r89"></script>
+<script src="../js/starfield.js?v=r89"></script>
+</body>
+</html>
