@@ -78,7 +78,6 @@ body.is-article .main > .foot{max-width:860px;margin-left:0;margin-right:auto;pa
 .rail .brand small{display:block;font-size:10px;font-weight:500;color:var(--ink-faint);letter-spacing:.2em;margin-top:6px}
 /* --- 上の階層へ戻る導線（§64.1）。レールは sticky なので、読んでいる途中でも
    親ページへ戻れる。狭い画面はレールが引き出しになるので .float-nav で補う。 --- */
-  .lesson-nav .next,.lesson-nav .mid{text-align:left}}
 .progress-wrap{height:2px;background:var(--line);border-radius:99px;margin:16px 0 18px;overflow:hidden}
 .progress-bar{height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--accent-deep));transition:width .15s linear}
 .toc{list-style:none;margin:0;padding:0;font-size:12.5px}
@@ -481,7 +480,7 @@ code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border
       <!-- パンくずは右のサイトナビ（layout.js の CRUMBS）に一本化した（§66）。 -->
       <h1>第2回　岩石惑星を深める<span class="sub">外から見た球に、地図を重ねる</span></h1>
       <p class="lead">第1回で作った9枚のカードのうち、太陽に近い4つ——水星・金星・地球・火星——に<strong>表面の地図を1枚ずつ重ねます</strong>。加えて、地球の②周りにあたる月を、独立したカードとして詳しく置きます。</p>
-      <p>覚えるのは、地形の名前そのものではなく<strong>「その天体のどこに何があるか」</strong>です。カロリス盆地は水星の右上、オリンポス山は火星の赤道より少し北の左寄り、といった位置を、実際の地図の上に置いてください。この作業が、そのまま第6回以降の地球の地図の練習になります。</p>
+      <p>覚えるのは、地形の名前そのものではなく<strong>「その天体のどこに何があるか」</strong>です。カロリス盆地は水星の右上、オリンポス山は火星の赤道より少し北の左寄り、といった位置を、実際の地図の上に置いてください。この作業が、そのまま2章以降の地球の地図の練習になります。</p>
     </div>
 
     <section id="goals">
@@ -509,7 +508,7 @@ code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border
       <p><strong>3. 置く（2分）</strong>——この回の一覧表にある地形を、区画のどこに入るか指で差しながら声に出す。「カロリス盆地、上の……中央よりやや右」のように。</p>
       <p><strong>4. 閉じる（1分）</strong>——目を閉じて、6区画の枠だけを思い浮かべ、入れたものを言う。</p>
       <p><strong>5. 照合（1分）</strong>——もう一度地図を開き、ずれていたものに印をつける。翌日はその区画から始めます。</p>
-      <p><strong>地球だけは 2. までです。</strong>6区画に割って眺めるところまでにとどめ、地表の地名は置きません。地名・地域・国は地球の回（第6回以降）で、同じ地図の上に置いていきます。</p>
+      <p><strong>地球だけは 2. までです。</strong>6区画に割って眺めるところまでにとどめ、地表の地名は置きません。地名・地域・国は地球の回（2章以降）で、同じ枠（正距円筒の展開図と30度の升目）の上に置いていきます。</p>
       <p><strong>6. 球で確かめる</strong>——展開図で位置を覚えたら、球に切り替えて同じ地形を探してください。展開図で「左寄り」と覚えたものが、球の既定の向きでどこに見えるかを確かめます。見つからないときは、覚えた位置がずれています。</p>
       <p>地図を大きく見るときの出どころ：USGS Astrogeology（astrogeology.usgs.gov）、NASA Science の各惑星ページ（science.nasa.gov/solar-system/planets）、Wikimedia Commons の各ファイルページ。</p></div>
 
@@ -619,7 +618,7 @@ code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border
     <section id="earth">
       <div class="sec-head"><span class="idx">05</span><h2>地球（宇宙から見た外観）</h2></div>
       <div class="box warn"><span class="lab">この層で扱う範囲</span>
-      <p>この回の地球は<strong>宇宙から見た姿だけ</strong>です。国名・都市・産物・民族は地球の回（第6回以降）で扱います。ここでは「遠くから見て地球をどう見分けるか」だけを覚えてください。</p></div>
+      <p>この回の地球は<strong>宇宙から見た姿だけ</strong>です。国名・都市・産物・民族は地球の回（2章以降）で扱います。ここでは「遠くから見て地球をどう見分けるか」だけを覚えてください。</p></div>
       <!-- 地球だけ経度を東西（180W〜180E）で書く。ほかは東経0〜360（§55.2）。 -->
       <div class="mod map-view has-globe" data-globe="../image/memoryverse/earth-map.jpg?v=r85" data-grid="equi" data-lon="we">
         <div class="mod-h"><span class="no">地球</span><span class="ttl">水と雲と、動く板</span><span class="tag">EARTH</span></div>
@@ -628,7 +627,7 @@ code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border
             <button type="button" class="vsw-b is-on" data-view="map" aria-pressed="true">地図</button>
             <button type="button" class="vsw-b" data-view="globe" aria-pressed="false">球</button>
           </div>
-          <div class="orbit"><svg class="grid" aria-hidden="true" preserveAspectRatio="none"></svg><svg class="links" aria-hidden="true" preserveAspectRatio="none"></svg><!-- 地球には地形ラベルを置かない。地名・地域・国は地球の回（第6回以降）で扱う（§56.2）。 --><div class="core"><button type="button" class="img-btn" aria-expanded="false"><figure class="planet-img"><div class="orb"><div class="frame"><img class="map-img" src="../image/memoryverse/earth-map.jpg" data-alt="https://upload.wikimedia.org/wikipedia/commons/thumb/4/4d/Whole_world_-_land_and_oceans.jpg/800px-Whole_world_-_land_and_oceans.jpg|https://commons.wikimedia.org/wiki/Special:FilePath/Whole_world_-_land_and_oceans.jpg?width=800|https://upload.wikimedia.org/wikipedia/commons/4/4d/Whole_world_-_land_and_oceans.jpg" alt="地球の全球地図（衛星観測をつないだ雲のない地表）" loading="lazy" decoding="async" onerror="mvNext(this)"><p class="fallback">画像を読み込めませんでした。<br><a href="https://science.nasa.gov/earth/" target="_blank" rel="noopener">NASAの地球のページで見る</a></p></div></div><span class="map-note">この層では地球の地形に名前をつけません。地名・国・地域は地球の回（第6回以降）で扱います。</span><figcaption>Blue Marble（雲を除いた地表、2002年）<br>線は経度・緯度とも30度ごと（狭い画面は60度ごと）<br>© NASA/GSFC</figcaption></figure><span class="hint"><span class="h-c">クリックで地形を開く</span><span class="h-o">クリックで閉じる</span></span></button></div></div>
+          <div class="orbit"><svg class="grid" aria-hidden="true" preserveAspectRatio="none"></svg><svg class="links" aria-hidden="true" preserveAspectRatio="none"></svg><!-- 地球には地形ラベルを置かない。地名・地域・国は地球の回（2章以降）で扱う（§56.2）。 --><div class="core"><button type="button" class="img-btn" aria-expanded="false"><figure class="planet-img"><div class="orb"><div class="frame"><img class="map-img" src="../image/memoryverse/earth-map.jpg" data-alt="https://upload.wikimedia.org/wikipedia/commons/thumb/4/4d/Whole_world_-_land_and_oceans.jpg/800px-Whole_world_-_land_and_oceans.jpg|https://commons.wikimedia.org/wiki/Special:FilePath/Whole_world_-_land_and_oceans.jpg?width=800|https://upload.wikimedia.org/wikipedia/commons/4/4d/Whole_world_-_land_and_oceans.jpg" alt="地球の全球地図（衛星観測をつないだ雲のない地表）" loading="lazy" decoding="async" onerror="mvNext(this)"><p class="fallback">画像を読み込めませんでした。<br><a href="https://science.nasa.gov/earth/" target="_blank" rel="noopener">NASAの地球のページで見る</a></p></div></div><span class="map-note">この層では地球の地形に名前をつけません。地名・国・地域は地球の回（2章以降）で扱います。</span><figcaption>Blue Marble（雲を除いた地表、2002年）<br>線は経度・緯度とも30度ごと（狭い画面は60度ごと）<br>© NASA/GSFC</figcaption></figure><span class="hint"><span class="h-c">クリックで地形を開く</span><span class="h-o">クリックで閉じる</span></span></button></div></div>
           <div class="globe" hidden>
             <div class="globe-stage"><canvas class="globe-cv"></canvas><p class="globe-fail" hidden>球を表示できませんでした。展開図でご覧ください。</p></div>
             <div class="globe-ctl">
@@ -641,7 +640,7 @@ code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border
           </div>
           <div class="row"><span class="k">見え方</span><span class="v">青い海、白い雲と極の氷、茶色〜緑の陸。<strong>他の3つと違って色が何種類もある</strong>のが地球です。夜の側には都市の光の筋が見えます</span></div>
           <div class="row"><span class="k">外から見た数値</span><span class="v">海 約71%／陸 約29%。つねに約3分の2が雲の下にあり、反射率（アルベド）は約0.30。対流圏は約8〜17kmで、半径6,371kmの<strong>0.2%ほど</strong>。水の内訳は 海 約97%／氷 約2%／地下水・河川・湖 約1%。高さと深さはエベレスト8,849m、マリアナ海溝 約10,900m</span></div>
-          <div class="row"><span class="k">見分ける目印</span><span class="v">大きさの比べ方や色の見え方は外観の数値で扱います。地表の地名・地域・国は、この層では扱いません。地球の回（第6回以降）で、同じ地図の上に置いていきます。</span></div>
+          <div class="row"><span class="k">見分ける目印</span><span class="v">大きさの比べ方や色の見え方は外観の数値で扱います。地表の地名・地域・国は、この層では扱いません。地球の回（2章以降）で、同じ枠（正距円筒の展開図と30度の升目）の上に置いていきます。</span></div>
           <div class="row"><span class="k">大気の理由</span><span class="v">質量が十分あって気体を引きとめられ、磁場が太陽風を逸らし、さらに<strong>二酸化炭素が海と岩石に取り込まれて戻る循環</strong>が働いています。窒素が8割を占めるのは、化学的に反応しにくく、抜けも吸収もされにくいからです。酸素の2割は生物が作ったもので、地球の大気の最大の特徴です</span></div>
           <div class="row"><span class="k">他と違う点</span><span class="v">表面に液体の水がある。プレートが動いていて、古い地形が消え続ける（だから月や水星のようなクレーターだらけにならない）</span></div>
         </div>
@@ -709,7 +708,7 @@ code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border
           <p style="font-size:12.5px;color:var(--ink-faint);margin:2px 0 0">出典：NASA／ESA／JAXA／ISRO各機関の発表（2026年9月時点）。今後の計画日程は変わるので、年と「何が初めてか」だけを覚え、予定は覚えないでください。</p>
           </span></div>
           <div class="box teach" style="margin:12px 0 0"><span class="lab">接続点</span>
-          <p>このシリーズでは、太陽系の回から地球の回（第6回以降）へ移るとき、頭の中で必ず月のティコ・クレーターを経由します。どこから入ってどこへ戻るかを決めておくと、2つの地図が混ざらずに済みます。ティコには地形以外の情報を置きません。</p></div>
+          <p>このシリーズでは、太陽系の回から地球の回（2章以降）へ移るとき、頭の中で必ず月のティコ・クレーターを経由します。どこから入ってどこへ戻るかを決めておくと、2つの地図が混ざらずに済みます。ティコには地形以外の情報を置きません。</p></div>
         </div>
       </div>
     </section>
@@ -1022,7 +1021,7 @@ code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border
         <tr><td><strong>4</strong></td><td>小天体</td><td>小惑星帯（ケレス、ベスタなど）、準惑星（冥王星ほか）、カイパーベルト、彗星、オールトの雲</td></tr>
         <tr><td><strong>5</strong></td><td>太陽と全体の統合</td><td>恒星としての太陽の詳細、太陽系の形成、全天体の横断比較と巡回</td></tr>
       </table>
-      <p>第6回以降（地球の回）に入る前に、太陽系の回の全体を1回通して巡る時間を第5回に置きます。第6回以降の構成は、地球の回に入る直前に目的に合わせて見直します。</p>
+      <p>2章（地球の回）に入る前に、太陽系の回の全体を1回通して巡る時間を第5回に置きます。2章以降の構成は、地球の回に入る直前に目的に合わせて見直します。</p>
     </section>
 
     <section id="evidence">
