@@ -64,6 +64,8 @@
         'phys-math:ch6':   { label: '6章 多変数関数の微分',                        parent: 'phys-math' },
         'phys-math_6-1':   { label: 'SECTION 6-1',  href: 'phys-math_6-1.html',    parent: 'phys-math:ch6',
                              title: '6-1　偏微分と全微分' },
+        'phys-math_6-2':   { label: 'SECTION 6-2',  href: 'phys-math_6-2.html',    parent: 'phys-math:ch6',
+                             title: '6-2　多変数微分の応用' },
         'skills':          { label: '精神の圏域',   href: 'study_skills.html',     parent: 'study' },
         'mnemonics':       { label: '記憶術',       href: 'skills_mnemonics.html', parent: 'skills' },
         'memoryverse':     { label: 'メモリーバース', href: 'memoryverse.html',    parent: 'mnemonics', unit: '回' },
