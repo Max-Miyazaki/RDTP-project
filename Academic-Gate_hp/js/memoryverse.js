@@ -506,7 +506,10 @@ window.addEventListener('resize',onScroll); onScroll();
     });
     function syncOpen(){
       var on=mod.classList.contains('open');
-      bOpen.textContent=on?'地形を閉じる':'地形を開く';
+      /* ボタンの呼び名はカードが決める（data-open-label）。無ければ「地形」。
+         第2〜5回はこの属性を持たないので、これまでどおり「地形を開く」。 */
+      var OL=mod.dataset.openLabel||'地形';
+      bOpen.textContent=on?OL+'を閉じる':OL+'を開く';
       bOpen.setAttribute('aria-pressed',on?'true':'false');
       list.hidden=!on||!src.length;
       if(G)G.pins.forEach(function(s){s.visible=on});

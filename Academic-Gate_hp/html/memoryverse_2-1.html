@@ -1,0 +1,1007 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2-1 地球の骨格｜メモリーバース | Academic Gates</title>
+<meta name="description" content="ティコから降りて、展開図の升目に大陸と海、基準線が通る国、面積の大きい11か国を置く。メモリーバース 2-1。">
+<link rel="icon" href="../../favicon.ico" sizes="32x32">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+<!-- ★ ライト/ダーク切替は停止中（DESIGN.md §44）。サイト全体がダーク基調なので、
+     記事だけテーマが変わるのは一貫性を欠くという判断。**復活させるには次の1行の
+     コメントを外すだけでよい**（js/theme.js も css/lesson-theme.css も残してある）。 -->
+<!-- <script src="../js/theme.js?v=r85"></script> -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;500&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+<!-- サイト共通 → 記事固有 → テーマ上書き の順で読む（lesson-theme.css は
+     記事の <style> より後ろに置くこと。css/lesson-theme.css 冒頭の注記どおり） -->
+<link rel="stylesheet" href="../css/style.css?v=r85">
+<!-- MathJax: 物理数学のページと同じ設定・同じ版（mathjax@3 の tex-svg）。メモリーバース全体で
+     読み込む（第5回以降でも式を書くため。§94）。設定ブロックはローダーより「前」に置く、
+     フォールバックは this.src= ではなく createElement 方式（どちらも DESIGN.md §11b）。
+     式の無い回では何も組版されず、表示は変わらない（§94 で DOM を突き合わせて確認）。 -->
+<script>
+window.MathJax={tex:{inlineMath:[['\\(','\\)']],displayMath:[['\\[','\\]']],tags:'none'},svg:{fontCache:'global'},options:{skipHtmlTags:['script','noscript','style','textarea','pre','code']}};
+</script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"
+        onerror="this.onerror=null;var s=document.createElement('script');s.async=true;s.src='https://unpkg.com/mathjax@3/es5/tex-svg.js';document.head.appendChild(s);"></script>
+<style>
+/* メモリーバース v3 2-1（2章 地球の最初の記事）— 記事固有のスタイルのみ。第5回の <style> から、この回が使う部品
+   （レール・カード・地図・球・演習・表・箱）だけを写した。値は第5回と同じ（DESIGN.md §99）。
+   断面・環・太陽の層の色・衛星の目次の階層は、この回では使わないので持たない。
+   共通のリセット・背景・星・ヘッダー/フッター・ボタン・見出し階層・本文リズムは
+   css/style.css が持つ（DESIGN.md §35, §36, §47）。 */
+:root{
+  /* 教材固有のトークン。本体と同値のもの（--bg --surface --nav-bg --ink --line
+     --line-strong --glow-cool --font(=--font-body) --nav-clear(=--nav-clearance)
+     --ease --dur --radius-lg/md/sm）は css/style.css 側に定義があるので持たない。
+     --ink-soft / --ink-faint は本体より明るい値を「意図的に」維持している。
+     本体値に寄せると 13.5px の補足文が 4.56:1 → 3.66:1 と AA を割るため（§36.2）。
+     --accent / --accent-tint / --glow-cool は元はティール（#2bd9c4）だったが、
+     サイトの青に一本化した。--accent と --glow-cool は本体から継承するので
+     ここには無い。--accent-deep / --accent-tint はダークでの定義が本体にも
+     lesson-theme.css にも無いので、記事が持つ（§47.5）。 */
+  --surface-2:rgba(255,255,255,.045);
+  --ink-soft:rgba(255,255,255,.68);
+  --ink-faint:rgba(255,255,255,.46);
+  --line-soft:rgba(255,255,255,.05);
+  --accent-deep:#a8c9ff;
+  --accent-tint:rgba(77,148,255,.12);
+  --amber:#ffb46b;--amber-tint:rgba(255,160,70,.08);--amber-line:rgba(255,160,70,.32);
+  --good:#72e3ad;--good-tint:rgba(114,227,173,.08);--good-line:rgba(114,227,173,.28);
+  --key:#ff6fa5;--key-tint:rgba(255,61,139,.08);--key-line:rgba(255,61,139,.28);
+  --teach:#a48bff;--teach-tint:rgba(123,77,255,.11);--teach-line:rgba(123,77,255,.38);
+  --mono:ui-monospace,'SFMono-Regular',Menlo,Consolas,monospace;
+  --rail-w:250px;
+}
+body{font-size:15.5px;line-height:1.9;line-break:strict;overflow-x:hidden}
+
+/* --- レイアウト（左に目次レール／右に本文の2カラム）。phys-math_1-1 と同一。 ---
+   style.css の共通記事ルールは `body.is-article main > section:not(.rail)`
+   （詳細度 0,2,3）で 900px と 160px パディングをかけてくる。こちらは `.main` を
+   噛ませて 0,3,2 / 0,4,3 とし、確実に上回る（§36.5 B）。
+   レールの左余白は 1280px → 1440px にかけて 0 → 32px、レール↔本文の間隔は
+   1024px → 1280px にかけて 24 → 56px。狭い画面ではまず余白を削って本文幅に回す（§43.3）。 */
+.wrap{display:flex;padding-top:var(--nav-clearance);
+      padding-left:clamp(0px, calc((100vw - 1280px) * .2), 32px)}
+.rail{width:var(--rail-w);flex:0 0 var(--rail-w);position:sticky;top:var(--nav-clearance);height:calc(100vh - var(--nav-clearance));overflow-y:auto;padding:18px 14px 60px 22px;border-right:1px solid var(--line)}
+.main{flex:1 1 auto;min-width:0;
+      padding:0 clamp(24px, calc(24px + (100vw - 1024px) * .125), 56px) 110px}
+/* 本文列 860px（§43.2）。この記事に数式は無いので 853px という下限の根拠は
+   効かないが、教材どうしで本文幅が割れるほうが害なので phys-math_1-1 に揃える。
+   中央寄せをやめて左揃えにし、余りは右へ流す。 */
+body.is-article .main > .lesson-hero,
+body.is-article .main > section:not(.rail),
+body.is-article .main > .foot{max-width:860px;margin-left:0;margin-right:auto;padding-left:0;padding-right:0}
+.rail .brand{font-weight:400;font-size:15px;line-height:1.45;margin:2px 0 4px}
+.rail .brand small{display:block;font-size:10px;font-weight:500;color:var(--ink-faint);letter-spacing:.2em;margin-top:6px}
+/* --- 上の階層へ戻る導線（§64.1）。レールは sticky なので、読んでいる途中でも
+   親ページへ戻れる。狭い画面はレールが引き出しになるので .float-nav で補う。 --- */
+.progress-wrap{height:2px;background:var(--line);border-radius:99px;margin:16px 0 18px;overflow:hidden}
+.progress-bar{height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--accent-deep));transition:width .15s linear}
+.toc{list-style:none;margin:0;padding:0;font-size:12.5px}
+.toc .part{font-size:10px;letter-spacing:.2em;color:var(--ink-faint);margin:16px 0 5px;padding-left:2px}
+.toc a{display:block;text-decoration:none;color:var(--ink-soft);padding:4px 10px;border-radius:999px;transition:color var(--dur) var(--ease),background var(--dur) var(--ease)}
+.toc a:hover{color:var(--ink);background:var(--surface-2)}
+.toc a.active{color:var(--ink);background:var(--accent-tint)}
+.toc a .n{font-size:10.5px;color:var(--ink-faint);margin-right:8px;font-variant-numeric:tabular-nums}
+.toc a.active .n{color:var(--accent)}
+/* --- 記事の導入部。`.hero` は index.html 専用で、style.css が
+   `.hero h1/.hero p/.hero .eyebrow` に黒い text-shadow をかけるため使えない（§36.5 A）。
+   要素も <header> ではなく <div>（裸の header は浮遊ナビの定義を浴びる）。 --- */
+.lesson-hero{padding:64px 0 34px;border-bottom:1px solid var(--line)}
+.lesson-hero h1{font-weight:300;font-size:clamp(28px,4vw,48px);line-height:1.25;letter-spacing:-.02em;margin:0 0 22px}
+.lesson-hero h1 .sub{display:block;font-size:.52em;font-weight:300;color:var(--ink-soft);letter-spacing:0;margin-top:12px}
+.lesson-hero p{color:var(--ink-soft);margin:0 0 12px}
+.lesson-hero .lead{font-size:16.5px;color:var(--ink-soft)}
+/* .eyebrow 本体は style.css の共通コンポーネント。色と余白だけ上書きする
+   （共通の --text-tertiary は 11px の小さな文字で 3.66:1 と AA を割るため） */
+.eyebrow{color:var(--ink-faint);margin-bottom:18px}
+
+section{border-bottom:1px solid var(--line-soft);scroll-margin-top:var(--nav-clearance)}
+body.is-article .main > section:not(.rail),
+body.is-article .main > section:not(.rail) ~ section:not(.rail){padding-top:56px;padding-bottom:12px}
+.sec-head{display:flex;align-items:baseline;gap:14px;margin-bottom:10px}
+.sec-head .idx{font-size:.72rem;font-weight:500;letter-spacing:.2em;color:var(--ink-faint);padding-top:4px;flex:0 0 auto;font-variant-numeric:tabular-nums}
+.sec-head .idx::after{content:' —'}
+body.is-article main h2{font-weight:400;font-size:clamp(21px,2.6vw,28px);line-height:1.3;letter-spacing:-.01em;margin:0}
+body.is-article main h3{font-weight:400;font-size:17px;margin:28px 0 6px;color:var(--ink)}
+body.is-article main p{margin:10px 0;color:var(--ink-soft)}
+body.is-article main ul,body.is-article main ol{margin:10px 0;padding-left:1.3em;color:var(--ink-soft)}
+li{margin:4px 0}
+strong{font-weight:500;color:var(--ink)}
+code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);border-radius:6px;padding:1px 6px;color:var(--accent-deep)}
+
+.box{border-radius:var(--radius-md);padding:16px 20px;margin:18px 0;border:1px solid var(--line);background:var(--surface)}
+.box .lab{font-size:.7rem;letter-spacing:.14em;font-weight:500;display:block;margin-bottom:6px}
+.box p:first-of-type{margin-top:2px}.box p:last-child{margin-bottom:0}
+/* 枠線は必ずトークン経由にすること。ここに直書きすると lesson-theme.css の
+   ライト上書きが効かず、暗い背景用の明るい色がライトでパステルになる（§41.2）。 */
+.box.principle{background:var(--key-tint);border-color:var(--key-line)}.box.principle .lab{color:var(--key)}
+.box.target{background:var(--good-tint);border-color:var(--good-line)}.box.target .lab{color:var(--good)}
+.box.warn{background:var(--amber-tint);border-color:var(--amber-line)}.box.warn .lab{color:var(--amber)}
+.box.teach{background:var(--teach-tint);border-color:var(--teach-line)}.box.teach .lab{color:var(--teach)}
+
+.table-scroll{overflow-x:auto;margin:14px 0}
+.mini-table{width:100%;border-collapse:collapse;font-size:14px;margin:14px 0;color:var(--ink-soft)}
+.mini-table th,.mini-table td{border:1px solid var(--line);padding:9px 11px;text-align:left;vertical-align:top}
+.mini-table th{background:var(--surface-2);font-weight:500;color:var(--ink)}
+/* 根拠の強度バッジ。枠線は tint と同系のトークンへ（上と同じ理由） */
+.g{font-size:10.5px;font-weight:500;border-radius:999px;padding:2px 9px;white-space:nowrap}
+.g.s{background:var(--good-tint);color:var(--good);border:1px solid var(--good-line)}
+.g.m{background:var(--amber-tint);color:var(--amber);border:1px solid var(--amber-line)}
+.g.w{background:var(--key-tint);color:var(--key);border:1px solid var(--key-line)}
+
+.fig{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-lg);padding:18px 18px 12px;margin:20px 0}
+.fig > svg,.fig-scroll > svg{width:100%;height:auto;display:block}
+/* ★ 図は縮めずに横へ送る（§90.1）。viewBox 640 の図を 390px 幅で縮めると、
+   9.5 の注記が実寸 4.6px になって読めない。別の縦長の図は作らない —— 同じ図を
+   2つの形で覚えることになるため。本文の枠が 640px を割ったときだけ送れるようになる。
+   合図は3つ：上の1行（.is-scrollable のときだけ）、送れる側の端のフェード、細いスクロールバー。
+   iOS はスクロールバーを動かすまで出さないので、1行とフェードが主な合図。 */
+.fig-scroll{overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.28) transparent}
+.fig-scroll > svg{min-width:640px}
+.fig-scroll::-webkit-scrollbar{height:6px}
+.fig-scroll::-webkit-scrollbar-thumb{background:rgba(255,255,255,.28);border-radius:99px}
+.fig.is-scrollable .fig-scroll{padding-bottom:8px;
+  -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 28px,#000 calc(100% - 44px),transparent);
+          mask-image:linear-gradient(90deg,transparent 0,#000 28px,#000 calc(100% - 44px),transparent)}
+.fig.is-scrollable .fig-scroll.is-start{-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 44px),transparent);mask-image:linear-gradient(90deg,#000 calc(100% - 44px),transparent)}
+.fig.is-scrollable .fig-scroll.is-end{-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 28px);mask-image:linear-gradient(90deg,transparent 0,#000 28px)}
+.fig.is-scrollable .fig-scroll.is-start.is-end{-webkit-mask-image:none;mask-image:none}
+.fig.is-scrollable::before{content:'横に送ると続きが見られます →';display:block;margin:0 0 8px;font-size:11px;letter-spacing:.06em;color:var(--ink-faint)}
+
+.fig svg text{font-family:var(--font-body)}
+.fig figcaption{font-size:13px;color:var(--ink-soft);margin-top:10px;line-height:1.8}
+/* 式のすぐ後ろの句読点を行頭へ送らない（§94.3）。インライン数式は lesson-theme.css で
+   inline-block になっているので、式と「、」「。」のあいだで改行できてしまう。 */
+.nb{white-space:nowrap}
+
+/* --- 到達目標の箱。`.goals` は style.css の `.card`（サイト共通カード。blog /
+   videos / study など6ページで使用中）と衝突したための改名（§47.6）。
+   そのままだと display:flex / gap / .card::before のホバーグロー / .card:hover の
+   背景変化が降ってきて、読むだけの箱がマウスに反応してしまう。 --- */
+.goals{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-lg);padding:20px 24px;margin:18px 0}
+.goals ol{counter-reset:q;list-style:none;padding-left:0;margin:6px 0 0}
+.goals ol li{counter-increment:q;position:relative;padding-left:44px;margin:14px 0}
+.goals ol li::before{content:"G" counter(q);position:absolute;left:0;top:3px;font-size:11px;font-weight:500;color:var(--accent);border:1px solid var(--accent);border-radius:999px;padding:1px 9px}
+.goals ol li b{display:block;font-size:15.5px;font-weight:400;color:var(--ink)}
+.goals ol li span{font-size:14px;color:var(--ink-soft)}
+
+/* --- 天体カード ------------------------------------------------------------
+   画像をクリックすると .mod.open が付き、数値（.stat）が円の周りに放射状に並ぶ。
+   配置は JS（mvPlace / mvLinks）が計算する。CSS は「閉じているときの姿」と
+   「開いたときの入れ物」だけを持つ。 --- */
+.mod{position:relative;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-lg);margin:18px 0;overflow:hidden;transition:border-color var(--dur) var(--ease),background var(--dur) var(--ease)}
+.mod::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,var(--glow-cool),transparent 45%);opacity:0;transition:opacity var(--dur) var(--ease);pointer-events:none}
+.mod:hover{border-color:var(--line-strong);background:var(--surface-2)}
+.mod:hover::before{opacity:.5}
+.mod>*{position:relative}
+.mod-h{display:flex;align-items:center;gap:12px;padding:14px 20px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+/* .no の文字色は lesson-theme.css が var(--on-accent) で持つ（§44.1 の分類表に
+   登録済み）。ここで再宣言しないこと。背景だけが記事の持ち物。 */
+.mod-h .no{font-size:12px;font-weight:500;background:var(--accent);border-radius:999px;padding:3px 12px;flex:0 0 auto}
+.mod-h .ttl{font-weight:400;font-size:17px;flex:1 1 auto;min-width:0}
+.mod-h .tag{font-size:10px;font-weight:500;letter-spacing:.14em;color:var(--ink-faint);border:1px solid var(--line);border-radius:999px;padding:2px 10px}
+.mod-b{padding:16px 20px 18px}
+/* ★ 第2回の .orbit は「外観＝左に球・右に物差し」「地図＝画像に重ねる」の2種類で、
+   第1回の3列グリッド（放射状配置の受け皿）は使わない（§57.1）。
+   位置指定の基準（position:relative）だけが共通の役割。 */
+.orbit{position:relative;margin-bottom:10px}
+.orbit .links{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;overflow:visible}
+/* 引き出し線。青はティールより輝度が低いので、不透明度を .38 → .45 に上げて
+   線としての見えを保つ（黒地 6.34:1 対 11.82:1 の差を埋める。§47.5） */
+.orbit .links line{stroke:rgba(61,139,255,.45);stroke-width:1}
+.orbit .links circle{fill:var(--accent)}
+.orb{position:relative;width:100%}
+.core{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;gap:8px;width:100%;margin:0}
+.img-btn{background:none;border:0;padding:0;cursor:pointer;width:100%;font-family:var(--font-body);color:inherit;display:flex;flex-direction:column}
+.img-btn .hint{order:-1;display:block;font-size:11px;color:var(--ink-faint);margin:0 0 12px;letter-spacing:.06em;position:relative;z-index:3}
+.hint .h-o{display:none}
+.mod.open .hint .h-c{display:none}
+.mod.open .hint .h-o{display:inline}
+.img-btn:hover .frame{border-color:var(--accent);box-shadow:0 0 24px rgba(61,139,255,.24)}
+/* .stat は **<div>**。押しても何も起きない要素なので、<button> のままだと
+   9枚 × 6〜7個 = 62 個の無反応なボタンが Tab 順に入る（§47.9）。mvPlace /
+   mvLinks はセレクタで拾うだけなのでタグに依存しない。数値を押せるようにする
+   日が来たら button に戻すこと — そのときは中身も操作対象になる。 */
+.stat{position:relative;z-index:2;display:block;width:max-content;max-width:100%;text-align:left;background:rgba(12,14,18,.82);backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px);border:1px solid var(--line);border-radius:var(--radius-sm);padding:8px 11px;font-size:13.5px;line-height:1.6;color:var(--ink);font-family:var(--font-body);font-variant-numeric:tabular-nums;transition:opacity .28s var(--ease),transform .28s var(--ease),border-color .2s var(--ease)}
+.stat b{display:block;font-size:10px;color:var(--ink-faint);font-weight:500;letter-spacing:.12em;margin-bottom:2px}
+.stat strong{color:var(--accent-deep)}
+.stat .v{display:block}
+.mod:not(.open) .orbit .stat{display:none}
+.mod:not(.open) .links{display:none}
+
+.mod.open .stat{animation:mvIn .32s var(--ease) both}
+@keyframes mvIn{from{opacity:0}to{opacity:1}}
+@media (prefers-reduced-motion:reduce){.mod.open .stat{animation:none}}
+
+/* 惑星画像。枠の中は宇宙の写真なので、ライトでも黒のまま
+   （lesson-theme.css の注記「.planet-img .frame は変更しない」と対になっている）。 */
+.planet-img{margin:0}
+.planet-img .frame{border-radius:var(--radius-md);background:radial-gradient(circle at 50% 50%,rgba(255,255,255,.04),transparent 70%),#000;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;overflow:hidden}
+.planet-img img{width:100%;height:100%;object-fit:contain;display:block}
+.planet-img .fallback{display:none;padding:14px;text-align:center;font-size:12.5px;color:var(--ink-soft)}
+.planet-img.failed img{display:none}.planet-img.failed .fallback{display:block}
+.planet-img figcaption{position:relative;z-index:3;margin-top:12px;font-size:10.5px;color:var(--ink-faint);line-height:1.5}
+.mod-b .row{display:flex;gap:12px;margin:8px 0;font-size:14.5px;align-items:flex-start}
+.mod-b .row .k{font-size:10.5px;font-weight:500;color:var(--ink-faint);letter-spacing:.14em;flex:0 0 58px;padding-top:4px}
+.mod-b .row .v{flex:1 1 auto;min-width:0;line-height:1.8;color:var(--ink-soft)}
+.mod-b ul{margin:3px 0;padding-left:1.2em}
+.mod-b li{font-size:14.5px;margin:2px 0}
+
+/* --- この回は地図だけを見せる。外観（球）は第1回が持つ（§63.2）。 --- */
+.planet-img .map-img{display:block}
+/* ★ 地図のときは枠を画像そのものの比率に合わせる。球用の正方形の枠に
+   object-fit:contain で入れると上下が大きく空き、地形が半分の大きさになる。
+   高さを auto にして画像に持たせれば、2:1 の惑星図も 4:3 の月の図も等しく収まる。
+   円形の指定は `.planet-img .orb .frame`（0,3,0）なので、こちらは 0,5,0 で勝つ。
+   環は球の周りを回る飾りなので、平面の地図では消す（楕円にならない）。 */
+.mod.map-view .planet-img .orb{aspect-ratio:auto}
+.mod.map-view .planet-img .orb .frame{height:auto;min-height:118px;aspect-ratio:auto;border-radius:var(--radius-md)}
+.mod.map-view .planet-img .map-img{height:auto}
+/* ★ 外観のときは数値欄（.stat）、地図のときは地形ラベル（.stat.geo）。
+   どちらも同じ .stat を使う（見た目の土台を共有する）。
+   閉じているときは第1回どおり両方とも隠れる（.mod:not(.open) .orbit .stat）。 */
+.mod.map-view .orbit .stat:not(.geo){display:none}
+/* ★ 地図のときだけ、線と点を画像の上に出す。共通CSSでは .links が z-index:0、
+   画像を持つ .core が z-index:1 なので、地図の上のピンが画像に隠れてしまう。
+   .stat と同じ z-index:2 にすると、DOM 順（svg → .stat）で線はラベルの下、
+   画像より上に来る。外観のときは第1回のままにしておく（§53.4）。 */
+.mod.map-view .orbit .links{z-index:2}
+
+/* === 地図は「カードの内幅いっぱい」。ラベルは地図の上に重ねる（§54／§55） =====
+   外観（左に球・右に物差し）とは別のレイアウトなので、.orbit をただのブロックに
+   して、中身を JS（mvMap）が絶対座標で置く。
+   ★ 数値（.stat）の開閉とは独立させる。地図の役目は地形の位置を示すことなので、
+   閉じていても大きさ・ピン・ラベル・線はそのまま出す（§55.1）。 */
+.mod.map-view .orbit{display:block;height:auto}
+.mod.map-view .core{grid-area:auto;max-width:none;width:100%;margin:0}
+/* 閉じたカード用の指定（`.mod:not(.open)` 系）のうち、大きさと基準線だけを打ち消す。
+   ★ ピン・ラベル・引き出し線は打ち消さない —— 地図を見て場所を思い出すのが
+   この回の訓練なので、答えにあたるラベルは数値と同じく「開いたときだけ」出す
+   （§56.1）。閉じている地図は、大きさとグリッドだけが見えている状態。 */
+.mod.map-view:not(.open) .core{max-width:none}
+.mod.map-view:not(.open) .grid{display:block}
+/* 900px 以下の `.planet-img .frame{max-width:260px}` と `.core{max-width:200px}`
+   （どちらも地図より弱い詳細度）を、ここで上書きしている。 */
+/* 枠は画像に合わせて縮める。月の図は 1.05:1 で、高さの上限に当たって
+   幅が 463px までしか出ないので、枠を内幅いっぱいのままにすると左右が
+   真っ黒な帯になる。min-width は読み込み前に枠が消えないための下限。 */
+.mod.map-view .planet-img .frame{max-width:100%;width:fit-content;min-width:260px;min-height:160px;margin:0 auto}
+/* 高さは画像に決めさせるが、上限を置く。2:1 の惑星図は内幅いっぱい（818→409px）、
+   1.05:1 の月と 1.75:1 の火星は上限に当たって幅が詰まる。**object-fit ではなく
+   画像そのものの寸法で収める** — 枠に余白が入ると data-x/data-y の基準が
+   画像とずれる（§53.3）。 */
+.mod.map-view .planet-img .map-img{width:auto;height:auto;max-width:100%;max-height:440px;margin:0 auto;object-fit:contain}
+/* 字幕は地図のとき中央に置く（画像が幅いっぱいになるため）。 */
+.mod.map-view .planet-img figcaption{text-align:center}
+
+/* ラベル。地図の上に乗るので pointer-events:none —— これが無いと、ラベルが
+   画像（.img-btn）を覆ってカードの開閉が効かなくなる。背景は .stat の .82 より
+   濃い .88（地図には砂漠や極冠のような明るい面があるため）、罫線は残す。 */
+.mod.map-view .orbit .stat.geo{position:absolute;left:0;top:0;z-index:2;pointer-events:none;
+  width:max-content;max-width:200px;background:rgba(10,12,16,.88);border-color:var(--line-strong);
+  font-size:11.5px;line-height:1.5;padding:4px 7px}
+.mod.map-view .orbit .stat.geo b{font-size:9px;letter-spacing:.08em;margin-bottom:0}
+/* ピンはラベルがすぐ横に来るぶん、白い縁取りで強める（どれがどこを指すかが要点）。
+   引き出し線は 22〜28px と短いので、不透明度を上げて確実に見えるようにする。 */
+.mod.map-view .orbit .links line{stroke:rgba(61,139,255,.9);stroke-width:1.4}
+.mod.map-view .orbit .links circle{fill:var(--accent);stroke:#fff;stroke-width:1.5}
+
+/* 緯度経度の基準線（§55.2）。画像より上・ピンより下に敷く。.links と同じ
+   z-index:2 で、DOM 順（.grid → .links → .stat）が重ね順を決める。 */
+.orbit .grid{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:2;overflow:visible;display:none}
+.mod.map-view .orbit .grid{display:block}
+.orbit .grid line,.orbit .grid path,.orbit .grid circle{fill:none;stroke:rgba(255,255,255,.2);stroke-width:.8}
+.orbit .grid .major{stroke:rgba(255,255,255,.35);stroke-width:1}
+/* 黒地にも砂漠のような明るい面にも乗るので、文字は暗い縁取りを付ける。 */
+.orbit .grid text{fill:rgba(255,255,255,.62);font-family:var(--font-body);font-size:9px;letter-spacing:.04em;
+  paint-order:stroke;stroke:rgba(0,0,0,.55);stroke-width:2.5;stroke-linejoin:round}
+
+/* 番号つきの説明リスト。560px 以下（地図の上にラベルを重ねると読めない）と、
+   狭い画面（560px 以下）で出す。番号は本文の「覚える地形」表と同じ順。 */
+.stat .n{display:none}
+.geo-list{display:none;list-style:none;margin:14px 0 0;padding:0;text-align:left}
+.geo-list li{display:flex;gap:9px;margin:5px 0;font-size:13px;line-height:1.6;color:var(--ink-soft)}
+.geo-list li b{font-weight:500;color:var(--ink)}
+.geo-list .n{display:grid;place-items:center;flex:0 0 auto;width:20px;height:20px;border-radius:50%;
+  background:var(--accent);color:var(--on-accent);font-size:11px;font-style:normal;margin-top:2px}
+
+/* --- 展開図と球の切り替え（§77）-------------------------------------------
+   球は「覚える面」ではなく確かめるためのもう1枚なので、切り替えは控えめに。 */
+.vsw{display:flex;gap:6px;justify-content:center;margin:0 0 12px}
+.vsw-b{font-family:inherit;font-size:12px;letter-spacing:.06em;padding:5px 14px;border-radius:999px;
+  border:1px solid var(--line);background:var(--surface);color:var(--ink-soft);cursor:pointer;
+  transition:color .25s var(--ease),border-color .25s var(--ease),background .25s var(--ease)}
+.vsw-b.is-on{color:var(--ink);border-color:var(--line-strong);background:var(--surface-2)}
+.vsw-b:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+@media (hover:hover){.vsw-b:hover{color:var(--ink);border-color:var(--line-strong)}}
+
+.mod.globe-view .orbit{display:none}
+.mod:not(.globe-view) .globe{display:none}
+.globe{text-align:center}
+/* ★ touch-action は「指が触れた要素」の値で決まる（継承されない）ので、
+   canvas にも書く。無いと指では回せない（§77.5）。
+   none ではなく pan-y にしてある—— 縦のスワイプはページのスクロールに
+   渡し、横のドラッグだけで回す。球の上でスクロールが止まると、
+   狭い画面では先へ進めなくなるため。 */
+.globe-stage{position:relative;width:100%;max-width:440px;margin:0 auto;aspect-ratio:1/1;
+  touch-action:pan-y;cursor:grab}
+.globe-stage.is-drag{cursor:grabbing}
+.globe-cv{display:block;width:100%;height:100%;touch-action:pan-y}
+.globe-fail{position:absolute;inset:0;display:grid;place-items:center;margin:0;color:var(--ink-faint);font-size:13px}
+/* ★ display を持つクラスは UA の [hidden]{display:none} を上書きするので、
+   hidden を付けても消えない。明示的に消す（§77.4）。 */
+.globe-fail[hidden],.globe-list[hidden],.vsw[hidden],.globe[hidden]{display:none}
+.globe-ctl{display:flex;gap:8px;justify-content:center;margin:10px 0 0}
+.globe-b{font-family:inherit;font-size:12px;padding:5px 13px;border-radius:999px;border:1px solid var(--line);
+  background:var(--surface);color:var(--ink-soft);cursor:pointer;
+  transition:color .25s var(--ease),border-color .25s var(--ease)}
+@media (hover:hover){.globe-b:hover{color:var(--ink);border-color:var(--line-strong)}}
+.globe-b:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.globe-list{list-style:none;margin:12px auto 0;padding:0;max-width:440px;text-align:left;
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:2px 12px}
+.globe-list li{display:flex;gap:7px;font-size:12.5px;line-height:1.6;color:var(--ink-soft)}
+.globe-list .n{display:grid;place-items:center;flex:0 0 auto;width:18px;height:18px;border-radius:50%;
+  background:var(--accent);color:var(--on-accent);font-size:10px;font-style:normal;margin-top:3px}
+.globe-note{max-width:560px;margin:14px auto 0;font-size:12.5px;line-height:1.7;color:var(--ink-faint);text-align:left}
+.globe-cap{margin:10px 0 0;font-size:11px;line-height:1.7;color:var(--ink-faint)}
+@media (max-width:560px){
+  .globe-stage{max-width:300px}
+  .globe-list{grid-template-columns:1fr}
+}
+
+/* --- 演習。解答は <details> なので、印刷時に開く仕掛けを下の @media print に置く --- */
+.ex{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-lg);padding:18px 22px;margin:18px 0}
+.ex .ex-h{font-weight:400;font-size:16.5px;margin:0 0 6px;color:var(--ink)}
+.ex .ex-h .num{font-size:11px;font-weight:500;color:var(--teach);border:1px solid var(--teach-line);background:var(--teach-tint);border-radius:999px;padding:2px 10px;margin-right:10px;vertical-align:2px}
+.ex details{margin-top:12px;border-top:1px solid var(--line);padding-top:10px}
+.ex summary{cursor:pointer;font-size:12.5px;font-weight:500;color:var(--ink-soft);list-style:none;display:inline-flex;align-items:center;gap:8px;padding:5px 6px 5px 14px;border:1px solid var(--line);border-radius:999px}
+/* ＋/− の丸。白文字は --teach(#a48bff) 上で 2.72:1 しか出ない。--on-accent なら
+   ダーク 7.58:1 / 印刷（--teach が #5a3fc0、--on-accent が #fff）7.29:1 で両立する。 */
+.ex summary::after{content:'+';display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;background:var(--teach);color:var(--on-accent);font-size:13px}
+.ex details[open] summary::after{content:'−'}
+.ex summary:hover{color:var(--ink);border-color:var(--line-strong)}
+.ex summary::-webkit-details-marker{display:none}
+.ex details[open] summary{margin-bottom:8px}
+.ex .ans{font-size:14.5px}
+
+.foot{padding:34px 0 0;color:var(--ink-faint);font-size:12.5px}
+.foot p{color:var(--ink-faint)}
+
+/* モバイル：レールを引き出しに。`.menu-btn` は位置だけを持ち、見た目は
+   共通コンポーネントの `.btn` を併用する。 */
+.menu-btn{display:none}
+.float-nav{display:none}
+.scrim{display:none}
+@media (max-width:900px){
+  .rail{position:fixed;left:0;top:0;height:100vh;z-index:1100;transform:translateX(-100%);transition:transform .25s var(--ease);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);padding-top:28px}
+  body.nav-open .rail{transform:translateX(0)}
+  .main{padding:0 20px 90px}
+  .mod:not(.map-view) .orbit{gap:16px}
+  .orbit .stat{font-size:12.5px;padding:7px 9px}
+  .planet-img .frame{max-width:260px;margin:0 auto}
+  .planet-img figcaption{text-align:center}
+  .mod-b .row{flex-direction:column;gap:2px}
+  .mod-b .row .k{flex:0 0 auto}
+  /* 「戻る」と「目次」を横並びで浮かせる。位置は入れ物が持ち、ボタン自身は
+     見た目だけを持つ（§64.2）。 */
+  .float-nav{display:flex;gap:10px;position:fixed;bottom:18px;right:18px;z-index:1050}
+  .menu-btn,.back-btn{position:static;display:inline-flex;background:var(--nav-bg);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);color:var(--ink);text-decoration:none}
+  .scrim{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:1090}
+  body.nav-open .scrim{display:block}
+  .lesson-hero{padding-top:40px}
+}
+@media (max-width:560px){
+
+  /* 地図の上にラベルを重ねると読めなくなるので、地図には通し番号の丸だけを置き、
+     説明は番号つきのリストにして地図の下へ出す（§54.5）。 */
+  .mod.map-view.open .orbit .stat.geo{width:22px;height:22px;max-width:none;padding:0;border-radius:50%;
+    background:var(--accent);border-color:#fff;color:var(--on-accent);font-size:11px;font-weight:500;
+    display:grid;place-items:center;box-shadow:0 0 0 1px rgba(0,0,0,.55)}
+  .mod.map-view.open .orbit .stat.geo b,.mod.map-view.open .orbit .stat.geo .v{display:none}
+  .mod.map-view.open .orbit .stat.geo .n{display:block}
+  .mod.map-view.open .geo-list{display:block}
+  .orbit{display:flex;flex-direction:column;gap:10px}
+  .orbit .core{order:-1;max-width:240px;align-self:center;margin:0;width:100%}
+  .orbit .links{display:none}
+  .orbit .stat{width:100%;max-width:none;font-size:13.5px;padding:8px 11px}
+}
+@media print{
+  body{background:#fff;color:#000}
+  header,.rail,.menu-btn,.float-nav,.lesson-nav,.scrim,#starfield,footer{display:none!important}
+  .wrap{display:block;padding-top:0}
+  /* ★ 解答（<details>）を開く。元の教材にあった `.ex details>*{display:block}` は
+     **効かない**（実測：閉じた details の中身は ::details-content の
+     content-visibility:hidden で隠れているので、子の display を変えても出てこない）。
+     効くのは次の1行。Chrome 131 / Safari 18.4 / Firefox 139 以降。
+     それ以前のブラウザ向けには、下の beforeprint で open 属性を足している。 */
+  details::details-content{content-visibility:visible!important}
+  .mod .orbit{display:block!important;height:auto!important}
+  .mod .orbit .stat{position:static!important;transform:none!important;max-width:none;margin:6px 0}
+  .mod .orbit .core{position:static!important;transform:none!important;margin:0 auto}
+  .mod .orbit{display:block!important}
+  .links{display:none!important}
+}
+
+/* 分かったこと／分かっていないことの2段。色は既存の箱のトークンだけで作る。 */
+.known{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:10px 0 0}
+.known > div{border:1px solid var(--line);border-radius:var(--radius-sm);padding:10px 13px;background:var(--surface)}
+.known .lab{display:block;font-size:10.5px;font-weight:500;letter-spacing:.12em;margin-bottom:4px}
+.known .k-yes{border-color:var(--good-line);background:var(--good-tint)}.known .k-yes .lab{color:var(--good)}
+.known .k-no{border-color:var(--amber-line);background:var(--amber-tint)}.known .k-no .lab{color:var(--amber)}
+.known .k-unseen{border-color:var(--teach-line);background:var(--teach-tint)}.known .k-unseen .lab{color:var(--teach)}
+.known .k-wide{grid-column:1 / -1}
+.known ul{margin:2px 0 0}
+@media (max-width:560px){.known{grid-template-columns:1fr}}
+/* ★ 900px 以下では .row が縦並び（flex-direction:column）になり、align-items:flex-start の
+   せいで .v が中身の幅まで広がる。最小幅 520px の比べる表を入れると、行ごと画面の外へ
+   はみ出した（390px で右端 561px、実測）。.v を行の幅に揃え、表は .table-scroll の中で送る。 */
+@media (max-width:900px){.mod-b .row > .v{align-self:stretch}}
+
+</style>
+<link rel="stylesheet" href="../css/lesson-theme.css?v=r85">
+<body data-page="study" class="is-article" data-node="memoryverse_2-1">
+<canvas id="starfield" aria-hidden="true"></canvas>
+<div id="site-nav"><noscript><nav class="noscript-nav" aria-label="メインナビゲーション"><a href="index.html">ホーム</a><a href="self-intro.html">自己紹介</a><a href="study.html">勉強の軌跡</a><a href="videos.html">動画</a><a href="blog.html">ブログ</a><a href="sns.html">各種SNS</a></nav></noscript></div>
+<div class="float-nav"><a class="back-btn btn" href="memoryverse.html">戻る <span class="btn-disc" aria-hidden="true">←</span></a><button class="menu-btn btn" id="menuBtn" aria-controls="rail" aria-expanded="false">目次 <span class="btn-disc" aria-hidden="true">≡</span></button></div>
+<div class="scrim" id="scrim"></div>
+<div class="wrap">
+  <nav class="rail" id="rail">
+    <!-- 科目へ戻る導線（レール上部の「← 一つ上」）は layout.js が CRUMBS から書き出す。 -->
+    <div class="brand">2-1　地球の骨格<small>SECTION 2-1 / THE EARTH'S FRAME</small></div>
+    <div class="progress-wrap"><div class="progress-bar" id="pbar"></div></div>
+    <ul class="toc" id="toc">
+      <li class="part">導入</li>
+      <li><a href="#goals"><span class="n">01</span>到達目標</a></li>
+      <li><a href="#view"><span class="n">02</span>この回の見方</a></li>
+      <li><a href="#tycho"><span class="n">03</span>ティコから地球へ</a></li>
+      <li class="part">置き場所の枠</li>
+      <li><a href="#continents"><span class="n">04</span>大陸と海</a></li>
+      <li><a href="#lines"><span class="n">05</span>基準線が通る国と地域</a></li>
+      <li><a href="#anchors"><span class="n">06</span>錨の11か国</a></li>
+      <li class="part">横断する軸と国境</li>
+      <li><a href="#cos"><span class="n">07</span>cos φ ― 高緯度は横に伸びる</a></li>
+      <li><a href="#borders"><span class="n">08</span>国境の描き方</a></li>
+      <li class="part">訓練</li>
+      <li><a href="#menu"><span class="n">09</span>訓練メニュー</a></li>
+      <li><a href="#drills"><span class="n">10</span>演習</a></li>
+      <li class="part">付録</li>
+      <li><a href="#plan"><span class="n">A</span>改訂とこの先の構成</a></li>
+      <li><a href="#evidence"><span class="n">B</span>根拠と強度</a></li>
+      <li><a href="#next"><span class="n">C</span>次回の予告</a></li>
+    </ul>
+  </nav>
+
+  <main class="main">
+    <div class="lesson-hero">
+      <h1>2-1　地球の骨格<span class="sub">ティコから降りて、置き場所の枠を作る</span></h1>
+      <p class="lead">1章（第1〜5回）で、太陽系の中の<strong>地球の位置</strong>を作りました。2章は、その地球の中に入ります。国はおよそ200あります。1つずつ覚える前に、<strong>それを置く枠</strong>——展開図の升目、5本の基準線、面積の大きい11か国——を先に作る回です。</p>
+    </div>
+
+    <section id="goals">
+      <div class="sec-head"><span class="idx">01</span><h2>この回の到達目標</h2></div>
+      <div class="goals">
+        <ol>
+          <li><b>白紙に横2・縦1の枠と30度の升目を引き、6大陸と5つの海を正しい升目に置ける</b><span>赤道と東経0度を先に引き、<strong>日本を最初に置いてから</strong>6大陸、最後に5つの海。形の細かさは問いません。<strong>どの段・どの列に入るかが合っていれば正解</strong>です（§04、演習1）。</span></li>
+          <li><b>赤道・北回帰線・南回帰線・東経0度・180度の5本について、通る国と地域を順に言える</b><span>緯線は<strong>西から東</strong>、経線は<strong>北から南</strong>。途中の海も区切りとして言い、かすめるだけの2か国（チャド・トーゴ）も含めます（§05、演習2）。</span></li>
+          <li><b>錨の11か国を展開図に描き、球を回して、高緯度の国が展開図でどれだけ横に伸びているかを 1/cos φ で言える</b><span>11か国を東経0度から東回りに置き、ロシアやカナダを球で正面に出して、緯度から倍率を出します（北緯60度なら2倍）（§06・§07、演習3・4）。</span></li>
+        </ol>
+      </div>
+      <div class="box warn"><span class="lab">前提の確認</span>
+      <p>第5回の統合の配置図で、<strong>地球がどこにあるか</strong>——太陽から3番目、1 AU、月をひとつ連れている——がすぐ出る状態で入ってください。この回は、その点の中へ降りていく回です。</p></div>
+    </section>
+
+    <section id="view">
+      <div class="sec-head"><span class="idx">02</span><h2>この回の見方</h2></div>
+      <div class="box principle"><span class="lab">この回は、第1回にあたる「骨格の回」</span>
+      <p>第1回は、太陽と8惑星を<strong>配置図の上に並べる</strong>だけの回でした。地形や衛星は、その並びが決まってから後の回で足しました。この回も同じです。<strong>国ごとの詳細（産物・気候・民族・企業）は3章</strong>で、この回は置き場所の枠だけを作ります。</p>
+      <p style="margin-top:8px">枠は3枚のカードでできています。<strong>§04 大陸と海</strong>（升目のどこに何があるか）、<strong>§05 基準線が通る国と地域</strong>（升目の線の上に並ぶ国）、<strong>§06 錨の11か国</strong>（大きな国を先に打ち込み、残りを「その隣」として置けるようにする）。そのあとに、展開図の歪みを直す式（§07）と、国境の線の引き方（§08）を置きます。</p></div>
+
+      <div class="box teach"><span class="lab">カードは地域が1枚、国はその中の引き出し</span>
+      <p>第3回で、衛星を母惑星の下に置きました。地球でも同じ入れ子にします。<strong>カードは地域ごとに1枚</strong>、国はその中の引き出しです。この回はまだ地域に入る前の枠なので、カードは3枚だけです。</p>
+      <p style="margin-top:8px">並べる順番は、第1回で惑星を太陽からの距離で並べたのと同じく、<strong>測れる数</strong>で決めます。国と地域は<strong>中心の経度で、東経0度から東回り</strong>です。</p></div>
+
+      <div class="box teach"><span class="lab">地図は「展開図」、球は確かめるためのもう1枚</span>
+      <p>3枚とも、第2回の岩石惑星と同じ<strong>［展開図］＋［球］</strong>のカードです。展開図は<strong>正距円筒図法</strong>で描いています。緯線と経線が等間隔の直線なので、30度の升目がそのまま読めます。歪みは東西方向だけで、その量は1本の式（§07）で直せます。同じ画像をそのまま球に貼れるのも、この図法だけです。</p>
+      <p style="margin-top:8px">閉じているときは<strong>地図と升目だけ</strong>が見えます。見て、先に答えを言ってから、クリックでピン・ラベル・引き出し線を出してください（第2回と同じ規則）。球のボタンは、この回では「ピンを開く」です。</p></div>
+
+      <div class="box warn"><span class="lab">国境の描き方</span>
+      <p>この教材の国境は、各地域を実際に治めている政府の範囲（実効支配）で描いています。領有の主張や承認の状況は、係争地ごとに別の欄に示します。線の引き方はどの主張を支持するものでもありません。日本の地図帳とは描き方が異なる地域があります。</p>
+      <p style="margin-top:8px">ただし、この回の地図の元データ（Natural Earth）の線は、実効支配で<strong>一貫していない場所があります</strong>。どこがずれているかは §08 にすべて書きました。</p></div>
+    </section>
+
+    <section id="tycho">
+      <div class="sec-head"><span class="idx">03</span><h2>ティコから地球へ</h2></div>
+      <p>第2回で決めたとおり、太陽系の回と地球の回を行き来するときは、<strong>必ず月のティコ・クレーター</strong>を経由します。ティコは月の表側、<strong>南緯約43度・西経約11度</strong>にある、光条の目立つ若いクレーターです。</p>
+      <p>月はいつも同じ面を地球に向けています。だからティコに立つと、地球は<strong>空のほぼ同じ場所に止まって</strong>見えます。方角は<strong>北北東、天頂から約45度</strong>の高さです（月の首振り＝秤動で、数度ずれます）。地球は止まって見えても、その場で1日1回まわっています。</p>
+      <div class="box teach"><span class="lab">ティコに置くのは、この1文だけ</span>
+      <p>ティコから見上げた地球の<strong>回転を止め、北を上・東経0度を正面</strong>にした姿——これが、この回のすべての球の「基準に戻す」の向きです。正面の中央は北緯0度・東経0度で、<strong>ギニア湾の海の上</strong>です。</p></div>
+      <p style="font-size:13px;color:var(--ink-faint)">ティコには地形以外の情報を置きません（第2回で決めた規則）。上の1文は、地球の球をどの向きから見るかを決めるためのもので、ティコそのものの説明ではありません。</p>
+    </section>
+
+    <section id="continents">
+      <div class="sec-head"><span class="idx">04</span><h2>大陸と海</h2></div>
+      <p><strong>枠は横2・縦1</strong>です。30度ごとに線を引くと、<strong>縦12列・横6段</strong>の升目になります。中央の横線が<strong>赤道</strong>、中央の縦線が<strong>東経0度</strong>。上端が北極、下端が南極で、どちらも点のはずのものが横線に引き伸ばされています。<strong>左端と右端はどちらも180度で、同じ線</strong>です。球ではここがくっつきます。</p>
+      <div class="mod map-view has-globe" data-grid="equi" data-lon="we" data-open-label="ピン" data-globe="../image/memoryverse/earth-countries.png?v=r85">
+        <div class="mod-h"><span class="no">大陸と海</span><span class="ttl">升目のどこに、何があるか</span><span class="tag">CONTINENTS &amp; OCEANS</span></div>
+        <div class="mod-b">
+          <div class="vsw" role="group" aria-label="表示の切り替え" hidden>
+            <button type="button" class="vsw-b is-on" data-view="map" aria-pressed="true">展開図</button>
+            <button type="button" class="vsw-b" data-view="globe" aria-pressed="false">球</button>
+          </div>
+          <div class="orbit"><svg class="grid" aria-hidden="true" preserveAspectRatio="none"></svg><svg class="links" aria-hidden="true" preserveAspectRatio="none"></svg><div class="stat geo" data-n="1" data-side="right" data-x="0.7361" data-y="0.2111" data-lat="52" data-lon="85"><i class="n">1</i><b>ユーラシア大陸</b><span class="v">北の2段、東の半分以上</span></div><div class="stat geo" data-n="2" data-side="down" data-x="0.5556" data-y="0.4556" data-lat="8" data-lon="20"><i class="n">2</i><b>アフリカ大陸</b><span class="v">赤道をまたぐ、中央の3列</span></div><div class="stat geo" data-n="3" data-side="right" data-x="0.2222" data-y="0.2333" data-lat="48" data-lon="-100"><i class="n">3</i><b>北アメリカ大陸</b><span class="v">本体は北緯30〜60度</span></div><div class="stat geo" data-n="4" data-side="down" data-x="0.3389" data-y="0.5667" data-lat="-12" data-lon="-58"><i class="n">4</i><b>南アメリカ大陸</b><span class="v">西経30〜90度の2列</span></div><div class="stat geo" data-n="5" data-side="up" data-x="0.8722" data-y="0.6389" data-lat="-25" data-lon="134"><i class="n">5</i><b>オーストラリア大陸</b><span class="v">東経120〜150度が本体</span></div><div class="stat geo" data-n="6" data-side="left" data-x="0.6111" data-y="0.9444" data-lat="-80" data-lon="40"><i class="n">6</i><b>南極大陸</b><span class="v">南緯60度より南</span></div><div class="stat geo" data-n="7" data-x="0.1111" data-y="0.4722" data-lat="5" data-lon="-140"><i class="n">7</i><b>太平洋</b><span class="v">左右の端をまたぐ</span></div><div class="stat geo" data-n="8" data-x="0.3889" data-y="0.3889" data-lat="20" data-lon="-40"><i class="n">8</i><b>大西洋</b><span class="v">南北に細長い</span></div><div class="stat geo" data-n="9" data-side="down" data-x="0.7167" data-y="0.6111" data-lat="-20" data-lon="78"><i class="n">9</i><b>インド洋</b><span class="v">北は陸でふさがる</span></div><div class="stat geo" data-n="10" data-x="0.0833" data-y="0.0333" data-lat="84" data-lon="-150"><i class="n">10</i><b>北極海</b><span class="v">上端の帯</span></div><div class="stat geo" data-n="11" data-side="down" data-x="0.7778" data-y="0.8333" data-lat="-60" data-lon="100"><i class="n">11</i><b>南極海</b><span class="v">南極を囲む帯</span></div><div class="core"><button type="button" class="img-btn" aria-expanded="false"><figure class="planet-img"><div class="orb"><div class="frame"><img class="map-img" src="../image/memoryverse/earth-countries.png" alt="全球の展開図（正距円筒図法）。陸は灰色、国境は細い線、係争地は斜線" loading="lazy" decoding="async"></div></div><figcaption>全球の展開図（正距円筒図法）。陸はすべて同じ灰色、係争地は斜線<br>線は経度・緯度とも30度ごと（狭い画面は60度ごと）<br>Natural Earth v5.1.2 から本教材が作成</figcaption></figure><span class="hint"><span class="h-c">クリックでピンを開く</span><span class="h-o">クリックで閉じる</span></span></button></div></div>
+          <div class="globe" hidden>
+            <div class="globe-stage"><canvas class="globe-cv"></canvas><p class="globe-fail" hidden>球を表示できませんでした。展開図でご覧ください。</p></div>
+            <div class="globe-ctl">
+              <button type="button" class="globe-b globe-home">基準に戻す</button>
+              <button type="button" class="globe-b globe-open" aria-pressed="false">ピンを開く</button>
+            </div>
+            <ol class="globe-list" hidden></ol>
+            <p class="globe-note">覚えるのは展開図のほうです。球は、展開図で覚えた位置が実物でどう見えるかを確かめるためのものです。既定の向き（ティコから見上げた向き）は東経0度が正面・北が上で、<strong>アフリカとヨーロッパが正面</strong>に来ます。太平洋を正面に出すには半周回してください。<strong>展開図では左右の端に割れていた太平洋が、球では1つの海になります</strong>。</p>
+            <p class="globe-cap">全球の展開図（正距円筒図法）。陸はすべて同じ灰色、係争地は斜線（正距円筒・2048×1024・左端は西経180度）<br>線は経度・緯度とも30度ごと<br>Natural Earth v5.1.2 から本教材が作成</p>
+          </div>
+          <div class="row"><span class="k">升目の読み方</span><span class="v">段は上から「北緯60〜90度」「北緯30〜60度」「北緯0〜30度」「南緯0〜30度」「南緯30〜60度」「南緯60〜90度」。列は左端（西経180度）から右へ30度ずつで、中央の縦線から右が東経、左が西経です</span></div>
+          <div class="row"><span class="k">6大陸</span><span class="v">
+          <div class="table-scroll"><table class="mini-table">
+            <tr><th style="width:18%">大陸</th><th style="width:22%">南北の端</th><th style="width:24%">東西の端</th><th>主にある段と列</th></tr>
+            <tr><td><strong>ユーラシア</strong></td><td>北1.3°〜北77.7°</td><td>西9.5°〜西169.6°（180度を越える）</td><td><strong>北の2段</strong>。列は西経30度から東へ、<strong>東の半分以上</strong>を占める</td></tr>
+            <tr><td><strong>アフリカ</strong></td><td>南34.8°〜北37.3°</td><td>西17.5°〜東51.4°</td><td><strong>赤道をまたぐ2段</strong>（南北の端は30度を少し越える）。<strong>中央の3列</strong>（西経30度〜東経60度）</td></tr>
+            <tr><td><strong>北アメリカ</strong></td><td>北7.2°〜北72.0°</td><td>西168.1°〜西55.6°</td><td>本体は<strong>北緯30〜60度</strong>。列は西経60度より西の4列</td></tr>
+            <tr><td><strong>南アメリカ</strong></td><td>南53.9°〜北12.5°</td><td>西81.3°〜西34.8°</td><td>赤道から南緯60度までの段。<strong>西経30〜90度の2列</strong></td></tr>
+            <tr><td><strong>オーストラリア</strong></td><td>南39.1°〜南10.7°</td><td>東113.2°〜東153.6°</td><td>南緯0〜30度の段が本体（南の端は30度を越える）。<strong>東経120〜150度</strong>の列</td></tr>
+            <tr><td><strong>南極</strong></td><td>南63.2°より南</td><td>全経度</td><td><strong>南緯60度より南</strong>の段を横いっぱいに</td></tr>
+          </table></div>
+          <p style="font-size:12.5px;color:var(--ink-faint);margin:2px 0 0">端の値は Natural Earth v5.1.2（1:1000万）の国境データから、各大陸でいちばん大きい陸塊（島を除く本土）を取り出して計算したものです。ユーラシアの東端はチュクチ半島で、180度の線を越えて西経側に出ます。</p>
+          </span></div>
+          <div class="row"><span class="k">最初に崩れやすい所</span><span class="v"><strong>南アメリカは北アメリカの真南ではなく、東へずれています。</strong>南アメリカの西端（西経81.3度）は、北アメリカでいえば<strong>フロリダとほぼ同じ経度</strong>です。北アメリカの本体（西経60〜120度あたり）の下に南アメリカを描くと、全体が1列西へずれます。</span></div>
+          <div class="row"><span class="k">大陸の数え方</span><span class="v">日本の教科書に従って<strong>6大陸</strong>（ユーラシア・アフリカ・北アメリカ・南アメリカ・オーストラリア・南極）とします。ヨーロッパとアジアを分けて7つと数える国もあります。<strong>ヨーロッパとアジアの境は慣習で決めた線</strong>で、ウラル山脈から先（カスピ海・コーカサスのあたり）の引き方は資料によって複数あります</span></div>
+          <div class="row"><span class="k">5つの海</span><span class="v">三大洋（太平洋・大西洋・インド洋）に北極海と南極海を足した<strong>5つ</strong>。南極海を独立した海として数えるかどうかは機関によって違い、<strong>5つと数える機関があります</strong>（米国の地名委員会や NOAA など）。<br><strong>この図法の弱点</strong>：いちばん広い太平洋が、<strong>展開図の左右の端に割れて</strong>しまいます。左端の太平洋と右端の太平洋は同じ海です（球で確かめてください）</span></div>
+          <div class="row"><span class="k">日本</span><span class="v"><strong>北緯30〜60度の段・東経120〜150度の列</strong>。本州・北海道・九州・四国は北31.0°〜北45.5°、東129.6°〜東145.8°で、この1マスに収まります。沖縄は北緯30度より南の段です。<strong>白紙に描くときは、日本を最初に置いてください</strong>——自分の足元から始めると、ほかの大陸の位置を「日本から見て西・南」で確かめられます</span></div>
+          <div class="row"><span class="k">分かっていること</span><span class="v">
+          <div class="known">
+            <div class="k-yes k-wide"><span class="lab">分かっていること</span>陸と海の形と位置。地球の陸は、衛星から繰り返し全面を撮られています。</div>
+            <div class="k-unseen k-wide"><span class="lab">まだ誰も見ていない</span><strong>海底の細かい地形の大部分</strong>。現代の基準（船の音響測深など）で測られた海底は<strong>約28.7%</strong>にとどまります（The Nippon Foundation-GEBCO Seabed 2030 Project、2026年4月20日発表）。残りは衛星で測った海面の高さから推定した粗い地形です。<br>太陽系の回では、エウロパやミランダのように<strong>半球が丸ごと撮られていない天体</strong>がありました。地球の<strong>陸には、そういう場所はありません</strong>。「まだ誰も見ていない」は、地球では海の底に集まっています。</div>
+          </div>
+          <p style="font-size:12.5px;color:var(--ink-faint);margin:6px 0 0">28.7%は毎年更新される数値です。最新は Seabed 2030 の発表で確認してください。</p>
+          </span></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="lines">
+      <div class="sec-head"><span class="idx">05</span><h2>基準線が通る国と地域</h2></div>
+      <p>升目の線のうち5本——<strong>赤道・北回帰線・南回帰線・東経0度・180度</strong>——の上に並ぶ国を覚えます。線は白紙にすぐ引けるので、国の並びを線に結びつけておくと、<strong>何もない空間に国名を浮かべずに済みます</strong>。</p>
+      <div class="mod map-view has-globe" data-grid="equi" data-lon="we" data-open-label="ピン" data-globe="../image/memoryverse/earth-lines.png?v=r85">
+        <div class="mod-h"><span class="no">基準線</span><span class="ttl">5本の線の上に並ぶ国</span><span class="tag">REFERENCE LINES</span></div>
+        <div class="mod-b">
+          <div class="vsw" role="group" aria-label="表示の切り替え" hidden>
+            <button type="button" class="vsw-b is-on" data-view="map" aria-pressed="true">展開図</button>
+            <button type="button" class="vsw-b" data-view="globe" aria-pressed="false">球</button>
+          </div>
+          <div class="orbit"><svg class="grid" aria-hidden="true" preserveAspectRatio="none"></svg><svg class="links" aria-hidden="true" preserveAspectRatio="none"></svg><div class="stat geo" data-n="1" data-x="0.1667" data-y="0.5000" data-lat="0" data-lon="-120"><i class="n">1</i><b>赤道</b><span class="v">西から東へ10か国</span></div><div class="stat geo" data-n="2" data-side="up" data-x="0.0833" data-y="0.3698" data-lat="23.44" data-lon="-150"><i class="n">2</i><b>北回帰線</b><span class="v">陸を通る距離がいちばん長い</span></div><div class="stat geo" data-n="3" data-side="down" data-x="0.1111" data-y="0.6302" data-lat="-23.44" data-lon="-140"><i class="n">3</i><b>南回帰線</b><span class="v">南アメリカ・アフリカ・オーストラリア</span></div><div class="stat geo" data-n="4" data-side="right" data-x="0.5000" data-y="0.6389" data-lat="-25" data-lon="0"><i class="n">4</i><b>東経0度</b><span class="v">北から南へ8か国と南極</span></div><div class="stat geo" data-n="5" data-side="up" data-x="0.5000" data-y="0.5000" data-lat="0" data-lon="0"><i class="n">5</i><b>北緯0度・東経0度</b><span class="v">ギニア湾の海の上</span></div><div class="stat geo" data-n="6" data-x="0.9997" data-y="0.7222" data-lat="-40" data-lon="179.9"><i class="n">6</i><b>180度</b><span class="v">ロシア・フィジー・南極</span></div><div class="core"><button type="button" class="img-btn" aria-expanded="false"><figure class="planet-img"><div class="orb"><div class="frame"><img class="map-img" src="../image/memoryverse/earth-lines.png" alt="全球の展開図。赤道・回帰線・東経0度・180度が陸地を通る国を茶色で塗り、回帰線を橙色の破線で引いたもの" loading="lazy" decoding="async"></div></div><figcaption>5本の基準線が陸地を通る国を茶色、北回帰線・南回帰線（±23.44度）を橙色の破線<br>線は経度・緯度とも30度ごと（狭い画面は60度ごと）<br>Natural Earth v5.1.2 から本教材が作成</figcaption></figure><span class="hint"><span class="h-c">クリックでピンを開く</span><span class="h-o">クリックで閉じる</span></span></button></div></div>
+          <div class="globe" hidden>
+            <div class="globe-stage"><canvas class="globe-cv"></canvas><p class="globe-fail" hidden>球を表示できませんでした。展開図でご覧ください。</p></div>
+            <div class="globe-ctl">
+              <button type="button" class="globe-b globe-home">基準に戻す</button>
+              <button type="button" class="globe-b globe-open" aria-pressed="false">ピンを開く</button>
+            </div>
+            <ol class="globe-list" hidden></ol>
+            <p class="globe-note">覚えるのは展開図のほうです。球にすると、<strong>赤道と2本の回帰線が1周つながった輪</strong>になります。展開図の左右の端で切れていた線が、球では切れ目なく続いていることを確かめてください。<strong>180度の経線は、基準の向きの真裏</strong>にあります。半周回すと正面に来ます。</p>
+            <p class="globe-cap">5本の基準線が陸地を通る国を茶色、北回帰線・南回帰線（±23.44度）を橙色の破線（正距円筒・2048×1024・左端は西経180度）<br>線は経度・緯度とも30度ごと<br>Natural Earth v5.1.2 から本教材が作成</p>
+          </div>
+          <div class="row"><span class="k">赤道</span><span class="v">エクアドル → コロンビア → ブラジル →（大西洋）→ ガボン → コンゴ共和国 → コンゴ民主共和国 → ウガンダ → ケニア → ソマリア →（インド洋）→ インドネシア</span></div>
+          <div class="row"><span class="k">北回帰線</span><span class="v">メキシコ → バハマ →（大西洋）→ 西サハラ → モーリタニア → マリ → アルジェリア → ニジェール → リビア → チャド → エジプト → サウジアラビア → アラブ首長国連邦 → オマーン →（アラビア海）→ インド → バングラデシュ → ミャンマー → 中国 → 台湾</span></div>
+          <div class="row"><span class="k">南回帰線</span><span class="v">チリ → アルゼンチン → パラグアイ → ブラジル →（大西洋）→ ナミビア → ボツワナ → 南アフリカ → モザンビーク →（モザンビーク海峡）→ マダガスカル →（インド洋）→ オーストラリア</span></div>
+          <div class="row"><span class="k">東経0度</span><span class="v">イギリス → フランス → スペイン →（地中海）→ アルジェリア → マリ → ブルキナファソ → トーゴ → ガーナ →（大西洋）→ 南極</span></div>
+          <div class="row"><span class="k">180度</span><span class="v">ロシア →（太平洋）→ フィジー → 南極</span></div>
+          <div class="row"><span class="k">海で区切る</span><span class="v">途中の海（大西洋、インド洋、地中海など）を<strong>必ず挟んで</strong>言ってください。「大西洋を渡ったら、次はアフリカの西の端」のように<strong>海を区切りに使うと、国の抜けに気づけます</strong>。区切りの間の国の数が毎回同じかどうかで確かめられるからです</span></div>
+          <div class="row"><span class="k">かすめるだけ</span><span class="v"><strong>チャド</strong>は北回帰線を<strong>約0.05度（数km）</strong>だけ、<strong>トーゴ</strong>は東経0度を<strong>約0.4度</strong>だけかすめます。地図の上ではほとんど見えませんが、線の上にある国として数えます</span></div>
+          <div class="row"><span class="k">北回帰線</span><span class="v">5本のうち<strong>陸を通る距離がいちばん長い</strong>線です（サハラ砂漠とアラビア半島を横断する）。西サハラでは、<strong>モロッコが実効支配する西側</strong>と、<strong>ポリサリオ戦線が実効支配する東側</strong>の両方を通ります（§08）</span></div>
+          <div class="row"><span class="k">回帰線の緯度</span><span class="v"><strong>回帰線の緯度は一定ではありません。</strong>地軸の傾きと同じ値で、2026年は<strong>約23.44度</strong>、いまは<strong>1世紀に約0.013度ずつ小さく</strong>なっています（国際天文学連合の式による平均値）。<br>チャドはこの線にぎりぎりかかる国です。ただし、チャドの北の端と2026年の回帰線の差は<strong>約1km</strong>で、この回で使った縮尺1:1000万のデータの位置の精度（数km）より小さい値です。<strong>チャドが入るかどうかは、どの年の回帰線を使うかだけでなく、どのデータを使うかでも変わります</strong>。この教材の「線の上の国」は、このデータで数えた結果です</span></div>
+          <div class="row"><span class="k">180度と日付変更線</span><span class="v"><strong>180度の経線と日付変更線は同じではありません。</strong>日付変更線は、1つの国の中で日付が分かれないよう、ロシアの東端やキリバス・サモアのまわりで<strong>折れ曲がって</strong>います</span></div>
+          <div class="row"><span class="k">数え方</span><span class="v">縮尺1:1000万のデータ（Natural Earth v5.1.2）で「<strong>線が陸地にかかる国</strong>」を計算したものです。小さな島は形が簡略化されているので、この縮尺で陸にかからない国は入っていません。<strong>領海まで含めると、キリバスやモルディブ（赤道）などが加わります</strong></span></div>
+          <div class="box principle" style="margin:12px 0 0"><span class="lab">並べる向きを固定する</span>
+          <p>赤道と回帰線は<strong>いつも西から東</strong>、経線は<strong>いつも北から南</strong>。第5回で「太陽から外へ」を固定したのと同じ理由です——向きが毎回同じなら、思い出すときの足場が1つで済みます。<strong>東へ進む向きは、地球が回る向き</strong>でもあります。</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="anchors">
+      <div class="sec-head"><span class="idx">06</span><h2>錨の11か国</h2></div>
+      <p>面積の大きい国を先に打ち込んでおくと、残りの国は「<strong>どの錨の隣か</strong>」で置けるようになります。順番は、太陽系で軌道の順に並べたのと同じく<strong>測れる数</strong>——<strong>中心の経度で、東経0度から東回り</strong>です。</p>
+      <div class="mod map-view has-globe" data-grid="equi" data-lon="we" data-open-label="ピン" data-globe="../image/memoryverse/earth-anchors.png?v=r85">
+        <div class="mod-h"><span class="no">錨の11か国</span><span class="ttl">大きな国を先に打ち込む</span><span class="tag">ANCHOR COUNTRIES</span></div>
+        <div class="mod-b">
+          <div class="vsw" role="group" aria-label="表示の切り替え" hidden>
+            <button type="button" class="vsw-b is-on" data-view="map" aria-pressed="true">展開図</button>
+            <button type="button" class="vsw-b" data-view="globe" aria-pressed="false">球</button>
+          </div>
+          <div class="orbit"><svg class="grid" aria-hidden="true" preserveAspectRatio="none"></svg><svg class="links" aria-hidden="true" preserveAspectRatio="none"></svg><div class="stat geo" data-n="1" data-side="left" data-x="0.5075" data-y="0.3439" data-lat="28.1" data-lon="2.7"><i class="n">1</i><b>アルジェリア</b><span class="v">東経0度が通る</span></div><div class="stat geo" data-n="2" data-side="down" data-x="0.5656" data-y="0.5161" data-lat="-2.9" data-lon="23.6"><i class="n">2</i><b>コンゴ民主共和国</b><span class="v">赤道が通る</span></div><div class="stat geo" data-n="3" data-side="left" data-x="0.6869" data-y="0.2322" data-lat="48.2" data-lon="67.3"><i class="n">3</i><b>カザフスタン</b><span class="v">カスピ海の東</span></div><div class="stat geo" data-n="4" data-side="down" data-x="0.7211" data-y="0.3728" data-lat="22.9" data-lon="79.6"><i class="n">4</i><b>インド</b><span class="v">北回帰線が通る</span></div><div class="stat geo" data-n="5" data-side="up" data-x="0.7761" data-y="0.1556" data-lat="62.0" data-lon="99.4"><i class="n">5</i><b>ロシア</b><span class="v">180度の経線が通る</span></div><div class="stat geo" data-n="6" data-side="right" data-x="0.7883" data-y="0.2967" data-lat="36.6" data-lon="103.8"><i class="n">6</i><b>中国</b><span class="v">北回帰線が通る</span></div><div class="stat geo" data-n="7" data-x="0.8733" data-y="0.6428" data-lat="-25.7" data-lon="134.4"><i class="n">7</i><b>オーストラリア</b><span class="v">南回帰線が通る</span></div><div class="stat geo" data-n="8" data-side="down" data-x="0.2264" data-y="0.2806" data-lat="39.5" data-lon="-98.5"><i class="n">8</i><b>アメリカ合衆国</b><span class="v">本土は北緯30〜60度</span></div><div class="stat geo" data-n="9" data-side="left" data-x="0.2233" data-y="0.1672" data-lat="59.9" data-lon="-99.6"><i class="n">9</i><b>カナダ</b><span class="v">北極海の島々まで</span></div><div class="stat geo" data-n="10" data-side="left" data-x="0.3189" data-y="0.6961" data-lat="-35.3" data-lon="-65.2"><i class="n">10</i><b>アルゼンチン</b><span class="v">南回帰線が通る</span></div><div class="stat geo" data-n="11" data-side="left" data-x="0.3525" data-y="0.5600" data-lat="-10.8" data-lon="-53.1"><i class="n">11</i><b>ブラジル</b><span class="v">赤道と南回帰線が通る</span></div><div class="core"><button type="button" class="img-btn" aria-expanded="false"><figure class="planet-img"><div class="orb"><div class="frame"><img class="map-img" src="../image/memoryverse/earth-anchors.png" alt="全球の展開図。面積の大きい11か国を青で塗ったもの" loading="lazy" decoding="async"></div></div><figcaption>面積の大きい11か国（南極とグリーンランドを除く）を青<br>線は経度・緯度とも30度ごと（狭い画面は60度ごと）<br>Natural Earth v5.1.2 から本教材が作成</figcaption></figure><span class="hint"><span class="h-c">クリックでピンを開く</span><span class="h-o">クリックで閉じる</span></span></button></div></div>
+          <div class="globe" hidden>
+            <div class="globe-stage"><canvas class="globe-cv"></canvas><p class="globe-fail" hidden>球を表示できませんでした。展開図でご覧ください。</p></div>
+            <div class="globe-ctl">
+              <button type="button" class="globe-b globe-home">基準に戻す</button>
+              <button type="button" class="globe-b globe-open" aria-pressed="false">ピンを開く</button>
+            </div>
+            <ol class="globe-list" hidden></ol>
+            <p class="globe-note">覚えるのは展開図のほうです。<strong>ロシアとカナダを正面に出して</strong>、ブラジルやコンゴ民主共和国を正面に出したときと見比べてください。展開図ほど大きな差はありません（§07）。球を上に倒して<strong>北極の上から見ると、ロシアとカナダは北極海をはさんで向かい合っています</strong>。展開図では左右の両側に離れている2か国です。</p>
+            <p class="globe-cap">面積の大きい11か国（南極とグリーンランドを除く）を青（正距円筒・2048×1024・左端は西経180度）<br>線は経度・緯度とも30度ごと<br>Natural Earth v5.1.2 から本教材が作成</p>
+          </div>
+          <div class="row"><span class="k">11か国</span><span class="v">
+          <div class="table-scroll"><table class="mini-table">
+            <tr><th style="width:5%">順</th><th style="width:17%">国</th><th style="width:17%">中心</th><th style="width:10%">面積（万km²）</th><th style="width:22%">主にある升目</th><th>形の手がかり</th></tr>
+            <tr><td>1</td><td><strong>アルジェリア</strong></td><td>北28.0° 東2.7°</td><td>231</td><td>北緯0〜30度・東経0〜30度（北と西は線を越える）</td><td>地中海に面し、南のサハラへ広がる扇形。<strong>東経0度が通る</strong></td></tr>
+            <tr><td>2</td><td><strong>コンゴ民主共和国</strong></td><td>南2.9° 東23.6°</td><td>233</td><td>赤道をまたぐ2段・東経0〜30度</td><td>アフリカの真ん中。大西洋へは細い口だけ。<strong>赤道が通る</strong></td></tr>
+            <tr><td>3</td><td><strong>カザフスタン</strong></td><td>北48.4° 東67.3°</td><td>271</td><td>北緯30〜60度・東経30〜90度</td><td>カスピ海の東、ロシアのすぐ南の横長</td></tr>
+            <tr><td>4</td><td><strong>インド</strong></td><td>北22.8° 東79.6°</td><td>315</td><td>北緯0〜30度・東経60〜90度</td><td>インド洋へ突き出す逆三角形。<strong>北回帰線が通る</strong></td></tr>
+            <tr><td>5</td><td><strong>ロシア</strong></td><td>北66.0° 東95.7°</td><td>1698</td><td>北の2段、東経30度付近から180度を越えるまで</td><td>最北の段を東西に占める。<strong>180度が通る</strong></td></tr>
+            <tr><td>6</td><td><strong>中国</strong></td><td>北36.7° 東103.4°</td><td>938</td><td>北緯30〜60度と0〜30度・東経90〜120度が本体</td><td>ロシアとインドのあいだ。<strong>北回帰線が通る</strong></td></tr>
+            <tr><td>7</td><td><strong>オーストラリア</strong></td><td>南25.8° 東134.3°</td><td>769</td><td>南緯0〜30度・東経120〜150度</td><td>大陸まるごと1国。<strong>南回帰線が通る</strong></td></tr>
+            <tr><td>8</td><td><strong>アメリカ合衆国</strong></td><td>北44.8° 西103.7°</td><td>946</td><td>本土は北緯30〜60度・西経60〜120度</td><td>本土は横長。北西の端にアラスカ、太平洋にハワイ</td></tr>
+            <tr><td>9</td><td><strong>カナダ</strong></td><td>北60.4° 西96.5°</td><td>995</td><td>北緯30〜90度・西経60〜150度</td><td>北アメリカの北半分と北極海の島々</td></tr>
+            <tr><td>10</td><td><strong>アルゼンチン</strong></td><td>南34.7° 西64.8°</td><td>278</td><td>南緯30〜60度・西経60〜90度</td><td>南アメリカの南に細長く、南端まで。<strong>南回帰線が通る</strong></td></tr>
+            <tr><td>11</td><td><strong>ブラジル</strong></td><td>南10.6° 西53.2°</td><td>847</td><td>赤道〜南緯30度・西経30〜60度（西は75度まで）</td><td>南アメリカの東半分。<strong>赤道と南回帰線の両方が通る</strong></td></tr>
+          </table></div>
+          <p style="font-size:12.5px;color:var(--ink-faint);margin:2px 0 0">中心は、国の形を細かい面に分け、各面の向きを表す単位ベクトルを面積で重みづけして平均した<strong>球面上の重心</strong>です（Natural Earth v5.1.2 から計算）。<strong>アメリカ合衆国の中心がカナダより西に出る</strong>のは、アラスカとハワイを含むためです。<strong>表の中心は計算値、地図のピンは読みやすさのために置いた位置</strong>です（アメリカ合衆国のピンは本土の中ほど）。面積は楕円体の上で計算した値です。</p>
+          </span></div>
+          <div class="row"><span class="k">なぜ11か国か</span><span class="v"><strong>上位9か国</strong>（ロシア・カナダ・アメリカ合衆国・中国・ブラジル・オーストラリア・インド・アルゼンチン・カザフスタン）は、どの資料でも顔ぶれが変わりません。<strong>10番目は資料で入れ替わります</strong>——国の公式の面積ではアルジェリア、Natural Earth の線で測るとコンゴ民主共和国です。差が小さい（この計算では約1.6万km²）ので、<strong>両方を置きます</strong>。その結果、アフリカの北と真ん中に錨ができます。<br>アメリカ合衆国と中国の順も、湖や沿岸の水域を含めるかで入れ替わります。<strong>この回では順位そのものを覚えず、位置と大きさの桁を覚えてください</strong></span></div>
+          <div class="row"><span class="k">どれだけ覆うか</span><span class="v">11か国で、南極を除く陸地（約1億3,447万km²）の<strong>約56%</strong>。上位9か国だけでも<strong>約52%</strong>です。錨を置けば、陸の半分以上は埋まります。<br><span style="font-size:12.5px;color:var(--ink-faint)">南極とグリーンランド（デンマークの自治領）は国ではないので除いています。これは Natural Earth の線から本教材が計算した値で、<strong>国の公式統計とは一致しません</strong>。</span></span></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="cos">
+      <div class="sec-head"><span class="idx">07</span><h2>cos φ ― 高緯度は横に伸びる</h2></div>
+      <p>第4回の共鳴、第5回の太陽風にあたる、<strong>地球の回の最初の横断する軸</strong>です。1つの式で、展開図の歪みと（次の回の）日射の強さの両方が説明できます。</p>
+      <h3>なぜ横に伸びるのか</h3>
+      <p>地球の半径を \(R\) とすると、赤道1周の長さは \(2\pi R\) です。緯度 \(\varphi\) の緯線は、地軸のまわりを半径 \(R\cos\varphi\) で回る輪なので、1周は赤道の \(\cos\varphi\) 倍しかありません。ところが展開図では、<strong>どの緯線も赤道と同じ長さの横線</strong>に引かれています。だから東西の向きだけが次の倍率で伸びます。</p>
+      \[ k(\varphi)=\frac{2\pi R}{2\pi R\cos\varphi}=\frac{1}{\cos\varphi} \]
+      <p><strong>南北は伸びません。</strong>正距円筒図法では、経線に沿った1度の間隔はどこでも同じ長さに描かれているからです。伸びるのは東西だけなので、<strong>面積も \(1/\cos\varphi\) 倍</strong>に見えます。</p>
+      <figure class="fig"><div class="fig-scroll">
+<svg viewBox="0 0 640 360" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="緯度と、展開図で東西に伸びる倍率（1/cos φ）のグラフ">
+<line x1="60" y1="310.0" x2="600" y2="310.0" stroke="var(--line)" stroke-width="1"/>
+<text x="52" y="313.5" font-size="10" fill="var(--ink-faint)" text-anchor="end">1倍</text>
+<line x1="60" y1="256.0" x2="600" y2="256.0" stroke="var(--line)" stroke-width="1"/>
+<text x="52" y="259.5" font-size="10" fill="var(--ink-faint)" text-anchor="end">2倍</text>
+<line x1="60" y1="202.0" x2="600" y2="202.0" stroke="var(--line)" stroke-width="1"/>
+<text x="52" y="205.5" font-size="10" fill="var(--ink-faint)" text-anchor="end">3倍</text>
+<line x1="60" y1="148.0" x2="600" y2="148.0" stroke="var(--line)" stroke-width="1"/>
+<text x="52" y="151.5" font-size="10" fill="var(--ink-faint)" text-anchor="end">4倍</text>
+<line x1="60" y1="94.0" x2="600" y2="94.0" stroke="var(--line)" stroke-width="1"/>
+<text x="52" y="97.5" font-size="10" fill="var(--ink-faint)" text-anchor="end">5倍</text>
+<line x1="60" y1="40.0" x2="600" y2="40.0" stroke="var(--line)" stroke-width="1"/>
+<text x="52" y="43.5" font-size="10" fill="var(--ink-faint)" text-anchor="end">6倍</text>
+<line x1="60.0" y1="310" x2="60.0" y2="315" stroke="var(--line-strong)"/>
+<text x="60.0" y="328" font-size="10" fill="var(--ink-faint)" text-anchor="middle">0°</text>
+<line x1="127.5" y1="310" x2="127.5" y2="315" stroke="var(--line-strong)"/>
+<text x="127.5" y="328" font-size="10" fill="var(--ink-faint)" text-anchor="middle">10°</text>
+<line x1="195.0" y1="310" x2="195.0" y2="315" stroke="var(--line-strong)"/>
+<text x="195.0" y="328" font-size="10" fill="var(--ink-faint)" text-anchor="middle">20°</text>
+<line x1="262.5" y1="310" x2="262.5" y2="315" stroke="var(--line-strong)"/>
+<text x="262.5" y="328" font-size="10" fill="var(--ink-faint)" text-anchor="middle">30°</text>
+<line x1="330.0" y1="310" x2="330.0" y2="315" stroke="var(--line-strong)"/>
+<text x="330.0" y="328" font-size="10" fill="var(--ink-faint)" text-anchor="middle">40°</text>
+<line x1="397.5" y1="310" x2="397.5" y2="315" stroke="var(--line-strong)"/>
+<text x="397.5" y="328" font-size="10" fill="var(--ink-faint)" text-anchor="middle">50°</text>
+<line x1="465.0" y1="310" x2="465.0" y2="315" stroke="var(--line-strong)"/>
+<text x="465.0" y="328" font-size="10" fill="var(--ink-faint)" text-anchor="middle">60°</text>
+<line x1="532.5" y1="310" x2="532.5" y2="315" stroke="var(--line-strong)"/>
+<text x="532.5" y="328" font-size="10" fill="var(--ink-faint)" text-anchor="middle">70°</text>
+<line x1="600.0" y1="310" x2="600.0" y2="315" stroke="var(--line-strong)"/>
+<text x="600.0" y="328" font-size="10" fill="var(--ink-faint)" text-anchor="middle">80°</text>
+<text x="600" y="346" font-size="10" fill="var(--ink-faint)" text-anchor="end">緯度 φ →</text>
+<line x1="60" y1="310" x2="600" y2="310" stroke="var(--line-strong)"/><line x1="60" y1="40" x2="60" y2="310" stroke="var(--line-strong)"/>
+<polyline points="60.0,310.0 61.7,310.0 63.4,310.0 65.1,310.0 66.8,310.0 68.4,310.0 70.1,310.0 71.8,310.0 73.5,310.0 75.2,310.0 76.9,309.9 78.6,309.9 80.2,309.9 81.9,309.9 83.6,309.9 85.3,309.9 87.0,309.9 88.7,309.9 90.4,309.8 92.1,309.8 93.8,309.8 95.4,309.8 97.1,309.8 98.8,309.7 100.5,309.7 102.2,309.7 103.9,309.7 105.6,309.6 107.2,309.6 108.9,309.6 110.6,309.5 112.3,309.5 114.0,309.5 115.7,309.4 117.4,309.4 119.1,309.4 120.8,309.3 122.4,309.3 124.1,309.2 125.8,309.2 127.5,309.2 129.2,309.1 130.9,309.1 132.6,309.0 134.2,309.0 135.9,308.9 137.6,308.9 139.3,308.8 141.0,308.8 142.7,308.7 144.4,308.7 146.1,308.6 147.8,308.6 149.4,308.5 151.1,308.5 152.8,308.4 154.5,308.3 156.2,308.3 157.9,308.2 159.6,308.2 161.2,308.1 162.9,308.0 164.6,308.0 166.3,307.9 168.0,307.8 169.7,307.8 171.4,307.7 173.1,307.6 174.8,307.5 176.4,307.5 178.1,307.4 179.8,307.3 181.5,307.2 183.2,307.1 184.9,307.1 186.6,307.0 188.2,306.9 189.9,306.8 191.6,306.7 193.3,306.6 195.0,306.5 196.7,306.4 198.4,306.3 200.1,306.3 201.8,306.2 203.4,306.1 205.1,306.0 206.8,305.9 208.5,305.8 210.2,305.7 211.9,305.6 213.6,305.4 215.2,305.3 216.9,305.2 218.6,305.1 220.3,305.0 222.0,304.9 223.7,304.8 225.4,304.7 227.1,304.5 228.8,304.4 230.4,304.3 232.1,304.2 233.8,304.0 235.5,303.9 237.2,303.8 238.9,303.7 240.6,303.5 242.2,303.4 243.9,303.3 245.6,303.1 247.3,303.0 249.0,302.8 250.7,302.7 252.4,302.6 254.1,302.4 255.8,302.3 257.4,302.1 259.1,302.0 260.8,301.8 262.5,301.6 264.2,301.5 265.9,301.3 267.6,301.2 269.2,301.0 270.9,300.8 272.6,300.7 274.3,300.5 276.0,300.3 277.7,300.1 279.4,300.0 281.1,299.8 282.8,299.6 284.4,299.4 286.1,299.2 287.8,299.1 289.5,298.9 291.2,298.7 292.9,298.5 294.6,298.3 296.2,298.1 297.9,297.9 299.6,297.7 301.3,297.5 303.0,297.3 304.7,297.0 306.4,296.8 308.1,296.6 309.8,296.4 311.4,296.2 313.1,295.9 314.8,295.7 316.5,295.5 318.2,295.2 319.9,295.0 321.6,294.8 323.2,294.5 324.9,294.3 326.6,294.0 328.3,293.8 330.0,293.5 331.7,293.2 333.4,293.0 335.1,292.7 336.8,292.4 338.4,292.2 340.1,291.9 341.8,291.6 343.5,291.3 345.2,291.0 346.9,290.8 348.6,290.5 350.2,290.2 351.9,289.9 353.6,289.6 355.3,289.2 357.0,288.9 358.7,288.6 360.4,288.3 362.1,288.0 363.8,287.6 365.4,287.3 367.1,287.0 368.8,286.6 370.5,286.3 372.2,285.9 373.9,285.6 375.6,285.2 377.2,284.8 378.9,284.4 380.6,284.1 382.3,283.7 384.0,283.3 385.7,282.9 387.4,282.5 389.1,282.1 390.8,281.7 392.4,281.3 394.1,280.9 395.8,280.4 397.5,280.0 399.2,279.6 400.9,279.1 402.6,278.7 404.2,278.2 405.9,277.7 407.6,277.3 409.3,276.8 411.0,276.3 412.7,275.8 414.4,275.3 416.1,274.8 417.8,274.3 419.4,273.7 421.1,273.2 422.8,272.7 424.5,272.1 426.2,271.6 427.9,271.0 429.6,270.4 431.2,269.9 432.9,269.3 434.6,268.7 436.3,268.1 438.0,267.4 439.7,266.8 441.4,266.2 443.1,265.5 444.8,264.9 446.4,264.2 448.1,263.5 449.8,262.8 451.5,262.1 453.2,261.4 454.9,260.7 456.6,259.9 458.2,259.2 459.9,258.4 461.6,257.6 463.3,256.8 465.0,256.0 466.7,255.2 468.4,254.3 470.1,253.5 471.8,252.6 473.4,251.7 475.1,250.8 476.8,249.9 478.5,249.0 480.2,248.0 481.9,247.1 483.6,246.1 485.2,245.1 486.9,244.0 488.6,243.0 490.3,241.9 492.0,240.8 493.7,239.7 495.4,238.6 497.1,237.4 498.8,236.2 500.4,235.0 502.1,233.8 503.8,232.5 505.5,231.2 507.2,229.9 508.9,228.6 510.6,227.2 512.2,225.8 513.9,224.4 515.6,222.9 517.3,221.4 519.0,219.8 520.7,218.3 522.4,216.7 524.1,215.0 525.8,213.3 527.4,211.6 529.1,209.8 530.8,208.0 532.5,206.1 534.2,204.2 535.9,202.2 537.6,200.2 539.2,198.1 540.9,196.0 542.6,193.8 544.3,191.6 546.0,189.3 547.7,186.9 549.4,184.4 551.1,181.9 552.8,179.3 554.4,176.6 556.1,173.9 557.8,171.0 559.5,168.1 561.2,165.1 562.9,161.9 564.6,158.7 566.2,155.4 567.9,151.9 569.6,148.3 571.3,144.6 573.0,140.8 574.7,136.8 576.4,132.7 578.1,128.4 579.8,123.9 581.4,119.3 583.1,114.5 584.8,109.5 586.5,104.3 588.2,98.8 589.9,93.1 591.6,87.2 593.2,81.0 594.9,74.5 596.6,67.7 598.3,60.5 600.0,53.0" fill="none" stroke="var(--accent)" stroke-width="2"/>
+<circle cx="60.0" cy="310.0" r="4" fill="var(--accent)" stroke="#fff" stroke-width="1.2"/>
+<text x="68.0" y="286.0" font-size="12" fill="var(--ink)">1.00倍</text>
+<text x="68.0" y="300.0" font-size="10" fill="var(--ink-faint)">0° 赤道</text>
+<circle cx="262.5" cy="301.9" r="4" fill="var(--accent)" stroke="#fff" stroke-width="1.2"/>
+<text x="256.5" y="277.9" font-size="12" fill="var(--ink)" text-anchor="end">1.15倍</text>
+<text x="256.5" y="291.9" font-size="10" fill="var(--ink-faint)" text-anchor="end">30° カイロ</text>
+<circle cx="363.8" cy="287.9" r="4" fill="var(--accent)" stroke="#fff" stroke-width="1.2"/>
+<text x="357.8" y="263.9" font-size="12" fill="var(--ink)" text-anchor="end">1.41倍</text>
+<text x="357.8" y="277.9" font-size="10" fill="var(--ink-faint)" text-anchor="end">45° 北海道の北端</text>
+<circle cx="465.0" cy="256.0" r="4" fill="var(--accent)" stroke="#fff" stroke-width="1.2"/>
+<text x="459.0" y="232.0" font-size="12" fill="var(--ink)" text-anchor="end">2.00倍</text>
+<text x="459.0" y="246.0" font-size="10" fill="var(--ink-faint)" text-anchor="end">60° オスロ・ヘルシンキ</text>
+<circle cx="532.5" cy="206.3" r="4" fill="var(--accent)" stroke="#fff" stroke-width="1.2"/>
+<text x="526.5" y="182.3" font-size="12" fill="var(--ink)" text-anchor="end">2.92倍</text>
+<text x="526.5" y="196.3" font-size="10" fill="var(--ink-faint)" text-anchor="end">70° ノルウェー北部</text>
+<circle cx="600.0" cy="53.0" r="4" fill="var(--accent)" stroke="#fff" stroke-width="1.2"/>
+<text x="590.0" y="57.0" font-size="12" fill="var(--ink)" text-anchor="end">5.76倍</text>
+<text x="590.0" y="71.0" font-size="10" fill="var(--ink-faint)" text-anchor="end">80° 北極海の島々</text>
+<text x="70" y="30" font-size="10.5" fill="var(--ink-faint)">南北は伸びない。東西だけが 1/cos φ 倍</text>
+</svg>
+      </div><figcaption>緯度と、展開図で東西に伸びる倍率 \(1/\cos\varphi\)。北緯60度で2倍、80度では約5.8倍になり、極（90度）では限りなく大きくなる。本教材で作成。</figcaption></figure>
+      <h3>錨の国は、展開図でどれだけ大きく見えるか</h3>
+      <p>赤道の縮尺で測った展開図の上の面積を、楕円体の上での実際の面積で割った値です。国の中の緯度ごとに \(1/\cos\varphi\) が違うので、国全体では「その国の陸がある緯度の平均」のような値になります。</p>
+      <div class="table-scroll">
+      <table class="mini-table">
+        <tr><th style="width:28%">国・地域</th><th style="width:22%">この回の展開図（正距円筒）</th><th style="width:22%">メルカトル図法</th><th>手がかり</th></tr>
+        <tr><td><strong>グリーンランド</strong></td><td>3.8倍</td><td>16.3倍</td><td>ほぼ全体が北緯60度より北</td></tr>
+        <tr><td><strong>ロシア</strong></td><td>2.14倍</td><td>4.9倍</td><td>中心が北緯66度</td></tr>
+        <tr><td><strong>カナダ</strong></td><td>2.11倍</td><td>5.1倍</td><td>中心が北緯60度</td></tr>
+        <tr><td>カザフスタン</td><td>1.50倍</td><td>—</td><td>北緯48度前後</td></tr>
+        <tr><td>アメリカ合衆国</td><td>1.46倍</td><td>—</td><td>アラスカが倍率を上げている</td></tr>
+        <tr><td>中国</td><td>1.26倍</td><td>—</td><td></td></tr>
+        <tr><td>アルゼンチン</td><td>1.24倍</td><td>—</td><td>南半球でも同じ式</td></tr>
+        <tr><td>アルジェリア</td><td>1.14倍</td><td>1.29倍</td><td></td></tr>
+        <tr><td>オーストラリア</td><td>1.12倍</td><td>—</td><td></td></tr>
+        <tr><td>インド</td><td>1.10倍</td><td>—</td><td></td></tr>
+        <tr><td>ブラジル</td><td>1.03倍</td><td>—</td><td>赤道のすぐ南</td></tr>
+        <tr><td><strong>コンゴ民主共和国</strong></td><td>1.01倍</td><td>1.01倍</td><td>赤道の上。どちらの図法でもほぼ実物大</td></tr>
+      </table>
+      </div>
+      <p style="font-size:13px;color:var(--ink-faint)">Natural Earth v5.1.2（1:1000万）から本教材が計算した値。メルカトル図法は EPSG:3395 で、南北85度より外を切り捨てて計算しました。メルカトルの欄の「—」は計算していない（この回で使わない）という意味です。</p>
+      <div class="box warn"><span class="lab">グリーンランドとコンゴ民主共和国</span>
+      <p>実際の面積は<strong>コンゴ民主共和国のほうが約1.08倍広い</strong>のに、この回の展開図では<strong>グリーンランドが約3.5倍</strong>、メルカトル図法なら<strong>約15倍</strong>に見えます。展開図だけで大きさを覚えると、高緯度の国を必ず大きく覚えてしまいます。</p>
+      <p style="margin-top:8px"><strong>正距円筒を選んだのは、歪みが東西だけで、1本の式で直せるから</strong>です。メルカトル図法は、角度を正しく保つために南北にも同じだけ伸ばすので、<strong>面積は \(1/\cos^2\varphi\) 倍</strong>になり、緯線の間隔も高緯度ほど広がって不揃いになります（升目が正方形でなくなる）。頭の中で直すには、正距円筒のほうが1段簡単です。</p></div>
+      <div class="box teach"><span class="lab">次の回へ——同じ cos φ が、日射の強さとして出てくる</span>
+      <p>春分・秋分の正午に、<strong>同じ広さの地面に当たる日射の強さは \(\cos\varphi\) に比例</strong>します。緯度 \(\varphi\) の地面は、真上から来る光に対して角度 \(\varphi\) だけ傾いているので、同じ太さの光の束がより広い地面に広がるからです。</p>
+      <p style="margin-top:8px">展開図の伸びと日射の弱まりは、<strong>どちらも球の形から出てくる同じ cos φ</strong> です。前者は緯線の輪の半径が \(\cos\varphi\) 倍に縮むこと、後者は地面が光に対して傾くこと。この回では<strong>歪みを直す式</strong>として、2-3（気候の回）では<strong>日射と気温の差</strong>として、同じ式が出てきます。</p></div>
+    </section>
+
+    <section id="borders">
+      <div class="sec-head"><span class="idx">08</span><h2>国境の描き方</h2></div>
+      <p>国の数を「約200」と書いたのは、<strong>数え方で数が変わる</strong>からです。国境の線も同じで、誰が何を根拠に引くかで変わります。この教材は、次の3つの欄を分けて書きます。</p>
+      <div class="table-scroll">
+      <table class="mini-table">
+        <tr><th style="width:18%">欄</th><th style="width:40%">何を書くか</th><th>性質</th></tr>
+        <tr><td><strong>実効支配</strong></td><td>その地域を実際に治めている政府。<strong>地図の線はこれで引く</strong></td><td>観察できる事実。ただし動くので、<strong>線にも日付を添える</strong></td></tr>
+        <tr><td><strong>主張</strong></td><td>どの政府が、その地域を自国の領土だと言っているか</td><td>分かっている事実（公式の声明や法律で確かめられる）</td></tr>
+        <tr><td><strong>承認</strong></td><td>どれだけの国がその主張や国家を認めているか</td><td>時点で変わる数。<strong>この回では扱わず、地域の回で</strong>出典と日付を添えて書く</td></tr>
+      </table>
+      </div>
+      <div class="box principle"><span class="lab">領土の争いを3分類に入れない理由</span>
+      <p>3分類（分かっていること／まだ確かめられていない／まだ誰も見ていない）は、<strong>「なぜ分からないか」を分ける仕組み</strong>でした。手がかりはあるが決め手がない、手がかりがそもそも無い——どちらも、観測を重ねれば答えに近づく問いです。</p>
+      <p style="margin-top:8px">領土の争いは違います。上の3つの欄は、<strong>どれも「分かっていること」</strong>です。誰が治めているか、誰が何を主張しているかは確かめられます。決着していないのは<strong>政治と法の問題</strong>で、観測を重ねても決まりません。3分類に入れると、<strong>発見を待つ正解があるように見えてしまう</strong>ので、入れません。</p></div>
+
+      <h3>この回の地図の線と、実効支配のずれ</h3>
+      <p>地図の元データ（Natural Earth v5.1.2 の既定の線）は、<strong>実効支配で一貫していません</strong>。係争地の中の町の位置を国の形に当てて、どちらの国の中に描かれているかを確かめました。</p>
+      <div class="table-scroll">
+      <table class="mini-table">
+        <tr><th style="width:24%">地域</th><th style="width:34%">この地図での描かれ方</th><th>実効支配との関係</th></tr>
+        <tr><td colspan="3"><strong>実効支配と合っている</strong></td></tr>
+        <tr><td>クリミア</td><td>ロシアの中（斜線）。シンフェロポリで確認</td><td>2014年からロシアが支配。合っている</td></tr>
+        <tr><td>西サハラ</td><td>西側（ラーユーン）はモロッコの中、東側（ティファリティ）は別の区域（斜線）</td><td>西側はモロッコ、東側はポリサリオ戦線が支配。合っている</td></tr>
+        <tr><td>カシミール</td><td>インド（スリナガル）／パキスタン（ギルギット）／中国（アクサイチン）に3分割（斜線）</td><td>3か国がそれぞれの部分を支配。合っている</td></tr>
+        <tr><td>台湾</td><td>別の区域として独立（斜線）</td><td>台湾の政府が治めている。合っている</td></tr>
+        <tr><td>コソボ・ソマリランド・北キプロス</td><td>それぞれ別の区域として独立（斜線）</td><td>それぞれの政府が治めている。合っている</td></tr>
+        <tr><td colspan="3"><strong>実効支配とずれている</strong></td></tr>
+        <tr><td>ウクライナの東部・南部</td><td>ウクライナの中。ドネツク・ルハンスクの両市のまわりだけ斜線、マリウポリ・メリトポリは斜線なし</td><td>ドネツク・ルハンスクの両市は2014年から、マリウポリ・メリトポリは2022年から、ロシア側が支配している。<strong>ずれている</strong></td></tr>
+        <tr><td>アブハジア・南オセチア</td><td>ジョージアの中（斜線）。スフミ・ツヒンヴァリで確認</td><td>ジョージアの政府は治めていない（ロシアが後ろ盾の当局が支配）。<strong>ずれている</strong></td></tr>
+        <tr><td>沿ドニエストル</td><td>モルドバの中（斜線）。ティラスポリで確認</td><td>モルドバの政府は治めていない。<strong>ずれている</strong></td></tr>
+      </table>
+      </div>
+      <p><strong>ずれている地域は、地域の回で出典と日付を添えて描き直します。</strong>前線が動いている地域は、世界全体の地図の線では追いきれないからです。この回の地図は、あくまで「置き場所の枠」として使ってください。</p>
+      <p style="font-size:13px;color:var(--ink-faint)">ずれがあっても、<strong>錨の11か国の顔ぶれと並びは変わらない</strong>ことを確かめました。ずれている地域はどれも11か国の下限（約231万km²）よりずっと小さく、極端な場合としてウクライナ全土（約57万km²）をロシアに足して計算しても、ロシアの中心は東経95.7度から92.8度へ動くだけで、インド（東79.6度）と中国（東103.4度）のあいだという並びは変わりません。</p>
+
+      <h3>日本に関わる3か所</h3>
+      <div class="table-scroll">
+      <table class="mini-table">
+        <tr><th style="width:16%">場所</th><th style="width:17%">実効支配</th><th style="width:20%">主張</th><th>この回の地図での描かれ方</th></tr>
+        <tr><td><strong>北方領土</strong></td><td>ロシア</td><td>日本</td><td>ロシアの中（斜線）。国後島で確認</td></tr>
+        <tr><td><strong>竹島</strong></td><td>韓国</td><td>日本</td><td>この縮尺では描かれない</td></tr>
+        <tr><td><strong>尖閣諸島</strong></td><td>日本</td><td>中国・台湾</td><td>この縮尺では描かれない</td></tr>
+      </table>
+      </div>
+      <div class="box teach"><span class="lab">3か所とも、同じ欄・同じ規則で</span>
+      <p>3か所とも、実効支配・主張の同じ欄に、同じ書き方で置きました。<strong>尖閣諸島だけ書き方を変えない</strong>——日本が治めている場所でも、他国が治めている場所と同じ規則で書くこと——が、基準が一貫しているかどうかの確かめになります。</p></div>
+    </section>
+
+    <section id="menu">
+      <div class="sec-head"><span class="idx">09</span><h2>訓練メニュー</h2></div>
+      <p>1日20分、<strong>2週間</strong>。A 構築12分・B 観察5分・メモ3分。どの日も<strong>想起を先に</strong>取ります——カードを開く前に、白紙に書くか声に出して言ってください。</p>
+      <div class="goals">
+        <ol>
+          <li><b>A 構築（12分）</b><span><strong>最初の3分——毎日、白紙に展開図を描く。</strong>枠（横2・縦1）と30度の升目、赤道と東経0度 → 日本 → 6大陸 → 5つの海、の順です。描き終えたら §04 のカードと照らし、外れた升目に印をつけます。第5回で統合の配置図を毎日描いたのと同じ位置です。<br><strong>残りの9分</strong>——その日のカードについて、①見ずに先に言う → ②カードを開いて照らす → ③外したものだけもう一度言う。</span></li>
+          <li><b>B 観察（5分）</b><span>球で1か所を正面に出し、<strong>展開図で見ていた形とどこが違ったか</strong>を言葉にします。高緯度の国（ロシア・カナダ・グリーンランド・北ヨーロッパ）を選ぶ日を多めにしてください。違いを \(1/\cos\varphi\) で言えたら十分です。</span></li>
+          <li><b>メモ（3分）</b><span>展開図で外した升目、線の上で抜けた国、置けなかった錨を書き留める。翌日のAの最初の3分は、ここに書いたものを最初に確かめてから描き始めます。</span></li>
+        </ol>
+      </div>
+      <div class="table-scroll">
+      <table class="mini-table">
+        <tr><th style="width:12%">日</th><th style="width:44%">第1週：枠・線・錨を1枚ずつ</th><th>第2週：重ねて通す</th></tr>
+        <tr><td><strong>1日目</strong></td><td>教材を読む（40〜50分）。<strong>白紙の展開図を初めて描く</strong></td><td>3枚を続けて。大陸と海 → 5本の線 → 錨</td></tr>
+        <tr><td><strong>2日目</strong></td><td>§04 大陸と海。6大陸の段と列、5つの海</td><td>5本の線を、錨の国に印をつけながら言う（ブラジル・インド・中国…は線と錨の両方に出る）</td></tr>
+        <tr><td><strong>3日目</strong></td><td>§05 赤道と2本の回帰線。<strong>演習2</strong>の前半</td><td>球で東経90度・西経90度・180度を正面に出す。<strong>演習5</strong></td></tr>
+        <tr><td><strong>4日目</strong></td><td>§05 東経0度と180度。<strong>演習2</strong>を通して</td><td>§08 国境の3つの欄と、日本に関わる3か所。<strong>演習6</strong></td></tr>
+        <tr><td><strong>5日目</strong></td><td>§06 錨の11か国を東回りに。<strong>演習3</strong></td><td>3枚を逆の順で（錨 → 線 → 大陸と海）</td></tr>
+        <tr><td><strong>6日目</strong></td><td>§07 cos φ。30・45・60度の倍率。<strong>演習4</strong></td><td>白紙の展開図に、錨の11か国と5本の線を<strong>1枚に重ねて</strong>描く</td></tr>
+        <tr><td><strong>7日目</strong></td><td>1週間ぶんを通して。<strong>演習1</strong>（白紙の展開図の採点）</td><td><strong>演習1</strong>をもう一度。<strong>到達目標①②③</strong>を確かめる</td></tr>
+      </table>
+      </div>
+      <p style="font-size:13px;color:var(--ink-faint)">どの日も、Aの最初の3分は白紙の展開図です。表には書いていませんが、省かないでください。</p>
+      <div class="box warn"><span class="lab">進んでよい条件（2-2へ）</span>
+      <ul>
+        <li><strong>白紙の展開図</strong>——升目を外さずに描けること（演習1で20点以上）</li>
+        <li><strong>5本の線</strong>——どの線も、止まらずに端から端まで言えること</li>
+        <li><strong>錨の11か国</strong>——東回りの順番と、主にある升目が言えること。ロシアとカナダが展開図で約2倍に伸びていることを、式で言えること</li>
+      </ul>
+      <p>3章の地域の回では、この枠の上に地域ごとに国を置いていきます。<strong>枠が揺れたまま進むと、後の回が全部揺れます。</strong>2週間で足りなければ、第1週をもう一度やるほうが近道です。</p></div>
+    </section>
+
+    <section id="drills">
+      <div class="sec-head"><span class="idx">10</span><h2>演習</h2></div>
+      <p>すべて<strong>カード・地図・球を見ずに</strong>答え、答えたあとで開いてください。間違えた項目は控えておき、翌日のAの最初に確かめます。</p>
+
+      <div class="ex">
+        <p class="ex-h"><span class="num">演習1</span>白紙の展開図</p>
+        <p>白紙に横2・縦1の枠を描き、30度ごとの升目を引いてください。赤道と東経0度を濃く引き、<strong>日本</strong>を置き、<strong>6大陸</strong>の輪郭をおおまかに描き、<strong>5つの海</strong>の名前を書き込みます。</p>
+        <details><summary>採点のしかた</summary><div class="ans">
+          <p>§04 のカードと照らします。<strong>22点満点</strong>です。</p>
+          <ul>
+            <li><strong>枠と升目（2点）</strong>——横2・縦1の枠で1点、縦12列・横6段の升目で1点</li>
+            <li><strong>基準の線（2点）</strong>——赤道が中央の横線、東経0度が中央の縦線で各1点</li>
+            <li><strong>日本（1点）</strong>——北緯30〜60度の段・東経120〜150度の列</li>
+            <li><strong>6大陸（12点）</strong>——大陸ごとに、段が合って1点、列が合って1点</li>
+            <li><strong>5つの海（5点）</strong>——正しい場所に名前があれば1点ずつ。太平洋は<strong>左右の両端</strong>に書けていて1点</li>
+          </ul>
+          <p>到達目標①の目安は<strong>20点以上</strong>です。外しやすいのは次の2つです。</p>
+          <ul>
+            <li><strong>南アメリカを北アメリカの真南に描く</strong>——南アメリカは東へずれていて、西端がフロリダとほぼ同じ経度（西経81度）</li>
+            <li><strong>アフリカを東経0度より東だけに描く</strong>——アフリカの西の出っ張り（西端は西経17.5度）は、東経0度の線より西にある。東経0度はガーナを通る</li>
+          </ul></div></details>
+      </div>
+
+      <div class="ex">
+        <p class="ex-h"><span class="num">演習2</span>5本の線の上の国</p>
+        <p>(1) 赤道・北回帰線・南回帰線の上にある国を、<strong>西から東へ</strong>、途中の海も挟んで言ってください。<br>(2) 東経0度と180度の上にある国と地域を、<strong>北から南へ</strong>言ってください。<br>(3) 線を<strong>かすめるだけ</strong>の国が2つあります。どの国が、どの線をかすめますか。</p>
+        <details><summary>解答</summary><div class="ans">
+          <ul>
+            <li><strong>赤道</strong>：エクアドル → コロンビア → ブラジル →（大西洋）→ ガボン → コンゴ共和国 → コンゴ民主共和国 → ウガンダ → ケニア → ソマリア →（インド洋）→ インドネシア</li>
+            <li><strong>北回帰線</strong>：メキシコ → バハマ →（大西洋）→ 西サハラ → モーリタニア → マリ → アルジェリア → ニジェール → リビア → チャド → エジプト → サウジアラビア → アラブ首長国連邦 → オマーン →（アラビア海）→ インド → バングラデシュ → ミャンマー → 中国 → 台湾</li>
+            <li><strong>南回帰線</strong>：チリ → アルゼンチン → パラグアイ → ブラジル →（大西洋）→ ナミビア → ボツワナ → 南アフリカ → モザンビーク → マダガスカル →（インド洋）→ オーストラリア</li>
+            <li><strong>東経0度</strong>：イギリス → フランス → スペイン →（地中海）→ アルジェリア → マリ → ブルキナファソ → トーゴ → ガーナ →（大西洋）→ 南極</li>
+            <li><strong>180度</strong>：ロシア →（太平洋）→ フィジー → 南極</li>
+            <li><strong>(3)</strong> <strong>チャド</strong>が北回帰線を約0.05度（数km）、<strong>トーゴ</strong>が東経0度を約0.4度</li>
+          </ul>
+          <p style="font-size:13px;color:var(--ink-faint)">海の区切りごとに国の数を数えておくと（赤道なら 3・6・1）、抜けに気づけます。</p></div></details>
+      </div>
+
+      <div class="ex">
+        <p class="ex-h"><span class="num">演習3</span>錨の11か国</p>
+        <p>(1) 錨の11か国を、<strong>東経0度から東回り</strong>に言い、それぞれ主にある升目を添えてください。<br>(2) 上位の国を「10か国」ではなく「11か国」にしたのはなぜですか。<br>(3) 11か国で、南極を除く陸地のおよそ何割を覆いますか。</p>
+        <details><summary>解答</summary><div class="ans">
+          <ul>
+            <li><strong>(1)</strong> アルジェリア（北緯0〜30・東経0〜30）→ コンゴ民主共和国（赤道をまたぐ・東経0〜30）→ カザフスタン（北緯30〜60・東経30〜90）→ インド（北緯0〜30・東経60〜90）→ ロシア（北の2段・東経30〜180）→ 中国（北緯0〜60・東経90〜120）→ オーストラリア（南緯0〜30・東経120〜150）→ アメリカ合衆国（北緯30〜60・西経60〜120）→ カナダ（北緯30〜90・西経60〜150）→ アルゼンチン（南緯30〜60・西経60〜90）→ ブラジル（赤道〜南緯30・西経30〜60）</li>
+            <li><strong>(2)</strong> 上位9か国はどの資料でも同じだが、<strong>10番目が資料で入れ替わる</strong>（国の公式面積ではアルジェリア、Natural Earth の線ではコンゴ民主共和国）。差が小さいので両方を置いた。結果として、アフリカの北と真ん中に錨ができる</li>
+            <li><strong>(3)</strong> <strong>約56%</strong>（上位9か国で約52%）。陸の半分以上</li>
+          </ul>
+          <p style="font-size:13px;color:var(--ink-faint)">順位（ロシア・カナダ・アメリカ合衆国・中国…）は採点しません。資料によって入れ替わるからです。</p></div></details>
+      </div>
+
+      <div class="ex">
+        <p class="ex-h"><span class="num">演習4</span>cos φ で直す</p>
+        <p>(1) 北緯30度・45度・60度の国は、この回の展開図で東西に何倍に伸びていますか。<br>(2) グリーンランドとコンゴ民主共和国は、実際はどちらが広いですか。この展開図とメルカトル図法では、それぞれ何倍に見えますか。<br>(3) 覚える面に正距円筒図法を選んだ理由を2つ言ってください。</p>
+        <details><summary>解答</summary><div class="ans">
+          <ul>
+            <li><strong>(1)</strong> 30度で約1.15倍、45度で約1.41倍、60度で<strong>2倍</strong>（\(1/\cos\varphi\)）。南北は伸びない</li>
+            <li><strong>(2)</strong> 実際は<strong>コンゴ民主共和国のほうが約1.08倍広い</strong>。この展開図ではグリーンランドが約3.5倍、メルカトル図法では約15倍に見える</li>
+            <li><strong>(3)</strong> ① 歪みが<strong>東西だけ</strong>で、\(1/\cos\varphi\) の1本の式で頭の中で直せる（メルカトルは南北にも伸ばすので面積が \(1/\cos^2\varphi\) 倍、緯線の間隔も不揃い）。② 緯線と経線が等間隔の直線なので<strong>30度の升目がそのまま読め</strong>、同じ画像を<strong>そのまま球に貼れる</strong></li>
+          </ul></div></details>
+      </div>
+
+      <div class="ex">
+        <p class="ex-h"><span class="num">演習5</span>球を見ずに回す</p>
+        <p>頭の中の球を回して、次の経線を正面に出してください。正面の<strong>中央の縦線</strong>の上に、北から南へ何が並びますか。<br>(1) 東経90度　(2) 西経90度　(3) 180度</p>
+        <details><summary>解答</summary><div class="ans">
+          <ul>
+            <li><strong>(1) 東経90度</strong>：ロシア → モンゴル → 中国 → ブータン → インド → バングラデシュ →（ベンガル湾・インド洋）→ 南極</li>
+            <li><strong>(2) 西経90度</strong>：カナダ → アメリカ合衆国 → メキシコ → グアテマラ → エルサルバドル（わずか）→（太平洋）→ 南極</li>
+            <li><strong>(3) 180度</strong>：ロシア →（太平洋）→ フィジー → 南極</li>
+          </ul>
+          <p>180度を正面に出すと、<strong>正面がほぼ全部海</strong>になります。これが太平洋の広さです。展開図では左右の端に割れていて気づきにくいので、球で確かめてください。</p>
+          <p style="font-size:13px;color:var(--ink-faint)">1:1000万のデータで「線が陸地にかかる国」を計算したものです。エルサルバドルは約0.3度ぶんだけかかります。</p></div></details>
+      </div>
+
+      <div class="ex">
+        <p class="ex-h"><span class="num">演習6</span>国境の欄</p>
+        <p>(1) 日本に関わる3か所（北方領土・竹島・尖閣諸島）について、実効支配と主張を言ってください。<br>(2) 領土の争いを3分類に入れないのはなぜですか。<br>(3) この回の地図の線が、実効支配とずれている場所を1つ挙げてください。</p>
+        <details><summary>解答</summary><div class="ans">
+          <ul>
+            <li><strong>(1)</strong> 北方領土：実効支配ロシア／主張日本。竹島：実効支配韓国／主張日本。尖閣諸島：実効支配日本／主張中国・台湾</li>
+            <li><strong>(2)</strong> 3分類は「なぜ分からないか」を分ける仕組みで、観測を重ねれば答えに近づく問いのためのもの。領土の争いでは、実効支配・主張・承認の3つの欄は<strong>どれも分かっていること</strong>で、決着していないのは政治と法の問題。3分類に入れると、<strong>発見を待つ正解があるように見えてしまう</strong></li>
+            <li><strong>(3)</strong> ウクライナの東部・南部（ロシア側が支配する地域がウクライナの中に描かれている）、アブハジア、南オセチア、沿ドニエストルのどれか</li>
+          </ul></div></details>
+      </div>
+    </section>
+
+    <section id="plan">
+      <div class="sec-head"><span class="idx">A</span><h2>改訂と、この先の構成</h2></div>
+      <h3>第5回の予告から変えたこと</h3>
+      <p>第5回の付録A・Cでは、地球の回の構成を案として出していました。この回に入る前に見直し、次のように変えました。</p>
+      <div class="table-scroll">
+      <table class="mini-table">
+        <tr><th style="width:18%">項目</th><th style="width:34%">第5回の予告</th><th style="width:48%">この回で決めたこと（理由）</th></tr>
+        <tr><td><strong>この回（2-1）の中身</strong></td><td>大陸と海洋、大きな山脈と川</td><td>大陸と海に、<strong>基準線と錨の11か国</strong>を入れた。<strong>山脈と川は後の回へ</strong>移した——プレートの境界や気候と一緒に扱うほうが、1つの仕組みでつながるため</td></tr>
+        <tr><td><strong>2章（2-2以降）</strong></td><td>—</td><td>2章は、<strong>地球全体に1本で通る仕組み</strong>を扱う。cos φ（日射）、プレートの境界、海流——どれも全部の地域に同じように効くので、先に通しておけば、3章で地域ごとに繰り返さずに済む</td></tr>
+        <tr><td><strong>3章（地域の回）</strong></td><td>国と地名 → 産物と資源 → 人びと → 企業と観光地 → 統合</td><td>地域ごとに<strong>まず国の形と場所を置き</strong>、そのうえで<strong>2章の仕組みがその地域でどう現れるか</strong>（その地域の気候・地形）と、<strong>その地域にしかないもの</strong>（産物・民族・企業・観光地）を重ねる</td></tr>
+        <tr><td><strong>気候の回</strong></td><td>地球の2回目として「気候」</td><td><strong>2-3 として残るが、扱いを変えた</strong>。全球の気候帯を置く回であって、国ごとの気候は3章で各地域に重ねる</td></tr>
+        <tr><td><strong>統合の回</strong></td><td>最後の回として「地球の統合」（1枚の地図・1本の巡回路・1つの表）</td><td><strong>3章の最後に置くが、形はまだ決めていない。</strong>3章を何回に分けるか（23の地域をそのまま使うか、小さい地域をまとめるか）が決まらないと、巡回路の長さも決まらないため。<strong>3章に入る前に決める</strong></td></tr>
+        <tr><td><strong>図法</strong></td><td>（決めていなかった）</td><td>全球は<strong>正距円筒図法</strong>。30度の升目がそのまま読め、歪みは東西だけで \(1/\cos\varphi\) で直せ、同じ画像を球に貼れる（§07）</td></tr>
+        <tr><td><strong>カードの単位</strong></td><td>（決めていなかった）</td><td><strong>地域が1枚、国はその中の引き出し</strong>（惑星の下に衛星、と同じ入れ子）</td></tr>
+        <tr><td><strong>順番</strong></td><td>（決めていなかった）</td><td>各地域・各国の<strong>中心の経度で、東経0度から東回り</strong></td></tr>
+        <tr><td><strong>国境</strong></td><td>（決めていなかった）</td><td><strong>実効支配で線を引き</strong>、主張・承認は別の欄。3分類には入れない（§08）</td></tr>
+        <tr><td><strong>章</strong></td><td>—</td><td><strong>2章 地球</strong>を新しく立てた。1章（太陽系）は通し番号の第1〜5回のまま、2章からは章ごとの番号（2-1、2-2…）</td></tr>
+      </table>
+      </div>
+
+      <h3>地域の回の順番</h3>
+      <p>地域は、国連の地域分類（M49）の小地域を単位にし、各地域の中心の経度で<strong>東経0度から東回り</strong>に並べます。中心は Natural Earth v5.1.2 から、錨の11か国と同じ方法（球面上の重心）で計算しました（南極と外洋の島は除く）。</p>
+      <div class="table-scroll">
+      <table class="mini-table">
+        <tr><th style="width:8%">順</th><th style="width:40%">地域</th><th>中心</th></tr>
+        <tr><td>1</td><td><strong>西ヨーロッパ</strong></td><td>北47° 東1°</td></tr>
+        <tr><td>2</td><td>南ヨーロッパ</td><td>北42° 東7°</td></tr>
+        <tr><td>3</td><td>北ヨーロッパ</td><td>北62° 東12°</td></tr>
+        <tr><td>4</td><td>北アフリカ</td><td>北26° 東16°</td></tr>
+        <tr><td>5</td><td>中部アフリカ</td><td>北1° 東19°</td></tr>
+        <tr><td>6</td><td>南部アフリカ</td><td>南25° 東22°</td></tr>
+        <tr><td>7</td><td>東ヨーロッパ（ロシアを除く）</td><td>北49° 東26°</td></tr>
+        <tr><td>8</td><td>東アフリカ</td><td>南4° 東36°</td></tr>
+        <tr><td>9</td><td>西アジア</td><td>北28° 東44°</td></tr>
+        <tr><td>10</td><td>中央アジア</td><td>北46° 東66°</td></tr>
+        <tr><td>11</td><td>南アジア</td><td>北28° 東72°</td></tr>
+        <tr><td>12</td><td><strong>ロシア</strong></td><td>北66° 東96°</td></tr>
+        <tr><td>13</td><td>東アジア</td><td>北38° 東105°</td></tr>
+        <tr><td>14</td><td>東南アジア</td><td>北8° 東110°</td></tr>
+        <tr><td>15</td><td>オーストラリアとニュージーランド</td><td>南26° 東135°</td></tr>
+        <tr><td>16</td><td>メラネシア</td><td>南8° 東148°</td></tr>
+        <tr><td>17</td><td>ミクロネシア</td><td>北8° 東160°</td></tr>
+        <tr><td>18</td><td>ポリネシア</td><td>南16° 西160°</td></tr>
+        <tr><td>19</td><td>中央アメリカ</td><td>北22° 西99°</td></tr>
+        <tr><td>20</td><td>北アメリカ</td><td>北56° 西98°</td></tr>
+        <tr><td>21</td><td>カリブ海</td><td>北20° 西75°</td></tr>
+        <tr><td>22</td><td>南アメリカ</td><td>南14° 西60°</td></tr>
+        <tr><td>23</td><td>西アフリカ</td><td>北15° 西1°</td></tr>
+      </table>
+      </div>
+      <div class="box teach"><span class="lab">輪の切れ目は、東経0度に1つだけ</span>
+      <p>地域は、東回りにたどると1周して元に戻る<strong>輪</strong>になっています。展開図の左端と右端が同じ180度の線であるように、輪にも<strong>どこかで切る場所</strong>が要ります。この教材は<strong>東経0度で切る</strong>ので、東回りの最初は<strong>西ヨーロッパ</strong>（東経1度）、最後は<strong>西アフリカ</strong>（西経1度）です。この2つは、輪の上では切れ目をはさんだ隣どうしです。錨の11か国（最初がアルジェリアの東経2.7度）にも同じ規則がそのまま効きます。</p>
+      <p style="margin-top:8px">§05 で東経0度を北から南へたどると、イギリス（北ヨーロッパ）→ フランス（西ヨーロッパ）→ スペイン（南ヨーロッパ）→ アルジェリア（北アフリカ）→ マリ・ブルキナファソ・トーゴ・ガーナ（西アフリカ）でした。<strong>切れ目の線の上に、輪の最初の4地域と、最後の西アフリカが並んでいます</strong>。</p></div>
+      <p style="font-size:13px;color:var(--ink-faint)"><strong>ロシアだけは M49 の「東ヨーロッパ」から切り出しました。</strong>そのままだとロシアの面積に引っぱられて東ヨーロッパの中心が<strong>東経87度</strong>になり、ポーランドやウクライナが中央アジアより東に並んでしまうためです。何回に分けて巡るか（1回に何地域か）は、3章の設計で決めます。中央アメリカと北アメリカは中心の経度が1度も違わない（西経98.6度と98.0度）ので、計算の方法やデータによって順が入れ替わりえます。この表は球面上の重心で計算した順です。</p>
+
+      <div class="box principle"><span class="lab">3分類と、変わりうる数値は、別の軸（第5回から引き継ぎ）</span>
+      <p>3分類は「なぜ分からないか」を分ける仕組みで、地球の回でもそのまま使います。<strong>時点で変わる数値</strong>（人口、企業の順位、国を承認している国の数）は3分類に入れず、<strong>出典と日付</strong>を添えます。領土の争いはさらに別で、3つの欄（実効支配・主張・承認）で書きます（§08）。</p></div>
+    </section>
+
+    <section id="evidence">
+      <div class="sec-head"><span class="idx">B</span><h2>根拠と強度——この回で足した手順</h2></div>
+      <p>第1〜5回の手順（見ずに思い出す・間隔を空ける・図と文章を一緒に使う・観察の言語化・配置図を背骨にする など）の根拠と強度は、<strong>第5回の付録Bのとおり</strong>で、この回もそれを土台にしています。ここでは<strong>この回で新しく足した手順だけ</strong>を挙げます。</p>
+      <div class="table-scroll">
+      <table class="mini-table">
+        <tr><th style="width:24%">要素</th><th style="width:36%">主な根拠</th><th style="width:30%">示していないこと</th><th style="width:10%">強度</th></tr>
+        <tr><td>地図の上に事実を結びつける（第2〜4回から引き継ぎ）</td><td>地図と一緒に学んだ文章の事実が思い出しやすくなる（Kulhavy らの一連の研究）</td><td>多くは実物の地図を見ながらの結果。<strong>頭の中だけの展開図で同じ効果が出るか</strong>は示されていない</td><td><span class="g m">中</span></td></tr>
+        <tr><td>大きな国を先に置き、残りを隣として覚える</td><td>項目を階層に組んで示すと想起が増える（Bower ほか 1969）という知見と整合する</td><td><strong>地図の上で</strong>、錨から隣へ広げるやり方が優れていることは検証されていない</td><td><span class="g w">弱</span></td></tr>
+        <tr><td>正距円筒を覚える面にし、歪みを式で直す</td><td>検証した研究は確認できていない。升目が読めて1本の式で直せる、という設計判断</td><td>ほかの図法で覚えるより正確に覚えられること</td><td><span class="g w">弱</span></td></tr>
+        <tr><td>基準線に国を並べる</td><td>検証した研究は確認できていない。白紙にすぐ引ける線に国の並びを結びつけるための設計判断</td><td>線に並べると国の位置が長く残ること</td><td><span class="g w">弱</span></td></tr>
+        <tr><td>横断する軸（cos φ）</td><td>検証した研究は確認できていない。1つの式で図法の歪みと日射の差をつなぐための設計判断（第4回の共鳴、第5回の太陽風と同じ扱い）</td><td>軸を立てたほうが個々の事実が残ること</td><td><span class="g w">弱</span></td></tr>
+        <tr><td>国境を実効支配で描き、主張・承認を別の欄にする</td><td>学習の研究ではなく、<strong>何を事実として描くかの基準</strong>（§08）</td><td>—</td><td>—</td></tr>
+      </table>
+      </div>
+      <p style="font-size:13px;color:var(--ink-faint)">研究の記述は要約です。効果量や条件は原論文で確認してください。<strong>この回の数値（面積・中心・倍率・線が通る国）は研究の成果ではなく、Natural Earth v5.1.2 から計算したものです。</strong>同じデータと同じ手順で、誰でも再現できます。</p>
+    </section>
+
+    <section id="next">
+      <div class="sec-head"><span class="idx">C</span><h2>次回の予告</h2></div>
+      <div class="box teach"><span class="lab">3章の予告　西ヨーロッパから東へ——地域の回</span>
+      <p>3章から、<strong>地域の回</strong>が始まります。最初は<strong>西ヨーロッパ</strong>、そこから東回りに地域を1つずつ巡り、最後に<strong>西アフリカ</strong>で輪を閉じます。この回で作った枠の上に、国の形と場所を全部置いていく回です。</p>
+      <p>最初の手がかりは、この回で覚えた<strong>東経0度</strong>です。北から南へ、イギリス・フランス・スペインが最初の3地域（北・西・南ヨーロッパ）の国で、その先の錨のアルジェリアが4番目の北アフリカ、ガーナ・トーゴ・ブルキナファソ・マリが最後の西アフリカです。</p>
+      <p>地域のカードは、<strong>標準緯線を地域の中心に置いた展開図</strong>にします。升目は直線のままで、その地域の緯度では形がほぼ正しく見えます（§07 の \(1/\cos\varphi\) を、地域の中心で打ち消した図）。係争地には<strong>実効支配・主張・承認の3欄</strong>を置き、承認の数には出典と日付を添えます。</p></div>
+    </section>
+
+    <div class="foot"><p>地図の元データは Natural Earth v5.1.2（1:5000万の国境〔湖を抜いたもの〕、1:1000万の国境と係争地。2026年9月25日取得、パブリックドメイン）です。展開図の画像3枚は本教材が作成しました（正距円筒図法、2048×1024、左端は西経180度。東京・ロンドン・ケープタウン・シドニー・ニューヨークの5点で位置を較正）。面積（楕円体の上で計算）・倍率・中心・基準線が通る国・大陸の端の緯度経度は、<strong>同じデータから本教材が計算した値で、国の公式統計とは一致しません</strong>。回帰線の緯度は、国際天文学連合の式による2026年の平均値です（地図の破線は±23.4363度で引いており、差は画像の1画素よりずっと小さい）。海底の割合は The Nippon Foundation-GEBCO Seabed 2030 Project の2026年4月20日の発表によります。国境の描き方は §08 の基準によるもので、<strong>どの主張を支持するものでもありません</strong>。緯度と倍率のグラフは本教材で作成しました。</p></div>
+  </main>
+</div>
+<div id="site-footer"><noscript><nav class="noscript-nav" aria-label="フッターナビゲーション"><a href="index.html">ホーム</a><a href="self-intro.html">自己紹介</a><a href="study.html">勉強の軌跡</a><a href="videos.html">動画</a><a href="blog.html">ブログ</a><a href="sns.html">各種SNS</a></nav></noscript></div>
+<script src="../js/memoryverse.js?v=r85"></script>
+<script src="../js/layout.js?v=r85"></script>
+<script src="../js/main.js?v=r85"></script>
+<script src="../js/starfield.js?v=r85"></script>
+</body>
+</html>

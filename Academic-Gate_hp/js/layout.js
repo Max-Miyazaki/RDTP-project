@@ -73,6 +73,9 @@
                              title: '第4回　小天体' },
         'memoryverse_1-5': { label: '第5回',        href: 'memoryverse_1-5.html',  parent: 'memoryverse:ch1',
                              title: '第5回　太陽と全体の統合' },
+        'memoryverse:ch2': { label: '2章 地球',                                    parent: 'memoryverse' },
+        'memoryverse_2-1': { label: '2-1',          href: 'memoryverse_2-1.html',  parent: 'memoryverse:ch2',
+                             title: '2-1　地球の骨格' },
     };
 
     // node から根までの並び（根が先頭）。
