@@ -16,13 +16,13 @@
      端末が勝手にライトになり、戻す手段が無くなる（§44.2）。
      復活時の挙動: テーマは描画前に同期で決まり（FOUC 防止）、ボタンの設置は
      layout.js がヘッダーを書き出したあと DOMContentLoaded で行われる。 -->
-<!-- <script src="../js/theme.js?v=r86"></script> -->
+<!-- <script src="../js/theme.js?v=r87"></script> -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;500&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
 <!-- サイト共通 → 記事固有 → テーマ上書き の順で読む（lesson-theme.css は
      記事の <style> より後ろに置くこと。css/lesson-theme.css 冒頭の注記どおり） -->
-<link rel="stylesheet" href="../css/style.css?v=r86">
+<link rel="stylesheet" href="../css/style.css?v=r87">
 <!-- MathJax: 設定ブロックはローダーより「前」に置く（DESIGN.md §11b）。
      フォールバックは this.src= ではなく createElement 方式（同§）。 -->
 <script>
@@ -224,7 +224,7 @@ mjx-container[display="true"]{margin:14px 0!important;overflow-x:auto;overflow-y
   .hint,.sol{display:block!important}
 }
 </style>
-<link rel="stylesheet" href="../css/lesson-theme.css?v=r86">
+<link rel="stylesheet" href="../css/lesson-theme.css?v=r87">
 </head>
 <body data-page="study" class="is-article" data-node="phys-math_5-3">
 <canvas id="starfield" aria-hidden="true"></canvas>
@@ -382,11 +382,12 @@ mjx-container[display="true"]{margin:14px 0!important;overflow-x:auto;overflow-y
       <div class="sol">
         <div class="step"><div class="sh"><span class="sn">1</span>微分を掛け算に置き換える</div>
         <div class="why">なぜ：指数関数の微分は \(i\omega\) を掛けるだけ。これが複素数で書く最大の利点です。</div>
-        \[ \frac{dz}{dt}=i\omega A e^{i\omega t},\qquad \frac{d^2z}{dt^2}=-\omega^2Ae^{i\omega t} \]
+        \[ \frac{dz}{dt}=i\omega A e^{i\omega t} \]
+        \[ \frac{d^2z}{dt^2}=-\omega^2Ae^{i\omega t} \]
         </div>
         <div class="step"><div class="sh"><span class="sn">2</span>代入してくくり出す</div>
-        <div class="why">なぜ：3つの項すべてに \(Ae^{i\omega t}\) が共通しています。</div>
-        \[ \left(-m\omega^2+i\gamma\omega+k\right)Ae^{i\omega t}=F_0e^{i\omega t} \]
+        <div class="why">なぜ：3つの項すべてに \(Ae^{i\omega t}\) が共通しています。係数は \(-m\omega^2+i\gamma\omega+k\)、見やすく並べ替えて \(k-m\omega^2+i\gamma\omega\) です。</div>
+        \[ \left(k-m\omega^2+i\gamma\omega\right)Ae^{i\omega t}=F_0e^{i\omega t} \]
         </div>
         <div class="step"><div class="sh"><span class="sn">3</span>\(e^{i\omega t}\) で割る</div>
         <div class="why">なぜ：指数関数は 0 になりません。<strong>微分が1つも残らず、ただの1次方程式になりました。</strong></div>
@@ -449,7 +450,7 @@ mjx-container[display="true"]{margin:14px 0!important;overflow-x:auto;overflow-y
 
       <div class="box teach"><span class="lab">(a) 非斉次項が定数のとき</span>
       <p>特解も定数 \(x_p=a\) と仮定します。定数を微分すると 0 なので、微分の項はすべて消えます。</p>
-      \[ m\cdot0+\gamma\cdot0+ka=f_0\quad\Longrightarrow\quad a=\frac{f_0}{k} \]
+      \[ ka=f_0\quad\Longrightarrow\quad a=\frac{f_0}{k} \]
       <p>残るのは \(x\) の項だけ。<strong>一定の力を加えたときの新しい釣り合い位置</strong>にあたります。</p></div>
 
       <div class="box teach"><span class="lab">(b) 非斉次項が指数関数のとき</span>
@@ -474,7 +475,7 @@ mjx-container[display="true"]{margin:14px 0!important;overflow-x:auto;overflow-y
       <p>実際に確かめます。積の微分で</p>
       \[ \dot x_p=a(1-t)e^{-t},\qquad \ddot x_p=a(t-2)e^{-t} \]
       <p>これを代入して \(e^{-t}\) でくくると、括弧の中は</p>
-      \[ a\big[(t-2)+3(1-t)+2t\big]=a\big[t-2+3-3t+2t\big]=a \]
+      \[ \begin{aligned} &a\big[(t-2)+3(1-t)+2t\big]\\[2pt] &=a\big[t-2+3-3t+2t\big]=a \end{aligned} \]
       <p>\(t\) を含む項がきれいに消えて、\(a=1\)。したがって特解は \(x_p=te^{-t}\) です。</p>
       <p><strong>\(t\) を掛けると、なぜうまくいくのか。</strong>\(te^{-t}\) を微分すると \(e^{-t}\) と \(te^{-t}\) の両方が現れます。\(te^{-t}\) の側は斉次解と同じ理由で打ち消し合い、<strong>残った \(e^{-t}\) の側が右辺と釣り合う</strong>——これが仕組みです。</p>
 
@@ -493,8 +494,8 @@ mjx-container[display="true"]{margin:14px 0!important;overflow-x:auto;overflow-y
       <div class="sol">
         <div class="step"><div class="sh"><span class="sn">1</span>斉次解を求める</div>
         <div class="why">なぜ：右辺を 0 にした方程式を、5-2 の手順で解きます。</div>
-        \[ \lambda^2+3\lambda+2=(\lambda+1)(\lambda+2)=0 \]
-        <p style="margin:4px 0">\(\lambda=-1,\ -2\) なので</p>
+        \[ \lambda^2+3\lambda+2=0 \]
+        <p style="margin:4px 0">左辺は \((\lambda+1)(\lambda+2)\) と因数分解できるので \(\lambda=-1,\ -2\)。したがって</p>
         \[ x_h=C_1e^{-t}+C_2e^{-2t} \]
         </div>
         <div class="step"><div class="sh"><span class="sn">2</span>特解を求める</div>
@@ -503,24 +504,24 @@ mjx-container[display="true"]{margin:14px 0!important;overflow-x:auto;overflow-y
         \[ (-1+3i+2)A=10 \]
         \[ A=\frac{10}{1+3i} \]
         <p style="margin:4px 0">分母を実数にするため、分母の共役 \(1-3i\) を分母と分子に掛けます。</p>
-        \[ A=\frac{10(1-3i)}{(1+3i)(1-3i)}=\frac{10(1-3i)}{10}=1-3i \]
+        \[ \begin{aligned} A&=\frac{10(1-3i)}{(1+3i)(1-3i)}\\[2pt] &=\frac{10(1-3i)}{10}=1-3i \end{aligned} \]
         <p style="margin:4px 0">実部を取れば特解です。オイラーの公式で \(e^{it}=\cos t+i\sin t\) と書いて展開します。</p>
         \[ (1-3i)(\cos t+i\sin t) \]
-        \[ =(\cos t+3\sin t)+i(\sin t-3\cos t) \]
+        \[ \begin{aligned} &=(\cos t+3\sin t)\\[2pt] &\quad+i(\sin t-3\cos t) \end{aligned} \]
         <p style="margin:4px 0">\(i^2=-1\) から、\(-3i\cdot i\sin t\) が \(+3\sin t\) となって実部に回る点に注意してください。実部だけ取れば</p>
         \[ x_p=\cos t+3\sin t \]
         </div>
         <div class="step"><div class="sh"><span class="sn">3</span>一般解を作る</div>
         <div class="why">なぜ：斉次解と特解を足すだけです。</div>
-        \[ x=C_1e^{-t}+C_2e^{-2t}+\cos t+3\sin t \]
+        \[ \begin{aligned} x=\;&C_1e^{-t}+C_2e^{-2t}\\[2pt] &+\cos t+3\sin t \end{aligned} \]
         </div>
         <div class="step"><div class="sh"><span class="sn">4</span>初期条件で定数を決める</div>
         <div class="why">なぜ：一般解<strong>全体</strong>に条件を課します。速度も必要なので、微分しておきます。</div>
-        \[ \dot x=-C_1e^{-t}-2C_2e^{-2t}-\sin t+3\cos t \]
+        \[ \begin{aligned} \dot x=\;&-C_1e^{-t}-2C_2e^{-2t}\\[2pt] &-\sin t+3\cos t \end{aligned} \]
         <p style="margin:4px 0">\(t=0\) を代入すると、2つの式が得られます。</p>
         \[ \begin{aligned} C_1+C_2+1&=0\\[2pt] -C_1-2C_2+3&=0 \end{aligned} \]
         <p style="margin:4px 0">2式を足すと \(-C_2+4=0\) より \(C_2=4\)、第1式から \(C_1=-5\)。</p>
-        \[ x(t)=-5e^{-t}+4e^{-2t}+\cos t+3\sin t \]
+        \[ \begin{aligned} x(t)=\;&-5e^{-t}+4e^{-2t}\\[2pt] &+\cos t+3\sin t \end{aligned} \]
         <p style="font-size:13.5px;color:var(--ink-faint);margin:6px 0 0">検算：\(t=0\) で \(-5+4+1=0\)、\(\dot x(0)=5-8+3=0\)。どちらも初期条件を満たします。前の2項は時間とともに消え、<strong>残るのは \(\cos t+3\sin t\) という定常振動</strong>。図で見た過渡状態から定常状態への移行が、式の上でも確認できます。</p></div>
       </div>
       </div>
@@ -531,7 +532,7 @@ mjx-container[display="true"]{margin:14px 0!important;overflow-x:auto;overflow-y
       <div class="attempt" style="margin:10px 0 4px"><span class="lab">自分の答えを出してから</span>
       <div class="controls"><button class="ctl-btn" data-sol>解答を見る</button></div>
       <div class="sol"><p>抵抗の項がないので、\(z=Ae^{3it}\) と置いて代入すると \(A\) は実数になります。</p>
-      \[ \left(-9+4\right)A=5\quad\Longrightarrow\quad A=-1 \]
+      \[ \begin{aligned} (-9+4)A&=5\\[2pt] A&=-1 \end{aligned} \]
       <p>したがって特解は</p>
       \[ x_p=-\cos 3t \]
       <p style="font-size:13.5px;color:var(--ink-faint)">\(A\) が負になりました。これは<strong>外力と逆向きに振動する</strong>ことを意味します。この系の固有角振動数は \(\omega_0=2\) で、外力の \(\omega=3\) はそれより速い。抵抗がない場合、\(A\) は実数になるので、符号が正なら外力と同じ向き、負なら逆向きに振動します。<strong>\(\omega\) が \(\omega_0\) をまたぐと、この符号が入れ替わります</strong>。符号の反転は位相が \(\pi\) ずれることにあたりますが、位相の詳しい扱いは力学のセクションに譲ります。</p></div></div></div>
@@ -544,14 +545,14 @@ mjx-container[display="true"]{margin:14px 0!important;overflow-x:auto;overflow-y
       </div>
       <div class="hint"><span class="hn">HINT 1</span><p>特性方程式 \(\lambda^2+2\lambda+5=0\) の判別式は負です。5-2 の減衰振動の場合にあたります。</p></div>
       <div class="sol"><p><strong>斉次解</strong>：\(\lambda=\dfrac{-2\pm\sqrt{4-20}}{2}=-1\pm2i\) なので、減衰振動の形です。</p>
-      \[ x_h=e^{-t}\left(C_1\cos 2t+C_2\sin 2t\right) \]
-      <p><strong>特解</strong>：\(\omega=1\) として \(z=Ae^{it}\) を代入します。</p>
-      \[ (-1+2i+5)A=8\quad\Longrightarrow\quad A=\frac{8}{4+2i} \]
+      \[ x_h=e^{-t}\big(C_1\cos 2t+C_2\sin 2t\big) \]
+      <p><strong>特解</strong>：\(\omega=1\) として \(z=Ae^{it}\) を代入します。\(A\) に掛かるのは \(-1+2i+5=4+2i\) なので</p>
+      \[ \begin{aligned} (4+2i)A&=8\\[2pt] A&=\frac{8}{4+2i} \end{aligned} \]
       <p>分母の共役を掛けて整理すると</p>
       \[ A=\frac{8(4-2i)}{20}=\frac{8}{5}-\frac45i \]
       \[ x_p=\frac85\cos t+\frac45\sin t \]
       <p><strong>一般解</strong>は、この2つの和です。</p>
-      \[ x=e^{-t}\left(C_1\cos 2t+C_2\sin 2t\right)+x_p \]
+      \[ \begin{aligned} x=\;&e^{-t}\big(C_1\cos 2t+C_2\sin 2t\big)\\[2pt] &+x_p \end{aligned} \]
       <p style="font-size:13.5px;color:var(--ink-faint)">斉次解の角振動数は 2、特解の角振動数は 1。<strong>過渡状態では2つの振動数が混ざり、定常状態では外力の 1 だけが残ります</strong>。§01 の図で見た複雑な動きは、この2つの重なりだったわけです。</p></div></div></div>
 
       <div class="drill"><p><span class="qn">問3</span>次の特解を求めよ。非斉次項の形に応じて、仮定する関数を選ぶこと。<br>(a) \(\dfrac{d^2x}{dt^2}+2\dfrac{dx}{dt}+5x=10\)　(b) \(\dfrac{d^2x}{dt^2}+3\dfrac{dx}{dt}+2x=e^{-3t}\)</p>
@@ -566,8 +567,8 @@ mjx-container[display="true"]{margin:14px 0!important;overflow-x:auto;overflow-y
       \[ 5a=10\quad\Longrightarrow\quad a=2 \]
       <p>したがって \(x_p=2\)。</p>
       <p style="font-size:13.5px;color:var(--ink-faint)">これは物理的には<strong>一定の力を加え続けたときの、新しい釣り合い位置</strong>です。重力の下でばねに重りを吊るすと、自然長より下に釣り合い点が移る——あの現象にあたります。振動はその点のまわりで起こります。</p>
-      <p style="margin-top:10px"><strong>(b)</strong> 斉次解は \(\lambda^2+3\lambda+2=0\) より \(\lambda=-1,-2\)。\(e^{-3t}\) は含まれていないので、そのまま \(x_p=ae^{-3t}\) と仮定できます。</p>
-      \[ (9-9+2)a=1\quad\Longrightarrow\quad a=\frac12 \]
+      <p style="margin-top:10px"><strong>(b)</strong> 斉次解は \(\lambda^2+3\lambda+2=0\) より \(\lambda=-1,-2\)。\(e^{-3t}\) は含まれていないので、そのまま \(x_p=ae^{-3t}\) と仮定できます。代入すると \(a\) に掛かるのは、特性方程式に \(\lambda=-3\) を入れた値 \(9-9+2=2\) です。</p>
+      \[ \begin{aligned} 2a&=1\\[2pt] a&=\frac12 \end{aligned} \]
       <p>したがって \(x_p=\dfrac12e^{-3t}\)。</p>
       <p style="font-size:13.5px;color:var(--ink-faint)">もし非斉次項が \(e^{-t}\) だったら、それは斉次解に含まれているので \(x_p=ate^{-t}\) と仮定する必要がありました。<strong>代入する前に、斉次解と重なっていないか確かめる</strong>のが、未定係数法を使うときの決まりごとです。</p></div></div></div>
 
@@ -586,8 +587,8 @@ mjx-container[display="true"]{margin:14px 0!important;overflow-x:auto;overflow-y
       \[ \dot x_p=a\sin 2t+2at\cos 2t \]
       \[ \ddot x_p=4a\cos 2t-4at\sin 2t \]
       <p>代入すると、\(t\) を含む項がきれいに打ち消し合います。</p>
-      \[ 4a\cos 2t-4at\sin 2t+4at\sin 2t=\cos 2t \]
-      \[ 4a\cos 2t=\cos 2t\quad\Longrightarrow\quad a=\frac14 \]
+      \[ \begin{aligned} &4a\cos 2t-4at\sin 2t+4at\sin 2t\\[2pt] &=\cos 2t \end{aligned} \]
+      \[ \begin{aligned} 4a\cos 2t&=\cos 2t\\[2pt] a&=\frac14 \end{aligned} \]
       <p>したがって特解は</p>
       \[ x_p=\frac{t}{4}\sin 2t \]
       <p style="font-size:13.5px;color:var(--ink-faint)">この解は、\(t\) が掛かっているため<strong>時間とともに振幅が増大していきます</strong>。抵抗がない系を、ちょうど固有振動数で揺さぶり続けた場合にあたります。§04 で「抵抗がないと振幅が発散する」と述べるのは、この解のことです。<strong>特解の形が斉次解と重なるという数学的な事情が、そのまま物理的な発散に対応している</strong>わけです。</p></div></div></div>
@@ -779,8 +780,8 @@ mb.addEventListener('click',function(){var o=body.classList.toggle('nav-open');m
 scrim.addEventListener('click',function(){body.classList.remove('nav-open')});
 document.getElementById('toc').addEventListener('click',function(e){if(e.target.closest('a'))body.classList.remove('nav-open')});
 </script>
-<script src="../js/layout.js?v=r86"></script>
-<script src="../js/main.js?v=r86"></script>
-<script src="../js/starfield.js?v=r86"></script>
+<script src="../js/layout.js?v=r87"></script>
+<script src="../js/main.js?v=r87"></script>
+<script src="../js/starfield.js?v=r87"></script>
 </body>
 </html>
