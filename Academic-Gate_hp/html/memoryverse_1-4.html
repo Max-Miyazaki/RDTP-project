@@ -11,13 +11,13 @@
 <!-- ★ ライト/ダーク切替は停止中（DESIGN.md §44）。サイト全体がダーク基調なので、
      記事だけテーマが変わるのは一貫性を欠くという判断。**復活させるには次の1行の
      コメントを外すだけでよい**（js/theme.js も css/lesson-theme.css も残してある）。 -->
-<!-- <script src="../js/theme.js?v=r76"></script> -->
+<!-- <script src="../js/theme.js?v=r77"></script> -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;500&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
 <!-- サイト共通 → 記事固有 → テーマ上書き の順で読む（lesson-theme.css は
      記事の <style> より後ろに置くこと。css/lesson-theme.css 冒頭の注記どおり） -->
-<link rel="stylesheet" href="../css/style.css?v=r76">
+<link rel="stylesheet" href="../css/style.css?v=r77">
 <!-- MathJax は読み込まない。この記事に数式は1つも無いため（§46.0 の執筆方針は
      数式の話なので該当しない）。設定ブロックもローダーも置かないこと。 -->
 <style>
@@ -579,7 +579,7 @@ code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border
 @media (max-width:900px){.mod-b .row > .v{align-self:stretch}}
 
 </style>
-<link rel="stylesheet" href="../css/lesson-theme.css?v=r76">
+<link rel="stylesheet" href="../css/lesson-theme.css?v=r77">
 </head>
 <body data-page="study" class="is-article" data-node="memoryverse_1-4">
 <canvas id="starfield" aria-hidden="true"></canvas>
@@ -613,12 +613,15 @@ code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border
           <li><a href="#charon">カロン</a></li>
         </ul>
       </li>
-      <li><a href="#rest"><span class="n">09</span>残りのカード</a></li>
+      <li><a href="#scattered"><span class="n">09</span>散乱円盤とエリス</a></li>
+      <li><a href="#dwarf"><span class="n">10</span>準惑星という区分</a></li>
+      <li><a href="#comet"><span class="n">11</span>彗星</a></li>
+      <li><a href="#oort"><span class="n">12</span>オールトの雲</a></li>
       <li class="part">横断して見る</li>
-      <li><a href="#cross"><span class="n">10</span>横断</a></li>
+      <li><a href="#cross"><span class="n">13</span>横断</a></li>
       <li class="part">訓練</li>
-      <li><a href="#menu"><span class="n">11</span>訓練メニュー</a></li>
-      <li><a href="#drills"><span class="n">12</span>演習</a></li>
+      <li><a href="#menu"><span class="n">14</span>訓練メニュー</a></li>
+      <li><a href="#drills"><span class="n">15</span>演習</a></li>
       <li class="part">付録</li>
       <li><a href="#plan"><span class="n">A</span>第1〜5回の改訂</a></li>
       <li><a href="#evidence"><span class="n">B</span>根拠と強度</a></li>
@@ -631,8 +634,8 @@ code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border
       <h1>第4回　小天体<span class="sub">場所と性質で覚える</span></h1>
       <p class="lead">第2回は「地面のある天体を地図で」、第3回は「地面のない天体を断面で」覚える回でした。<strong>第4回の対象は、その2つでは分けきれません。</strong>直径900kmの準惑星から、差し渡し1kmに満たない岩まで、数が多すぎて形も揃っていないからです。</p>
       <p>そこでこの回は、<strong>対象ごとに覚える手がかりを変えます</strong>。地図が作れるものは地図で、形が特徴のものは形で、そして数が多すぎるものは<strong>「どこに広がっているか」</strong>で。分け方は §02 に書きました。</p>
-      <div class="box warn"><span class="lab">いまは配置図と8枚までです</span>
-      <p>この回はいま、<strong>配置図（§03）と、小惑星帯・ケレス・ベスタ・リュウグウとベンヌ・木星のトロヤ群・カイパーベルト・冥王星・カロンの8枚</strong>までを作りました。冥王星とカロンの関係の見せ方を決めてから残りに進みます。到達目標・残りのカード・横断・訓練メニュー・演習・付録の各節は<strong>まだ枠だけ</strong>です。</p></div>
+      <div class="box warn"><span class="lab">カードはそろいました。残りはまだ枠だけです</span>
+      <p><strong>配置図（§03）と、小惑星帯からオールトの雲までのカード</strong>をすべて作りました（§04〜§12）。到達目標・横断・訓練メニュー・演習・付録の各節は<strong>まだ枠だけ</strong>です。</p></div>
     </div>
 
     <section id="goals">
@@ -1223,14 +1226,14 @@ code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border
       <div class="sec-head is-sub"><h2>ケレス</h2></div>
       <p><strong>配置図のどこか</strong>——小惑星帯のほぼ真ん中、<strong>2.77 AU</strong>。帯で最も大きく、<strong>この回で「地図が作れる4天体」の1つ</strong>です。</p>
 
-      <div class="mod map-view has-globe" data-globe="../image/memoryverse/ceres-map.jpg?v=r76" data-grid="equi">
+      <div class="mod map-view has-globe" data-globe="../image/memoryverse/ceres-map.jpg?v=r77" data-grid="equi">
         <div class="mod-h"><span class="no">ケレス</span><span class="ttl">小惑星帯で唯一の準惑星</span><span class="tag">CERES</span></div>
         <div class="mod-b">
           <div class="vsw" role="group" aria-label="表示の切り替え" hidden>
             <button type="button" class="vsw-b is-on" data-view="map" aria-pressed="true">地図</button>
             <button type="button" class="vsw-b" data-view="globe" aria-pressed="false">球</button>
           </div>
-          <div class="orbit"><svg class="grid" aria-hidden="true" preserveAspectRatio="none"></svg><svg class="links" aria-hidden="true" preserveAspectRatio="none"></svg><div class="stat geo" data-n="1" data-x="0.1648" data-y="0.3899" data-lat="19.8" data-lon="-120.7"><i class="n">1</i><b>オッカトル・クレーター</b><span class="v">中央に明るい斑点</span></div><div class="stat geo" data-n="2" data-x="0.3783" data-y="0.5582" data-lat="-10.5" data-lon="-43.8"><i class="n">2</i><b>アフナ山</b><span class="v">高さ 約4kmの孤立した山</span></div><div class="stat geo" data-n="3" data-x="0.8444" data-y="0.5598" data-lat="-10.8" data-lon="124.0"><i class="n">3</i><b>ケルワン</b><span class="v">直径 約280kmで最大</span></div><div class="stat geo" data-n="4" data-x="0.3124" data-y="0.7366" data-lat="-42.6" data-lon="-67.5"><i class="n">4</i><b>ヤロデ</b><span class="v">南半球の大きな盆地</span></div><div class="core"><button type="button" class="img-btn" aria-expanded="false"><figure class="planet-img"><div class="orb"><div class="frame"><img class="map-img" src="../image/memoryverse/ceres-map.jpg?v=r76" data-alt="https://astrogeology.usgs.gov/ckan/dataset/6ad84c9a-1fad-4869-b4f6-b52c5c2ace36/resource/9f757a65-8d8a-4349-a72d-8062387574b3/download/ceres_dawn_fc_dlr_global_feb2016_1024.jpg" alt="ケレスの全球地図（ドーン探査機のフレーミングカメラによるモザイク。正距円筒）" loading="lazy" decoding="async" onerror="mvNext(this)"><p class="fallback">画像を読み込めませんでした。<br><a href="https://science.nasa.gov/dwarf-planets/ceres/" target="_blank" rel="noopener">NASAのケレスのページで見る</a></p></div></div><figcaption>USGS Astrogeology「Ceres Dawn FC Global Mosaic 140m」（ドーン探査機のフレーミングカメラ）<br>正距円筒・惑星中心系・<strong>東経が右へ増え、中央が東経0度、左右の端が東経180度</strong>。配布画像の定義域がそのままこの向きなので、ずらしていません<br>線は経度・緯度とも30度ごと（狭い画面は60度ごと）<br><strong>南緯75度より南は約52%が未撮影</strong>（北極域にも数%）。全球の約5.7%。埋める加工はしていません<br>© NASA/JPL-Caltech/UCLA/MPS/DLR/IDA ／ USGS Astrogeology（パブリックドメイン）</figcaption></figure><span class="hint"><span class="h-c">クリックで地形を開く</span><span class="h-o">クリックで閉じる</span></span></button></div></div>
+          <div class="orbit"><svg class="grid" aria-hidden="true" preserveAspectRatio="none"></svg><svg class="links" aria-hidden="true" preserveAspectRatio="none"></svg><div class="stat geo" data-n="1" data-x="0.1648" data-y="0.3899" data-lat="19.8" data-lon="-120.7"><i class="n">1</i><b>オッカトル・クレーター</b><span class="v">中央に明るい斑点</span></div><div class="stat geo" data-n="2" data-x="0.3783" data-y="0.5582" data-lat="-10.5" data-lon="-43.8"><i class="n">2</i><b>アフナ山</b><span class="v">高さ 約4kmの孤立した山</span></div><div class="stat geo" data-n="3" data-x="0.8444" data-y="0.5598" data-lat="-10.8" data-lon="124.0"><i class="n">3</i><b>ケルワン</b><span class="v">直径 約280kmで最大</span></div><div class="stat geo" data-n="4" data-x="0.3124" data-y="0.7366" data-lat="-42.6" data-lon="-67.5"><i class="n">4</i><b>ヤロデ</b><span class="v">南半球の大きな盆地</span></div><div class="core"><button type="button" class="img-btn" aria-expanded="false"><figure class="planet-img"><div class="orb"><div class="frame"><img class="map-img" src="../image/memoryverse/ceres-map.jpg?v=r77" data-alt="https://astrogeology.usgs.gov/ckan/dataset/6ad84c9a-1fad-4869-b4f6-b52c5c2ace36/resource/9f757a65-8d8a-4349-a72d-8062387574b3/download/ceres_dawn_fc_dlr_global_feb2016_1024.jpg" alt="ケレスの全球地図（ドーン探査機のフレーミングカメラによるモザイク。正距円筒）" loading="lazy" decoding="async" onerror="mvNext(this)"><p class="fallback">画像を読み込めませんでした。<br><a href="https://science.nasa.gov/dwarf-planets/ceres/" target="_blank" rel="noopener">NASAのケレスのページで見る</a></p></div></div><figcaption>USGS Astrogeology「Ceres Dawn FC Global Mosaic 140m」（ドーン探査機のフレーミングカメラ）<br>正距円筒・惑星中心系・<strong>東経が右へ増え、中央が東経0度、左右の端が東経180度</strong>。配布画像の定義域がそのままこの向きなので、ずらしていません<br>線は経度・緯度とも30度ごと（狭い画面は60度ごと）<br><strong>南緯75度より南は約52%が未撮影</strong>（北極域にも数%）。全球の約5.7%。埋める加工はしていません<br>© NASA/JPL-Caltech/UCLA/MPS/DLR/IDA ／ USGS Astrogeology（パブリックドメイン）</figcaption></figure><span class="hint"><span class="h-c">クリックで地形を開く</span><span class="h-o">クリックで閉じる</span></span></button></div></div>
           <div class="globe" hidden>
             <div class="globe-stage"><canvas class="globe-cv"></canvas><p class="globe-fail" hidden>球を表示できませんでした。展開図でご覧ください。</p></div>
             <div class="globe-ctl">
@@ -1288,14 +1291,14 @@ code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border
       <div class="sec-head is-sub"><h2>ベスタ</h2></div>
       <p><strong>配置図のどこか</strong>——小惑星帯の内側寄り、<strong>2.36 AU</strong>。ケレス（2.77 AU）より太陽に近い側です。<strong>「地図が作れる4天体」の2つめ</strong>で、ケレスと同じくドーンが周回して全球を撮りました。</p>
 
-      <div class="mod map-view has-globe" data-globe="../image/memoryverse/vesta-map.jpg?v=r76" data-grid="equi">
+      <div class="mod map-view has-globe" data-globe="../image/memoryverse/vesta-map.jpg?v=r77" data-grid="equi">
         <div class="mod-h"><span class="no">ベスタ</span><span class="ttl">南極に、天体とほぼ同じ大きさの傷がある</span><span class="tag">VESTA</span></div>
         <div class="mod-b">
           <div class="vsw" role="group" aria-label="表示の切り替え" hidden>
             <button type="button" class="vsw-b is-on" data-view="map" aria-pressed="true">地図</button>
             <button type="button" class="vsw-b" data-view="globe" aria-pressed="false">球</button>
           </div>
-          <div class="orbit"><svg class="grid" aria-hidden="true" preserveAspectRatio="none"></svg><svg class="links" aria-hidden="true" preserveAspectRatio="none"></svg><div class="stat geo" data-n="1" data-x="0.7397" data-y="0.8997" data-lat="-72.0" data-lon="86.3"><i class="n">1</i><b>レアシルビア</b><span class="v">南極の巨大な衝突盆地</span></div><div class="stat geo" data-n="2" data-side="right" data-x="0.3491" data-y="0.7663" data-lat="-47.9" data-lon="-54.3"><i class="n">2</i><b>ベネネイア</b><span class="v">レアシルビアの下の古い盆地</span></div><div class="stat geo" data-n="3" data-x="0.4432" data-y="0.4501" data-lat="9.0" data-lon="-20.5"><i class="n">3</i><b>雪だるまクレーター</b><span class="v">3つ並んだクレーター</span></div><div class="stat geo" data-n="4" data-x="0.0451" data-y="0.5503" data-lat="-9.1" data-lon="-163.8"><i class="n">4</i><b>ディヴァリア溝</b><span class="v">赤道を巻く長い溝</span></div><div class="core"><button type="button" class="img-btn" aria-expanded="false"><figure class="planet-img"><div class="orb"><div class="frame"><img class="map-img" src="../image/memoryverse/vesta-map.jpg?v=r76" data-alt="https://astrogeology.usgs.gov/ckan/dataset/ec63e420-a8bd-4a90-9341-a5754b551574/resource/9306febf-0c7a-49ee-b7b0-a1f043297bf7/download/vesta_dawn_fc_hamo_mosaic_global_1024.jpg" alt="ベスタの全球地図（ドーン探査機のフレーミングカメラによるモザイク。正距円筒）" loading="lazy" decoding="async" onerror="mvNext(this)"><p class="fallback">画像を読み込めませんでした。<br><a href="https://science.nasa.gov/solar-system/asteroids/4-vesta/" target="_blank" rel="noopener">NASAのベスタのページで見る</a></p></div></div><figcaption>USGS Astrogeology「Vesta Dawn FC HAMO Global Mosaic 60m」（ドーン探査機のフレーミングカメラ）<br>正距円筒・惑星中心系・<strong>東経が右へ増え、中央が東経0度、左右の端が東経180度</strong>。配布画像の定義域がそのままこの向きなので、ずらしていません<br>経度は IAU の「Claudia Double Prime」系（クラウディア・クレーターが東経146度）。<strong>ドーン初期の論文の経度とは150度ずれます</strong><br>線は経度・緯度とも30度ごと（狭い画面は60度ごと）<br><strong>北緯60度あたりから北は、撮影時に影だった部分が黒く欠けています</strong>（上辺の中央の黒い四角もその1つ）。埋める加工はしていません<br>© NASA/JPL-Caltech/UCLA/MPS/DLR/IDA ／ USGS Astrogeology</figcaption></figure><span class="hint"><span class="h-c">クリックで地形を開く</span><span class="h-o">クリックで閉じる</span></span></button></div></div>
+          <div class="orbit"><svg class="grid" aria-hidden="true" preserveAspectRatio="none"></svg><svg class="links" aria-hidden="true" preserveAspectRatio="none"></svg><div class="stat geo" data-n="1" data-x="0.7397" data-y="0.8997" data-lat="-72.0" data-lon="86.3"><i class="n">1</i><b>レアシルビア</b><span class="v">南極の巨大な衝突盆地</span></div><div class="stat geo" data-n="2" data-side="right" data-x="0.3491" data-y="0.7663" data-lat="-47.9" data-lon="-54.3"><i class="n">2</i><b>ベネネイア</b><span class="v">レアシルビアの下の古い盆地</span></div><div class="stat geo" data-n="3" data-x="0.4432" data-y="0.4501" data-lat="9.0" data-lon="-20.5"><i class="n">3</i><b>雪だるまクレーター</b><span class="v">3つ並んだクレーター</span></div><div class="stat geo" data-n="4" data-x="0.0451" data-y="0.5503" data-lat="-9.1" data-lon="-163.8"><i class="n">4</i><b>ディヴァリア溝</b><span class="v">赤道を巻く長い溝</span></div><div class="core"><button type="button" class="img-btn" aria-expanded="false"><figure class="planet-img"><div class="orb"><div class="frame"><img class="map-img" src="../image/memoryverse/vesta-map.jpg?v=r77" data-alt="https://astrogeology.usgs.gov/ckan/dataset/ec63e420-a8bd-4a90-9341-a5754b551574/resource/9306febf-0c7a-49ee-b7b0-a1f043297bf7/download/vesta_dawn_fc_hamo_mosaic_global_1024.jpg" alt="ベスタの全球地図（ドーン探査機のフレーミングカメラによるモザイク。正距円筒）" loading="lazy" decoding="async" onerror="mvNext(this)"><p class="fallback">画像を読み込めませんでした。<br><a href="https://science.nasa.gov/solar-system/asteroids/4-vesta/" target="_blank" rel="noopener">NASAのベスタのページで見る</a></p></div></div><figcaption>USGS Astrogeology「Vesta Dawn FC HAMO Global Mosaic 60m」（ドーン探査機のフレーミングカメラ）<br>正距円筒・惑星中心系・<strong>東経が右へ増え、中央が東経0度、左右の端が東経180度</strong>。配布画像の定義域がそのままこの向きなので、ずらしていません<br>経度は IAU の「Claudia Double Prime」系（クラウディア・クレーターが東経146度）。<strong>ドーン初期の論文の経度とは150度ずれます</strong><br>線は経度・緯度とも30度ごと（狭い画面は60度ごと）<br><strong>北緯60度あたりから北は、撮影時に影だった部分が黒く欠けています</strong>（上辺の中央の黒い四角もその1つ）。埋める加工はしていません<br>© NASA/JPL-Caltech/UCLA/MPS/DLR/IDA ／ USGS Astrogeology</figcaption></figure><span class="hint"><span class="h-c">クリックで地形を開く</span><span class="h-o">クリックで閉じる</span></span></button></div></div>
           <div class="globe" hidden>
             <div class="globe-stage"><canvas class="globe-cv"></canvas><p class="globe-fail" hidden>球を表示できませんでした。展開図でご覧ください。</p></div>
             <div class="globe-ctl">
@@ -1355,8 +1358,8 @@ code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border
 
           <figure class="pair-fig">
             <div class="pair-stage">
-              <figure class="p-r"><img src="../image/memoryverse/ryugu.jpg?v=r76" alt="リュウグウ。上下がとがり、赤道が張り出した、そろばんの玉のような形。表面は岩だらけ" loading="lazy" decoding="async" width="499" height="485"><span class="nm">リュウグウ</span><span class="sz">赤道の差し渡し 約1.0km</span></figure>
-              <figure class="p-b"><img src="../image/memoryverse/bennu.jpg?v=r76" alt="ベンヌ。リュウグウと同じくそろばんの玉のような形で、大きさは約半分。表面は岩だらけ" loading="lazy" decoding="async" width="648" height="576"><span class="nm">ベンヌ</span><span class="sz">約0.5km</span></figure>
+              <figure class="p-r"><img src="../image/memoryverse/ryugu.jpg?v=r77" alt="リュウグウ。上下がとがり、赤道が張り出した、そろばんの玉のような形。表面は岩だらけ" loading="lazy" decoding="async" width="499" height="485"><span class="nm">リュウグウ</span><span class="sz">赤道の差し渡し 約1.0km</span></figure>
+              <figure class="p-b"><img src="../image/memoryverse/bennu.jpg?v=r77" alt="ベンヌ。リュウグウと同じくそろばんの玉のような形で、大きさは約半分。表面は岩だらけ" loading="lazy" decoding="async" width="648" height="576"><span class="nm">ベンヌ</span><span class="sz">約0.5km</span></figure>
             </div>
             <div class="pair-scale"><i></i>500 m</div>
             <figcaption><strong>2枚は同じ縮尺です</strong>（赤道の差し渡し リュウグウ 1,004m、ベンヌ 505m。JPL Small-Body Database、2026年9月25日閲覧）。<strong>ベンヌはリュウグウの約半分</strong>で、東京スカイツリー（634m）より小さい。<br><strong>明るさは比べないでください。</strong>2枚とも見やすいように明るさを持ち上げた画像で、その度合いが違います。実際は2つとも反射率 約4〜5%——<strong>炭のように黒い</strong>天体です。<br>リュウグウ：はやぶさ2 光学航法カメラ ONC-T（2018年7月12日）。JAXA/ISAS（DARTS アーカイブ）の画像を Meli thev と Nrco0e が色合成・彩度調整したもの（Wikimedia Commons、CC BY 4.0）。本教材で本体のまわりを切り抜きました<br>ベンヌ：オシリス・レックス PolyCam のモザイク。NASA/Goddard/University of Arizona。本教材で切り抜き・縮小しました</figcaption>
@@ -1828,14 +1831,14 @@ code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border
       <div class="sec-head is-sub"><h2>冥王星</h2></div>
       <p>カイパーベルトで最大の天体。<strong>地図の中央にある白いハート</strong>を起点に覚えます。</p>
 
-      <div class="mod map-view has-globe" data-globe="../image/memoryverse/pluto-map.jpg?v=r76" data-grid="equi" data-lonc="180" data-home="180">
+      <div class="mod map-view has-globe" data-globe="../image/memoryverse/pluto-map.jpg?v=r77" data-grid="equi" data-lonc="180" data-home="180">
         <div class="mod-h"><span class="no">冥王星</span><span class="ttl">白いハートは、窒素の氷の海</span><span class="tag">PLUTO</span></div>
         <div class="mod-b">
           <div class="vsw" role="group" aria-label="表示の切り替え" hidden>
             <button type="button" class="vsw-b is-on" data-view="map" aria-pressed="true">地図</button>
             <button type="button" class="vsw-b" data-view="globe" aria-pressed="false">球</button>
           </div>
-          <div class="orbit"><svg class="grid" aria-hidden="true" preserveAspectRatio="none"></svg><svg class="links" aria-hidden="true" preserveAspectRatio="none"></svg><div class="stat geo" data-n="1" data-side="up" data-x="0.4964" data-y="0.3916" data-lat="19.5" data-lon="178.7"><i class="n">1</i><b>スプートニク平原</b><span class="v">ハートの左半分。窒素の氷</span></div><div class="stat geo" data-n="2" data-side="left" data-x="0.2539" data-y="0.5512" data-lat="-9.2" data-lon="91.4"><i class="n">2</i><b>ベルトン地域</b><span class="v">赤道の黒い帯（旧称クトゥルフ）</span></div><div class="stat geo" data-n="3" data-side="down" data-x="0.4812" data-y="0.6187" data-lat="-21.4" data-lon="173.2"><i class="n">3</i><b>ライト山</b><span class="v">頂上がくぼんだ山</span></div><div class="stat geo" data-n="4" data-side="right" data-x="0.6475" data-y="0.4528" data-lat="8.5" data-lon="-126.9"><i class="n">4</i><b>タルタロス尾根</b><span class="v">刃のように並ぶ氷の尾根</span></div><div class="core"><button type="button" class="img-btn" aria-expanded="false"><figure class="planet-img"><div class="orb"><div class="frame"><img class="map-img" src="../image/memoryverse/pluto-map.jpg?v=r76" data-alt="https://astrogeology.usgs.gov/ckan/dataset/a5f1b7f4-9822-4697-a201-e23ef4bd3e16/resource/96be2aa1-f384-4a9f-9458-a8431a0e7956/download/pluto_newhorizons_global_mosaic_300m_jul2017_1024.jpg" alt="冥王星の全球地図（ニューホライズンズのモザイク。正距円筒）。中央に白いハート形の平原、下半分は未撮影で黒い" loading="lazy" decoding="async" onerror="mvNext(this)"><p class="fallback">画像を読み込めませんでした。<br><a href="https://science.nasa.gov/dwarf-planets/pluto/" target="_blank" rel="noopener">NASAの冥王星のページで見る</a></p></div></div><figcaption>USGS Astrogeology「Pluto New Horizons LORRI MVIC Global Mosaic 300m」（ニューホライズンズの望遠カメラ LORRI とカラーカメラ MVIC）<br>正距円筒・惑星中心系・東経が右へ増える。<strong>★ この地図だけ、中央が東経180度、左右の端が東経0度</strong>。配布画像のままで、ずらしていません（既定の向きに回すと、ハートが左右の端で割れるため）<br>線は経度・緯度とも30度ごと（狭い画面は60度ごと）<br><strong>南緯30〜40度より南は写っていません</strong>（全球の約25%。2015年の通過時、南半球は冬の闇だった）。左右の端のぼやけた部分は、遠くからしか撮れなかった側です。埋める加工はしていません<br>© NASA/JHUAPL/SwRI/LPI ／ USGS Astrogeology</figcaption></figure><span class="hint"><span class="h-c">クリックで地形を開く</span><span class="h-o">クリックで閉じる</span></span></button></div></div>
+          <div class="orbit"><svg class="grid" aria-hidden="true" preserveAspectRatio="none"></svg><svg class="links" aria-hidden="true" preserveAspectRatio="none"></svg><div class="stat geo" data-n="1" data-side="up" data-x="0.4964" data-y="0.3916" data-lat="19.5" data-lon="178.7"><i class="n">1</i><b>スプートニク平原</b><span class="v">ハートの左半分。窒素の氷</span></div><div class="stat geo" data-n="2" data-side="left" data-x="0.2539" data-y="0.5512" data-lat="-9.2" data-lon="91.4"><i class="n">2</i><b>ベルトン地域</b><span class="v">赤道の黒い帯（旧称クトゥルフ）</span></div><div class="stat geo" data-n="3" data-side="down" data-x="0.4812" data-y="0.6187" data-lat="-21.4" data-lon="173.2"><i class="n">3</i><b>ライト山</b><span class="v">頂上がくぼんだ山</span></div><div class="stat geo" data-n="4" data-side="right" data-x="0.6475" data-y="0.4528" data-lat="8.5" data-lon="-126.9"><i class="n">4</i><b>タルタロス尾根</b><span class="v">刃のように並ぶ氷の尾根</span></div><div class="core"><button type="button" class="img-btn" aria-expanded="false"><figure class="planet-img"><div class="orb"><div class="frame"><img class="map-img" src="../image/memoryverse/pluto-map.jpg?v=r77" data-alt="https://astrogeology.usgs.gov/ckan/dataset/a5f1b7f4-9822-4697-a201-e23ef4bd3e16/resource/96be2aa1-f384-4a9f-9458-a8431a0e7956/download/pluto_newhorizons_global_mosaic_300m_jul2017_1024.jpg" alt="冥王星の全球地図（ニューホライズンズのモザイク。正距円筒）。中央に白いハート形の平原、下半分は未撮影で黒い" loading="lazy" decoding="async" onerror="mvNext(this)"><p class="fallback">画像を読み込めませんでした。<br><a href="https://science.nasa.gov/dwarf-planets/pluto/" target="_blank" rel="noopener">NASAの冥王星のページで見る</a></p></div></div><figcaption>USGS Astrogeology「Pluto New Horizons LORRI MVIC Global Mosaic 300m」（ニューホライズンズの望遠カメラ LORRI とカラーカメラ MVIC）<br>正距円筒・惑星中心系・東経が右へ増える。<strong>★ この地図だけ、中央が東経180度、左右の端が東経0度</strong>。配布画像のままで、ずらしていません（既定の向きに回すと、ハートが左右の端で割れるため）<br>線は経度・緯度とも30度ごと（狭い画面は60度ごと）<br><strong>南緯30〜40度より南は写っていません</strong>（全球の約25%。2015年の通過時、南半球は冬の闇だった）。左右の端のぼやけた部分は、遠くからしか撮れなかった側です。埋める加工はしていません<br>© NASA/JHUAPL/SwRI/LPI ／ USGS Astrogeology</figcaption></figure><span class="hint"><span class="h-c">クリックで地形を開く</span><span class="h-o">クリックで閉じる</span></span></button></div></div>
           <div class="globe" hidden>
             <div class="globe-stage"><canvas class="globe-cv"></canvas><p class="globe-fail" hidden>球を表示できませんでした。展開図でご覧ください。</p></div>
             <div class="globe-ctl">
@@ -1892,14 +1895,14 @@ code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border
       <div class="sec-head is-sub"><h2>カロン</h2></div>
       <p>冥王星の相方。直径は冥王星の<strong>約半分</strong>。第3回のどの衛星よりも、主星に対して大きい相方です。<strong>赤い北極と、赤道を横切る割れ目の帯</strong>を起点に覚えます。</p>
 
-      <div class="mod map-view has-globe" data-globe="../image/memoryverse/charon-map.jpg?v=r76" data-grid="equi">
+      <div class="mod map-view has-globe" data-globe="../image/memoryverse/charon-map.jpg?v=r77" data-grid="equi">
         <div class="mod-h"><span class="no">カロン</span><span class="ttl">冥王星に赤く塗られた北極</span><span class="tag">CHARON</span></div>
         <div class="mod-b">
           <div class="vsw" role="group" aria-label="表示の切り替え" hidden>
             <button type="button" class="vsw-b is-on" data-view="map" aria-pressed="true">地図</button>
             <button type="button" class="vsw-b" data-view="globe" aria-pressed="false">球</button>
           </div>
-          <div class="orbit"><svg class="grid" aria-hidden="true" preserveAspectRatio="none"></svg><svg class="links" aria-hidden="true" preserveAspectRatio="none"></svg><div class="stat geo" data-n="1" data-x="0.6667" data-y="0.0278" data-lat="85.0" data-lon="60.0"><i class="n">1</i><b>ネバーランド地域</b><span class="v">赤い北極（旧称モルドール）</span></div><div class="stat geo" data-n="2" data-side="left" data-x="0.3178" data-y="0.4733" data-lat="4.8" data-lon="-65.6"><i class="n">2</i><b>マンジェト谷</b><span class="v">割れ目の帯の西の端</span></div><div class="stat geo" data-n="3" data-side="right" data-x="0.7233" data-y="0.3456" data-lat="27.8" data-lon="80.4"><i class="n">3</i><b>アルゴ谷</b><span class="v">割れ目の帯の東の端</span></div><div class="stat geo" data-n="4" data-side="down" data-x="0.5856" data-y="0.4800" data-lat="3.6" data-lon="30.8"><i class="n">4</i><b>キューブリック山</b><span class="v">堀に囲まれた山</span></div><div class="core"><button type="button" class="img-btn" aria-expanded="false"><figure class="planet-img"><div class="orb"><div class="frame"><img class="map-img" src="../image/memoryverse/charon-map.jpg?v=r76" data-alt="https://astrogeology.usgs.gov/ckan/dataset/93827f6c-8feb-42b6-98e6-b0ce57c7d2c8/resource/1abf318c-3290-4aa0-932e-a34f32d7f6ad/download/charon_newhorizons_global_mosaic_300m_jul2017_1024.jpg" alt="カロンの全球地図（ニューホライズンズのモザイク。正距円筒）。上端に暗い北極、赤道の上を割れ目の帯が横切る。下半分は未撮影で黒い" loading="lazy" decoding="async" onerror="mvNext(this)"><p class="fallback">画像を読み込めませんでした。<br><a href="https://science.nasa.gov/dwarf-planets/pluto/moons/charon/" target="_blank" rel="noopener">NASAのカロンのページで見る</a></p></div></div><figcaption>USGS Astrogeology「Charon New Horizons LORRI MVIC Global Mosaic 300m」（ニューホライズンズ）<br>正距円筒・惑星中心系・<strong>東経が右へ増え、中央が東経0度、左右の端が東経180度</strong>。配布画像の向きがこのサイトの既定と同じなので、ずらしていません<br>線は経度・緯度とも30度ごと（狭い画面は60度ごと）<br><strong>南緯20〜40度より南は写っていません</strong>（全球の約27%。冥王星と同じく冬の闇）。埋める加工はしていません。白黒の画像なので、北極の<strong>赤さはこの地図では見えません</strong>（暗い帯として写っています）<br>© NASA/JHUAPL/SwRI/LPI ／ USGS Astrogeology</figcaption></figure><span class="hint"><span class="h-c">クリックで地形を開く</span><span class="h-o">クリックで閉じる</span></span></button></div></div>
+          <div class="orbit"><svg class="grid" aria-hidden="true" preserveAspectRatio="none"></svg><svg class="links" aria-hidden="true" preserveAspectRatio="none"></svg><div class="stat geo" data-n="1" data-x="0.6667" data-y="0.0278" data-lat="85.0" data-lon="60.0"><i class="n">1</i><b>ネバーランド地域</b><span class="v">赤い北極（旧称モルドール）</span></div><div class="stat geo" data-n="2" data-side="left" data-x="0.3178" data-y="0.4733" data-lat="4.8" data-lon="-65.6"><i class="n">2</i><b>マンジェト谷</b><span class="v">割れ目の帯の西の端</span></div><div class="stat geo" data-n="3" data-side="right" data-x="0.7233" data-y="0.3456" data-lat="27.8" data-lon="80.4"><i class="n">3</i><b>アルゴ谷</b><span class="v">割れ目の帯の東の端</span></div><div class="stat geo" data-n="4" data-side="down" data-x="0.5856" data-y="0.4800" data-lat="3.6" data-lon="30.8"><i class="n">4</i><b>キューブリック山</b><span class="v">堀に囲まれた山</span></div><div class="core"><button type="button" class="img-btn" aria-expanded="false"><figure class="planet-img"><div class="orb"><div class="frame"><img class="map-img" src="../image/memoryverse/charon-map.jpg?v=r77" data-alt="https://astrogeology.usgs.gov/ckan/dataset/93827f6c-8feb-42b6-98e6-b0ce57c7d2c8/resource/1abf318c-3290-4aa0-932e-a34f32d7f6ad/download/charon_newhorizons_global_mosaic_300m_jul2017_1024.jpg" alt="カロンの全球地図（ニューホライズンズのモザイク。正距円筒）。上端に暗い北極、赤道の上を割れ目の帯が横切る。下半分は未撮影で黒い" loading="lazy" decoding="async" onerror="mvNext(this)"><p class="fallback">画像を読み込めませんでした。<br><a href="https://science.nasa.gov/dwarf-planets/pluto/moons/charon/" target="_blank" rel="noopener">NASAのカロンのページで見る</a></p></div></div><figcaption>USGS Astrogeology「Charon New Horizons LORRI MVIC Global Mosaic 300m」（ニューホライズンズ）<br>正距円筒・惑星中心系・<strong>東経が右へ増え、中央が東経0度、左右の端が東経180度</strong>。配布画像の向きがこのサイトの既定と同じなので、ずらしていません<br>線は経度・緯度とも30度ごと（狭い画面は60度ごと）<br><strong>南緯20〜40度より南は写っていません</strong>（全球の約27%。冥王星と同じく冬の闇）。埋める加工はしていません。白黒の画像なので、北極の<strong>赤さはこの地図では見えません</strong>（暗い帯として写っています）<br>© NASA/JHUAPL/SwRI/LPI ／ USGS Astrogeology</figcaption></figure><span class="hint"><span class="h-c">クリックで地形を開く</span><span class="h-o">クリックで閉じる</span></span></button></div></div>
           <div class="globe" hidden>
             <div class="globe-stage"><canvas class="globe-cv"></canvas><p class="globe-fail" hidden>球を表示できませんでした。展開図でご覧ください。</p></div>
             <div class="globe-ctl">
@@ -1943,26 +1946,368 @@ code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border
       </div>
     </section>
 
-    <section id="rest">
-      <div class="sec-head"><span class="idx">09</span><h2>残りのカード</h2></div>
-      <div class="box warn"><span class="lab">準備中</span>
-      <p>散乱円盤とエリスなど、冥王星の分類の変更（独立した枠）、彗星（チュリュモフ／ゲラシメンコ）、オールトの雲を、冥王星とカロンの見せ方が決まってから足します。いまは枠だけです。</p></div>
+    <section id="scattered">
+      <div class="sec-head"><span class="idx">09</span><h2>散乱円盤とエリス</h2></div>
+      <p><strong>配置図のどこか</strong>——<strong>カイパーベルトと重なりながら、その外へ 100 AU を超えて</strong>。§03 の図で、カイパーベルトの箱のすぐ下から右へ伸びる、灰色の破線の箱です。端がはっきりしないので、箱も破線にしてあります。</p>
+
+      <div class="mod">
+        <div class="mod-h"><span class="no">散乱円盤</span><span class="ttl">海王星に弾き飛ばされた天体の、細長い軌道</span><span class="tag">SCATTERED DISK</span></div>
+        <div class="mod-b">
+          <p class="vsw-note">地図も球もありません。散乱円盤は天体ではなく<strong>領域</strong>なので、覚えるのは「どんな軌道の天体が、どこまで広がっているか」です</p>
+
+          <figure class="fig" style="margin:0 0 14px"><div class="fig-scroll">
+<svg viewBox="0 0 640 400" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="海王星より外の天体の、軌道の大きさと太陽にいちばん近づく距離の散布図。カイパーベルトは左に固まり、散乱円盤の天体は近日点が海王星の近くのまま軌道だけが大きく伸びている。セドナは近日点も遠い">
+<text x="24" y="24" font-size="12.5" font-weight="500" fill="var(--ink)">散乱円盤 ― 近づく距離は海王星のそばのまま、遠ざかる距離だけが伸びる</text>
+<text x="24" y="41" font-size="10.5" fill="var(--ink-faint)">IAU小惑星センターの2つの一覧（2026年9月25日更新）の 5,926個。1つの点が1つの天体の実データ</text>
+<rect x="90.9" y="167.5" width="48.5" height="71.5" fill="rgba(61,139,255,.08)" stroke="var(--accent)" stroke-width="1" stroke-dasharray="3 3"/>
+<line x1="64.0" y1="232.3" x2="596.0" y2="232.3" stroke="var(--good)" stroke-width="1" stroke-dasharray="4 4"/>
+<path d="M64 289.5h0m0.5 -39h0m0 35h0m0.5 -21h0m0.5 -7h0m0 3.5h0m1 -15h0m0.5 32.5h0m0 26.5h0m0.5 -43.5h0m0 33.5h0m1 -0.5h0m0.5 -57.5h0m0 49.5h0m1 -56h0m0 28h0m0 18h0m0.5 -17.5h0m0.5 -21.5h0m0 52h0m0.5 -15.5h0m1 -27h0m0 9h0m0.5 1h0m0 12h0m0.5 -23.5h0m0 41h0m0.5 -50h0m0 17.5h0m0 22.5h0m0.5 -40.5h0m0.5 10.5h0m0.5 -13.5h0m0 3h0m0 12.5h0m0.5 -5.5h0m0 20.5h0m0.5 -1h0m0 10.5h0m0.5 -40h0m0 1h0m0 1h0m0.5 -0.5h0m0 68.5h0m0.5 -69h0m0.5 12.5h0m0 11.5h0m0.5 -32h0m0 8h0m0 74.5h0m0.5 -85h0m0 9h0m0 30.5h0m0 13.5h0m0.5 -44h0m0.5 -7h0m0 6h0m0 25h0m0 1h0m0 22.5h0m0 13.5h0m0.5 -40.5h0m0 13.5h0m0.5 -10.5h0m0 22h0m0 31.5h0m0.5 -40.5h0m0.5 -38.5h0m0 44.5h0m0 3.5h0m0 33.5h0m0.5 -81.5h0m0 0.5h0m0.5 -9h0m0 46.5h0m0 15.5h0m0 11h0m0.5 -65h0m0.5 0h0m0 19h0m1 -20.5h0m0 0.5h0m0 6.5h0m0 16h0m0.5 -31.5h0m0 4.5h0m0 1.5h0m0 1h0m0 1h0m0 0.5h0m0 7h0m0 45h0m0 28.5h0m0.5 -89h0m0 1.5h0m0 3h0m0 0.5h0m0 1h0m0 0.5h0m0 1h0m0 1h0m0 65h0m0.5 -70.5h0m0 2h0m0 2h0m0 0.5h0m0 0.5h0m0 5h0m0 33.5h0m0 5.5h0m0.5 -48h0m0 4h0m0.5 -5.5h0m0 3h0m0 0.5h0m0 0.5h0m0 1.5h0m0 1h0m0 6.5h0m0 23.5h0m0.5 -41.5h0m0 3.5h0m0 6.5h0m0 15h0m0 21.5h0m0 48.5h0m0.5 -86h0m0 7.5h0m0.5 -17h0m0 8.5h0m0 27.5h0m0.5 -28h0m0 49h0m0 12h0m0.5 -62h0m0 11h0m0.5 -18h0m0 10.5h0m0 38h0m0.5 -49.5h0m0 8.5h0m0 1h0m0 1h0m0 0.5h0m0 14h0m0 68h0m0.5 -93.5h0m0 5h0m0 4h0m0 1.5h0m0 51h0m0.5 -61h0m0 1h0m0 1.5h0m0 2h0m0 1h0m0 2.5h0m0 2h0m0 1h0m0 1.5h0m0 6.5h0m0.5 -23.5h0m0 8.5h0m0 0.5h0m0 2h0m0 0.5h0m0 1h0m0 1h0m0 1h0m0 0.5h0m0 0.5h0m0 1h0m0 2h0m0 1h0m0 2.5h0m0 2h0m0.5 -18.5h0m0 2h0m0 1h0m0 1.5h0m0 1.5h0m0 0.5h0m0 1.5h0m0 1h0m0 0.5h0m0 0.5h0m0 2h0m0 0.5h0m0 1h0m0 4h0m0 1.5h0m0 3h0m0 12h0m0.5 -38.5h0m0 1h0m0 6.5h0m0 3.5h0m0 3h0m0 2h0m0 4.5h0m0 0.5h0m0 5h0m0.5 -25.5h0m0 10h0m0 13h0m0.5 -23.5h0m0 9h0m0 1.5h0m0 3h0m0.5 -15h0m0 10h0m0 1h0m0 17h0m0 29.5h0m0.5 -56h0m0 9h0m0 6.5h0m0.5 -12.5h0m0 5h0m0 0.5h0m0 0.5h0m0 18.5h0m0.5 -26h0m0 6.5h0m0 0.5h0m0 4h0m0 50h0m0 5h0m0.5 -59h0m0 16.5h0m0 4.5h0m0 22.5h0m0.5 -55h0m0 2h0m0 3.5h0m0 2h0m0 2.5h0m0 12.5h0m0 24.5h0m0 16.5h0m0.5 -62.5h0m0 2h0m0 0.5h0m0 0.5h0m0 0.5h0m0 1.5h0m0 3.5h0m0 0.5h0m0 7h0m0 10h0m0 28.5h0m0.5 -55h0m0 2h0m0 1h0m0 1h0m0 3.5h0m0 3.5h0m0 9.5h0m0.5 -22h0m0 1h0m0 1h0m0 5h0m0 0.5h0m0 1.5h0m0 1.5h0m0 2h0m0 0.5h0m0 1h0m0 8h0m0 2.5h0m0 11.5h0m0 39.5h0m0 3h0m0.5 -80h0m0 1.5h0m0 1h0m0 1h0m0 0.5h0m0 2.5h0m0 3h0m0 1h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 1.5h0m0 7h0m0 1h0m0 11.5h0m0 1.5h0m0 21.5h0m0.5 -56.5h0m0 4.5h0m0 0.5h0m0 1h0m0 2.5h0m0 1.5h0m0 1h0m0 2h0m0 21h0m0 62h0m0.5 -96h0m0 2.5h0m0 0.5h0m0 2h0m0 4.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 2h0m0 79h0m0.5 -91.5h0m0 1h0m0 1.5h0m0 1h0m0 1h0m0 0.5h0m0 4.5h0m0 20.5h0m0 2.5h0m0 4h0m0.5 -36h0m0 0.5h0m0 2.5h0m0 1.5h0m0 0.5h0m0 1h0m0 1.5h0m0 1h0m0 0.5h0m0 1.5h0m0 4.5h0m0 3.5h0m0 60h0m0.5 -81.5h0m0 1.5h0m0 0.5h0m0 2.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 1h0m0 0.5h0m0 0.5h0m0 3h0m0 1h0m0 1.5h0m0 4.5h0m0 1h0m0 3h0m0 0.5h0m0 1h0m0 2.5h0m0 2.5h0m0 2h0m0 2.5h0m0 2h0m0.5 -36h0m0 6h0m0 0.5h0m0 1h0m0 2.5h0m0 1h0m0 1h0m0 0.5h0m0 1h0m0 1h0m0 3h0m0 2.5h0m0 1h0m0 0.5h0m0 0.5h0m0 1h0m0 0.5h0m0 4h0m0 1h0m0 2h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 1h0m0 1.5h0m0 2h0m0 2.5h0m0.5 -38.5h0m0 2.5h0m0 1h0m0 0.5h0m0 2h0m0 2.5h0m0 0.5h0m0 0.5h0m0 1.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 2.5h0m0 0.5h0m0 1h0m0 2h0m0 1h0m0 1h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 1h0m0 1h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 1h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 1.5h0m0 1h0m0 1h0m0 0.5h0m0 1.5h0m0 1.5h0m0.5 -43.5h0m0 2.5h0m0 0.5h0m0 0.5h0m0 1h0m0 2.5h0m0 1.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 1h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 1.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 1h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 1h0m0 0.5h0m0 0.5h0m0 0.5h0m0 1h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 1.5h0m0 0.5h0m0 7.5h0m0 10h0m0.5 -57h0m0 2h0m0 0.5h0m0 2h0m0 2h0m0 2.5h0m0 0.5h0m0 1.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 1h0m0 1h0m0 0.5h0m0 0.5h0m0 1h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 1h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 1.5h0m0 5h0m0 0.5h0m0 55h0m0.5 -95.5h0m0 4h0m0 0.5h0m0 1.5h0m0 0.5h0m0 1h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 1.5h0m0 0.5h0m0 1h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 1h0m0 0.5h0m0 1h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 1h0m0 0.5h0m0 0.5h0m0 1h0m0 0.5h0m0 0.5h0m0 1h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 1h0m0 0.5h0m0 1.5h0m0 0.5h0m0 0.5h0m0 1h0m0 3.5h0m0 1.5h0m0 4h0m0.5 -46.5h0m0 3h0m0 0.5h0m0 0.5h0m0 4h0m0 1.5h0m0 1h0m0 1.5h0m0 1h0m0 0.5h0m0 0.5h0m0 1h0m0 1h0m0 0.5h0m0 1.5h0m0 0.5h0m0 1h0m0 1h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 1h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 1.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 3.5h0m0 0.5h0m0 0.5h0m0 1h0m0 1h0m0.5 -37h0m0 4.5h0m0 0.5h0m0 0.5h0m0 8.5h0m0 0.5h0m0 2h0m0 0.5h0m0 1h0m0 1.5h0m0 1h0m0 0.5h0m0 0.5h0m0 0.5h0m0 1.5h0m0 0.5h0m0 1h0m0 0.5h0m0 0.5h0m0 1.5h0m0 0.5h0m0 0.5h0m0 1h0m0 1h0m0 0.5h0m0 2h0m0 0.5h0m0 1h0m0 1h0m0 15.5h0m0.5 -52.5h0m0 1h0m0 0.5h0m0 0.5h0m0 1h0m0 3h0m0 13.5h0m0 4h0m0 5.5h0m0 0.5h0m0 1h0m0.5 -35h0m0 1h0m0 5h0m0 1h0m0 2.5h0m0 0.5h0m0 0.5h0m0 3h0m0 0.5h0m0 4h0m0 4.5h0m0 5h0m0 1.5h0m0.5 -32h0m0 1.5h0m0 0.5h0m0 2h0m0 1h0m0 1h0m0 0.5h0m0 0.5h0m0 0.5h0m0 1.5h0m0 0.5h0m0 1h0m0 1h0m0 1.5h0m0 0.5h0m0 1.5h0m0 5h0m0 5.5h0m0 13.5h0m0 26.5h0m0 35.5h0m0.5 -100h0m0 1.5h0m0 1h0m0 0.5h0m0 0.5h0m0 0.5h0m0 1h0m0 2h0m0 0.5h0m0 2h0m0 0.5h0m0 1h0m0 0.5h0m0 2h0m0 9.5h0m0 11h0m0.5 -35.5h0m0 0.5h0m0 3.5h0m0 2h0m0 0.5h0m0 0.5h0m0 2h0m0 0.5h0m0 1h0m0 0.5h0m0 0.5h0m0 2h0m0 2h0m0 1h0m0.5 -17.5h0m0 5.5h0m0 1h0m0 0.5h0m0 2.5h0m0 1.5h0m0 0.5h0m0 1h0m0 0.5h0m0 0.5h0m0 0.5h0m0 1h0m0 2.5h0m0 2.5h0m0 5.5h0m0 16.5h0m0.5 -42h0m0 1h0m0 3.5h0m0 0.5h0m0 2h0m0 1.5h0m0 1h0m0 2.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 1h0m0 6h0m0 1.5h0m0 9h0m0 31.5h0m0.5 -64h0m0 3h0m0 1.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 1.5h0m0 1.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 1h0m0 3h0m0 1h0m0 2h0m0 12h0m0 1h0m0 3h0m0 78h0m0.5 -112h0m0 1h0m0 2.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 1h0m0 0.5h0m0 1h0m0 1.5h0m0 0.5h0m0 0.5h0m0 1h0m0 1h0m0 3.5h0m0.5 -20h0m0 1h0m0 3h0m0 1h0m0 1h0m0 1.5h0m0 2.5h0m0 1h0m0 2.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 2.5h0m0 0.5h0m0 5.5h0m0 1h0m0 5h0m0 7h0m0.5 -37.5h0m0 1h0m0 2.5h0m0 1h0m0 1h0m0 0.5h0m0 1h0m0 1h0m0 1h0m0 1.5h0m0 1.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 1h0m0 0.5h0m0 0.5h0m0 0.5h0m0 2h0m0 2h0m0 6h0m0 2h0m0 11.5h0m0 1.5h0m0.5 -39h0m0 0.5h0m0 1h0m0 2h0m0 0.5h0m0 1h0m0 0.5h0m0 1h0m0 1.5h0m0 1h0m0 0.5h0m0 0.5h0m0 0.5h0m0 1h0m0 0.5h0m0 1.5h0m0 2h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 1h0m0 2h0m0 1h0m0 3h0m0 3.5h0m0 9.5h0m0 23.5h0m0 2.5h0m0.5 -66.5h0m0 2.5h0m0 1h0m0 1h0m0 1.5h0m0 0.5h0m0 0.5h0m0 1h0m0 0.5h0m0 0.5h0m0 1h0m0 1h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 2.5h0m0 0.5h0m0 2h0m0 1.5h0m0 1.5h0m0 0.5h0m0 5h0m0 5.5h0m0 7h0m0 50.5h0m0.5 -90h0m0 1.5h0m0 1h0m0 2h0m0 1h0m0 1h0m0 1h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 1h0m0 0.5h0m0 0.5h0m0 0.5h0m0 1h0m0 1.5h0m0 0.5h0m0 1.5h0m0 0.5h0m0 0.5h0m0 1h0m0 1h0m0.5 -19h0m0 1.5h0m0 2h0m0 0.5h0m0 2.5h0m0 3h0m0 1h0m0 0.5h0m0 0.5h0m0 1.5h0m0 1h0m0 1.5h0m0 0.5h0m0 1h0m0 1h0m0 2.5h0m0 2.5h0m0 1h0m0 4h0m0 1.5h0m0 18h0m0.5 -51.5h0m0 0.5h0m0 4h0m0 1h0m0 1.5h0m0 2h0m0 0.5h0m0 1h0m0 1h0m0 1h0m0 2h0m0 0.5h0m0 0.5h0m0 1h0m0 1h0m0 0.5h0m0 0.5h0m0 0.5h0m0 1h0m0 1.5h0m0 1.5h0m0 1.5h0m0 1h0m0 2h0m0 0.5h0m0 1h0m0 0.5h0m0 2.5h0m0 3.5h0m0 6.5h0m0.5 -42.5h0m0 2.5h0m0 0.5h0m0 1h0m0 0.5h0m0 1.5h0m0 1h0m0 1.5h0m0 0.5h0m0 1h0m0 1h0m0 1.5h0m0 1h0m0 0.5h0m0 0.5h0m0 1h0m0 0.5h0m0 2.5h0m0 1h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 1.5h0m0 1.5h0m0 2h0m0 0.5h0m0 1.5h0m0 1.5h0m0 0.5h0m0 2h0m0 1h0m0 0.5h0m0 57h0m0.5 -91.5h0m0 0.5h0m0 1.5h0m0 0.5h0m0 0.5h0m0 1h0m0 1h0m0 1.5h0m0 1h0m0 2h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 3h0m0 0.5h0m0 0.5h0m0 1.5h0m0 0.5h0m0 0.5h0m0 2h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 1h0m0 0.5h0m0 0.5h0m0 1h0m0 1h0m0 0.5h0m0 5h0m0 0.5h0m0 0.5h0m0 2.5h0m0 0.5h0m0 2.5h0m0.5 -38h0m0 1.5h0m0 1h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 1h0m0 0.5h0m0 1h0m0 1h0m0 0.5h0m0 2h0m0 1h0m0 1h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 1.5h0m0 0.5h0m0 0.5h0m0 1h0m0 1h0m0 0.5h0m0 0.5h0m0 0.5h0m0 1h0m0 0.5h0m0 0.5h0m0 1h0m0 1.5h0m0 1h0m0 0.5h0m0 1.5h0m0 3h0m0 2h0m0 0.5h0m0 0.5h0m0 4.5h0m0.5 -42h0m0 0.5h0m0 1h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 1h0m0 0.5h0m0 1h0m0 0.5h0m0 1.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 1h0m0 0.5h0m0 1.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 2.5h0m0 0.5h0m0 0.5h0m0 1h0m0 1h0m0 0.5h0m0 3.5h0m0 0.5h0m0 2.5h0m0 1h0m0 1h0m0 1.5h0m0 1h0m0 33h0m0.5 -69h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 1h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 1h0m0 0.5h0m0 1h0m0 0.5h0m0 0.5h0m0 1h0m0 1h0m0 0.5h0m0 0.5h0m0 0.5h0m0 1.5h0m0 1h0m0 0.5h0m0 2.5h0m0 0.5h0m0 0.5h0m0 4h0m0 2h0m0 0.5h0m0 16.5h0m0 9h0m0.5 -57h0m0 0.5h0m0 0.5h0m0 0.5h0m0 1h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 1h0m0 2h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 1h0m0 1h0m0 0.5h0m0 0.5h0m0 1h0m0 0.5h0m0 0.5h0m0 0.5h0m0 1h0m0 0.5h0m0 1.5h0m0 1.5h0m0 12.5h0m0 72.5h0m0.5 -111.5h0m0 0.5h0m0 1.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 2h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 1h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 1h0m0 1h0m0 2h0m0 1.5h0m0 0.5h0m0 3h0m0 1h0m0 3h0m0 1.5h0m0 2h0m0 4.5h0m0.5 -39.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 1h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 1h0m0 1h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 1h0m0 0.5h0m0 1.5h0m0 0.5h0m0 0.5h0m0 1h0m0 0.5h0m0 2h0m0 20.5h0m0 3h0m0.5 -52h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 1h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 2h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 1h0m0 0.5h0m0 0.5h0m0 1h0m0 0.5h0m0 0.5h0m0 2h0m0 1h0m0 2h0m0 0.5h0m0 3h0m0 1h0m0 5h0m0 4.5h0m0 6h0m0.5 -46.5h0m0 0.5h0m0 0.5h0m0 1h0m0 0.5h0m0 0.5h0m0 1h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 1h0m0 1h0m0 0.5h0m0 1.5h0m0 1.5h0m0 1h0m0 1h0m0 0.5h0m0 1.5h0m0 1h0m0 2.5h0m0 2h0m0 1.5h0m0 1.5h0m0 0.5h0m0 3h0m0.5 -44h0m0 1h0m0 1h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 1h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 1.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 2.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 1h0m0 1h0m0 1h0m0 1h0m0 0.5h0m0 0.5h0m0 0.5h0m0 3h0m0 1h0m0 2h0m0 1.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 3.5h0m0 32h0m0 47.5h0m0.5 -123h0m0 0.5h0m0 0.5h0m0 1h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 1.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 1.5h0m0 0.5h0m0 1.5h0m0 0.5h0m0 1h0m0 1.5h0m0 0.5h0m0 1h0m0 1.5h0m0 1.5h0m0 3.5h0m0 3h0m0 2h0m0 1h0m0 1h0m0 0.5h0m0 2h0m0 9h0m0 7h0m0.5 -61h0m0 2h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 1h0m0 0.5h0m0 1h0m0 0.5h0m0 1.5h0m0 1.5h0m0 0.5h0m0 1h0m0 0.5h0m0 0.5h0m0 0.5h0m0 1h0m0 1h0m0 2h0m0 1.5h0m0 4.5h0m0 0.5h0m0 1.5h0m0 1h0m0 0.5h0m0 1h0m0 3h0m0 6h0m0 22.5h0m0.5 -72h0m0 2h0m0 0.5h0m0 0.5h0m0 1h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 1.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 1.5h0m0 1.5h0m0 3.5h0m0 0.5h0m0 0.5h0m0 13.5h0m0.5 -42.5h0m0 1.5h0m0 0.5h0m0 2.5h0m0 1h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 1h0m0 0.5h0m0 0.5h0m0 0.5h0m0 1h0m0 0.5h0m0 0.5h0m0 0.5h0m0 1h0m0 1.5h0m0 0.5h0m0 2h0m0 1h0m0 1.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 2h0m0 0.5h0m0 4h0m0 6h0m0.5 -39h0m0 3.5h0m0 0.5h0m0 1.5h0m0 0.5h0m0 1h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 1.5h0m0 0.5h0m0 0.5h0m0 1.5h0m0 0.5h0m0 1h0m0 1.5h0m0 0.5h0m0 2h0m0 0.5h0m0 3.5h0m0 10h0m0 7h0m0 32.5h0m0.5 -79h0m0 3h0m0 1.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 1h0m0 1h0m0 1h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 1.5h0m0 0.5h0m0 1h0m0 0.5h0m0 1.5h0m0 1h0m0 1h0m0 0.5h0m0 0.5h0m0 0.5h0m0 1h0m0 2.5h0m0 1.5h0m0 2h0m0 12.5h0m0.5 -41.5h0m0 1.5h0m0 2h0m0 2h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 1h0m0 0.5h0m0 1h0m0 0.5h0m0 0.5h0m0 1h0m0 0.5h0m0 1h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 1h0m0 0.5h0m0 1h0m0 0.5h0m0 0.5h0m0 1.5h0m0 1h0m0 0.5h0m0 1h0m0 0.5h0m0 4h0m0 1h0m0 3.5h0m0 0.5h0m0 3h0m0 1.5h0m0 2h0m0 1.5h0m0.5 -41h0m0 2h0m0 3.5h0m0 1h0m0 0.5h0m0 2.5h0m0 1h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 1h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 1h0m0 0.5h0m0 1h0m0 1.5h0m0 0.5h0m0 3h0m0 1.5h0m0 1h0m0 0.5h0m0 1.5h0m0 3h0m0 6h0m0 2.5h0m0.5 -40.5h0m0 3.5h0m0 1.5h0m0 1h0m0 0.5h0m0 1.5h0m0 0.5h0m0 2.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 1h0m0 0.5h0m0 1h0m0 1h0m0 0.5h0m0 1.5h0m0 0.5h0m0 1h0m0 1h0m0 0.5h0m0 0.5h0m0 1h0m0 2h0m0 0.5h0m0 0.5h0m0 1h0m0 1h0m0 2h0m0 0.5h0m0 1.5h0m0 0.5h0m0 21h0m0.5 -55.5h0m0 0.5h0m0 1h0m0 5.5h0m0 0.5h0m0 1h0m0 0.5h0m0 0.5h0m0 1h0m0 0.5h0m0 1.5h0m0 1.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 2.5h0m0 0.5h0m0 1.5h0m0 1h0m0 0.5h0m0 1h0m0 0.5h0m0 0.5h0m0 1.5h0m0 2h0m0 1h0m0 1h0m0 1.5h0m0 2.5h0m0 1h0m0 0.5h0m0 3.5h0m0 10.5h0m0 1h0m0.5 -52h0m0 1.5h0m0 0.5h0m0 2.5h0m0 0.5h0m0 0.5h0m0 1h0m0 0.5h0m0 0.5h0m0 1.5h0m0 0.5h0m0 0.5h0m0 1h0m0 0.5h0m0 0.5h0m0 1.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 1h0m0 0.5h0m0 1.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 2h0m0 6.5h0m0 2h0m0 0.5h0m0 14.5h0m0.5 -51h0m0 0.5h0m0 2h0m0 2h0m0 1.5h0m0 2.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 1h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 1h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 1h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 1h0m0 1.5h0m0 0.5h0m0 0.5h0m0 1h0m0 0.5h0m0 0.5h0m0 1h0m0 1h0m0 0.5h0m0 0.5h0m0 3h0m0 1h0m0 0.5h0m0 2.5h0m0.5 -38.5h0m0 5h0m0 1.5h0m0 0.5h0m0 1.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 1h0m0 1h0m0 0.5h0m0 0.5h0m0 0.5h0m0 1h0m0 1h0m0 1h0m0 0.5h0m0 1h0m0 0.5h0m0 2h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 1h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 1h0m0 2.5h0m0 1h0m0 1h0m0 46h0m0.5 -81.5h0m0 0.5h0m0 0.5h0m0 1h0m0 0.5h0m0 2.5h0m0 2h0m0 1h0m0 2h0m0 2.5h0m0 1h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 1.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 1h0m0 0.5h0m0 1h0m0 0.5h0m0 0.5h0m0 1h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 1.5h0m0 1.5h0m0 4h0m0 0.5h0m0 0.5h0m0 85h0m0.5 -122.5h0m0 0.5h0m0 3h0m0 1h0m0 1h0m0 0.5h0m0 0.5h0m0 3.5h0m0 1.5h0m0 0.5h0m0 0.5h0m0 2h0m0 0.5h0m0 0.5h0m0 0.5h0m0 1h0m0 0.5h0m0 0.5h0m0 1.5h0m0 0.5h0m0 1.5h0m0 1h0m0 1h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 1h0m0 1h0m0 0.5h0m0 1h0m0 1h0m0 1h0m0 4h0m0 3.5h0m0 1h0m0 30.5h0m0 3h0m0 23.5h0m0.5 -95h0m0 2.5h0m0 1.5h0m0 3h0m0 2h0m0 0.5h0m0 0.5h0m0 1h0m0 2h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 1h0m0 0.5h0m0 0.5h0m0 0.5h0m0 1h0m0 0.5h0m0 0.5h0m0 0.5h0m0 1h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 1h0m0 0.5h0m0 1h0m0 2h0m0 8h0m0 3.5h0m0 8.5h0m0 2.5h0m0 2h0m0 41h0m0.5 -97.5h0m0 4.5h0m0 0.5h0m0 4.5h0m0 0.5h0m0 1h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 1.5h0m0 1h0m0 0.5h0m0 0.5h0m0 1h0m0 0.5h0m0 0.5h0m0 1h0m0 1h0m0 0.5h0m0 1.5h0m0 0.5h0m0 1h0m0 1.5h0m0 1h0m0 0.5h0m0 1.5h0m0 4h0m0 3h0m0 0.5h0m0 11.5h0m0 4h0m0 13.5h0m0.5 -65.5h0m0 0.5h0m0 2.5h0m0 2h0m0 1.5h0m0 2h0m0 1h0m0 1.5h0m0 0.5h0m0 1.5h0m0 2.5h0m0 1.5h0m0 1h0m0 0.5h0m0 0.5h0m0 1h0m0 0.5h0m0 1h0m0 0.5h0m0 0.5h0m0 0.5h0m0 1h0m0 0.5h0m0 0.5h0m0 0.5h0m0 1.5h0m0 1h0m0 1h0m0 1h0m0 2h0m0 2h0m0 2.5h0m0 6.5h0m0.5 -36.5h0m0 2.5h0m0 4h0m0 2.5h0m0 2h0m0 1h0m0 0.5h0m0 1h0m0 0.5h0m0 0.5h0m0 0.5h0m0 1.5h0m0 0.5h0m0 0.5h0m0 1.5h0m0 1h0m0 0.5h0m0 0.5h0m0 1h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 1h0m0 0.5h0m0 3.5h0m0 2h0m0 8.5h0m0 1.5h0m0.5 -49h0m0 9h0m0 2h0m0 0.5h0m0 1h0m0 0.5h0m0 2h0m0 1h0m0 2h0m0 0.5h0m0 1h0m0 1.5h0m0 3h0m0 1h0m0 0.5h0m0 0.5h0m0 0.5h0m0 1.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 1h0m0 0.5h0m0 0.5h0m0 2h0m0 0.5h0m0 0.5h0m0 1h0m0 0.5h0m0 2h0m0 0.5h0m0 2.5h0m0 4.5h0m0 19h0m0.5 -65h0m0 0.5h0m0 4.5h0m0 4h0m0 2h0m0 0.5h0m0 3h0m0 1h0m0 1h0m0 1h0m0 2.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 1h0m0 1.5h0m0 3.5h0m0 0.5h0m0 1.5h0m0 1h0m0 0.5h0m0 0.5h0m0 1.5h0m0 4h0m0 3h0m0 5h0m0.5 -44h0m0 1.5h0m0 4h0m0 4.5h0m0 3h0m0 0.5h0m0 1h0m0 0.5h0m0 0.5h0m0 1.5h0m0 0.5h0m0 5h0m0 0.5h0m0 0.5h0m0 1h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 1.5h0m0 1h0m0 0.5h0m0 1h0m0 1.5h0m0 1h0m0 2h0m0 0.5h0m0 1h0m0 0.5h0m0 9h0m0 6h0m0 7h0m0 2h0m0 70.5h0m0.5 -123h0m0 3h0m0 1h0m0 0.5h0m0 1h0m0 0.5h0m0 1h0m0 1h0m0 3.5h0m0 0.5h0m0 1h0m0 3.5h0m0 0.5h0m0 1.5h0m0 2h0m0 1.5h0m0 0.5h0m0 1h0m0 1h0m0 1h0m0 1.5h0m0 0.5h0m0 1h0m0 3.5h0m0 1.5h0m0 2.5h0m0 4h0m0 39.5h0m0.5 -86.5h0m0 2.5h0m0 0.5h0m0 1h0m0 2.5h0m0 2.5h0m0 1.5h0m0 1h0m0 0.5h0m0 4h0m0 1h0m0 0.5h0m0 1.5h0m0 1.5h0m0 2h0m0 1h0m0 2h0m0 1h0m0 1.5h0m0 0.5h0m0 1.5h0m0 0.5h0m0 1.5h0m0 3.5h0m0 3h0m0 6.5h0m0 2h0m0 4.5h0m0.5 -53.5h0m0 5h0m0 1h0m0 3.5h0m0 2h0m0 0.5h0m0 1h0m0 10.5h0m0 0.5h0m0 2.5h0m0 5.5h0m0 0.5h0m0 1h0m0 0.5h0m0 2.5h0m0 1h0m0 2.5h0m0 1.5h0m0 1h0m0 2h0m0 1h0m0 2h0m0 1h0m0 1.5h0m0 4h0m0 0.5h0m0 8h0m0 0.5h0m0 20.5h0m0 6.5h0m0 44.5h0m0.5 -132.5h0m0 5.5h0m0 5h0m0 0.5h0m0 3h0m0 3h0m0 2h0m0 0.5h0m0 0.5h0m0 1.5h0m0 1h0m0 0.5h0m0 1h0m0 1.5h0m0 2.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 1.5h0m0 0.5h0m0 0.5h0m0 1.5h0m0 1.5h0m0 1.5h0m0 1.5h0m0 4.5h0m0 0.5h0m0 2h0m0 0.5h0m0 4h0m0 1.5h0m0 1h0m0 11h0m0 54h0m0.5 -114h0m0 1h0m0 1h0m0 0.5h0m0 0.5h0m0 3h0m0 1h0m0 0.5h0m0 0.5h0m0 0.5h0m0 5h0m0 1.5h0m0 1h0m0 1h0m0 0.5h0m0 0.5h0m0 3.5h0m0 0.5h0m0 2h0m0 1h0m0 1h0m0 0.5h0m0 3.5h0m0 0.5h0m0 1h0m0 0.5h0m0 0.5h0m0 0.5h0m0 0.5h0m0 1h0m0 0.5h0m0 1h0m0 1.5h0m0 2h0m0 2h0m0 1h0m0 2h0m0 0.5h0m0 4h0m0 4h0m0 28h0m0 15.5h0m0 15h0m0.5 -112h0m0 0.5h0m0 3h0m0 4h0m0 0.5h0m0 12h0m0 1.5h0m0 0.5h0m0 1h0m0 2.5h0m0 1.5h0m0 1.5h0m0 0.5h0m0 1.5h0m0 0.5h0m0 2.5h0m0 3.5h0m0 1h0m0 1h0m0 0.5h0m0 2h0m0 0.5h0m0 0.5h0m0 0.5h0m0 4.5h0m0 1.5h0m0 5h0m0 2.5h0m0 17h0m0 31h0m0.5 -98.5h0m0 3.5h0m0 5h0m0 1.5h0m0 0.5h0m0 2.5h0m0 5.5h0m0 0.5h0m0 2h0m0 0.5h0m0 1.5h0m0 1h0m0 1h0m0 1h0m0 1.5h0m0 0.5h0m0 1h0m0 0.5h0m0 0.5h0m0 1h0m0 0.5h0m0 3h0m0 1h0m0 0.5h0m0 0.5h0m0 0.5h0m0 3h0m0 2h0m0 1.5h0m0 7h0m0.5 -51h0m0 0.5h0m0 0.5h0m0 6.5h0m0 1h0m0 8.5h0m0 1h0m0 3h0m0 0.5h0m0 2.5h0m0 3h0m0 0.5h0m0 3h0m0 19.5h0m0 27h0m0.5 -77h0m0 0.5h0m0 8h0m0 6h0m0 9h0m0 1.5h0m0 1h0m0 0.5h0m0 5h0m0 35h0m0.5 -66.5h0m0 0.5h0m0 8h0m0 3h0m0 11.5h0m0 1.5h0m0 3.5h0m0 2.5h0m0 1h0m0 4.5h0m0.5 -37h0m0 1.5h0m0 0.5h0m0 9.5h0m0 9.5h0m0 2.5h0m0 0.5h0m0 0.5h0m0 1h0m0 4.5h0m0 0.5h0m0 1.5h0m0 2h0m0 1h0m0.5 -36.5h0m0 0.5h0m0 6h0m0 10.5h0m0 10h0m0 7h0m0 38.5h0m0.5 -86.5h0m0 14h0m0 1h0m0 14.5h0m0 8h0m0 1h0m0 1h0m0 1h0m0 3.5h0m0 41h0m0.5 -71h0m0 19h0m0 3.5h0m0 1h0m0 0.5h0m0 0.5h0m0 15h0m0 0.5h0m0.5 -41h0m0 10h0m0 1h0m0 0.5h0m0 9.5h0m0 4.5h0m0 0.5h0m0 0.5h0m0 1.5h0m0 2h0m0 0.5h0m0 3.5h0m0 17h0m0.5 -50.5h0m0 8h0m0 14h0m0 4.5h0m0 11h0m0 29.5h0m0.5 -68h0m0 20.5h0m0 2h0m0 3h0m0 6.5h0m0 2.5h0m0 17h0m0 58.5h0m0.5 -110.5h0m0 17h0m0 6.5h0m0 0.5h0m0 2.5h0m0 0.5h0m0 2h0m0 1h0m0 0.5h0m0.5 -45.5h0m0 14h0m0 23h0m0 1.5h0m0 2h0m0 2.5h0m0 1.5h0m0 4.5h0m0 6.5h0m0 1h0m0.5 -41.5h0m0 15.5h0m0 0.5h0m0 2h0m0 7.5h0m0 1h0m0 1h0m0 0.5h0m0 3h0m0 2.5h0m0 0.5h0m0.5 -34.5h0m0 28.5h0m0 2h0m0 2h0m0 0.5h0m0 0.5h0m0 0.5h0m0 1.5h0m0 88.5h0m0.5 -125h0m0 0.5h0m0 1h0m0 7h0m0 7h0m0 11h0m0 1.5h0m0 3.5h0m0 4.5h0m0.5 -25h0m0 8.5h0m0 0.5h0m0 0.5h0m0 3h0m0 2.5h0m0 7.5h0m0 0.5h0m0 1.5h0m0 0.5h0m0 2.5h0m0.5 -50h0m0 9.5h0m0 0.5h0m0 1h0m0 9.5h0m0 12.5h0m0 2h0m0 3h0m0 2.5h0m0 5h0m0 1.5h0m0 0.5h0m0 0.5h0m0 7.5h0m0 27.5h0m0.5 -64.5h0m0 7.5h0m0 3h0m0 6.5h0m0 8h0m0 16h0m0 0.5h0m0 9.5h0m0 4.5h0m0.5 -64.5h0m0 18h0m0 7.5h0m0 2.5h0m0 12h0m0 1.5h0m0.5 -43h0m0 20.5h0m0 2.5h0m0 3.5h0m0 5.5h0m0 1h0m0 3h0m0 4.5h0m0 3.5h0m0.5 -44.5h0m0 20.5h0m0 2.5h0m0 0.5h0m0 5h0m0 1h0m0 0.5h0m0 1h0m0 2.5h0m0 1h0m0 4h0m0 0.5h0m0 3.5h0m0 11h0m0 7.5h0m0 24.5h0m0.5 -64h0m0 1h0m0 1h0m0 8.5h0m0 3.5h0m0 0.5h0m0 6h0m0 40h0m0.5 -53.5h0m0 0.5h0m0 5h0m0 0.5h0m0 7h0m0 7h0m0 4h0m0 17h0m0.5 -39.5h0m0 2h0m0 6.5h0m0 7h0m0.5 -57h0m0 11h0m0 18.5h0m0 2h0m0 4.5h0m0 1h0m0 0.5h0m0 2h0m0 1h0m0 0.5h0m0 4.5h0m0 0.5h0m0 1.5h0m0 1h0m0 1h0m0 5h0m0 83.5h0m0.5 -129.5h0m0 3.5h0m0 19.5h0m0 5h0m0 1h0m0 3.5h0m0 3.5h0m0 4.5h0m0 4h0m0 11h0m0 8.5h0m0 1h0m0.5 -41h0m0 8.5h0m0 0.5h0m0 4h0m0 10.5h0m0 0.5h0m0 1.5h0m0 18.5h0m0.5 -55.5h0m0 1h0m0 9.5h0m0 4h0m0 0.5h0m0 8h0m0 0.5h0m0 1h0m0 1.5h0m0 4h0m0 0.5h0m0 7.5h0m0.5 -50.5h0m0 13.5h0m0 2h0m0 1h0m0 8.5h0m0 4h0m0 4h0m0 3.5h0m0 0.5h0m0 1.5h0m0 5.5h0m0 2.5h0m0 12.5h0m0 60.5h0m0.5 -120h0m0 36.5h0m0 0.5h0m0 2h0m0 2.5h0m0 5h0m0 2.5h0m0 0.5h0m0 0.5h0m0 28.5h0m0 14h0m0 15h0m0.5 -77.5h0m0 3.5h0m0 1.5h0m0 12.5h0m0 47h0m0.5 -75h0m0 9.5h0m0 1h0m0 3h0m0 4h0m0 0.5h0m0 3h0m0 1h0m0 2.5h0m0 1.5h0m0 1h0m0 8.5h0m0.5 -44.5h0m0 4h0m0 7h0m0 10.5h0m0 4.5h0m0 6h0m0 1.5h0m0 12h0m0.5 -69.5h0m0 31h0m0 4.5h0m0 3.5h0m0 1.5h0m0 3h0m0 0.5h0m0 1h0m0 1h0m0 6h0m0 1h0m0 6h0m0.5 -17h0m0 3.5h0m0 3h0m0 0.5h0m0 3.5h0m0 0.5h0m0 1h0m0 0.5h0m0 11.5h0m0 4.5h0m0 0.5h0m0 64h0m0.5 -115h0m0 9h0m0 13h0m0 1.5h0m0 8.5h0m0 0.5h0m0 12h0m0 19.5h0m0.5 -32h0m0 1.5h0m0 26.5h0m0.5 -71.5h0m0 2.5h0m0 29h0m0 6.5h0m0 1.5h0m0 3.5h0m0 1h0m0 1.5h0m0 10.5h0m0 2.5h0m0 4.5h0m0 47h0m0.5 -109.5h0m0 2h0m0 28h0m0 2.5h0m0 2.5h0m0 3.5h0m0 1.5h0m0 1h0m0 0.5h0m0 0.5h0m0 1.5h0m0 2h0m0 6.5h0m0 2h0m0 1h0m0 1h0m0 1h0m0 2.5h0m0 11.5h0m0 16.5h0m0.5 -88.5h0m0 0.5h0m0 29.5h0m0 3h0m0 4h0m0 6h0m0 2h0m0 0.5h0m0 4.5h0m0 4.5h0m0 0.5h0m0 0.5h0m0 1.5h0m0 0.5h0m0 1.5h0m0 3h0m0 1h0m0.5 -48h0m0 1h0m0 1.5h0m0 4h0m0 4.5h0m0 8h0m0 0.5h0m0 3.5h0m0 4h0m0 4h0m0 4h0m0 0.5h0m0 1h0m0 2h0m0 0.5h0m0 0.5h0m0 0.5h0m0 2h0m0 1.5h0m0 1h0m0 0.5h0m0 5.5h0m0 39h0m0.5 -92h0m0 1.5h0m0 8.5h0m0 6.5h0m0 8h0m0 0.5h0m0 1.5h0m0 1h0m0 1.5h0m0 1h0m0 0.5h0m0 5.5h0m0 1h0m0 5h0m0 1h0m0 1h0m0 0.5h0m0 1h0m0 1h0m0.5 -35.5h0m0 2.5h0m0 8h0m0 5h0m0 5h0m0 0.5h0m0 4h0m0 1.5h0m0 2h0m0 0.5h0m0 0.5h0m0 1.5h0m0 1.5h0m0 1.5h0m0 3h0m0 1h0m0 8.5h0m0.5 -40.5h0m0 0.5h0m0 1h0m0 8h0m0 5.5h0m0 1h0m0 3h0m0 2h0m0 1.5h0m0 1h0m0 1h0m0 1h0m0 0.5h0m0 0.5h0m0 2h0m0 0.5h0m0 1.5h0m0 1.5h0m0 1h0m0 2h0m0.5 -33h0m0 4h0m0 2h0m0 2.5h0m0 1.5h0m0 2h0m0 3h0m0 7h0m0 6h0m0.5 -22h0m0 2.5h0m0 5h0m0 8.5h0m0 3h0m0 10h0m0.5 -38h0m0 8h0m0 4h0m0 1h0m0 3h0m0 0.5h0m0 3.5h0m0 3h0m0 6h0m0 52.5h0m0.5 -72h0m0 0.5h0m0 2h0m0 4h0m0 5h0m0 40h0m0.5 -95.5h0m0 1h0m0 38.5h0m0 7.5h0m0 0.5h0m0 4.5h0m0 4h0m0.5 -56h0m0 45.5h0m0 0.5h0m0 1h0m0 2h0m0 2h0m0 11h0m0 3.5h0m0 6.5h0m0 9h0m0.5 -39.5h0m0 1.5h0m0 4.5h0m0 0.5h0m0 1h0m0 2.5h0m0 0.5h0m0 2h0m0 12.5h0m0 1h0m0 27.5h0m0.5 -58.5h0m0 6h0m0 5h0m0 0.5h0m0 1.5h0m0 7.5h0m0 12h0m0.5 -18.5h0m0 5h0m0 12h0m0 4.5h0m0.5 -72.5h0m0 45.5h0m0 6.5h0m0 11h0m0 25h0m0.5 -58h0m0 6h0m0 0.5h0m0 9.5h0m0 1.5h0m0 3.5h0m0 0.5h0m0 1h0m0 8h0m0 40.5h0m0 14h0m0.5 -104.5h0m0 23.5h0m0 17.5h0m0 31h0m0.5 -86h0m0 45.5h0m0 3.5h0m0 3h0m0 1h0m0 2h0m0 3.5h0m0 11.5h0m0 14.5h0m0 37h0m0.5 -76h0m0 20.5h0m0 26.5h0m0.5 -46h0m0 3.5h0m0 4.5h0m0 3h0m0 11h0m0.5 -69h0m0 34h0m0 5.5h0m0 6.5h0m0 7.5h0m0 0.5h0m0 5h0m0 90h0m0.5 -119.5h0m0 20.5h0m0 0.5h0m0 7h0m0.5 -24h0m0 7h0m0 5h0m0 1h0m0 15h0m0 51.5h0m0 32.5h0m0.5 -98.5h0m0 1.5h0m0 3h0m0 1.5h0m0 5.5h0m0 0.5h0m0.5 -11h0m0 1.5h0m0 6.5h0m0 3h0m0 0.5h0m0 3h0m0 32.5h0m0.5 -119h0m0 64.5h0m0 5h0m0 2h0m0 3.5h0m0.5 -55.5h0m0 46.5h0m0 13h0m0 3h0m0 82h0m0.5 -89h0m0 1h0m0 3h0m0 1.5h0m0 16.5h0m0 8h0m0 17.5h0m0 12h0m0.5 -83.5h0m0 22h0m0 1.5h0m0 2.5h0m0 0.5h0m0 1h0m0 31h0m0.5 -47h0m0 65h0m0.5 -48.5h0m0 0.5h0m0 1h0m0 0.5h0m0 2h0m0 0.5h0m0 1h0m0 13.5h0m0 22h0m0.5 -69h0m0 6h0m0 21.5h0m0 6.5h0m0.5 -9.5h0m0 0.5h0m0 3h0m0 2.5h0m0 22h0m0.5 -88h0m0 0.5h0m0 46h0m0 8.5h0m0 1.5h0m0 1h0m0 1.5h0m0 3h0m0 4.5h0m0 8.5h0m0 9.5h0m0 7h0m0.5 -61h0m0 7.5h0m0 16h0m0 2.5h0m0 4.5h0m0 3h0m0 0.5h0m0 6h0m0 14.5h0m0 73.5h0m0.5 -126.5h0m0 25.5h0m0 3h0m0 5.5h0m0 1h0m0 0.5h0m0 4h0m0 7h0m0 20h0m0.5 -75h0m0 8h0m0 4h0m0 16h0m0 0.5h0m0 1.5h0m0 0.5h0m0 9h0m0 1.5h0m0 1h0m0.5 -14h0m0 3.5h0m0 8.5h0m0 2.5h0m0 3h0m0 5h0m0.5 -76.5h0m0 22h0m0 15h0m0 6.5h0m0 9.5h0m0 4.5h0m0 4h0m0 4h0m0 11h0m0 27.5h0m0 24.5h0m0.5 -109.5h0m0 30h0m0 5h0m0 3h0m0 2h0m0 1h0m0 3.5h0m0 0.5h0m0 8.5h0m0 27h0m0.5 -101.5h0m0 54.5h0m0 2.5h0m0 4h0m0 5.5h0m0 11.5h0m0 5h0m0.5 -15.5h0m0 1.5h0m0 2h0m0.5 -17.5h0m0 9.5h0m0 6.5h0m0 12h0m0 2h0m0 3h0m0.5 -49.5h0m0 36h0m0.5 -62.5h0m0 52h0m0 6h0m0 12.5h0m0 13h0m0.5 -90h0m0 60.5h0m0 5h0m0 18h0m0.5 -71h0m0 21.5h0m0 15h0m0 14.5h0m0 1h0m0 2.5h0m0 9h0m0.5 -83.5h0m0 64.5h0m0 1.5h0m0 16h0m0.5 -17.5h0m0 14h0m0 1h0m0 5.5h0m0.5 -21h0m0 0.5h0m0 2h0m0 0.5h0m0 0.5h0m0 3h0m0 5h0m0 1h0m0.5 -19.5h0m0 14.5h0m0 2.5h0m0 2.5h0m0 2h0m0.5 -84h0m0 63h0m0 1.5h0m0 10h0m0 0.5h0m0 3h0m0 69h0m0.5 -79.5h0m0 4.5h0m0 6h0m0 1h0m0 1.5h0m0.5 -5h0m0 36h0m0.5 -47h0m0 3h0m0 0.5h0m0 10h0m0 6.5h0m0.5 -47h0m0 30h0m0 3h0m0 2h0m0 20.5h0m0 43.5h0m0.5 -63.5h0m0 1h0m0 38.5h0m0.5 -38.5h0m0 0.5h0m0 1.5h0m0 1.5h0m0 8h0m0 2.5h0m0.5 -87h0m0 73.5h0m0 50.5h0m0 10h0m0.5 -59h0m0 27.5h0m0.5 -35h0m0.5 -71h0m0 55h0m0 15.5h0m0 1.5h0m0 1h0m0 4h0m0 1.5h0m0.5 -21h0m0 2.5h0m0 9h0m0 3.5h0m0 4h0m0 7h0m0 1h0m0 1.5h0m0.5 -91h0m0 75h0m0 2h0m0 2h0m0 9h0m0 64.5h0m0 24.5h0m0.5 -94.5h0m0 7.5h0m0 8.5h0m0.5 -42h0m0 30.5h0m0 1h0m0 0.5h0m0 4.5h0m0 6.5h0m0.5 -12.5h0m0 2.5h0m0 4h0m0 2h0m0 6.5h0m0.5 -42.5h0m0 22.5h0m0 4.5h0m0 9h0m0 0.5h0m0 3.5h0m0 17.5h0m0 16.5h0m0.5 -52h0m0 5h0m0 6h0m0.5 -12h0m0 0.5h0m0 3h0m0 0.5h0m0 8h0m0 4h0m0 38h0m0 3h0m0 22h0m0.5 -164.5h0m0 78h0m0 8.5h0m0 1h0m0 1.5h0m0 0.5h0m0 4.5h0m0 24h0m0 35h0m0.5 -96h0m0 32h0m0 7h0m0.5 -19h0m0 6.5h0m0 16h0m0 3h0m0 1h0m0 1.5h0m0.5 -30h0m0 5h0m0 0.5h0m0 6.5h0m0 5h0m0.5 -27.5h0m0.5 38.5h0m0 13h0m0.5 -53.5h0m0 20.5h0m0.5 -6h0m0 5.5h0m0.5 -1h0m0 11h0m0 0.5h0m0 1.5h0m0 35.5h0m0 29h0m0.5 -91.5h0m0 7h0m0 13h0m0 24h0m0.5 -117.5h0m0 85h0m0 6h0m0 5.5h0m0 3.5h0m0 2.5h0m0.5 -9h0m0 8h0m0 10h0m0 7.5h0m0.5 -37h0m0 14h0m0 2h0m0 3.5h0m0 6h0m0.5 -13.5h0m0 14h0m0.5 -29.5h0m0 14h0m0 2.5h0m0 79h0m0 3.5h0m0.5 -98.5h0m0 8h0m0 49h0m0 42h0m0.5 -84.5h0m0 2h0m0.5 -30h0m0 19h0m0 3.5h0m0 3h0m0 5h0m0 13h0m0.5 -25h0m0 9.5h0m0 15.5h0m0.5 -41.5h0m0 22.5h0m0 5h0m0.5 -72h0m0 73h0m0 7.5h0m0 65h0m0.5 -178h0m0 103h0m0 0.5h0m0 39.5h0m0.5 -89.5h0m0 26.5h0m0 22.5h0m0 8.5h0m0 10.5h0m0.5 -58h0m0 19.5h0m0 19.5h0m0 2h0m0 3h0m0 50.5h0m0.5 -118.5h0m0 32h0m0 23.5h0m0 10h0m0 19h0m0.5 -67.5h0m0 25h0m0 16.5h0m0 3h0m0 3h0m0 7.5h0m0.5 -27h0m0 5h0m0 5.5h0m0 35.5h0m0 17h0m0.5 -93.5h0m0 33.5h0m0 8.5h0m0 5h0m0 2h0m0 6h0m0.5 -31h0m0 14h0m0 1.5h0m0 3.5h0m0 3.5h0m0 5h0m0 50h0m0 28.5h0m0.5 -84.5h0m0 15h0m0 2.5h0m0 1.5h0m0 1h0m0 78.5h0m1 -98h0m0 1.5h0m0 9.5h0m0.5 -33h0m0 15.5h0m0 11h0m0 0.5h0m0 1h0m0 6.5h0m0 3h0m0 21.5h0m0 31.5h0m0.5 -85.5h0m0 11.5h0m0 14.5h0m0 89h0m0.5 -73h0m0 20.5h0m0.5 -154.5h0m0 103.5h0m0 7h0m0.5 -11h0m0 6.5h0m0 2.5h0m0 17.5h0m0.5 -27h0m0 18h0m0 55.5h0m0.5 -64h0m0.5 -26h0m0 28.5h0m0 1.5h0m0 4.5h0m0.5 39h0m0.5 -57h0m0 1h0m0 3h0m0 3h0m0 2.5h0m0 5h0m0 19.5h0m0 36.5h0m0.5 -68.5h0m0 9h0m0 0.5h0m0 4h0m0 0.5h0m0 1h0m0.5 -13.5h0m0 13h0m0 4.5h0m0 4h0m0 2h0m0.5 -31h0m0 15h0m0.5 -17h0m0 10.5h0m0 5h0m0 14.5h0m0 4.5h0m0 10.5h0m0.5 -36h0m0 10h0m0.5 -120h0m0 106h0m0 6h0m0 7.5h0m0 41.5h0m0 34.5h0m0.5 -69.5h0m0 7h0m0 5h0m0.5 -11.5h0m0 2h0m0.5 33h0m0 0.5h0m0.5 -35.5h0m0 7h0m0.5 13.5h0m0 14.5h0m0 17h0m0 17h0m0.5 -82h0m0 3.5h0m1 -26.5h0m0 26.5h0m0 9h0m0 2h0m0 8h0m0 1h0m0.5 -72h0m0 43h0m0.5 14h0m0 2.5h0m0 9h0m0.5 -14.5h0m0 7h0m0.5 -12h0m0 36.5h0m1 -52h0m0 20h0m0 10.5h0m0.5 -15.5h0m0 6.5h0m0 8.5h0m0.5 -115h0m0 138h0m0.5 -42.5h0m0 6h0m0 3.5h0m0 9.5h0m0 2.5h0m0.5 -18h0m0 31h0m0.5 8.5h0m0.5 -97.5h0m0 54h0m0 108.5h0m0.5 -54.5h0m0.5 -59h0m0 20h0m0 5.5h0m0 1.5h0m0 11h0m0 60.5h0m0.5 -87h0m0 9.5h0m0 7h0m0.5 -7h0m0 1.5h0m0 14.5h0m0 40h0m0.5 -83h0m0 12h0m0 19.5h0m0 7.5h0m0.5 -6h0m0.5 -23h0m0 5.5h0m0 2.5h0m0 2h0m0 2.5h0m0 7h0m0 74h0m0.5 -83.5h0m0 6h0m0 24.5h0m0 10h0m0.5 -46h0m0 1.5h0m0 12.5h0m0 8h0m0.5 -24h0m0 5.5h0m0 0.5h0m0 5.5h0m0 32.5h0m0.5 -50.5h0m0 15.5h0m0 14h0m0 31h0m0.5 -39.5h0m0 16h0m0.5 -14h0m0.5 -30.5h0m0 18h0m0 2.5h0m0 3.5h0m0 4h0m0 4.5h0m0.5 -19.5h0m0.5 -2h0m0 13.5h0m0 37.5h0m0.5 -43.5h0m0 11h0m0 19.5h0m0.5 -29h0m0 3.5h0m0 7h0m0.5 -3h0m0.5 26h0m0.5 -35.5h0m0 1h0m0 7h0m0 5h0m0 4h0m0 5h0m0 20.5h0m0.5 -57.5h0m0 9.5h0m0 15h0m0 1h0m0 3h0m0.5 -5.5h0m0.5 -8h0m0 2.5h0m0.5 -2h0m0 11h0m0.5 -14.5h0m0 52.5h0m0.5 -46.5h0m0 6h0m0 3.5h0m0.5 -13.5h0m0.5 -2h0m0.5 6h0m0.5 -21h0m0 26h0m0 7h0m0.5 -3h0m0 18.5h0m0 27.5h0m0.5 -67.5h0m0 91.5h0m0 2.5h0m0.5 -90h0m0 2.5h0m0.5 4h0m0 7.5h0m0 32h0m0.5 -29h0m0.5 -25.5h0m0.5 4h0m0.5 14h0m0 0.5h0m0 6.5h0m0 4.5h0m0 11.5h0m0.5 -80h0m0 57.5h0m0 3h0m0.5 -3.5h0m0 7.5h0m0 19.5h0m0 36h0m0.5 -64h0m0 17h0m0.5 -37h0m0 22.5h0m0.5 2.5h0m0 13.5h0m0 2h0m0.5 -23h0m0.5 11.5h0m0 1h0m0.5 -4h0m0.5 -0.5h0m0.5 -7.5h0m0 33h0m0.5 -34.5h0m1 12h0m1 -23.5h0m0 19h0m0 5.5h0m0.5 -15h0m0 5h0m0.5 50.5h0m0.5 -91.5h0m1 65.5h0m1 18h0m0 28h0m0.5 -55h0m0.5 -14.5h0m0 6h0m0.5 -12h0m0 14h0m0 6h0m0 14h0m1 -32h0m0 4.5h0m0.5 -75h0m0 89.5h0m1 11.5h0m0 19.5h0m0.5 -55h0m0.5 10h0m0.5 22h0m0.5 -17.5h0m1 -13h0m0 4.5h0m0 51.5h0m0.5 -66.5h0m0 12h0m0 8h0m0 0.5h0m1 -15h0m0 9.5h0m0 66h0m1 -78.5h0m0.5 8h0m0 58.5h0m0.5 -65.5h0m0 2.5h0m0 63.5h0m0.5 -69.5h0m0.5 12.5h0m0 5h0m0 12.5h0m0 12h0m0 13.5h0m1.5 -36.5h0m1 -6.5h0m0 12h0m0.5 42h0m0.5 -53h0m0 7h0m0.5 -1h0m0 0.5h0m1 -18.5h0m0 28h0m0.5 -20.5h0m0.5 7.5h0m0.5 -57.5h0m0 52.5h0m0 35h0m1 -31h0m0.5 0.5h0m0 38.5h0m0.5 -38h0m0.5 -14h0m0.5 58h0m0 8.5h0m1.5 -5h0m0.5 -70h0m0 26.5h0m0 75h0m0.5 -88h0m2 22.5h0m0.5 -34.5h0m0.5 -34.5h0m1.5 47h0m0.5 3.5h0m1 -1h0m0.5 19h0m0.5 -18.5h0m0 8.5h0m0.5 18h0m0 27h0m0.5 8h0m0.5 -66.5h0m0 16h0m1.5 -3h0m0 0.5h0m0 53.5h0m2 -66.5h0m0.5 8.5h0m0.5 -15h0m0 50.5h0m0.5 -35h0m0 5.5h0m0 29h0m1 -23.5h0m2 -39h0m0 24h0m0 13.5h0m1 -12h0m0.5 16.5h0m1 -15h0m0 48h0m0.5 -77h0m0 33h0m1.5 -27h0m0.5 101.5h0m0.5 -71h0m0.5 9h0m1.5 -25.5h0m1 31h0m0.5 -2h0m0.5 -25.5h0m0 32h0m2.5 -19h0m1 -10h0m0.5 6h0m3.5 -3h0m0.5 12.5h0m0 14.5h0m2 -29h0m2 50h0m5 -50.5h0m0 19h0m1 -32.5h0m0 9.5h0m0 2h0m0.5 7h0m0.5 5h0m3.5 57.5h0m1 -55.5h0m0.5 -15h0m0 50h0m0.5 16h0m0.5 35h0m0.5 -85h0m0 18.5h0m0.5 -11h0m2 19h0m0.5 -31.5h0m0.5 5h0m0 46.5h0m2 46.5h0m1.5 -114.5h0m0.5 26.5h0m0 60.5h0m1.5 -63.5h0m2 -17.5h0m2 14.5h0m0.5 15h0m1 27h0m0 5h0m1 -176h0m1.5 131h0m2 39h0m1 -69.5h0m0 28.5h0m0.5 34h0m4.5 9.5h0m2 -40.5h0m1.5 27h0m0.5 -32.5h0m6.5 15h0m0.5 -41.5h0m10 29h0m1.5 -99.5h0m3 86.5h0m1 -5.5h0m0 40.5h0m1.5 38h0m4.5 -55.5h0m2.5 72.5h0m5 -90h0m3.5 -11h0m1.5 -3h0m3 55.5h0m5 -68h0m1 123h0m0.5 -113.5h0m3.5 20h0m1 9h0m2.5 -9h0m1 14h0m7.5 -43.5h0m7 16h0m1 -20h0m0 44.5h0m4 6.5h0m1 35.5h0m0 35.5h0m0.5 -68.5h0m1 -13h0m0.5 2.5h0m2.5 29h0m11.5 52.5h0m0.5 -96.5h0m2.5 39h0m1.5 66h0m3.5 -25h0m1 -16h0m2 -82h0m1 94h0m0 33.5h0m2 -40.5h0m7.5 -89h0m2 34.5h0m1 71h0m10 -71h0m1.5 57h0m0.5 -81.5h0m3.5 -107.5h0m3 132h0m1 64.5h0m2 -26.5h0m7.5 9.5h0m10.5 -63h0m8 109h0m10 -159h0m16 102.5h0m1.5 -82.5h0m2 13.5h0m6 2h0m15 -36.5h0m4.5 134h0" stroke="rgba(168,201,255,.6)" stroke-width="2.2" stroke-linecap="round" fill="none"/>
+<line x1="64.0" y1="330.0" x2="596.0" y2="330.0" stroke="var(--line-strong)" stroke-width="1.2"/>
+<line x1="64.0" y1="330.0" x2="64.0" y2="70.0" stroke="var(--line-strong)" stroke-width="1.2"/>
+<line x1="64.0" y1="330.0" x2="64.0" y2="335.0" stroke="var(--line-strong)"/>
+<text x="64.0" y="348.0" font-size="10" fill="var(--ink-faint)" text-anchor="middle">30</text>
+<line x1="139.4" y1="330.0" x2="139.4" y2="335.0" stroke="var(--line-strong)"/>
+<text x="139.4" y="348.0" font-size="10" fill="var(--ink-faint)" text-anchor="middle">50</text>
+<line x1="241.8" y1="330.0" x2="241.8" y2="335.0" stroke="var(--line-strong)"/>
+<text x="241.8" y="348.0" font-size="10" fill="var(--ink-faint)" text-anchor="middle">100</text>
+<line x1="344.2" y1="330.0" x2="344.2" y2="335.0" stroke="var(--line-strong)"/>
+<text x="344.2" y="348.0" font-size="10" fill="var(--ink-faint)" text-anchor="middle">200</text>
+<line x1="479.5" y1="330.0" x2="479.5" y2="335.0" stroke="var(--line-strong)"/>
+<text x="479.5" y="348.0" font-size="10" fill="var(--ink-faint)" text-anchor="middle">500</text>
+<line x1="581.9" y1="330.0" x2="581.9" y2="335.0" stroke="var(--line-strong)"/>
+<text x="581.9" y="348.0" font-size="10" fill="var(--ink-faint)" text-anchor="middle">1,000</text>
+<text x="596.0" y="364.0" font-size="10" fill="var(--ink-soft)" text-anchor="end">軌道の大きさ（軌道長半径、AU、対数目盛）→</text>
+<line x1="59.0" y1="330.0" x2="64.0" y2="330.0" stroke="var(--line-strong)"/>
+<text x="56.0" y="333.5" font-size="10" fill="var(--ink-faint)" text-anchor="end">0</text>
+<line x1="59.0" y1="265.0" x2="64.0" y2="265.0" stroke="var(--line-strong)"/>
+<text x="56.0" y="268.5" font-size="10" fill="var(--ink-faint)" text-anchor="end">20</text>
+<line x1="59.0" y1="200.0" x2="64.0" y2="200.0" stroke="var(--line-strong)"/>
+<text x="56.0" y="203.5" font-size="10" fill="var(--ink-faint)" text-anchor="end">40</text>
+<line x1="59.0" y1="135.0" x2="64.0" y2="135.0" stroke="var(--line-strong)"/>
+<text x="56.0" y="138.5" font-size="10" fill="var(--ink-faint)" text-anchor="end">60</text>
+<line x1="59.0" y1="70.0" x2="64.0" y2="70.0" stroke="var(--line-strong)"/>
+<text x="56.0" y="73.5" font-size="10" fill="var(--ink-faint)" text-anchor="end">80</text>
+<text x="64.0" y="58.0" font-size="10" fill="var(--ink-soft)">↑ 太陽にいちばん近づく距離（近日点、AU）</text>
+<text x="592.0" y="246.3" font-size="10" fill="var(--good)" text-anchor="end">海王星の軌道（30 AU）</text>
+<text x="90.9" y="161.5" font-size="10.5" font-weight="500" fill="var(--accent-deep)">カイパーベルト</text>
+<circle cx="104.0" cy="233.9" r="3.6" fill="none" stroke="var(--key)" stroke-width="1.4"/>
+<text x="108.0" y="250.9" font-size="10.5" font-weight="500" fill="var(--key)" text-anchor="start" stroke="#0b0c10" stroke-width="3" stroke-linejoin="round" paint-order="stroke">冥王星</text>
+<circle cx="184.7" cy="205.9" r="3.6" fill="none" stroke="var(--key)" stroke-width="1.4"/>
+<text x="188.7" y="196.9" font-size="10.5" font-weight="500" fill="var(--key)" text-anchor="start" stroke="#0b0c10" stroke-width="3" stroke-linejoin="round" paint-order="stroke">エリス</text>
+<circle cx="492.0" cy="82.3" r="3.6" fill="none" stroke="var(--teach)" stroke-width="1.4"/>
+<text x="484.0" y="86.3" font-size="10.5" font-weight="500" fill="var(--teach)" text-anchor="end" stroke="#0b0c10" stroke-width="3" stroke-linejoin="round" paint-order="stroke">セドナ ― 近日点も遠い</text>
+<text x="268.8" y="128.5" font-size="10.5" fill="var(--ink-soft)">散乱円盤：点が右へ長く伸び、</text>
+<text x="268.8" y="142.5" font-size="10.5" fill="var(--ink-soft)">高さ（近日点）は 30〜40 AU に留まる</text>
+</svg>
+</div>
+            <figcaption>IAU小惑星センターの「海王星以遠天体」と「ケンタウルス族・散乱円盤天体」の2つの一覧（2026年9月25日更新分）から、軌道長半径 30〜1,100 AU・近日点 0〜80 AU の天体を本教材で描いた<strong>実データ</strong>です。セドナはどちらの一覧にも無いので、JPL Small-Body Database の値（近日点76.2 AU、軌道長半径544 AU）で別に置きました。<strong>見つけやすさの偏りは補正していません</strong>——遠い天体ほど見つかりにくいので、右ほど点がまばらなのは、実際に少ないからだけではありません。海王星の線より下の点は、海王星の内側まで入り込む天体（ケンタウルス族など）です。</figcaption>
+          </figure>
+
+          <div class="row"><span class="k">基本</span><span class="v"><strong>海王星に弾き飛ばされて、細長く傾いた軌道になった天体の集まり</strong>です。NASA は「カイパーベルトの主な部分よりずっと遠くまで広がり、海王星によって非常に細長い軌道に散らされた天体がいる。<strong>数百 AU の彼方</strong>まで出て行くものもある」と書いています（NASA Kuiper Belt Facts、2025年3月13日更新）。
+          <ul>
+            <li><strong>図の読み方</strong>——散乱円盤の天体は、<strong>太陽にいちばん近づく距離（近日点）が海王星のそば（30〜40 AU）に留まったまま、軌道だけが右へ長く伸びています</strong>。いまも海王星に近づくたびに少しずつ引っぱられている、という形です</li>
+            <li>軌道長半径が 50 AU を超えるものが、上の一覧に<strong>約1,100個</strong>（本教材で数えた値）。この数も増え続けます</li>
+            <li>散乱円盤から内側へ入ってきた天体が、<strong>木星族彗星</strong>のもとの1つと考えられています（Volk・Malhotra 2008）。次の節の彗星につながります</li>
+          </ul></span></div>
+
+          <div class="row"><span class="k">セドナ</span><span class="v">図の右上の紫の丸。<strong>近日点が76 AU</strong>で、いちばん近づいても海王星からずっと遠い。海王星の影響をほとんど受けない軌道で、こうした天体は<strong>「切り離された天体」</strong>と呼ばれます（NASA）。2003年に、エリスと同じブラウンらのチームが見つけました。</span></div>
+
+          <div class="row"><span class="k">準惑星<br>3つ</span><span class="v">
+          <div class="table-scroll"><table class="mini-table">
+            <tr><th style="width:18%">名前</th><th style="width:26%">どこに</th><th style="width:22%">大きさ</th><th>覚えどころ</th></tr>
+            <tr><td><strong>エリス</strong><br>Eris</td><td><strong>散乱円盤</strong>。軌道長半径 67.9 AU、近日点38／遠日点98 AU、傾き<strong>44度</strong>。1周 約560年。いまは約95 AU</td><td>直径 <strong>2,326km</strong>——冥王星（2,377km）より<strong>わずかに小さい</strong></td><td><strong>重さは冥王星の約1.27倍</strong>（衛星ディスノミアの動きから求めた）。大きさでは負け、重さでは勝つ</td></tr>
+            <tr><td><strong>マケマケ</strong><br>Makemake</td><td>カイパーベルト。軌道長半径 45.6 AU</td><td>約1,430×1,500km</td><td>2005年発見。衛星は2015年の画像から見つかった（2016年発表）</td></tr>
+            <tr><td><strong>ハウメア</strong><br>Haumea</td><td>カイパーベルト。軌道長半径 43.1 AU</td><td>約2,300×1,700×1,000km の<strong>細長い形</strong></td><td><strong>3.9時間</strong>で自転し、その速さで引き伸ばされている。<strong>カイパーベルトで初めて環が見つかった天体</strong>（2017年）。衛星2つ</td></tr>
+          </table></div>
+          <p style="font-size:12.5px;color:var(--ink-faint);margin:2px 0 0">軌道は JPL Small-Body Database（2026年9月25日閲覧）。エリスの直径は恒星の掩蔽による Sicardy ほか 2011（<i>Nature</i>）、重さは Brown・Schaller 2007（<i>Science</i>）、冥王星の直径は NASA（ニューホライズンズの測定）。NASA のエリスのページは直径を「約2,400km」と古い値のままにしています。ハウメアの形と環は Ortiz ほか 2017（<i>Nature</i>）。エリスの現在の距離は JPL Horizons で本教材が確認。</p>
+          </span></div>
+
+          <div class="row"><span class="k">エリスと<br>2006年</span><span class="v"><strong>エリスの発見が、「惑星とは何か」を決め直すきっかけになりました。</strong>
+          <ul>
+            <li>2005年7月29日、NASA は「<strong>10番目の惑星</strong>を発見」と発表しました。冥王星より大きいと考えられたからです（のちの測定では、わずかに小さかった）</li>
+            <li>冥王星が惑星なら、それと同じくらいの天体も惑星になる。<strong>カイパーベルトや散乱円盤には、ほかにも似た天体がありそうだった</strong>——惑星の数が際限なく増えかねない</li>
+            <li>NASA は「エリスの発見が議論を引き起こし、2006年に国際天文学連合（IAU）が惑星の定義をはっきりさせる決定につながった」と書いています。IAU も、エリス・マケマケ・ハウメアを「その発見が惑星の定義を見直させた天体」と呼んでいます</li>
+          </ul>
+          <p style="margin:8px 0 0">そのとき何が決められたかは、次の節で扱います。名前の「エリス」は、ギリシャ神話の<strong>争いの女神</strong>です（2006年9月13日命名）。</p>
+          <p style="font-size:12.5px;color:var(--ink-faint);margin:6px 0 0">確認先：JPL「NASA-Funded Scientists Discover Tenth Planet」（2005年7月29日）、NASA の Eris のページ（science.nasa.gov/dwarf-planets/eris/）、IAU の発表 iau0806（2008年7月）。いずれも2026年9月25日閲覧。</p></span></div>
+        </div>
+      </div>
     </section>
 
+    <section id="dwarf">
+      <div class="sec-head"><span class="idx">10</span><h2>冥王星は、なぜ「準惑星」になったのか</h2></div>
+      <p>この節は<strong>カードではありません</strong>。天体の性質ではなく、<strong>人間の決めた呼び方</strong>の話だからです。覚える対象でもないので、演習には出しません。</p>
+
+      <div class="box teach"><span class="lab">2006年に決められたこと</span>
+      <p><strong>2006年8月24日、プラハの国際天文学連合（IAU）総会で、「惑星」の定義が初めて決められました。</strong>太陽系の惑星とは、次の<strong>3つをすべて満たす</strong>天体です。</p>
+      <ol>
+        <li><strong>太陽のまわりを回っている</strong></li>
+        <li><strong>自分の重力で、ほぼ丸い形になるほど重い</strong></li>
+        <li><strong>自分の軌道の近くから、ほかの天体を掃き清めている</strong></li>
+      </ol>
+      <p style="margin-top:8px">冥王星は①と②を満たしますが、<strong>③を満たしません</strong>。軌道のまわりのカイパーベルトには、冥王星と同じような天体がたくさん残っています（§07 の分布の図）。</p>
+      <p style="margin-top:8px">同時に、<strong>①と②だけを満たし、③を満たさず、衛星でもない天体</strong>の区分として<strong>「準惑星」</strong>が作られ、冥王星はここに入りました（決議 B6。冥王星は「海王星以遠の天体の新しい区分の<strong>典型</strong>」とされた）。冥王星の決議は <strong>237対157</strong>（棄権17）で可決されています。</p>
+      <p style="margin-top:8px">いま IAU が認めている準惑星は<strong>5つ</strong>——<strong>ケレス・冥王星・エリス・マケマケ・ハウメア</strong>。この回で、5つすべてに出会ったことになります。</p>
+      <p style="font-size:12.5px;color:var(--ink-faint);margin:8px 0 0">決議の文言は IAU の発表 iau0603（2006年8月24日、iauarchive.eso.org）による。採決の場に残っていたのは総会参加者2,500人超のうち約400人で、報道では「424人」という数字がよく引かれますが、IAU の発表にある数ではありません。</p></div>
+
+      <div class="box principle"><span class="lab">冥王星そのものは、何も変わっていません</span>
+      <p>2006年の前と後で、冥王星の大きさも、軌道も、ハートも、カロンとの関係も、<strong>何ひとつ変わっていません</strong>。<strong>変わったのは、人間の側の呼び方だけ</strong>です。</p>
+      <p style="margin-top:8px">ケレスも同じです。1801年に<strong>惑星</strong>として数えられ、次に<strong>小惑星</strong>になり、2006年に<strong>準惑星</strong>になりました（§04 のケレスのカード）。その間、ケレスは小惑星帯の同じ場所を回り続けていました。<strong>分類は観測や考え方が進むと変わります。天体は変わりません。</strong></p></div>
+
+      <div class="box warn"><span class="lab">いまも議論は続いている</span>
+      <ul>
+        <li><strong>③の「掃き清める」をどう測るか</strong>が、いちばんの論点です。完全に掃き清めた惑星は無い（地球の軌道のそばにも地球近傍小惑星がある）という批判があり、ソーター（2006）やマーゴ（2015）は、これを数値で判定する方法を提案しています</li>
+        <li>ニューホライズンズの責任者スターンらは、「自分の重力で丸くなっているものはすべて惑星」とする<strong>地球物理学的な定義</strong>を提案しています（Runyon ほか 2017）。この定義だと、月も惑星に入ります</li>
+        <li>2026年4月にも、NASA の長官が議会で「冥王星を惑星に戻す側にいる」と述べ、話題になりました。ただし<strong>IAU が定義を見直すという発表は、2026年9月時点で出ていません</strong></li>
+      </ul>
+      <p style="margin-top:8px"><strong>決着した話ではありません。</strong>定義は、何を便利に区別したいかで変わりうる約束ごとです。</p>
+      <p style="font-size:12.5px;color:var(--ink-faint);margin:6px 0 0">確認先：Soter 2006（<i>The Astronomical Journal</i> 132）、Margot 2015（同 150）、Runyon ほか 2017（月惑星科学会議）、<i>Scientific American</i>（2026年4月28日）。いずれも2026年9月25日閲覧。</p></div>
+
+      <div class="box target"><span class="lab">この教材が優先すること</span>
+      <p><strong>区分の名前より、「どこにあって、どういう天体か」を覚えてください。</strong>冥王星なら——カイパーベルトの 39.5 AU、海王星と 3:2 の共鳴、窒素の氷のハート、カロンと互いに回り合う。これは2006年の前にも後にも、定義がこの先どう変わっても、変わりません。</p></div>
+    </section>
+
+    <section id="comet">
+      <div class="sec-head"><span class="idx">11</span><h2>彗星 ― チュリュモフ・ゲラシメンコ彗星</h2></div>
+      <p><strong>配置図のどこか</strong>——<strong>1か所に決まらない</strong>のが彗星です。細長い軌道で、配置図の上を行き来します。例にとる<strong>チュリュモフ・ゲラシメンコ彗星（67P）</strong>は、太陽に<strong>約1.2 AU</strong>（地球のすぐ外）まで近づき、<strong>約5.7 AU</strong>（木星のあたり）まで離れる、6.4年の軌道です。</p>
+      <p>ここは<strong>形が特徴のもの</strong>のカードです。地図も球も作りません。</p>
+
+      <div class="mod">
+        <div class="mod-h"><span class="no">67P</span><span class="ttl">2つの塊がくっついた、氷と塵の核</span><span class="tag">COMET 67P</span></div>
+        <div class="mod-b">
+          <p class="vsw-note">地図も球もありません。形そのものが覚えるものなので、実画像を1枚と、彗星のつくりの図を1枚</p>
+
+          <figure class="fig ir" style="margin:0 auto 14px">
+            <img src="../image/memoryverse/comet-67p.jpg?v=r77" alt="チュリュモフ・ゲラシメンコ彗星の核。大きい塊と小さい塊が細いくびれでつながった形で、表面から淡いガスの噴き出しが見える" loading="lazy" decoding="async" width="1000" height="795">
+            <figcaption style="font-size:10.5px;color:var(--ink-faint);line-height:1.6">ロゼッタの航法カメラ NAVCAM、2014年9月19日、核の中心から28.6km。4枚をつないだもの。右上に淡く、ガスと塵の噴き出しが写っています。<br>© ESA/Rosetta/NAVCAM – CC BY-SA IGO 3.0（Wikimedia Commons 経由）。本教材で縮小しました。この縮小版も CC BY-SA IGO 3.0 です</figcaption>
+          </figure>
+
+          <div class="row"><span class="k">形</span><span class="v"><strong>大きい塊（4.1×3.3×1.8km）と小さい塊（2.6×2.3×1.8km）が、くびれでつながっています</strong>。「ゴムのアヒル」と呼ばれる形です。
+          <ul>
+            <li>有力な説は、<strong>太陽系の初めに、2つの彗星がゆっくりぶつかってくっついた</strong>というもの。2つの塊で、地層のような重なりの向きが別々だったことが根拠です（Massironi ほか 2015, <i>Nature</i>）。ほかの説もあります</li>
+            <li>密度は <strong>0.53 g/cm³</strong>——<strong>水に浮く</strong>。中の7〜8割はすき間です。反射率は約6%で、炭のように黒い</li>
+          </ul></span></div>
+
+          <div class="row"><span class="k">基本</span><span class="v">公転周期 <strong>約6.4年</strong>、近日点 約1.2 AU、遠日点 約5.7 AU。自転周期 <strong>約12.4時間</strong>（2015年に太陽へ近づいたとき、ガスの噴き出しで少し短くなった）。<strong>木星族彗星</strong>——木星の近くまでしか離れない、周期の短い彗星です。<br>1969年、チュリュモフとゲラシメンコが、アルマ・アタで撮影された写真乾板から見つけました（ESA）。<br><span style="font-size:12.5px;color:var(--ink-faint)">大きさは ESA（2015年1月22日）、密度は Pätzold ほか 2016（<i>Nature</i>）、軌道は JPL Small-Body Database（2026年9月25日閲覧）。軌道は木星に近づくたびに少しずつ変わるので、値は時期によって少し違います</span></span></div>
+          <p style="margin:14px 0 8px"><strong>彗星のつくり</strong>——核は数kmしかありませんが、太陽に近づくと、その何万倍もの大きさに広がります。</p>
+          <figure class="fig" style="margin:0 0 14px"><div class="fig-scroll">
+<svg viewBox="0 0 640 486" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="彗星のつくり。太陽に近いところでは核のまわりにコマができ、イオンの尾は太陽と正反対へまっすぐ、ダストの尾は軌道に沿って後ろへ曲がる。太陽から遠いところでは核だけで尾は無い">
+<defs><radialGradient id="cm-coma"><stop offset="0" stop-color="#fff" stop-opacity=".9"/><stop offset=".3" stop-color="#d6e6ff" stop-opacity=".4"/><stop offset="1" stop-color="#d6e6ff" stop-opacity="0"/></radialGradient><linearGradient id="cm-ion" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#6fb2ff" stop-opacity=".85"/><stop offset="1" stop-color="#6fb2ff" stop-opacity="0"/></linearGradient><radialGradient id="cm-sun"><stop offset="0" stop-color="#ffd48a"/><stop offset=".55" stop-color="#ffb46b" stop-opacity=".8"/><stop offset="1" stop-color="#ffb46b" stop-opacity="0"/></radialGradient></defs>
+<text x="24" y="24" font-size="12.5" font-weight="500" fill="var(--ink)">彗星のつくり ― 2本の尾は、別の向きを向く（模式）</text>
+<text x="24" y="41" font-size="10.5" fill="var(--ink-faint)">同じ彗星を、軌道の2か所で描いた。大きさ・長さ・軌道の形は模式で、縮尺どおりではない</text>
+<path d="M736.8,355.7 L735.0,349.7 L732.8,343.7 L730.2,337.8 L727.2,331.9 L723.8,326.0 L720.1,320.3 L716.0,314.6 L711.5,309.0 L706.6,303.4 L701.4,298.0 L695.8,292.7 L689.9,287.5 L683.6,282.3 L677.0,277.3 L670.0,272.5 L662.8,267.7 L655.2,263.1 L647.4,258.7 L639.2,254.4 L630.8,250.2 L622.1,246.2 L613.2,242.4 L604.0,238.7 L594.5,235.2 L584.9,231.9 L575.0,228.8 L564.9,225.8 L554.7,223.0 L544.2,220.5 L533.6,218.1 L522.9,215.9 L512.0,213.9 L501.0,212.1 L489.8,210.5 L478.6,209.2 L467.3,208.0 L455.9,207.1 L444.5,206.3 L433.0,205.8 L421.5,205.5 L410.0,205.4 L398.5,205.5 L387.0,205.8 L375.5,206.3 L364.1,207.1 L352.7,208.0 L341.4,209.2 L330.2,210.5 L319.0,212.1 L308.0,213.9 L297.1,215.9 L286.4,218.1 L275.8,220.5 L265.3,223.0 L255.1,225.8 L245.0,228.8 L235.1,231.9 L225.5,235.2 L216.0,238.7 L206.8,242.4 L197.9,246.2 L189.2,250.2 L180.8,254.4 L172.6,258.7 L164.8,263.1 L157.2,267.7 L150.0,272.5 L143.0,277.3 L136.4,282.3 L130.1,287.5 L124.2,292.7 L118.6,298.0 L113.4,303.4 L108.5,309.0 L104.0,314.6 L99.9,320.3 L96.2,326.0 L92.8,331.9 L89.8,337.8 L87.2,343.7 L85.0,349.7 L83.2,355.7 L81.8,361.7 L80.8,367.8 L80.2,373.9 L80.0,380.0 L80.2,386.1 L80.8,392.2 L81.8,398.3 L83.2,404.3 L85.0,410.3 L87.2,416.3 L89.8,422.2 L92.8,428.1" fill="none" stroke="var(--line-strong)" stroke-width="1" stroke-dasharray="4 4"/>
+<circle cx="130.0" cy="380.0" r="30" fill="url(#cm-sun)"/><circle cx="130.0" cy="380.0" r="11" fill="#ffc47a"/>
+<text x="130.0" y="424.0" font-size="11" fill="var(--amber)" text-anchor="middle">太陽</text>
+<path d="M262.0,223.9 Q330.0,150.8 287.4,64.7 Q275.4,64.3 262.4,63.8 Q310.0,150.1 262.0,223.9Z" fill="rgba(255,228,185,.26)" stroke="rgba(255,220,170,.5)" stroke-width=".8"/>
+<g transform="translate(262.0,223.9) rotate(-49.8)"><path d="M0,-2.5 L150,-7 L150,7 L0,2.5Z" fill="url(#cm-ion)"/></g>
+<circle cx="262.0" cy="223.9" r="18" fill="url(#cm-coma)"/><circle cx="262.0" cy="223.9" r="2.8" fill="#fff"/>
+<line x1="285.2" y1="217.7" x2="304.5" y2="212.6" stroke="var(--ink-soft)" stroke-width="1.2"/>
+<polygon points="311.3,210.8 305.4,216.0 303.6,209.2" fill="var(--ink-soft)"/>
+<line x1="140.3" y1="367.8" x2="249.1" y2="239.2" stroke="var(--amber-line)" stroke-width="1" stroke-dasharray="2 3"/>
+<circle cx="560.0" cy="224.4" r="2.8" fill="#fff"/>
+<text x="366.9" y="113.4" font-size="11.5" fill="#8fc2ff" text-anchor="start" font-weight="500">イオンの尾</text>
+<text x="366.9" y="127.4" font-size="9.5" fill="var(--ink-faint)" text-anchor="start">太陽風に流され、太陽と正反対へ</text>
+<text x="366.9" y="139.4" font-size="9.5" fill="var(--ink-faint)" text-anchor="start">まっすぐ。青っぽい</text>
+<text x="253.4" y="70.0" font-size="11.5" fill="#ffdcaa" text-anchor="end" font-weight="500">ダストの尾</text>
+<text x="253.4" y="84.0" font-size="9.5" fill="var(--ink-faint)" text-anchor="end">太陽の光に押され、軌道に</text>
+<text x="253.4" y="96.0" font-size="9.5" fill="var(--ink-faint)" text-anchor="end">沿って後ろへ曲がる。白っぽい</text>
+<text x="288.0" y="253.9" font-size="11" fill="var(--ink)" text-anchor="start" font-weight="500">核とコマ</text>
+<text x="288.0" y="267.9" font-size="9.5" fill="var(--ink-faint)" text-anchor="start">核は数km。まわりのガスと塵がコマ</text>
+<text x="306.5" y="202.6" font-size="9.5" fill="var(--ink-soft)" text-anchor="start">進む向き</text>
+<text x="560.0" y="194.4" font-size="11" fill="var(--ink)" text-anchor="middle" font-weight="500">太陽から遠いところ</text>
+<text x="560.0" y="208.4" font-size="9.5" fill="var(--ink-faint)" text-anchor="middle">核だけ。尾もコマも無い</text>
+<text x="24.0" y="458.0" font-size="10" fill="var(--ink-soft)" text-anchor="start">尾は、太陽に近づいて氷が蒸発しはじめたときだけ出る。</text>
+<text x="24.0" y="474.0" font-size="10" fill="var(--ink-soft)" text-anchor="start">イオンの尾は、彗星がどちらへ進んでいても、太陽と正反対を向く（太陽から遠ざかるときは、尾が先に立つ）</text>
+</svg>
+</div>
+            <figcaption>模式図（本教材で作成）。尾の向きと色は ESA の解説「Structure of a comet」（2023年12月20日）と NASA の Comets のページ（2026年9月21日更新）による。<strong>核</strong>は数km、<strong>コマ</strong>は数十万kmに広がることがあり、<strong>尾</strong>は数百万km以上に伸びます。水の氷が蒸発しはじめるのは太陽からおよそ3 AU（木星の軌道の内側）より近くで、それより遠くでは尾が出ません（一酸化炭素などの氷が多い彗星は、もっと遠くから活動することもあります）。</figcaption>
+          </figure>
+
+          <div class="row"><span class="k">2本の尾</span><span class="v"><strong>尾は2本あり、別々の向きを向きます。</strong>
+          <ul>
+            <li><strong>イオンの尾</strong>——電気を帯びたガス。<strong>太陽風（太陽から吹き出す電気を帯びた粒の流れ）に流され、太陽と正反対へまっすぐ</strong>伸びる。青く光る</li>
+            <li><strong>ダストの尾</strong>——煙の粒ほどの細かい塵。太陽の光に押されて太陽の反対側へ出るが、重いぶん流されにくく、<strong>彗星の通ってきた軌道に沿って後ろへ曲がる</strong>。白っぽい黄色</li>
+            <li><strong>尾は、太陽に近づいたときだけ出ます。</strong>遠いところでは、黒い核が1つあるだけです。67P も、ロゼッタが着いた2014年8月（太陽から約3.5 AU）には活動がまだ弱く、2015年8月13日の近日点にかけて最も強くなりました</li>
+          </ul>
+          <p style="margin:8px 0 0"><strong>「尾は後ろにたなびく」は誤解です。</strong>イオンの尾は、彗星がどちらへ進んでいても太陽と正反対を向きます。太陽から遠ざかるときは、尾が進む方向の前に出ます。</p></span></div>
+
+          <div class="row"><span class="k">どこから<br>来るか</span><span class="v"><strong>彗星は、配置図の2か所から来ます。</strong>
+          <div class="table-scroll"><table class="mini-table">
+            <tr><th style="width:24%">種類</th><th style="width:26%">周期</th><th>ふるさと</th></tr>
+            <tr><td><strong>短周期彗星</strong><br>（67P はここ）</td><td>200年より短い。木星族は20年以下</td><td><strong>カイパーベルトと散乱円盤</strong>（§07・§09）。海王星などに押されて内側へ入ってきた（NASA）</td></tr>
+            <tr><td><strong>長周期彗星</strong></td><td>200年より長い。数千万年かかるものも</td><td><strong>オールトの雲</strong>（次の節）。<strong>ほぼあらゆる方向から</strong>来る。多くは人類が一度しか見ていない（NASA）</td></tr>
+          </table></div>
+          <p style="margin:8px 0 0">§03 の配置図でいえば、<strong>青い箱（カイパーベルト）と、いちばん右の紫の破線（オールトの雲）</strong>。小惑星帯から地球近傍小惑星が押し出されてきたのと同じく、<strong>彗星も「遠くの貯蔵庫から押し出されてきたもの」</strong>です。</p></span></div>
+
+          <div class="row"><span class="k">ロゼッタ</span><span class="v"><strong>ロゼッタ</strong>（ESA）は、<strong>彗星を周回した最初の探査機</strong>です。
+          <ul>
+            <li>2004年3月2日打ち上げ、<strong>2014年8月6日</strong>に67P に到着。2年あまり彗星と一緒に太陽を回り、近日点の前後の変化を間近で見続けた</li>
+            <li><strong>2016年9月30日</strong>、彗星の表面にゆっくり降りて運用を終えた</li>
+          </ul></span></div>
+
+          <div class="row"><span class="k">フィラエ</span><span class="v"><strong>ロゼッタが降ろした着陸機フィラエは、計画どおりにいきませんでした。</strong>
+          <ul>
+            <li><strong>2014年11月12日</strong>に着地。前の晩、<strong>着地の瞬間に上から押さえつけるガス噴射装置が動かない</strong>ことが分かっていました。頼みの<strong>銛（もり）も、着地のとき発射されませんでした</strong></li>
+            <li>そのため、ほとんど重力の無い表面で<strong>跳ね返り</strong>、崖の縁にぶつかり、尾根に触れ——<strong>表面に4回触れたあと</strong>、最初の着地点から1km以上離れた<strong>崖の陰</strong>（アビドス）で止まりました。最初の着地から約2時間後です（ESA の再構成）</li>
+            <li>止まった場所は日陰で、12.4時間の1日のうち日が当たるのは<strong>約1.3時間</strong>だけ（予定地では約6.5時間）。<strong>太陽電池でほとんど充電できなかった</strong></li>
+            <li>最初の電池で約57時間、予定していた最初の観測の<strong>約8割</strong>をこなし、<strong>11月15日、電池が尽きて眠りに入りました</strong></li>
+            <li>2015年6月13日〜7月9日に、彗星が太陽に近づいて日照が増えたおかげで<strong>数回だけ通信が戻り</strong>、それきり途絶えました。2016年7月27日、ロゼッタ側の通信装置が切られました</li>
+            <li><strong>2016年9月2日</strong>、運用終了の4週間前に、ロゼッタのカメラが<strong>割れ目に挟まったフィラエ</strong>を見つけました。脚2本が見えていました</li>
+          </ul>
+          <p style="margin:8px 0 0"><strong>失敗から分かったこともあります。</strong>跳ねたときに頭をぶつけた岩の跡から、中の氷が<strong>カプチーノの泡よりふわふわ</strong>だと分かりました（O'Rourke ほか 2020, <i>Nature</i>）。</p>
+          <p style="font-size:12.5px;color:var(--ink-faint);margin:6px 0 0">確認先：ESA「Philae's extraordinary comet landing relived」（2024年11月12日）、「Reconstructing Philae's trajectory」（2015年4月）、「Rosetta's lander faces eternal hibernation」（2016年2月12日）、「Philae found」（2016年9月5日）、「Philae's second touchdown site discovered at skull-top ridge」（2020年10月28日）、ESA のブログ（2015年1月30日・2016年7月26日）。いずれも2026年9月25日閲覧。</p></span></div>
+
+          <div class="row"><span class="k">分かった<br>こと</span><span class="v"><ul>
+            <li>彗星から<strong>酸素分子</strong>が初めて見つかった（Bieler ほか 2015, <i>Nature</i>）。アミノ酸の<strong>グリシン</strong>とリンも見つかった（Altwegg ほか 2016）</li>
+            <li><strong>地球の海の水は彗星から来たのか</strong>——67P の水の重水素の割合は、2015年に「地球の海の3倍以上」と発表され、彗星説に不利とされました。2024年の再解析は「地球に近い」とし、<strong>2026年9月の全データの再解析はまた「約3倍」</strong>としています（Altwegg ほか 2015／Mandt ほか 2024／Müller ほか 2026）。<strong>まだ確かめられていない</strong>側で、しかも結論が行き来しています</li>
+          </ul></span></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="oort">
+      <div class="sec-head"><span class="idx">12</span><h2>オールトの雲</h2></div>
+      <p><strong>配置図のどこか</strong>——<strong>約2,000〜100,000 AU（推定）</strong>。§03 の図のいちばん右寄りの、紫の破線の箱です。図の下段の線形バーでは、恒星までの約37%を占める紫の帯でした。<strong>この回で、ただ1つ「推定」とだけ書いてある対象</strong>です。</p>
+
+      <div class="mod">
+        <div class="mod-h"><span class="no">オールトの雲</span><span class="ttl">見えていないものを、どう置くか</span><span class="tag">OORT CLOUD</span></div>
+        <div class="mod-b">
+          <p class="vsw-note">地図も球も実画像もありません。<strong>そこにある天体を、その場所で撮った画像が1枚もない</strong>からです</p>
+
+          <figure class="fig" style="margin:0 0 14px"><div class="fig-scroll">
+<svg viewBox="0 0 640 470" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="オールトの雲をどう置くか。上：長周期彗星がほぼあらゆる方向から来ることから、太陽系を球殻が包んでいると推定する。下：ボイジャー1号の現在地と、内側の端の推定値を同じ物差しで並べた">
+<text x="24" y="24" font-size="12.5" font-weight="500" fill="var(--ink)">オールトの雲 ― 推定の根拠と、探査機までの距離</text>
+<text x="24" y="50" font-size="11.5" font-weight="500" fill="var(--teach)">① なぜ「ある」と考えるのか</text>
+<circle cx="170.0" cy="160.0" r="94.0" fill="rgba(123,77,255,.08)" stroke="var(--teach)" stroke-width="1.2" stroke-dasharray="5 4"/>
+<circle cx="170.0" cy="160.0" r="76.0" fill="none" stroke="var(--teach-line)" stroke-width="1" stroke-dasharray="2 4"/>
+<line x1="258.0" y1="159.0" x2="196.0" y2="159.7" stroke="var(--accent-deep)" stroke-width="1" opacity=".75"/>
+<polygon points="196.0,159.7 202.0,162.6 202.0,156.6" fill="var(--accent-deep)" opacity=".75"/>
+<line x1="250.8" y1="194.8" x2="193.9" y2="170.3" stroke="var(--accent-deep)" stroke-width="1" opacity=".75"/>
+<polygon points="193.9,170.3 198.2,175.4 200.6,169.9" fill="var(--accent-deep)" opacity=".75"/>
+<line x1="225.6" y1="228.2" x2="186.4" y2="180.2" stroke="var(--accent-deep)" stroke-width="1" opacity=".75"/>
+<polygon points="186.4,180.2 187.9,186.7 192.5,182.9" fill="var(--accent-deep)" opacity=".75"/>
+<line x1="204.3" y1="241.0" x2="180.1" y2="183.9" stroke="var(--accent-deep)" stroke-width="1" opacity=".75"/>
+<polygon points="180.1,183.9 179.7,190.6 185.3,188.3" fill="var(--accent-deep)" opacity=".75"/>
+<line x1="169.8" y1="248.0" x2="170.0" y2="186.0" stroke="var(--accent-deep)" stroke-width="1" opacity=".75"/>
+<polygon points="170.0,186.0 166.9,192.0 172.9,192.0" fill="var(--accent-deep)" opacity=".75"/>
+<line x1="134.6" y1="240.6" x2="159.5" y2="183.8" stroke="var(--accent-deep)" stroke-width="1" opacity=".75"/>
+<polygon points="159.5,183.8 154.4,188.1 159.9,190.5" fill="var(--accent-deep)" opacity=".75"/>
+<line x1="112.7" y1="226.8" x2="153.1" y2="179.7" stroke="var(--accent-deep)" stroke-width="1" opacity=".75"/>
+<polygon points="153.1,179.7 146.9,182.3 151.4,186.2" fill="var(--accent-deep)" opacity=".75"/>
+<line x1="88.6" y1="193.4" x2="146.0" y2="169.9" stroke="var(--accent-deep)" stroke-width="1" opacity=".75"/>
+<polygon points="146.0,169.9 139.3,169.4 141.5,174.9" fill="var(--accent-deep)" opacity=".75"/>
+<line x1="82.0" y1="157.3" x2="144.0" y2="159.2" stroke="var(--accent-deep)" stroke-width="1" opacity=".75"/>
+<polygon points="144.0,159.2 138.1,156.0 137.9,162.0" fill="var(--accent-deep)" opacity=".75"/>
+<line x1="91.3" y1="120.7" x2="146.7" y2="148.4" stroke="var(--accent-deep)" stroke-width="1" opacity=".75"/>
+<polygon points="146.7,148.4 142.7,143.0 140.0,148.4" fill="var(--accent-deep)" opacity=".75"/>
+<line x1="102.0" y1="104.1" x2="149.9" y2="143.5" stroke="var(--accent-deep)" stroke-width="1" opacity=".75"/>
+<polygon points="149.9,143.5 147.2,137.4 143.4,142.0" fill="var(--accent-deep)" opacity=".75"/>
+<line x1="132.5" y1="80.4" x2="158.9" y2="136.5" stroke="var(--accent-deep)" stroke-width="1" opacity=".75"/>
+<polygon points="158.9,136.5 159.1,129.8 153.7,132.3" fill="var(--accent-deep)" opacity=".75"/>
+<line x1="161.4" y1="72.4" x2="167.4" y2="134.1" stroke="var(--accent-deep)" stroke-width="1" opacity=".75"/>
+<polygon points="167.4,134.1 169.8,127.9 163.9,128.4" fill="var(--accent-deep)" opacity=".75"/>
+<line x1="209.6" y1="81.4" x2="181.7" y2="136.8" stroke="var(--accent-deep)" stroke-width="1" opacity=".75"/>
+<polygon points="181.7,136.8 187.1,132.8 181.7,130.1" fill="var(--accent-deep)" opacity=".75"/>
+<line x1="235.0" y1="100.7" x2="189.2" y2="142.5" stroke="var(--accent-deep)" stroke-width="1" opacity=".75"/>
+<polygon points="189.2,142.5 195.7,140.7 191.6,136.2" fill="var(--accent-deep)" opacity=".75"/>
+<line x1="247.1" y1="117.6" x2="192.8" y2="147.5" stroke="var(--accent-deep)" stroke-width="1" opacity=".75"/>
+<polygon points="192.8,147.5 199.5,147.2 196.6,142.0" fill="var(--accent-deep)" opacity=".75"/>
+<circle cx="170.0" cy="160.0" r="12" fill="rgba(255,180,107,.18)" stroke="var(--amber)" stroke-width="1"/>
+<circle cx="170.0" cy="160.0" r="3.5" fill="var(--amber)"/>
+<text x="318" y="72" font-size="11" fill="var(--ink)" font-weight="500">長周期彗星は、ほぼあらゆる方向から来る</text>
+<text x="318" y="88" font-size="9.5" fill="var(--ink-faint)">青い矢印。惑星の並ぶ平面からだけではない</text>
+<text x="318" y="112" font-size="11" fill="var(--ink)" font-weight="500">もとの軌道をさかのぼると、数万 AU に行き着く</text>
+<text x="318" y="128" font-size="9.5" fill="var(--ink-faint)">遠くの端（遠日点）が、そのあたりに集まる</text>
+<text x="318" y="152" font-size="11" fill="var(--teach)" font-weight="500">→ 太陽系を、球の殻が包んでいると推定する</text>
+<text x="318" y="168" font-size="9.5" fill="var(--ink-faint)">紫の破線。そこにある天体を、その場所で見たことは一度もない</text>
+<text x="318" y="196" font-size="9.5" fill="var(--ink-faint)">中心の橙の円が、惑星の並ぶ範囲（約30 AU まで）。</text>
+<text x="318" y="210" font-size="9.5" fill="var(--ink-faint)">縮尺どおりなら、この図の点よりはるかに小さい</text>
+<text x="24" y="280" font-size="11.5" font-weight="500" fill="var(--teach)">② いちばん遠い探査機は、どこまで来ているか（線形目盛）</text>
+<rect x="243.6" y="344" width="305.5" height="16" fill="rgba(123,77,255,.14)" stroke="var(--teach)" stroke-width="1" stroke-dasharray="4 3"/>
+<text x="396.4" y="336" font-size="10" fill="var(--teach)" text-anchor="middle">内側の端の推定 2,000〜5,000 AU（NASA の解説ページ）</text>
+<line x1="141.8" y1="342" x2="141.8" y2="360" stroke="var(--teach)" stroke-width="1.4"/>
+<text x="141.8" y="314" font-size="10" fill="var(--teach)" text-anchor="middle">1,000 AU</text>
+<text x="141.8" y="327" font-size="9.5" fill="var(--ink-faint)" text-anchor="middle">（NASA 2018年の図）</text>
+<line x1="40.0" y1="360" x2="600.0" y2="360" stroke="var(--line-strong)" stroke-width="1.2"/>
+<line x1="40.0" y1="360" x2="40.0" y2="365" stroke="var(--line-strong)"/>
+<text x="40.0" y="378" font-size="10" fill="var(--ink-faint)" text-anchor="middle">0</text>
+<line x1="141.8" y1="360" x2="141.8" y2="365" stroke="var(--line-strong)"/>
+<text x="141.8" y="378" font-size="10" fill="var(--ink-faint)" text-anchor="middle">1,000</text>
+<line x1="243.6" y1="360" x2="243.6" y2="365" stroke="var(--line-strong)"/>
+<text x="243.6" y="378" font-size="10" fill="var(--ink-faint)" text-anchor="middle">2,000</text>
+<line x1="345.5" y1="360" x2="345.5" y2="365" stroke="var(--line-strong)"/>
+<text x="345.5" y="378" font-size="10" fill="var(--ink-faint)" text-anchor="middle">3,000</text>
+<line x1="447.3" y1="360" x2="447.3" y2="365" stroke="var(--line-strong)"/>
+<text x="447.3" y="378" font-size="10" fill="var(--ink-faint)" text-anchor="middle">4,000</text>
+<line x1="549.1" y1="360" x2="549.1" y2="365" stroke="var(--line-strong)"/>
+<text x="549.1" y="378" font-size="10" fill="var(--ink-faint)" text-anchor="middle">5,000</text>
+<text x="608.0" y="378" font-size="10" fill="var(--ink-faint)">AU</text>
+<circle cx="40.0" cy="360" r="3.5" fill="var(--amber)"/>
+<polygon points="57.5,357 61.5,350 53.5,350" fill="var(--key)"/>
+<text x="59.5" y="398" font-size="10.5" font-weight="500" fill="var(--key)">ボイジャー1号 ― 約172 AU（2026年9月）</text>
+<text x="59.5" y="412" font-size="9.5" fill="var(--ink-faint)">1977年打ち上げ。年に約3.6 AU ずつ遠ざかる。惑星の範囲（30 AU）は太陽の点とほぼ重なる</text>
+<line x1="57.5" y1="364" x2="57.5" y2="387" stroke="var(--key)" stroke-width="1"/>
+<text x="24" y="444" font-size="10" fill="var(--ink-soft)">いまの速さのまま進むと、1,000 AU まで<tspan font-weight="500" fill="var(--ink)">約230年</tspan>、2,000 AU まで<tspan font-weight="500" fill="var(--ink)">約510年</tspan>、5,000 AU まで<tspan font-weight="500" fill="var(--ink)">約1,360年</tspan>（本教材の計算）</text>
+<text x="24" y="460" font-size="10" fill="var(--ink-soft)"><tspan font-weight="500" fill="var(--ink)">推定の幅が、そのまま「着くまでの年数」の幅になる</tspan>。外側の端（10万 AU）を抜けるのは、約3万年後</text>
+</svg>
+</div>
+            <figcaption>①は模式図で、矢印の向きと本数は実際の彗星の記録ではありません。②の距離は縮尺どおり（線形目盛）。ボイジャー1号の位置と速さは JPL Horizons で本教材が確認した値（2026年9月25日：太陽から171.85 AU、秒速16.88km＝年に約3.56 AU）。<strong>到着までの年数は、いまの速さのまま進むとした本教材の計算</strong>です。内側の端は、NASA の解説ページ（2025年1月2日更新）が「2,000〜5,000 AU と考えられている」、NASA の2018年12月10日の図が「1,000 AU ほどまで近いかもしれない」と書いています。</figcaption>
+          </figure>
+
+          <div class="row"><span class="k">基本</span><span class="v">太陽系のいちばん外側を包む、<strong>氷の小天体の巨大な殻</strong>。NASA の解説は、内側の端を<strong>2,000〜5,000 AU</strong>、外側の端を<strong>1万〜10万 AU</strong> のどこか、と書いています。中にあるのは<strong>数千億から数兆個</strong>の氷の天体と考えられています（NASA、2025年1月2日更新）。
+          <ul>
+            <li><strong>形</strong>——外側は<strong>球の殻</strong>。惑星やカイパーベルトのように平たい円盤ではなく、上下も含めて全方向を包んでいると考えられています</li>
+            <li>内側の部分（約3,000 AU までの「内オールトの雲」）は、完全な球ではなく円盤に近い形が残っているとされます（Hills 1981、Vokrouhlický ほか 2019）</li>
+            <li><strong>内側の端の値は、資料によって2倍から5倍ずれます</strong>（上の図の②）。ずれていること自体が、この天体の置かれ方を表しています</li>
+          </ul></span></div>
+
+          <div class="row"><span class="k">なぜ<br>あると<br>考えるか</span><span class="v"><strong>1950年、オランダの天文学者ヤン・オールトが、彗星の軌道から推定しました。</strong>
+          <ul>
+            <li>オールトは、よく観測された<strong>長周期彗星19個</strong>の「太陽系に入ってくる前の軌道」を計算し直しました。すると、軌道のいちばん遠い点が<strong>5万〜15万 AU</strong> のあたりに集まっていた（Królikowska・Dybczyński 2010 による要約）</li>
+            <li>しかも長周期彗星は、<strong>ほぼあらゆる方向から</strong>やって来る。惑星の並ぶ平面に沿ってではなく、上からも下からも</li>
+            <li>この2つを合わせると、<strong>遠くに、太陽を球のように包む彗星の貯蔵庫がある</strong>と考えると説明がつく。論文の題は「太陽系を取り巻く彗星の雲の構造と、その起源についての仮説」（<i>Bulletin of the Astronomical Institutes of the Netherlands</i> 11巻、1950年）</li>
+          </ul>
+          <p style="margin:8px 0 0">似た考えは、1932年にエストニアのエルンスト・エピックも出しています。そのため「エピック・オールトの雲」と呼ばれることもあります。</p></span></div>
+
+          <div class="row"><span class="k">どうして<br>できたか</span><span class="v">太陽系ができたころ、木星などの巨大惑星の重力に<strong>はじき飛ばされた氷の小天体</strong>が、遠くで止まって集まったと考えられています。一部は太陽系の外まで飛ばされました（NASA）。NASA は、<strong>ほかの恒星のまわりでできた天体を捕まえている可能性</strong>にも触れています。<br>——<strong>地球近傍小惑星は小惑星帯から、短周期彗星はカイパーベルトから、そしてオールトの雲は巨大惑星のまわりから</strong>。この回の小天体は、どれも「どこかから押し出されてきたもの」として並びます。</span></div>
+
+          <div class="row"><span class="k">どこまで<br>届くか</span><span class="v"><strong>いちばん遠くにいる探査機ボイジャー1号でも、内側の端まで数百年かかります。</strong>
+          <ul>
+            <li>1977年打ち上げ。2026年9月25日時点で太陽から<strong>約172 AU</strong>、年に約3.6 AU ずつ遠ざかっています（JPL Horizons で本教材が確認）</li>
+            <li>NASA は「内側の端に着くまで<strong>約300年</strong>、抜けるまで<strong>約3万年</strong>」と書いています（Voyager の FAQ、2026年8月4日更新）。ただしこの300年は、内側の端を<strong>約1,000 AU</strong> とした場合の値です（NASA 2018年の図）</li>
+            <li>NASA の解説ページの<strong>2,000〜5,000 AU</strong> を使うと、いまから<strong>約510〜1,360年</strong>になります（本教材の計算）。<strong>どちらの値を使うかで、答えが数倍変わる</strong>——端の位置が分かっていないからです</li>
+            <li>しかもボイジャー1号は、電力の不足で観測装置を順に止めています。2026年4月にも1つを止め、動いている観測装置は2つだけになりました（NASA、2026年4月17日）。<strong>着いたときに観測できる状態ではありません</strong></li>
+          </ul></span></div>
+
+          <div class="row"><span class="k">分かって<br>いないこと</span><span class="v"><strong>第3回の「まだ誰も見ていない」の、最も極端な例です。</strong>
+          <ul>
+            <li><strong>トリトンの北半球</strong>（第3回）は、40年近く誰も行っていないが、<strong>行けば分かる</strong>。探査機を送れば十数年で着く</li>
+            <li><strong>冥王星の南半球</strong>（§08）も同じ側。次の探査機が行けば見える</li>
+            <li><strong>オールトの雲</strong>は、<strong>いちばん速い探査機でも着くまでに数百年から千年以上</strong>。いま生きている人は誰も、その場所の画像を見ることができません。しかも、<strong>そこに天体があること自体も、まだ確かめられていない</strong>——彗星の軌道からの推定です。「まだ確かめられていない」と「まだ誰も見ていない」の<strong>両方に、いちばん深く入っている</strong>対象です</li>
+          </ul>
+          <p style="margin:8px 0 0">それでもこの教材は、オールトの雲を配置図に<strong>置きます</strong>。置き方の約束は3つ——<strong>破線で描く、値に幅を付ける、「推定」と書く</strong>。見えていないものを消すのでも、見えているかのように描くのでもなく、<strong>どれだけ分かっていないかが見える形で置く</strong>。これがこの回の最後のカードで覚えることです。</p>
+          <p style="font-size:12.5px;color:var(--ink-faint);margin:6px 0 0">2025年には、銀河の潮汐力によって内オールトの雲に長さ約1万5,000 AU の<strong>渦巻きの構造</strong>ができている、という計算結果が発表されました（Nesvorný ほか 2025, <i>The Astrophysical Journal</i>）。これは<strong>シミュレーションの予測で、観測ではありません</strong>。著者自身も、観測で確かめられる見込みは乏しいと書いています。</p></span></div>
+
+          <div class="row"><span class="k">確認先</span><span class="v"><span style="font-size:12.5px;color:var(--ink-faint)">NASA の Oort Cloud のページ（science.nasa.gov/solar-system/oort-cloud/、2025年4月22日更新）と Facts（2025年1月2日更新）、NASA の Voyager の FAQ（2026年8月4日更新）とブログ（2026年4月17日）、NASA の図「Oort Cloud and Scale of the Solar System」（2018年12月10日）、Vokrouhlický・Nesvorný・Dones 2019（<i>The Astronomical Journal</i> 157, 181）。いずれも2026年9月25日閲覧。オールトの原論文（1950年）は本教材では読めておらず、内容は上記の要約によります。</span></span></div>
+        </div>
+      </div>
+    </section>
+
+
     <section id="cross">
-      <div class="sec-head"><span class="idx">10</span><h2>横断して見る</h2></div>
+      <div class="sec-head"><span class="idx">13</span><h2>横断して見る</h2></div>
       <div class="box warn"><span class="lab">準備中</span>
       <p>大きさをくらべる／共鳴が閉じ込める場合と追い出す場合／探査の歴史を、カードが揃った段階で書きます。いまは枠だけです。</p></div>
     </section>
 
     <section id="menu">
-      <div class="sec-head"><span class="idx">11</span><h2>訓練メニュー</h2></div>
+      <div class="sec-head"><span class="idx">14</span><h2>訓練メニュー</h2></div>
       <div class="box warn"><span class="lab">準備中</span>
       <p>3週間ぶんの表を、カードが揃った段階で書きます。いまは枠だけです。</p></div>
     </section>
 
     <section id="drills">
-      <div class="sec-head"><span class="idx">12</span><h2>演習</h2></div>
+      <div class="sec-head"><span class="idx">15</span><h2>演習</h2></div>
       <div class="box warn"><span class="lab">準備中</span>
       <p>演習は、カードが揃った段階で書きます。いまは枠だけです。</p></div>
     </section>
@@ -1992,13 +2337,13 @@ code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border
       <p>第5回「太陽と全体の統合」の予告は、この回が揃った段階で書きます。</p></div>
     </section>
 
-    <div class="foot"><p>距離・軌道の数値は NASA Planetary Fact Sheet（nssdc.gsfc.nasa.gov/planetary/factsheet）と NASA JPL Small-Body Database（ssd.jpl.nasa.gov、いずれも2026年9月25日閲覧）による概数です。小惑星の総数は IAU小惑星センターの集計（minorplanetcenter.net/mpc/summary、2026年9月25日閲覧）で、<strong>毎月増えます</strong>。小惑星帯・カイパーベルト・散乱円盤・オールトの雲の広がりは NASA Science の各ページによります。<strong>オールトの雲の内側・外側の値は推定であり、直接には観測されていません。</strong>「隣の小惑星まで平均約360万km」は本教材による概算で、発表値ではありません（前提は本文に記載）。カークウッドの空隙の距離は、木星の軌道長半径とケプラーの第3法則から計算した値です。地名の緯度経度は USGS Gazetteer of Planetary Nomenclature（planetarynames.wr.usgs.gov、2026年9月25日閲覧）。ケレスの全球地図は USGS Astrogeology「Ceres Dawn FC Global Mosaic 140m」（© NASA/JPL-Caltech/UCLA/MPS/DLR/IDA、パブリックドメイン）を表示用に縮小したもので、<strong>撮影されていない範囲を埋める加工はしていません</strong>。ベスタの全球地図は USGS Astrogeology「Vesta Dawn FC HAMO Global Mosaic 60m」（© NASA/JPL-Caltech/UCLA/MPS/DLR/IDA）の配布画像（1024×512）をそのまま使っており、こちらも<strong>欠けた範囲を埋める加工はしていません</strong>。リュウグウの画像は JAXA/ISAS の ONC-T データを Meli thev と Nrco0e が処理したもの（Wikimedia Commons、CC BY 4.0）を、ベンヌの画像は NASA/Goddard/University of Arizona のモザイクを、<strong>本教材で切り抜き・縮小</strong>しました。<strong>試料の分析結果は研究が続いている分野で、本文の内容は2026年9月25日時点で確認したものです。</strong>トロヤ群の数は IAU小惑星センターの一覧（minorplanetcenter.net/iau/lists/JupiterTrojans.html、2026年5月30日更新分）を本教材で数えた値です。冥王星とカロンの全球地図は USGS Astrogeology「Pluto／Charon New Horizons LORRI MVIC Global Mosaic 300m」（© NASA/JHUAPL/SwRI/LPI）の配布画像（1024×512）をそのまま使っており、<strong>写っていない南半球を埋める加工はしていません</strong>。カイパーベルトの分布の図は、IAU小惑星センターの海王星以遠天体の一覧（minorplanetcenter.net/iau/lists/TNOs.html、2026年9月25日更新分）の軌道長半径を本教材で数えたもので、<strong>見つけやすさの偏りは補正していません</strong>。冥王星とカロン、地球と月の共通重心の位置は、JPL と NASA の値から本教材で計算しました。配置図・小惑星帯の図・トロヤ群の図・カイパーベルトの図・共通重心の図は本教材で作成しました。</p></div>
+    <div class="foot"><p>距離・軌道の数値は NASA Planetary Fact Sheet（nssdc.gsfc.nasa.gov/planetary/factsheet）と NASA JPL Small-Body Database（ssd.jpl.nasa.gov、いずれも2026年9月25日閲覧）による概数です。小惑星の総数は IAU小惑星センターの集計（minorplanetcenter.net/mpc/summary、2026年9月25日閲覧）で、<strong>毎月増えます</strong>。小惑星帯・カイパーベルト・散乱円盤・オールトの雲の広がりは NASA Science の各ページによります。<strong>オールトの雲の内側・外側の値は推定であり、直接には観測されていません。</strong>「隣の小惑星まで平均約360万km」は本教材による概算で、発表値ではありません（前提は本文に記載）。カークウッドの空隙の距離は、木星の軌道長半径とケプラーの第3法則から計算した値です。地名の緯度経度は USGS Gazetteer of Planetary Nomenclature（planetarynames.wr.usgs.gov、2026年9月25日閲覧）。ケレスの全球地図は USGS Astrogeology「Ceres Dawn FC Global Mosaic 140m」（© NASA/JPL-Caltech/UCLA/MPS/DLR/IDA、パブリックドメイン）を表示用に縮小したもので、<strong>撮影されていない範囲を埋める加工はしていません</strong>。ベスタの全球地図は USGS Astrogeology「Vesta Dawn FC HAMO Global Mosaic 60m」（© NASA/JPL-Caltech/UCLA/MPS/DLR/IDA）の配布画像（1024×512）をそのまま使っており、こちらも<strong>欠けた範囲を埋める加工はしていません</strong>。リュウグウの画像は JAXA/ISAS の ONC-T データを Meli thev と Nrco0e が処理したもの（Wikimedia Commons、CC BY 4.0）を、ベンヌの画像は NASA/Goddard/University of Arizona のモザイクを、<strong>本教材で切り抜き・縮小</strong>しました。<strong>試料の分析結果は研究が続いている分野で、本文の内容は2026年9月25日時点で確認したものです。</strong>トロヤ群の数は IAU小惑星センターの一覧（minorplanetcenter.net/iau/lists/JupiterTrojans.html、2026年5月30日更新分）を本教材で数えた値です。冥王星とカロンの全球地図は USGS Astrogeology「Pluto／Charon New Horizons LORRI MVIC Global Mosaic 300m」（© NASA/JHUAPL/SwRI/LPI）の配布画像（1024×512）をそのまま使っており、<strong>写っていない南半球を埋める加工はしていません</strong>。カイパーベルトの分布の図は、IAU小惑星センターの海王星以遠天体の一覧（minorplanetcenter.net/iau/lists/TNOs.html、2026年9月25日更新分）の軌道長半径を本教材で数えたもので、<strong>見つけやすさの偏りは補正していません</strong>。冥王星とカロン、地球と月の共通重心の位置は、JPL と NASA の値から本教材で計算しました。散乱円盤の図は、IAU小惑星センターの2つの一覧（2026年9月25日更新分）を本教材で描いたものです。チュリュモフ・ゲラシメンコ彗星の画像は © ESA/Rosetta/NAVCAM（CC BY-SA IGO 3.0）を<strong>本教材で縮小</strong>したもので、縮小版も同じ条件で使えます。ボイジャー1号の位置と、オールトの雲に着くまでの年数は、JPL Horizons の値から本教材で計算しました。<strong>オールトの雲の範囲は資料によって違い、どれも推定です。</strong>配置図・小惑星帯の図・トロヤ群の図・カイパーベルトの図・共通重心の図・散乱円盤の図・彗星のつくりの図・オールトの雲の図は本教材で作成しました。</p></div>
   </main>
 </div>
 <div id="site-footer"><noscript><nav class="noscript-nav" aria-label="フッターナビゲーション"><a href="index.html">ホーム</a><a href="self-intro.html">自己紹介</a><a href="study.html">勉強の軌跡</a><a href="videos.html">動画</a><a href="blog.html">ブログ</a><a href="sns.html">各種SNS</a></nav></noscript></div>
-<script src="../js/memoryverse.js?v=r76"></script>
-<script src="../js/layout.js?v=r76"></script>
-<script src="../js/main.js?v=r76"></script>
-<script src="../js/starfield.js?v=r76"></script>
+<script src="../js/memoryverse.js?v=r77"></script>
+<script src="../js/layout.js?v=r77"></script>
+<script src="../js/main.js?v=r77"></script>
+<script src="../js/starfield.js?v=r77"></script>
 </body>
 </html>
