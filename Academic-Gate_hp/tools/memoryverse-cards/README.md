@@ -68,12 +68,12 @@ zsh  tools/memoryverse-cards/extract.sh JPN          # 1) 取得（無ければ�
 - 1行は全角14文字（半角は0.5文字）まで。超えたら末尾を「…」。切り詰めた結果、同じ図の中で同じ文字列になったものだけ、
   後ろを残して先頭を「…」にする
 
-**図**：正距円筒図法。標準緯線は国の面積で重みをつけた球面上の重心（`centroid.py`）。経度を cos φ₀ 倍に縮めたうえで
+**図**：正距円筒図法。標準緯線は国の**本土**（面積がいちばん大きい陸のかたまり）の、面積で重みをつけた球面上の重心（`centroid.py`。海外領土や離島を含めると中心が本土から離れるため。日本は本州で北緯36.63度）。経度を cos φ₀ 倍に縮めたうえで
 1度 = 44px（どの国も同じ縮尺）。格子は1度・5度・30度（30度が 2-1 の升目）。
 
 ## 国を足す
 
-1. 標準緯線を出す：`.venv/bin/python tools/memoryverse-cards/centroid.py <ADM0_A3>`（例：`TCD` → `[15.28, 18.64]`）
+1. 標準緯線を出す：`.venv/bin/python tools/memoryverse-cards/centroid.py <ADM0_A3>`（本土の重心。例：`TCD` → `[15.28, 18.64]`）
 2. `countries.py` の `COUNTRIES` に1項目足す。必要なのは：
    - `geofabrik`（Geofabrik のパス。例：`africa/chad-latest.osm.pbf`）
    - `phi0`（1の緯度）、`panels`（図の範囲。国の外形に0.5度ほど余白。離島が遠い国は図を分け、**同じ縮尺**のまま）
