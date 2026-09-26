@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>7-2 座標系の取り替えとヤコビアン｜物理数学I 7章 | Academic Gates</title>
+<meta name="description" content="極座標・円柱座標・球座標と面積要素・体積要素。偏微分から作るヤコビアンと、ガウス積分。物理数学I 7章／7-2。">
+<link rel="icon" href="../../favicon.ico" sizes="32x32">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+<!-- ★ ライト/ダーク切替は停止中（DESIGN.md §44）。サイト全体がダーク基調なので、
+     記事だけテーマが変わるのは一貫性を欠くという判断。**復活させるには次の1行の
+     コメントを外すだけでよい**（js/theme.js も css/lesson-theme.css も残してある）。
+     data-theme を付ける主体がこれしか無いので、外しておけば :root[data-theme="light"]
+     は構造的にマッチしない。逆に読み込んだままボタンだけ消すと、OS がライト設定の
+     端末が勝手にライトになり、戻す手段が無くなる（§44.2）。
+     復活時の挙動: テーマは描画前に同期で決まり（FOUC 防止）、ボタンの設置は
+     layout.js がヘッダーを書き出したあと DOMContentLoaded で行われる。 -->
+<!-- <script src="../js/theme.js?v=r95"></script> -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;500&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+<!-- サイト共通 → 記事固有 → テーマ上書き の順で読む（lesson-theme.css は
+     記事の <style> より後ろに置くこと。css/lesson-theme.css 冒頭の注記どおり） -->
+<link rel="stylesheet" href="../css/style.css?v=r95">
+<!-- MathJax: 設定ブロックはローダーより「前」に置く（DESIGN.md §11b）。
+     フォールバックは this.src= ではなく createElement 方式（同§）。 -->
+<script>
+window.MathJax={tex:{inlineMath:[['\\(','\\)']],displayMath:[['\\[','\\]']],tags:'none'},svg:{fontCache:'global'},options:{skipHtmlTags:['script','noscript','style','textarea','pre','code']}};
+</script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"
+        onerror="this.onerror=null;var s=document.createElement('script');s.async=true;s.src='https://unpkg.com/mathjax@3/es5/tex-svg.js';document.head.appendChild(s);"></script>
+<style>
+/* 7-2 座標系の取り替えとヤコビアン — 記事固有のスタイルのみ。7-1 と同じ構成をそのまま使う。
+   共通のリセット・背景・星・ヘッダー/フッター・ボタン・見出し階層・本文リズムは
+   css/style.css が持つ（DESIGN.md §35, §36）。ここに残すのは、この教材の
+   構造（レール／演習ブロック／図版）と、教育用の色トークンだけ。 */
+:root{
+  /* 教材固有のトークン。本体と同値のもの（--bg --surface --nav-bg --ink --line
+     --line-strong --glow-cool --font --nav-clear --ease --radius-lg/md）は
+     css/style.css 側に定義があるので、ここでは持たない。
+     --ink-soft / --ink-faint は本体より明るい値を「意図的に」維持している。
+     本体値に寄せると 13.5px の解説文が 4.56:1 → 3.66:1 と AA を割るため（§36）。 */
+  --surface-2:rgba(255,255,255,.045);
+  --ink-soft:rgba(255,255,255,.68);
+  --ink-faint:rgba(255,255,255,.46);
+  --line-soft:rgba(255,255,255,.05);
+  --accent-deep:#a8c9ff;
+  --accent-tint:rgba(77,148,255,.12);
+  --amber:#ffb46b;--amber-tint:rgba(255,160,70,.08);--amber-line:rgba(255,160,70,.32);
+  --good:#72e3ad;--good-tint:rgba(114,227,173,.08);--good-line:rgba(114,227,173,.28);
+  --key:#ff6fa5;--key-tint:rgba(255,61,139,.08);--key-line:rgba(255,61,139,.28);
+  --teach:#a48bff;--teach-tint:rgba(123,77,255,.11);--teach-line:rgba(123,77,255,.38);
+  --mono:ui-monospace,'SFMono-Regular',Menlo,Consolas,monospace;
+  --rail-w:250px;
+}
+body{font-size:15.5px;line-height:1.9;line-break:strict;overflow-x:hidden}
+
+/* --- レイアウト（左に目次レール／右に本文の2カラム） ------------------------
+   本文列 760px は日本語の長文＋数式に合わせた measure。style.css の共通記事
+   ルールは `body.is-article main > section:not(.rail)`（詳細度 0,2,3）と
+   `… ~ section:not(.rail)`（0,3,4）で 900px と 160px パディングをかけてくる。
+   こちらは `.main` を噛ませて 0,3,2 / 0,4,3 とし、確実に上回る（§36）。 */
+/* 全幅。左寄せのレイアウトで、余った幅は右に流す（§43）。
+   §40 で一度 max-width を外して差し戻しているが、あれは「中央寄せのまま左右を
+   対称にする」変更で、本文の位置も幅も変わらなかったため戻した。今回は本文を
+   860px に広げて左揃えにするので、目的も結果も違う。
+   レールの左余白は 1280px → 1440px にかけて 0 → 32px。狭い画面ではまず余白を
+   削って本文幅に回す（レール幅 250px は目次の文字量で決まるので触らない）。 */
+.wrap{display:flex;padding-top:var(--nav-clearance);
+      padding-left:clamp(0px, calc((100vw - 1280px) * .2), 32px)}
+.rail{width:var(--rail-w);flex:0 0 var(--rail-w);position:sticky;top:var(--nav-clearance);height:calc(100vh - var(--nav-clearance));overflow-y:auto;padding:18px 14px 60px 22px;border-right:1px solid var(--line)}
+/* 左パディング＝レールと本文の間隔。1024px → 1280px にかけて 24 → 56px。
+   これも狭い画面では縮めて本文幅に回す。 */
+.main{flex:1 1 auto;min-width:0;
+      padding:0 clamp(24px, calc(24px + (100vw - 1024px) * .125), 56px) 110px}
+/* 本文列 860px。760px では display 数式が 6 本はみ出していた（解答の入れ子
+   パディングで、.sol の中は本文列より 132px 狭い箱になる）。全 82 本が収まる
+   最小幅は実測 853px（§43.2）。中央寄せをやめて左揃えにし、余りは右へ。 */
+body.is-article .main > .lesson-hero,
+body.is-article .main > section:not(.rail),
+body.is-article .main > .foot{max-width:860px;margin-left:0;margin-right:auto;padding-left:0;padding-right:0}
+.rail .brand{font-weight:400;font-size:15px;line-height:1.45;margin:2px 0 4px}
+.rail .brand small{display:block;font-size:10px;font-weight:500;color:var(--ink-faint);letter-spacing:.2em;margin-top:6px}
+.progress-wrap{height:2px;background:var(--line);border-radius:99px;margin:16px 0 18px;overflow:hidden}
+.progress-bar{height:100%;width:0;background:linear-gradient(90deg,var(--accent),#a8c9ff);transition:width .15s linear}
+.toc{list-style:none;margin:0;padding:0;font-size:12.5px}
+.toc .part{font-size:10px;letter-spacing:.2em;color:var(--ink-faint);margin:16px 0 5px;padding-left:2px}
+.toc a{display:block;text-decoration:none;color:var(--ink-soft);padding:4px 10px;border-radius:999px;transition:color var(--dur) var(--ease),background var(--dur) var(--ease)}
+.toc a:hover{color:var(--ink);background:var(--surface-2)}
+.toc a.active{color:var(--ink);background:var(--accent-tint)}
+.toc a .n{font-size:10.5px;color:var(--ink-faint);margin-right:8px;font-variant-numeric:tabular-nums}
+.toc a.active .n{color:var(--accent)}
+
+/* --- 記事の導入部。`.hero` は index.html 専用で、style.css が
+   `.hero h1/.hero p/.hero .eyebrow` に黒い text-shadow をかけるため使えない（§36）。 --- */
+.lesson-hero{padding:64px 0 34px;border-bottom:1px solid var(--line)}
+.lesson-hero h1{font-weight:300;font-size:clamp(28px,4vw,48px);line-height:1.25;letter-spacing:-.02em;margin:0 0 22px}
+.lesson-hero h1 .sub{display:block;font-size:.52em;font-weight:300;color:var(--ink-soft);letter-spacing:0;margin-top:12px}
+.lesson-hero p{color:var(--ink-soft);margin:0 0 12px}
+.lesson-hero .lead{font-size:16.5px;color:var(--ink-soft)}
+/* .eyebrow 本体は style.css の共通コンポーネント。色と余白だけ上書きする
+   （共通の --text-tertiary は 11px の小さな文字で 3.66:1 と AA を割るため） */
+.eyebrow{color:var(--ink-faint);margin-bottom:18px}
+
+section{border-bottom:1px solid var(--line-soft);scroll-margin-top:var(--nav-clearance)}
+/* 縦の余白も共通ルールに勝つ必要がある（先頭セクションも2つ目以降も同じ 56px） */
+body.is-article .main > section:not(.rail),
+body.is-article .main > section:not(.rail) ~ section:not(.rail){padding-top:56px;padding-bottom:12px}
+.sec-head{display:flex;align-items:baseline;gap:14px;margin-bottom:10px}
+.sec-head .idx{font-size:.72rem;font-weight:500;letter-spacing:.2em;color:var(--ink-faint);padding-top:4px;flex:0 0 auto;font-variant-numeric:tabular-nums}
+.sec-head .idx::after{content:' —'}
+body.is-article main h2{font-weight:400;font-size:clamp(21px,2.6vw,28px);line-height:1.3;letter-spacing:-.01em;margin:0}
+body.is-article main h3{font-weight:400;font-size:17px;margin:30px 0 6px;color:var(--ink)}
+body.is-article main h4{font-weight:500;font-size:14.5px;margin:18px 0 4px;color:var(--ink)}
+body.is-article main p{margin:10px 0;color:var(--ink-soft)}
+body.is-article main ul,body.is-article main ol{margin:10px 0;padding-left:1.3em;color:var(--ink-soft)}
+li{margin:4px 0}
+strong{font-weight:500;color:var(--ink)}
+code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);border-radius:6px;padding:1px 6px;color:var(--accent-deep)}
+mjx-container{color:var(--ink)}
+mjx-container[display="true"]{margin:14px 0!important;overflow-x:auto;overflow-y:hidden;padding:2px 0}
+
+/* 別行立て数式だけ、入れ子のパディングの外へ広げる（§46）。
+   解答や色付きボックスの中の数式は、section → .drill(20) → .attempt(22) →
+   .sol(20) と積み上がるパディングで、本文列より最大 132px 狭い箱に入っていた。
+   1024px では 82本中 6本がはみ出し、最大 +127px。**文章の字下げはそのまま**に、
+   数式だけを外へ出す。
+   値は「祖先のパディングの合計 − 8px」。8px 残すのは枠線に重ねないため。
+   全量（合計そのまま）だと .sol 左端の青いアクセントバーの上に分数が乗る。
+   はみ出しが無い幅では見た目が変わらない（箱が左右対称に広がるだけで中身は
+   中央揃えのまま。1440px で適用前後のピクセル差 0 を確認済み）。
+   !important は既存の margin:14px 0!important を上書きするため。
+   新しい入れ子を足すときは、この表に1行足すこと（現在 .hint の中に別行立ては無い）。
+     .box 20 / .drill 20 / .attempt 22 / .sol 20 */
+.box mjx-container[display="true"],
+.drill > mjx-container[display="true"]{margin:14px -12px!important}
+.attempt mjx-container[display="true"]{margin:14px -14px!important}
+.drill .attempt mjx-container[display="true"],
+.attempt .sol mjx-container[display="true"]{margin:14px -34px!important}
+.drill .attempt .sol mjx-container[display="true"]{margin:14px -54px!important}
+
+.box{border-radius:var(--radius-md);padding:16px 20px;margin:18px 0;border:1px solid var(--line);background:var(--surface)}
+.box .lab{font-size:.7rem;letter-spacing:.14em;font-weight:500;display:block;margin-bottom:6px}
+.box p{max-width:none}
+.box p:first-of-type{margin-top:2px}.box p:last-child{margin-bottom:0}
+/* 枠線は必ずトークン経由にすること。ここに直書きすると lesson-theme.css の
+   ライト上書きが効かず、暗い背景用の明るい色がライトでパステルになる（§41）。 */
+.box.principle{background:var(--key-tint);border-color:var(--key-line)}.box.principle .lab{color:var(--key)}
+.box.target{background:var(--good-tint);border-color:var(--good-line)}.box.target .lab{color:var(--good)}
+.box.warn{background:var(--amber-tint);border-color:var(--amber-line)}.box.warn .lab{color:var(--amber)}
+.box.teach{background:var(--teach-tint);border-color:var(--teach-line)}.box.teach .lab{color:var(--teach)}
+.box.teach .lab::before{content:"◎ "}
+
+.table-scroll{overflow-x:auto;margin:14px 0}
+.mini-table{width:100%;border-collapse:collapse;font-size:14px;margin:0;color:var(--ink-soft)}
+.mini-table th,.mini-table td{border:1px solid var(--line);padding:9px 11px;text-align:left;vertical-align:top}
+.mini-table th{background:var(--surface-2);font-weight:500;color:var(--ink)}
+
+.fig{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-lg);padding:18px 18px 12px;margin:20px 0}
+.fig > svg{width:100%;height:auto;display:block}
+.fig svg text{font-family:var(--font-body)}
+.fig figcaption{font-size:13px;color:var(--ink-soft);margin-top:10px;line-height:1.8;max-width:none}
+
+/* --- 演習まわり。`.ctl-btn` は style.css の `.btn`（サイト CTA。
+   `.btn::before` のホバーグローを持つ）と衝突しないよう改名したもの（§36）。 --- */
+.attempt{background:var(--surface);border:1px solid var(--amber-line);border-radius:var(--radius-lg);padding:18px 22px;margin:20px 0}
+.attempt .lab{font-size:.7rem;letter-spacing:.14em;color:var(--amber);font-weight:500;display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.attempt .lab::before{content:"✎"}
+.attempt p{max-width:none}
+.controls{display:flex;flex-wrap:wrap;gap:10px;margin:14px 0 4px}
+.ctl-btn{font-family:var(--font-body);font-size:12.5px;font-weight:500;border:1px solid var(--line);background:transparent;color:var(--ink-soft);padding:7px 16px;border-radius:var(--radius-pill);cursor:pointer;transition:color var(--dur) var(--ease),border-color var(--dur) var(--ease),background var(--dur) var(--ease)}
+.ctl-btn:hover{color:var(--ink);border-color:var(--line-strong);background:var(--surface-2)}
+.ctl-btn.amber{color:var(--amber);border-color:var(--amber-line)}
+.ctl-btn.amber:hover{background:var(--amber-tint)}
+.ctl-btn:disabled{opacity:.4;cursor:default;background:transparent}
+.hint{display:none;border-left:2px solid var(--amber);background:var(--amber-tint);border-radius:0 var(--radius-sm) var(--radius-sm) 0;padding:12px 16px;margin:10px 0}
+.hint .hn{font-size:.68rem;letter-spacing:.14em;color:var(--amber);font-weight:500;display:block;margin-bottom:3px}
+.hint p{max-width:none}.hint p:last-child{margin-bottom:0}.hint p:first-child{margin-top:0}
+.sol{display:none;border:1px solid var(--line);border-left:2px solid var(--accent);border-radius:0 var(--radius-md) var(--radius-md) 0;background:var(--surface-2);padding:8px 20px 16px;margin:12px 0}
+.sol p{max-width:none}
+.step{margin:18px 0}
+.step .sh{display:flex;gap:10px;align-items:baseline;font-weight:500;color:var(--ink);margin-bottom:2px}
+.step .sn{font-size:11px;font-weight:500;color:#06142e;background:var(--accent);border-radius:999px;padding:1px 10px;flex:0 0 auto}
+.step .why{font-size:13.5px;color:var(--ink-faint);border-left:1px solid var(--line);padding-left:12px;margin:5px 0 5px 2px;max-width:none}
+.transfer{background:var(--surface-2);border:1px solid var(--line);border-radius:var(--radius-md);padding:14px 18px;margin:18px 0}
+.transfer .lab{font-size:.7rem;letter-spacing:.14em;color:var(--accent);font-weight:500;display:block;margin-bottom:5px}
+.transfer p{max-width:none}
+.drill{background:var(--surface);border:1px solid var(--line);border-left:2px solid var(--accent);border-radius:0 var(--radius-md) var(--radius-md) 0;padding:14px 20px;margin:16px 0}
+.drill .qn{font-size:11px;font-weight:500;color:#06142e;background:var(--accent);border-radius:999px;padding:2px 11px;margin-right:8px}
+.drill p{max-width:none}
+.drill p:first-child{margin-top:2px}
+.drill .attempt{background:transparent;border-style:dashed}
+.foot{padding:34px 0 0;color:var(--ink-faint);font-size:12.5px}
+.foot p{color:var(--ink-faint);max-width:none}
+
+/* モバイル：レールを引き出しに。`.menu-btn` は位置だけを持ち、見た目は
+   共通コンポーネントの `.btn` を併用する。 */
+.menu-btn{display:none}
+.scrim{display:none}
+@media (max-width:900px){
+  .rail{position:fixed;left:0;top:0;height:100vh;z-index:1100;transform:translateX(-100%);transition:transform .25s var(--ease);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);padding-top:28px}
+  body.nav-open .rail{transform:translateX(0)}
+  .main{padding:0 20px 90px}
+  .menu-btn{display:inline-flex;position:fixed;bottom:18px;right:18px;z-index:1050;background:var(--nav-bg);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);color:var(--ink)}
+  .scrim{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:1090}
+  body.nav-open .scrim{display:block}
+  .lesson-hero{padding-top:40px}
+  /* 案A（§46.1）の負マージンをここで切る。マージンは固定 px なので、箱そのものが
+     狭いこの帯では数式が .sol の枠を大きく飛び出し、点線の .attempt 枠まで越えて
+     見える。390px では 28本が枠を横切っていた。はみ出し本数は 36→42 に増えるが、
+     どれも数式ごとの横スクロールで読める。§46.4 */
+  .box mjx-container[display="true"],
+  .drill > mjx-container[display="true"],
+  .attempt mjx-container[display="true"],
+  .drill .attempt mjx-container[display="true"],
+  .attempt .sol mjx-container[display="true"],
+  .drill .attempt .sol mjx-container[display="true"]{margin:14px 0!important}
+}
+@media print{
+  body{background:#fff;color:#000}
+  header,.rail,.menu-btn,.scrim,#starfield,footer{display:none!important}
+  .wrap{display:block;padding-top:0}
+  .hint,.sol{display:block!important}
+}
+</style>
+<link rel="stylesheet" href="../css/lesson-theme.css?v=r95">
+</head>
+<body data-page="study" class="is-article" data-node="phys-math_7-2">
+<canvas id="starfield" aria-hidden="true"></canvas>
+<div id="site-nav"><noscript><nav class="noscript-nav" aria-label="メインナビゲーション"><a href="index.html">ホーム</a><a href="self-intro.html">自己紹介</a><a href="study.html">勉強の軌跡</a><a href="videos.html">動画</a><a href="blog.html">ブログ</a><a href="sns.html">各種SNS</a></nav></noscript></div>
+<button class="menu-btn btn" id="menuBtn" aria-controls="rail" aria-expanded="false">目次 <span class="btn-disc" aria-hidden="true">≡</span></button>
+<div class="scrim" id="scrim"></div>
+<div class="wrap">
+  <nav class="rail" id="rail">
+    <!-- 科目へ戻る導線（レール上部の「← 一つ上」）は layout.js が CRUMBS から書き出す。 -->
+    <div class="brand">7-2　座標系の取り替えとヤコビアン<small>SECTION 7-2 / JACOBIAN</small></div>
+    <div class="progress-wrap"><div class="progress-bar" id="pbar"></div></div>
+    <ul class="toc" id="toc">
+      <li class="part">土台</li>
+      <li><a href="#m0"><span class="n">01</span>極座標と面積要素</a></li>
+      <li><a href="#d1"><span class="n">02</span>ヤコビアン</a></li>
+      <li class="part">使ってみる</li>
+      <li><a href="#d2"><span class="n">03</span>円柱座標と球座標</a></li>
+      <li><a href="#d3"><span class="n">04</span>ガウス積分</a></li>
+      <li class="part">仕上げ</li>
+      <li><a href="#howto"><span class="n">05</span>チェックリストと次回予告</a></li>
+    </ul>
+  </nav>
+
+  <main class="main">
+    <div class="lesson-hero">
+      <div class="eyebrow">物理数学 I ／ 7章 多重積分と座標系 ／ SECTION 7-2</div>
+      <h1>7-2　座標系の取り替えとヤコビアン<span class="sub">形に合った座標で、積分を軽くする</span></h1>
+      <p class="lead">7-1 の最後で、円板と球の積分が直交座標では重くなることを見ました。境界は「中心からの距離 ＝ 1」と一言で書けるのに、\(x,\ y,\ z\) がその形に合っていないのでした。</p>
+      <p>この記事では、<strong>領域の形に合った座標に取り替えます</strong>。そのとき面積要素・体積要素に付く因子を、6-1 の偏微分から組み立てます。これが<strong>ヤコビアン</strong>です。</p>
+      <p>最後に、この道具を使って、1変数のままではどうしても求まらない積分 \(\int_{{-}\infty}^{\infty}e^{{-}x^2}dx\) を求めます。統計力学から場の量子論まで、至るところで使われる積分です。</p>
+      <p>読み方：解答は必ず閉じたまま、紙で挑戦してください。</p>
+    </div>
+
+    <!-- §01 -->
+    <section id="m0">
+      <div class="sec-head"><span class="idx">§01</span><h2>極座標と面積要素</h2></div>
+
+      <p>平面上の点を、原点からの距離 \(r\) と、\(x\) 軸から測った角度 \(\theta\) で指定します。これを<strong>極座標</strong>といいます。直交座標との関係は、三角関数の定義そのものです。</p>
+      \[ x=r\cos\theta,\qquad y=r\sin\theta \]
+      <p>範囲は \(r\ge0\)、\(0\le\theta\le2\pi\) です。角度はラジアンで測ります。</p>
+      <figure class="fig">
+        <svg viewBox="0 0 640 280" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="極座標と直交座標の関係"><line x1="130.0" y1="242.0" x2="502.0" y2="242.0" stroke="var(--ink-faint)" stroke-width="1.3"/><polygon points="510.0,242.0 502.0,245.4 502.0,238.6" fill="var(--ink-faint)" stroke="none" stroke-width="1.5" stroke-linejoin="round"/><line x1="170.0" y1="266.0" x2="170.0" y2="55.0" stroke="var(--ink-faint)" stroke-width="1.3"/><polygon points="170.0,47.0 173.4,55.0 166.6,55.0" fill="var(--ink-faint)" stroke="none" stroke-width="1.5" stroke-linejoin="round"/><text x="514.0" y="246.0" font-size="12" fill="var(--ink-soft)" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">x</text><text x="177.0" y="53.0" font-size="12" fill="var(--ink-soft)" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">y</text><text x="162.0" y="258.0" font-size="11.5" fill="var(--ink-faint)" text-anchor="end" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">O</text><polygon points="170.0,242.0 379.7,242.0 379.7,105.8" fill="rgba(77,148,255,.10)" stroke="none" stroke-width="0" stroke-linejoin="round"/><line x1="170.0" y1="242.0" x2="379.7" y2="242.0" stroke="var(--key)" stroke-width="3"/><line x1="379.7" y1="242.0" x2="379.7" y2="105.8" stroke="var(--amber)" stroke-width="3"/><line x1="170.0" y1="242.0" x2="379.7" y2="105.8" stroke="var(--accent)" stroke-width="3"/><polyline points="367.7,242.0 367.7,230.0 379.7,230.0" fill="none" stroke="var(--ink-soft)" stroke-width="1.2" stroke-linejoin="round"/><polyline points="212.0,242.0 212.0,240.5 211.9,239.0 211.8,237.5 211.6,236.0 211.3,234.5 211.0,233.0 210.7,231.5 210.3,230.1 209.8,228.6 209.3,227.2 208.8,225.8 208.1,224.4 207.5,223.1 206.8,221.7 206.0,220.4 205.2,219.1" fill="none" stroke="var(--ink)" stroke-width="1.6" stroke-linejoin="round"/><text x="228.0" y="231.0" font-size="13" font-weight="500" fill="var(--ink)" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">θ</text><circle cx="379.7" cy="105.8" r="5" fill="var(--ink)" stroke="#000" stroke-width="2"/><text x="389.7" y="97.8" font-size="12" font-weight="500" fill="var(--ink)" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">P(x, y)</text><text x="264.8" y="163.9" font-size="13" font-weight="500" fill="var(--accent)" text-anchor="end" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round"><tspan font-style="italic">r</tspan></text><text x="274.8" y="264.0" font-size="12.5" font-weight="500" fill="var(--key)" text-anchor="middle" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">x ＝ r cos θ</text><text x="391.7" y="178.9" font-size="12.5" font-weight="500" fill="var(--amber)" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">y ＝ r sin θ</text></svg>
+        <figcaption>点 P から \(x\) 軸に垂線を下ろすと、斜辺 \(r\)、角 \(\theta\) の直角三角形ができます。<strong>横の辺が \(x=r\cos\theta\)、縦の辺が \(y=r\sin\theta\)</strong> です。</figcaption>
+      </figure>
+
+      <div class="box teach"><span class="lab">丸い領域が、長方形になる</span>
+      <p>単位円板 \(x^2+y^2\le1\) を極座標で書くと</p>
+      \[ 0\le r\le1,\qquad 0\le\theta\le2\pi \]
+      <p>です。<strong>\(r\) と \(\theta\) の範囲が、どちらもただの数</strong>になりました。7-1 §03 で見たとおり、積分範囲がただの数なら、長方形の領域と同じく計算が楽になります。7-1 で苦しんだ根号 \(\sqrt{1-x^2}\) は、どこにも出てきません。</p></div>
+
+      <h3>面積要素は \(dr\,d\theta\) ではない</h3>
+      <p>では、極座標で区画に分けたとき、1つの区画の面積はいくらでしょうか。</p>
+
+      <figure class="fig">
+        <svg viewBox="0 0 640 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="極座標の区画と面積要素"><line x1="10.0" y1="158.0" x2="242.0" y2="158.0" stroke="var(--ink-faint)" stroke-width="1.3"/><polygon points="250.0,158.0 242.0,161.4 242.0,154.6" fill="var(--ink-faint)" stroke="none" stroke-width="1.5" stroke-linejoin="round"/><line x1="128.0" y1="266.0" x2="128.0" y2="44.0" stroke="var(--ink-faint)" stroke-width="1.3"/><polygon points="128.0,36.0 131.4,44.0 124.6,44.0" fill="var(--ink-faint)" stroke="none" stroke-width="1.5" stroke-linejoin="round"/><text x="254.0" y="162.0" font-size="12" fill="var(--ink-soft)" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">x</text><text x="135.0" y="44.0" font-size="12" fill="var(--ink-soft)" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">y</text><polygon points="153.0,158.0 152.9,156.3 152.8,154.5 152.5,152.8 152.0,151.1 151.5,149.4 150.8,147.8 150.1,146.3 149.2,144.8 148.2,143.3 147.2,141.9 146.0,140.6 144.7,139.4 143.4,138.3 142.0,137.3 140.5,136.3 139.0,135.5 137.4,134.8 135.7,134.2 134.0,133.7 132.3,133.4 130.6,133.1 128.9,133.0 127.1,133.0 125.4,133.1 123.7,133.4 122.0,133.7 120.3,134.2 118.6,134.8 117.0,135.5 115.5,136.3 114.0,137.3 112.6,138.3 111.3,139.4 110.0,140.6 108.8,141.9 107.8,143.3 106.8,144.8 105.9,146.3 105.2,147.8 104.5,149.4 104.0,151.1 103.5,152.8 103.2,154.5 103.1,156.3 103.0,158.0 103.1,159.7 103.2,161.5 103.5,163.2 104.0,164.9 104.5,166.6 105.2,168.2 105.9,169.7 106.8,171.2 107.8,172.7 108.8,174.1 110.0,175.4 111.3,176.6 112.6,177.7 114.0,178.7 115.5,179.7 117.0,180.5 118.6,181.2 120.3,181.8 122.0,182.3 123.7,182.6 125.4,182.9 127.1,183.0 128.9,183.0 130.6,182.9 132.3,182.6 134.0,182.3 135.7,181.8 137.4,181.2 139.0,180.5 140.5,179.7 142.0,178.7 143.4,177.7 144.7,176.6 146.0,175.4 147.2,174.1 148.2,172.7 149.2,171.2 150.1,169.7 150.8,168.2 151.5,166.6 152.0,164.9 152.5,163.2 152.8,161.5 152.9,159.7" fill="none" stroke="var(--good)" stroke-width="1.0" stroke-linejoin="round" stroke-opacity=".7"/><polygon points="178.0,158.0 177.9,154.5 177.5,151.0 176.9,147.6 176.1,144.2 175.0,140.9 173.7,137.7 172.1,134.5 170.4,131.5 168.5,128.6 166.3,125.9 164.0,123.3 161.5,120.8 158.8,118.6 156.0,116.5 153.0,114.7 149.9,113.1 146.7,111.6 143.5,110.4 140.1,109.5 136.7,108.8 133.2,108.3 129.7,108.0 126.3,108.0 122.8,108.3 119.3,108.8 115.9,109.5 112.5,110.4 109.3,111.6 106.1,113.1 103.0,114.7 100.0,116.5 97.2,118.6 94.5,120.8 92.0,123.3 89.7,125.9 87.5,128.6 85.6,131.5 83.9,134.5 82.3,137.7 81.0,140.9 79.9,144.2 79.1,147.6 78.5,151.0 78.1,154.5 78.0,158.0 78.1,161.5 78.5,165.0 79.1,168.4 79.9,171.8 81.0,175.1 82.3,178.3 83.9,181.5 85.6,184.5 87.5,187.4 89.7,190.1 92.0,192.7 94.5,195.2 97.2,197.4 100.0,199.5 103.0,201.3 106.1,202.9 109.3,204.4 112.5,205.6 115.9,206.5 119.3,207.2 122.8,207.7 126.3,208.0 129.7,208.0 133.2,207.7 136.7,207.2 140.1,206.5 143.5,205.6 146.7,204.4 149.9,202.9 153.0,201.3 156.0,199.5 158.8,197.4 161.5,195.2 164.0,192.7 166.3,190.1 168.5,187.4 170.4,184.5 172.1,181.5 173.7,178.3 175.0,175.1 176.1,171.8 176.9,168.4 177.5,165.0 177.9,161.5" fill="none" stroke="var(--good)" stroke-width="1.0" stroke-linejoin="round" stroke-opacity=".7"/><polygon points="203.0,158.0 202.8,152.8 202.3,147.6 201.4,142.4 200.1,137.3 198.5,132.3 196.5,127.5 194.2,122.8 191.6,118.3 188.7,113.9 185.5,109.8 182.0,105.9 178.2,102.3 174.2,98.9 169.9,95.8 165.5,93.0 160.9,90.6 156.1,88.5 151.2,86.7 146.1,85.2 141.0,84.1 135.8,83.4 130.6,83.0 125.4,83.0 120.2,83.4 115.0,84.1 109.9,85.2 104.8,86.7 99.9,88.5 95.1,90.6 90.5,93.0 86.1,95.8 81.8,98.9 77.8,102.3 74.0,105.9 70.5,109.8 67.3,113.9 64.4,118.3 61.8,122.8 59.5,127.5 57.5,132.3 55.9,137.3 54.6,142.4 53.7,147.6 53.2,152.8 53.0,158.0 53.2,163.2 53.7,168.4 54.6,173.6 55.9,178.7 57.5,183.7 59.5,188.5 61.8,193.2 64.4,197.7 67.3,202.1 70.5,206.2 74.0,210.1 77.8,213.7 81.8,217.1 86.1,220.2 90.5,223.0 95.1,225.4 99.9,227.5 104.8,229.3 109.9,230.8 115.0,231.9 120.2,232.6 125.4,233.0 130.6,233.0 135.8,232.6 141.0,231.9 146.1,230.8 151.2,229.3 156.1,227.5 160.9,225.4 165.5,223.0 169.9,220.2 174.2,217.1 178.2,213.7 182.0,210.1 185.5,206.2 188.7,202.1 191.6,197.7 194.2,193.2 196.5,188.5 198.5,183.7 200.1,178.7 201.4,173.6 202.3,168.4 202.8,163.2" fill="none" stroke="var(--good)" stroke-width="1.0" stroke-linejoin="round" stroke-opacity=".7"/><polygon points="228.0,158.0 227.8,151.0 227.0,144.1 225.8,137.2 224.1,130.4 222.0,123.8 219.4,117.3 216.3,111.1 212.8,105.0 208.9,99.2 204.6,93.7 199.9,88.5 194.9,83.7 189.6,79.2 183.9,75.1 178.0,71.4 171.8,68.1 165.5,65.3 158.9,62.9 152.2,61.0 145.4,59.5 138.5,58.5 131.5,58.1 124.5,58.1 117.5,58.5 110.6,59.5 103.8,61.0 97.1,62.9 90.5,65.3 84.2,68.1 78.0,71.4 72.1,75.1 66.4,79.2 61.1,83.7 56.1,88.5 51.4,93.7 47.1,99.2 43.2,105.0 39.7,111.1 36.6,117.3 34.0,123.8 31.9,130.4 30.2,137.2 29.0,144.1 28.2,151.0 28.0,158.0 28.2,165.0 29.0,171.9 30.2,178.8 31.9,185.6 34.0,192.2 36.6,198.7 39.7,204.9 43.2,211.0 47.1,216.8 51.4,222.3 56.1,227.5 61.1,232.3 66.4,236.8 72.1,240.9 78.0,244.6 84.2,247.9 90.5,250.7 97.1,253.1 103.8,255.0 110.6,256.5 117.5,257.5 124.5,257.9 131.5,257.9 138.5,257.5 145.4,256.5 152.2,255.0 158.9,253.1 165.5,250.7 171.8,247.9 178.0,244.6 183.9,240.9 189.6,236.8 194.9,232.3 199.9,227.5 204.6,222.3 208.9,216.8 212.8,211.0 216.3,204.9 219.4,198.7 222.0,192.2 224.1,185.6 225.8,178.8 227.0,171.9 227.8,165.0" fill="rgba(114,227,173,.08)" stroke="var(--good)" stroke-width="1.8" stroke-linejoin="round" stroke-opacity=".7"/><line x1="128.0" y1="158.0" x2="228.0" y2="158.0" stroke="var(--good)" stroke-width="1.0" stroke-opacity=".45"/><line x1="128.0" y1="158.0" x2="214.6" y2="108.0" stroke="var(--good)" stroke-width="1.0" stroke-opacity=".45"/><line x1="128.0" y1="158.0" x2="178.0" y2="71.4" stroke="var(--good)" stroke-width="1.0" stroke-opacity=".45"/><line x1="128.0" y1="158.0" x2="128.0" y2="58.0" stroke="var(--good)" stroke-width="1.0" stroke-opacity=".45"/><line x1="128.0" y1="158.0" x2="78.0" y2="71.4" stroke="var(--good)" stroke-width="1.0" stroke-opacity=".45"/><line x1="128.0" y1="158.0" x2="41.4" y2="108.0" stroke="var(--good)" stroke-width="1.0" stroke-opacity=".45"/><line x1="128.0" y1="158.0" x2="28.0" y2="158.0" stroke="var(--good)" stroke-width="1.0" stroke-opacity=".45"/><line x1="128.0" y1="158.0" x2="41.4" y2="208.0" stroke="var(--good)" stroke-width="1.0" stroke-opacity=".45"/><line x1="128.0" y1="158.0" x2="78.0" y2="244.6" stroke="var(--good)" stroke-width="1.0" stroke-opacity=".45"/><line x1="128.0" y1="158.0" x2="128.0" y2="258.0" stroke="var(--good)" stroke-width="1.0" stroke-opacity=".45"/><line x1="128.0" y1="158.0" x2="178.0" y2="244.6" stroke="var(--good)" stroke-width="1.0" stroke-opacity=".45"/><line x1="128.0" y1="158.0" x2="214.6" y2="208.0" stroke="var(--good)" stroke-width="1.0" stroke-opacity=".45"/><polygon points="193.0,120.5 191.7,118.4 190.4,116.3 189.0,114.3 187.5,112.3 186.0,110.4 184.4,108.5 182.7,106.7 181.0,105.0 179.3,103.3 177.5,101.6 175.6,100.0 173.7,98.5 171.7,97.0 169.7,95.6 167.6,94.3 165.5,93.0 178.0,71.4 180.8,73.1 183.6,74.9 186.2,76.7 188.9,78.7 191.4,80.7 193.9,82.8 196.4,85.0 198.7,87.3 201.0,89.6 203.2,92.1 205.3,94.6 207.3,97.1 209.3,99.8 211.1,102.4 212.9,105.2 214.6,108.0" fill="rgba(255,111,165,.55)" stroke="var(--key)" stroke-width="1.6" stroke-linejoin="round"/><polygon points="149.7,145.5 149.2,144.8 148.8,144.1 148.3,143.4 147.8,142.8 147.3,142.1 146.8,141.5 146.2,140.9 145.7,140.3 145.1,139.8 144.5,139.2 143.9,138.7 143.2,138.2 142.6,137.7 141.9,137.2 141.2,136.8 140.5,136.3 153.0,114.7 154.4,115.5 155.8,116.4 157.1,117.4 158.4,118.3 159.7,119.3 161.0,120.4 162.2,121.5 163.4,122.6 164.5,123.8 165.6,125.0 166.7,126.3 167.7,127.6 168.6,128.9 169.6,130.2 170.5,131.6 171.3,133.0" fill="rgba(77,148,255,.55)" stroke="var(--accent)" stroke-width="1.6" stroke-linejoin="round"/><text x="128.0" y="26.0" font-size="12.5" font-weight="500" fill="var(--ink)" text-anchor="middle" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">円板を極座標で分ける</text><text x="128.0" y="288.0" font-size="11.5" fill="var(--ink-faint)" text-anchor="middle" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">外側の区画ほど大きい</text><line x1="292.0" y1="282.0" x2="413.4" y2="193.8" stroke="var(--ink-faint)" stroke-width="1" stroke-dasharray="3 4"/><line x1="292.0" y1="282.0" x2="362.4" y2="149.6" stroke="var(--ink-faint)" stroke-width="1" stroke-dasharray="3 4"/><circle cx="292" cy="282" r="3.5" fill="var(--ink)"/><text x="284.0" y="286.0" font-size="11" fill="var(--ink-faint)" text-anchor="end" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">原点</text><polyline points="338.9,247.9 337.6,246.2 336.2,244.5 334.8,242.8 333.3,241.2 331.7,239.7 330.1,238.2 328.4,236.8 326.6,235.5 324.9,234.2 323.0,233.0 321.1,231.9 319.2,230.8" fill="none" stroke="var(--amber)" stroke-width="1.5" stroke-linejoin="round"/><text x="347.1" y="222.6" font-size="11.5" font-weight="500" fill="var(--amber)" text-anchor="middle" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">dθ</text><polygon points="413.4,193.8 411.7,191.6 409.9,189.3 408.2,187.1 406.3,184.9 404.5,182.8 402.6,180.7 400.7,178.6 398.7,176.6 396.7,174.6 394.6,172.6 392.5,170.7 390.4,168.8 388.3,167.0 386.1,165.2 383.8,163.4 381.6,161.7 379.3,160.0 377.0,158.4 374.6,156.8 372.2,155.3 369.8,153.8 367.4,152.3 364.9,150.9 362.4,149.6 391.5,94.8 395.0,96.7 398.5,98.7 402.0,100.8 405.4,102.9 408.8,105.0 412.1,107.3 415.4,109.6 418.6,111.9 421.8,114.4 424.9,116.9 428.0,119.4 431.1,122.0 434.1,124.7 437.0,127.4 439.9,130.1 442.8,133.0 445.6,135.8 448.3,138.8 451.0,141.8 453.6,144.8 456.2,147.9 458.7,151.0 461.1,154.2 463.5,157.4" fill="rgba(255,111,165,.35)" stroke="var(--key)" stroke-width="1.8" stroke-linejoin="round"/><text x="389.0" y="229.3" font-size="12.5" fill="var(--ink)" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round"><tspan font-style="italic">r</tspan></text><text x="448.4" y="189.6" font-size="12" font-weight="500" fill="var(--key)" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">dr</text><text x="380.4" y="184.8" font-size="12" font-weight="500" fill="var(--key)" text-anchor="end" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">r dθ</text><text x="372.0" y="26.0" font-size="12.5" font-weight="500" fill="var(--ink)" text-anchor="middle" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">1つの区画を拡大</text><text x="500.0" y="120.0" font-size="11.5" fill="var(--ink-soft)" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">縦：dr</text><text x="500.0" y="140.0" font-size="11.5" fill="var(--ink-soft)" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">横：r dθ（弧の長さ）</text><line x1="500.0" y1="156.0" x2="628.0" y2="156.0" stroke="var(--line)" stroke-width="1.2"/><text x="500.0" y="180.0" font-size="12.5" font-weight="500" fill="var(--ink)" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">dA ＝ r dr dθ</text><text x="500.0" y="208.0" font-size="11" fill="var(--ink-soft)" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">同じ dθ でも、中心から</text><text x="500.0" y="226.0" font-size="11" fill="var(--ink-soft)" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">遠いほど横が長い</text></svg>
+        <figcaption>円板を、中心からの距離 \(r\) と角度 \(\theta\) で区切ります。拡大した1つの区画は、縦が \(dr\)、横が弧の長さ \(r\,d\theta\) の、ほぼ長方形です。<strong>同じ \(d\theta\) でも中心から遠いほど横が長い</strong>ので、面積要素に \(r\) が掛かります。</figcaption>
+      </figure>
+
+      <p>区画の縦は、\(r\) が \(dr\) だけ増える幅なので \(dr\) です。横は、半径 \(r\) の円の、中心角 \(d\theta\) の弧です。ラジアンの定義から、その長さは \(r\,d\theta\) です。区画は十分小さければほぼ長方形なので</p>
+
+      <div class="box target"><span class="lab">極座標の面積要素</span>
+      \[ dA=r\,dr\,d\theta \]
+      <p>したがって、極座標での重積分は次のように書けます。</p>
+      \[ \iint_D f\,dA=\iint f\,r\,dr\,d\theta \]
+      <p>\(f\) を \(r,\ \theta\) で書き直し、<strong>\(r\) を1つ掛けてから</strong>積分します。</p></div>
+
+      <div class="box warn"><span class="lab">よくある間違い：\(r\) を掛け忘れる</span>
+      <p>\(dA=dr\,d\theta\) としてしまう間違いが、いちばん多い失敗です。単位で確かめると防げます。\(dA\) は面積なので「長さの2乗」の単位を持ちます。一方、\(dr\) は長さ、\(d\theta\) は角度（単位なし）なので、\(dr\,d\theta\) は長さの1乗にしかなりません。<strong>足りない長さ1つぶんが \(r\)</strong> です。</p></div>
+
+      <p>確かめとして、単位円板の面積を求めます。\(f=1\) として</p>
+      \[ \int_0^{2\pi}\!\int_0^1 r\,dr\,d\theta \]
+      <p>範囲がただの数で、中身も \(r\) だけの関数なので、7-1 §02 の「変数が分かれるとき」がそのまま使えます。\(\int_0^1 r\,dr=\dfrac12\)、\(\int_0^{2\pi}d\theta=2\pi\) で、積は \(\pi\)。7-1 §03 で置換積分を使った計算が、2行で終わりました。</p>
+
+      <div class="attempt"><span class="lab">まず自力で</span>
+      <p>単位円板 \(D:\ x^2+y^2\le1\) について、次の重積分を極座標で計算してください。</p>
+      \[ \iint_D(x^2+y^2)\,dA \]
+      <div class="controls">
+        <button class="ctl-btn amber" data-hint>ヒントを表示</button>
+        <button class="ctl-btn" data-sol>解答を見る</button>
+      </div>
+      <div class="hint"><span class="hn">HINT 1</span><p>\(x^2+y^2\) は、原点からの距離の2乗なので \(r^2\) です。そこに面積要素の \(r\) を掛けるのを忘れずに。</p></div>
+      <div class="sol">
+        <div class="step"><div class="sh"><span class="sn">1</span>中身を \(r,\ \theta\) で書く</div>
+        <div class="why">なぜ：\(x^2+y^2=r^2\cos^2\theta+r^2\sin^2\theta=r^2\) です。</div>
+        <p style="margin:4px 0">中身は \(r^2\)、面積要素は \(r\,dr\,d\theta\) なので、積分するのは \(r^3\) です。</p>
+        </div>
+        <div class="step"><div class="sh"><span class="sn">2</span>範囲を書いて分ける</div>
+        <div class="why">なぜ：範囲がただの数で、中身が \(r\) だけの関数なので、2つの積分の積に分かれます。</div>
+        \[ \int_0^{2\pi}d\theta\cdot\int_0^1 r^3\,dr \]
+        </div>
+        <div class="step"><div class="sh"><span class="sn">3</span>計算する</div>
+        <div class="why">なぜ：それぞれは1変数の積分です。</div>
+        \[ 2\pi\times\frac14=\frac{\pi}{2} \]
+        <p style="font-size:13.5px;color:var(--ink-faint);margin:6px 0 0">直交座標なら、\(\int(x^2+y^2)\,dy\) を \(\pm\sqrt{1-x^2}\) の範囲で計算してから、根号の3乗が入った積分をすることになります。<strong>中身も領域も「中心からの距離」だけで決まるときは、極座標が圧倒的に楽</strong>です。この積分は、密度が一様な円板の、中心を軸とした慣性モーメントに比例します。その意味は古典力学のセクションで扱います。</p></div>
+      </div>
+      </div>
+
+      <h3>計算ドリル（§01・全1問）</h3>
+
+      <div class="drill"><p><span class="qn">問1</span>\(x\ge0,\ y\ge0\) の部分の単位円板（4分の1円）を \(D\) とする。\(\displaystyle\iint_D xy\,dA\) を極座標で計算せよ。</p>
+      <div class="attempt" style="margin:10px 0 4px"><span class="lab">自分の答えを出してから</span>
+      <div class="controls">
+        <button class="ctl-btn amber" data-hint>ヒントを表示</button>
+        <button class="ctl-btn" data-sol>解答を見る</button>
+      </div>
+      <div class="hint"><span class="hn">HINT 1</span><p>4分の1円は \(0\le r\le1\)、\(0\le\theta\le\dfrac{\pi}{2}\) です。\(xy=r^2\cos\theta\sin\theta\) に、面積要素の \(r\) を掛けます。</p></div>
+      <div class="sol"><p>\(x=r\cos\theta\)、\(y=r\sin\theta\) を入れます。</p>
+      \[ xy=r^2\cos\theta\sin\theta \]
+      <p>これに面積要素 \(dA=r\,dr\,d\theta\) の \(r\) を掛けるので、積分する中身は \(r^3\cos\theta\sin\theta\) です。範囲は \(0\le r\le1\)、\(0\le\theta\le\frac{\pi}{2}\) でどちらもただの数なので、<strong>\(r\) の積分と \(\theta\) の積分の積</strong>に分かれます。</p>
+      <p style="margin-top:10px"><strong>\(r\) の積分</strong>：</p>
+      \[ \begin{aligned}\int_0^1 r^3\,dr&=\Big[\frac{r^4}{4}\Big]_0^1\\&=\frac14\end{aligned} \]
+      <p style="margin-top:10px"><strong>\(\theta\) の積分</strong>：\(u=\sin\theta\) と置くと、\(du=\cos\theta\,d\theta\) です。\(\theta\) が \(0\) から \(\frac{\pi}{2}\) まで動くとき、\(u\) は \(0\) から \(1\) まで動くので</p>
+      \[ \int_0^{\frac{\pi}{2}}\sin\theta\cos\theta\,d\theta=\int_0^1u\,du \]
+      \[ \begin{aligned}\int_0^1u\,du&=\Big[\frac{u^2}{2}\Big]_0^1\\&=\frac12\end{aligned} \]
+      <p style="margin-top:10px"><strong>まとめる</strong>：2つの積なので</p>
+      \[ \frac14\times\frac12=\frac18 \]
+      <p style="font-size:13.5px;color:var(--ink-faint)">極座標では、\(x\) と \(y\) の積のような式も <strong>「\(r\) の部分 × \(\theta\) の部分」</strong>に分かれることが多く、それが計算を楽にします。よくある間違いは、4分の1円なのに \(\theta\) を \(0\) から \(2\pi\) まで取ってしまうことです。\(\theta\) の範囲も、必ず図を見て決めてください。</p></div></div></div>
+
+      <div class="box teach"><span class="lab">この記事の到達目標</span>
+      <ul style="margin:6px 0 0">
+        <li>極座標の面積要素 \(r\,dr\,d\theta\) を、図から導いて説明できる</li>
+        <li>一般の座標変換で、ヤコビアンを偏微分から計算できる</li>
+        <li>1変数の置換積分が、ヤコビアンの特別な場合であることを説明できる</li>
+        <li>円柱座標・球座標の体積要素を使って、体積や質量を計算できる</li>
+        <li>ガウス積分 \(\int_{{-}\infty}^{\infty}e^{{-}x^2}dx=\sqrt{\pi}\) を導ける</li>
+      </ul></div>
+
+      <div class="box principle"><span class="lab">前提として使うもの</span>
+      <ul style="margin:6px 0 0">
+        <li><strong>7-1</strong>：重積分、累次積分、変数が分かれるときの積</li>
+        <li><strong>6-1</strong>：偏微分、全微分</li>
+        <li><strong>2章</strong>：置換積分</li>
+        <li><strong>高校数学</strong>：ラジアン、弧の長さ、ベクトルで表した三角形の面積</li>
+      </ul></div>
+    </section>
+
+    <!-- §02 -->
+    <section id="d1">
+      <div class="sec-head"><span class="idx">§02</span><h2>ヤコビアン — 面積が何倍になるか</h2></div>
+
+      <p>極座標では、図を描いて面積要素を読み取れました。しかし座標の取り替え方はほかにもいくらでもあり、そのたびに図から読むのは大変です。そこで、<strong>どんな取り替えでも使える手続き</strong>を作ります。</p>
+      <p>新しい座標を \(u,\ v\) とし、\(x,\ y\) がその関数として与えられているとします。</p>
+      \[ x=x(u,v),\qquad y=y(u,v) \]
+      <p>極座標なら \(u=r\)、\(v=\theta\) です。</p>
+
+      <figure class="fig">
+        <svg viewBox="0 0 640 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="座標を取り替えると小さな長方形がほぼ平行四辺形に写る"><line x1="44.0" y1="252.0" x2="205.2" y2="252.0" stroke="var(--ink-faint)" stroke-width="1.3"/><polygon points="213.2,252.0 205.2,255.4 205.2,248.6" fill="var(--ink-faint)" stroke="none" stroke-width="1.5" stroke-linejoin="round"/><line x1="44.0" y1="252.0" x2="44.0" y2="90.8" stroke="var(--ink-faint)" stroke-width="1.3"/><polygon points="44.0,82.8 47.4,90.8 40.6,90.8" fill="var(--ink-faint)" stroke="none" stroke-width="1.5" stroke-linejoin="round"/><text x="218.2" y="256.0" font-size="12" fill="var(--ink-soft)" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">u</text><text x="51.0" y="88.8" font-size="12" fill="var(--ink-soft)" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">v</text><line x1="296.0" y1="272.0" x2="500.4" y2="272.0" stroke="var(--ink-faint)" stroke-width="1.3"/><polygon points="508.4,272.0 500.4,275.4 500.4,268.6" fill="var(--ink-faint)" stroke="none" stroke-width="1.5" stroke-linejoin="round"/><line x1="296.0" y1="272.0" x2="296.0" y2="85.6" stroke="var(--ink-faint)" stroke-width="1.3"/><polygon points="296.0,77.6 299.4,85.6 292.6,85.6" fill="var(--ink-faint)" stroke="none" stroke-width="1.5" stroke-linejoin="round"/><text x="513.4" y="276.0" font-size="12" fill="var(--ink-soft)" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">x</text><text x="303.0" y="83.6" font-size="12" fill="var(--ink-soft)" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">y</text><line x1="44.0" y1="252.0" x2="44.0" y2="108.0" stroke="var(--good)" stroke-width="1" stroke-opacity=".5"/><line x1="44.0" y1="252.0" x2="188.0" y2="252.0" stroke="var(--good)" stroke-width="1" stroke-opacity=".5"/><polyline points="296.0,272.0 296.1,267.2 296.3,262.4 296.6,257.6 297.0,252.8 297.6,248.0 298.3,243.2 299.1,238.4 300.1,233.6 301.2,228.8 302.4,224.0 303.7,219.2 305.2,214.4 306.8,209.6 308.5,204.8 310.4,200.0 312.4,195.2 314.5,190.4 316.7,185.6 319.1,180.8 321.6,176.0 324.2,171.2 327.0,166.4 329.9,161.6 332.9,156.8 336.0,152.0 339.3,147.2 342.7,142.4 346.2,137.6 349.8,132.8 353.6,128.0" fill="none" stroke="var(--good)" stroke-width="1" stroke-linejoin="round" stroke-opacity=".5"/><polyline points="296.0,272.0 300.8,272.0 305.6,271.8 310.4,271.6 315.2,271.2 320.0,270.8 324.8,270.3 329.6,269.6 334.4,268.9 339.2,268.1 344.0,267.2 348.8,266.2 353.6,265.1 358.4,263.9 363.2,262.6 368.0,261.2 372.8,259.7 377.6,258.1 382.4,256.4 387.2,254.7 392.0,252.8 396.8,250.8 401.6,248.8 406.4,246.6 411.2,244.4 416.0,242.0 420.8,239.6 425.6,237.0 430.4,234.4 435.2,231.6 440.0,228.8" fill="none" stroke="var(--good)" stroke-width="1" stroke-linejoin="round" stroke-opacity=".5"/><line x1="80.0" y1="252.0" x2="80.0" y2="108.0" stroke="var(--good)" stroke-width="1" stroke-opacity=".5"/><line x1="44.0" y1="216.0" x2="188.0" y2="216.0" stroke="var(--good)" stroke-width="1" stroke-opacity=".5"/><polyline points="332.0,269.3 332.1,264.5 332.3,259.7 332.6,254.9 333.0,250.1 333.6,245.3 334.3,240.5 335.1,235.7 336.1,230.9 337.2,226.1 338.4,221.3 339.7,216.5 341.2,211.7 342.8,206.9 344.5,202.1 346.4,197.3 348.4,192.5 350.5,187.7 352.7,182.9 355.1,178.1 357.6,173.3 360.2,168.5 363.0,163.7 365.9,158.9 368.9,154.1 372.0,149.3 375.3,144.5 378.7,139.7 382.2,134.9 385.8,130.1 389.6,125.3" fill="none" stroke="var(--good)" stroke-width="1" stroke-linejoin="round" stroke-opacity=".5"/><polyline points="299.6,236.0 304.4,236.0 309.2,235.8 314.0,235.6 318.8,235.2 323.6,234.8 328.4,234.3 333.2,233.6 338.0,232.9 342.8,232.1 347.6,231.2 352.4,230.2 357.2,229.1 362.0,227.9 366.8,226.6 371.6,225.2 376.4,223.7 381.2,222.1 386.0,220.4 390.8,218.7 395.6,216.8 400.4,214.8 405.2,212.8 410.0,210.6 414.8,208.4 419.6,206.0 424.4,203.6 429.2,201.0 434.0,198.4 438.8,195.6 443.6,192.8" fill="none" stroke="var(--good)" stroke-width="1" stroke-linejoin="round" stroke-opacity=".5"/><line x1="116.0" y1="252.0" x2="116.0" y2="108.0" stroke="var(--good)" stroke-width="1" stroke-opacity=".5"/><line x1="44.0" y1="180.0" x2="188.0" y2="180.0" stroke="var(--good)" stroke-width="1" stroke-opacity=".5"/><polyline points="368.0,261.2 368.1,256.4 368.3,251.6 368.6,246.8 369.0,242.0 369.6,237.2 370.3,232.4 371.1,227.6 372.1,222.8 373.2,218.0 374.4,213.2 375.7,208.4 377.2,203.6 378.8,198.8 380.5,194.0 382.4,189.2 384.4,184.4 386.5,179.6 388.7,174.8 391.1,170.0 393.6,165.2 396.2,160.4 399.0,155.6 401.9,150.8 404.9,146.0 408.0,141.2 411.3,136.4 414.7,131.6 418.2,126.8 421.8,122.0 425.6,117.2" fill="none" stroke="var(--good)" stroke-width="1" stroke-linejoin="round" stroke-opacity=".5"/><polyline points="310.4,200.0 315.2,200.0 320.0,199.8 324.8,199.6 329.6,199.2 334.4,198.8 339.2,198.3 344.0,197.6 348.8,196.9 353.6,196.1 358.4,195.2 363.2,194.2 368.0,193.1 372.8,191.9 377.6,190.6 382.4,189.2 387.2,187.7 392.0,186.1 396.8,184.4 401.6,182.7 406.4,180.8 411.2,178.8 416.0,176.8 420.8,174.6 425.6,172.4 430.4,170.0 435.2,167.6 440.0,165.0 444.8,162.4 449.6,159.6 454.4,156.8" fill="none" stroke="var(--good)" stroke-width="1" stroke-linejoin="round" stroke-opacity=".5"/><line x1="152.0" y1="252.0" x2="152.0" y2="108.0" stroke="var(--good)" stroke-width="1" stroke-opacity=".5"/><line x1="44.0" y1="144.0" x2="188.0" y2="144.0" stroke="var(--good)" stroke-width="1" stroke-opacity=".5"/><polyline points="404.0,247.7 404.1,242.9 404.3,238.1 404.6,233.3 405.0,228.5 405.6,223.7 406.3,218.9 407.1,214.1 408.1,209.3 409.2,204.5 410.4,199.7 411.7,194.9 413.2,190.1 414.8,185.3 416.5,180.5 418.4,175.7 420.4,170.9 422.5,166.1 424.7,161.3 427.1,156.5 429.6,151.7 432.2,146.9 435.0,142.1 437.9,137.3 440.9,132.5 444.0,127.7 447.3,122.9 450.7,118.1 454.2,113.3 457.8,108.5 461.6,103.7" fill="none" stroke="var(--good)" stroke-width="1" stroke-linejoin="round" stroke-opacity=".5"/><polyline points="328.4,164.0 333.2,164.0 338.0,163.8 342.8,163.6 347.6,163.2 352.4,162.8 357.2,162.3 362.0,161.6 366.8,160.9 371.6,160.1 376.4,159.2 381.2,158.2 386.0,157.1 390.8,155.9 395.6,154.6 400.4,153.2 405.2,151.7 410.0,150.1 414.8,148.4 419.6,146.7 424.4,144.8 429.2,142.8 434.0,140.8 438.8,138.6 443.6,136.4 448.4,134.0 453.2,131.6 458.0,129.0 462.8,126.4 467.6,123.6 472.4,120.8" fill="none" stroke="var(--good)" stroke-width="1" stroke-linejoin="round" stroke-opacity=".5"/><line x1="188.0" y1="252.0" x2="188.0" y2="108.0" stroke="var(--good)" stroke-width="1" stroke-opacity=".5"/><line x1="44.0" y1="108.0" x2="188.0" y2="108.0" stroke="var(--good)" stroke-width="1" stroke-opacity=".5"/><polyline points="440.0,228.8 440.1,224.0 440.3,219.2 440.6,214.4 441.0,209.6 441.6,204.8 442.3,200.0 443.1,195.2 444.1,190.4 445.2,185.6 446.4,180.8 447.7,176.0 449.2,171.2 450.8,166.4 452.5,161.6 454.4,156.8 456.4,152.0 458.5,147.2 460.7,142.4 463.1,137.6 465.6,132.8 468.2,128.0 471.0,123.2 473.9,118.4 476.9,113.6 480.0,108.8 483.3,104.0 486.7,99.2 490.2,94.4 493.8,89.6 497.6,84.8" fill="none" stroke="var(--good)" stroke-width="1" stroke-linejoin="round" stroke-opacity=".5"/><polyline points="353.6,128.0 358.4,128.0 363.2,127.8 368.0,127.6 372.8,127.2 377.6,126.8 382.4,126.3 387.2,125.6 392.0,124.9 396.8,124.1 401.6,123.2 406.4,122.2 411.2,121.1 416.0,119.9 420.8,118.6 425.6,117.2 430.4,115.7 435.2,114.1 440.0,112.4 444.8,110.7 449.6,108.8 454.4,106.8 459.2,104.8 464.0,102.6 468.8,100.4 473.6,98.0 478.4,95.6 483.2,93.0 488.0,90.4 492.8,87.6 497.6,84.8" fill="none" stroke="var(--good)" stroke-width="1" stroke-linejoin="round" stroke-opacity=".5"/><polygon points="116.0,216.0 152.0,216.0 152.0,180.0 116.0,180.0" fill="rgba(255,111,165,.45)" stroke="var(--key)" stroke-width="1.6" stroke-linejoin="round"/><text x="134.0" y="232.0" font-size="11.5" font-weight="500" fill="var(--accent)" text-anchor="middle" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">du</text><text x="109.0" y="202.0" font-size="11.5" font-weight="500" fill="var(--amber)" text-anchor="end" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">dv</text><polygon points="371.6,225.2 372.8,224.8 374.0,224.5 375.2,224.1 376.4,223.7 377.6,223.3 378.8,222.9 380.0,222.5 381.2,222.1 382.4,221.7 383.6,221.3 384.8,220.9 386.0,220.4 387.2,220.0 388.4,219.6 389.6,219.1 390.8,218.7 392.0,218.2 393.2,217.7 394.4,217.3 395.6,216.8 396.8,216.3 398.0,215.8 399.2,215.3 400.4,214.8 401.6,214.3 402.8,213.8 404.0,213.3 405.2,212.8 406.4,212.2 407.6,211.7 407.6,211.7 407.8,210.5 408.1,209.3 408.4,208.1 408.6,206.9 408.9,205.7 409.2,204.5 409.5,203.3 409.8,202.1 410.1,200.9 410.4,199.7 410.7,198.5 411.1,197.3 411.4,196.1 411.7,194.9 412.1,193.7 412.5,192.5 412.8,191.3 413.2,190.1 413.6,188.9 414.0,187.7 414.4,186.5 414.8,185.3 415.2,184.1 415.7,182.9 416.1,181.7 416.5,180.5 417.0,179.3 417.5,178.1 417.9,176.9 418.4,175.7 418.4,175.7 417.2,176.2 416.0,176.8 414.8,177.3 413.6,177.8 412.4,178.3 411.2,178.8 410.0,179.3 408.8,179.8 407.6,180.3 406.4,180.8 405.2,181.3 404.0,181.7 402.8,182.2 401.6,182.7 400.4,183.1 399.2,183.6 398.0,184.0 396.8,184.4 395.6,184.9 394.4,185.3 393.2,185.7 392.0,186.1 390.8,186.5 389.6,186.9 388.4,187.3 387.2,187.7 386.0,188.1 384.8,188.5 383.6,188.8 382.4,189.2 382.4,189.2 381.9,190.4 381.5,191.6 381.0,192.8 380.5,194.0 380.1,195.2 379.7,196.4 379.2,197.6 378.8,198.8 378.4,200.0 378.0,201.2 377.6,202.4 377.2,203.6 376.8,204.8 376.5,206.0 376.1,207.2 375.7,208.4 375.4,209.6 375.1,210.8 374.7,212.0 374.4,213.2 374.1,214.4 373.8,215.6 373.5,216.8 373.2,218.0 372.9,219.2 372.6,220.4 372.4,221.6 372.1,222.8 371.8,224.0 371.6,225.2" fill="rgba(255,111,165,.45)" stroke="var(--key)" stroke-width="1.6" stroke-linejoin="round"/><polygon points="371.6,225.2 407.6,214.4 414.8,178.4 378.8,189.2" fill="none" stroke="var(--ink)" stroke-width="1.1" stroke-linejoin="round" stroke-dasharray="3 3"/><line x1="371.6" y1="225.2" x2="399.0" y2="217.0" stroke="var(--accent)" stroke-width="2.2"/><polygon points="407.6,214.4 400.1,220.6 397.9,213.4" fill="var(--accent)" stroke="none" stroke-width="1.5" stroke-linejoin="round"/><line x1="371.6" y1="225.2" x2="377.0" y2="198.0" stroke="var(--amber)" stroke-width="2.2"/><polygon points="378.8,189.2 380.7,198.8 373.3,197.3" fill="var(--amber)" stroke="none" stroke-width="1.5" stroke-linejoin="round"/><line x1="200.0" y1="150.0" x2="247.0" y2="150.0" stroke="var(--ink-soft)" stroke-width="1.6"/><polygon points="256.0,150.0 247.0,153.8 247.0,146.2" fill="var(--ink-soft)" stroke="none" stroke-width="1.5" stroke-linejoin="round"/><text x="228.0" y="138.0" font-size="11" fill="var(--ink-soft)" text-anchor="middle" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">取り替え</text><text x="120.0" y="26.0" font-size="12.5" font-weight="500" fill="var(--ink)" text-anchor="middle" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">u, v の世界</text><text x="120.0" y="44.0" font-size="11.5" fill="var(--ink-faint)" text-anchor="middle" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">小さな長方形</text><text x="420.0" y="26.0" font-size="12.5" font-weight="500" fill="var(--ink)" text-anchor="middle" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">x, y の世界</text><text x="420.0" y="44.0" font-size="11.5" fill="var(--ink-faint)" text-anchor="middle" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">ほぼ平行四辺形に写る</text><line x1="516.0" y1="186.0" x2="538.0" y2="186.0" stroke="var(--accent)" stroke-width="3"/><text x="544.0" y="190.0" font-size="11" fill="var(--accent)" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">u を du</text><text x="544.0" y="206.0" font-size="11" fill="var(--accent)" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">動かした分</text><line x1="516.0" y1="228.0" x2="538.0" y2="228.0" stroke="var(--amber)" stroke-width="3"/><text x="544.0" y="232.0" font-size="11" fill="var(--amber)" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">v を dv</text><text x="544.0" y="248.0" font-size="11" fill="var(--amber)" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">動かした分</text></svg>
+        <figcaption>左の \(u,v\) の世界の小さな長方形は、座標を取り替えると、右の \(x,y\) の世界では曲がった四角形に写ります。十分小さければ、<strong>2本の矢印が張る平行四辺形とみなせます</strong>。その面積が、もとの長方形の何倍か——それがヤコビアンです。</figcaption>
+      </figure>
+
+      <h3>2本の矢印を、全微分で作る</h3>
+      <p>\(u,v\) の世界で、辺が \(du\) と \(dv\) の小さな長方形を取ります。これが \(x,y\) の世界でどんな形になるかを調べます。</p>
+      <p>まず、<strong>\(u\) だけを \(du\) 動かした</strong>とき、点はどれだけ動くか。6-1 の全微分で、\(dv=0\) と置いたものです。</p>
+      \[ dx=\frac{\partial x}{\partial u}\,du,\qquad dy=\frac{\partial y}{\partial u}\,du \]
+      <p>これが図の青い矢印です。同じく、<strong>\(v\) だけを \(dv\) 動かした</strong>ときの移動がオレンジの矢印です。</p>
+      \[ dx=\frac{\partial x}{\partial v}\,dv,\qquad dy=\frac{\partial y}{\partial v}\,dv \]
+      <p>小さな長方形は、この2本の矢印が張る平行四辺形に写ります。</p>
+
+      <h3>平行四辺形の面積を、高校数学で求める</h3>
+      <p>高校で、2つのベクトル \(\vec a=(a_1,a_2)\)、\(\vec b=(b_1,b_2)\) が作る三角形の面積が \(\dfrac12|a_1b_2-a_2b_1|\) であることを学びました。平行四辺形はその2倍なので</p>
+      \[ S=|a_1b_2-a_2b_1| \]
+      <p>です。ここに2本の矢印の成分を入れます。</p>
+      <figure class="fig">
+        <svg viewBox="0 0 640 290" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="2つのベクトルが張る平行四辺形"><line x1="76.0" y1="252.0" x2="418.0" y2="252.0" stroke="var(--ink-faint)" stroke-width="1.3"/><polygon points="426.0,252.0 418.0,255.4 418.0,248.6" fill="var(--ink-faint)" stroke="none" stroke-width="1.5" stroke-linejoin="round"/><line x1="96.0" y1="270.0" x2="96.0" y2="48.0" stroke="var(--ink-faint)" stroke-width="1.3"/><polygon points="96.0,40.0 99.4,48.0 92.6,48.0" fill="var(--ink-faint)" stroke="none" stroke-width="1.5" stroke-linejoin="round"/><text x="430.0" y="256.0" font-size="12" fill="var(--ink-soft)" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">x</text><text x="103.0" y="46.0" font-size="12" fill="var(--ink-soft)" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">y</text><text x="88.0" y="268.0" font-size="11.5" fill="var(--ink-faint)" text-anchor="end" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">O</text><polygon points="96.0,252.0 296.0,190.0 368.0,40.0 168.0,102.0" fill="rgba(255,111,165,.22)" stroke="var(--key)" stroke-width="1" stroke-linejoin="round" stroke-dasharray="4 3"/><line x1="96.0" y1="252.0" x2="296.0" y2="252.0" stroke="var(--accent)" stroke-width="1.4" stroke-dasharray="4 3"/><line x1="296.0" y1="252.0" x2="296.0" y2="190.0" stroke="var(--accent)" stroke-width="1.4" stroke-dasharray="4 3"/><line x1="96.0" y1="252.0" x2="96.0" y2="102.0" stroke="var(--amber)" stroke-width="1.4" stroke-dasharray="4 3"/><line x1="96.0" y1="102.0" x2="168.0" y2="102.0" stroke="var(--amber)" stroke-width="1.4" stroke-dasharray="4 3"/><line x1="96.0" y1="252.0" x2="285.5" y2="193.3" stroke="var(--accent)" stroke-width="2.8"/><polygon points="296.0,190.0 286.9,197.7 284.1,188.8" fill="var(--accent)" stroke="none" stroke-width="1.5" stroke-linejoin="round"/><line x1="96.0" y1="252.0" x2="163.2" y2="111.9" stroke="var(--amber)" stroke-width="2.8"/><polygon points="168.0,102.0 167.4,113.9 159.1,109.9" fill="var(--amber)" stroke="none" stroke-width="1.5" stroke-linejoin="round"/><text x="196.0" y="272.0" font-size="12" font-weight="500" fill="var(--accent)" text-anchor="middle" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round"><tspan font-family="'Times New Roman',Times,serif" font-style="italic" font-size="14">a</tspan><tspan dx="0.5" dy="4" font-size="9.5">1</tspan></text><text x="304.0" y="226.0" font-size="12" font-weight="500" fill="var(--accent)" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round"><tspan font-family="'Times New Roman',Times,serif" font-style="italic" font-size="14">a</tspan><tspan dx="0.5" dy="4" font-size="9.5">2</tspan></text><text x="88.0" y="182.0" font-size="12" font-weight="500" fill="var(--amber)" text-anchor="end" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round"><tspan font-family="'Times New Roman',Times,serif" font-style="italic" font-size="14">b</tspan><tspan dx="0.5" dy="4" font-size="9.5">2</tspan></text><text x="132.0" y="94.0" font-size="12" font-weight="500" fill="var(--amber)" text-anchor="middle" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round"><tspan font-family="'Times New Roman',Times,serif" font-style="italic" font-size="14">b</tspan><tspan dx="0.5" dy="4" font-size="9.5">1</tspan></text><text x="204.0" y="211.0" font-size="13.5" font-weight="700" fill="var(--accent)" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round"><tspan font-family="'Times New Roman',Times,serif" font-style="italic" font-size="15">a</tspan></text><text x="144.0" y="179.0" font-size="13.5" font-weight="700" fill="var(--amber)" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round"><tspan font-family="'Times New Roman',Times,serif" font-style="italic" font-size="15">b</tspan></text><text x="262.0" y="154.0" font-size="13" font-weight="500" fill="var(--key)" text-anchor="middle" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round"><tspan font-family="'Times New Roman',Times,serif" font-style="italic" font-size="15">S</tspan></text><text x="452.0" y="70.0" font-size="12" font-weight="500" fill="var(--key)" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">平行四辺形の面積</text><text x="452.0" y="96.0" font-size="13" font-weight="500" fill="var(--ink)" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round"><tspan dx="0" dy="0"><tspan font-family="'Times New Roman',Times,serif" font-style="italic" font-size="14">S</tspan> ＝ |</tspan><tspan font-family="'Times New Roman',Times,serif" font-style="italic" font-size="14" dx="0" dy="0">a</tspan><tspan dx="0.5" dy="4" font-size="9.5">1</tspan><tspan font-family="'Times New Roman',Times,serif" font-style="italic" font-size="14" dx="1.5" dy="-4">b</tspan><tspan dx="0.5" dy="4" font-size="9.5">2</tspan><tspan dx="1.5" dy="-4"> − </tspan><tspan font-family="'Times New Roman',Times,serif" font-style="italic" font-size="14" dx="0" dy="0">a</tspan><tspan dx="0.5" dy="4" font-size="9.5">2</tspan><tspan font-family="'Times New Roman',Times,serif" font-style="italic" font-size="14" dx="1.5" dy="-4">b</tspan><tspan dx="0.5" dy="4" font-size="9.5">1</tspan><tspan dx="1.5" dy="-4">|</tspan></text><line x1="452.0" y1="120.0" x2="628.0" y2="120.0" stroke="var(--line)" stroke-width="1.2"/><text x="452.0" y="146.0" font-size="11.5" fill="var(--ink-faint)" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">この記事で使う2本</text><line x1="452.0" y1="168.0" x2="472.0" y2="168.0" stroke="var(--accent)" stroke-width="3"/><text x="480.0" y="172.0" font-size="11.5" fill="var(--accent)" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round"><tspan font-family="'Times New Roman',Times,serif" font-style="italic" font-size="14">a</tspan>：u を du</text><text x="480.0" y="190.0" font-size="11.5" fill="var(--accent)" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">動かした矢印</text><line x1="452.0" y1="216.0" x2="472.0" y2="216.0" stroke="var(--amber)" stroke-width="3"/><text x="480.0" y="220.0" font-size="11.5" fill="var(--amber)" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round"><tspan font-family="'Times New Roman',Times,serif" font-style="italic" font-size="14">b</tspan>：v を dv</text><text x="480.0" y="238.0" font-size="11.5" fill="var(--amber)" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">動かした矢印</text></svg>
+        <figcaption>2つのベクトル \(\vec a=(a_1,a_2)\)、\(\vec b=(b_1,b_2)\) が張る平行四辺形です。破線は各ベクトルの成分で、\(\vec a\) は横に \(a_1\)、縦に \(a_2\)、\(\vec b\) は横に \(b_1\)、縦に \(b_2\) 進みます。<strong>この記事では、\(\vec a\) を「\(u\) を \(du\) 動かした矢印」、\(\vec b\) を「\(v\) を \(dv\) 動かした矢印」とします</strong>（上の図の青とオレンジ）。</figcaption>
+      </figure>
+      \[ \begin{aligned}a_1b_2&=\frac{\partial x}{\partial u}\frac{\partial y}{\partial v}\,du\,dv\\a_2b_1&=\frac{\partial y}{\partial u}\frac{\partial x}{\partial v}\,du\,dv\end{aligned} \]
+      <p>どちらにも \(du\,dv\) が共通に付いているので、くくり出せます。</p>
+
+      <div class="box target"><span class="lab">ヤコビアン</span>
+      <p>次の量を<strong>ヤコビアン</strong>と呼びます。</p>
+      \[ J=\frac{\partial x}{\partial u}\frac{\partial y}{\partial v}-\frac{\partial x}{\partial v}\frac{\partial y}{\partial u} \]
+      <p>小さな長方形の面積 \(du\,dv\) は、\(x,y\) の世界では \(|J|\) 倍になります。したがって</p>
+      \[ dA=|J|\,du\,dv \]
+      <p>\(J\) は4つの偏微分を<strong>たすき掛けして引いたもの</strong>です。記号 \(\dfrac{\partial(x,y)}{\partial(u,v)}\) で書くこともあります。</p></div>
+
+      <div class="box teach"><span class="lab">行列式という書き方</span>
+      <p>4つの偏微分を正方形に並べ、縦棒で挟んで次のように書く記法があります。</p>
+      \[ J=\begin{vmatrix}\dfrac{\partial x}{\partial u}&\dfrac{\partial x}{\partial v}\\[8pt]\dfrac{\partial y}{\partial u}&\dfrac{\partial y}{\partial v}\end{vmatrix} \]
+      <p>この縦棒は「左上×右下 − 右上×左下」を計算する、という約束です。この形の量を<strong>行列式</strong>といいます。いまは記法として覚えれば十分です。</p>
+      <p style="margin-top:8px">ここで見たように、<strong>行列式は「面積が何倍になるか」を表す量</strong>です。9章で行列を線形変換として扱うとき、この意味がそのまま中心に来ます。</p></div>
+
+      <div class="attempt"><span class="lab">まず自力で</span>
+      <p>極座標 \(x=r\cos\theta,\ y=r\sin\theta\) のヤコビアンを計算し、§01 で図から読んだ \(dA=r\,dr\,d\theta\) と一致することを確かめてください。</p>
+      <div class="controls">
+        <button class="ctl-btn amber" data-hint>ヒントを表示</button>
+        <button class="ctl-btn" data-sol>解答を見る</button>
+      </div>
+      <div class="hint"><span class="hn">HINT 1</span><p>\(u=r\)、\(v=\theta\) として、4つの偏微分を計算します。\(\theta\) で偏微分するときは \(r\) を定数として扱います。</p></div>
+      <div class="sol">
+        <div class="step"><div class="sh"><span class="sn">1</span>4つの偏微分</div>
+        <div class="why">なぜ：ヤコビアンの材料です。止める変数に注意します。</div>
+        \[ \frac{\partial x}{\partial r}=\cos\theta,\qquad \frac{\partial y}{\partial r}=\sin\theta \]
+        \[ \frac{\partial x}{\partial\theta}={-}r\sin\theta,\qquad \frac{\partial y}{\partial\theta}=r\cos\theta \]
+        </div>
+        <div class="step"><div class="sh"><span class="sn">2</span>たすき掛けして引く</div>
+        <div class="why">なぜ：\(J=\dfrac{\partial x}{\partial r}\dfrac{\partial y}{\partial\theta}-\dfrac{\partial x}{\partial\theta}\dfrac{\partial y}{\partial r}\) です。</div>
+        \[ J=r\cos^2\theta-({-}r\sin^2\theta) \]
+        <p style="margin:4px 0">\(\cos^2\theta+\sin^2\theta=1\) より、\(J=r\) です。</p>
+        </div>
+        <div class="step"><div class="sh"><span class="sn">3</span>面積要素を書く</div>
+        <div class="why">なぜ：\(r\ge0\) なので \(|J|=r\) です。</div>
+        \[ dA=r\,dr\,d\theta \]
+        <p style="font-size:13.5px;color:var(--ink-faint);margin:6px 0 0">図から読んだ結果と一致しました。図の「縦 \(dr\)、横 \(r\,d\theta\)」は、2本の矢印がたまたま直交しているので、平行四辺形がちょうど長方形になっている場合です。<strong>ヤコビアンは、矢印が直交していなくても使える</strong>ところが強みです。</p></div>
+      </div>
+      </div>
+
+      <h3>1変数の置換積分は、ヤコビアンの特別な場合</h3>
+      <p>7-1 §03 で円板の面積を求めたとき、\(x=\sin\theta\) と置いて \(dx=\cos\theta\,d\theta\) という因子が付きました。変数が1つなら、「平行四辺形の面積」は「線分の長さ」になり、その倍率は導関数1つで済みます。</p>
+      \[ dx=\frac{dx}{du}\,du \]
+      <p>2章の置換積分は、<strong>変数が1つのときのヤコビアン</strong>だったのです。2変数では、縦と横が互いに混ざり合うので、倍率が4つの偏微分のたすき掛けになります。</p>
+
+      <div class="box warn"><span class="lab">絶対値が付く理由</span>
+      <p>\(J\) は負になることもあります。たとえば \(u\) と \(v\) の役割を入れ替えると、たすき掛けの順が逆になって符号が変わります。面積は負にならないので、\(dA\) には絶対値 \(|J|\) を使います。</p>
+      <p style="margin-top:8px">1変数の置換積分では絶対値を付けませんでした。その代わり、\(u\) が減る向きの置換では、積分の上限と下限が入れ替わり、そこで符号が調整されていました。</p></div>
+
+      <h3>計算ドリル（§02・全2問）</h3>
+
+      <div class="drill"><p><span class="qn">問1</span>\(x=2u+v,\ y=u+3v\) という取り替えについて、ヤコビアンを求めよ。\(u,v\) の世界の1辺 1 の正方形は、\(x,y\) の世界でどんな面積の図形になるか。</p>
+      <div class="attempt" style="margin:10px 0 4px"><span class="lab">自分の答えを出してから</span>
+      <div class="controls"><button class="ctl-btn" data-sol>解答を見る</button></div>
+      <div class="sol"><p>偏微分はすべて定数です。</p>
+      \[ \frac{\partial x}{\partial u}=2,\quad \frac{\partial x}{\partial v}=1 \]
+      \[ \frac{\partial y}{\partial u}=1,\quad \frac{\partial y}{\partial v}=3 \]
+      <p>たすき掛けして引くと \(J=2\cdot3-1\cdot1=5\)。正方形は、面積 5 の平行四辺形に写ります。</p>
+      <p style="font-size:13.5px;color:var(--ink-faint)">\(x,\ y\) が \(u,\ v\) の1次式だと、偏微分が定数になり、<strong>どこでも同じ倍率</strong>で面積が変わります。曲がった取り替えでは、倍率が場所ごとに変わります（極座標なら \(r\) に比例）。1次式の取り替えは、9章の「行列による線形変換」そのものです。</p></div></div></div>
+
+      <div class="drill"><p><span class="qn">問2</span>\(x=ar\cos\theta,\ y=br\sin\theta\)（\(a,b\) は正の定数）とすると、\(0\le r\le1\)、\(0\le\theta\le2\pi\) は楕円 \(\dfrac{x^2}{a^2}+\dfrac{y^2}{b^2}\le1\) の内部を表す。ヤコビアンを求め、この楕円の面積を計算せよ。</p>
+      <div class="attempt" style="margin:10px 0 4px"><span class="lab">自分の答えを出してから</span>
+      <div class="controls">
+        <button class="ctl-btn amber" data-hint>ヒントを表示</button>
+        <button class="ctl-btn" data-sol>解答を見る</button>
+      </div>
+      <div class="hint"><span class="hn">HINT 1</span><p>極座標の計算で、\(x\) の側に \(a\)、\(y\) の側に \(b\) が掛かっただけです。</p></div>
+      <div class="sol"><p>偏微分は</p>
+      \[ \begin{aligned}\frac{\partial x}{\partial r}&=a\cos\theta\\\frac{\partial y}{\partial\theta}&=br\cos\theta\\\frac{\partial x}{\partial\theta}&={-}ar\sin\theta\\\frac{\partial y}{\partial r}&=b\sin\theta\end{aligned} \]
+      <p>たすき掛けして引くと \(J=abr\) です。面積は</p>
+      \[ \int_0^{2\pi}\!\int_0^1 abr\,dr\,d\theta=\pi ab \]
+      <p style="font-size:13.5px;color:var(--ink-faint)">\(a=b\) なら半径 \(a\) の円で、面積 \(\pi a^2\) に戻ります。楕円は円を \(x\) 方向に \(a\) 倍、\(y\) 方向に \(b\) 倍に引き伸ばしたものなので、<strong>面積は \(ab\) 倍</strong>——ヤコビアンがちょうどそれを言っています。</p></div></div></div>
+    </section>
+
+    <!-- §03 -->
+    <section id="d2">
+      <div class="sec-head"><span class="idx">§03</span><h2>円柱座標と球座標</h2></div>
+
+      <p>3次元でも考え方は同じです。領域の形に合った座標を選び、体積要素に付く因子を求めます。</p>
+
+      <h3>円柱座標</h3>
+      <p>平面の部分を極座標にし、高さ \(z\) はそのまま使うのが<strong>円柱座標</strong>です。</p>
+      \[ x=r\cos\theta,\qquad y=r\sin\theta,\qquad z=z \]
+      <p>底面の区画が \(r\,dr\,d\theta\)、高さが \(dz\) の柱なので、体積要素は</p>
+      \[ dV=r\,dr\,d\theta\,dz \]
+      <p>です。円柱や、軸のまわりに対称な物体に向いています。</p>
+
+      <h3>球座標</h3>
+      <p>球に合わせるには、原点からの距離 \(r\) と、向きを表す2つの角度を使います。</p>
+
+      <figure class="fig">
+        <svg viewBox="0 0 640 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="球座標 r, θ, φ の定義"><line x1="210.0" y1="205.0" x2="125.6" y2="259.0" stroke="var(--ink-faint)" stroke-width="1.4"/><polygon points="118.9,263.3 123.8,256.2 127.4,261.8" fill="var(--ink-faint)" stroke="none" stroke-width="1.5" stroke-linejoin="round"/><text x="106.9" y="271.3" font-size="12" fill="var(--ink-soft)" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">x</text><line x1="210.0" y1="205.0" x2="381.6" y2="226.7" stroke="var(--ink-faint)" stroke-width="1.4"/><polygon points="389.5,227.7 381.2,230.0 382.0,223.3" fill="var(--ink-faint)" stroke="none" stroke-width="1.5" stroke-linejoin="round"/><text x="394.5" y="232.7" font-size="12" fill="var(--ink-soft)" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">y</text><line x1="210.0" y1="205.0" x2="210.0" y2="44.2" stroke="var(--ink-faint)" stroke-width="1.4"/><polygon points="210.0,36.2 213.4,44.2 206.6,44.2" fill="var(--ink-faint)" stroke="none" stroke-width="1.5" stroke-linejoin="round"/><text x="217.0" y="40.2" font-size="12" fill="var(--ink-soft)" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">z</text><polygon points="162.3,140.1 169.5,140.9 177.0,141.5 184.8,141.9 192.6,142.1 200.6,142.1 208.6,142.0 216.7,141.6 224.7,141.0 232.6,140.2 240.4,139.2 248.0,138.1 255.3,136.8 262.4,135.3 269.1,133.6 275.5,131.8 281.5,129.9 287.0,127.8 292.1,125.6 296.7,123.4 300.7,121.0 304.2,118.6 307.0,116.1 309.3,113.5 311.0,111.0 312.0,108.4 312.5,105.9 312.3,103.3 311.4,100.9 310.0,98.4 307.9,96.0 305.2,93.8 301.9,91.6 298.1,89.5 293.7,87.5 288.8,85.7 283.4,84.0 277.6,82.5 271.3,81.2 264.7,80.0 257.7,79.0 250.5,78.2 243.0,77.6 235.2,77.2 227.4,76.9 219.4,76.9 211.4,77.1 203.3,77.5 195.3,78.1 187.4,78.9 179.6,79.8 172.0,81.0 164.7,82.3 157.6,83.8 150.9,85.5 144.5,87.3 138.5,89.2 133.0,91.3 127.9,93.4 123.3,95.7 119.3,98.1 115.8,100.5 113.0,103.0 110.7,105.5 109.0,108.1 108.0,110.6 107.5,113.2 107.7,115.7 108.6,118.2 110.0,120.7 112.1,123.0 114.8,125.3 118.1,127.5 121.9,129.6 126.3,131.6 131.2,133.4 136.6,135.1 142.4,136.6 148.7,137.9 155.3,139.1" fill="none" stroke="var(--good)" stroke-width="1" stroke-linejoin="round" stroke-dasharray="3 4" stroke-opacity=".5"/><line x1="256.9" y1="136.4" x2="256.9" y2="231.9" stroke="var(--ink-soft)" stroke-width="1.2" stroke-dasharray="4 4"/><line x1="210.0" y1="205.0" x2="256.9" y2="231.9" stroke="var(--ink-soft)" stroke-width="1.2" stroke-dasharray="4 4"/><line x1="210.0" y1="205.0" x2="256.9" y2="136.4" stroke="var(--accent)" stroke-width="2.6"/><polyline points="210.0,159.1 210.9,159.6 211.8,160.3 212.7,160.9 213.5,161.7 214.4,162.5 215.3,163.4 216.1,164.3 217.0,165.3 217.8,166.4 218.6,167.5 219.4,168.7 220.2,170.0 221.0,171.3 221.8,172.6 222.5,174.0 223.3,175.5 224.0,177.0 224.6,178.5 225.3,180.1 225.9,181.7" fill="none" stroke="var(--amber)" stroke-width="1.8" stroke-linejoin="round"/><text x="223.9" y="155.2" font-size="13" font-weight="500" fill="var(--amber)" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">θ</text><polyline points="188.4,218.8 190.4,219.1 192.4,219.3 194.5,219.4 196.6,219.6 198.8,219.7 200.9,219.7 203.1,219.8 205.3,219.8 207.6,219.7 209.8,219.7 212.0,219.6 214.2,219.4 216.4,219.2 218.6,219.0 220.8,218.8 223.0,218.5 225.1,218.2 227.2,217.9 229.2,217.6 231.2,217.2" fill="none" stroke="var(--key)" stroke-width="1.8" stroke-linejoin="round"/><text x="207.7" y="240.1" font-size="13" font-weight="500" fill="var(--key)" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">φ</text><text x="245.5" y="176.7" font-size="13" font-weight="500" fill="var(--accent)" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round"><tspan font-style="italic">r</tspan></text><circle cx="256.9" cy="136.4" r="5" fill="var(--ink)" stroke="#000" stroke-width="2"/><text x="266.9" y="130.4" font-size="12.5" font-weight="500" fill="var(--ink)" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">P</text><text x="430.0" y="70.0" font-size="12.5" font-weight="500" fill="var(--ink)" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">点 P を 3 つの数で指定する</text><text x="430.0" y="102.0" font-size="11.5" fill="var(--accent)" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">r：原点からの距離</text><text x="430.0" y="128.0" font-size="11.5" fill="var(--amber)" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">θ：z 軸から測った角度</text><text x="430.0" y="154.0" font-size="11.5" fill="var(--key)" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">φ：P の影（xy 平面）の</text><text x="454.0" y="172.0" font-size="11.5" fill="var(--key)" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">x 軸から測った向き</text><line x1="428.0" y1="196.0" x2="452.0" y2="196.0" stroke="var(--good)" stroke-width="1" stroke-dasharray="3 4"/><text x="460.0" y="200.0" font-size="11" fill="var(--good)" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">θ を一定にした円</text></svg>
+        <figcaption>点 P を、原点からの距離 \(r\)、\(z\) 軸から測った角度 \(\theta\)、P の影の向き \(\varphi\) の3つで指定します。緑の破線は、\(\theta\) を一定にしたまま \(\varphi\) を1周させた円で、半径は \(r\sin\theta\) です。</figcaption>
+      </figure>
+
+      <p>P から \(xy\) 平面に下ろした影は、原点から \(r\sin\theta\) の距離にあり、向きは \(\varphi\) です。影の位置を極座標で書き、高さを加えると</p>
+
+      <div class="box target"><span class="lab">球座標</span>
+      \[ \begin{aligned}x&=r\sin\theta\cos\varphi\\y&=r\sin\theta\sin\varphi\\z&=r\cos\theta\end{aligned} \]
+      <p>範囲は \(r\ge0\)、\(0\le\theta\le\pi\)、\(0\le\varphi\le2\pi\) です。\(\theta\) は北極（\(z\) 軸の正の向き）から南極まで、\(\varphi\) は1周です。</p></div>
+
+      <div class="box warn"><span class="lab">記号の流儀</span>
+      <p>ここでは物理でよく使う流儀に従い、<strong>\(\theta\) を \(z\) 軸から測る角度</strong>、\(\varphi\) を \(xy\) 平面内の角度としました。数学の本では \(\theta\) と \(\varphi\) の役割が逆のこともあります。本を読むときは、まずどちらの流儀かを確かめてください。</p></div>
+
+      <h3>球座標の体積要素</h3>
+      <p>3変数のヤコビアンも、2変数と同じ考え方で作れます（3本の矢印が張る平行六面体の体積）。ただ、計算に3行3列の行列式が必要になるので、ここでは §01 と同じく<strong>図から読み取ります</strong>。</p>
+
+      <figure class="fig">
+        <svg viewBox="0 0 640 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="球座標の体積要素"><line x1="120.0" y1="262.0" x2="120.0" y2="42.5" stroke="var(--ink-faint)" stroke-width="1.4"/><polygon points="120.0,34.5 123.4,42.5 116.6,42.5" fill="var(--ink-faint)" stroke="none" stroke-width="1.5" stroke-linejoin="round"/><text x="127.0" y="38.5" font-size="12" fill="var(--ink-soft)" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">z</text><line x1="120.0" y1="262.0" x2="185.1" y2="151.7" stroke="var(--ink-faint)" stroke-width="1" stroke-dasharray="3 4" stroke-opacity=".7"/><line x1="120.0" y1="262.0" x2="211.5" y2="213.3" stroke="var(--ink-faint)" stroke-width="1" stroke-dasharray="3 4" stroke-opacity=".7"/><line x1="120.0" y1="262.0" x2="218.3" y2="139.4" stroke="var(--ink-faint)" stroke-width="1" stroke-dasharray="3 4" stroke-opacity=".7"/><line x1="120.0" y1="262.0" x2="258.3" y2="196.0" stroke="var(--ink-faint)" stroke-width="1" stroke-dasharray="3 4" stroke-opacity=".7"/><line x1="120.0" y1="124.1" x2="185.1" y2="151.7" stroke="var(--amber)" stroke-width="1.3" stroke-dasharray="4 3"/><text x="150.5" y="120.9" font-size="11.5" font-weight="500" fill="var(--amber)" text-anchor="middle" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">r sin θ</text><polygon points="207.9,113.1 210.5,117.8 213.2,122.5 215.7,127.4 218.2,132.3 220.7,137.3 223.1,142.4 225.4,147.5 227.7,152.7 229.9,157.9 232.1,163.3 234.2,168.6 236.2,174.1 238.1,179.6 240.0,185.1 241.8,190.7 243.6,196.3 243.6,196.3 248.3,195.1 252.9,193.8 257.5,192.5 261.9,191.2 266.2,189.8 270.5,188.4 274.6,187.0 278.6,185.5 282.6,184.0 286.4,182.5 290.1,181.0 293.7,179.4 297.1,177.8 300.5,176.2 303.7,174.6 306.8,172.9 306.8,172.9 304.1,167.6 301.4,162.4 298.5,157.2 295.6,152.1 292.5,147.1 289.4,142.1 286.1,137.2 282.8,132.3 279.3,127.6 275.8,122.9 272.2,118.3 268.4,113.7 264.6,109.3 260.8,104.9 256.8,100.7 252.8,96.5 252.8,96.5 250.6,97.7 248.3,98.8 245.9,100.0 243.4,101.1 240.9,102.2 238.3,103.3 235.6,104.4 232.8,105.4 229.9,106.5 227.0,107.5 224.0,108.5 220.9,109.5 217.7,110.4 214.5,111.3 211.2,112.2 207.9,113.1" fill="rgba(77,148,255,.30)" stroke="none" stroke-width="0" stroke-linejoin="round"/><polygon points="211.5,213.3 213.6,212.3 215.6,211.2 217.6,210.1 219.6,209.1 221.6,208.0 223.6,206.9 225.6,205.9 227.6,204.8 229.6,203.7 231.6,202.7 233.6,201.6 235.6,200.5 237.6,199.5 239.6,198.4 241.6,197.4 243.6,196.3 243.6,196.3 248.3,195.1 252.9,193.8 257.5,192.5 261.9,191.2 266.2,189.8 270.5,188.4 274.6,187.0 278.6,185.5 282.6,184.0 286.4,182.5 290.1,181.0 293.7,179.4 297.1,177.8 300.5,176.2 303.7,174.6 306.8,172.9 306.8,172.9 303.7,174.4 300.7,175.8 297.7,177.3 294.7,178.7 291.6,180.2 288.6,181.6 285.6,183.0 282.5,184.5 279.5,185.9 276.5,187.4 273.5,188.8 270.4,190.3 267.4,191.7 264.4,193.1 261.4,194.6 258.3,196.0 258.3,196.0 256.1,197.3 253.7,198.5 251.2,199.7 248.6,200.8 246.0,202.0 243.2,203.1 240.4,204.3 237.5,205.3 234.5,206.4 231.5,207.5 228.3,208.5 225.1,209.5 221.8,210.5 218.5,211.5 215.0,212.4 211.5,213.3" fill="rgba(77,148,255,.48)" stroke="none" stroke-width="0" stroke-linejoin="round"/><polygon points="185.1,151.7 186.5,149.3 187.9,146.9 189.4,144.5 190.8,142.0 192.2,139.6 193.6,137.2 195.0,134.8 196.5,132.4 197.9,130.0 199.3,127.6 200.7,125.2 202.2,122.7 203.6,120.3 205.0,117.9 206.4,115.5 207.9,113.1 207.9,113.1 210.5,117.8 213.2,122.5 215.7,127.4 218.2,132.3 220.7,137.3 223.1,142.4 225.4,147.5 227.7,152.7 229.9,157.9 232.1,163.3 234.2,168.6 236.2,174.1 238.1,179.6 240.0,185.1 241.8,190.7 243.6,196.3 243.6,196.3 241.6,197.4 239.6,198.4 237.6,199.5 235.6,200.5 233.6,201.6 231.6,202.7 229.6,203.7 227.6,204.8 225.6,205.9 223.6,206.9 221.6,208.0 219.6,209.1 217.6,210.1 215.6,211.2 213.6,212.3 211.5,213.3 211.5,213.3 210.3,209.2 208.9,205.0 207.5,200.9 206.1,196.9 204.6,192.9 203.0,188.9 201.4,184.9 199.8,181.0 198.1,177.2 196.4,173.4 194.6,169.6 192.8,165.9 190.9,162.3 189.0,158.7 187.1,155.2 185.1,151.7" fill="rgba(77,148,255,.18)" stroke="none" stroke-width="0" stroke-linejoin="round"/><polyline points="185.1,151.7 187.6,151.1 190.0,150.4 192.4,149.7 194.7,149.0 197.0,148.3 199.2,147.5 201.4,146.8 203.5,146.0 205.6,145.2 207.6,144.5 209.6,143.6 211.4,142.8 213.3,142.0 215.0,141.1 216.7,140.3 218.3,139.4" fill="none" stroke="var(--accent)" stroke-width="1.5" stroke-linejoin="round" stroke-dasharray="3 3" stroke-opacity=".6"/><polyline points="211.5,213.3 215.0,212.4 218.5,211.5 221.8,210.5 225.1,209.5 228.3,208.5 231.5,207.5 234.5,206.4 237.5,205.3 240.4,204.3 243.2,203.1 246.0,202.0 248.6,200.8 251.2,199.7 253.7,198.5 256.1,197.3 258.3,196.0" fill="none" stroke="var(--accent)" stroke-width="1.5" stroke-linejoin="round"/><polyline points="185.1,151.7 187.1,155.2 189.0,158.7 190.9,162.3 192.8,165.9 194.6,169.6 196.4,173.4 198.1,177.2 199.8,181.0 201.4,184.9 203.0,188.9 204.6,192.9 206.1,196.9 207.5,200.9 208.9,205.0 210.3,209.2 211.5,213.3" fill="none" stroke="var(--accent)" stroke-width="1.5" stroke-linejoin="round"/><polyline points="218.3,139.4 221.3,142.5 224.3,145.7 227.1,148.9 230.0,152.2 232.7,155.5 235.4,158.9 238.0,162.4 240.6,165.9 243.0,169.5 245.4,173.2 247.8,176.9 250.0,180.6 252.2,184.4 254.3,188.2 256.4,192.1 258.3,196.0" fill="none" stroke="var(--accent)" stroke-width="1.5" stroke-linejoin="round" stroke-dasharray="3 3" stroke-opacity=".6"/><polyline points="207.9,113.1 211.2,112.2 214.5,111.3 217.7,110.4 220.9,109.5 224.0,108.5 227.0,107.5 229.9,106.5 232.8,105.4 235.6,104.4 238.3,103.3 240.9,102.2 243.4,101.1 245.9,100.0 248.3,98.8 250.6,97.7 252.8,96.5" fill="none" stroke="var(--accent)" stroke-width="1.5" stroke-linejoin="round"/><polyline points="243.6,196.3 248.3,195.1 252.9,193.8 257.5,192.5 261.9,191.2 266.2,189.8 270.5,188.4 274.6,187.0 278.6,185.5 282.6,184.0 286.4,182.5 290.1,181.0 293.7,179.4 297.1,177.8 300.5,176.2 303.7,174.6 306.8,172.9" fill="none" stroke="var(--accent)" stroke-width="1.5" stroke-linejoin="round"/><polyline points="207.9,113.1 210.5,117.8 213.2,122.5 215.7,127.4 218.2,132.3 220.7,137.3 223.1,142.4 225.4,147.5 227.7,152.7 229.9,157.9 232.1,163.3 234.2,168.6 236.2,174.1 238.1,179.6 240.0,185.1 241.8,190.7 243.6,196.3" fill="none" stroke="var(--accent)" stroke-width="1.5" stroke-linejoin="round"/><polyline points="252.8,96.5 256.8,100.7 260.8,104.9 264.6,109.3 268.4,113.7 272.2,118.3 275.8,122.9 279.3,127.6 282.8,132.3 286.1,137.2 289.4,142.1 292.5,147.1 295.6,152.1 298.5,157.2 301.4,162.4 304.1,167.6 306.8,172.9" fill="none" stroke="var(--accent)" stroke-width="1.5" stroke-linejoin="round"/><line x1="185.1" y1="151.7" x2="207.9" y2="113.1" stroke="var(--accent)" stroke-width="1.5"/><line x1="218.3" y1="139.4" x2="252.8" y2="96.5" stroke="var(--accent)" stroke-width="1.5" stroke-dasharray="3 3" stroke-opacity=".6"/><line x1="211.5" y1="213.3" x2="243.6" y2="196.3" stroke="var(--accent)" stroke-width="1.5"/><line x1="258.3" y1="196.0" x2="306.8" y2="172.9" stroke="var(--accent)" stroke-width="1.5"/><line x1="211.5" y1="213.3" x2="243.6" y2="196.3" stroke="var(--key)" stroke-width="2.8"/><polyline points="207.9,113.1 210.5,117.8 213.2,122.5 215.7,127.4 218.2,132.3 220.7,137.3 223.1,142.4 225.4,147.5 227.7,152.7 229.9,157.9 232.1,163.3 234.2,168.6 236.2,174.1 238.1,179.6 240.0,185.1 241.8,190.7 243.6,196.3" fill="none" stroke="var(--key)" stroke-width="2.8" stroke-linejoin="round"/><polyline points="243.6,196.3 248.3,195.1 252.9,193.8 257.5,192.5 261.9,191.2 266.2,189.8 270.5,188.4 274.6,187.0 278.6,185.5 282.6,184.0 286.4,182.5 290.1,181.0 293.7,179.4 297.1,177.8 300.5,176.2 303.7,174.6 306.8,172.9" fill="none" stroke="var(--key)" stroke-width="2.8" stroke-linejoin="round"/><text x="223.3" y="224.2" font-size="12" font-weight="500" fill="var(--key)" text-anchor="middle" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">dr</text><text x="241.7" y="156.7" font-size="12" font-weight="500" fill="var(--key)" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">r dθ</text><text x="303.2" y="206.7" font-size="12" font-weight="500" fill="var(--key)" text-anchor="middle" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">r sin θ dφ</text><text x="430.0" y="80.0" font-size="12" font-weight="500" fill="var(--ink)" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">r, θ, φ を少しずつ動かすと</text><text x="430.0" y="100.0" font-size="12" font-weight="500" fill="var(--ink)" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">ほぼ直方体の区画ができる</text><text x="430.0" y="132.0" font-size="11.5" fill="var(--ink-faint)" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">3辺の長さ</text><text x="430.0" y="154.0" font-size="11.5" fill="var(--key)" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">dr ／ r dθ ／ r sin θ dφ</text><line x1="430.0" y1="176.0" x2="628.0" y2="176.0" stroke="var(--line)" stroke-width="1.2"/><text x="430.0" y="204.0" font-size="12.5" font-weight="500" fill="var(--ink)" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">dV ＝ r<tspan dx="1" dy="-5" font-size="9">2</tspan><tspan dy="5"> sin θ dr dθ dφ</tspan></text></svg>
+        <figcaption>\(r,\ \theta,\ \varphi\) をそれぞれ少しずつ動かすと、ほぼ直方体の区画ができます。3辺は \(dr\)、\(r\,d\theta\)、\(r\sin\theta\,d\varphi\)。最後の辺は、半径 \(r\sin\theta\) の円（オレンジの破線）の弧です。</figcaption>
+      </figure>
+
+      <ul>
+        <li>\(r\) 方向の辺：\(r\) が \(dr\) 増える幅なので \(dr\)</li>
+        <li>\(\theta\) 方向の辺：半径 \(r\) の円（北極と南極を通る円）の、中心角 \(d\theta\) の弧なので \(r\,d\theta\)</li>
+        <li>\(\varphi\) 方向の辺：\(\theta\) を止めて \(\varphi\) を動かすと、<strong>半径 \(r\sin\theta\) の円</strong>の上を動くので \(r\sin\theta\,d\varphi\)</li>
+      </ul>
+      <p>3辺はたがいに直交しているので、掛け合わせれば体積です。</p>
+
+      <div class="box target"><span class="lab">球座標の体積要素</span>
+      \[ dV=r^2\sin\theta\,dr\,d\theta\,d\varphi \]
+      <p>\(\sin\theta\) が付くのは、<strong>北極や南極に近いほど \(\varphi\) の円が小さくなる</strong>からです。地球儀で、経線どうしの間隔が極に近いほど狭くなるのと同じです。</p></div>
+
+      <h3>球の体積を完成させる</h3>
+      <p>7-1 §04 で直交座標のまま止めた、半径 \(R\) の球の体積を計算します。範囲は \(0\le r\le R\)、\(0\le\theta\le\pi\)、\(0\le\varphi\le2\pi\)。どれもただの数で、中身 \(r^2\sin\theta\) は \(r\) の部分と \(\theta\) の部分の積です。したがって3つの積分の積に分かれます。</p>
+      \[ \int_0^{2\pi}d\varphi\cdot\int_0^{\pi}\sin\theta\,d\theta\cdot\int_0^R r^2\,dr \]
+      <p>順に \(2\pi\)、\(2\)、\(\dfrac{R^3}{3}\) なので、体積は \(\dfrac43\pi R^3\) です。<strong>根号の入れ子に苦しんだ計算が、1行で終わりました</strong>。</p>
+
+      <div class="box teach"><span class="lab">球対称なら、角度の積分は \(4\pi\)</span>
+      <p>上の計算で、角度の部分だけを取り出すと \(2\pi\times2=4\pi\) でした。中身が \(r\) だけで決まる（<strong>球対称</strong>な）ときは、いつもこの \(4\pi\) が出てきます。</p>
+      \[ \iiint f(r)\,dV=4\pi\int f(r)\,r^2\,dr \]
+      <p>\(4\pi r^2\,dr\) は、半径 \(r\)、厚さ \(dr\) の薄い球殻の体積です。物理で扱う量の多くは球対称なので、この形は何度も使います。</p></div>
+
+      <div class="attempt"><span class="lab">まず自力で</span>
+      <p>半径 \(R\) の球で、密度が中心からの距離 \(r\) だけで決まり、\(\rho=\rho_0\Big(1-\dfrac{r}{R}\Big)\) であるとします（\(\rho_0\) は定数。中心で最も濃く、表面で 0）。この球の質量 \(M\) を求めてください。</p>
+      <div class="controls">
+        <button class="ctl-btn amber" data-hint>ヒントを表示</button>
+        <button class="ctl-btn" data-sol>解答を見る</button>
+      </div>
+      <div class="hint"><span class="hn">HINT 1</span><p>球対称なので、角度の積分は \(4\pi\) で済みます。残るのは \(\rho\,r^2\) の \(r\) についての積分です。</p></div>
+      <div class="sol">
+        <div class="step"><div class="sh"><span class="sn">1</span>角度の積分を済ませる</div>
+        <div class="why">なぜ：密度が \(r\) だけで決まるので、球殻の体積 \(4\pi r^2\,dr\) を使えます。</div>
+        \[ M=4\pi\int_0^R\rho\,r^2\,dr \]
+        </div>
+        <div class="step"><div class="sh"><span class="sn">2</span>中身を展開する</div>
+        <div class="why">なぜ：\(\rho\,r^2=\rho_0\Big(r^2-\dfrac{r^3}{R}\Big)\) と、項ごとに積分できる形にします。</div>
+        \[ \int_0^R\Big(r^2-\frac{r^3}{R}\Big)dr=\frac{R^3}{3}-\frac{R^3}{4} \]
+        <p style="margin:4px 0">これは \(\dfrac{R^3}{12}\) です。</p>
+        </div>
+        <div class="step"><div class="sh"><span class="sn">3</span>まとめる</div>
+        <div class="why">なぜ：手順1の式に戻します。</div>
+        \[ \begin{aligned}M&=4\pi\rho_0\cdot\frac{R^3}{12}\\&=\frac{\pi}{3}\rho_0R^3\end{aligned} \]
+        <p style="font-size:13.5px;color:var(--ink-faint);margin:6px 0 0">密度が一様に \(\rho_0\) なら \(\dfrac43\pi\rho_0R^3\) なので、ちょうどその4分の1です。外側ほど薄いうえに、<strong>外側ほど球殻の体積 \(4\pi r^2\,dr\) が大きい</strong>ので、表面近くの薄さが効いて大きく減ります。「半径 \(R\) の球の中にある質量」は、宇宙論で宇宙の膨張を考えるときの出発点になります。その話は宇宙論のセクションで扱います。</p></div>
+      </div>
+      </div>
+
+      <h3>計算ドリル（§03・全1問）</h3>
+
+      <div class="drill"><p><span class="qn">問1</span>次の積分を計算せよ。また、その値が何を表すか答えよ。</p>
+      \[ \int_0^{2\pi}\!\int_0^{\pi}R^2\sin\theta\,d\theta\,d\varphi \]
+      <div class="attempt" style="margin:10px 0 4px"><span class="lab">自分の答えを出してから</span>
+      <div class="controls">
+        <button class="ctl-btn amber" data-hint>ヒントを表示</button>
+        <button class="ctl-btn" data-sol>解答を見る</button>
+      </div>
+      <div class="hint"><span class="hn">HINT 1</span><p>体積要素の区画で、\(r=R\) に固定して \(dr\) を除くと、球面上の小さな区画になります。辺は \(R\,d\theta\) と \(R\sin\theta\,d\varphi\) です。</p></div>
+      <div class="sol"><p>\(\theta\) の積分が \(2\)、\(\varphi\) の積分が \(2\pi\) なので</p>
+      \[ R^2\cdot2\cdot2\pi=4\pi R^2 \]
+      <p>これは<strong>半径 \(R\) の球の表面積</strong>です。中身の \(R^2\sin\theta\,d\theta\,d\varphi\) は、球面上の小さな区画の面積（辺 \(R\,d\theta\) と \(R\sin\theta\,d\varphi\) の積）だからです。</p>
+      <p style="font-size:13.5px;color:var(--ink-faint)">球の体積 \(\dfrac43\pi R^3\) を \(R\) で微分すると \(4\pi R^2\) になります。<strong>球を薄皮1枚ぶん大きくしたときに増える体積が、表面積 × 厚さ</strong>だからです。球面の上で量を足し上げる計算は、8章で「面積分」として本格的に扱います。</p></div></div></div>
+    </section>
+
+    <!-- §04 -->
+    <section id="d3">
+      <div class="sec-head"><span class="idx">§04</span><h2>ガウス積分</h2></div>
+
+      <p>最後に、この記事の道具がなければ解けない積分を扱います。</p>
+      \[ I=\int_{{-}\infty}^{\infty}e^{{-}x^2}dx \]
+      <p>\(e^{{-}x^2}\) は、7-1 §03 の \(e^{x^2}\) と同じく、知っている関数の組み合わせでは原始関数が書けません。1変数のまま攻めても、どうにもならないのです。</p>
+      <p>積分の範囲が \({-}\infty\) から \(\infty\) までというのは、有限の範囲 \({-}L\) から \(L\) までの積分を計算してから、\(L\) を限りなく大きくした極限、という意味です。</p>
+
+      <h3>わざと2次元にする</h3>
+      <p>発想の転換をします。\(I\) を2乗し、片方の積分変数を \(y\) と書きます。積分変数の名前は何でもよいからです。</p>
+      \[ I^2=\int_{{-}\infty}^{\infty}e^{{-}x^2}dx\cdot\int_{{-}\infty}^{\infty}e^{{-}y^2}dy \]
+      <p>7-1 §02 の「変数が分かれるとき」を<strong>逆向きに</strong>使うと、これは平面全体での重積分です。</p>
+      \[ I^2=\iint e^{{-}(x^2+y^2)}\,dA \]
+      <p>中身は \(e^{{-}r^2}\) で、<strong>中心からの距離だけで決まります</strong>。極座標の出番です。</p>
+
+      <figure class="fig">
+        <svg viewBox="0 0 640 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="山の形の関数を同心円の輪で切る"><polygon points="369.0,226.0 368.8,223.3 368.1,220.5 367.0,217.8 365.4,215.1 363.4,212.4 361.0,209.8 358.1,207.2 354.8,204.7 351.1,202.2 347.0,199.8 342.5,197.4 337.7,195.2 332.5,193.0 326.9,190.9 321.0,188.9 314.7,187.0 308.2,185.2 301.4,183.5 294.3,182.0 287.0,180.6 279.5,179.2 271.7,178.1 263.8,177.0 255.7,176.1 247.4,175.3 239.1,174.7 230.7,174.2 222.1,173.8 213.6,173.6 205.0,173.5 196.4,173.6 187.9,173.8 179.3,174.2 170.9,174.7 162.6,175.3 154.3,176.1 146.2,177.0 138.3,178.1 130.5,179.2 123.0,180.6 115.7,182.0 108.6,183.5 101.8,185.2 95.3,187.0 89.0,188.9 83.1,190.9 77.5,193.0 72.3,195.2 67.5,197.4 63.0,199.8 58.9,202.2 55.2,204.7 51.9,207.2 49.0,209.8 46.6,212.4 44.6,215.1 43.0,217.8 41.9,220.5 41.2,223.3 41.0,226.0 41.2,228.7 41.9,231.5 43.0,234.2 44.6,236.9 46.6,239.6 49.0,242.2 51.9,244.8 55.2,247.3 58.9,249.8 63.0,252.2 67.5,254.6 72.3,256.8 77.5,259.0 83.1,261.1 89.0,263.1 95.3,265.0 101.8,266.8 108.6,268.5 115.7,270.0 123.0,271.4 130.5,272.8 138.3,273.9 146.2,275.0 154.3,275.9 162.6,276.7 170.9,277.3 179.3,277.8 187.9,278.2 196.4,278.4 205.0,278.5 213.6,278.4 222.1,278.2 230.7,277.8 239.1,277.3 247.4,276.7 255.7,275.9 263.8,275.0 271.7,273.9 279.5,272.8 287.0,271.4 294.3,270.0 301.4,268.5 308.2,266.8 314.7,265.0 321.0,263.1 326.9,261.1 332.5,259.0 337.7,256.8 342.5,254.6 347.0,252.2 351.1,249.8 354.8,247.3 358.1,244.8 361.0,242.2 363.4,239.6 365.4,236.9 367.0,234.2 368.1,231.5 368.8,228.7" fill="rgba(114,227,173,.05)" stroke="var(--good)" stroke-width="1" stroke-linejoin="round" stroke-opacity=".45"/><polyline points="41.0,223.3 41.8,218.0 42.6,215.8 43.5,214.2 44.3,212.8 45.1,211.6 45.9,210.5 46.7,209.5 47.6,208.6 48.4,207.7 49.2,206.9 50.0,206.1 50.8,205.3 51.7,204.6 52.5,204.0 53.3,203.3 54.1,202.7 54.9,202.1 55.8,201.5 56.6,200.9 57.4,200.4 58.2,199.8 59.0,199.3 59.9,198.8 60.7,198.3 61.5,197.8 62.3,197.4 63.1,196.9 64.0,196.5 64.8,196.0 65.6,195.6 66.4,195.2 67.2,194.8 68.1,194.4 68.9,194.0 69.7,193.6 70.5,193.2 71.3,192.8 72.2,192.5 73.0,192.1 73.8,191.8 74.6,191.4 75.4,191.1 76.3,190.7 77.1,190.4 77.9,190.1 78.7,189.8 79.5,189.5 80.4,189.1 81.2,188.8 82.0,188.5 82.8,188.2 83.6,188.0 84.5,187.7 85.3,187.4 86.1,187.1 86.9,186.8 87.7,186.6 88.6,186.3 89.4,186.0 90.2,185.8 91.0,185.5 91.8,185.3 92.7,185.0 93.5,184.8 94.3,184.5 95.1,184.3 95.9,184.1 96.8,183.8 97.6,183.6 98.4,183.4 99.2,183.1 100.0,182.9 100.9,182.7 101.7,182.5 102.5,182.3 103.3,182.1 104.1,181.9 105.0,181.7 105.8,181.5 106.6,181.3 107.4,181.1 108.2,180.9 109.1,180.7 109.9,180.5 110.7,180.3 111.5,180.1 112.3,179.8 113.2,179.0 114.0,178.1 114.8,177.2 115.6,176.3 116.4,175.4 117.3,174.5 118.1,173.6 118.9,172.6 119.7,171.6 120.5,170.6 121.4,169.6 122.2,168.6 123.0,167.6 123.8,166.6 124.6,165.5 125.5,164.4 126.3,163.4 127.1,162.3 127.9,161.2 128.7,160.0 129.6,158.9 130.4,157.8 131.2,156.6 132.0,155.5 132.8,154.3 133.7,153.1 134.5,152.0 135.3,150.8 136.1,149.6 136.9,148.4 137.8,147.1 138.6,145.9 139.4,144.7 140.2,143.5 141.0,142.2 141.9,141.0 142.7,139.7 143.5,138.5 144.3,137.2 145.1,136.0 146.0,134.7 146.8,133.5 147.6,132.2 148.4,131.0 149.2,129.7 150.1,128.4 150.9,127.2 151.7,125.9 152.5,124.7 153.3,123.4 154.2,122.2 155.0,120.9 155.8,119.7 156.6,118.5 157.4,117.2 158.3,116.0 159.1,114.8 159.9,113.6 160.7,112.4 161.5,111.2 162.4,110.0 163.2,108.9 164.0,107.7 164.8,106.5 165.6,105.4 166.5,104.3 167.3,103.2 168.1,102.1 168.9,101.0 169.7,99.9 170.6,98.9 171.4,97.8 172.2,96.8 173.0,95.8 173.8,94.8 174.7,93.9 175.5,92.9 176.3,92.0 177.1,91.1 177.9,90.2 178.8,89.3 179.6,88.5 180.4,87.6 181.2,86.8 182.0,86.1 182.9,85.3 183.7,84.6 184.5,83.9 185.3,83.2 186.1,82.5 187.0,81.9 187.8,81.3 188.6,80.7 189.4,80.1 190.2,79.6 191.1,79.1 191.9,78.6 192.7,78.2 193.5,77.7 194.3,77.3 195.2,77.0 196.0,76.6 196.8,76.3 197.6,76.0 198.4,75.8 199.3,75.6 200.1,75.4 200.9,75.2 201.7,75.1 202.5,75.0 203.4,74.9 204.2,74.9 205.0,74.8 205.8,74.9 206.6,74.9 207.5,75.0 208.3,75.1 209.1,75.2 209.9,75.4 210.7,75.6 211.6,75.8 212.4,76.0 213.2,76.3 214.0,76.6 214.8,77.0 215.7,77.3 216.5,77.7 217.3,78.2 218.1,78.6 218.9,79.1 219.8,79.6 220.6,80.1 221.4,80.7 222.2,81.3 223.0,81.9 223.9,82.5 224.7,83.2 225.5,83.9 226.3,84.6 227.1,85.3 228.0,86.1 228.8,86.8 229.6,87.6 230.4,88.5 231.2,89.3 232.1,90.2 232.9,91.1 233.7,92.0 234.5,92.9 235.3,93.9 236.2,94.8 237.0,95.8 237.8,96.8 238.6,97.8 239.4,98.9 240.3,99.9 241.1,101.0 241.9,102.1 242.7,103.2 243.5,104.3 244.4,105.4 245.2,106.5 246.0,107.7 246.8,108.9 247.6,110.0 248.5,111.2 249.3,112.4 250.1,113.6 250.9,114.8 251.7,116.0 252.6,117.2 253.4,118.5 254.2,119.7 255.0,120.9 255.8,122.2 256.7,123.4 257.5,124.7 258.3,125.9 259.1,127.2 259.9,128.4 260.8,129.7 261.6,131.0 262.4,132.2 263.2,133.5 264.0,134.7 264.9,136.0 265.7,137.2 266.5,138.5 267.3,139.7 268.1,141.0 269.0,142.2 269.8,143.5 270.6,144.7 271.4,145.9 272.2,147.1 273.1,148.4 273.9,149.6 274.7,150.8 275.5,152.0 276.3,153.1 277.2,154.3 278.0,155.5 278.8,156.6 279.6,157.8 280.4,158.9 281.3,160.0 282.1,161.2 282.9,162.3 283.7,163.4 284.5,164.4 285.4,165.5 286.2,166.6 287.0,167.6 287.8,168.6 288.6,169.6 289.5,170.6 290.3,171.6 291.1,172.6 291.9,173.6 292.7,174.5 293.6,175.4 294.4,176.3 295.2,177.2 296.0,178.1 296.8,179.0 297.7,179.8 298.5,180.1 299.3,180.3 300.1,180.5 300.9,180.7 301.8,180.9 302.6,181.1 303.4,181.3 304.2,181.5 305.0,181.7 305.9,181.9 306.7,182.1 307.5,182.3 308.3,182.5 309.1,182.7 310.0,182.9 310.8,183.1 311.6,183.4 312.4,183.6 313.2,183.8 314.1,184.1 314.9,184.3 315.7,184.5 316.5,184.8 317.3,185.0 318.2,185.3 319.0,185.5 319.8,185.8 320.6,186.0 321.4,186.3 322.3,186.6 323.1,186.8 323.9,187.1 324.7,187.4 325.5,187.7 326.4,188.0 327.2,188.2 328.0,188.5 328.8,188.8 329.6,189.1 330.5,189.5 331.3,189.8 332.1,190.1 332.9,190.4 333.7,190.7 334.6,191.1 335.4,191.4 336.2,191.8 337.0,192.1 337.8,192.5 338.7,192.8 339.5,193.2 340.3,193.6 341.1,194.0 341.9,194.4 342.8,194.8 343.6,195.2 344.4,195.6 345.2,196.0 346.0,196.5 346.9,196.9 347.7,197.4 348.5,197.8 349.3,198.3 350.1,198.8 351.0,199.3 351.8,199.8 352.6,200.4 353.4,200.9 354.2,201.5 355.1,202.1 355.9,202.7 356.7,203.3 357.5,204.0 358.3,204.6 359.2,205.3 360.0,206.1 360.8,206.9 361.6,207.7 362.4,208.6 363.3,209.5 364.1,210.5 364.9,211.6 365.7,212.8 366.5,214.2 367.4,215.8 368.2,218.0 369.0,223.3" fill="none" stroke="var(--good)" stroke-width="1.6" stroke-linejoin="round" stroke-opacity=".7"/><polyline points="278.8,226.0 278.7,224.8 278.4,223.5 277.9,222.3 277.2,221.1 276.3,219.9 275.2,218.7 273.9,217.5 272.4,216.4 270.8,215.3 268.9,214.2 266.9,213.1 264.7,212.1 262.4,211.1 259.8,210.2 257.2,209.3 254.4,208.4 251.4,207.6 248.4,206.9 245.2,206.2 241.9,205.5 238.5,205.0 235.0,204.4 231.4,204.0 227.8,203.5 224.1,203.2 220.3,202.9 216.5,202.7 212.7,202.5 208.9,202.4 205.0,202.4 201.1,202.4 197.3,202.5 193.5,202.7 189.7,202.9 185.9,203.2 182.2,203.5 178.6,204.0 175.0,204.4 171.5,205.0 168.1,205.5 164.8,206.2 161.6,206.9 158.6,207.6 155.6,208.4 152.8,209.3 150.2,210.2 147.6,211.1 145.3,212.1 143.1,213.1 141.1,214.2 139.2,215.3 137.6,216.4 136.1,217.5 134.8,218.7 133.7,219.9 132.8,221.1 132.1,222.3 131.6,223.5 131.3,224.8 131.2,226.0" fill="none" stroke="var(--key)" stroke-width="1" stroke-linejoin="round" stroke-dasharray="3 3" stroke-opacity=".6"/><polyline points="295.2,226.0 295.1,224.5 294.7,223.0 294.1,221.5 293.2,220.0 292.1,218.5 290.8,217.1 289.2,215.7 287.4,214.3 285.4,212.9 283.1,211.6 280.6,210.3 278.0,209.0 275.1,207.8 272.0,206.7 268.8,205.6 265.4,204.5 261.8,203.6 258.0,202.6 254.1,201.8 250.1,201.0 245.9,200.3 241.7,199.6 237.3,199.1 232.9,198.5 228.3,198.1 223.8,197.8 219.1,197.5 214.4,197.3 209.7,197.2 205.0,197.1 200.3,197.2 195.6,197.3 190.9,197.5 186.2,197.8 181.7,198.1 177.1,198.5 172.7,199.1 168.3,199.6 164.1,200.3 159.9,201.0 155.9,201.8 152.0,202.6 148.2,203.6 144.6,204.5 141.2,205.6 138.0,206.7 134.9,207.8 132.0,209.0 129.4,210.3 126.9,211.6 124.6,212.9 122.6,214.3 120.8,215.7 119.2,217.1 117.9,218.5 116.8,220.0 115.9,221.5 115.3,223.0 114.9,224.5 114.8,226.0" fill="none" stroke="var(--key)" stroke-width="1" stroke-linejoin="round" stroke-dasharray="3 3" stroke-opacity=".6"/><polygon points="295.2,226.0 295.1,224.5 294.7,223.0 294.1,221.5 293.2,220.0 292.1,218.5 290.8,217.1 289.2,215.7 287.4,214.3 285.4,212.9 283.1,211.6 280.6,210.3 278.0,209.0 275.1,207.8 272.0,206.7 268.8,205.6 265.4,204.5 261.8,203.6 258.0,202.6 254.1,201.8 250.1,201.0 245.9,200.3 241.7,199.6 237.3,199.1 232.9,198.5 228.3,198.1 223.8,197.8 219.1,197.5 214.4,197.3 209.7,197.2 205.0,197.1 200.3,197.2 195.6,197.3 190.9,197.5 186.2,197.8 181.7,198.1 177.1,198.5 172.7,199.1 168.3,199.6 164.1,200.3 159.9,201.0 155.9,201.8 152.0,202.6 148.2,203.6 144.6,204.5 141.2,205.6 138.0,206.7 134.9,207.8 132.0,209.0 129.4,210.3 126.9,211.6 124.6,212.9 122.6,214.3 120.8,215.7 119.2,217.1 117.9,218.5 116.8,220.0 115.9,221.5 115.3,223.0 114.9,224.5 114.8,226.0 114.8,170.8 114.9,169.3 115.3,167.8 115.9,166.3 116.8,164.8 117.9,163.3 119.2,161.9 120.8,160.5 122.6,159.1 124.6,157.7 126.9,156.4 129.4,155.1 132.0,153.9 134.9,152.7 138.0,151.5 141.2,150.4 144.6,149.4 148.2,148.4 152.0,147.5 155.9,146.6 159.9,145.8 164.1,145.1 168.3,144.4 172.7,143.9 177.1,143.4 181.7,142.9 186.2,142.6 190.9,142.3 195.6,142.1 200.3,142.0 205.0,142.0 209.7,142.0 214.4,142.1 219.1,142.3 223.8,142.6 228.3,142.9 232.9,143.4 237.3,143.9 241.7,144.4 245.9,145.1 250.1,145.8 254.1,146.6 258.0,147.5 261.8,148.4 265.4,149.4 268.8,150.4 272.0,151.5 275.1,152.7 278.0,153.9 280.6,155.1 283.1,156.4 285.4,157.7 287.4,159.1 289.2,160.5 290.8,161.9 292.1,163.3 293.2,164.8 294.1,166.3 294.7,167.8 295.1,169.3 295.2,170.8" fill="rgba(255,111,165,.12)" stroke="none" stroke-width="0" stroke-linejoin="round"/><polygon points="295.2,170.8 295.0,168.8 294.3,166.8 293.2,164.8 291.7,162.9 289.8,160.9 287.4,159.1 284.6,157.3 281.5,155.5 278.0,153.9 274.1,152.3 269.9,150.8 265.4,149.4 260.5,148.1 255.4,146.9 250.1,145.8 244.5,144.9 238.8,144.1 232.9,143.4 226.8,142.8 220.7,142.4 214.4,142.1 208.1,142.0 201.9,142.0 195.6,142.1 189.3,142.4 183.2,142.8 177.1,143.4 171.2,144.1 165.5,144.9 159.9,145.8 154.6,146.9 149.5,148.1 144.6,149.4 140.1,150.8 135.9,152.3 132.0,153.9 128.5,155.5 125.4,157.3 122.6,159.1 120.2,160.9 118.3,162.9 116.8,164.8 115.7,166.8 115.0,168.8 114.8,170.8 115.0,172.8 115.7,174.8 116.8,176.8 118.3,178.8 120.2,180.7 122.6,182.6 125.4,184.4 128.5,186.1 132.0,187.8 135.9,189.4 140.1,190.9 144.6,192.3 149.5,193.6 154.6,194.7 159.9,195.8 165.5,196.8 171.2,197.6 177.1,198.3 183.2,198.8 189.3,199.2 195.6,199.5 201.9,199.7 208.1,199.7 214.4,199.5 220.7,199.2 226.8,198.8 232.9,198.3 238.8,197.6 244.5,196.8 250.1,195.8 255.4,194.7 260.5,193.6 265.4,192.3 269.9,190.9 274.1,189.4 278.0,187.8 281.5,186.1 284.6,184.4 287.4,182.6 289.8,180.7 291.7,178.8 293.2,176.8 294.3,174.8 295.0,172.8 295.2,170.8 278.8,170.8 278.6,172.5 278.1,174.1 277.2,175.7 275.9,177.3 274.3,178.9 272.4,180.4 270.2,181.9 267.6,183.3 264.7,184.7 261.5,186.0 258.1,187.2 254.4,188.4 250.4,189.4 246.3,190.4 241.9,191.3 237.4,192.0 232.6,192.7 227.8,193.3 222.9,193.7 217.8,194.1 212.7,194.3 207.6,194.4 202.4,194.4 197.3,194.3 192.2,194.1 187.1,193.7 182.2,193.3 177.4,192.7 172.6,192.0 168.1,191.3 163.7,190.4 159.6,189.4 155.6,188.4 151.9,187.2 148.5,186.0 145.3,184.7 142.4,183.3 139.8,181.9 137.6,180.4 135.7,178.9 134.1,177.3 132.8,175.7 131.9,174.1 131.4,172.5 131.2,170.8 131.4,169.2 131.9,167.5 132.8,165.9 134.1,164.3 135.7,162.7 137.6,161.2 139.8,159.7 142.4,158.3 145.3,156.9 148.5,155.6 151.9,154.4 155.6,153.3 159.6,152.2 163.7,151.2 168.1,150.4 172.6,149.6 177.4,148.9 182.2,148.4 187.1,147.9 192.2,147.6 197.3,147.3 202.4,147.2 207.6,147.2 212.7,147.3 217.8,147.6 222.9,147.9 227.8,148.4 232.6,148.9 237.4,149.6 241.9,150.4 246.3,151.2 250.4,152.2 254.4,153.3 258.1,154.4 261.5,155.6 264.7,156.9 267.6,158.3 270.2,159.7 272.4,161.2 274.3,162.7 275.9,164.3 277.2,165.9 278.1,167.5 278.6,169.2 278.8,170.8" fill="rgba(255,111,165,.55)" stroke="var(--key)" stroke-width="1.2" stroke-linejoin="round"/><polygon points="114.8,226.0 114.9,227.5 115.3,229.0 115.9,230.5 116.8,232.0 117.9,233.5 119.2,234.9 120.8,236.3 122.6,237.7 124.6,239.1 126.9,240.4 129.4,241.7 132.0,243.0 134.9,244.2 138.0,245.3 141.2,246.4 144.6,247.5 148.2,248.4 152.0,249.4 155.9,250.2 159.9,251.0 164.1,251.7 168.3,252.4 172.7,252.9 177.1,253.5 181.7,253.9 186.2,254.2 190.9,254.5 195.6,254.7 200.3,254.8 205.0,254.9 209.7,254.8 214.4,254.7 219.1,254.5 223.8,254.2 228.3,253.9 232.9,253.5 237.3,252.9 241.7,252.4 245.9,251.7 250.1,251.0 254.1,250.2 258.0,249.4 261.8,248.4 265.4,247.5 268.8,246.4 272.0,245.3 275.1,244.2 278.0,243.0 280.6,241.7 283.1,240.4 285.4,239.1 287.4,237.7 289.2,236.3 290.8,234.9 292.1,233.5 293.2,232.0 294.1,230.5 294.7,229.0 295.1,227.5 295.2,226.0 295.2,170.8 295.1,172.3 294.7,173.8 294.1,175.3 293.2,176.8 292.1,178.3 290.8,179.7 289.2,181.2 287.4,182.6 285.4,183.9 283.1,185.3 280.6,186.5 278.0,187.8 275.1,189.0 272.0,190.1 268.8,191.2 265.4,192.3 261.8,193.2 258.0,194.2 254.1,195.0 250.1,195.8 245.9,196.5 241.7,197.2 237.3,197.8 232.9,198.3 228.3,198.7 223.8,199.1 219.1,199.3 214.4,199.5 209.7,199.6 205.0,199.7 200.3,199.6 195.6,199.5 190.9,199.3 186.2,199.1 181.7,198.7 177.1,198.3 172.7,197.8 168.3,197.2 164.1,196.5 159.9,195.8 155.9,195.0 152.0,194.2 148.2,193.2 144.6,192.3 141.2,191.2 138.0,190.1 134.9,189.0 132.0,187.8 129.4,186.5 126.9,185.3 124.6,183.9 122.6,182.6 120.8,181.2 119.2,179.7 117.9,178.3 116.8,176.8 115.9,175.3 115.3,173.8 114.9,172.3 114.8,170.8" fill="rgba(255,111,165,.38)" stroke="none" stroke-width="0" stroke-linejoin="round"/><polyline points="114.8,226.0 114.9,227.5 115.3,229.0 115.9,230.5 116.8,232.0 117.9,233.5 119.2,234.9 120.8,236.3 122.6,237.7 124.6,239.1 126.9,240.4 129.4,241.7 132.0,243.0 134.9,244.2 138.0,245.3 141.2,246.4 144.6,247.5 148.2,248.4 152.0,249.4 155.9,250.2 159.9,251.0 164.1,251.7 168.3,252.4 172.7,252.9 177.1,253.5 181.7,253.9 186.2,254.2 190.9,254.5 195.6,254.7 200.3,254.8 205.0,254.9 209.7,254.8 214.4,254.7 219.1,254.5 223.8,254.2 228.3,253.9 232.9,253.5 237.3,252.9 241.7,252.4 245.9,251.7 250.1,251.0 254.1,250.2 258.0,249.4 261.8,248.4 265.4,247.5 268.8,246.4 272.0,245.3 275.1,244.2 278.0,243.0 280.6,241.7 283.1,240.4 285.4,239.1 287.4,237.7 289.2,236.3 290.8,234.9 292.1,233.5 293.2,232.0 294.1,230.5 294.7,229.0 295.1,227.5 295.2,226.0" fill="none" stroke="var(--key)" stroke-width="1.6" stroke-linejoin="round"/><line x1="114.8" y1="226.0" x2="114.8" y2="170.8" stroke="var(--key)" stroke-width="1.6"/><line x1="295.2" y1="226.0" x2="295.2" y2="170.8" stroke="var(--key)" stroke-width="1.6"/><line x1="205.0" y1="226.0" x2="205.0" y2="53.5" stroke="var(--ink-faint)" stroke-width="1" stroke-dasharray="3 4"/><line x1="309.2" y1="226.0" x2="309.2" y2="170.8" stroke="var(--amber)" stroke-width="1.3"/><line x1="305.2" y1="226.0" x2="313.2" y2="226.0" stroke="var(--amber)" stroke-width="1.3"/><line x1="305.2" y1="170.8" x2="313.2" y2="170.8" stroke="var(--amber)" stroke-width="1.3"/><text x="316.2" y="178.0" font-size="11.5" font-weight="500" fill="var(--amber)" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">高さ e<tspan dx="1" dy="-5" font-size="9">−r²</tspan><tspan dy="5"></tspan></text><line x1="123.0" y1="168.8" x2="101.0" y2="136.8" stroke="var(--key)" stroke-width="1" stroke-dasharray="3 3"/><text x="99.0" y="132.8" font-size="11.5" font-weight="500" fill="var(--key)" text-anchor="end" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">厚み dr</text><line x1="205.0" y1="170.8" x2="132.7" y2="170.8" stroke="var(--ink)" stroke-width="1.3"/><text x="168.8" y="164.8" font-size="12.5" font-weight="500" fill="var(--ink)" text-anchor="middle" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round"><tspan font-style="italic">r</tspan></text><text x="440.0" y="62.0" font-size="12.5" font-weight="500" fill="var(--ink)" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">筒を切り開くと、薄い板</text><text x="440.0" y="92.0" font-size="11.5" fill="var(--ink-soft)" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">長さ：周 2πr</text><text x="440.0" y="114.0" font-size="11.5" fill="var(--key)" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">厚み：dr</text><text x="440.0" y="136.0" font-size="11.5" fill="var(--amber)" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">高さ：e<tspan dx="1" dy="-5" font-size="9">−r²</tspan><tspan dy="5"></tspan></text><line x1="440.0" y1="154.0" x2="628.0" y2="154.0" stroke="var(--line)" stroke-width="1.2"/><text x="440.0" y="178.0" font-size="11.5" fill="var(--ink-faint)" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">筒1本の体積</text><text x="440.0" y="200.0" font-size="12.5" font-weight="500" fill="var(--ink)" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">≈ 2πr × dr × e<tspan dx="1" dy="-5" font-size="9">−r²</tspan><tspan dy="5"></tspan></text><text x="440.0" y="238.0" font-size="11.5" fill="var(--ink-soft)" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">山全体は、この筒を</text><text x="440.0" y="258.0" font-size="11.5" fill="var(--ink-soft)" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">入れ子に重ねたもの</text></svg>
+        <figcaption>山の形 \(z=e^{-r^2}\) の中に、半径 \(r\)、厚み \(dr\) の<strong>薄い筒</strong>を1本立てます。筒の上端は山の表面に届き、高さは \(e^{-r^2}\)。筒を切り開けば、長さ \(2\pi r\)・厚み \(dr\)・高さ \(e^{-r^2}\) の薄い板なので、体積はその積です。<strong>山全体は、この筒を入れ子に重ねたもの</strong>です。</figcaption>
+      </figure>
+
+      <p>\(I^2\) は、この山の体積です。平面全体は \(0\le r<\infty\)、\(0\le\theta\le2\pi\) なので</p>
+      \[ I^2=\int_0^{2\pi}d\theta\cdot\int_0^{\infty}e^{{-}r^2}r\,dr \]
+      <p>角度の積分は \(2\pi\) です。残りの \(r\) の積分には、<strong>面積要素から来た \(r\) が掛かっています</strong>。</p>
+
+      <div class="box teach"><span class="lab">邪魔者だった \(r\) が、鍵になる</span>
+      <p>\(\int e^{{-}r^2}r\,dr\) なら、\(u=r^2\) と置換すると \(du=2r\,dr\) で、ちょうど \(r\,dr\) が現れます。</p>
+      \[ \begin{aligned}\int_0^{\infty}e^{{-}r^2}r\,dr&=\frac12\int_0^{\infty}e^{{-}u}du\\&=\frac12\end{aligned} \]
+      <p>1変数では \(e^{{-}x^2}\) に掛かる \(x\) がなかったので置換できませんでした。<strong>2次元に移ると、面積要素の \(r\) がその役を果たしてくれる</strong>のです。7-1 §03 の \(e^{x^2}\) の例で、順序を交換したら \(x\) が出てきたのと同じ仕組みです。</p></div>
+
+      <p>以上から \(I^2=2\pi\times\dfrac12=\pi\)。\(I\) は正の数を足したものなので正で</p>
+
+      <div class="box target"><span class="lab">ガウス積分</span>
+      \[ \int_{{-}\infty}^{\infty}e^{{-}x^2}dx=\sqrt{\pi} \]</div>
+
+      <div class="attempt"><span class="lab">まず自力で</span>
+      <p>\(a\) を正の定数として、次の積分を求めてください。</p>
+      \[ \int_{{-}\infty}^{\infty}e^{{-}ax^2}dx \]
+      <div class="controls">
+        <button class="ctl-btn amber" data-hint>ヒントを表示</button>
+        <button class="ctl-btn" data-sol>解答を見る</button>
+      </div>
+      <div class="hint"><span class="hn">HINT 1</span><p>\(ax^2=t^2\) となるように、\(t=\sqrt{a}\,x\) と置換します。範囲は \({-}\infty\) から \(\infty\) のまま変わりません。</p></div>
+      <div class="sol">
+        <div class="step"><div class="sh"><span class="sn">1</span>置換する</div>
+        <div class="why">なぜ：ガウス積分の形 \(e^{{-}t^2}\) に持ち込むためです。</div>
+        <p style="margin:4px 0">\(t=\sqrt{a}\,x\) と置くと、\(dt=\sqrt{a}\,dx\) です。</p>
+        \[ dx=\frac{1}{\sqrt{a}}\,dt \]
+        </div>
+        <div class="step"><div class="sh"><span class="sn">2</span>ガウス積分を使う</div>
+        <div class="why">なぜ：\(\dfrac{1}{\sqrt{a}}\) は定数なので外に出せます。</div>
+        \[ \frac{1}{\sqrt{a}}\int_{{-}\infty}^{\infty}e^{{-}t^2}dt=\sqrt{\frac{\pi}{a}} \]
+        <p style="font-size:13.5px;color:var(--ink-faint);margin:6px 0 0">\(a\) が大きいほど山は細く鋭くなり、面積は小さくなります。答えが \(\dfrac{1}{\sqrt{a}}\) に比例するのは、<strong>山の幅が \(\dfrac{1}{\sqrt{a}}\) に比例して縮む</strong>からです。物理ではこの形を、\(a\) に温度や質量などが入った状態でよく使います。</p></div>
+      </div>
+      </div>
+
+      <div class="box teach"><span class="lab">この先の物理で</span>
+      <ul style="margin:6px 0 0">
+        <li><strong>統計力学</strong>：気体の分子の速度の分布は、速度の3成分それぞれについてのガウス型の関数の積になります。全体を足し上げるにはガウス積分が要り、さらに<strong>速度の空間で球座標を使う</strong>と、速さの分布に球殻の因子 \(4\pi v^2\) が現れます。</li>
+        <li><strong>量子力学</strong>：水素原子のように中心からの力を受ける問題は、球座標で解きます。確率を空間全体で足すとき、体積要素 \(r^2\sin\theta\,dr\,d\theta\,d\varphi\) が必ず出てきます。</li>
+        <li><strong>場の量子論</strong>：相互作用のない場の計算は、ガウス積分を無限個の変数に広げたものになります。この記事の \(\sqrt{\pi}\) が、その最も簡単な場合です。</li>
+      </ul>
+      <p style="margin-top:8px">それぞれの意味と使い方は、各分野のセクションで扱います。</p></div>
+
+      <h3>計算ドリル（§04・全2問）</h3>
+
+      <div class="drill"><p><span class="qn">問1</span>3次元のガウス積分 \(\displaystyle\iiint e^{{-}(x^2+y^2+z^2)}\,dV\)（空間全体）を、2通りに計算する。<br>(a) 変数が分かれることを使って計算せよ。<br>(b) 球座標で書くと \(\displaystyle4\pi\int_0^{\infty}r^2e^{{-}r^2}dr\) になる。(a) の結果と比べて、\(\displaystyle\int_0^{\infty}r^2e^{{-}r^2}dr\) の値を求めよ。</p>
+      <div class="attempt" style="margin:10px 0 4px"><span class="lab">自分の答えを出してから</span>
+      <div class="controls">
+        <button class="ctl-btn amber" data-hint>ヒントを表示</button>
+        <button class="ctl-btn" data-sol>解答を見る</button>
+      </div>
+      <div class="hint"><span class="hn">HINT 1</span><p>(a) \(e^{{-}(x^2+y^2+z^2)}=e^{{-}x^2}e^{{-}y^2}e^{{-}z^2}\) です。(b) 中身が \(r\) だけで決まるので、角度の積分は \(4\pi\) です。</p></div>
+      <div class="sol"><p><strong>(a)</strong> 3つのガウス積分の積になります。</p>
+      \[ \sqrt{\pi}\cdot\sqrt{\pi}\cdot\sqrt{\pi}=\pi^{\frac32} \]
+      <p style="margin-top:10px"><strong>(b)</strong> 2つの計算は同じ量なので</p>
+      \[ 4\pi\int_0^{\infty}r^2e^{{-}r^2}dr=\pi^{\frac32} \]
+      <p>両辺を \(4\pi\) で割って</p>
+      \[ \int_0^{\infty}r^2e^{{-}r^2}dr=\frac{\sqrt{\pi}}{4} \]
+      <p style="font-size:13.5px;color:var(--ink-faint)">この積分は、置換だけでは直接求めにくい形です。<strong>同じ量を2つの座標で計算して比べる</strong>と、片方からもう片方の値が分かります。統計力学で分子の運動エネルギーの平均を求めるとき、ちょうどこの形の積分が現れます。</p></div></div></div>
+
+      <div class="drill"><p><span class="qn">問2</span><strong>口頭試問形式</strong>：次の3つを、公式を見ずに自分の言葉で説明せよ。<br>①極座標の面積要素が \(dr\,d\theta\) でなく \(r\,dr\,d\theta\) なのはなぜか。<br>②ヤコビアンは何を表す量か。どうやって偏微分から作られるか。<br>③ガウス積分を求めるとき、なぜわざわざ2次元にするのか。</p>
+      <div class="attempt" style="margin:10px 0 4px"><span class="lab">自分の答えを出してから</span>
+      <div class="controls"><button class="ctl-btn" data-sol>解答例を見る</button></div>
+      <div class="sol"><p><strong>①</strong> 極座標の区画は、縦が \(dr\)、横が半径 \(r\) の円の弧で長さ \(r\,d\theta\)。同じ \(d\theta\) でも中心から遠いほど弧が長いので、\(r\) が掛かる。単位で見ても、面積には長さ2つぶんが要る。</p>
+      <p><strong>②</strong> 新しい座標の小さな長方形 \(du\,dv\) が、\(x,y\) の世界で何倍の面積になるかを表す。\(u\) だけ動かしたときの移動と \(v\) だけ動かしたときの移動を全微分から作り、その2本が張る平行四辺形の面積を、成分のたすき掛けで求めると、4つの偏微分のたすき掛けになる。</p>
+      <p><strong>③</strong> \(e^{{-}x^2}\) は原始関数が書けず、1変数のままでは置換もできない。2乗して2次元の積分にすると、中身が中心からの距離だけで決まるので極座標が使え、面積要素から \(r\) が出てくる。その \(r\) のおかげで \(u=r^2\) の置換ができる。</p>
+      <p style="font-size:13.5px;color:var(--ink-faint)">この3つが澱みなく言えれば、この記事は通過です。特に②は、図（小さな長方形が平行四辺形に写る）を描きながら説明できるか確かめてください。</p></div></div></div>
+    </section>
+
+    <!-- §05 -->
+    <section id="howto">
+      <div class="sec-head"><span class="idx">§05</span><h2>チェックリストと次回予告</h2></div>
+
+      <h3>この記事で答えられるようになるべき問い</h3>
+      <div class="box principle"><span class="lab">最終チェック</span>
+      <ul style="margin:8px 0 0">
+        <li>極座標と直交座標の関係を書けるか（§01）</li>
+        <li>面積要素 \(r\,dr\,d\theta\) を図から導けるか（§01）</li>
+        <li>円板や扇形の領域を、極座標の範囲で書けるか（§01）</li>
+        <li>小さな長方形が平行四辺形に写ることを、全微分で説明できるか（§02）</li>
+        <li>ヤコビアンを4つの偏微分から計算できるか（§02）</li>
+        <li>1変数の置換積分が、ヤコビアンの特別な場合だと説明できるか（§02）</li>
+        <li>球座標の3つの変数の意味と、それぞれの範囲を言えるか（§03）</li>
+        <li>体積要素 \(r^2\sin\theta\,dr\,d\theta\,d\varphi\) の \(\sin\theta\) の由来を説明できるか（§03）</li>
+        <li>球対称なとき、角度の積分が \(4\pi\) になることを使えるか（§03）</li>
+        <li>ガウス積分を、2次元と極座標を経由して導けるか（§04）</li>
+      </ul></div>
+
+      <h3>次章（8-1 ベクトルと場）への接続</h3>
+      <p>7章では、関数の値を、面積や体積の上で足し上げました。足し上げた関数は、密度のように<strong>各点に1つの数を持つ量</strong>でした。</p>
+      <p>しかし物理には、<strong>各点に矢印を持つ量</strong>もあります。重力や電気の力は、場所ごとに大きさと向きを持ちます。こうした量を「場」として扱い、微分し、線や面に沿って足し上げる道具を作るのが8章です。</p>
+      <p>この記事の球座標も、そこでそのまま働きます。球対称な場を扱うとき、球面上で足し上げる計算（§03 ドリルの表面積）が中心に来るからです。</p>
+      <div class="box teach"><span class="lab">8-1 で扱う問い（予習用）</span>
+      <ul style="margin:6px 0 0">
+        <li>空間の各点に矢印を持つ量（ベクトル場）は、どう表すのか</li>
+        <li>各点に数を持つ量（スカラー場）と、何が違うのか</li>
+        <li>6-2 の「偏微分を並べた矢印」は、場として見ると何を指しているのか</li>
+        <li>矢印を持つ量を、線や面に沿って足し上げるとはどういうことか</li>
+      </ul>
+      <p style="margin-top:8px"><strong>鍵となる一言</strong>：8章の最後に出てくるガウスの定理は、「体積の上での積分」と「それを囲む面の上での積分」を結ぶ式です。7章で作った体積積分と、この記事の球面上の積分が、そこで1本の等式につながります。</p></div>
+
+      <h3>学習サイクルの推奨手順</h3>
+      <ol>
+        <li><strong>解答を開かず、紙で挑戦</strong>。詰まっても5分は粘ってください。詰まるのは失敗ではなく、<strong>まだ腑に落ちていない一点が表に出た合図</strong>です。そこを自分の手で越えた経験が、そのまま次に進む力になります。</li>
+        <li><strong>ヒントを1つずつ</strong>開き、詰まりが解けたら閉じて自力で続行。</li>
+        <li>座標を取り替えたら、<strong>面積要素・体積要素の因子を掛けたか</strong>を毎回確かめる。迷ったら単位で確認してください（面積なら長さの2乗、体積なら長さの3乗）。</li>
+        <li>翌日、何も見ずにガウス積分を導出し、§04 問2（口頭試問）を再現する。特に②のヤコビアンの説明を、図を描きながらできるか確かめてください。</li>
+      </ol>
+
+      <div class="box warn"><span class="lab">この教材の立ち位置</span>
+      <p>本節では、座標の取り替えを<strong>積分を軽くする道具</strong>として扱いました。その道具で計算した量が物理で何を意味するかは、各分野のセクションで扱います。慣性モーメントは<strong>古典力学</strong>、球の中の質量と宇宙膨張は<strong>宇宙論</strong>、分子の速度分布は<strong>統計力学</strong>、水素原子の確率分布は<strong>量子力学</strong>、ガウス積分の無限次元への拡張は<strong>場の量子論</strong>のセクションです。</p>
+      <p style="margin-top:8px">また、3変数以上のヤコビアン（3行3列の行列式）の一般的な計算は扱っていません。行列式そのものは9章で扱います。座標の取り替えが許される厳密な条件や、範囲が無限に広がる積分（広義積分）の収束の議論にも踏み込んでいません。物理で扱う関数では、ほとんどの場合問題になりません。</p></div>
+
+      <div class="foot"><p>Academic Gates ／ 物理数学I 7章 多重積分と座標系 ／ 7-2「座標系の取り替えとヤコビアン」。演習問題は本教材独自の構成です。続編：8章 ベクトル解析 ／ 8-1「ベクトルと場」。</p></div>
+    </section>
+  </main>
+</div>
+
+<div id="site-footer"><noscript><nav class="noscript-nav" aria-label="フッターナビゲーション"><a href="index.html">ホーム</a><a href="self-intro.html">自己紹介</a><a href="study.html">勉強の軌跡</a><a href="videos.html">動画</a><a href="blog.html">ブログ</a><a href="sns.html">各種SNS</a></nav></noscript></div>
+
+<script>
+/* ヒント／解答トグル */
+document.querySelectorAll('[data-hint]').forEach(function(btn){
+  var box=btn.closest('.attempt');
+  var hints=[].slice.call(box.querySelectorAll('.hint'));
+  if(!hints.length){ btn.style.display='none'; return; }
+  var hideBtn=document.createElement('button');
+  hideBtn.type='button';hideBtn.className='ctl-btn amber';hideBtn.textContent='ヒントを隠す';hideBtn.style.display='none';
+  btn.after(hideBtn);
+  btn.addEventListener('click',function(){
+    var hidden=hints.filter(function(h){return h.style.display!=='block'});
+    if(hidden.length){ hidden[0].style.display='block'; hideBtn.style.display='';
+      if(hidden.length===1){ btn.textContent='ヒントは以上'; btn.disabled=true; }
+      else { btn.textContent='次のヒント ('+(hints.length-hidden.length+1)+'/'+hints.length+')'; }
+    }
+  });
+  hideBtn.addEventListener('click',function(){
+    hints.forEach(function(h){h.style.display='none'});
+    hideBtn.style.display='none';btn.disabled=false;btn.textContent='ヒントを表示';
+  });
+});
+document.querySelectorAll('[data-sol]').forEach(function(btn){
+  btn.addEventListener('click',function(){
+    var sol=btn.closest('.attempt').querySelector('.sol');
+    var open=sol.style.display==='block';
+    sol.style.display=open?'none':'block';
+    if(!btn.dataset.show) btn.dataset.show=btn.textContent;
+    btn.textContent=open?btn.dataset.show:'閉じる';
+    if(!open && window.MathJax && MathJax.typesetPromise) MathJax.typesetPromise([sol]);
+  });
+});
+
+/* 目次の追従 */
+var links=[].slice.call(document.querySelectorAll('.toc a[href^="#"]'));
+var secs=links.map(function(a){return document.querySelector(a.getAttribute('href'))});
+var pbar=document.getElementById('pbar');
+function onScroll(){
+  // getBoundingClientRect を使う（offsetTop ではない）。style.css の
+  // `main{position:relative}` で <main> が offsetParent になり、offsetTop が
+  // 文書基準でなくなるため、scrollY と直接比べると判定がずれる（§36）。
+  var idx=0;
+  secs.forEach(function(s,i){ if(s&&s.getBoundingClientRect().top<=140) idx=i; });
+  links.forEach(function(a){a.classList.remove('active')});
+  if(links[idx]) links[idx].classList.add('active');
+  var h=document.documentElement.scrollHeight-window.innerHeight;
+  pbar.style.width=(h>0?(window.scrollY/h*100):0)+'%';
+}
+window.addEventListener('scroll',onScroll,{passive:true});
+window.addEventListener('resize',onScroll); onScroll();
+var body=document.body,mb=document.getElementById('menuBtn'),scrim=document.getElementById('scrim');
+mb.addEventListener('click',function(){var o=body.classList.toggle('nav-open');mb.setAttribute('aria-expanded',o)});
+scrim.addEventListener('click',function(){body.classList.remove('nav-open')});
+document.getElementById('toc').addEventListener('click',function(e){if(e.target.closest('a'))body.classList.remove('nav-open')});
+</script>
+<script src="../js/layout.js?v=r95"></script>
+<script src="../js/main.js?v=r95"></script>
+<script src="../js/starfield.js?v=r95"></script>
+</body>
+</html>

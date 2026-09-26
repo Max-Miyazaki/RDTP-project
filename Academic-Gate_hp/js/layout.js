@@ -69,6 +69,8 @@
         'phys-math:ch7':   { label: '7章 多重積分と座標系',                        parent: 'phys-math' },
         'phys-math_7-1':   { label: 'SECTION 7-1',  href: 'phys-math_7-1.html',    parent: 'phys-math:ch7',
                              title: '7-1　重積分' },
+        'phys-math_7-2':   { label: 'SECTION 7-2',  href: 'phys-math_7-2.html',    parent: 'phys-math:ch7',
+                             title: '7-2　座標系の取り替えとヤコビアン' },
         'skills':          { label: '精神の圏域',   href: 'study_skills.html',     parent: 'study' },
         'mnemonics':       { label: '記憶術',       href: 'skills_mnemonics.html', parent: 'skills' },
         'memoryverse':     { label: 'メモリーバース', href: 'memoryverse.html',    parent: 'mnemonics', unit: '回' },
