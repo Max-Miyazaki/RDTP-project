@@ -74,6 +74,11 @@
         'phys-math:ch8':   { label: '8章 ベクトル解析',                            parent: 'phys-math' },
         'phys-math_8-1':   { label: 'SECTION 8-1',  href: 'phys-math_8-1.html',    parent: 'phys-math:ch8',
                              title: '8-1　ベクトルと場' },
+        // 複合分野：学問分野と精神の圏域のあいだの枠（DESIGN.md §103）。いまは「地球と人類」だけ。
+        'composite':       { label: '複合分野',     href: 'study_composite.html',  parent: 'study' },
+        // ★ title は付けない：ツリーは title を label より優先するので、付けるとツリーが「地球の構造から人類を読み解く」になる。
+        //   シリーズの長い名前は earthhuman.html の h1 が持つ（§103.1）。
+        'earthhuman':      { label: '地球と人類',   href: 'earthhuman.html',       parent: 'composite', unit: '章' },
         'skills':          { label: '精神の圏域',   href: 'study_skills.html',     parent: 'study' },
         'mnemonics':       { label: '記憶術',       href: 'skills_mnemonics.html', parent: 'skills' },
         'memoryverse':     { label: 'メモリーバース', href: 'memoryverse.html',    parent: 'mnemonics', unit: '回' },

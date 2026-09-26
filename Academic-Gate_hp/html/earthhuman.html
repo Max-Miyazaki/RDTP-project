@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>地球と人類｜複合分野 - Academic Gates</title>
+    <meta name="description" content="地球と人類の教材。地理・世界史・宗教学・地政学・哲学史・美術史の6分野を、動きにくい層から順に重ねて、地球の構造から人類を読み解く。7部35章。">
+    <link rel="stylesheet" href="../css/style.css?v=r98">
+    <link rel="icon" href="../../favicon.ico" sizes="32x32">
+    <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+    <!-- 一覧ページだが、章のカードの前に「この教材の設計」を文章で置くので、そのぶんだけこのページに書く（DESIGN.md §103）。
+         カードと部の見出しは phys-math.html と同じ .study-grid / .study-card のまま。
+         箱（.box）の値は memoryverse_2-1.html と同じ（琥珀＝注意）。一覧ページは lesson-theme.css を読まないので、ここで持つ。 -->
+    <style>
+        .eh-sec { max-width: 1200px; margin: 0 auto; padding: 0 var(--gutter) var(--space-8); }
+        .eh-sec > h2 { margin-bottom: var(--space-3); }
+        .eh-sec p, .eh-sec li { max-width: 46em; line-height: 1.9; color: var(--text-secondary); }
+        .eh-sec p + p { margin-top: var(--space-2); }
+        .eh-sec strong { color: var(--text-primary); font-weight: 500; }
+        .eh-sec a { color: var(--spec-glow); text-decoration: underline; text-underline-offset: 3px; }
+        .eh-sub { font-size: 1.05rem; font-weight: 400; color: var(--text-primary); margin: var(--space-4) 0 var(--space-2); }
+
+        .eh-layers { display: flex; flex-wrap: wrap; gap: var(--space-4); align-items: center; margin: 0 0 var(--space-4); }
+        .eh-layers figure { margin: 0; flex: 0 1 480px; min-width: 0; }
+        .eh-layers svg { display: block; width: 100%; height: auto; }
+        .eh-layers figcaption { font-size: .8rem; color: var(--text-tertiary); margin-top: var(--space-1); }
+        .eh-layers .eh-why { flex: 1 1 320px; min-width: 0; }
+        .eh-layers svg text { font-family: var(--font-body); fill: var(--text-primary); }
+        .eh-layers .lt { font-size: 14px; fill: var(--text-secondary); }
+        .eh-layers .lv { font-size: 13px; fill: var(--text-secondary); }
+        .eh-layers .ln { font-size: 17px; }
+        .eh-layers .le { font-size: 13px; fill: var(--text-secondary); }
+        .eh-layers .lc { font-size: 14px; fill: var(--text-secondary); letter-spacing: .08em; }
+
+        .box { border-radius: var(--radius-md); padding: 16px 20px; margin: 18px 0; border: 1px solid var(--hairline); background: var(--surface); max-width: 52em; }
+        .box .lab { font-size: .7rem; letter-spacing: .14em; font-weight: 500; display: block; margin-bottom: 6px; color: var(--text-secondary); }
+        .box p { max-width: none; }
+        .box.warn { background: rgba(255, 160, 70, .08); border-color: rgba(255, 160, 70, .32); }
+        .box.warn .lab { color: #ffb46b; }
+        .study-grid > .part-q, .study-grid > .box { grid-column: 1 / -1; margin: 0; }
+        .study-grid > .part-q { max-width: 46em; }
+
+        .table-scroll { overflow-x: auto; margin: var(--space-2) 0; }
+        .eh-table { border-collapse: collapse; font-size: .9rem; color: var(--text-secondary); min-width: 100%; }
+        .eh-table th, .eh-table td { border: 1px solid var(--hairline); padding: 9px 12px; text-align: left; vertical-align: top; line-height: 1.7; }
+        .eh-table thead th { background: var(--surface-hot); color: var(--text-primary); font-weight: 500; }
+        .eh-table tbody th { color: var(--text-primary); font-weight: 500; white-space: nowrap; }
+        .eh-table td:nth-child(2) { color: var(--text-primary); }
+        .eh-pace { min-width: 0; width: auto; }
+        .eh-pace td:nth-child(2) { color: var(--text-secondary); }
+
+        .eh-flow { list-style: none; padding: 0; margin: var(--space-2) 0; counter-reset: f; }
+        .eh-flow li { counter-increment: f; padding-left: 2.2em; position: relative; }
+        .eh-flow li::before { content: counter(f); position: absolute; left: 0; color: var(--text-tertiary); font-variant-numeric: tabular-nums; }
+        .eh-flow b, .eh-out b { color: var(--text-primary); font-weight: 500; }
+        .eh-out { padding-left: 1.2em; margin: var(--space-2) 0; }
+
+        .eh-books { display: grid; gap: var(--space-3); grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+        .eh-books h3 { font-size: 1rem; font-weight: 400; margin-bottom: var(--space-1); }
+        .eh-books ul { list-style: none; padding: 0; margin: 0; }
+        .eh-books li { font-size: .9rem; line-height: 1.8; }
+    </style>
+</head>
+<body data-page="study" data-node="earthhuman">
+    <canvas id="starfield" aria-hidden="true"></canvas>
+<div id="site-nav"><noscript><nav class="noscript-nav" aria-label="メインナビゲーション"><a href="index.html">ホーム</a><a href="self-intro.html">自己紹介</a><a href="study.html">勉強の軌跡</a><a href="videos.html">動画</a><a href="blog.html">ブログ</a><a href="sns.html">各種SNS</a></nav></noscript></div>
+    <main>
+        <div class="page-header">
+                <h1>地球の構造から人類を読み解く</h1>
+            <p>地理・世界史・宗教学・地政学・哲学史・美術史の6分野は、同じ人類を違う解像度で見るレンズである。下の層ほど変わりにくく、その上に乗る層の条件を決める。上の層ほど変化が速く、読み方の幅が広い。この教材は、6枚のレンズを下から順に重ねていく。</p>
+        </div>
+
+        <!-- (b) なぜこの6分野・この順番か。★ 地理決定論の箱は、この教材でいちばん大事な注意（DESIGN.md §103）。
+             メモリーバースとの分担（なぜ／どこ）の1文もこの節の末尾に置く。 -->
+        <section class="eh-sec" aria-labelledby="eh-why">
+            <h2 id="eh-why">なぜこの6分野・この順番か</h2>
+            <div class="eh-layers">
+                <figure>
+                    <svg viewBox="0 0 480 412" role="img" aria-labelledby="eh-layers-t">
+      <title id="eh-layers-t">6分野の層。下から地理・世界史・宗教学・地政学・哲学史・美術史。下ほど動かず上限を決め、上ほど変化が速く解釈の幅が広い。</title>
+      <text x="16" y="24" class="lt">↑ 変化が速い・解釈の幅が広い</text>
+      <rect x="16" y="40" width="372" height="46" rx="8" fill="rgba(61,139,255,0.06)" stroke="rgba(255,255,255,.22)"/>
+      <text x="32" y="69" class="lv">第VI部</text>
+      <text x="98" y="70" class="ln">美術史</text>
+      <text x="374" y="69" class="le" text-anchor="end">見え方の記録</text>
+      <rect x="16" y="94" width="372" height="46" rx="8" fill="rgba(61,139,255,0.09)" stroke="rgba(255,255,255,.22)"/>
+      <text x="32" y="123" class="lv">第V部</text>
+      <text x="98" y="124" class="ln">哲学史</text>
+      <text x="374" y="123" class="le" text-anchor="end">問いの立て方</text>
+      <rect x="16" y="148" width="372" height="46" rx="8" fill="rgba(61,139,255,0.13)" stroke="rgba(255,255,255,.22)"/>
+      <text x="32" y="177" class="lv">第IV部</text>
+      <text x="98" y="178" class="ln">地政学</text>
+      <text x="374" y="177" class="le" text-anchor="end">国家の利害</text>
+      <rect x="16" y="202" width="372" height="46" rx="8" fill="rgba(61,139,255,0.18)" stroke="rgba(255,255,255,.22)"/>
+      <text x="32" y="231" class="lv">第III部</text>
+      <text x="98" y="232" class="ln">宗教学</text>
+      <text x="374" y="231" class="le" text-anchor="end">意味と規範</text>
+      <rect x="16" y="256" width="372" height="46" rx="8" fill="rgba(61,139,255,0.24)" stroke="rgba(255,255,255,.22)"/>
+      <text x="32" y="285" class="lv">第II部</text>
+      <text x="98" y="286" class="ln">世界史</text>
+      <text x="374" y="285" class="le" text-anchor="end">出来事と制度</text>
+      <rect x="16" y="310" width="372" height="46" rx="8" fill="rgba(61,139,255,0.32)" stroke="rgba(255,255,255,.22)"/>
+      <text x="32" y="339" class="lv">第I部</text>
+      <text x="98" y="340" class="ln">地理</text>
+      <text x="374" y="339" class="le" text-anchor="end">地形・気候・資源</text>
+      <text x="16" y="398" class="lt">↓ 動かない・上限を決める</text>
+      <line x1="424" y1="354" x2="424" y2="48" stroke="rgba(255,255,255,.55)" stroke-width="1.5"/>
+      <path d="M417 58 L424 42 L431 58 Z" fill="rgba(255,255,255,.55)"/>
+      <text x="452" y="92" class="lc" writing-mode="tb">下の層が上の層の条件を決める</text>
+    </svg>
+                    <figcaption>図　6分野の層。下の層は動きにくく、上の層の可能性の幅を決める。</figcaption>
+                </figure>
+                <div class="eh-why">
+                    <p>順番は、<strong>下の層が上の層の可能性の幅を決める</strong>向きに並べた。逆向きはない。どんな思想も、砂漠の真ん中に大河文明を起こすことはできない。</p>
+                    <p>ただし、決めるのは「幅」までである。同じ大河のほとりから、エジプトとメソポタミアという別々の歴史が生まれた。同じ地理から、複数の歴史がありえた。そのうちどれが実際に起きたのかを追うのが上の層の仕事で、上へ行くほど、同じ事実から読み取れることの幅が広がる。</p>
+                </div>
+            </div>
+
+            <div class="box warn"><span class="lab">地理決定論に陥らない</span>
+                <p>「下の層が上を決める」を、「地理が歴史を決める」と読んではいけない。<strong>地理は確率を偏らせるのであって、決定はしない。</strong></p>
+                <p>朝鮮半島とイタリア半島は、どちらも大陸から海へ突き出した半島だが、たどった歴史はまるで違う。日本とイギリスは、どちらも大陸の端に浮かぶ島国だが、大陸との距離も、隣にあった国の形も、その後の歩みも違う。似た地理が似た歴史を約束するなら、こうはならない。</p>
+                <p>どの章も、この線を引く。地理で説明できることと、説明できないこと（人の選択、偶然、思想）を分けて書く。</p>
+            </div>
+
+            <p>なお、場所そのもの——どこに何があるか（升目、実際のデータの分布、白地図に描く訓練）——は<a href="memoryverse.html">メモリーバース</a>が受け持ち、この教材は「なぜそこにそうあるのか」を受け持つ。同じ事実は片方にだけ書き、もう片方からはそこを参照する。</p>
+        </section>
+
+        <!-- (c) 8つの手筋。6分野を通して使う。 -->
+        <section class="eh-sec" aria-labelledby="eh-u">
+            <h2 id="eh-u">6分野を通して使う8つの手筋</h2>
+            <p>分野が変わっても、考え方の型は同じものを使う。章の中では、いま使っている手筋を U1〜U8 の番号で示す。</p>
+            <div class="table-scroll">
+                <table class="eh-table">
+                    <thead><tr><th scope="col"></th><th scope="col">手筋</th><th scope="col">中身</th></tr></thead>
+                    <tbody>
+                    <tr><th scope="row">U1</th><td>制約から考える</td><td>まず物理的・地理的に「できないこと」を確定させる</td></tr>
+                    <tr><th scope="row">U2</th><td>スケールを切り替える</td><td>世界／地域／個人、千年／百年／十年。「どのスケールの話か」を常に宣言する</td></tr>
+                    <tr><th scope="row">U3</th><td>比較で変数を分離する</td><td>似た条件で違う結果になった例を探す</td></tr>
+                    <tr><th scope="row">U4</th><td>経路依存を疑う</td><td>最初の小さな偶然が後戻りできない構造に固定されることがある</td></tr>
+                    <tr><th scope="row">U5</th><td>内在的に読む</td><td>「なぜそんな愚かなことを」と思ったら、こちらが前提を見落としている</td></tr>
+                    <tr><th scope="row">U6</th><td>史料と作品の出所を問う</td><td>残っているものは「残る理由があったもの」だけ。沈黙している層を意識する</td></tr>
+                    <tr><th scope="row">U7</th><td>必要条件と十分条件を分ける</td><td>石炭は産業革命の必要条件だが十分条件ではない</td></tr>
+                    <tr><th scope="row">U8</th><td>現在からの逆算を戒める</td><td>当時の人は結末を知らなかった。「近代へ向かう歴史」という物語を一度外す</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- (d) 7部35章。部は見出し（平文）、章はカード。記事がまだ無いので、カードはすべて div
+             （layout.js の markSoonCards が「準備中」を付ける）。記事ができたら a にして href を足す（§75）。 -->
+        <section class="study-grid">
+            <h2>第I部 地理</h2>
+            <p class="part-q">人に何ができて何ができないか——その上限は、地球の物理でどこまで決まっているのか。</p>
+
+            <div class="study-card">
+                <h3>1-1 地球というOS</h3>
+                <p>なぜそこに山があり、砂漠があるのか</p>
+            </div>
+
+            <div class="study-card">
+                <h3>1-2 水と土</h3>
+                <p>落ちた水と土が、何人を養えるか</p>
+            </div>
+
+            <div class="study-card">
+                <h3>1-3 人はどこに住むか</h3>
+                <p>人口分布・都市の立地・集積</p>
+            </div>
+
+            <div class="study-card">
+                <h3>1-4 移動と摩擦</h3>
+                <p>なぜ海運は陸運より圧倒的に安いのか</p>
+            </div>
+
+            <div class="study-card">
+                <h3>1-5 資源とエネルギー</h3>
+                <p>資源の偏在はなぜ生まれるか</p>
+            </div>
+
+            <div class="study-card">
+                <h3>1-6 境界と領域</h3>
+                <p>なぜアフリカの国境は直線が多いのか</p>
+            </div>
+        </section>
+
+        <section class="study-grid">
+            <h2>第II部 世界史</h2>
+            <p class="part-q">似た地理の上で、なぜ違う歴史が生まれたのか。地理が開いた可能性のどれが実際に選ばれたのかを追う。</p>
+
+            <div class="study-card">
+                <h3>2-1 農耕と国家の発生</h3>
+                <p>余剰が生まれると、なぜ支配が生まれるのか</p>
+            </div>
+
+            <div class="study-card">
+                <h3>2-2 枢軸時代と古典帝国</h3>
+                <p>同じ時代に、各地で思想と帝国が生まれた</p>
+            </div>
+
+            <div class="study-card">
+                <h3>2-3 普遍宗教と帝国の再編</h3>
+                <p>帝国が崩れたあとを、宗教がつなぐ</p>
+            </div>
+
+            <div class="study-card">
+                <h3>2-4 ユーラシアの一体化</h3>
+                <p>草原と海の道が、大陸をひとつにする</p>
+            </div>
+
+            <div class="study-card">
+                <h3>2-5 大航海と大西洋世界</h3>
+                <p>海が、陸より遠くを近くする</p>
+            </div>
+
+            <div class="study-card">
+                <h3>2-6 大分岐と帝国主義</h3>
+                <p>なぜ西ヨーロッパが先に抜け出したのか</p>
+            </div>
+
+            <div class="study-card">
+                <h3>2-7 総力戦から現在へ</h3>
+                <p>国家がすべてを動員した世紀</p>
+            </div>
+        </section>
+
+        <section class="study-grid">
+            <h2>第III部 宗教学</h2>
+            <p class="part-q">人は世界の意味をどう説明してきたのか。その説明が、社会の規則と人の動き方をどう変えたのか。</p>
+
+            <div class="study-card">
+                <h3>3-1 宗教を分析する道具</h3>
+                <p>信じる前に、比べるための言葉を持つ</p>
+            </div>
+
+            <div class="study-card">
+                <h3>3-2 インドの系譜</h3>
+                <p>輪廻と解脱、そこから分かれた道</p>
+            </div>
+
+            <div class="study-card">
+                <h3>3-3 東アジアの系譜</h3>
+                <p>天と祖先と、外から来た教え</p>
+            </div>
+
+            <div class="study-card">
+                <h3>3-4 アブラハムの系譜</h3>
+                <p>一つの神から、三つの伝統へ</p>
+            </div>
+
+            <div class="study-card">
+                <h3>3-5 世俗化と現代</h3>
+                <p>宗教は消えたのか、形を変えたのか</p>
+            </div>
+        </section>
+
+        <section class="study-grid">
+            <h2>第IV部 地政学</h2>
+            <p class="part-q">地理と歴史が決めた条件の上で、国家は何を恐れ、何を守ろうとするのか。</p>
+
+            <div class="box note"><span class="lab">この部の書き方</span>
+                <p>現在進行形の国際問題には、事実の争いと価値の争いが混ざっている。この部の資料は各当事者の主張を、その内在的論理として並べて示す。「どれが正しいか」の結論は書かない。</p></div>
+
+            <div class="study-card">
+                <h3>4-1 古典地政学の道具箱</h3>
+                <p>ハートランド・シーパワー・リムランド</p>
+            </div>
+
+            <div class="study-card">
+                <h3>4-2 海の秩序</h3>
+                <p>海峡と航路を握る者</p>
+            </div>
+
+            <div class="study-card">
+                <h3>4-3 大陸国家の論理</h3>
+                <p>国境を接する国の、安全の考え方</p>
+            </div>
+
+            <div class="study-card">
+                <h3>4-4 地経学</h3>
+                <p>貿易と資源が、武器になるとき</p>
+            </div>
+
+            <div class="study-card">
+                <h3>4-5 現代の焦点</h3>
+                <p>いま争われている場所を、当事者の論理で読む</p>
+            </div>
+        </section>
+
+        <section class="study-grid">
+            <h2>第V部 哲学史</h2>
+            <p class="part-q">人は何を問うべきか——その問いの立て方そのものを、どう組み替えてきたのか。</p>
+
+            <div class="study-card">
+                <h3>5-1 哲学史の読み方</h3>
+                <p>答えではなく、問いの立て方を追う</p>
+            </div>
+
+            <div class="study-card">
+                <h3>5-2 古代ギリシアとヘレニズム</h3>
+                <p>万物の根源から、よく生きることへ</p>
+            </div>
+
+            <div class="study-card">
+                <h3>5-3 中世 信仰と理性</h3>
+                <p>信じることと考えることは両立するか</p>
+            </div>
+
+            <div class="study-card">
+                <h3>5-4 近代I 認識の転回</h3>
+                <p>世界ではなく、知る側から始める</p>
+            </div>
+
+            <div class="study-card">
+                <h3>5-5 近代II 歴史と主体</h3>
+                <p>人間は歴史の中で何者になるのか</p>
+            </div>
+
+            <div class="study-card">
+                <h3>5-6 20世紀以降</h3>
+                <p>言葉・構造・他者</p>
+            </div>
+        </section>
+
+        <section class="study-grid">
+            <h2>第VI部 美術史</h2>
+            <p class="part-q">作品は、それが作られた時代の人が世界をどう見ていたかを、どこまで語るのか。</p>
+
+            <div class="study-card">
+                <h3>6-1 見る技術</h3>
+                <p>何が描かれているかより、どう描かれているか</p>
+            </div>
+
+            <div class="study-card">
+                <h3>6-2 古代から中世へ</h3>
+                <p>神と権力のための像</p>
+            </div>
+
+            <div class="study-card">
+                <h3>6-3 ルネサンスとバロック</h3>
+                <p>見えるとおりに描くという発明</p>
+            </div>
+
+            <div class="study-card">
+                <h3>6-4 近代 制度の崩壊</h3>
+                <p>アカデミーの外へ</p>
+            </div>
+
+            <div class="study-card">
+                <h3>6-5 20世紀と非西洋</h3>
+                <p>「美術」の枠そのものを問う</p>
+            </div>
+        </section>
+
+        <section class="study-grid">
+            <h2>第VII部 統合</h2>
+            <p class="part-q">6つの層を1つの場所に重ねると、1つの分野だけでは見えなかった何が見えるのか。</p>
+
+            <div class="study-card">
+                <h3>7-1 6枚のレンズを1点に重ねる</h3>
+                <p>1つの場所を、6つの層で読み解く</p>
+            </div>
+        </section>
+
+        <!-- (e) ペース -->
+        <section class="eh-sec" aria-labelledby="eh-pace">
+            <h2 id="eh-pace">進め方の目安</h2>
+            <div class="table-scroll">
+                <table class="eh-table eh-pace">
+                    <thead><tr><th scope="col">ペース</th><th scope="col">1章あたり</th><th scope="col">全35章</th></tr></thead>
+                    <tbody>
+                    <tr><th scope="row">速習</th><td>週5時間×1週</td><td>約8ヶ月</td></tr>
+                    <tr><th scope="row">標準</th><td>週5時間×2週</td><td>約16ヶ月（推奨）</td></tr>
+                    <tr><th scope="row">じっくり</th><td>週3時間×3週</td><td>約24ヶ月</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <h3 class="eh-sub">配分の勘所</h3>
+            <p><strong>時間を均等に割らない。</strong>第I部と第II部に全体の45%を使う。残りの4部はこの2部の上に乗るので、ここが薄いと上の層がすべて根のない話になる。</p>
+            <p><strong>第I部と第IV部を続けて読まない。</strong>地理から地政学へ直行すると、地形がそのまま国家の行動を決めているように見えてしまう。あいだに世界史と宗教学を挟むのは、地理決定論を防ぐためである。</p>
+        </section>
+
+        <!-- (f) 1章の流れ -->
+        <section class="eh-sec" aria-labelledby="eh-flow">
+            <h2 id="eh-flow">1章の流れ</h2>
+            <ol class="eh-flow">
+                <li><b>原理</b>　その章の土台になる仕組みを1つ置く</li>
+                <li><b>挑戦</b>　答えを読む前に、自分で予想を立てる</li>
+                <li><b>段階ヒント</b>　詰まったら、一度に答えを見ずに1段ずつ開く</li>
+                <li><b>導出</b>　原理から結論までを組み立てる</li>
+                <li><b>図</b>　組み立てた結論を、地図と図で確かめる</li>
+                <li><b>ドリル</b>　同じ手筋を、別の例で使う</li>
+                <li><b>転用</b>　別の地域・別の時代に当てはめて、どこまで通用するかを見る</li>
+            </ol>
+            <p>各章の終わりに、次の3つを自分の手で作る。</p>
+            <ul class="eh-out">
+                <li><b>白地図に描く</b></li>
+                <li><b>2軸の比較表を作る</b></li>
+                <li><b>200字で説明する</b></li>
+            </ul>
+        </section>
+
+        <!-- (g) 併読書。書名と著者だけ（要約は付けない）。 -->
+        <section class="eh-sec" aria-labelledby="eh-books">
+            <h2 id="eh-books">併読書</h2>
+            <div class="eh-books">
+                <div class="eh-books-f">
+                    <h3>地理</h3>
+                    <ul>
+                        <li>『銃・病原菌・鉄』ジャレド・ダイアモンド</li>
+                        <li>『経済は地理から学べ！』宮路秀作</li>
+                        <li>『地球の歴史』鎌田浩毅</li>
+                    </ul>
+                </div>
+                <div class="eh-books-f">
+                    <h3>世界史</h3>
+                    <ul>
+                        <li>『世界史』ウィリアム・H・マクニール</li>
+                        <li>『大分岐』ケネス・ポメランツ</li>
+                        <li>『世界史の誕生』岡田英弘</li>
+                    </ul>
+                </div>
+                <div class="eh-books-f">
+                    <h3>宗教学</h3>
+                    <ul>
+                        <li>『聖と俗』ミルチャ・エリアーデ</li>
+                        <li>『プロテスタンティズムの倫理と資本主義の精神』マックス・ヴェーバー</li>
+                        <li>『イスラーム文化』井筒俊彦</li>
+                    </ul>
+                </div>
+                <div class="eh-books-f">
+                    <h3>地政学</h3>
+                    <ul>
+                        <li>『マッキンダーの地政学』ハルフォード・マッキンダー</li>
+                        <li>『マハン海上権力史論』アルフレッド・T・マハン</li>
+                        <li>『恐怖の地政学』ティム・マーシャル</li>
+                    </ul>
+                </div>
+                <div class="eh-books-f">
+                    <h3>哲学史</h3>
+                    <ul>
+                        <li>『西洋哲学史』バートランド・ラッセル</li>
+                        <li>『西洋哲学史』熊野純彦</li>
+                    </ul>
+                </div>
+                <div class="eh-books-f">
+                    <h3>美術史</h3>
+                    <ul>
+                        <li>『美術の物語』エルンスト・H・ゴンブリッチ</li>
+                        <li>『イメージ』ジョン・バージャー</li>
+                        <li>『名画を見る眼』高階秀爾</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- (h) この教材について -->
+        <section class="eh-sec" aria-labelledby="eh-about">
+            <h2 id="eh-about">この教材について</h2>
+            <p>この教材は独自に設計したもので、特定の教科書や講座に沿ったものではない。見方が分かれるところは、対立する見方を並べて示し、どちらかに結論を寄せない。現在進行形の国際問題は、事実として確かめられることと価値判断とを分けて書き、結論は読む人に委ねる。</p>
+        </section>
+    </main>
+    <div id="site-footer"><noscript><nav class="noscript-nav" aria-label="フッターナビゲーション"><a href="index.html">ホーム</a><a href="self-intro.html">自己紹介</a><a href="study.html">勉強の軌跡</a><a href="videos.html">動画</a><a href="blog.html">ブログ</a><a href="sns.html">各種SNS</a></nav></noscript></div>
+    <script src="../js/layout.js?v=r98"></script>
+    <script src="../js/main.js?v=r98"></script>
+    <script src="../js/starfield.js?v=r98"></script>
+</body>
+</html>
