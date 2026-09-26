@@ -52,7 +52,11 @@ def glen(g):
 
 
 # ---------- 川：同じ名前の区間をつなぎ、つながった塊ごとに長さを測る ----------
+# ★ 同じ川かどうかは OSM の `name` で決める（無ければ `name:ja`）。ラベルは、その塊の区間に入っている `name:ja`
+#   （無ければ `name`）。`name:ja` で束ねると、一部の区間にだけ日本語名が入った川が割れる（ライン川が「Rhein」
+#   「ライン川」の2本になった。§101.7）。名前そのものが区間で変わる川（信濃川と千曲川）は、`name` が違うので別のまま。
 by_name = defaultdict(list)
+ja_of = defaultdict(list)                      # key → [(区間, name:ja)]（日本語名が入っている区間だけ）
 n_river_ways = 0
 for f in read_seq('river.geojsonseq'):
     g = shape(f['geometry'])
@@ -61,7 +65,23 @@ for f in read_seq('river.geojsonseq'):
     n_river_ways += 1
     g = clip(g)
     if lines_of(g):
-        by_name[name_of(f['properties'])].append(g)
+        p = f['properties']
+        key = p.get('name') or p.get('name:ja') or None
+        by_name[key].append(g)
+        if key and p.get('name:ja'):
+            ja_of[key].append((g, p['name:ja']))
+
+
+def river_label(key, geom):
+    """塊のラベル：その塊に重なる区間の name:ja のうち、長さがいちばん長いもの。無ければ name"""
+    if not key or key not in ja_of:
+        return key
+    tally = defaultdict(float)
+    near = geom.buffer(1e-6)
+    for g, ja in ja_of[key]:
+        if near.intersects(g):
+            tally[ja] += glen(g)
+    return max(tally, key=tally.get) if tally else key
 
 rivers = []
 for nm, ls in by_name.items():
@@ -86,7 +106,8 @@ for nm, ls in by_name.items():
             cl[root(i)].append(p)
         clusters = list(cl.values())
     for c in clusters:
-        rivers.append({'name': nm, 'geom': MultiLineString(c), 'len_km': glen(MultiLineString(c)) / 1000})
+        mg = MultiLineString(c)
+        rivers.append({'name': river_label(nm, mg), 'key': nm, 'geom': mg, 'len_km': glen(mg) / 1000})
 rivers.sort(key=lambda r: -r['len_km'])
 river_top = rivers[:15]
 

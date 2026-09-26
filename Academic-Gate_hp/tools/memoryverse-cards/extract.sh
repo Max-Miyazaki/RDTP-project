@@ -21,14 +21,20 @@ for f in ne_10m_admin_0_countries ne_10m_admin_1_states_provinces ne_10m_populat
     https://raw.githubusercontent.com/nvkelso/natural-earth-vector/v5.1.2/geojson/$f.geojson
 done
 
-# --- Geofabrik の抽出（*-latest は日付つきのファイルへ転送されるので -L で追う）
+# --- Geofabrik の抽出。*-latest は日付つきのファイル（例 germany-260925.osm.pbf）へ転送される。
+# ★ *-latest の .md5 はミラーへ転送され、ミラーが1日古いことがある（ドイツで実際に起きた。§101.6）。
+#   そこで日付つきの名前を先に確かめ、そのファイルと、その名前の .md5 を Geofabrik から取って突き合わせる
 mkdir -p $WD/osm
 cd $WD/osm
 PBF=${GF:t}
 if [[ ! -s $PBF ]]; then
-  curl -fL -o $PBF https://download.geofabrik.de/$GF
-  curl -fsL -o $PBF.md5 https://download.geofabrik.de/$GF.md5
-  [[ "$(md5 -q $PBF 2>/dev/null || md5sum $PBF | cut -d' ' -f1)" == "$(cut -d' ' -f1 $PBF.md5)" ]] || { echo "MD5 が合わない: $PBF" >&2; exit 1; }
+  DIR=${GF:h}
+  DATED=$(curl -sI https://download.geofabrik.de/$GF | grep -i '^location' | sed 's#.*/##' | tr -d '\r')
+  [[ -n $DATED ]] || DATED=$PBF
+  curl -f -o $PBF https://download.geofabrik.de/$DIR/$DATED
+  curl -fs -o $PBF.md5 https://download.geofabrik.de/$DIR/$DATED.md5
+  [[ "$(md5 -q $PBF 2>/dev/null || md5sum $PBF | cut -d' ' -f1)" == "$(cut -d' ' -f1 $PBF.md5)" ]] || { echo "MD5 が合わない: $DATED" >&2; exit 1; }
+  echo $DATED > dated.txt
 fi
 # ファイルの日付（Geofabrik の抽出の時刻）はここに残り、カードの出典に書かれる
 osmium fileinfo -e -j $PBF > fileinfo.json

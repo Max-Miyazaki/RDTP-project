@@ -12,6 +12,7 @@
 
 - `image/memoryverse/cards/<国>.svg`（図が2枚以上の国は `<国>-<図>.svg`。例：`jpn-main.svg`・`jpn-ryukyu.svg`）
 - `html/country/<国>.html`（**手で直さない**。直すなら `page_tpl.html` か `countries.py`）
+- `image/memoryverse/cards/r<回>-*.svg`：地域の記事のカード（`region.py`。いまは 3-1 の形・首都・拡大図）
 
 **入れないもの**：取ってきたデータと途中のファイル（`data/`、`*.osm.pbf`、`*.geojsonseq`）。サイズが大きいことと、
 OSM のデータベースそのものを配らないため（ODbL）。`.gitignore` に入っている。
@@ -55,8 +56,13 @@ zsh  tools/memoryverse-cards/extract.sh JPN          # 1) 取得（無ければ�
 - **本数で切る**のは、「主要な川」の長さが国によって違うため（日本で100km以上と決めるとチャドでは0本になる）
 - 「その国」は Natural Earth v5.1.2 の国境を0.1度広げた範囲（海上の橋・河口・国境の川のため）。国境は実効支配で
   描く（2-1 §08）ので、係争地ではその範囲に入らない地域の層2も描かれない
-- 名前は `name:ja`、無ければ `name`。名前の無いものは線だけ引く。川は**名前ごと**に数える（1本の川でも区間で名前が
-  変われば別。信濃川と千曲川、Chari と「Chari شاري」）
+- ラベルは `name:ja`、無ければ `name`。名前の無いものは線だけ引く
+- ★ **川は OSM の `name` ごとに数える**（無ければ `name:ja`）。区間で `name` そのものが変われば別（信濃川と千曲川、
+  Chari と「Chari شاري」）。同じ `name` の区間は、一部にだけ日本語名が入っていても1本（ライン川。ラベルはその塊の
+  `name:ja` のうち長さがいちばん長いもの）。同じ名前でも1km 以上途切れていれば別（ドイツのエルベ川が2回出る）。
+  `name` に2つの文字体系が並ぶ区間（「吉野川 (Yoshinogawa)」）も、`name` が違うので別に数える
+- 湖の面積は、国の形を約2km（0.02度）広げた範囲で測る。国境をまたぐ湖は隣の国の側の湖面も含む（レマン湖はフランスで347km²、
+  フランス側だけなら約234km²）。国境で切ると、同じ湖が国によって違う大きさになるので切らない
 - 0のものは埋めない。ボタンを薄くして「なし」、図には何も足さない
 - 層1・層3：都市は Natural Earth の人口（`POP_MAX`）の多い順に20。地方は Natural Earth の `region`
 
@@ -71,6 +77,27 @@ zsh  tools/memoryverse-cards/extract.sh JPN          # 1) 取得（無ければ�
 **図**：正距円筒図法。標準緯線は国の**本土**（面積がいちばん大きい陸のかたまり）の、面積で重みをつけた球面上の重心（`centroid.py`。海外領土や離島を含めると中心が本土から離れるため。日本は本州で北緯36.63度）。経度を cos φ₀ 倍に縮めたうえで
 1度 = 44px（どの国も同じ縮尺）。格子は1度・5度・30度（30度が 2-1 の升目）。
 
+## 地域のカード（`region.py`）
+
+地域の記事（3-1 など）に置く図。国のページと**同じ縮尺**（1度44px）で、標準緯線は地域の中心（本土の重心を丸めた値）。
+
+```sh
+.venv/bin/python tools/memoryverse-cards/region.py 3-1
+```
+
+- `r3-1-shape.svg`（形）・`r3-1-capitals.svg`（形＋首都）・`r3-1-zoom.svg`（点になる国の拡大図。枠ごとに「この図だけ○倍」）を
+  `image/memoryverse/cards/` に書き出す。記事は `js/country-card.js` で取りに行く
+- `data/r3-1-cmp.svg`（§06 の見比べる図）は**記事に直接埋め込む**（2-1 §07 の比較図と同じ扱い。色は記事の CSS 変数）ので、
+  作り直したら記事の `<figure class="fig fig-cmp">` の中身を差し替える
+- 地域の設定（範囲・国名ラベルの置き方・首都・拡大図）は `region.py` の `REGIONS`
+
+## 倍率を上げる国
+
+1度44pxで図の長いほうの辺が **100px 未満**になる国だけ、`countries.py` に `zoom`（倍率）・`fine`（細い格子の間隔、度）・
+`zoom_why`（上げた理由の一言）を書く。倍率は、長いほうの辺が 300〜700px に収まる 10・20・50・100・200倍のうち
+いちばん小さいもの（ルクセンブルク10・リヒテンシュタイン50・モナコ200）。図の右上とカードの注記に「この図だけ○倍」が出る。
+ベルギー（126px）・オランダ（145px）・スイス（157px）は小さいが形は読めるので上げない（地域のカードと同じ縮尺で並ぶことを優先）。
+
 ## 国を足す
 
 1. 標準緯線を出す：`.venv/bin/python tools/memoryverse-cards/centroid.py <ADM0_A3>`（本土の重心。例：`TCD` → `[15.28, 18.64]`）
@@ -80,5 +107,7 @@ zsh  tools/memoryverse-cards/extract.sh JPN          # 1) 取得（無ければ�
    - `name`・`description`（ページの `<title>` と説明）、`admin1_word`（「州」「県」など。ボタンの名前）
    - `regions`（Natural Earth の `region` を日本語に。無い国は `{}`）、`region_fill`（`region` が欠けている区分の補い）
    - `notes`（図の外の島・係争地の注記）、`src13`・`fig`（出典欄の文）
+   - `up_href`・`up_label`（戻る導線。属する地域の記事。まだ記事が無ければ省く＝一覧ページへ）
+   - 必要なら `zoom`・`fine`・`zoom_why`（上の「倍率を上げる国」）、`region_word`・`region_suffix`・`region_fs`（区分をまとめる単位の呼び名）
 3. `extract.sh` → `prep.py` → `draw.py` を走らせ、`data/<国>/stats.json` の数と `report.json` を見る
 4. ブラウザで `html/country/<国>.html` を開き、層の切り替え・0の表示・ラベルを確かめる

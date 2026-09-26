@@ -7,6 +7,7 @@ from shapely.geometry import shape, box, LineString, MultiLineString, Polygon, M
 from shapely.ops import unary_union, linemerge, polylabel
 from shapely import affinity, set_precision
 from prep_util import lines_of, polys_of, merge, label_name, first_script, clip_len, clip_tail
+from svgutil import fmt, rel, d_lines, d_polys
 from html import escape
 
 from countries import COUNTRIES, NE, SVG_DIR, PAGE_DIR, SITE
@@ -23,7 +24,13 @@ STATS = json.load(open(os.path.join(WD, 'stats.json')))
 
 PHI0 = C['phi0']
 K = math.cos(math.radians(PHI0))        # 日本 0.7941、チャド 0.9647
-S = 44.0                                 # 圧縮後 1度あたり 44px（どの国も同じ）
+ZOOM = C.get('zoom', 1)                  # 1度44pxのままでは図にならない国だけ倍率を上げる（図とカードに明記。§100.11）
+S = 44.0 * ZOOM                          # 圧縮後 1度あたり 44px（どの国も同じ。ZOOM の国だけその倍）
+FINE = C.get('fine')
+# 1級区分をまとめる単位の呼び名（日本は「地方」、フランスは「地域圏」）と、地図の上の書き方
+RWORD = C.get('region_word', '地方')
+RSUF = C.get('region_suffix', '地方')     # 名前の後ろに付ける語（日本「東北」＋「地方」）
+RFS, RLS = C.get('region_fs', 15), C.get('region_ls', 3)                     # 倍率を上げた国の細い格子の間隔（度）
 ML, MR, MT, MB = 46, 14, 26, 26          # 余白（緯度ラベル・経度ラベル・見出し）
 PANELS = C['panels']
 
@@ -110,35 +117,6 @@ class Panel:
         return self.proj(g).simplify(tol, preserve_topology=False)
 
 
-def fmt(v):
-    s = f'{v:.1f}'
-    return s[:-2] if s.endswith('.0') else s
-
-
-def rel(pts, close=False):
-    """点列を相対座標のパスにする（0.1px 単位に丸め、丸めで重なる点は落とす）。"""
-    q = [(round(x * 10), round(y * 10)) for x, y in pts]
-    q = [q[0]] + [b for a, b in zip(q, q[1:]) if a != b]
-    if len(q) < (3 if close else 2):
-        return ''
-    f = lambda v: fmt(v / 10)
-    out = f'M{f(q[0][0])} {f(q[0][1])}l' + ' '.join(f'{f(b[0] - a[0])} {f(b[1] - a[1])}' for a, b in zip(q, q[1:]))
-    return (out + 'z') if close else out
-
-
-def d_lines(g):
-    # 短い断片も落とさない（2px 未満を落とすと線全体の1〜2割が消え、途切れて見える。§100）
-    return ''.join(rel(l.coords) for l in lines_of(g))
-
-
-def d_polys(g):
-    out = []
-    for p in polys_of(g):
-        for ring in [p.exterior, *p.interiors]:
-            out.append(rel(list(ring.coords)[:-1], close=True))
-    return ''.join(out)
-
-
 def tw(text, fs):
     """文字幅の見積もり（全角 = fs、半角 = 0.62fs。欧文の太めの字に合わせて少し広めに見る）"""
     return sum(fs if ord(ch) > 0x2000 else fs * 0.62 for ch in text)
@@ -178,6 +156,17 @@ def label_text(el, x, y, text, fs, fill, anchor='middle', extra=''):
     el.append(f'<text x="{fmt(x)}" y="{fmt(y)}" font-size="{fs}" fill="{fill}" text-anchor="{anchor}"{extra}>{escape(text, quote=False)}</text>')
 
 
+NAMES_ALL, NAMES_PLACED = defaultdict(set), defaultdict(set)   # 図に入る区分・都市の名前と、置けた名前（図をまたいで1回）
+
+
+def scale_bar(pn):
+    """縮尺の棒：図の幅の3分の1に収まる長さ（100・50・20・10・5・2・1・0.5km から）。右下の角に置く"""
+    km_px = S / (math.pi * 6371.0088 / 180)                 # 1km が何 px か（南北。標準緯線上では東西も同じ）
+    km = next(k for k in (100, 50, 20, 10, 5, 2, 1, 0.5) if k * km_px <= min(120, pn.w / 3))
+    L = km * km_px
+    return km, L, ML + pn.w - 12 - L, MT + pn.h - 12
+
+
 def build(pn):
     E = []   # SVG 要素
     W, H = pn.W, pn.H
@@ -201,14 +190,31 @@ def build(pn):
     if g30:
         E.append(f'<path d="{"".join(g30)}" stroke="rgba(255,255,255,.42)" stroke-width="1.3" fill="none"/>')
     lab = []
-    for lon in range(math.ceil(pn.lon0), math.floor(pn.lon1) + 1):
-        if lon % 5 == 0:
+    if FINE:
+        # 倍率を上げた国：1度・5度の線はほとんど枠に入らないので、細い格子（FINE 度ごと）を引いてラベルもそれに付ける
+        d = max(0, -int(math.floor(math.log10(FINE) + 1e-9)))
+        gf = []
+        for i in range(math.ceil(pn.lon0 / FINE - 1e-9), math.floor(pn.lon1 / FINE + 1e-9) + 1):
+            lon = round(i * FINE, 6)
             x, _ = pn.xy(lon, 0)
-            label_text(lab, x, MT + pn.h + 15, (f'東経{lon}°' if lon >= 0 else f'西経{-lon}°'), 10, 'rgba(255,255,255,.55)', extra=' stroke="none"')
-    for lat in range(math.ceil(pn.lat0), math.floor(pn.lat1) + 1):
-        if lat % 5 == 0:
+            gf.append(f'M{fmt(x)} {MT}V{fmt(MT + pn.h)}')
+            if x < ML + pn.w - 22:
+                label_text(lab, x, MT + pn.h + 15, (f'東経{lon:.{d}f}°' if lon >= 0 else f'西経{-lon:.{d}f}°'), 9.5, 'rgba(255,255,255,.55)', extra=' stroke="none"')
+        for i in range(math.ceil(pn.lat0 / FINE - 1e-9), math.floor(pn.lat1 / FINE + 1e-9) + 1):
+            lat = round(i * FINE, 6)
             _, y = pn.xy(0, lat)
-            label_text(lab, ML - 5, y + 3.5, (f'北緯{lat}°' if lat >= 0 else f'南緯{-lat}°'), 10, 'rgba(255,255,255,.55)', 'end', ' stroke="none"')
+            gf.append(f'M{ML} {fmt(y)}H{fmt(ML + pn.w)}')
+            label_text(lab, ML - 5, y + 3.5, (f'北緯{lat:.{d}f}°' if lat >= 0 else f'南緯{-lat:.{d}f}°'), 9.5, 'rgba(255,255,255,.55)', 'end', ' stroke="none"')
+        E.insert(len(E) - (3 if g30 else 2), f'<path d="{"".join(gf)}" stroke="rgba(255,255,255,.07)" stroke-width=".6" stroke-dasharray="2 3" fill="none"/>')
+    else:
+        for lon in range(math.ceil(pn.lon0), math.floor(pn.lon1) + 1):
+            if lon % 5 == 0:
+                x, _ = pn.xy(lon, 0)
+                label_text(lab, x, MT + pn.h + 15, (f'東経{lon}°' if lon >= 0 else f'西経{-lon}°'), 10, 'rgba(255,255,255,.55)', extra=' stroke="none"')
+        for lat in range(math.ceil(pn.lat0), math.floor(pn.lat1) + 1):
+            if lat % 5 == 0:
+                _, y = pn.xy(0, lat)
+                label_text(lab, ML - 5, y + 3.5, (f'北緯{lat}°' if lat >= 0 else f'南緯{-lat}°'), 10, 'rgba(255,255,255,.55)', 'end', ' stroke="none"')
     E += lab
     E.append('</g>')
 
@@ -221,6 +227,9 @@ def build(pn):
     E.append('</g>')
 
     # ---- 層2：骨組み（OSM） ----
+    _, L_, x0_, y0_ = scale_bar(pn)
+    for grp in ('L2', 'L3'):                 # 縮尺の棒と「100 km」の文字の上にはラベルを置かない
+        pn.boxes[grp].append((x0_ - 3, y0_ - 18, x0_ + L_ + 3, y0_ + 3))
     items = []    # ラベル候補 (長さpx, 種類, 名前, 候補点の列)
     E.append('<g class="L2">')
     geoms = {'lake': [l['geom'] for l in P['lake_top']], 'river': [r['geom'] for r in P['river_top']]}
@@ -315,12 +324,15 @@ def build(pn):
             bx = x + dx - (w if an == 'end' else 0) if an != 'middle' else x
             if try_place(pn, 'L3', c['name'], 10, bx, y + dy, 'start' if an != 'middle' else 'middle'):
                 label_text(city, x + dx, y + dy, c['name'], 10, '#fff', an, ' font-weight="600"')
+                NAMES_PLACED['city'].add(c['name'])
                 break
+        NAMES_ALL['city'].add(c['name'])
     for p in PREF:
         gi = p['geom'].intersection(pn.bb)
         if gi.is_empty:
             continue
         big = max(polys_of(pn.proj(gi)), key=lambda q: q.area)
+        NAMES_ALL['prefname'].add(p['name'])    # 小さすぎて置かないものも「データにはある」に数える
         if big.area < 40:
             continue
         pt = polylabel(big, 0.3)
@@ -329,8 +341,8 @@ def build(pn):
             if try_place(pn, 'L3', p['name'], 9, pt.x + dx, pt.y + dy):
                 label_text(prefn, pt.x + dx, pt.y + dy, p['name'], 9, 'rgba(255,255,255,.8)')
                 pn.placed['prefname'] = pn.placed.get('prefname', 0) + 1
+                NAMES_PLACED['prefname'].add(p['name'])
                 break
-        pn.cand['prefname'] += 1
     # 地方名：都市・都道府県名を置いたあと、その地方の中の空いている所に置く
     for k, g in REGIONS.items():
         gi = g.intersection(pn.bb)
@@ -339,7 +351,7 @@ def build(pn):
         if HOME[k] != pn.key:          # 地方名は、その地方の面積をいちばん多く含む図にだけ置く
             continue
         big = max(polys_of(pn.proj(gi)), key=lambda p: p.area)
-        w = tw(k + '地方', 15) + 3 * 4
+        w = tw(k + RSUF, RFS) + RLS * len(k + RSUF)
         pl = polylabel(big, 0.5)
         best = None
         near = big.buffer(30)          # 中に空きが無ければ、すぐ外（海の上）にも置ける
@@ -357,9 +369,14 @@ def build(pn):
                 score = (hits, 0 if big.contains(pt) else 1, math.hypot(gx - pl.x, gy - pl.y))
                 if best is None or score < best[0]:
                     best = (score, gx, gy, bx)
+        NAMES_ALL['region'].add(k)
+        if best is None or best[0][0] > 0:   # 図の中に入る場所が無い、またはどこに置いても重なる（小さい図に長い名前）——置かずに数える
+            pn.placed['region_skipped'] = pn.placed.get('region_skipped', 0) + 1
+            continue
         _, gx, gy, bx = best
         pn.boxes['L3'].append(bx)
-        reg.append(f'<text x="{fmt(gx)}" y="{fmt(gy)}" font-size="15" font-weight="700" fill="rgba(255,255,255,.34)" text-anchor="middle" letter-spacing="3" stroke="none">{k}地方</text>')
+        NAMES_PLACED['region'].add(k)
+        reg.append(f'<text x="{fmt(gx)}" y="{fmt(gy)}" font-size="{RFS}" font-weight="700" fill="rgba(255,255,255,.34)" text-anchor="middle" letter-spacing="{RLS}" stroke="none">{k}{RSUF}</text>')
     E.append('<g class="k-region">' + ''.join(reg) + '</g>')
     E.append('</g>')
 
@@ -371,10 +388,11 @@ def build(pn):
     # 枠・見出し・縮尺
     E.append(f'<rect x="{ML}" y="{MT}" width="{fmt(pn.w)}" height="{fmt(pn.h)}" fill="none" stroke="rgba(255,255,255,.3)" stroke-width="1"/>')
     E.append(f'<text x="{ML}" y="{MT - 9}" font-size="12" fill="#fff" font-weight="600" stroke="none">{pn.title}</text>')
-    km100 = 100 / (math.pi * 6371.0088 / 180) * S          # 南北100km（標準緯線上では東西も同じ）
-    x0, y0 = ML + pn.w - 12 - km100, MT + pn.h - 12
-    E.append(f'<path d="M{fmt(x0)} {fmt(y0 - 4)}V{fmt(y0)}H{fmt(x0 + km100)}V{fmt(y0 - 4)}" fill="none" stroke="rgba(255,255,255,.7)" stroke-width="1.2"/>')
-    E.append(f'<text x="{fmt(x0 + km100 / 2)}" y="{fmt(y0 - 7)}" font-size="9.5" fill="rgba(255,255,255,.75)" text-anchor="middle">100 km</text>')
+    if ZOOM != 1:
+        E.append(f'<text x="{fmt(ML + pn.w)}" y="{MT - 9}" font-size="11" fill="#ffd166" font-weight="600" text-anchor="end" stroke="none">この図だけ {ZOOM}倍（1度＝{int(S):,}px）</text>')
+    km, L, x0, y0 = scale_bar(pn)
+    E.append(f'<path d="M{fmt(x0)} {fmt(y0 - 4)}V{fmt(y0)}H{fmt(x0 + L)}V{fmt(y0 - 4)}" fill="none" stroke="rgba(255,255,255,.7)" stroke-width="1.2"/>')
+    E.append(f'<text x="{fmt(x0 + L / 2)}" y="{fmt(y0 - 7)}" font-size="9.5" fill="rgba(255,255,255,.75)" text-anchor="middle">{km:g} km</text>')
     E.append('</svg>')
     return '\n'.join(E)
 
@@ -409,7 +427,7 @@ SUBS = [('L2', 'river', '川', 'border-color:#5fd0ff', ''), ('L2', 'lake', '湖'
         ('L2', 'motorway', '高速道路', 'border-color:#ffb46b', ''), ('L2', 'trunk', '主要幹線', 'border-color:#a7784a;border-top-width:1px', ''),
         ('L2', 'hsr', '高速鉄道', 'border-color:#8fe3c9;border-top-width:3px', ' dash'), ('L2', 'main', '主要鉄道', 'border-color:#8fe3c9;border-top-width:1px', ' dash'),
         None,
-        ('L3', 'region', '地方', '', ''), ('L3', 'prefname', C['admin1_word'] + '名', '', ''), ('L3', 'city', '都市', '', '')]
+        ('L3', 'region', RWORD, '', ''), ('L3', 'prefname', C['admin1_word'] + '名', '', ''), ('L3', 'city', '都市', '', '')]
 btn = []
 for sb in SUBS:
     if sb is None:
@@ -421,7 +439,7 @@ for sb in SUBS:
         btn.append(f'<button class="cc-sub cc-zero" data-layer="{L}" data-k="{k}" aria-pressed="false" disabled title="この国のデータに無い">{swh}{lab}<em>なし</em></button>')
     else:
         btn.append(f'<button class="cc-sub" data-layer="{L}" data-k="{k}" aria-pressed="true">{swh}{lab}</button>')
-NAMES = {'river': '川', 'lake': '湖', 'motorway': '高速道路', 'trunk': '主要幹線', 'hsr': '高速鉄道', 'main': '主要鉄道', 'region': '地方', 'prefname': C['admin1_word'] + '名', 'city': '都市'}
+NAMES = {'river': '川', 'lake': '湖', 'motorway': '高速道路', 'trunk': '主要幹線', 'hsr': '高速鉄道', 'main': '主要鉄道', 'region': RWORD, 'prefname': C['admin1_word'] + '名', 'city': '都市'}
 zeros = [NAMES[k] for k in COUNT if COUNT[k] == 0]
 zero_html = (f'<p class="cc-zeros">この国のデータに<b>無いもの</b>：{"・".join(zeros)}（0なので線も名前も描いていない）</p>') if zeros else ''
 # 図は枠だけを書き、SVG は js/country-card.js がカードを開いたときに取りに行く（§100）。
@@ -432,7 +450,23 @@ figs = ''.join(
     f'<p class="cc-status">地図を読み込み中…</p><p class="cc-fallback">地図を読み込めませんでした</p></div></div>'
     for k, pn in svgs.items())
 notes = ''.join(f'<p class="cc-note">{n}</p>' for n in C['notes'])
-notes += f'<p class="cc-note">{"2枚は同じ縮尺" if len(PANELS) > 1 else "縮尺"}（経度を cos {PHI0}° = {K:.4f} 倍に縮めたうえで、1度 = 44px。どの国も同じ）。細い格子は1度、中くらいは5度、太い線は30度（2-1 の升目）。</p>'
+# 入りきらずに置かなかったラベル（データにはある）。「なし」（データに無い）と混ざらないよう書き分ける
+tot = lambda k: len(NAMES_ALL[k])
+got = lambda k: len(NAMES_PLACED[k] & NAMES_ALL[k])
+miss = [(lab, tot(k), got(k)) for k, lab in (('region', RWORD + '名'), ('prefname', C['admin1_word'] + '名'), ('city', '都市名'))
+        if tot(k) and got(k) < tot(k)]
+l2 = sum(pn.cand.get(k, 0) for pn in svgs.values() for k in ('river', 'lake', 'motorway', 'trunk', 'hsr', 'main'))
+l2got = sum(pn.placed.get(k, 0) for pn in svgs.values() for k in ('river', 'lake', 'motorway', 'trunk', 'hsr', 'main'))
+if miss or l2got < l2:
+    parts = '、'.join(f'{lab}は{t}のうち{g}' for lab, t, g in miss)
+    notes += ('<p class="cc-note"><b>この縮尺で入りきらないラベルは置いていない。データには全部ある</b>'
+              + (f'（層3：{parts}を表示）' if parts else '')
+              + '。層2の川・湖・道路・鉄道の名前も、動かないものから長い順に置き、重なるものは飛ばしている。'
+              + 'ボタンの<b>「なし」はデータに無いもの</b>で、これとは別。</p>')
+if ZOOM == 1:
+    notes += f'<p class="cc-note">{"2枚は同じ縮尺" if len(PANELS) > 1 else "縮尺"}（経度を cos {PHI0}° = {K:.4f} 倍に縮めたうえで、1度 = 44px。どの国も同じ）。細い格子は1度、中くらいは5度、太い線は30度（2-1 の升目）。</p>'
+else:
+    notes += f'<p class="cc-note"><b>この国の図だけ {ZOOM}倍</b>（経度を cos {PHI0}° = {K:.4f} 倍に縮めたうえで、1度 = {int(S):,}px。ほかの国のページは1度 = 44px）。1度44pxのままだと国が{C["zoom_why"]}になり、形が読めないため。点線の格子は{FINE:g}度ごと。</p>'
 html = open(os.path.join(D, 'page_tpl.html')).read()
 for a_, b_ in {'{{NAME}}': C['name'], '{{DESCRIPTION}}': C['description'], '{{CC}}': CC.lower(), '{{VER}}': VER,
                '{{UP_HREF}}': C.get('up_href', 'memoryverse.html'), '{{UP_LABEL}}': C.get('up_label', 'メモリーバース'),
