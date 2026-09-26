@@ -91,6 +91,19 @@ zsh  tools/memoryverse-cards/extract.sh JPN          # 1) 取得（無ければ�
   作り直したら記事の `<figure class="fig fig-cmp">` の中身を差し替える
 - 地域の設定（範囲・国名ラベルの置き方・首都・拡大図）は `region.py` の `REGIONS`
 
+## 全球のカード（`earth.py`）
+
+2章の記事（2-2 など）に置く全球の図。**枠は 2-1 と同じ全球の正距円筒図法**（左端が西経180度、横2・縦1）で、2-1 の30度の升目がそのまま重なる。
+
+```sh
+.venv/bin/python tools/memoryverse-cards/earth.py 2-2
+```
+
+- データは `data/earth/` に置く（リポジトリには入れない）：PB2002 の GeoJSON（fraxen/tectonicplates）と `PB2002_steps.dat`、
+  Natural Earth（ne_10m_geography_regions_polys・ne_50m_land）、USGS の地震の CSV、GVP の完新世の火山の CSV
+- ★ **GVP の火山のデータは非商業限定・引用必須**（DESIGN.md §102.1）。広告を入れるときは見直す
+- 境界は `PB2002_steps.dat` の7分類を3つ（広がる・沈み込む・すれ違う）にまとめて色分けする。「:」「*」は分類ではない印（§102.2）
+
 ## 倍率を上げる国
 
 1度44pxで図の長いほうの辺が **100px 未満**になる国だけ、`countries.py` に `zoom`（倍率）・`fine`（細い格子の間隔、度）・

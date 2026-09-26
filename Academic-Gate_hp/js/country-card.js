@@ -20,6 +20,8 @@
         // 層のボタン：層と中身を一緒に切り替える（中身が個別に消えたままだと、層だけ点けても何も出ないため）。
         // 0のもの（disabled）は点けない。
         lays.forEach(function (b) {
+            // 押せない層のボタン（取得待ちなど）は切り替えない。層は消えたまま（render で off-* が付く）
+            if (b.disabled) return;
             b.addEventListener('click', function () {
                 var v = !on(b);
                 set(b, v);

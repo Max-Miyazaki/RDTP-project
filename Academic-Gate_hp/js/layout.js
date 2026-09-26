@@ -88,6 +88,8 @@
         'memoryverse:ch2': { label: '2章 地球',                                    parent: 'memoryverse' },
         'memoryverse_2-1': { label: '2-1',          href: 'memoryverse_2-1.html',  parent: 'memoryverse:ch2',
                              title: '2-1　地球の骨格' },
+        'memoryverse_2-2': { label: '2-2',          href: 'memoryverse_2-2.html',  parent: 'memoryverse:ch2',
+                             title: '2-2　プレートと大地形' },
         // 3章は地域の記事だけを登録する。国のページ（html/country/）は登録しない——約200枚で木が使えなくなるため。
         // 国のページへは記事から入り、国のページは記事へ戻る1本の導線を持つ（DESIGN.md §100.2）。
         'memoryverse:ch3': { label: '3章 各地域',                                  parent: 'memoryverse' },
