@@ -104,6 +104,24 @@ zsh  tools/memoryverse-cards/extract.sh JPN          # 1) 取得（無ければ�
 - ★ **GVP の火山のデータは非商業限定・引用必須**（DESIGN.md §102.1）。広告を入れるときは見直す
 - 境界は `PB2002_steps.dat` の7分類を3つ（広がる・沈み込む・すれ違う）にまとめて色分けする。「:」「*」は分類ではない印（§102.2）
 
+## 気候と海流のカード（`climate.py`）
+
+2-3 の全球のカード5枚（`e2-3-*.svg`）と、§05 に埋め込む図（`data/e2-3-profile.svg`）、記事の数値（`data/e2-3-numbers.json`）を作る。
+枠は `earth.py` と同じ（`head`・`grid`・`land_base` をそのまま使う）。設計の理由は `DESIGN.md` §104。
+
+```sh
+.venv/bin/python tools/memoryverse-cards/climate.py
+```
+
+- データは `data/earth/` に置く（リポジトリには入れない）：
+  - `cru/cru_ts4.09.{1991.2000,2001.2010,2011.2020}.{tmp,pre}.dat.nc`——CRU TS 4.09（crudata.uea.ac.uk。`.gz` を展開。OGL v3）。
+    サーバーが途中で切ることが多いので `curl -C -` で続きを取る
+  - `gdp_annual_v3.10.nc`——ERDDAP の `drifter_annualmeans.nc?U[][],V[][],N[][],eU[][],eV[][]`（版3.10、CC BY 4.0）
+  - `etopo2022_60s_every5.npy`——無ければ `climate.py` が NCEI の OPeNDAP から ETOPO 2022 60秒を5つおきに取って作る（CC0）
+  - Natural Earth：`ne_50m_land`・`ne_10m_geography_regions_polys`・`ne_10m_geography_marine_polys`、演習2の表に `../ne/ne_10m_admin_0_countries`
+- 帯の境目は計算して、記事の値（北 15.5・32・45.5・64、南 18.5・34）と一致することを assert で確かめる。データを取り直して境目が変わったら、記事と `CUTS_N`・`CUTS_S` を直す
+- 外れる場所の呼び名は `NAMES`（本教材が付けたもの）。新しいかたまりが出て名前が無いと、図に名前が出ない
+
 ## 倍率を上げる国
 
 1度44pxで図の長いほうの辺が **100px 未満**になる国だけ、`countries.py` に `zoom`（倍率）・`fine`（細い格子の間隔、度）・
