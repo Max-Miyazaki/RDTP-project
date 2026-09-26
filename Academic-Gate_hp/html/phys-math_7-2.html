@@ -337,7 +337,7 @@ mjx-container[display="true"]{margin:14px 0!important;overflow-x:auto;overflow-y
       <p style="margin-top:10px"><strong>\(r\) の積分</strong>：</p>
       \[ \begin{aligned}\int_0^1 r^3\,dr&=\Big[\frac{r^4}{4}\Big]_0^1\\&=\frac14\end{aligned} \]
       <p style="margin-top:10px"><strong>\(\theta\) の積分</strong>：\(u=\sin\theta\) と置くと、\(du=\cos\theta\,d\theta\) です。\(\theta\) が \(0\) から \(\frac{\pi}{2}\) まで動くとき、\(u\) は \(0\) から \(1\) まで動くので</p>
-      \[ \int_0^{\frac{\pi}{2}}\sin\theta\cos\theta\,d\theta=\int_0^1u\,du \]
+      \[ \begin{aligned}&\int_0^{\frac{\pi}{2}}\sin\theta\cos\theta\,d\theta\\&=\int_0^1u\,du\end{aligned} \]
       \[ \begin{aligned}\int_0^1u\,du&=\Big[\frac{u^2}{2}\Big]_0^1\\&=\frac12\end{aligned} \]
       <p style="margin-top:10px"><strong>まとめる</strong>：2つの積なので</p>
       \[ \frac14\times\frac12=\frac18 \]
@@ -417,8 +417,7 @@ mjx-container[display="true"]{margin:14px 0!important;overflow-x:auto;overflow-y
       <div class="sol">
         <div class="step"><div class="sh"><span class="sn">1</span>4つの偏微分</div>
         <div class="why">なぜ：ヤコビアンの材料です。止める変数に注意します。</div>
-        \[ \frac{\partial x}{\partial r}=\cos\theta,\qquad \frac{\partial y}{\partial r}=\sin\theta \]
-        \[ \frac{\partial x}{\partial\theta}={-}r\sin\theta,\qquad \frac{\partial y}{\partial\theta}=r\cos\theta \]
+        \[ \begin{aligned}\frac{\partial x}{\partial r}&=\cos\theta\\\frac{\partial y}{\partial r}&=\sin\theta\\\frac{\partial x}{\partial\theta}&={-}r\sin\theta\\\frac{\partial y}{\partial\theta}&=r\cos\theta\end{aligned} \]
         </div>
         <div class="step"><div class="sh"><span class="sn">2</span>たすき掛けして引く</div>
         <div class="why">なぜ：\(J=\dfrac{\partial x}{\partial r}\dfrac{\partial y}{\partial\theta}-\dfrac{\partial x}{\partial\theta}\dfrac{\partial y}{\partial r}\) です。</div>
@@ -539,7 +538,7 @@ mjx-container[display="true"]{margin:14px 0!important;overflow-x:auto;overflow-y
         </div>
         <div class="step"><div class="sh"><span class="sn">2</span>中身を展開する</div>
         <div class="why">なぜ：\(\rho\,r^2=\rho_0\Big(r^2-\dfrac{r^3}{R}\Big)\) と、項ごとに積分できる形にします。</div>
-        \[ \int_0^R\Big(r^2-\frac{r^3}{R}\Big)dr=\frac{R^3}{3}-\frac{R^3}{4} \]
+        \[ \begin{aligned}&\int_0^R\Big(r^2-\frac{r^3}{R}\Big)dr\\&=\frac{R^3}{3}-\frac{R^3}{4}\end{aligned} \]
         <p style="margin:4px 0">これは \(\dfrac{R^3}{12}\) です。</p>
         </div>
         <div class="step"><div class="sh"><span class="sn">3</span>まとめる</div>
