@@ -278,6 +278,13 @@ def currents():
     tot = AREA[ocean].sum()
     gaps = {'no_obs_pct': round(float(AREA[A].sum() / tot * 100), 1), 'no_obs_km2': int(AREA[A].sum()),
             'slow_pct': round(float(AREA[B].sum() / tot * 100), 1), 'lines_pct': round(float(AREA[ocean & ~A & ~B].sum() / tot * 100), 1)}
+    def near(a, o, r=1.0):
+        ii = np.abs(la - a) <= r; jj = np.abs(lo - o) <= r; n = N[np.ix_(ii, jj)] >= 5
+        if n.sum() < 3: return None
+        u = float(np.nanmean(U[np.ix_(ii, jj)][n])); v = float(np.nanmean(V[np.ix_(ii, jj)][n]))
+        return [round(math.hypot(u, v), 2), round((math.degrees(math.atan2(u, v)) + 360) % 360)]
+    gaps['west_europe'] = {nm: near(a, o) for nm, a, o in [('大西洋のまんなか', 51, -32), ('アイルランドの西', 53, -15), ('フェロー諸島〜シェトランド', 61, -3),
+                                                          ('ノルウェーの沖', 64, 4), ('ビスケー湾', 46, -6), ('イギリス海峡の入口', 49, -7), ('北海', 54, 4)]}
     return lines, labels, A, gaps
 
 
@@ -658,6 +665,25 @@ def main():
             NUM['tropics']['N' if la > 0 else 'S'] = sorted([(nm, round(float(np.median([a for a, b, c in v]))), max(set(b for a, b, c in v), key=[b for a, b, c in v].count), round(float(np.mean([c for a, b, c in v])), 1)) for nm, v in rowres.items()], key=lambda r: r[3])
     # 食い違う場所（0.5度）
     C['mismatch_geom'] = cells_geom(list(zip(*np.where(mism)))).intersection(LAND_S)
+    # 3-1 西ヨーロッパ（§105）：9か国のヨーロッパの陸だけで、帯・+7.3℃の場所・ケッペンの食い違い
+    Cn = json.load(open(os.path.join(E_, '..', 'ne', 'ne_10m_admin_0_countries.geojson')))['features']
+    EU = box(-25, 35, 45, 72)
+    nw = set(x for r in C['T_low_warm'] if r['name'] == '北西ヨーロッパ' for x in r['cells'])
+    r31 = {'countries': {}}; allc = []
+    for nm in ['フランス', 'ベルギー', 'オランダ', 'ルクセンブルク', 'モナコ', 'スイス', 'リヒテンシュタイン', 'ドイツ', 'オーストリア']:
+        g = shape([x for x in Cn if x['properties'].get('NAME_JA') == nm][0]['geometry']).intersection(EU)
+        cells = [(i, j) for i in range(NY) for j in range(NX) if land[i, j] and g.contains(Point(LON[j], LAT[i]))]
+        if not cells: r31['countries'][nm] = None; continue
+        allc += cells; w = np.array([AREA[x] for x in cells]); f = lambda m: round(float(w[np.array(m)].sum() / w.sum() * 100), 1)
+        r31['countries'][nm] = {'cells': len(cells), 'warm': f([x in nw for x in cells]), 'mismatch': f([bool(mism[x]) for x in cells]),
+                                'band': {names[b][1]: f([band[x] == b for x in cells]) for b in sorted(set(band[x] for x in cells))},
+                                'koppen': {k: f([K[x] == k for x in cells]) for k in 'ABCDE' if any(K[x] == k for x in cells)}}
+    w = np.array([AREA[x] for x in allc]); f = lambda m: round(float(w[np.array(m)].sum() / w.sum() * 100), 1)
+    inn = [x in nw for x in allc]
+    r31['all7'] = {'cells': len(allc), 'mismatch': f([bool(mism[x]) for x in allc]), 'band': {names[b][1]: f([band[x] == b for x in allc]) for b in sorted(set(band[x] for x in allc))},
+                   'mismatch_in_warm': round(float(sum(AREA[x] for x, i in zip(allc, inn) if i and mism[x]) / sum(AREA[x] for x, i in zip(allc, inn) if i) * 100), 1),
+                   'mismatch_out_warm': round(float(sum(AREA[x] for x, i in zip(allc, inn) if not i and mism[x]) / sum(AREA[x] for x, i in zip(allc, inn) if not i) * 100), 1)}
+    NUM['r3-1'] = r31
     # 海流
     lines, labels, gapA, gaps = currents()
     C['lines'] = lines; C['labels'] = labels; C['gapA'] = gapA
