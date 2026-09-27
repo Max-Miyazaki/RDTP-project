@@ -303,6 +303,7 @@ def build(pn):
     pn.tails = sorted(tails)
     pn.placed = dict(placed)
     pn.cand = defaultdict(int)
+    pn.prefout = []
     for _, k, _, _ in items:
         pn.cand[k] += 1
 
@@ -323,7 +324,7 @@ def build(pn):
         for (dx, dy, an) in ((6, 3.5, 'start'), (-6, 3.5, 'end'), (0, -7, 'middle'), (0, 14, 'middle')):
             bx = x + dx - (w if an == 'end' else 0) if an != 'middle' else x
             if try_place(pn, 'L3', c['name'], 10, bx, y + dy, 'start' if an != 'middle' else 'middle'):
-                label_text(city, x + dx, y + dy, c['name'], 10, '#fff', an, ' font-weight="600"')
+                label_text(city, x + dx, y + dy, c['name'], 10, '#fff', an, f' font-weight="600" data-ax="{fmt(x)}" data-ay="{fmt(y)}"')   # 拡大表示で点を中心に縮め戻す
                 NAMES_PLACED['city'].add(c['name'])
                 break
         NAMES_ALL['city'].add(c['name'])
@@ -340,6 +341,15 @@ def build(pn):
         for dx, dy in ((0, 3), (0, 13), (0, -7), (w * .6, 3), (-w * .6, 3), (w * .6, 13), (-w * .6, -7), (0, 23), (0, -17)):
             if try_place(pn, 'L3', p['name'], 9, pt.x + dx, pt.y + dy):
                 label_text(prefn, pt.x + dx, pt.y + dy, p['name'], 9, 'rgba(255,255,255,.8)')
+                bx = pn.boxes['L3'][-1]      # 名前の箱のうち、自分の区分の中にある割合（はみ出しの確認用、report.json に出す）
+                own = pn.proj(gi)
+                inside = own.intersection(box(*bx)).area / ((bx[2] - bx[0]) * (bx[3] - bx[1]))
+                if inside < .999:
+                    # 拡大表示では名前が縮め戻る（country-card.css の scale(var(--inv))、中心は横 50%・縦 70%）。何倍で中に収まるか
+                    ox, oy = (bx[0] + bx[2]) / 2, bx[1] + .7 * (bx[3] - bx[1])
+                    zfit = next((zz for zz in (1.5, 2, 3, 4, 6, 8, 12, 16)
+                                 if own.contains(affinity.scale(box(*bx), 1 / zz, 1 / zz, origin=(ox, oy)))), None)
+                    pn.prefout.append((p['name'], round(inside * 100), zfit))
                 pn.placed['prefname'] = pn.placed.get('prefname', 0) + 1
                 NAMES_PLACED['prefname'].add(p['name'])
                 break
@@ -411,7 +421,8 @@ for key in PANELS:
     open(fn, 'w').write(s)
     svgs[key] = pn
     report[key] = {'file': os.path.relpath(fn, SITE), 'size_kb': round(os.path.getsize(fn) / 1024, 1), 'W': round(pn.W), 'H': round(pn.H),
-                   'labels_placed': pn.placed, 'dup_rounds': pn.dups, 'tail_cut': pn.tails, 'label_candidates': dict(pn.cand)}
+                   'labels_placed': pn.placed, 'dup_rounds': pn.dups, 'tail_cut': pn.tails, 'label_candidates': dict(pn.cand),
+                   'prefname_outside': sorted(pn.prefout, key=lambda t: t[1])}
 print(json.dumps(report, ensure_ascii=False, indent=1))
 json.dump(report, open(os.path.join(WD, 'report.json'), 'w'), ensure_ascii=False, indent=1)
 
@@ -445,7 +456,7 @@ zero_html = (f'<p class="cc-zeros">この国のデータに<b>無いもの</b>�
 # 図は枠だけを書き、SVG は js/country-card.js がカードを開いたときに取りに行く（§100）。
 # 枠の縦横比を先に決めておくので、届くまでのあいだ下の段落が跳ねない。
 figs = ''.join(
-    f'<div class="cc-scroll"><div class="cc-fig" style="--w:{round(pn.W)};--h:{round(pn.H)}" '
+    f'<div class="cc-scroll"><div class="cc-fig" style="--w:{round(pn.W)};--h:{round(pn.H)}" data-deg="{S:g}" '
     f'data-src="../image/memoryverse/cards/{svg_name(k)}?v={VER}">'
     f'<p class="cc-status">地図を読み込み中…</p><p class="cc-fallback">地図を読み込めませんでした</p></div></div>'
     for k, pn in svgs.items())
@@ -470,6 +481,12 @@ if miss or l2got < l2:
               + (f'（層3：{parts}を表示）' if parts else '')
               + '。層2の川・湖・道路・鉄道の名前も、動かないものから長い順に置き、重なるものは飛ばしている。'
               + 'ボタンの<b>「なし」はデータに無いもの</b>で、これとは別。</p>')
+# 拡大表示の中にも「入りきらないラベルは入っていない」を出す（拡大しても出てこないので、これで全部だと誤解されないように。DESIGN.md §108）
+full_note = ''
+if miss or l2got < l2:
+    parts = '、'.join(f'{lab}は{t}のうち{g}' for lab, t, g in miss)
+    full_note = ('<p class="cc-full-attr cc-full-omit"><b>拡大しても、ラベルは増えない</b>：この地図には、1度' + f'{int(S):,}' + 'pxの縮尺で入りきらなかったラベルは入っていない'
+                 + (f'（層3：{parts}）' if parts else '') + '。データには全部ある。</p>')
 if ZOOM == 1:
     notes += f'<p class="cc-note">{"2枚は同じ縮尺" if len(PANELS) > 1 else "縮尺"}（経度を cos {PHI0}° = {K:.4f} 倍に縮めたうえで、1度 = 44px。どの国も同じ）。細い格子は1度、中くらいは5度、太い線は30度（2-1 の升目）。</p>'
 else:
@@ -477,7 +494,7 @@ else:
 html = open(os.path.join(D, 'page_tpl.html')).read()
 for a_, b_ in {'{{NAME}}': C['name'], '{{DESCRIPTION}}': C['description'], '{{CC}}': CC.lower(), '{{VER}}': VER,
                '{{UP_HREF}}': C.get('up_href', 'memoryverse.html'), '{{UP_LABEL}}': C.get('up_label', 'メモリーバース'),
-               '{{BUTTONS}}': ''.join(btn), '{{ZEROS}}': zero_html, '{{FIGS}}': figs, '{{NOTES}}': notes,
+               '{{BUTTONS}}': ''.join(btn), '{{ZEROS}}': zero_html, '{{FIGS}}': figs, '{{NOTES}}': notes, '{{FULL_NOTE}}': full_note,
                '{{SRC13}}': C['src13'], '{{PBF}}': C['geofabrik'].split('/')[-1], '{{OSM_TS}}': ts, '{{PHI0}}': f'{PHI0}', '{{FIG}}': C['fig']}.items():
     html = html.replace(a_, b_)
 assert '{{' not in html, re.findall(r'\{\{\w+\}\}', html)

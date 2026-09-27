@@ -160,3 +160,26 @@ body.cc-full-open main { z-index: 2001; }
 }
 .cc-card.is-full .cc-full-attr a { color: inherit; }
 
+/* --- 拡大表示の中の拡大・移動（country-card.js の zoomable。DESIGN.md §108）------------------------ */
+.cc-zoombar, .cc-zoomscale { display: none; }
+.cc-card.is-full .cc-fig { user-select: none; -webkit-user-select: none; }
+.cc-card.is-full .cc-fig > svg { cursor: grab; }
+.cc-card.is-full .cc-fig > svg:active { cursor: grabbing; }
+.cc-card.is-full .cc-zoombar {
+    display: flex; gap: 4px; position: absolute; top: 6px; right: 6px; z-index: 2;
+}
+.cc-card.is-full .cc-zoombar button { padding: 2px 11px; font-size: 13px; background: rgba(5, 8, 13, .82); }
+.cc-card.is-full .cc-zoomscale {
+    display: block; position: absolute; left: 6px; bottom: 6px; z-index: 2;
+    font-size: 11.5px; padding: 2px 8px; border-radius: 6px;
+    color: var(--ink-soft, var(--text-secondary)); background: rgba(5, 8, 13, .82);
+}
+/* ラベルを逆に縮めて、画面の上の大きさを保つ（--inv = 1/倍率）。縮める中心は text-anchor の端（既定は start） */
+.cc-card.is-full svg text { transform-box: fill-box; transform-origin: 0% 70%; transform: scale(var(--inv, 1)); }
+.cc-card.is-full svg text[text-anchor="middle"] { transform-origin: 50% 70%; }
+.cc-card.is-full svg text[text-anchor="end"] { transform-origin: 100% 70%; }
+/* 線の太さと点の大きさも、画面の上で保つ（拡大で道路や鉄道が太い帯に、都市の点が大きな円になるのを防ぐ）。面の塗りは地図と一緒に大きくなる */
+.cc-card.is-full svg path, .cc-card.is-full svg line, .cc-card.is-full svg polyline, .cc-card.is-full svg rect { vector-effect: non-scaling-stroke; }
+.cc-card.is-full svg circle { transform-box: fill-box; transform-origin: center; transform: scale(var(--inv, 1)); }
+.cc-card.is-full .cc-full-omit { max-width: 60em; margin: 8px auto 0; }
+
