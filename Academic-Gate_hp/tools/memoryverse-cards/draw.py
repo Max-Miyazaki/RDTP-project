@@ -156,6 +156,120 @@ def label_text(el, x, y, text, fs, fill, anchor='middle', extra=''):
     el.append(f'<text x="{fmt(x)}" y="{fmt(y)}" font-size="{fs}" fill="{fill}" text-anchor="{anchor}"{extra}>{escape(text, quote=False)}</text>')
 
 
+# ---------------- 県名の引き出し線 ----------------
+# 名前は、箱のうち区分の中の点（polylabel）にいちばん近い所を中心に縮め戻す（拡大表示、data-ax/ay）。
+# その中心が自分の区分の外にある名前は、どこまで拡大しても隣の区分の上に残る。そういう名前だけを置き直す：
+# まず区分の中に中心が来る位置を探し、無ければ区分の外に置いて、区分の中の点へ引き出し線を引く（3-1 のモナコ・リヒテンシュタインと同じ線）
+LEAD = 'stroke="rgba(255,255,255,.55)" stroke-width=".8" fill="none"'
+
+
+def best_anchor(own, bx, pt):
+    """縮め戻す中心の候補（箱の字の並びの線の上 9点と、区分の中の点に最も近い所）から、いちばん小さい倍率で区分の中に収まるもの"""
+    yl = bx[1] + .7 * (bx[3] - bx[1])
+    cands = [(min(max(pt.x, bx[0]), bx[2]), min(max(pt.y, bx[1]), bx[3]))] + [(bx[0] + (bx[2] - bx[0]) * k / 8, yl) for k in (4, 3, 5, 2, 6, 1, 7, 0, 8)]
+    best = None
+    for ax, ay in cands:
+        z = zfit_of(own, bx, ax, ay)
+        if z is not None and (best is None or z < best[0]):
+            best = (z, ax, ay)
+    return best
+
+
+def zfit_of(own, bx, ax, ay):
+    return next((zz for zz in (1, 1.5, 2, 3, 4, 6, 8, 12, 16)
+                 if own.contains(affinity.scale(box(*bx), 1 / zz, 1 / zz, origin=(ax, ay)))), None)
+
+
+def lead_ends(own, bx, pt):
+    """引き出し線：区分の側の端の候補は、区分の中で名前にいちばん近い所（縁から4・2・1単位内側。境の線の上で止まらないよう）と、区分の中の点。
+    名前の側は、箱の縁のうちその端に近い所"""
+    from shapely.ops import nearest_points
+    c = shape({'type': 'Point', 'coordinates': (min(max(pt.x, bx[0]), bx[2]), min(max(pt.y, bx[1]), bx[3]))})
+    ends = []
+    for d in (4, 2, 1):
+        g = own.buffer(-d)
+        if not g.is_empty:
+            e = nearest_points(g, c)[0]
+            ends.append((e.x, e.y))
+    ends.append((pt.x, pt.y))
+    return [((min(max(e[0], bx[0]), bx[2]), min(max(e[1], bx[1]), bx[3])), e) for e in ends]
+
+
+def line_clear(pn, a, b, skip, lines):
+    seg = LineString([a, b])
+    if any(seg.intersects(l) for l in lines):
+        return False
+    n = max(2, int(seg.length / 1.5))
+    for k in range(1, n):
+        x, y = a[0] + (b[0] - a[0]) * k / n, a[1] + (b[1] - a[1]) * k / n
+        if any(o is not skip and o[0] - 1 <= x <= o[2] + 1 and o[1] - 1 <= y <= o[3] + 1 for o in pn.boxes['L3']):
+            return False
+    return True
+
+
+def place_leaders(pn, pp, out):
+    lines, pn.prefout = [], []
+    pn.lead = {'inside': 0, 'moved_in': 0, 'leader': 0, 'leader_kept_crossing': []}
+    todo = []
+    for q in pp:
+        b = best_anchor(q['own'], q['bx'], q['pt'])
+        if b:
+            q['z'], q['ax'], q['ay'] = b
+            pn.lead['inside'] += 1
+        else:
+            todo.append(q)
+    for q in todo:
+        pn.boxes['L3'].remove(q['bx'])
+        cands = []
+        for r in range(0, 64, 3):
+            for k in range(max(1, r // 2)):
+                t = 2 * math.pi * k / max(1, r // 2)
+                cx, cy = q['pt'].x + r * math.cos(t), q['pt'].y + 3 + r * math.sin(t)
+                bx = (cx - q['w'] / 2, cy - 9 * 0.9, cx + q['w'] / 2, cy + 9 * 0.25)
+                if bx[0] < ML + 1 or bx[2] > ML + pn.w - 1 or bx[1] < MT + 1 or bx[3] > MT + pn.h - 1:
+                    continue
+                if any(overlaps(bx, o) for o in pn.boxes['L3']):
+                    continue
+                cands.append((r, cx, cy, bx))
+        best = None
+        for r, cx, cy, bx in cands:            # 1) 拡大すれば区分の中に収まる位置
+            b = best_anchor(q['own'], bx, q['pt'])
+            if b:
+                best = (cx, cy, bx, b[1], b[2], None)
+                break
+        if best is None:
+            for r, cx, cy, bx in cands:        # 2) 外に置いて引き出し線（線がほかの名前・点・線を横切らない所）
+                ok = next((ae for ae in lead_ends(q['own'], bx, q['pt'])
+                           if math.hypot(ae[1][0] - ae[0][0], ae[1][1] - ae[0][1]) >= 4 and line_clear(pn, ae[0], ae[1], bx, lines)), None)
+                if ok:
+                    best = (cx, cy, bx, ok[0][0], ok[0][1], ok[1])
+                    break
+        if best is None:                       # 3) 線を引ける所が無い——元の位置のまま。横切らない端があればそれ、無ければ横切ることを report に出す
+            le = lead_ends(q['own'], q['bx'], q['pt'])
+            ok = next((ae for ae in le if line_clear(pn, ae[0], ae[1], q['bx'], lines)), None)
+            if ok is None:
+                ok = le[0]
+                pn.lead['leader_kept_crossing'].append(q['name'])
+            best = (q['x'], q['y'], q['bx'], ok[0][0], ok[0][1], ok[1])
+        cx, cy, bx, ax, ay, e = best
+        q.update(x=cx, y=cy, bx=bx, ax=ax, ay=ay, z=None)
+        pn.boxes['L3'].append(bx)
+        if e is None:
+            pn.lead['moved_in'] += 1
+            q['z'] = best_anchor(q['own'], bx, q['pt'])[0]
+            continue
+        l = LineString([(ax, ay), e])
+        lines.append(l)
+        out.append(f'<path d="M{fmt(e[0])} {fmt(e[1])}L{fmt(ax)} {fmt(ay)}" {LEAD}/>')
+        n = max(2, int(l.length / 3))          # 線のあとに置く名前（地方名）が線に重ならないよう、線の上に小さな箱を並べる
+        pn.boxes['L3'].extend((ax + (e[0] - ax) * k / n - .5, ay + (e[1] - ay) * k / n - .5,
+                               ax + (e[0] - ax) * k / n + .5, ay + (e[1] - ay) * k / n + .5) for k in range(n + 1))
+        pn.lead['leader'] += 1
+    for q in pp:
+        label_text(out, q['x'], q['y'], q['name'], 9, 'rgba(255,255,255,.8)', 'middle', f' data-ax="{fmt(q["ax"])}" data-ay="{fmt(q["ay"])}"')
+        pn.prefout.append((q['name'], q['z']))
+
+
 NAMES_ALL, NAMES_PLACED = defaultdict(set), defaultdict(set)   # 図に入る区分・都市の名前と、置けた名前（図をまたいで1回）
 
 
@@ -328,6 +442,7 @@ def build(pn):
                 NAMES_PLACED['city'].add(c['name'])
                 break
         NAMES_ALL['city'].add(c['name'])
+    pp = []          # 置いた県名：名前・位置・箱・自分の区分・区分の中の点
     for p in PREF:
         gi = p['geom'].intersection(pn.bb)
         if gi.is_empty:
@@ -340,19 +455,11 @@ def build(pn):
         w = tw(p['name'], 9)
         for dx, dy in ((0, 3), (0, 13), (0, -7), (w * .6, 3), (-w * .6, 3), (w * .6, 13), (-w * .6, -7), (0, 23), (0, -17)):
             if try_place(pn, 'L3', p['name'], 9, pt.x + dx, pt.y + dy):
-                label_text(prefn, pt.x + dx, pt.y + dy, p['name'], 9, 'rgba(255,255,255,.8)')
-                bx = pn.boxes['L3'][-1]      # 名前の箱のうち、自分の区分の中にある割合（はみ出しの確認用、report.json に出す）
-                own = pn.proj(gi)
-                inside = own.intersection(box(*bx)).area / ((bx[2] - bx[0]) * (bx[3] - bx[1]))
-                if inside < .999:
-                    # 拡大表示では名前が縮め戻る（country-card.css の scale(var(--inv))、中心は横 50%・縦 70%）。何倍で中に収まるか
-                    ox, oy = (bx[0] + bx[2]) / 2, bx[1] + .7 * (bx[3] - bx[1])
-                    zfit = next((zz for zz in (1.5, 2, 3, 4, 6, 8, 12, 16)
-                                 if own.contains(affinity.scale(box(*bx), 1 / zz, 1 / zz, origin=(ox, oy)))), None)
-                    pn.prefout.append((p['name'], round(inside * 100), zfit))
+                pp.append(dict(name=p['name'], x=pt.x + dx, y=pt.y + dy, bx=pn.boxes['L3'][-1], own=pn.proj(gi), pt=pt, w=w))
                 pn.placed['prefname'] = pn.placed.get('prefname', 0) + 1
                 NAMES_PLACED['prefname'].add(p['name'])
                 break
+    place_leaders(pn, pp, prefn)
     # 地方名：都市・都道府県名を置いたあと、その地方の中の空いている所に置く
     for k, g in REGIONS.items():
         gi = g.intersection(pn.bb)
@@ -422,7 +529,7 @@ for key in PANELS:
     svgs[key] = pn
     report[key] = {'file': os.path.relpath(fn, SITE), 'size_kb': round(os.path.getsize(fn) / 1024, 1), 'W': round(pn.W), 'H': round(pn.H),
                    'labels_placed': pn.placed, 'dup_rounds': pn.dups, 'tail_cut': pn.tails, 'label_candidates': dict(pn.cand),
-                   'prefname_outside': sorted(pn.prefout, key=lambda t: t[1])}
+                   'prefname_zoomfit': pn.prefout, 'prefname_lead': pn.lead}   # 何倍で区分の中に収まるか（None＝収まらない）／引き出し線
 print(json.dumps(report, ensure_ascii=False, indent=1))
 json.dump(report, open(os.path.join(WD, 'report.json'), 'w'), ensure_ascii=False, indent=1)
 
