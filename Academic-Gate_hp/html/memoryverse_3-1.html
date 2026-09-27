@@ -329,8 +329,12 @@ code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border
           <button class="cc-lay" data-layer="L2" aria-pressed="true">層2 拡大図</button>
         </div></div>
         <div class="cc-maps">
-          <div class="cc-scroll"><div class="cc-fig" style="--w:730;--h:677" data-src="../image/memoryverse/cards/r3-1-shape.svg?v=r101"><p class="cc-status">地図を読み込み中…</p><p class="cc-fallback">地図を読み込めませんでした</p></div></div>
+          <!-- 拡大図（層2）は地図の上に置く。層2を押した瞬間、ボタンのすぐ下で変化が見えるように（地図の下だと、1440px でも
+               画面の下の端に23〜70px しか出ず、気づけなかった）。層2を消すと地図が拡大図の高さぶん上がる（跳ねる）が、場所を空けて
+               おく案は採らない——§02 のとおり「まず層1だけ」で見ると、空いた枠が画面を占めて地図が下へ押し出されるため。
+               画面は送らない（読んでいる位置が勝手に動くほうが邪魔。2-2 の mvKeepTop と同じ判断）。DESIGN.md §106 -->
           <div class="cc-scroll L2"><div class="cc-fig" style="--w:690;--h:433" data-src="../image/memoryverse/cards/r3-1-zoom.svg?v=r101"><p class="cc-status">拡大図を読み込み中…</p><p class="cc-fallback">拡大図を読み込めませんでした</p></div></div>
+          <div class="cc-scroll"><div class="cc-fig" style="--w:730;--h:677" data-src="../image/memoryverse/cards/r3-1-shape.svg?v=r101"><p class="cc-status">地図を読み込み中…</p><p class="cc-fallback">地図を読み込めませんでした</p></div></div>
         </div>
         <div class="cc-src">
           <p><b>形</b>：正距円筒図法。標準緯線は北緯49度（9か国の本土の重心、北緯48.5度を丸めた値）。経度を cos 49° = 0.6561 倍に縮めたうえで、<strong>1度 = 44px（国のページと同じ縮尺）</strong>。細い格子は1度、中くらいは5度、太い線は30度（2-1 の升目。この図では東経0度）。</p>
