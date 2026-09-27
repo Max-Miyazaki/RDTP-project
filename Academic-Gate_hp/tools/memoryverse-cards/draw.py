@@ -450,6 +450,13 @@ figs = ''.join(
     f'<p class="cc-status">地図を読み込み中…</p><p class="cc-fallback">地図を読み込めませんでした</p></div></div>'
     for k, pn in svgs.items())
 notes = ''.join(f'<p class="cc-note">{n}</p>' for n in C['notes'])
+# 区分の呼び名（原語）。地図のラベルは日本語のまま、呼び名だけを注記に1行（DESIGN.md §107）。読みは目安
+if C.get('terms'):
+    notes += f'<p class="cc-note">{C["terms"]}' + ('読みは目安で、正確な発音ではない。' if C.get('terms_reading') else '') + '</p>'
+# ラベルの言語が層で揃っていない理由（日本以外）
+if CC != 'JPN':
+    notes += ('<p class="cc-note"><b>ラベルの言語</b>：日本語名があるものは日本語、無いものは原語で出している。層3（区分・都市）は '
+              'Natural Earth の日本語名を使うのでほぼ日本語、層2（川・湖・道路・鉄道）は OpenStreetMap に日本語名が無いものが多いので原語が多い。</p>')
 # 入りきらずに置かなかったラベル（データにはある）。「なし」（データに無い）と混ざらないよう書き分ける
 tot = lambda k: len(NAMES_ALL[k])
 got = lambda k: len(NAMES_PLACED[k] & NAMES_ALL[k])

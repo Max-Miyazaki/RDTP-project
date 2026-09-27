@@ -64,9 +64,49 @@
         [].forEach.call(card.querySelectorAll('.cc-fig[data-src]'), loadFigure);
     }
 
+    // 画面いっぱいに広げる（国のページの .cc-full のボタン。DESIGN.md §107）。カードまるごとを overlay にするので、
+    // 層のボタンはそのまま効く。閉じると元の場所に戻り、読んでいた位置も戻す（画面を勝手に送らない）。
+    function setupFull(card) {
+        var btn = card.querySelector('.cc-full');
+        if (!btn) return;
+        var ph = null, y = 0;
+        function onKey(e) { if (e.key === 'Escape') close(); }
+        function open() {
+            y = window.scrollY;
+            ph = document.createElement('div');                    // カードが抜けたぶん、本文が詰まらないように
+            ph.style.height = card.offsetHeight + 'px';
+            card.parentNode.insertBefore(ph, card);
+            card.classList.add('is-full');
+            card.setAttribute('role', 'dialog');
+            card.setAttribute('aria-modal', 'true');
+            document.body.classList.add('cc-full-open');
+            card.style.setProperty('--cc-ctl-h', (card.querySelector('.cc-ctl').offsetHeight + 60) + 'px');
+            btn.textContent = '閉じる ✕';
+            btn.setAttribute('aria-expanded', 'true');
+            loadCard(card);
+            document.addEventListener('keydown', onKey);
+            btn.focus();
+        }
+        function close() {
+            card.classList.remove('is-full');
+            card.removeAttribute('role');
+            card.removeAttribute('aria-modal');
+            card.style.removeProperty('--cc-ctl-h');
+            document.body.classList.remove('cc-full-open');
+            if (ph) { ph.remove(); ph = null; }
+            btn.textContent = '拡大 ⤢';
+            btn.setAttribute('aria-expanded', 'false');
+            document.removeEventListener('keydown', onKey);
+            window.scrollTo({ top: y, behavior: 'instant' });
+            btn.focus({ preventScroll: true });
+        }
+        btn.addEventListener('click', function () { card.classList.contains('is-full') ? close() : open(); });
+    }
+
     function init() {
         var cards = [].slice.call(document.querySelectorAll('.cc-card'));
         cards.forEach(setupButtons);
+        cards.forEach(setupFull);
         if (!('IntersectionObserver' in window)) { cards.forEach(loadCard); return; }
         // 最初にカードが画面に近づいたときに取りに行く（2-1 の地図の loading="lazy" と同じ考え方）
         var io = new IntersectionObserver(function (entries) {

@@ -117,3 +117,46 @@
 .cc-card.off-river .k-river, .cc-card.off-lake .k-lake, .cc-card.off-motorway .k-motorway,
 .cc-card.off-trunk .k-trunk, .cc-card.off-hsr .k-hsr, .cc-card.off-main .k-main,
 .cc-card.off-region .k-region, .cc-card.off-prefname .k-prefname, .cc-card.off-city .k-city { display: none; }
+
+/* --- 画面いっぱいに広げる（国のページだけ。page_tpl.html に .cc-full のボタンがあるときだけ効く。DESIGN.md §107）--------
+   カードまるごと（ボタンも）を overlay にする。複製しないので層の切り替えはそのまま効く。
+   ★ Fullscreen API は使わない（iPhone の Safari は、ふつうの要素を全画面にできない）。
+   ★ 図は画面に収めるだけ。1:1 は置かない（どの国も1度44pxで揃えた縮尺から外れた見え方が混ざるため）。 */
+.cc-card .cc-full { margin-left: auto; }
+.cc-full-attr { display: none; }
+body.cc-full-open { overflow: hidden; }
+/* main は position:relative と z-index を持つので、その中の fixed は main の重なりの中に閉じこめられ、サイトの浮いたナビ（z-index 1000）の下になる。
+   開いているあいだだけ main をナビより上へ上げる（overlay が画面全体を覆うので、ほかへの影響は無い） */
+body.cc-full-open main { z-index: 2001; }
+.cc-card.is-full {
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+    margin: 0;
+    border: 0;
+    border-radius: 0;
+    padding: 12px 12px 8px;
+    background: #05080d;
+    overflow: auto;
+    overscroll-behavior: contain;
+    display: flex;
+    flex-direction: column;
+}
+.cc-card.is-full .cc-ctl { margin-bottom: 10px; }
+.cc-card.is-full .cc-side, .cc-card.is-full .cc-src { display: none; }
+.cc-card.is-full .cc-maps { flex-direction: column; align-items: center; gap: 12px; }
+.cc-card.is-full .cc-scroll { overflow: visible; max-width: none; }
+/* 画面に収める：幅と、ボタンの段を除いた高さの両方に入る大きさ（--cc-ctl-h は country-card.js が測って入れる） */
+.cc-card.is-full .cc-fig {
+    max-width: none;
+    width: min(calc(100vw - 24px), calc((100dvh - var(--cc-ctl-h, 140px)) * var(--w) / var(--h)));
+}
+.cc-card.is-full .cc-full-attr {
+    display: block;
+    margin: 8px 0 0;
+    font-size: 11.5px;
+    color: var(--ink-faint, var(--text-tertiary));
+    text-align: center;
+}
+.cc-card.is-full .cc-full-attr a { color: inherit; }
+
