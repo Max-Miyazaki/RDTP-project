@@ -159,7 +159,7 @@ def label_text(el, x, y, text, fs, fill, anchor='middle', extra=''):
 # ---------------- 県名の引き出し線 ----------------
 # 名前は、箱のうち区分の中の点（polylabel）にいちばん近い所を中心に縮め戻す（拡大表示、data-ax/ay）。
 # その中心が自分の区分の外にある名前は、どこまで拡大しても隣の区分の上に残る。そういう名前だけを置き直す：
-# まず区分の中に中心が来る位置を探し、無ければ区分の外に置いて、区分の中の点へ引き出し線を引く（3-1 のモナコ・リヒテンシュタインと同じ線）
+# まず区分の中に中心が来る位置を探し、無ければ区分の外に置いて、区分の中へ引き出し線を引く（線は 3-1 のモナコ・リヒテンシュタインと同じ。区分の側の端に点）
 LEAD = 'stroke="rgba(255,255,255,.55)" stroke-width=".8" fill="none"'
 
 
@@ -261,6 +261,7 @@ def place_leaders(pn, pp, out):
         l = LineString([(ax, ay), e])
         lines.append(l)
         out.append(f'<path d="M{fmt(e[0])} {fmt(e[1])}L{fmt(ax)} {fmt(ay)}" {LEAD}/>')
+        out.append(f'<circle cx="{fmt(e[0])}" cy="{fmt(e[1])}" r="1.5" fill="rgba(255,255,255,.85)"/>')   # 区分の側の端の点（境の線・経線と見分けるため）
         n = max(2, int(l.length / 3))          # 線のあとに置く名前（地方名）が線に重ならないよう、線の上に小さな箱を並べる
         pn.boxes['L3'].extend((ax + (e[0] - ax) * k / n - .5, ay + (e[1] - ay) * k / n - .5,
                                ax + (e[0] - ax) * k / n + .5, ay + (e[1] - ay) * k / n + .5) for k in range(n + 1))
