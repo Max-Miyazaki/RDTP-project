@@ -290,10 +290,13 @@ def zoom_map(key, R, C):
             x, y = fr.xy(lo, la)
             E.append(text(x, y, t, 10.5, 'rgba(255,255,255,.6)'))
         pt = polylabel(fr.proj(mainland(C[a3][0])), 0.5)
-        E.append(text(pt.x, pt.y + 5, nm if len(nm) < 7 else nm[:5] + '​' + nm[5:], 12, '#fff', extra=' font-weight="600"'))
+        # 国名はその国のページへのリンク（地図本体の main_map と同じ。拡大図だけ付け忘れていた。DESIGN.md §118）
+        E.append(f'<a class="cc-cty" href="country/{a3.lower()}.html"><title>{nm}の国のページへ</title>'
+                 + text(pt.x, pt.y + 5, nm if len(nm) < 7 else nm[:5] + '​' + nm[5:], 12, '#fff', extra=' font-weight="600"') + '</a>')
         E.append('</g>')
         E.append(f'<rect x="{fmt(fr.ml)}" y="{fmt(fr.mt)}" width="{fmt(fr.w)}" height="{fmt(fr.h)}" fill="none" stroke="#ffd166" stroke-width="1.2" stroke-dasharray="5 3"/>')
-        E.append(text(fr.ml, fr.mt - 22, nm, 12, '#fff', 'start', ' font-weight="600" stroke="none"'))
+        E.append(f'<a class="cc-cty" href="country/{a3.lower()}.html"><title>{nm}の国のページへ</title>'
+                 + text(fr.ml, fr.mt - 22, nm, 12, '#fff', 'start', ' font-weight="600" stroke="none"') + '</a>')
         E.append(text(fr.ml, fr.mt - 8, f'この図だけ {z}倍（1度＝{int(S * z):,}px）', 10.5, '#ffd166', 'start', ' font-weight="600" stroke="none"'))
         E += scale_bar(fr, km)
     E.append('</g></svg>')

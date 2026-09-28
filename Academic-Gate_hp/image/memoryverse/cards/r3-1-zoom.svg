@@ -20,10 +20,10 @@
 <path d="M144.3 113.2l9.7 9.3 -3.9 12.3 2.6 7.7 5.5 7.7 4.9 12.2 -0.6 6.3 -5.7 13.2 0.1 7.6 17.2 10.6 13.7 19.9 5.8 22.4 -4 22.9 -15.9 21.1 -11.9 3.9 -35.2 -6.1 -13 -4 -0.7 -8.2 6.7 -9.5 8.9 -9.4 5.5 -11.8 -0.3 -18.7 -4.9 -14.1 -6.2 -12.7 -4.4 -14.6 1.3 -29.6 10 -29.7 9.5 -16.8z" fill="rgba(61,139,255,.16)" stroke="#6aa9ff" stroke-width=".8" stroke-linejoin="round"/>
 <text x="86.4" y="292.4" font-size="10.5" fill="rgba(255,255,255,.6)" text-anchor="middle">スイス</text>
 <text x="219.2" y="81.2" font-size="10.5" fill="rgba(255,255,255,.6)" text-anchor="middle">オーストリア</text>
-<text x="161.2" y="258.4" font-size="12" fill="#fff" text-anchor="middle" font-weight="600">リヒテンシ​ュタイン</text>
+<a class="cc-cty" href="country/lie.html"><title>リヒテンシュタインの国のページへ</title><text x="161.2" y="258.4" font-size="12" fill="#fff" text-anchor="middle" font-weight="600">リヒテンシ​ュタイン</text></a>
 </g>
 <rect x="46" y="46" width="213.6" height="299.2" fill="none" stroke="#ffd166" stroke-width="1.2" stroke-dasharray="5 3"/>
-<text x="46" y="24" font-size="12" fill="#fff" text-anchor="start" font-weight="600" stroke="none">リヒテンシュタイン</text>
+<a class="cc-cty" href="country/lie.html"><title>リヒテンシュタインの国のページへ</title><text x="46" y="24" font-size="12" fill="#fff" text-anchor="start" font-weight="600" stroke="none">リヒテンシュタイン</text></a>
 <text x="46" y="38" font-size="10.5" fill="#ffd166" text-anchor="start" font-weight="600" stroke="none">この図だけ 20倍（1度＝880px）</text>
 <path d="M208 329.2V333.2H247.6V329.2" fill="none" stroke="rgba(255,255,255,.7)" stroke-width="1.2"/>
 <text x="227.8" y="326.2" font-size="9.5" fill="rgba(255,255,255,.75)" text-anchor="middle">5 km</text>
@@ -48,10 +48,10 @@
 <path d="M659.3 155.5l-24.2 32 -24.6 28.5 -32.4 -53.2 -55.6 -35.4 -56.1 24.6 -43 53.1 -15.5 51.5 -4.4 50.2 -36.3 31 -23.6 26 0 -317.8 332 0 0 94.5z" fill="rgba(255,255,255,.05)" stroke="rgba(255,255,255,.18)" stroke-width=".7" stroke-linejoin="round"/>
 <path d="M597.2 231.4l-43 39.4 -39.4 56.9 -68.1 -5.7 -43.2 -15.2 4.4 -50.2 15.5 -51.5 43 -53.1 56.1 -24.6 55.6 35.4 32.4 53.2z" fill="rgba(61,139,255,.16)" stroke="#6aa9ff" stroke-width=".8" stroke-linejoin="round"/>
 <text x="473.5" y="90" font-size="10.5" fill="rgba(255,255,255,.6)" text-anchor="middle">フランス</text>
-<text x="512.1" y="216.2" font-size="12" fill="#fff" text-anchor="middle" font-weight="600">モナコ</text>
+<a class="cc-cty" href="country/mco.html"><title>モナコの国のページへ</title><text x="512.1" y="216.2" font-size="12" fill="#fff" text-anchor="middle" font-weight="600">モナコ</text></a>
 </g>
 <rect x="343.6" y="46" width="332" height="360.8" fill="none" stroke="#ffd166" stroke-width="1.2" stroke-dasharray="5 3"/>
-<text x="343.6" y="24" font-size="12" fill="#fff" text-anchor="start" font-weight="600" stroke="none">モナコ</text>
+<a class="cc-cty" href="country/mco.html"><title>モナコの国のページへ</title><text x="343.6" y="24" font-size="12" fill="#fff" text-anchor="start" font-weight="600" stroke="none">モナコ</text></a>
 <text x="343.6" y="38" font-size="10.5" fill="#ffd166" text-anchor="start" font-weight="600" stroke="none">この図だけ 100倍（1度＝4,400px）</text>
 <path d="M624 390.8V394.8H663.6V390.8" fill="none" stroke="rgba(255,255,255,.7)" stroke-width="1.2"/>
 <text x="643.8" y="387.8" font-size="9.5" fill="rgba(255,255,255,.75)" text-anchor="middle">1 km</text>
