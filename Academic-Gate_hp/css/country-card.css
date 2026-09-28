@@ -67,6 +67,8 @@
     aspect-ratio: var(--w) / var(--h);
 }
 .cc-fig > svg { display: block; width: 100%; height: auto; }
+/* 地域のカードが本文の列より広いとき（3-2 南ヨーロッパ 1234px）は縮めずに横へスクロールする（1度44px を守る。DESIGN.md §114） */
+.cc-fig.cc-1to1 { max-width: none; }
 .cc-status, .cc-fallback {
     position: absolute;
     inset: 0;
@@ -142,6 +144,8 @@ body.cc-full-open main { z-index: 2001; }
     display: flex;
     flex-direction: column;
 }
+/* 記事の中のカード（地域のカード）は、記事の <style> の .main .cc-card{margin:18px 0} が後から効いて上下に隙間ができる。広げたときは打ち消す */
+.main .cc-card.is-full { margin: 0; }
 .cc-card.is-full .cc-ctl { margin-bottom: 10px; }
 .cc-card.is-full .cc-side, .cc-card.is-full .cc-src { display: none; }
 .cc-card.is-full .cc-maps { flex-direction: column; align-items: center; gap: 12px; }

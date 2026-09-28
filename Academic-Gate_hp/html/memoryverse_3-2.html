@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>3-2 南ヨーロッパ｜メモリーバース | Academic Gates</title>
+<meta name="description" content="東経0度から東回りに、南ヨーロッパの17か国（アンドラからギリシャ、最後にイベリア半島まで）の形・位置・隣り合い・首都と、国境の3つの欄を置く。メモリーバース 3-2。">
+<link rel="icon" href="../../favicon.ico" sizes="32x32">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+<!-- ★ ライト/ダーク切替は停止中（DESIGN.md §44）。サイト全体がダーク基調なので、
+     記事だけテーマが変わるのは一貫性を欠くという判断。**復活させるには次の1行の
+     コメントを外すだけでよい**（js/theme.js も css/lesson-theme.css も残してある）。 -->
+<!-- <script src="../js/theme.js?v=r109"></script> -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;500&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+<!-- サイト共通 → 記事固有 → テーマ上書き の順で読む（lesson-theme.css は
+     記事の <style> より後ろに置くこと。css/lesson-theme.css 冒頭の注記どおり） -->
+<link rel="stylesheet" href="../css/style.css?v=r109">
+<link rel="stylesheet" href="../css/country-card.css?v=r109">
+<!-- MathJax: 物理数学のページと同じ設定・同じ版（mathjax@3 の tex-svg）。メモリーバース全体で
+     読み込む（第5回以降でも式を書くため。§94）。設定ブロックはローダーより「前」に置く、
+     フォールバックは this.src= ではなく createElement 方式（どちらも DESIGN.md §11b）。
+     式の無い回では何も組版されず、表示は変わらない（§94 で DOM を突き合わせて確認）。 -->
+<script>
+window.MathJax={tex:{inlineMath:[['\\(','\\)']],displayMath:[['\\[','\\]']],tags:'none'},svg:{fontCache:'global'},options:{skipHtmlTags:['script','noscript','style','textarea','pre','code']}};
+</script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"
+        onerror="this.onerror=null;var s=document.createElement('script');s.async=true;s.src='https://unpkg.com/mathjax@3/es5/tex-svg.js';document.head.appendChild(s);"></script>
+<style>
+/* メモリーバース v3 3-2（3章 各地域。3-1 の <style> をそのまま使う）— 記事固有のスタイルのみ。2-1 の <style> から、この回が使う部品
+   （レール・見出し・箱・表・図・見比べる図・到達目標・演習）だけを写した。値は 2-1 と同じ（DESIGN.md §101）。
+   地図のピン（.mod / .orbit / .stat）と球（.globe）は、この回では使わないので持たない。地域のカードは
+   国のページと同じ部品（css/country-card.css・js/country-card.js）で描く。 */
+:root{
+  /* 教材固有のトークン。本体と同値のもの（--bg --surface --nav-bg --ink --line
+     --line-strong --glow-cool --font(=--font-body) --nav-clear(=--nav-clearance)
+     --ease --dur --radius-lg/md/sm）は css/style.css 側に定義があるので持たない。
+     --ink-soft / --ink-faint は本体より明るい値を「意図的に」維持している。
+     本体値に寄せると 13.5px の補足文が 4.56:1 → 3.66:1 と AA を割るため（§36.2）。
+     --accent / --accent-tint / --glow-cool は元はティール（#2bd9c4）だったが、
+     サイトの青に一本化した。--accent と --glow-cool は本体から継承するので
+     ここには無い。--accent-deep / --accent-tint はダークでの定義が本体にも
+     lesson-theme.css にも無いので、記事が持つ（§47.5）。 */
+  --surface-2:rgba(255,255,255,.045);
+  --ink-soft:rgba(255,255,255,.68);
+  --ink-faint:rgba(255,255,255,.46);
+  --line-soft:rgba(255,255,255,.05);
+  --accent-deep:#a8c9ff;
+  --accent-tint:rgba(77,148,255,.12);
+  --amber:#ffb46b;--amber-tint:rgba(255,160,70,.08);--amber-line:rgba(255,160,70,.32);
+  --good:#72e3ad;--good-tint:rgba(114,227,173,.08);--good-line:rgba(114,227,173,.28);
+  --key:#ff6fa5;--key-tint:rgba(255,61,139,.08);--key-line:rgba(255,61,139,.28);
+  --teach:#a48bff;--teach-tint:rgba(123,77,255,.11);--teach-line:rgba(123,77,255,.38);
+  --mono:ui-monospace,'SFMono-Regular',Menlo,Consolas,monospace;
+  --rail-w:250px;
+}
+body{font-size:15.5px;line-height:1.9;line-break:strict;overflow-x:hidden}
+
+/* --- レイアウト（左に目次レール／右に本文の2カラム）。phys-math_1-1 と同一。 ---
+   style.css の共通記事ルールは `body.is-article main > section:not(.rail)`
+   （詳細度 0,2,3）で 900px と 160px パディングをかけてくる。こちらは `.main` を
+   噛ませて 0,3,2 / 0,4,3 とし、確実に上回る（§36.5 B）。
+   レールの左余白は 1280px → 1440px にかけて 0 → 32px、レール↔本文の間隔は
+   1024px → 1280px にかけて 24 → 56px。狭い画面ではまず余白を削って本文幅に回す（§43.3）。 */
+.wrap{display:flex;padding-top:var(--nav-clearance);
+      padding-left:clamp(0px, calc((100vw - 1280px) * .2), 32px)}
+.rail{width:var(--rail-w);flex:0 0 var(--rail-w);position:sticky;top:var(--nav-clearance);height:calc(100vh - var(--nav-clearance));overflow-y:auto;padding:18px 14px 60px 22px;border-right:1px solid var(--line)}
+.main{flex:1 1 auto;min-width:0;
+      padding:0 clamp(24px, calc(24px + (100vw - 1024px) * .125), 56px) 110px}
+/* 本文列 860px（§43.2）。この記事に数式は無いので 853px という下限の根拠は
+   効かないが、教材どうしで本文幅が割れるほうが害なので phys-math_1-1 に揃える。
+   中央寄せをやめて左揃えにし、余りは右へ流す。 */
+body.is-article .main > .lesson-hero,
+body.is-article .main > section:not(.rail),
+body.is-article .main > .foot{max-width:860px;margin-left:0;margin-right:auto;padding-left:0;padding-right:0}
+.rail .brand{font-weight:400;font-size:15px;line-height:1.45;margin:2px 0 4px}
+.rail .brand small{display:block;font-size:10px;font-weight:500;color:var(--ink-faint);letter-spacing:.2em;margin-top:6px}
+/* --- 上の階層へ戻る導線（§64.1）。レールは sticky なので、読んでいる途中でも
+   親ページへ戻れる。狭い画面はレールが引き出しになるので .float-nav で補う。 --- */
+.progress-wrap{height:2px;background:var(--line);border-radius:99px;margin:16px 0 18px;overflow:hidden}
+.progress-bar{height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--accent-deep));transition:width .15s linear}
+.toc{list-style:none;margin:0;padding:0;font-size:12.5px}
+.toc .part{font-size:10px;letter-spacing:.2em;color:var(--ink-faint);margin:16px 0 5px;padding-left:2px}
+.toc a{display:block;text-decoration:none;color:var(--ink-soft);padding:4px 10px;border-radius:999px;transition:color var(--dur) var(--ease),background var(--dur) var(--ease)}
+.toc a:hover{color:var(--ink);background:var(--surface-2)}
+.toc a.active{color:var(--ink);background:var(--accent-tint)}
+.toc a .n{font-size:10.5px;color:var(--ink-faint);margin-right:8px;font-variant-numeric:tabular-nums}
+.toc a.active .n{color:var(--accent)}
+/* --- 記事の導入部。`.hero` は index.html 専用で、style.css が
+   `.hero h1/.hero p/.hero .eyebrow` に黒い text-shadow をかけるため使えない（§36.5 A）。
+   要素も <header> ではなく <div>（裸の header は浮遊ナビの定義を浴びる）。 --- */
+.lesson-hero{padding:64px 0 34px;border-bottom:1px solid var(--line)}
+.lesson-hero h1{font-weight:300;font-size:clamp(28px,4vw,48px);line-height:1.25;letter-spacing:-.02em;margin:0 0 22px}
+.lesson-hero h1 .sub{display:block;font-size:.52em;font-weight:300;color:var(--ink-soft);letter-spacing:0;margin-top:12px}
+.lesson-hero p{color:var(--ink-soft);margin:0 0 12px}
+.lesson-hero .lead{font-size:16.5px;color:var(--ink-soft)}
+/* .eyebrow 本体は style.css の共通コンポーネント。色と余白だけ上書きする
+   （共通の --text-tertiary は 11px の小さな文字で 3.66:1 と AA を割るため） */
+.eyebrow{color:var(--ink-faint);margin-bottom:18px}
+
+section{border-bottom:1px solid var(--line-soft);scroll-margin-top:var(--nav-clearance)}
+body.is-article .main > section:not(.rail),
+body.is-article .main > section:not(.rail) ~ section:not(.rail){padding-top:56px;padding-bottom:12px}
+.sec-head{display:flex;align-items:baseline;gap:14px;margin-bottom:10px}
+.sec-head .idx{font-size:.72rem;font-weight:500;letter-spacing:.2em;color:var(--ink-faint);padding-top:4px;flex:0 0 auto;font-variant-numeric:tabular-nums}
+.sec-head .idx::after{content:' —'}
+body.is-article main h2{font-weight:400;font-size:clamp(21px,2.6vw,28px);line-height:1.3;letter-spacing:-.01em;margin:0}
+body.is-article main h3{font-weight:400;font-size:17px;margin:28px 0 6px;color:var(--ink)}
+body.is-article main p{margin:10px 0;color:var(--ink-soft)}
+body.is-article main ul,body.is-article main ol{margin:10px 0;padding-left:1.3em;color:var(--ink-soft)}
+li{margin:4px 0}
+strong{font-weight:500;color:var(--ink)}
+/* リンクの中の太字は、リンクの色のまま（strong の白が勝つと、表の国名が押せると分からない。DESIGN.md §108） */
+a strong{color:inherit}
+code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);border-radius:6px;padding:1px 6px;color:var(--accent-deep)}
+
+.box{border-radius:var(--radius-md);padding:16px 20px;margin:18px 0;border:1px solid var(--line);background:var(--surface)}
+.box .lab{font-size:.7rem;letter-spacing:.14em;font-weight:500;display:block;margin-bottom:6px}
+.box p:first-of-type{margin-top:2px}.box p:last-child{margin-bottom:0}
+/* 枠線は必ずトークン経由にすること。ここに直書きすると lesson-theme.css の
+   ライト上書きが効かず、暗い背景用の明るい色がライトでパステルになる（§41.2）。 */
+.box.principle{background:var(--key-tint);border-color:var(--key-line)}.box.principle .lab{color:var(--key)}
+.box.target{background:var(--good-tint);border-color:var(--good-line)}.box.target .lab{color:var(--good)}
+.box.warn{background:var(--amber-tint);border-color:var(--amber-line)}.box.warn .lab{color:var(--amber)}
+.box.teach{background:var(--teach-tint);border-color:var(--teach-line)}.box.teach .lab{color:var(--teach)}
+
+.table-scroll{overflow-x:auto;margin:14px 0}
+.mini-table{width:100%;border-collapse:collapse;font-size:14px;margin:14px 0;color:var(--ink-soft)}
+.mini-table th,.mini-table td{border:1px solid var(--line);padding:9px 11px;text-align:left;vertical-align:top}
+.mini-table th{background:var(--surface-2);font-weight:500;color:var(--ink)}
+/* 根拠の強度バッジ。枠線は tint と同系のトークンへ（上と同じ理由） */
+.g{font-size:10.5px;font-weight:500;border-radius:999px;padding:2px 9px;white-space:nowrap}
+.g.s{background:var(--good-tint);color:var(--good);border:1px solid var(--good-line)}
+.g.m{background:var(--amber-tint);color:var(--amber);border:1px solid var(--amber-line)}
+.g.w{background:var(--key-tint);color:var(--key);border:1px solid var(--key-line)}
+
+.fig{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-lg);padding:18px 18px 12px;margin:20px 0}
+.fig > svg,.fig-scroll > svg{width:100%;height:auto;display:block}
+/* ★ 図は縮めずに横へ送る（§90.1）。viewBox 640 の図を 390px 幅で縮めると、
+   9.5 の注記が実寸 4.6px になって読めない。別の縦長の図は作らない —— 同じ図を
+   2つの形で覚えることになるため。本文の枠が 640px を割ったときだけ送れるようになる。
+   合図は3つ：上の1行（.is-scrollable のときだけ）、送れる側の端のフェード、細いスクロールバー。
+   iOS はスクロールバーを動かすまで出さないので、1行とフェードが主な合図。 */
+.fig-scroll{overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.28) transparent}
+.fig-scroll > svg{min-width:640px}
+.fig-scroll::-webkit-scrollbar{height:6px}
+.fig-scroll::-webkit-scrollbar-thumb{background:rgba(255,255,255,.28);border-radius:99px}
+.fig.is-scrollable .fig-scroll{padding-bottom:8px;
+  -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 28px,#000 calc(100% - 44px),transparent);
+          mask-image:linear-gradient(90deg,transparent 0,#000 28px,#000 calc(100% - 44px),transparent)}
+.fig.is-scrollable .fig-scroll.is-start{-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 44px),transparent);mask-image:linear-gradient(90deg,#000 calc(100% - 44px),transparent)}
+.fig.is-scrollable .fig-scroll.is-end{-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 28px);mask-image:linear-gradient(90deg,transparent 0,#000 28px)}
+.fig.is-scrollable .fig-scroll.is-start.is-end{-webkit-mask-image:none;mask-image:none}
+.fig.is-scrollable::before{content:'横に送ると続きが見られます →';display:block;margin:0 0 8px;font-size:11px;letter-spacing:.06em;color:var(--ink-faint)}
+
+.fig svg text{font-family:var(--font-body)}
+/* 見比べる図（§07 グリーンランドとコンゴ民主共和国、DESIGN §99.8）。左右を同時に見ることが中身そのものなので、
+   §90.1 の横送りを使わず、狭い画面でも2×2のまま全体を縮める。細かい注記は無いが、縮めると国名と倍率が
+   読めなくなるので、560px 以下だけ SVG の中の文字を大きくし（単位は viewBox の座標）、ラベルと2行目を
+   下へずらし、補足の目盛の行を隠す。 */
+@media (max-width:560px){
+  .fig.fig-cmp{padding:12px 8px 10px}
+  .fig-cmp .cmp-h{font-size:20px}
+  .fig-cmp .cmp-n{font-size:26px;transform:translateY(8px)}
+  .fig-cmp .cmp-v{font-size:22px;transform:translateY(20px)}
+  .fig-cmp .cmp-r2{transform:translateY(12px)}
+  .fig-cmp .cmp-scale{display:none}
+}
+.fig figcaption{font-size:13px;color:var(--ink-soft);margin-top:10px;line-height:1.8}
+/* 式のすぐ後ろの句読点を行頭へ送らない（§94.3）。インライン数式は lesson-theme.css で
+   inline-block になっているので、式と「、」「。」のあいだで改行できてしまう。 */
+.nb{white-space:nowrap}
+
+/* --- 到達目標の箱。`.goals` は style.css の `.card`（サイト共通カード。blog /
+   videos / study など6ページで使用中）と衝突したための改名（§47.6）。
+   そのままだと display:flex / gap / .card::before のホバーグロー / .card:hover の
+   背景変化が降ってきて、読むだけの箱がマウスに反応してしまう。 --- */
+.goals{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-lg);padding:20px 24px;margin:18px 0}
+.goals ol{counter-reset:q;list-style:none;padding-left:0;margin:6px 0 0}
+.goals ol li{counter-increment:q;position:relative;padding-left:44px;margin:14px 0}
+.goals ol li::before{content:"G" counter(q);position:absolute;left:0;top:3px;font-size:11px;font-weight:500;color:var(--accent);border:1px solid var(--accent);border-radius:999px;padding:1px 9px}
+.goals ol li b{display:block;font-size:15.5px;font-weight:400;color:var(--ink)}
+.goals ol li span{font-size:14px;color:var(--ink-soft)}
+
+/* --- 演習。解答は <details> なので、印刷時に開く仕掛けを下の @media print に置く --- */
+.ex{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-lg);padding:18px 22px;margin:18px 0}
+.ex .ex-h{font-weight:400;font-size:16.5px;margin:0 0 6px;color:var(--ink)}
+.ex .ex-h .num{font-size:11px;font-weight:500;color:var(--teach);border:1px solid var(--teach-line);background:var(--teach-tint);border-radius:999px;padding:2px 10px;margin-right:10px;vertical-align:2px}
+.ex details{margin-top:12px;border-top:1px solid var(--line);padding-top:10px}
+.ex summary{cursor:pointer;font-size:12.5px;font-weight:500;color:var(--ink-soft);list-style:none;display:inline-flex;align-items:center;gap:8px;padding:5px 6px 5px 14px;border:1px solid var(--line);border-radius:999px}
+/* ＋/− の丸。白文字は --teach(#a48bff) 上で 2.72:1 しか出ない。--on-accent なら
+   ダーク 7.58:1 / 印刷（--teach が #5a3fc0、--on-accent が #fff）7.29:1 で両立する。 */
+.ex summary::after{content:'+';display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;background:var(--teach);color:var(--on-accent);font-size:13px}
+.ex details[open] summary::after{content:'−'}
+.ex summary:hover{color:var(--ink);border-color:var(--line-strong)}
+.ex summary::-webkit-details-marker{display:none}
+.ex details[open] summary{margin-bottom:8px}
+.ex .ans{font-size:14.5px}
+
+.foot{padding:34px 0 0;color:var(--ink-faint);font-size:12.5px}
+.foot p{color:var(--ink-faint)}
+
+/* モバイル：レールを引き出しに。`.menu-btn` は位置だけを持ち、見た目は
+   共通コンポーネントの `.btn` を併用する。 */
+.menu-btn{display:none}
+.float-nav{display:none}
+.scrim{display:none}
+@media (max-width:900px){
+  .rail{position:fixed;left:0;top:0;height:100vh;z-index:1100;transform:translateX(-100%);transition:transform .25s var(--ease);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);padding-top:28px}
+  body.nav-open .rail{transform:translateX(0)}
+  .main{padding:0 20px 90px}
+  /* 「戻る」と「目次」を横並びで浮かせる。位置は入れ物が持ち、ボタン自身は
+     見た目だけを持つ（§64.2）。 */
+  .float-nav{display:flex;gap:10px;position:fixed;bottom:18px;right:18px;z-index:1050}
+  .menu-btn,.back-btn{position:static;display:inline-flex;background:var(--nav-bg);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);color:var(--ink);text-decoration:none}
+  .scrim{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:1090}
+  body.nav-open .scrim{display:block}
+  .lesson-hero{padding-top:40px}
+}
+@media print{
+  body{background:#fff;color:#000}
+  header,.rail,.menu-btn,.float-nav,.lesson-nav,.scrim,#starfield,footer{display:none!important}
+  .wrap{display:block;padding-top:0}
+  /* ★ 解答（<details>）を開く。元の教材にあった `.ex details>*{display:block}` は
+     **効かない**（実測：閉じた details の中身は ::details-content の
+     content-visibility:hidden で隠れているので、子の display を変えても出てこない）。
+     効くのは次の1行。Chrome 131 / Safari 18.4 / Firefox 139 以降。
+     それ以前のブラウザ向けには、下の beforeprint で open 属性を足している。 */
+  details::details-content{content-visibility:visible!important}
+}
+/* 地域のカード（country-card.css の .cc-card）を本文の列に置くときの間隔 */
+.main .cc-card{margin:18px 0}
+/* 国のページへの一覧。国名のリンクは本文の青（lesson-theme.css の a）のまま */
+.clist td:first-child{white-space:nowrap}
+</style>
+<link rel="stylesheet" href="../css/lesson-theme.css?v=r109">
+<body data-page="study" class="is-article" data-node="memoryverse_3-2">
+<canvas id="starfield" aria-hidden="true"></canvas>
+<div id="site-nav"><noscript><nav class="noscript-nav" aria-label="メインナビゲーション"><a href="index.html">ホーム</a><a href="self-intro.html">自己紹介</a><a href="study.html">勉強の軌跡</a><a href="videos.html">動画</a><a href="blog.html">ブログ</a><a href="sns.html">各種SNS</a></nav></noscript></div>
+<div class="float-nav"><a class="back-btn btn" href="memoryverse.html">戻る <span class="btn-disc" aria-hidden="true">←</span></a><button class="menu-btn btn" id="menuBtn" aria-controls="rail" aria-expanded="false">目次 <span class="btn-disc" aria-hidden="true">≡</span></button></div>
+<div class="scrim" id="scrim"></div>
+<div class="wrap">
+  <nav class="rail" id="rail">
+    <!-- 科目へ戻る導線（レール上部の「← 一つ上」）は layout.js が CRUMBS から書き出す。 -->
+    <div class="brand">3-2　南ヨーロッパ<small>SECTION 3-2 / SOUTHERN EUROPE</small></div>
+    <div class="progress-wrap"><div class="progress-bar" id="pbar"></div></div>
+    <ul class="toc" id="toc">
+      <li class="part">導入</li>
+      <li><a href="#goals"><span class="n">01</span>到達目標</a></li>
+      <li><a href="#view"><span class="n">02</span>この回の見方</a></li>
+      <li><a href="#grid"><span class="n">03</span>2-1 の升目のどこか</a></li>
+      <li class="part">17か国を置く</li>
+      <li><a href="#shapes"><span class="n">04</span>17か国の形と位置</a></li>
+      <li><a href="#capitals"><span class="n">05</span>首都</a></li>
+      <li class="part">横断する軸・国境・国のページ</li>
+      <li><a href="#axes"><span class="n">06</span>横断する軸——3本</a></li>
+      <li><a href="#borders"><span class="n">07</span>国境</a></li>
+      <li><a href="#countries"><span class="n">08</span>国のページへ</a></li>
+      <li class="part">訓練</li>
+      <li><a href="#menu"><span class="n">09</span>訓練メニュー</a></li>
+      <li><a href="#drills"><span class="n">10</span>演習</a></li>
+      <li class="part">付録</li>
+      <li><a href="#plan"><span class="n">A</span>この回で決めたこと</a></li>
+      <li><a href="#evidence"><span class="n">B</span>根拠と強度</a></li>
+      <li><a href="#next"><span class="n">C</span>次回の予告</a></li>
+    </ul>
+  </nav>
+
+  <main class="main">
+    <div class="lesson-hero">
+      <h1>3-2　南ヨーロッパ<span class="sub">東経0度から東へ、17か国を置く</span></h1>
+      <p class="lead">3-1 の西ヨーロッパに続いて、<strong>南ヨーロッパの17か国</strong>を置きます。東経0度から東回りに、<strong>アンドラで始まり、ギリシャを通って、最後はイベリア半島のポルトガル・ジブラルタル・スペイン</strong>で終わります。東経0度より西にある3つが最後に来るのは、2-1 で決めた「輪の切れ目は東経0度に1つだけ」という規則のとおりです（§03）。</p>
+      <p>この回で覚えるのは<strong>形・位置・隣り合い・首都</strong>と、<strong>国境の3つの欄</strong>です。3-1 と同じく、国ごとの川や道路、区分や都市は17か国それぞれの<strong>国のページ</strong>が持っています（§08）。</p>
+    </div>
+
+    <section id="goals">
+      <div class="sec-head"><span class="idx">01</span><h2>この回の到達目標</h2></div>
+      <div class="goals">
+        <ol>
+          <li><b>白紙の升目に17か国を描き、東経0度から東回りの順を言える</b><span>北緯30〜60度の段の、西経30度〜東経30度の2つのマスに、アンドラからスペインまで。最後のスペインが、輪の上では最初のアンドラと隣り合うことも言えること（§03・§04、演習1〜3）。</span></li>
+          <li><b>17か国の首都を言え、国境の3つの欄で3つの場所を説明できる</b><span>コソボ（承認：数える人で数が違う）、ジブラルタル（主張：スペインが主張している）、サンマリノとバチカン（イタリアに囲まれている）（§05・§07、演習4）。</span></li>
+          <li><b>この地域が3本の横断する軸の上で、西ヨーロッパとどう違うかを数で言える</b><span>プレートの境界の線がイタリアとギリシャの国の中を通る。地震は国境の100km以内に220件（西ヨーロッパは6件）。ケッペンでは帯の予想と90.8%が食い違うが、外れ値の場所は1つもかからない。エーゲ海は漂流ブイの観測が無い（§06、演習5・6）。</span></li>
+        </ol>
+      </div>
+      <div class="box warn"><span class="lab">前提の確認</span>
+      <p><a href="memoryverse_3-1.html">3-1</a> の<strong>白紙の9か国</strong>（演習1で17点以上）と、<strong>東回りと西回り</strong>が止まらずに言えることを確かめてから入ってください。この回の17か国は、西ヨーロッパの南と東に接しています。フランスはスペイン・イタリア・アンドラと、スイスはイタリアと、オーストリアはイタリア・スロベニアと接しています（3-1 §04「域外で接する国」）。</p></div>
+    </section>
+
+    <section id="view">
+      <div class="sec-head"><span class="idx">02</span><h2>この回の見方</h2></div>
+      <div class="box principle"><span class="lab">3-1 と同じ型、節が1つ増える</span>
+      <p>記事は位置を置き、国の詳細は国のページが持ちます（<strong>記事＝訓練、国のページ＝参照</strong>）。§06「横断する軸——3本」までは 3-1 と同じ型です。この回はそのあとに<strong>§07 国境</strong>を足しました。3-1 の地域には係争地がありませんでしたが、南ヨーロッパにはコソボとジブラルタルがあるためです（付録A）。</p></div>
+
+      <div class="box teach"><span class="lab">地域のカードは、横に送って見る</span>
+      <p>§04・§05 のカードは、国のページと同じ<strong>1度44px</strong>で描いています。17か国は東西に約36度（島を含めると約38度）あるので、カードの幅は<strong>1,234px</strong>になり、本文の列に収まりません。<strong>縮めずに、横に送って見てください</strong>。全体を一度に見たいときは、カードの右上の<strong>「拡大 ⤢」</strong>で画面いっぱいに広げられます。広げた画面では縮尺が変わるので、左下に「覚えるための縮尺 1度44px の何倍か」が出ます。</p>
+      <p style="margin-top:8px">違う縮尺の図には「この図だけ○倍」と書きます。この回では §04 の拡大図（アンドラ20倍・サンマリノ50倍・マルタ20倍）と、小さい国の国のページ（§08）がそうです。</p></div>
+
+      <div class="box teach"><span class="lab">カードは層で見る</span>
+      <p><strong>層1が形</strong>、§04 の<strong>層2が拡大図</strong>、§05 の<strong>層3が首都</strong>です。まず層1だけで形と位置を言い、そのあとで層を足してください。層は1つずつ重ねて使います。</p></div>
+
+      <div class="box warn"><span class="lab">国境の描き方</span>
+      <p>国境は <a href="memoryverse_2-1.html#borders">2-1 §08</a> のとおり、実効支配（実際に治めている政府の範囲）で描いています。この地域には、2-1 §08 で扱った<strong>コソボ</strong>（別の区域として描かれ、実効支配と合っている）と、<strong>ジブラルタル</strong>があります。主張と承認は §07 で別の欄に書きます。元データは Natural Earth v5.1.2（1:1000万）です。</p></div>
+    </section>
+
+    <section id="grid">
+      <div class="sec-head"><span class="idx">03</span><h2>2-1 の升目のどこか</h2></div>
+      <p>17か国は、2-1 の升目の<strong>北緯30〜60度の段</strong>にあり、<strong>西経30度〜東経0度</strong>と<strong>東経0〜30度</strong>の2つのマスにまたがります。東経0度はスペインを通ります（<a href="memoryverse_2-1.html#lines">2-1 §05</a> で北から南へ、イギリス → フランス → スペインとたどった線です）。</p>
+      <div class="table-scroll">
+      <table class="mini-table">
+        <tr><th style="width:18%">端</th><th style="width:40%">本土（国ごとの、面積がいちばん大きい陸）</th><th>島を含めると（ヨーロッパの部分）</th></tr>
+        <tr><td><strong>西</strong></td><td>西経9.5度（ポルトガル）</td><td>同じ</td></tr>
+        <tr><td><strong>東</strong></td><td>東経26.6度（ギリシャ）</td><td>東経28.2度（ギリシャの島）</td></tr>
+        <tr><td><strong>南</strong></td><td>北緯35.8度（マルタ。マルタの本土はマルタ島）</td><td>北緯34.8度（ギリシャの島）</td></tr>
+        <tr><td><strong>北</strong></td><td>北緯47.1度（イタリア）</td><td>同じ</td></tr>
+      </table>
+      </div>
+      <p>東西は約36度、南北は約11度。3-1 の西ヨーロッパ（東西約22度・南北約13度）より<strong>東西に長く</strong>、地中海の北の岸に沿って並びます。17か国の本土の中心は<strong>北緯42.2度・東経6.6度</strong>です（<a href="memoryverse_2-1.html#plan">2-1 付録A</a>の表では丸めて「北42° 東7°」）。</p>
+
+      <div class="box principle"><span class="lab">輪の切れ目——イベリアが最後に来る</span>
+      <p>東経0度で切って東回りに並べるので、<strong>東経0度より西にあるポルトガル・ジブラルタル・スペインは最後に来ます</strong>。輪の上では、最後のスペインは最初のアンドラと隣り合っています（アンドラはスペインとフランスのあいだ）。<a href="memoryverse_2-1.html#plan">2-1 の付録A</a>で、地域の輪の切れ目を東経0度に1つだけ置き、西アフリカが最後に来ると書いたのと同じ規則です。規則を曲げずに当てはめた結果です。</p></div>
+
+      <div class="box teach"><span class="lab">大西洋の島は、この回の地図の外</span>
+      <p>スペインの<strong>カナリア諸島</strong>（北緯28.3度・西経15.7度）、ポルトガルの<strong>アゾレス諸島</strong>（北緯38.4度・西経27.3度）と<strong>マデイラ諸島</strong>（北緯32.8度・西経17.0度）は、この回のカードの範囲の外にあります。国のページでは、日本の南西諸島と同じく別の図にしています（§08）。</p></div>
+
+      <div class="box teach"><span class="lab">日本と同じ緯度に並べる</span>
+      <p>日本と同じ<strong>北緯30〜60度の段</strong>です。西ヨーロッパは日本より北でしたが、南ヨーロッパは日本とほぼ重なります。<strong>ローマ（北緯41.9度）は函館（北緯41.8度）</strong>、<strong>アテネ（北緯38.0度）は仙台（北緯38.3度）</strong>、<strong>マルタのバレッタ（北緯35.9度）は東京（北緯35.7度）</strong>とほぼ同じ緯度です（Natural Earth の人口地点）。</p></div>
+    </section>
+
+    <section id="shapes">
+      <div class="sec-head"><span class="idx">04</span><h2>17か国の形と位置</h2></div>
+      <p>まず層1だけを出して、17か国の形と位置を見てください。アンドラ・サンマリノ・バチカン・マルタ・ジブラルタルは、この縮尺では<strong>点</strong>になります（丸印と引き出し線）。アンドラ・サンマリノ・マルタの形は層2の拡大図で見ます。バチカンとジブラルタルは、この記事では点だけで示します（形は国のページ）。</p>
+      <div class="cc-card" data-cc="r3-2-shape">
+        <div class="cc-ctl"><div class="cc-row">
+          <button class="cc-lay" data-layer="L1" aria-pressed="true">層1 形</button>
+          <button class="cc-lay" data-layer="L2" aria-pressed="true">層2 拡大図</button>
+          <button class="cc-full" type="button" aria-expanded="false" title="地図を画面いっぱいに広げる（Esc で閉じる）">拡大 ⤢</button>
+        </div></div>
+        <div class="cc-maps">
+          <div class="cc-scroll"><div class="cc-fig cc-1to1" style="--w:1332;--h:620" data-deg="44" data-src="../image/memoryverse/cards/r3-2-shape.svg?v=r109"><p class="cc-status">地図を読み込み中…</p><p class="cc-fallback">地図を読み込めませんでした</p></div></div>
+          <div class="cc-scroll L2"><div class="cc-fig" style="--w:1058;--h:389" data-deg="mixed" data-src="../image/memoryverse/cards/r3-2-zoom.svg?v=r109"><p class="cc-status">拡大図を読み込み中…</p><p class="cc-fallback">拡大図を読み込めませんでした</p></div></div>
+        </div>
+        <div class="cc-src">
+          <p><b>形</b>：正距円筒図法。標準緯線は北緯42度（17か国の本土の重心、北緯42.2度を丸めた値）。経度を cos 42° = 0.7431 倍に縮めたうえで、<strong>1度 = 44px（国のページと同じ縮尺）</strong>。細い格子は1度、中くらいは5度、太い線は30度（2-1 の升目。この図では東経0度）。</p>
+          <p><b>拡大図</b>：<strong>アンドラは20倍（1度 = 880px）、サンマリノは50倍（1度 = 2,200px）、マルタは20倍（1度 = 880px）</strong>。この3枚だけ縮尺が違います（黄色の点線の枠）。</p>
+          <p>Natural Earth v5.1.2（パブリックドメイン）から本教材が作成。</p>
+        </div>
+      </div>
+
+      <h3>17か国と順番</h3>
+      <p>順番は 2-1・3-1 と同じ規則です。国の<strong>本土</strong>（面積がいちばん大きい陸のかたまり）の、面積で重みをつけた球面上の重心の経度で、<strong>東経0度から東回り</strong>に並べます。</p>
+      <div class="table-scroll">
+      <table class="mini-table">
+        <tr><th style="width:5%">順</th><th style="width:18%">国</th><th style="width:15%">中心</th><th style="width:16%">本土の面積（km²）</th><th>形の手がかり</th></tr>
+        <tr><td>1</td><td><strong>アンドラ</strong></td><td>北42.5° 東1.6°</td><td>452</td><td>スペインとフランスのあいだ。海に面さない。この縮尺では点</td></tr>
+        <tr><td>2</td><td><strong>イタリア</strong></td><td>北43.5° 東12.3°</td><td>250,835</td><td>南東へ伸びる半島と、シチリア島・サルデーニャ島（島を含めると301,185）。サンマリノとバチカンを囲む</td></tr>
+        <tr><td>3</td><td><strong>サンマリノ</strong></td><td>北43.9° 東12.4°</td><td>60</td><td>イタリアの中、アドリア海の近く。この縮尺では点</td></tr>
+        <tr><td>4</td><td><strong>バチカン</strong></td><td>北41.9° 東12.5°</td><td>0.01 ※</td><td>イタリアの中、ローマの中。この縮尺では点</td></tr>
+        <tr><td>5</td><td><strong>マルタ</strong></td><td>北35.9° 東14.4°</td><td>261</td><td>シチリア島の南の島（ゴゾ島を含めると326）。<strong>陸の隣国が無い</strong>。この縮尺では点</td></tr>
+        <tr><td>6</td><td><strong>スロベニア</strong></td><td>北46.1° 東14.8°</td><td>20,327</td><td>イタリアの東。アドリア海に短く面する</td></tr>
+        <tr><td>7</td><td><strong>クロアチア</strong></td><td>北45.2° 東16.4°</td><td>51,491</td><td>ボスニア・ヘルツェゴビナを北と西から包む「く」の字。アドリア海の長い海岸と島々。南の端（ドゥブロヴニクのあたり）は本土から切れている</td></tr>
+        <tr><td>8</td><td><strong>ボスニア・ヘルツェゴビナ</strong></td><td>北44.2° 東17.8°</td><td>51,827</td><td>三角形に近い。海に面するのは南のネウムのあたりだけ</td></tr>
+        <tr><td>9</td><td><strong>モンテネグロ</strong></td><td>北42.8° 東19.2°</td><td>13,727</td><td>アドリア海の南の岸。5か国と接する</td></tr>
+        <tr><td>10</td><td><strong>アルバニア</strong></td><td>北41.1° 東20.1°</td><td>28,336</td><td>アドリア海とイオニア海の岸に、南北に細長い</td></tr>
+        <tr><td>11</td><td><strong>セルビア</strong></td><td>北44.2° 東20.8°</td><td>77,629</td><td>バルカン半島の内陸。海に面さない。8か国と接する</td></tr>
+        <tr><td>12</td><td><strong>コソボ</strong></td><td>北42.6° 東20.9°</td><td>10,913</td><td>セルビアの南。海に面さない</td></tr>
+        <tr><td>13</td><td><strong>北マケドニア</strong></td><td>北41.6° 東21.7°</td><td>25,385</td><td>ギリシャの北。海に面さない</td></tr>
+        <tr><td>14</td><td><strong>ギリシャ</strong></td><td>北39.5° 東22.6°</td><td>106,704</td><td>南へ突き出た半島と、エーゲ海・イオニア海の島々、南にクレタ島（島を含めると131,353）</td></tr>
+        <tr><td>15</td><td><strong>ポルトガル</strong></td><td>北39.7° 西8.0°</td><td>87,952</td><td>イベリア半島の西の、縦長の長方形。大西洋に面する</td></tr>
+        <tr><td>16</td><td><strong>ジブラルタル</strong></td><td>北36.1° 西5.4°</td><td>3.7 ※</td><td>イベリア半島の南の端、スペインにつながる。この縮尺では点</td></tr>
+        <tr><td>17</td><td><strong>スペイン</strong></td><td>北40.4° 西3.6°</td><td>494,246</td><td>イベリア半島の大部分。<strong>東経0度が通る</strong>。地中海にバレアレス諸島、アフリカの北岸にセウタとメリリャ</td></tr>
+      </table>
+      </div>
+      <p style="font-size:12.5px;color:var(--ink-faint)">中心と面積は Natural Earth v5.1.2（1:1000万）から本教材が計算した値で、<strong>国の公式統計とは一致しません</strong>。※ Natural Earth の形は、<strong>バチカンが7つの点・0.01km²</strong>、<strong>ジブラルタルが3.69km²</strong>しかなく、形として使えません。国のページでは、この2つだけ<strong>層1を OpenStreetMap の輪郭</strong>（バチカン0.49km²、ジブラルタルの陸の境界6.59km²）で描いています（付録A）。サンマリノ（東経12.44度）とバチカン（東経12.45度）は中心の経度の差が0.01度しかなく、計算の方法やデータで順が入れ替わりえます。セルビアとコソボの差も0.06度です。</p>
+
+      <h3>隣り合い</h3>
+      <p>陸の国境で接している国を数えました（Natural Earth v5.1.2 の国境で、本教材が計算）。<strong>域内</strong>は17か国どうし、<strong>域外</strong>は17か国以外の国です。</p>
+      <div class="table-scroll">
+      <table class="mini-table">
+        <tr><th style="width:20%">国</th><th style="width:42%">域内で接する国</th><th>域外で接する国</th></tr>
+        <tr><td><strong>アンドラ</strong></td><td>1（スペイン）</td><td>1（フランス）</td></tr>
+        <tr><td><strong>イタリア</strong></td><td>3（スロベニア・サンマリノ・バチカン）</td><td>3（フランス・スイス・オーストリア）</td></tr>
+        <tr><td><strong>サンマリノ</strong></td><td><strong>1</strong>（イタリア）</td><td><strong>0</strong></td></tr>
+        <tr><td><strong>バチカン</strong></td><td><strong>1</strong>（イタリア）</td><td><strong>0</strong></td></tr>
+        <tr><td><strong>マルタ</strong></td><td><strong>0</strong></td><td><strong>0</strong></td></tr>
+        <tr><td><strong>スロベニア</strong></td><td>2（イタリア・クロアチア）</td><td>2（オーストリア・ハンガリー）</td></tr>
+        <tr><td><strong>クロアチア</strong></td><td>4（スロベニア・ボスニア・ヘルツェゴビナ・セルビア・モンテネグロ）※</td><td>1（ハンガリー）</td></tr>
+        <tr><td><strong>ボスニア・ヘルツェゴビナ</strong></td><td>3（クロアチア・セルビア・モンテネグロ）</td><td><strong>0</strong></td></tr>
+        <tr><td><strong>モンテネグロ</strong></td><td><strong>5</strong>（クロアチア・ボスニア・ヘルツェゴビナ・セルビア・コソボ・アルバニア）</td><td><strong>0</strong></td></tr>
+        <tr><td><strong>アルバニア</strong></td><td>4（モンテネグロ・コソボ・北マケドニア・ギリシャ）</td><td><strong>0</strong></td></tr>
+        <tr><td><strong>セルビア</strong></td><td><strong>5</strong>（クロアチア・ボスニア・ヘルツェゴビナ・モンテネグロ・コソボ・北マケドニア）</td><td>3（ハンガリー・ルーマニア・ブルガリア）</td></tr>
+        <tr><td><strong>コソボ</strong></td><td>4（セルビア・モンテネグロ・アルバニア・北マケドニア）</td><td><strong>0</strong></td></tr>
+        <tr><td><strong>北マケドニア</strong></td><td>4（セルビア・コソボ・アルバニア・ギリシャ）</td><td>1（ブルガリア）</td></tr>
+        <tr><td><strong>ギリシャ</strong></td><td>2（アルバニア・北マケドニア）</td><td>2（ブルガリア・トルコ）</td></tr>
+        <tr><td><strong>ポルトガル</strong></td><td><strong>1</strong>（スペイン）</td><td><strong>0</strong></td></tr>
+        <tr><td><strong>ジブラルタル</strong></td><td><strong>1</strong>（スペイン）</td><td><strong>0</strong></td></tr>
+        <tr><td><strong>スペイン</strong></td><td>3（ポルトガル・アンドラ・ジブラルタル）</td><td>本土で1（フランス）。セウタとメリリャでモロッコとも接する</td></tr>
+      </table>
+      </div>
+      <p style="font-size:12.5px;color:var(--ink-faint)">※ クロアチアとモンテネグロが接するのは、クロアチアの南の端（ドゥブロヴニクのあたり）だけです。この部分は、ボスニア・ヘルツェゴビナの海岸（ネウム）で本土から切れています。本土だけで数えると、クロアチアの域内の隣国は3です。</p>
+      <div class="box principle"><span class="lab">隣り合いから読める構造</span>
+      <ul class="rule-list">
+        <li><strong>要はセルビアとモンテネグロ</strong>——域内でそれぞれ5か国と接する。セルビアは域外の3か国を足すと8か国で、この地域でいちばん多い</li>
+        <li><strong>1か国とだけ接する国が4つ</strong>——サンマリノとバチカン（イタリア）、ポルトガルとジブラルタル（スペイン）</li>
+        <li><strong>陸の隣国が無い国</strong>——マルタ</li>
+        <li><strong>海に面していない国が6つ</strong>——北マケドニア・コソボ・セルビア・アンドラ・サンマリノ・バチカン。3-1 のリヒテンシュタインのような二重内陸国（隣国がすべて内陸）は、この地域には無い</li>
+        <li><strong>1つの国に囲まれた国が2つ</strong>——サンマリノとバチカンは、周りをすべてイタリアに囲まれている。Natural Earth の国の形で数えると、このような国は世界にあと1つ（レソト。南アフリカ共和国に囲まれる）しかない（演習3）</li>
+      </ul></div>
+    </section>
+
+    <section id="capitals">
+      <div class="sec-head"><span class="idx">05</span><h2>首都</h2></div>
+      <p>§04 で形を置いてから、この図に進んでください。まず層1だけで首都の場所を指で差し、名前を言ってから層3を出します。</p>
+      <div class="cc-card" data-cc="r3-2-capitals">
+        <div class="cc-ctl"><div class="cc-row">
+          <button class="cc-lay" data-layer="L1" aria-pressed="true">層1 形</button>
+          <button class="cc-lay" data-layer="L3" aria-pressed="true">層3 首都</button>
+          <button class="cc-full" type="button" aria-expanded="false" title="地図を画面いっぱいに広げる（Esc で閉じる）">拡大 ⤢</button>
+        </div></div>
+        <div class="cc-maps">
+          <div class="cc-scroll"><div class="cc-fig cc-1to1" style="--w:1332;--h:620" data-deg="44" data-src="../image/memoryverse/cards/r3-2-capitals.svg?v=r109"><p class="cc-status">地図を読み込み中…</p><p class="cc-fallback">地図を読み込めませんでした</p></div></div>
+        </div>
+        <div class="cc-src">
+          <p><b>首都</b>：黄色の点。縮尺は §04 と同じ（1度 = 44px、標準緯線は北緯42度）。首都の位置は Natural Earth v5.1.2 の人口地点（首都として入っている16）。本教材が作成。</p>
+        </div>
+      </div>
+      <div class="table-scroll">
+      <table class="mini-table">
+        <tr><th style="width:5%">順</th><th style="width:22%">国</th><th style="width:22%">首都</th><th>注記</th></tr>
+        <tr><td>1</td><td>アンドラ</td><td>アンドラ・ラ・ベリャ</td><td></td></tr>
+        <tr><td>2</td><td>イタリア</td><td>ローマ</td><td>バチカンはローマの中にある</td></tr>
+        <tr><td>3</td><td>サンマリノ</td><td>サンマリノ（市）</td><td>国と首都が同じ名前</td></tr>
+        <tr><td>4</td><td>バチカン</td><td>バチカン</td><td>都市国家。国全体が1つの都市</td></tr>
+        <tr><td>5</td><td>マルタ</td><td>バレッタ</td><td></td></tr>
+        <tr><td>6</td><td>スロベニア</td><td>リュブリャナ</td><td></td></tr>
+        <tr><td>7</td><td>クロアチア</td><td>ザグレブ</td><td></td></tr>
+        <tr><td>8</td><td>ボスニア・ヘルツェゴビナ</td><td>サラエヴォ</td><td></td></tr>
+        <tr><td>9</td><td>モンテネグロ</td><td>ポドゴリツァ</td><td></td></tr>
+        <tr><td>10</td><td>アルバニア</td><td>ティラナ</td><td></td></tr>
+        <tr><td>11</td><td>セルビア</td><td>ベオグラード</td><td></td></tr>
+        <tr><td>12</td><td>コソボ</td><td>プリシュティナ</td><td>国家としての承認は §07</td></tr>
+        <tr><td>13</td><td>北マケドニア</td><td>スコピエ</td><td></td></tr>
+        <tr><td>14</td><td>ギリシャ</td><td>アテネ</td><td>この地域の東の端の近く</td></tr>
+        <tr><td>15</td><td>ポルトガル</td><td>リスボン</td><td>この地域の西の端（大西洋の岸）</td></tr>
+        <tr><td>16</td><td>ジブラルタル</td><td>——</td><td>イギリスの海外領土で、国ではない。首都は数えない（Natural Earth でも町のジブラルタルは国の首都として入っていない）</td></tr>
+        <tr><td>17</td><td>スペイン</td><td>マドリード</td><td>イベリア半島のほぼ中央</td></tr>
+      </table>
+      </div>
+      <div class="box teach"><span class="lab">密なところから覚える</span>
+      <p>首都の点がいちばん密なのは<strong>バルカン半島の南西</strong>です。ポドゴリツァ（モンテネグロ）・ティラナ（アルバニア）・プリシュティナ（コソボ）・スコピエ（北マケドニア）の4つが、東西・南北とも約2度（1度44px の図で約90px）の中に入ります。この4つは、<strong>西の海岸から東へ</strong>、ポドゴリツァとティラナ（海に近い）→ プリシュティナとスコピエ（内陸）の順に置くと崩れにくくなります。</p></div>
+    </section>
+
+    <section id="axes">
+      <div class="sec-head"><span class="idx">06</span><h2>横断する軸——3本</h2></div>
+      <p>3-1 と同じく、2章で立てた3本の軸——<a href="memoryverse_2-1.html#cos">2-1 の \(\cos\varphi\)</a>、<a href="memoryverse_2-2.html">2-2 のプレートの境界</a>、<a href="memoryverse_2-3.html">2-3 の気候の帯と海流</a>——の上に、この地域を置きます。書くのは<strong>どこにあるか</strong>だけで、なぜそうなるかは「地球と人類」第I部 第1章（準備中）が受け持ちます。<strong>西ヨーロッパと違うところ</strong>が、この節の中心です。</p>
+
+      <h3 id="axis-cos">① \(\cos\varphi\)——展開図で何倍に見えるか</h3>
+      <p>17か国の本土は<strong>北緯35.8〜47.1度</strong>にあり、2-1 の展開図では東西に<strong>1.23〜1.47倍</strong>に伸びて見えます。西ヨーロッパ（北緯42.3〜54.9度で1.35〜1.74倍）より<strong>倍率が小さく、幅も狭い</strong>——南にあるぶん、展開図の歪みが少ない地域です。</p>
+      <div class="table-scroll">
+      <table class="mini-table">
+        <tr><th style="width:28%">範囲</th><th style="width:30%">緯度</th><th>展開図で東西に伸びる倍率 \(1/\cos\varphi\)</th></tr>
+        <tr><td><strong>17か国の本土全体</strong></td><td>北緯35.8〜47.1度</td><td><strong>1.23〜1.47倍</strong></td></tr>
+        <tr><td>マルタ</td><td>北緯35.8〜36.0度</td><td>1.23〜1.24倍（いちばん小さい）</td></tr>
+        <tr><td>ギリシャ</td><td>北緯36.4〜41.8度</td><td>1.24〜1.34倍</td></tr>
+        <tr><td>スペイン</td><td>北緯36.0〜43.8度</td><td>1.24〜1.39倍</td></tr>
+        <tr><td>ポルトガル</td><td>北緯37.0〜42.2度</td><td>1.25〜1.35倍</td></tr>
+        <tr><td>イタリア</td><td>北緯37.9〜47.1度</td><td>1.27〜1.47倍（北の端がこの地域でいちばん大きい。南北に長いので幅もいちばん大きい）</td></tr>
+        <tr><td>スロベニア</td><td>北緯45.4〜46.9度</td><td>1.42〜1.46倍</td></tr>
+      </table>
+      </div>
+      <figure class="fig fig-cmp">
+        <svg viewBox="0 0 842.5 221.3" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="南ヨーロッパの17か国を、展開図での見え方（左）と真上から見た形（右）で同じ縮尺に並べた図">
+<text class="cmp-h" x="229.6" y="20" font-size="12.5" fill="var(--ink)" text-anchor="middle">展開図での見え方（赤道の縮尺）</text>
+<text class="cmp-h" x="660.8" y="20" font-size="12.5" fill="var(--ink)" text-anchor="middle">真上から見た形</text>
+<line x1="469.1" y1="8" x2="469.1" y2="191.3" stroke="var(--line)" stroke-width="1"/>
+<g class="cmp-r1">
+<path d="M144.3 84.7l-0.5 -0.1 -0.2 0.4 -1.3 0.4 -0.8 -0.1 -0.4 -0.6 0.4 -0.1 0 -0.2 -0.4 -0.1 0.6 -1.3 0.9 0 0.7 0.3 1.2 0.1 -0.1 0.2 0.6 0.3 -0.5 0.2zM202.7 47l1.6 0.5 1.5 -0.4 0.8 0 2 -0.8 1.1 0.2 0.7 0.4 1.5 0.1 0.4 -0.6 1.3 -0.4 0.3 -0.9 0.9 -0.4 0.2 -0.8 -0.6 -0.6 0.2 -0.2 1.1 -0.4 1 -0.7 0.4 -0.7 0.9 -0.2 0.3 0.1 0.2 0.4 -0.2 1.5 0.1 0.4 0.8 0.3 1 0.9 0.9 0.3 0.5 -0.1 0.9 0.2 0.3 0.3 -0.8 0.9 1.2 0.4 0.4 0.7 -0.1 0.6 1.1 0.1 0.7 -0.9 -0.9 -0.7 0.4 -0.3 -0.2 -0.5 0.7 -0.3 0.3 -0.8 1.5 -1 0.5 -1.1 -0.1 -1 -0.3 -0.2 0.5 -0.7 0.8 0 0.3 0.4 0.6 -0.4 0.1 1.4 1 0.8 1.5 0.1 0.4 -0.2 0.1 -0.5 0.5 0.2 1.7 -0.4 0.5 0.2 0.2 0.6 0.5 0.4 0.2 0.5 0.3 0 0.9 -0.5 -0.7 -0.7 0.5 -0.8 -1.2 -0.5 0.2 -0.2 -0.1 -0.8 0.6 -0.7 1.1 -0.3 0.5 0.1 0 0.5 0.6 0.2 1.7 0.2 0.2 -0.5 -0.1 -0.5 -0.6 -0.1 -0.3 -0.4 0.6 -0.9 -0.1 -0.5 0.4 -0.7 0.8 0.2 1.3 -0.2 1 0.4 -0.1 0.4 3 0.2 0.6 -0.5 0.4 -1 0.9 -0.6 1.6 -0.3 1 0.2 0.7 -0.4 0.6 0.2 1.7 0 0.6 0.2 1.8 -0.6 3.1 -0.6 0.2 0 0 0.3 -1 0.7 0.4 0.7 -0.2 0.2 1.5 0.5 0.1 0.8 0.8 0.3 0.7 0.8 1.5 0.4 2.1 0.1 1 0.4 3.5 0.3 0.9 0.3 2.8 -0.1 2.4 0.5 -0.2 0.7 -0.9 0.1 -0.8 0.6 -1 0.4 -0.8 0.7 0.5 0.9 0.3 0 -0.1 -0.2 0.5 0 0.9 0.5 0.9 0 0.1 0.2 -0.3 0.4 -1.2 0.7 -0.5 0.6 0.5 0.5 1.1 -0.2 0.2 0.2 -0.7 1.5 0.2 0.2 2.2 0.7 1.2 1.2 -0.5 0.6 -1.5 -0.1 0.2 -0.2 0.9 -0.1 -0.8 -0.3 0.2 -0.3 -0.3 -0.3 -1.7 -1 -0.2 0 -0.3 0.3 0.3 0.3 -1.7 0.7 -0.3 -0.1 0.6 -0.3 -0.6 -0.4 -1.3 -0.1 -0.4 -0.3 -0.8 0.3 -0.3 -0.2 0.1 0.4 -0.5 0.1 -0.1 0.3 0.8 0 -0.7 0.6 -1.5 0.2 -1.8 0.8 -3.9 1.3 0 -0.5 0.5 0 -0.1 -0.2 0.6 0.1 0 -0.3 0.7 -0.4 -0.5 0.2 -0.3 -0.4 -0.7 0.5 0.1 0.2 -0.6 -0.1 0 -0.2 -0.2 0.1 0.5 0.3 -1.3 0.1 -0.6 0.6 0 0.5 -0.4 0.8 -0.7 0.1 -0.1 0.2 0.4 0.4 0.2 -0.5 0.2 0.1 0.1 1 0.4 0 0.5 -0.3 0.2 1.4 -0.2 -0.3 -0.1 0.4 0.4 0.1 0.4 0.5 -0.2 0.1 0.2 0.2 0.2 -0.3 -0.2 -0.3 1.2 1 0.2 -0.2 0.4 0.2 -0.5 1.2 -0.5 0.5 -0.2 -0.4 0.1 -0.5 -0.3 0.1 -0.2 0.4 0.3 0 -0.2 0.2 0.3 0.2 -0.1 0.2 -0.5 0.1 -0.8 -0.6 -0.4 0.2 0.2 0.1 -0.4 1.2 0.4 1.2 0 1.2 1 2.6 1.2 1.3 2.3 1.6 2.6 0.8 3.6 2.4 2.4 1 0.5 -0.2 1.1 0.7 2.4 4.8 1.2 3.6 1.4 2.2 5.4 4.1 1.6 0.6 0.3 1 1.5 0.6 1.3 0.2 0.6 0.4 1.3 0.5 3.1 0.2 6.4 -0.4 1.2 0.3 0.5 0.3 0 1.2 -3.1 1.8 0 0.9 0.7 0.8 6.9 2.8 5.1 1.4 2.4 1.1 2.2 1.7 5.3 1.7 0 0.3 0.6 -0.1 0.4 0.6 -0.1 0.5 2.2 1.1 2.2 2.1 0.9 1.4 0 0.4 -1.2 1.3 -0.2 1.8 -0.6 0.2 -2.9 -1.2 -0.9 -0.9 0.3 -0.2 0 -0.3 -0.6 -0.2 0.5 -0.5 -0.9 -0.8 -0.3 -0.8 0.1 -0.1 -0.5 -0.3 -3.9 -0.2 -1.2 -0.3 -2.2 -1 0.5 -0.3 -0.2 -0.3 0.8 0 0.3 -0.3 -0.9 0 -0.6 0.2 -0.4 -0.3 -1.2 -0.1 -0.8 0.3 -0.7 0.5 -1.4 1.6 -0.6 1.1 -1.3 1.3 -0.1 0.5 0.3 0.8 -0.9 0.9 -0.6 1.2 0.4 0.6 -0.1 0.3 0.3 0.3 0.9 0.4 1.7 0.2 0.7 0.6 1.8 0.8 0.9 0.7 0.7 0.1 -0.4 0.8 0 0.7 0.3 0.7 -0.2 1.3 0.3 0.6 0.6 0.1 -0.4 0.2 0 0.5 -0.8 0.7 -0.1 -0.2 -0.8 0.1 -0.7 -0.3 -1.3 0.2 -2.8 1.3 -0.5 1.1 0.4 1.9 0 1.1 -0.7 0.6 -2.2 1.1 -1.5 1.4 -0.5 1.5 -0.6 0.8 -0.8 0.2 -2.6 -0.1 -0.9 -0.3 -0.5 -0.6 0.2 -0.4 -0.3 -0.5 0.2 -0.6 -0.1 -0.8 1.9 -0.9 1.2 -2.4 -0.2 -0.7 -0.6 -0.4 -0.1 -0.3 1.8 -0.9 1.7 0 0.5 -0.5 0.2 -0.9 0 -0.7 -0.7 -0.4 -0.8 -1.3 -0.5 -3 -0.5 -1 -1.3 -1.3 -0.7 -1.6 -0.4 -1.4 0 -0.7 -1.6 -2.1 -1 0 -1.4 1 -0.7 -0.1 -0.3 -0.4 -0.6 0.1 0.2 -0.2 -0.2 -0.3 -1.5 -1.1 -0.9 0 -0.5 -0.4 -1 -0.4 0.3 -1 0.6 -0.2 0.1 -0.5 -1.2 -1.9 -1.2 -1.1 -1.7 0.3 -0.9 0.4 -0.6 -0.3 -1.6 0.7 -0.1 -0.6 1.5 -0.7 0 -0.4 -0.9 -0.4 -1.1 -0.8 -0.7 0.1 -0.3 0.3 -1.3 -0.3 0 0.5 -0.4 -0.1 0.1 -0.5 -0.4 -0.9 -0.6 -0.9 -0.5 -0.3 -0.7 -1.3 -1.5 -1.2 -1.4 0 -0.3 0.2 0.1 0.3 -0.3 0 -2.9 -1 -2.6 0.8 -0.7 -1.1 -1 -0.8 -1.6 -0.3 -1 -0.4 -0.2 0.2 -2.1 -2 -1.3 -0.9 -1 -0.3 -0.7 -1.6 -1.7 -1.2 -1.1 -0.5 -1 0 -1.9 -2.7 -1.3 -0.7 -1.8 -0.7 -1.8 -0.1 -0.3 0.6 -0.8 -0.3 -0.2 -0.3 0.1 -0.3 0.7 0.1 0.3 -0.5 -0.4 -0.9 -0.3 0.1 -0.5 -0.9 -0.8 -0.3 -0.2 -0.5 -0.5 -0.4 -2.4 -0.6 0.4 -0.4 0.2 -0.6 -0.2 -0.3 -1.4 -0.4 -1.1 0.1 0.1 0.1 -0.3 0.1 -0.2 -0.1 -0.2 -0.6 0.4 -0.4 0.3 -1.3 -0.2 -1.1 -1 -1.6 -1.3 -1.1 -0.7 -3.9 -0.8 -1.2 -1 -0.8 -1.1 -0.4 -0.3 0.2 -1.3 -0.7 -0.3 0.2 0.3 0.2 -0.1 0.3 -1.7 -1 -0.7 -0.1 -1.5 -1.1 -0.5 0.1 -0.8 -0.6 -1.5 -0.7 -0.2 0.5 -0.7 -0.2 -0.5 -0.5 -3.7 -0.7 -3.3 1.5 -0.6 1.2 -1.7 0.7 -0.4 0.9 -0.7 0.7 0.1 0.3 -1.1 0.6 -3.6 1.1 -2.6 0.1 -0.2 -0.8 2.3 -2.2 -0.5 -0.9 0.1 -0.3 -3.5 0.5 -2.1 -0.9 -1.9 -0.4 -1.1 -1.3 0 -0.6 0.5 -0.2 -0.6 -0.4 -0.3 -0.7 1.2 -1 -0.1 -0.2 0.3 -0.4 1 0 -0.6 -1.2 0.1 -0.4 -0.8 -0.4 -1 0.1 -1.1 -0.6 -0.2 -1.1 -0.8 -0.3 -0.6 -0.7 1.5 -0.6 1.2 0.3 1.2 -0.9 0.8 -0.2 0.3 0.1 0.6 -0.5 -0.2 -0.7 0.8 -0.9 -2 -1.1 -0.3 -0.9 0.1 -0.5 -1.6 -0.7 -0.4 -0.9 0.2 -0.5 1.6 -0.3zM262.7 69.3l0.3 -0.5 -0.1 -0.5 -0.7 0.2 -0.4 0.4 0.2 0.3zM296.8 130.8l1 0.3 -0.9 0.5 -0.1 0.3 0.1 0 -0.8 1.3 -3.2 3.5 0.1 0.6 -0.6 1.6 -0.8 0.9 0.1 1.7 1.7 0.8 0.1 0.2 -0.2 -0.1 -0.3 0.3 -0.1 -0.3 -0.3 0.4 0.4 0.6 0.3 0 -0.2 0.1 0.2 0.3 0.6 0.2 -0.2 0.6 0.4 0.1 0.2 0.3 -0.8 0.1 0 0.3 -1.2 0.5 -0.7 1.4 0.5 1.4 -0.5 0.2 -0.9 -0.5 -0.3 0.1 -1.1 -0.4 -1.1 0.3 -2.2 -0.9 -1 -0.1 -1.1 -1.7 -1.2 -1.1 -1.7 -0.7 -2.6 0.1 -1.9 -0.8 -1.6 -1.1 -1.3 -0.3 -1.9 -1 -1.2 -1.1 -1.6 0 -0.3 -0.5 -0.6 -0.4 -3.1 0.1 -0.9 -1 -0.8 -0.1 -0.9 -1.5 0.4 -0.3 0.3 -2.1 0.9 -0.6 0.4 0.1 0.6 -0.6 0.5 0.1 0.2 -0.2 0 -0.7 0.4 0.1 0.6 1.1 0.9 0.6 1.8 -0.6 -0.1 -0.7 0.5 -0.5 1.2 0.2 0.3 -0.4 0.9 -0.1 0.6 0.5 0.2 0.8 1.3 -0.1 0.4 0.2 0 0.4 1.2 0.6 1.5 0.3 2.5 -0.8 0.7 0.2 2.1 0.1 1.8 -0.3 0.8 0 1.4 -0.4 1.1 -0.8 1.9 -0.4 2 0.7 1 -0.3 0.6 -1 0 -0.2 0.1 0.5 0.5 0.1zM293.2 125.2l-0.2 0.4 -0.3 -0.2 0.2 -0.2zM290.1 129.3l0.6 0.6 -0.2 0.2 -0.5 -0.4zM289.5 128.8l0.3 -0.4 0.3 0 0.3 0.3 -0.3 0.1 0.1 0.3 -0.2 0zM289.1 128.2l-0.4 -0.2 -0.4 -0.2 0.8 -0.1zM286 127.9l-0.3 0 -0.1 -0.3 0.2 0.1zM283.4 128.2l0.1 -0.2 0.1 0.2zM279.2 104.2l-0.8 0.3 -0.5 -0.3 0.2 -0.5 1.1 0.3zM273.2 103.3l0.2 0 -0.2 0.2zM270.3 126.3l0.5 0 -0.5 0.2zM267.1 157.5l0.1 0.2 -0.3 -0.1 0 -0.1zM264.4 161.5l-0.1 0.2 -0.9 -0.3 0.3 0zM261.7 52.4l0.2 -0.1 0.4 0.2 -0.6 0 -0.6 0.8zM260.6 134.8l0.5 -0.1 0.6 0.2 -0.8 0.1zM261.2 52.1l0.4 0.2 -0.5 0.1zM258.5 134.5l-0.2 0.1 -0.4 -0.3 0.3 -0.1zM257.6 146.9l0.6 0.8 -0.3 0.2 -0.3 0 -0.7 -0.5 -0.2 -0.4zM245.3 85.8l0.6 0.7 -0.1 0.1 -0.7 -0.5zM240.4 80.9l-0.1 0.5 -0.4 0.3 0.4 0.3 -0.1 0.3 -0.9 -0.6 -0.2 0.2 -0.2 -0.2 -0.6 0.1 -0.2 0.2 -1.3 -0.2 -0.1 -0.3 0.4 -0.3 1.4 0.1 0.1 -0.3 0.6 0 0.2 0.2 0.7 -0.7zM239 86.2l0.1 0.2 -0.1 0.1 -0.2 0zM236.5 83.3l0 0.5 -0.3 -0.1zM233.9 78.4l0 0.4 -0.5 0.2 -0.2 -0.2 0.3 -0.4zM233.6 106.2l-0.6 1.6 -0.6 0.3 -0.9 1.1 0.3 1.3 0.9 0.7 -0.5 1.3 0.1 0.3 0.2 0 -0.4 0.5 0.2 0.4 -0.3 0.7 0 0.8 -0.5 2.4 0.2 0.2 -0.5 1.4 0.4 0.6 -0.8 0.7 0 1 -0.5 0.4 -0.2 -0.3 -0.6 0.1 -1.7 -1 -0.8 -0.1 -0.6 0.4 -1.6 -0.8 0.2 0.4 0.5 0 -0.7 0.9 0.3 1 -0.2 0.7 -1.9 1.2 -1.5 -0.6 -0.5 0.3 -0.3 0.5 0 -0.3 -0.5 -0.1 0.2 -0.5 -0.4 -0.2 -0.2 -1 -0.7 -0.1 0.2 -0.2 -0.2 -0.1 -0.2 0.1 -0.2 -0.4 -0.2 0 -0.1 -0.5 -0.3 -0.1 -0.4 -0.5 0.7 -0.9 -0.7 -0.9 0.4 -0.5 -0.2 -0.5 0.8 -1.1 -0.2 -2 0.8 0.6 0.5 0 -0.7 -0.2 0.5 -0.7 -0.3 0.2 0.4 -1 -0.3 -0.5 -0.7 -0.2 -0.3 0.2 0.3 0 -0.3 0.5 -0.5 -0.6 0.2 -1.2 -0.4 -0.2 1.1 -0.3 0.2 -0.4 -0.3 -0.7 0.1 -1.4 -1 -0.7 0 -1.3 -0.6 -0.4 -0.4 -0.9 -0.8 0.2 -0.2 -0.1 0.2 -0.3 -0.3 -0.1 -0.3 0.6 -0.2 -0.3 -0.1 -0.4 0.4 -0.2 0.3 -0.5 -0.7 -0.4 0.9 -1.7 -0.1 -0.4 -0.3 -0.1 0.1 -0.4 0.4 0 0.1 0.6 0.8 0.6 2.3 0.3 0.9 -0.3 0.5 -0.5 0.7 -0.2 0.6 0 0.6 -0.3 0.7 -0.9 0.4 -0.1 1 -0.9 1.5 -0.4 0.3 -1 0.6 -0.2 0.4 0.3 0 0.4 0.2 0.1 0 -0.3 0 0.3 0.6 0 0 -0.2 0.9 0.3 -0.1 0.2 0.4 0.3 0 0.5 0.3 -0.6 0.6 0 0.4 0.2 0 0.3 -0.2 0.2 -0.1 -0.1 -0.3 0.8 0.4 -0.2 0.1 0.3 0.7 -0.1 0.5 0.2 -0.8 0 -0.2 0.7 -0.8 0.1 0.8 0.2 0.8 -0.1 -0.3 0.3 1.2 0.5 -0.8 0.5 1 1.3 0.1 1zM229.9 98.6l-0.1 0.6 -0.4 -0.1 0.3 -0.7zM229.4 98.7l-0.7 0.1 0 -0.2 0.5 -0.4zM218.6 122.4l0.3 -0.1 -0.2 0.3 -0.3 0.9 -0.3 0 -0.7 -1.5 0.2 -0.2 0.9 0.2zM216.4 100.6l-0.1 0.6 -0.4 -0.1 0.2 -0.5 0.5 -0.3 0.1 -0.4 0.5 -0.2 0.2 0.6zM217 121l0 0.8 -0.2 0.2 -0.4 -0.1 -0.3 -0.5zM262 69.2l0 -0.5 0.9 -0.4 0.1 0.5 -0.3 0.5zM285.8 157.5l0 0.5 -0.4 0.3 -1.1 -0.3 -0.9 -0.5 -0.3 -1.1 0.7 -0.2 -0.4 0.2 1.1 0.1zM282.7 155.4l0.6 0.3 -0.8 0.3 -0.9 -0.3 0 -0.3zM275.7 52l-0.6 -0.3 0.1 -0.3 -0.3 -0.2 2 -0.2 -0.5 -0.4 1.5 0.1 0.5 -0.6 -1.2 -1.2 -2.2 -0.7 -0.1 -0.6 0.6 -1.1 -0.2 -0.2 -1.1 0.2 -0.5 -0.5 0.5 -0.6 1.2 -0.7 0.3 -0.4 -0.1 -0.2 -0.9 0 -0.9 -0.5 -0.5 0 0.1 0.2 -0.3 0 -0.5 -0.9 0.8 -0.7 1 -0.4 0.8 -0.6 0.9 -0.1 0.2 -0.7 3.9 0.4 1 0.5 2.9 0 0.5 0.2 0.5 0 0.4 0.4 0.6 -0.6 1 -0.2 0.3 -0.4 0.9 -0.2 0.7 -1 0.9 -0.2 0.3 0.2 0.4 -0.4 0.7 -0.1 3.6 0 0.8 0.3 0.5 -0.1 0.4 -0.5 0.9 -0.1 0.1 -0.4 1 0.2 1.4 -0.3 1.8 0.6 -0.5 -0.8 0 -0.8 1.3 -0.5 2 0 0.6 0.3 -0.3 0.7 0.2 0.3 1 0.8 -0.4 0.3 0 0.2 1.4 0.9 0.2 0.5 -1.8 -0.5 -1 0.3 -0.3 0.4 0.4 1.2 -0.9 0 -0.5 -0.2 -1 0.1 0.1 0.5 -0.5 0.4 -2.2 0.5 -0.8 0.5 -1.2 0 -0.5 1.1 1.2 0.8 -0.4 1.6 0.1 0.5 -0.5 0.3 -1.9 0 -0.3 0.5 -1.9 0.5 0.3 0.5 0.5 0 0.5 0.5 -1.1 0.4 0.3 0.8 0.7 0.5 -0.4 0.3 -2.1 0.3 -0.9 -0.6 -1.5 -0.4 -0.4 0.5 -0.9 0.1 -0.2 -0.3 -1.2 -0.5 0 -0.3 -0.8 -0.4 -0.2 -0.7 -0.9 0.7 -0.3 0.8 -1.1 0.5 -1.7 -0.2 -1.4 0.3 -1.3 -0.5 -0.1 0.3 0.2 0.2 -1 0.5 -1.4 -0.4zM305.4 40.1l3.5 0.9 1 0.9 0.2 -0.2 0.7 0.2 0.6 1 1.8 1.5 0.7 0.3 1 0.1 0.4 0.4 0.3 0.8 0.5 0.1 -0.3 0.2 0.5 0 0.1 0.3 0.5 -0.1 0.2 0.2 1.1 -0.1 0.9 0.2 0.6 0.5 0.1 0.5 1.7 0.3 0.5 0.5 0.4 -0.2 2.1 0.2 1.4 -0.1 1.2 0.4 0.5 -0.1 0.4 0.1 0.9 -0.5 1 -0.3 0.9 -1 1.3 0.3 0.4 -0.3 1 -0.2 0.1 0.1 -0.4 0.3 0.4 0.3 -0.6 0.1 -0.1 0.4 0.6 0.6 0.2 0.6 0.6 0.4 -0.7 0.6 -0.1 0.5 0.5 0.4 0.8 -0.3 1 0.6 -0.4 0.2 -0.7 -0.1 -0.1 0.5 0.3 0.4 -0.6 0.3 0.1 0.2 1.1 0.4 0.2 0.4 0.6 0.3 2.5 0.5 0.3 0.3 -0.2 0.3 -1.1 -0.1 -0.7 0.2 -1.2 -0.4 0.2 0.6 -1 0.1 0.4 0.6 0.1 1.2 0.4 0.2 -0.7 0.5 -0.5 -0.2 -0.3 0.1 0.3 0.6 -1.4 0 -1.2 -0.6 -0.1 -0.3 0.4 -0.3 -0.2 -0.3 -0.6 -0.2 -0.6 -0.7 -0.4 0.2 -0.3 -0.4 -0.8 0.1 0 0.4 -0.3 0 -1.2 -0.6 -1.9 -0.5 -0.9 0.6 -1.7 -0.5 -1 0.7 -0.8 0.2 -1.7 -1.1 -0.6 0.1 -0.6 0.4 -1 0 0.2 -0.3 -0.6 0.1 0 -0.3 -0.7 0.3 -1.2 -0.6 -0.3 0.4 -0.6 0.1 -1.5 -0.6 -0.2 -0.3 -0.3 0.1 0 -0.3 -0.7 0.1 -0.2 -0.5 -1.3 1.1 -3.1 -0.4 -0.5 0.2 -0.5 0.7 -0.5 0.2 -0.6 1.2 -0.2 0.1 -1.2 -0.3 -1 -0.8 -0.6 -0.8 -0.4 -0.1 -0.1 -0.4 -1.5 0 -1 0.3 -0.4 1.6 0.1 0.8 -0.4 0.5 0.5 0.9 -0.6 0.5 0.1 0.3 0.9 0.8 0.9 -0.3 0.9 1 0.6 0.1 0.2 0.4 -0.4 0.5 1.2 0.3 0.5 1.1 -0.3 0.4 0.7 0.2 -0.1 0.9 0.3 0.8 1.2 1.4 1 0.3 0.2 0.4 0.7 0.3 2 1.7 0.3 0.7 3.5 2.5 1.3 0.6 1.4 0.3 0.2 0.3 -0.3 0.9 0.3 0.6 1.2 0.9 0.5 0.7 2 1.2 0.4 0.9 -0.3 0.1 -1.3 0 -0.5 -0.6 0.3 -0.2 -0.7 0.1 0.3 -0.1 -0.3 -0.1 -0.1 -0.3 -0.2 0.1 -1 -0.8 -2.2 -0.9 -2.6 -2.2 -2.8 -0.4 -1.1 -0.7 -1.5 0 0.9 -0.3 -0.4 -0.1 -3.5 0.2 0.6 0.4 -0.7 0.1 -1.6 -0.2 0.3 -0.5 -0.7 -0.1 0.2 -0.1 -0.3 -0.1 0.2 -0.2 -0.2 -0.4 0.5 -0.2 -0.6 0 0.5 -0.1 -0.2 -0.2 0.2 -0.2 -0.3 0.2 -1.5 -0.9 -0.9 -0.1 -0.3 -0.4 -0.7 -0.3 0.5 0.2 0.2 -0.1 -2.5 -1.2 -3.4 -3 0.1 -0.4 -0.5 -0.3 0.3 -0.2 0.4 0.4 0.4 -0.3 -0.3 -0.1 0.3 0 -0.1 -0.2 1 0.5 -0.1 -0.3 0.2 -0.2 -0.4 -0.4 1.8 0.8 1.1 -0.1 -0.9 -0.1 -1.5 -0.8 -2.5 -2 -0.8 -0.4 -1.4 -1.7 0 -1.5 0.4 -1 -0.7 -1.5 -2.2 -1.2 -0.9 -0.7 0 -0.3 -0.4 -0.2 0.2 0.1 -0.2 0.2 -1.5 -0.6 -1 -0.1 -0.4 0.6 -0.4 1.6 -0.3 0.2 -0.3 -0.1 0.1 0.3 -0.4 0.2 0 0.4 -0.1 -0.1 0.2 0.5 -0.1 0.4 -0.9 0.4 0.1 -0.5 -0.5 -0.5 0.1 0.4 0.3 0.2 -0.4 0.3 -0.2 0.6 -0.5 0 0.2 0.2 -0.2 0.6 0.3 0.2 -0.8 0 -0.4 -0.3 0.3 0.6 -0.2 0.1 0 -0.4 -1.2 -0.7 0.3 0.1 0.3 -0.3 -0.6 0 0.2 -0.3 -0.4 -0.5 -1.6 -1.2 0.1 -0.2 -0.3 -0.3 1.3 -0.2 -1.4 -0.1 -0.1 -1.2 -0.2 -0.1 0.3 -0.2 -0.3 -0.3 0.4 -0.1 -0.7 -0.3 0.1 -0.2 -0.5 -0.8 0 -0.8 1.3 0.5 1.5 0 1.4 0.4 1 -0.5 -0.2 -0.2 0.1 -0.3 1.3 0.5 1.4 -0.3 1.7 0.2 1.1 -0.5 0.3 -0.8 0.9 -0.7 0.2 0.7 0.8 0.4 0 0.3 1.2 0.5 0.2 0.3 0.9 -0.1 0.4 -0.5 1.5 0.4 0.9 0.6 2.1 -0.3 0.4 -0.3 -0.7 -0.5 -0.3 -0.8 1.1 -0.4 -0.5 -0.5 -0.5 0 -0.3 -0.5 1.9 -0.5 0.3 -0.5 1.9 0 0.5 -0.3 -0.1 -0.5 0.4 -1.6 -1.2 -0.8 0.5 -1.1 1.2 0 0.8 -0.5 2.2 -0.5 0.5 -0.4 -0.1 -0.5 1 -0.1 0.5 0.2 0.9 0 -0.4 -1.3zM328.5 84.1l-0.1 0.6 0.7 0.8 -2.9 -1.5 -0.2 -0.7 -1.6 -0.4 -0.3 -0.5 -0.2 0.1 -1.4 -0.7 -0.2 -0.2 0.1 -0.2 -0.9 -0.2 -0.3 0.1 -0.7 -0.3 0.5 0.5 -0.2 0.1 -0.2 -0.3 -3.2 -0.8 0.1 -0.3 -0.3 -0.1 -2.2 -0.8 -1.9 -0.1 -0.5 -0.7 0.8 0.3 1.8 0 1.7 0.5 0.8 0.7 1 0.1 2.1 0.8 -0.5 -0.4 0.1 -0.2 -0.6 0 0.5 -0.3 1.2 0.1 0.5 1 4.1 2.1 1.2 0.3zM317.9 81.5l2.9 1 -4.1 -0.8 -0.5 -0.3 0.7 -0.1 -0.2 0.1zM313 79.3l1.8 0.7 -2.5 -0.1 -1.3 0.3 -2.2 -0.3 -0.2 -0.1 0.8 -0.4 -0.9 -0.1 1 -0.1 1.2 0.3zM309 77.7l-3.3 -0.8 1.4 -0.2 0.9 0.3 -0.7 -0.4 0.5 0 1.1 0.1 0.7 0.6 1.5 -0.1 3.6 0.5zM311.7 81.6l0.2 0.2 -0.3 0.3 -0.8 0 -0.3 -0.2 0.2 -0.2 -0.3 0 0.3 -0.2zM306.2 75.6l-0.1 -0.2 0.2 0.1 0.3 -0.3 -0.3 -0.4 0.2 0 2.7 0.2 1.3 0.2 -0.1 0.1 1 0.4 -0.5 0.4 -2.4 0.1zM305.7 75.4l-1.8 -0.6 -0.1 -0.2 1.1 0.1 1 0.6zM304.5 73.5l1.2 0.2 -1.8 0zM303 78.1l1.4 0.3 -0.5 0.3 -1 0.3 -0.6 -0.1 0.3 -0.3 -0.5 -0.2zM298.7 72.2l-0.7 -0.1 -0.8 -0.4 0.6 0zM294.5 69l-1 -1 1.3 0.4 0.7 0.9zM293.1 69.5l1.3 0.7 0.6 0.4 -1 -0.4zM293.4 67.9l-1.5 -0.8 -0.6 -0.8 1.8 1.1zM289.7 62.6l-2 -2.2 1.2 1.1 0.4 0.2 0 -0.3 0.2 0 1.6 0.9 0.3 0.5 -1.8 -0.8 1.5 1.3 0.6 0.2 -0.6 -0.6 2.3 1.5 -1 -0.3 0.6 0.3 0 0.3 -1 -0.3 0.5 0.4 -0.5 -0.1 -0.4 -0.7 0.3 -0.2 -0.8 0 -0.3 -0.4 -1.3 -0.7zM293 69.1l-0.2 0.2 -0.7 -0.3 0.6 0.5 -0.8 -0.4 -1.3 -1.6 -1.4 -0.9 -0.3 -0.4 1.2 0.8 0.6 0.1 0.4 0.7zM288.6 66.2l0.6 0.4 -0.4 -0.1 -0.2 -0.1zM287.7 59.6l0.2 0.2 -0.6 -0.1 -0.5 -0.4 0.6 0.1 -0.1 -0.2 0.3 0.1 -0.5 -0.5 0.8 0 -0.2 0.3 0.9 0.5 0.4 0.6 -0.1 0.2zM287.9 57.7l-1.4 -0.4 -0.1 -0.7 -0.2 0.1 0.2 0.1 -1.2 -0.1 -0.9 -0.6 0.5 -0.4 0.6 -0.1 0.2 -1.2 0.6 0.1 -0.2 0.1 0.5 0.6 -0.3 0.1 0.7 0 0 0.8 0.8 0.2 0 0.3 0.9 0.7 -0.6 0zM288.4 63.6l0 0.7 -0.5 -0.2 0.1 -0.6zM287.9 64.9l0.4 0.3 -0.6 -0.1zM286.3 64.4l0.5 0.3 -0.7 -0.4zM284.8 60.3l0.7 0.8 -0.3 0.2 -0.4 0 -0.5 -0.4 -0.4 -0.6 0.1 -0.5 -0.4 -0.1 0 -0.6 -0.4 -0.2 -0.4 -0.8 0.1 -0.4 1 0.4 0 -0.6 0.2 0.1 -1.4 -1.7 0.4 -0.7 0.4 0 0.4 1.5 0.3 0.4 0.6 0.3 -0.2 0.6 0.1 1.2 -0.1 0.1zM284.1 61.5l1.4 1.3 -0.3 0 -0.8 -0.6 0.3 0 -0.3 -0.3 -0.8 -0.1 0.2 -0.3 -0.5 -1.3 0.7 0.4zM282.5 60.6l0.2 0 -0.3 0.3 0.1 0.5 -0.3 -0.2zM319.8 80.3l-1.1 -0.5 0.7 0.2 -0.4 -0.3 0.9 -0.2 -0.4 -0.9 -2 -1.2 -0.5 -0.7 -1.2 -0.9 -0.3 -0.6 0.3 -0.9 -0.2 -0.3 -1.4 -0.3 -1.3 -0.6 -3.5 -2.5 -0.3 -0.7 -2 -1.7 -0.7 -0.3 -0.2 -0.4 -1 -0.3 -1.2 -1.4 -0.3 -0.8 0.1 -0.9 -0.7 -0.2 0.3 -0.4 -0.5 -1.1 -1.2 -0.3 0.4 -0.5 -0.2 -0.4 -0.6 -0.1 -0.9 -1 -0.9 0.3 -0.9 -0.8 -0.1 -0.3 0.6 -0.5 -0.5 -0.9 0.4 -0.5 -0.1 -0.8 0.4 -1.6 1 -0.3 1.5 0 0.1 0.4 0.4 0.1 0.6 0.8 1 0.8 1.2 0.3 0.2 -0.1 0.6 -1.2 0.5 -0.2 0.5 -0.7 0.5 -0.2 3.1 0.4 1.3 -1.1 0.2 0.5 0.7 -0.1 0 0.3 0.3 -0.1 0.2 0.3 1.5 0.6 0.6 -0.1 0.3 -0.4 1.2 0.6 0.7 -0.3 0 0.3 0.6 -0.1 -0.2 0.3 1 0 0.6 -0.4 0.6 -0.1 1.7 1.1 0.8 -0.2 1 -0.7 1.7 0.5 0.9 -0.6 1.9 0.5 1.2 0.6 0.3 0 0 -0.4 0.8 -0.1 0.3 0.4 0.4 -0.3 0.6 0.8 0.6 0.2 0.2 0.3 -0.4 0.3 0.1 0.3 1.2 0.6 2 -0.1 1.3 -0.6 0.1 0.2 1.2 0 0.7 0.2 0 0.3 -0.6 1.6 -1.4 1.6 -0.1 0.4 -0.6 0.2 0.2 1 -0.4 0.5 0.5 1 1.7 0.2 0.8 1.1 0.7 0.3 0.2 -0.1 0.6 0.8 1 0.3 0 0.4 -0.9 0.5 -1.8 0 -1 -0.4 -0.3 0.1 -0.2 0.5 2.6 2.1 0.5 1 -0.3 0.6 0.1 0.6 -0.7 -0.1 -0.2 0.4 -0.7 -0.8 -1 0.2 -0.4 0.6 -1 0 -0.8 0.3 -0.8 -0.4 -0.8 0.4 0 0.2 0.5 0.3 -0.1 0.2 0.3 0 0.4 0.4 0.7 1.1 -0.9 0.5 -0.7 -0.9 -1.2 0 0.2 0.2 -1.9 1 0.3 0.1 -0.8 1.2 0.2 1.1 -1.1 -0.1 -0.9 0.4 -0.2 0.6 0.4 0.8 -0.3 0.5 1.2 1.7 -0.2 0.5 -0.5 0.3 0 0.3 -1.2 0 -0.5 -0.4 -1.2 -0.3 -2.6 -1.2 -1.5 -0.9 -0.5 -1 -1.2 -0.1zM329.4 85.7l-0.9 -0.9 -0.1 -0.9 0.6 0 0 -0.3 0.5 -0.3 0.2 -0.5 -1.1 -1.4 -0.1 -0.5 0.3 -0.3 -0.4 -1 0.5 -0.7 1.7 0 -0.2 -1.1 0.8 -1.2 -0.3 -0.1 1.9 -1 -0.2 -0.2 1.2 0 0.7 0.9 0.9 -0.5 -0.7 -1.1 -1.1 -0.9 0.8 -0.6 0.8 0.4 0.8 -0.3 0.7 0 -0.2 0.3 0.2 0.6 2 0.8 2.5 2.3 1.2 0.1 1.1 0.8 1.3 -0.3 2.1 1.6 1.2 0.2 1.4 0.7 -0.1 0.7 -1.4 0.3 -0.4 0.6 -1.2 -0.3 -0.5 0.3 0.1 0.4 0.7 0.6 -0.3 1 -0.4 0.1 -0.6 0.5 -2 0.5 -0.7 -0.7 0.1 -0.8 -0.3 -0.5 -0.5 0 -0.6 0.4 -0.3 0.8 -1.9 1.8 -0.2 0.5 -1.4 1.5 0.1 0.3 1 0.7 -0.2 0.8 0.2 0.4 -0.3 0.3 0.2 1.2 -0.6 -0.4 -1.5 -0.5 -0.4 -0.5 0 -0.7 -0.6 -0.4 0 -0.3 -0.4 -0.3 -0.4 0 -1.1 -0.9 -0.3 -0.7 -0.7 -0.1 -0.4 0.2 -1.1 -1.2 -0.7 0.2 -0.8 -0.7 0.2 -0.1 1.5 0.5 -0.1 -1 -0.4 0.3 -1.7 0zM351.6 91.6l0.1 0.8 -0.6 0.6 0.4 1.7 -1 0.4 0.1 0.6 0.9 1 -0.1 0.5 -0.5 0.1 0.2 1.2 0.7 1 0.1 0.6 0.9 0.2 0.7 1.8 0.5 0.2 0.8 -0.4 1.3 0.4 0.1 1 -0.2 0.4 0.8 0.8 0.2 0.6 -0.3 1 -0.6 0.3 -0.2 0.5 -1.1 0 -0.7 0.6 0 0.6 -0.8 0.9 0 0.7 -0.4 0.4 0.1 0.5 -0.3 0.5 -0.7 0.3 -1.6 0 -0.7 0.8 -0.8 0 0.2 0.8 0.9 1.1 -0.3 0.4 -1 -0.2 0.2 0.9 -0.6 0.6 -0.4 0 -0.3 0.3 -1 -0.5 -0.8 -0.2 -0.3 0.1 0.1 -0.6 -0.2 -0.1 0.3 -1.2 -1.1 -0.5 0.4 -0.3 -0.9 -1.2 -0.9 -0.4 -0.1 0.2 -0.4 -0.5 -2.9 -1.2 -1 -0.8 -0.4 -0.9 -0.6 -0.5 0.6 -0.1 0.9 1.1 0.5 -0.2 0.1 -1.2 -0.7 -0.4 -0.3 -0.3 0 -0.3 0.5 0.4 0.2 -0.5 -0.4 -0.3 -0.3 0 0 0.3 -1 -1.1 0.7 -0.6 0.1 -1 0.4 -0.2 -0.2 -0.3 0.3 -0.3 -0.4 -0.4 0.7 -0.4 -0.2 0.1 0.2 0.7 0.9 -0.5 -0.4 -0.9 -0.1 0.5 -0.4 0.2 0.3 -0.4 -0.4 -0.5 0.2 -1 -0.1 -0.4 0.2 -0.1 0.6 -1.1 -0.3 -0.6 -0.8 -0.1 -0.3 -1 0.4 0.1 0.2 -0.4 0.5 -0.3 0.3 -0.5 -0.8 -0.8 0.9 0.1 0.4 -0.1 0.2 -0.4 0.3 0.1 -0.1 -0.3 -0.5 -0.3 0.3 -0.3 -0.1 -0.9 0.3 -0.1 -0.1 -0.4 -1.7 -0.6 -0.8 0.2 -0.2 -1.2 0.3 -0.3 -0.2 -0.4 0.2 -0.8 -1.1 -0.9 1.4 -1.6 0.1 -0.5 2 -1.8 0.3 -0.8 0.9 -0.5 0.5 0.6 -0.1 0.8 0.5 0.6 0.4 0.1 1 -0.5 0.8 0 0.6 -0.5 1.3 0.7 0.6 0.8 -0.2 0.3 0.5 0.8 1.1 0 1.6 1 0.6 0.8 0.7 2.1 -0.4 0.7 0 0.3zM349 45.5l0.5 0.9 2.4 0.9 1.4 1.7 0.7 -0.3 0.2 0.1 -0.3 1.6 0.5 0.9 -0.4 0.5 0.6 0.2 1.8 1.4 1.2 0.5 0.5 -0.1 1.1 0.8 1.9 0.3 0.9 0.6 0 0.3 -0.5 0.3 -0.3 0.7 -0.7 0.3 0.6 0.5 1.2 0.2 0.2 0.5 -2 0.4 -0.1 0.2 0.6 0.5 2 0.1 0.8 1 1.1 0.1 1.1 -0.2 1.5 0.5 0.6 0.9 0.9 0.8 0.6 -0.2 1.4 -1.8 1.3 -0.6 0.6 0.1 1.2 0.9 1.2 0.2 0.7 0.5 -0.2 0.3 -0.5 0.1 -1.3 -0.2 -0.4 0.6 -0.7 0.1 -0.1 0.4 0.5 1 0.7 0.5 1.1 0.2 0.1 0.9 -0.9 0.6 -0.2 1.2 -0.6 0.1 -0.4 0.4 -1.1 0.3 -0.6 2 0.5 0.6 0.2 0.7 0.6 0.5 0.2 0.9 0.4 1 2.4 1 1.6 1.7 1.1 0.3 0 0.3 -0.3 0.7 -0.8 0.8 -1.2 0.6 -0.5 1 -0.7 0.2 -1.1 -0.1 -0.6 0.1 -0.9 0.7 0.6 0.8 -0.4 0.6 -0.2 1.2 0.9 0.6 0.3 0.4 -0.3 0.8 -0.4 0.2 -0.5 0.7 -1.3 0.1 -0.4 -0.6 -1.9 0.7 -1.9 -0.3 -2.8 1.1 -1.1 -0.1 -0.6 -1.1 1.1 -0.5 0 -0.6 1.1 -1.2 0.2 -0.8 0.4 -0.2 -0.1 -0.3 -0.6 -0.2 -0.9 0.2 -0.7 -0.5 -2 -0.3 0.3 -1.1 -1.6 -0.5 -0.3 -0.2 -0.3 -1 -0.7 0.1 -0.6 -1.1 -0.9 -0.1 -1.9 -0.8 0 -0.4 0.3 -0.1 -0.5 -0.4 -0.5 -0.1 -1.9 0.7 0.3 0.8 0.5 0.2 -0.3 0.6 -0.5 0.5 -0.4 0 -0.4 0.4 -0.7 0.2 -0.1 0.4 0.5 0.4 -0.3 0.3 -1.4 0.3 0.1 -0.7 -0.2 -0.2 -1.6 -0.6 -0.8 -0.1 -2.1 -1.6 -1.3 0.3 -1.1 -0.8 -1.2 -0.1 -2.5 -2.3 -1.7 -0.6 -0.5 -0.5 0 -0.3 0.5 -0.3 0.4 -0.6 1 -0.2 0.7 0.8 0.2 -0.4 0.7 0.1 -0.1 -0.6 0.3 -0.3 -0.5 -1.3 -2.6 -2.1 0.2 -0.5 0.5 -0.1 0.8 0.4 1.8 0 1 -0.7 -0.2 -0.3 -0.2 0.1 -0.7 -0.3 -0.6 -0.8 -0.2 0.1 -0.9 -0.5 -0.4 -0.8 -1.9 -0.3 -0.4 -0.6 -0.1 -0.4 0.4 -0.5 -0.2 -1 0.6 -0.2 0.1 -0.4 1.4 -1.6 0.6 -1.6 -0.2 -0.4 -1.7 -0.1 -0.1 -0.2 -1.9 0.7 -0.3 -0.6 0.3 -0.1 0.5 0.2 0.7 -0.5 -0.4 -0.2 -0.1 -1.2 -0.4 -0.6 1 -0.1 -0.2 -0.6 1.2 0.4 0.7 -0.2 1.1 0.1 0.2 -0.3 -0.3 -0.3 -2.5 -0.5 -0.6 -0.3 -0.2 -0.4 -1.1 -0.4 -0.1 -0.2 0.6 -0.3 -0.3 -0.4 0.1 -0.5 0.7 0.1 0.4 -0.2 -1 -0.6 -0.8 0.3 -0.5 -0.4 0.1 -0.5 0.7 -0.6 -0.6 -0.4 -0.2 -0.6 -0.6 -0.6 0.1 -0.4 0.6 -0.1 -0.4 -0.3 0.4 -0.3 -0.1 -0.1 1 0 -0.1 -0.3 0.7 -0.1 0.2 -0.5 0.5 0 0.4 0.3 1.3 0 0.5 -0.5 0.8 -0.1 0.8 -0.5 0.5 -0.3 -0.1 -0.3 0.6 -0.3 1.4 -0.1 1.3 0.5 1.5 -0.4 2.7 0.2zM346.3 84.1l0.4 -1.2 -0.8 -0.8 0.1 -0.3 0.4 -0.2 1.2 0.3 0.5 -0.7 2.7 -0.5 0.3 -0.3 -0.5 -0.4 0.1 -0.4 0.7 -0.2 0.4 -0.4 0.4 0 0.7 -0.8 0.1 -0.3 -0.6 -0.3 -0.2 -0.7 2.1 -0.7 0.8 0.5 -0.3 0.1 0 0.4 1.9 0.8 0.9 0.1 0.6 1.1 0.7 -0.1 0.3 1 0.3 0.2 1.6 0.5 -0.3 1.1 2 0.3 0.7 0.5 1.2 -0.1 0.4 0.4 -0.4 0.2 -0.2 0.8 -1.1 1.2 0 0.6 -1.1 0.5 0.5 1.1 -1.4 0 -0.2 0.1 0.1 0.2 -0.7 -0.1 -0.8 0.9 0.1 0.6 -0.7 -0.1 -0.8 -0.7 -0.7 -0.4 -1.1 0.6 -2.4 0.7 -0.4 1 0.1 0.9 -0.8 0.7 -0.4 -0.3 -0.5 0.3 -0.4 -0.3 0 -0.3 0.4 -0.7 -1.1 -2.7 -1.8 -1.2 -1.1 0 -0.5 -0.8 0.1 -0.4 -0.7 -0.9zM352.1 91.7l0.6 -0.2 0.4 0.3 0.5 -0.2 0.3 -0.5 0 -1.5 0.3 -0.4 2.4 -0.7 1.1 -0.6 0.7 0.4 0.8 0.7 0.6 0.1 0 -0.6 0.7 -0.8 0.8 0 -0.1 -0.2 0.2 -0.1 2.6 0.1 2.8 -1.1 1.5 0.4 2.3 -0.8 0 0.3 0.8 0.4 2 2 2.1 0.9 1.3 0.3 0.5 1.6 0.6 1.1 0.6 0.1 0.2 0.5 -0.8 1.2 0.2 1.9 -0.2 1 -1.7 0.1 -0.3 0.2 -0.3 1.7 -0.2 0.3 -0.7 -0.5 -0.6 0.6 -1.5 0.1 -1.6 -0.1 -0.1 -0.2 -1 -0.2 -1.2 0.5 -0.6 -0.4 -1.5 0.6 -0.2 0.5 -1.2 1 -0.2 0.4 -0.9 0 -1.1 0.7 -0.8 -0.4 -1.1 -0.1 -1.3 0.5 -3.6 0.2 -0.3 -0.7 -1.1 -0.2 -0.8 0.4 -0.5 -0.2 -0.7 -1.8 -0.9 -0.2 -0.1 -0.6 -0.7 -1 -0.2 -1.2 0.5 -0.1 0.1 -0.5 -0.9 -1 -0.1 -0.6 1 -0.4 -0.4 -1.7 0.6 -0.6 -0.1 -0.8 0.2 -0.1zM436.2 151.3l0 0.7 -0.3 0.2 -0.5 1.3 -1.1 1.3 0.4 0.2 -0.3 0.3 0.2 0.2 -1.1 -0.1 -1.8 1.6 -0.5 0.3 -0.5 -0.3 -0.3 -0.4 0.5 -1.4 -0.8 -0.8 1 -0.5 0.3 -0.8 1.1 -0.7 2.4 -1 0.7 0 0.4 -0.3zM432.2 149.2l0 0.9 -0.3 0.2 -0.2 -0.1 0.2 -0.1 -0.6 -0.2 0.2 -0.1 -0.5 0 0.3 -0.5 0.8 -0.3 -0.5 0.4zM429.4 153.4l-0.1 0.3 -1 0 0.1 -0.2zM426.9 151.5l0.6 0.2 -0.5 0.2 -0.4 -0.1 -0.2 -0.4 -0.3 0.2 -0.3 -0.3 0.1 -0.4 0.1 0.2 0.7 -0.2 0.3 0.4zM425.7 146.1l0.8 0.5 -1.5 0.4 -1 0.7 -0.9 -0.1 -0.6 0.2 -0.2 0.8 -0.6 -0.4 0.1 -0.5 0.3 -0.2 0.3 0.2 0.9 -0.8 1.1 -0.6zM425.2 161.6l0 0.3 -0.6 0 -0.5 0.8 0.1 -0.2 -0.6 -0.4 0.3 -0.3 0 -0.8 -0.6 -0.4 1 -1.4 0 -0.9 0.7 -0.3 0 1.1 -0.7 1.2 0.7 0.7 -0.2 0.3zM424.7 149.4l0.1 0.4 -0.8 0 0.1 -0.3zM423 136.7l0.3 0.6 -1.7 0.3 -0.5 0.4 -0.8 0 -0.3 -0.5 -0.6 -0.2 -1.2 0.4 -0.2 -0.7 0.8 -0.6 1.7 -0.3 1.7 0.8 -0.2 -0.5 1.3 0.2zM421.6 145.7l0.5 -0.9 -0.4 -0.2 -0.3 -0.5 1 0.5 -0.1 0 0.4 0.5 0.3 -0.1 0.1 0.1 -0.1 0.6 -0.5 -0.1 -0.1 0.3 -0.4 0zM422.6 162.3l0.1 0.4 -1.5 0.6 -0.3 -0.3 0.6 -0.6zM420.9 143.3l0.5 0.6 -0.6 0 0.2 -0.2 -0.4 0.1 0 -0.3 -0.5 -0.4 0.4 -0.2 0.4 0.1zM356.2 102.8l4 -0.2 0.9 -0.5 1.1 0.1 0.8 0.4 1.1 -0.7 0.9 0 0.2 -0.4 1.2 -1 0.2 -0.5 1.5 -0.6 0.6 0.4 1.2 -0.5 1 0.2 0.1 0.2 1.6 0.1 1.5 -0.1 0.6 -0.6 0.7 0.5 0.2 -0.3 0.3 -1.7 0.3 -0.2 4.1 0.2 0.5 -0.2 0.3 -0.5 0.7 -0.2 0.4 0.3 1 -0.3 2.1 0.3 0.7 -0.3 0.9 0 0.2 -0.3 1.3 -0.4 0.6 0.3 0.6 -0.3 0.4 0.1 0.2 -0.1 -0.1 -0.7 0.8 -0.1 0.6 0.3 0.7 -0.6 0.6 0.3 0.1 0.2 1.5 -0.1 0.8 -0.4 0.8 1.4 1.3 0.3 0.8 0.7 0.2 0 0.1 -0.5 1 -0.1 2.3 0.7 1.3 1 0.7 0.1 2.5 -0.5 0.5 -0.4 1.4 0.2 1.4 -0.5 0.8 0.5 2.6 -0.6 0.6 -0.9 -0.3 -0.5 0.2 -0.5 -0.4 -0.3 -0.1 -0.7 -0.7 -0.3 -0.1 -0.5 0.7 -0.4 1.3 -0.2 0.5 0.3 1 0 1.2 0.5 -0.1 0.3 1.2 0.6 0.3 -0.2 0 0.8 0.4 1.5 -0.3 0.8 -0.8 -0.3 -1.4 1 -1 0.2 0.2 1 -0.2 0.4 0.2 0 -0.1 0.5 0.5 0.5 -0.4 0.4 0.3 0.3 -0.8 0.4 0.1 0.2 -0.4 -0.1 -0.3 0.4 -0.1 -0.2 -0.2 0.6 -1.4 1.2 -0.4 0 -0.2 -0.7 -0.2 0 0.5 -0.3 -0.6 -0.1 0 0.2 -0.9 -0.4 -4.2 -0.2 -2.6 -0.9 -0.4 0.3 -0.9 -0.2 -0.5 -0.2 0.4 -0.4 -0.4 -0.1 -1.1 0 -0.5 0.4 0 0.3 -1.1 0.3 -1 0.7 -1 0 -0.5 -0.3 -0.4 0.3 -0.7 -1.1 -0.6 -0.1 -1.3 0.3 -0.9 0.6 0.2 0.3 -0.2 0.1 0.3 0.2 -2.5 1.1 -1.4 -0.1 -1.5 -0.5 -1.3 0.3 -0.3 0.4 0 0.5 0.6 0.3 0.4 0.6 1.4 0.6 -1 0.3 0 0.5 0.4 0.6 1.1 0.3 0.4 -0.1 -0.1 -0.6 0.2 0 0.8 0.9 1.1 0.1 0.2 0.4 0.4 0 1.7 1.8 -1 0.3 -1.4 -1.6 -1.7 -0.4 -0.9 -0.6 -2.3 0.1 -0.4 0.5 0.3 0.6 0.7 0.6 1.3 0.3 1 0.6 -0.1 0.3 0.3 0.3 -0.2 0.2 0.2 0 0.1 0.3 -0.3 0.3 0.1 0.2 -0.3 0.1 0.2 0.1 -0.8 0 0.1 -0.2 -0.3 0 0 -0.2 -0.6 -0.4 -0.2 0.2 -0.5 -0.6 0.1 -0.3 -1.3 -1.4 -2.6 -0.7 -0.8 0.2 -0.3 0.4 0.3 0.8 0.4 0.1 1.1 1.1 1.9 0.7 0.3 0.5 0.5 0.1 -0.5 0.2 -2.5 -0.7 -1.2 0.1 0.2 -0.4 -0.8 -1.1 0.2 -0.8 -0.3 -0.7 -3 -1 -0.7 -0.6 -0.8 0 0 -0.4 -0.8 -0.9 1.4 -0.2 0.4 -0.4 -0.8 -1 -0.6 0.1 0 0.5 -1.1 0.3 -0.2 0.5 -0.7 -0.1 -0.2 0.6 -0.8 0 0.3 0.7 0.6 0.4 -1.2 2.3 0.2 1.2 0.3 0.4 1.2 0.6 0.2 0.9 1.4 1 0.9 2.3 1.8 0.9 1.9 1.9 0.8 1.6 -1.5 0.5 0.2 0.2 -0.3 0.1 -1.6 0.1 0.3 -0.5 0.4 -0.2 -0.2 0.6 0.8 -0.3 0.1 -0.2 0.2 0 0.2 -0.3 -0.9 -1.3 -1.3 -0.2 -0.2 -0.4 -0.7 -0.1 0.1 0.7 -1.1 0.1 -0.2 0.8 0.3 0.6 0.2 -0.3 0.3 0.1 0.2 0.6 0.5 0.1 0.4 0.5 -0.4 0.7 1.2 -0.3 -1 0.9 -0.9 0.4 -0.6 -0.1 -0.1 0.3 -0.5 0.2 -1.1 0 -0.8 -0.4 -1 0.4 0 0.3 0.5 -0.1 -0.2 0.2 0.3 0.1 0.2 -0.1 -0.1 0.2 1.2 -0.3 0.9 0.8 0.5 0 0.4 0.3 0.6 -0.2 1.4 0.3 0.6 1.2 0.9 -0.2 0.2 -0.1 -0.4 -0.2 0.3 0 1.3 0.3 0.3 0.6 -0.5 0.2 -0.1 0.3 0.3 -0.2 0.8 0.4 -0.5 0.4 2.5 0 0.4 0.3 -0.3 0.2 1.1 1.1 3.1 0.7 1.3 0.9 0.1 0.5 -0.2 0.4 -0.3 -0.2 -0.5 0.3 0.5 1.2 -0.3 0.9 0.4 0.2 -0.4 0.2 0.6 0.3 -0.1 0.4 0.4 0.5 -0.3 0.5 0.1 0.5 -0.4 0.4 -1 -0.3 0 -0.5 -0.3 0.1 -0.2 -0.7 -0.1 0.1 -0.3 -0.4 -0.6 -0.2 -0.3 0.3 -0.9 -1.5 -0.8 0 0.2 -0.2 -0.9 -0.2 0.4 -0.5 -0.3 -0.3 -1.4 0.3 -0.6 0.3 0.4 0.1 -0.2 0.1 -2 0 -1.5 0.7 -0.8 -0.2 -0.3 0.5 0.2 0.4 1.2 -0.1 0.7 0.5 0 0.4 -0.6 0.1 -0.1 0.2 0.6 0.3 0 1.1 1.8 0.9 0.3 -0.1 0 -0.3 -0.6 -0.5 1 -0.2 0 0.4 -0.3 0.5 0.5 0.3 -0.3 0.1 1 0.3 0.5 0.3 0 0.3 -2.9 0.4 -0.4 0.3 0.6 0.3 -1.1 0.1 0.2 0.4 -0.3 0 -0.3 -0.1 0.2 -0.2 -1 -0.3 0 -0.5 0.2 0.1 0.3 -0.4 0.3 0.2 -0.1 -0.4 -1 -0.2 0 -0.3 -0.4 0.3 -0.3 -0.5 -0.7 -0.3 -0.7 0.2 -0.8 -0.9 -0.6 0.4 0.3 1.8 0.7 0.6 0 0.3 1 1.4 -0.1 0.8 0.6 -0.1 0 0.3 0.3 0.2 -0.2 0 0.4 0.5 0.1 0.5 -0.2 0 0.2 0.2 0 0.4 0.9 1.3 -0.1 0.3 0.4 0.1 -0.3 0.5 -0.4 -0.1 -0.3 0.2 0.1 0.4 0.3 0 -0.3 0.5 0.5 0.7 0.8 0.4 -0.2 0.4 0.7 0.6 0 0.2 -1.2 -0.1 -0.4 -0.8 -0.9 0 -0.5 -0.9 -0.6 -0.3 0.1 -0.3 -0.5 -0.4 -0.2 0.2 -0.3 -1.3 -1.2 -0.2 -1.1 0.3 0 0.5 -0.6 0.6 0.2 0 0.1 0.3 -0.4 -0.1 0.1 0.6 -0.2 0.1 0 -0.3 -0.3 0.2 0.3 1.6 -0.2 0.8 -0.2 -0.7 -0.7 -0.4 -0.3 0.1 -0.3 -0.3 0.4 -0.5 -0.2 -0.3 0.2 -0.2 -0.3 0 0.3 -1.2 -0.4 0.1 -1.5 -2.2 -0.5 0.1 -0.4 -0.3 0.2 -1.1 -1.2 -0.2 -1.1 0.5 -0.3 1.4 0.1 0.5 0.5 0.3 -1 0.7 -0.6 -0.9 -0.7 0.2 -0.6 -0.3 -0.2 -0.8 0.2 -0.6 -0.5 -0.2 0.2 -0.1 -0.2 0.1 -1 -1.7 0 -0.8 1.4 -1.4 -0.3 -0.9 -1.4 -1.8 -1.6 -1 -0.6 -0.2 -0.4 0.4 0 -1 -0.3 -0.6 -1.8 -0.6 -0.1 -0.5 0.3 -0.7 0.3 0.2 0.5 -0.2 1.3 -0.8 -0.1 -0.2 -0.4 0.2 0.9 -1.1 0.1 -1.1 0.4 0.4 -0.1 -0.4 1.4 0.6 1 0.1 0.9 -0.6 0.7 -1 0.9 -0.5 1.9 0.4 0.3 0.4 0.7 0.1 0.6 0.6 0.6 0.2 1.2 0.1 3.9 1.3 2 1.4 0.9 -0.1 0.3 -0.4 -1.3 -0.6 0.2 -0.1 0.8 -0.4 1.4 0.3 1.1 -0.3 0.5 -0.2 -0.5 -0.5 0.6 -0.2 -1.1 -0.1 0.2 -0.1 -0.2 -0.3 -0.7 0.3 -0.3 0 0.2 -0.1 -0.3 -0.3 -0.8 -0.1 -0.4 0.2 0.6 0.2 -0.7 0 -0.2 -0.6 -0.9 0.2 -0.5 -0.2 0.4 -0.4 -1.1 -0.4 -0.2 -0.5 -0.4 -0.3 -0.2 0.2 0.2 0.1 -0.4 0 -0.2 0.3 0.1 0.4 -0.4 0.1 -1 -1.4 -0.8 -0.4 0.1 0.4 -0.4 0.3 0.3 0.2 -0.2 0.3 -1.7 -0.2 -0.4 0.4 -0.6 -0.5 -2 -0.4 -0.8 0.3 -0.6 -0.2 -0.7 0.8 -0.5 -0.3 -1.3 0 -0.9 0.6 -1 -0.3 0.7 0.2 -0.2 -0.4 0.2 -0.1 -0.8 -0.1 0 -0.3 -0.4 -0.1 -0.2 -0.7 -0.5 -0.4 -0.1 0.1 0.5 0.6 -0.2 0.4 -0.7 0.4 -0.4 0.4 -0.5 -0.2 0.1 0.2 -0.5 0.3 -0.2 -0.4 -0.6 -0.1 0.3 -0.1 0 -0.2 -0.2 0.1 0.2 -0.2 0.3 -0.2 -0.5 -0.1 -0.1 -0.3 0.3 0.1 0.1 -0.1 -0.1 0 0 -0.5 -0.3 -0.1 0.2 0 0 -0.5 -0.8 0.3 0 -1.1 -0.4 -0.6 -0.8 -0.2 -0.6 -1.3 -0.6 0.4 -0.4 0 -0.5 -0.5 0.2 -0.5 0.7 -0.1 -0.6 -0.5 0.2 -0.5 0.5 0.4 0.5 -0.5 0 0.4 0.4 0 0.2 -0.3 1.2 0.2 0 0.4 0.6 0.4 0.2 -0.5 0.9 0.4 -0.5 -0.8 0.3 -0.6 -0.9 -0.7 0 0.3 -0.5 0.2 0.2 0.1 -1.1 -0.3 -0.2 -0.2 0.1 -0.2 -0.5 0 -0.4 0.2 0.3 0.2 -0.5 0 0.1 -0.2 -0.3 -0.2 0.1 -0.2 -0.2 -0.3 -0.5 0.3 0.1 0.5 -0.4 0.2 0.9 0.7 -0.7 -0.2 -0.3 0.3 -0.5 -1.3 -2.3 -1.7 0 -0.6 -1.7 -0.2 -0.6 -1 -0.4 -0.1 -0.2 -0.4 0.5 -0.1 -0.5 -0.5 0.5 -0.2 -1.4 -0.2 0.1 -0.5 0.3 0 0.1 -0.6 -2 -0.7 2.2 0.6 1.1 -0.9 -0.2 -0.9 1 0.2 0.2 -0.2 0 -0.4 -0.8 -0.9 -0.2 -0.8 0.8 0 0.7 -0.8 1.6 0 0.7 -0.3 0.3 -0.5 -0.1 -0.5 0.4 -0.4 0 -0.7 0.8 -0.9 0 -0.6 0.7 -0.6 1.1 0 0.2 -0.5 0.7 -0.4 0.2 -1.2 -1 -1.1zM418.3 122.7l-0.1 0.3 -0.7 -0.1 -0.2 -0.2 0.1 -0.5 -0.4 -0.4 -0.6 0.2 1.2 1 0 0.2 -1.3 0.3 -2.9 -0.6 -0.8 -0.7 1.5 -0.6 0.7 -0.4 -0.1 -0.3 -1 0 -1.4 1.2 -1.9 -0.6 -0.6 -0.4 0.2 -0.4 -0.1 -0.1 0.8 -0.8 0.2 0.3 1.1 -0.1 0.1 -0.2 0.2 0.1 1.1 -0.4 0 -0.6 2.2 0 -0.1 0.3 0.7 0.3 -0.4 0.6 1.7 1.2 -0.1 0.1zM418.2 141.3l-0.6 0.2 0.2 0.6 -0.2 0 -0.2 -0.3 0.1 -0.8zM415.9 149.1l0.8 0.6 -1 0.1 -0.3 0.7 -0.5 0 -0.4 -0.4 0 -0.6 0.9 0.3 0.6 -0.2 -0.4 -0.4zM415.6 137.6l-1.5 1.2 -1.1 0.2 -0.8 0.4 -0.9 0 0.1 -0.3 1 -1 1.4 0 0.9 -0.4zM415 163.8l-0.5 0.4 0.4 0.9 0.2 -0.2 -0.4 0.5 0 0.6 -0.5 0.7 -1 0.4 -1.8 -0.4 -1.9 0.3 -2.3 0 -1 0.3 -1.8 -0.1 -2.6 0.6 -4.1 0.1 0.2 -1.3 -0.4 -0.5 -1.7 -0.2 -1.8 -0.9 -1.2 0.1 -1 -0.3 -1.7 0.2 -0.6 -0.5 -1.8 -0.2 -1.6 0.3 -0.8 -0.1 -1 -0.8 0.4 -0.1 -0.2 -0.6 0.4 -0.7 -0.1 -0.2 0.2 -1.3 0.3 -0.4 0.1 0.9 0.5 0.3 0.6 -0.1 0.1 -0.5 -0.2 -1 0.4 -0.5 0.4 0.2 0 1.1 0.4 0.4 2.3 0.2 0.3 -0.4 0.4 0 -0.1 -0.4 1.1 0.1 0.2 0.4 -0.2 0.4 -1.1 -0.1 -0.1 0.2 1.3 0.5 0.7 -0.3 0.1 1.2 0.8 0.3 4.2 -0.9 1.3 0.3 0.7 -0.3 0.6 0.3 0.2 -0.3 0.9 0.3 0 0.5 0.2 0.1 3.3 0 0.9 0.6 2.3 -0.6 1.1 0.1 -0.4 0.5 0 0.3 0.3 -0.2 0 0.2 -0.2 0.2 -0.3 0.7 0.2 0.5 0.7 0.2 0.4 0 0.8 -0.7 1.8 -0.6 1 0.4 1.2 -0.9 0.3 -0.1 0 -0.3 0.3 0zM413.4 128.1l-0.2 0.6 -0.3 0 0.4 0.3 -0.2 0.5 0.3 1.3 -0.6 0.2 0 0.7 -0.8 0.2 -0.3 0.5 -0.5 -0.2 -0.6 -0.6 -0.2 0.1 0 -0.3 -0.3 0 0.1 -0.3 1 -0.3 0.3 -0.5 0 -0.4 -0.4 -0.3 -0.1 -0.5 -1.1 -0.7 0 -0.7 1.9 -0.2 0.5 0.1 0.5 0.5 0.4 -0.2zM411.6 145.8l0.8 0.5 -0.7 0 -1.4 1.1 -1.4 0.2 -0.2 -0.2 1.2 -0.2 0.2 -0.3 -0.2 -0.1 1.4 -0.6 -0.2 -0.2zM408.6 151.9l0.4 -0.2 1 0.4 -1.2 0.1zM409.5 144l-0.3 -0.3 0.6 -0.1 0 0.4zM408.2 107.3l-1.4 0.4 -1.3 -0.9 1.4 -0.4 1.1 0.3zM407.4 146.3l0.3 -0.2 0.4 0.2 -0.3 0.1zM407.1 127.5l0.3 0.2 -0.1 0.5 -0.5 0 -0.4 -0.7zM406.5 142.9l0.6 0.6 -0.1 1.4 -0.3 0.5 -1.2 0.6 -1.1 -1.8zM405.2 150.9l0.8 0.8 -0.1 0.5 -0.4 0.2 -0.9 -0.2 0.8 -0.4 -0.2 -0.7 -0.5 -0.1zM405.4 147.1l0.1 -0.4 0.4 -0.2 0 0.4zM405.6 140.2l-1.6 0.4 0.2 -0.6 -0.2 -0.3 0.4 -0.2 0.4 0.5 0.1 -0.3 0.8 0.2zM405.5 111.8l0 0.4 -0.5 0.3 -0.1 0.5 -0.5 0.1 0.3 0.1 -0.4 0.3 0.4 0.6 -0.3 0.3 -1.2 -0.7 0.5 -0.4 -0.3 -0.3 -0.6 0.3 0.3 0.1 -0.6 0.4 0.3 0 0.2 0.5 -0.8 -0.2 0.2 -0.4 -0.3 0.2 -0.2 -0.2 -0.8 0.2 0.2 -0.2 -0.2 -0.3 0.3 -0.4 -0.4 -0.8 2.1 -0.2 0.6 0.6 1.1 -0.7zM404.7 148.9l-1.3 -0.8 0.1 -0.4 0.5 -0.3 1.1 0.9zM403.7 144.3l-1 1 -1 -0.3 0.1 -0.6 0.5 -0.3 -0.2 0 0.2 -0.2 0.9 -0.5 -0.1 0.2 0.4 0.1 0 -0.3 0.3 0 -0.3 0.7zM403 139.2l-2.4 -1.1 -0.2 -0.5 0.8 0 0.4 0.4 1.7 0.2 0.2 0.4zM402.6 148.2l-0.6 0.6 -0.7 0.3 0.5 -0.7zM401.3 145.6l-0.4 -0.6 0.7 -0.4 -0.3 0.8 0.2 0.2zM401.1 117.1l-0.1 0.3 -0.6 0.6 -0.1 -0.8 0.3 -0.3zM400.5 136.8l-0.4 0.8 -0.7 -1 -0.8 -0.6 -0.2 0.1 -0.3 -0.5 -0.4 -0.3 -0.2 0.1 -0.4 -0.6 0.1 -0.3 1 -0.4 0.5 0.4 0.2 0.5 1.2 0.1 -0.1 0.7 0.4 0.3 -0.3 0.5zM400 139.8l0.2 0.9 -0.9 0.4 0.1 -0.4 -0.3 0 0.2 -0.3 -0.2 0 0.4 -0.2 -0.1 -0.7zM400 149.2l0.2 0.3 -0.4 0 -1 -0.7zM398 104l0.3 0.3 -0.3 0.4 0.2 0.7 -0.3 -0.1 -1.2 0.5 -0.6 -0.5 -0.8 -0.2 0.2 -0.9 1.2 -0.9 0.9 0.2 0.7 0.5zM397.5 144.9l0.5 0.8 -0.6 0.5 -0.7 -1.6zM397.7 138.1l-0.2 0.5 -0.6 -0.2zM397.1 125.2l0 0.3 -0.3 0.1 -0.6 -0.2 -0.4 0.3 -0.3 -0.4 0.4 -0.1 -0.2 -0.4 -0.5 0 -0.3 -0.4 -0.5 0 0.3 -0.3 0 -0.6 0.3 -0.2 0.8 0.4 0.2 0.8zM396.8 147.5l0.1 0.2 -0.2 0.2 -0.4 -0.4zM396.3 147l-0.4 0.5 -0.4 0 -0.2 -0.4 0.5 -0.3zM396.1 132.3l0 1.1 -0.4 0.9 -0.9 0.2 -0.5 -0.6 -0.6 0.5 -1 -1.2 -0.9 -0.1 0.1 -0.4 -0.3 -0.1 0.3 -0.3 -0.3 -0.6 -0.6 0 0.4 -0.5 -0.1 -0.2 -0.5 0.3 0.1 -0.6 -1 -0.2 0.4 -0.3 -0.2 -0.5 -4.4 -0.1 -0.3 -0.6 -0.3 0.1 0.5 -0.5 -0.2 -0.6 -1.2 -0.5 -0.1 -0.3 -0.6 -0.5 -2.7 -1.7 -1.4 -0.2 -1.1 -0.5 -0.2 0.1 0.4 0.2 -0.1 0.2 -1.6 0.2 0 -0.3 2.2 -0.8 1 -0.9 2 -0.3 0.7 0.3 0.1 0.5 0.5 0.1 0.6 1.3 1.2 0.5 0 0.2 1.4 0.1 0.4 0.5 1.1 0.4 2.4 0 0.9 0.3 -0.3 0.2 0 0.4 1.1 0.9 -0.4 0.5 0.1 0.7 -0.2 0 0.8 1.3 0 0.7 1 0.7 1.5 0.3zM394.8 147.9l0.8 -0.1 -0.1 0.8 -2.3 0.3 0.1 -0.6 -0.1 -0.1 0.3 -0.4 0.6 0.5 0.6 0.1 0 -0.3 -0.6 -0.4zM394.4 143.1l0.9 -0.2 0.2 0.8 -0.2 -0.2 -0.2 0.4 -0.4 -0.3 -0.5 0.1zM393.7 140.3l0.8 -0.6 -0.2 0.5 0.6 0.4 -0.4 0.7 -0.9 0.4 0.4 -0.7 -0.1 -0.4 -0.3 0zM394 137.9l-1 1.3 -0.4 0.1 0.1 -1.1 0.6 -0.5 -0.2 -0.1 0.6 0zM391 168.6l0.1 0.5 -1 -0.4 0.5 -0.2zM390.6 119.3l-0.1 0.4 -0.2 0.1 -0.2 -0.5 0.2 -0.2zM389.2 120.3l-1.1 1.2 -0.3 0 1.3 -1.6zM388.3 146.8l0 0.1 -0.1 -0.1zM385.9 121.7l-0.8 -0.9 1.5 0.7 0 0.2 0.7 0.1 -0.8 0.5 -0.7 -0.3zM385.1 141l-0.9 0.3 -0.1 0.3 -1.4 0.2 1 -0.6zM383 135.1l0.4 -0.3 0.4 0 0.3 -0.3 -0.9 0 0.4 -0.1 -0.3 -0.2 1 -0.1 0.3 0.5 0.3 0 -0.4 0.2 -0.2 0.4 -0.6 0.2zM384.8 136.6l-0.4 0.9 -0.5 0.1 -0.3 -0.1 0.2 -0.3 -0.5 -0.5zM383.9 139l0.5 0.4 -1 0 0.4 -0.2zM383.7 121.6l-0.8 -0.1 0.1 -0.2 0.8 -0.6 0.4 0.4zM383.6 145.9l0.1 0.3 -0.2 -0.3zM381.6 157.2l0.6 0.4 0.1 0.4zM379.6 142.1l0.7 0 0.1 0.3zM378.7 152.7l1 0.8 -0.5 0.2 0 0.8 -0.7 0.1 -0.9 -0.8 -0.1 -1.4 0.5 -0.6zM365 147.8l0.2 0.2 0 0.4 -0.3 -0.1zM364.3 148l0.1 -0.7 0.2 0.1zM355.7 136.7l0.8 0.4 0.1 0.3 -1.2 -0.4 -0.5 0.4 0 0.5 -0.3 0 -2.2 -1.9 0 -0.4 0.7 -0.7 0.3 0 0.4 0.7 1.2 0.3zM356.1 127l-0.1 0.2 -0.8 0.5 0.3 -0.7zM356 127.5l-0.4 0.6 -0.2 0 0.5 -0.6zM353.5 133.4l-1.1 -0.6 -0.6 0.3 -0.6 -0.2 -0.4 -0.9 0.4 0.1 -0.7 -1 -0.2 0.1 0 1 -0.5 0.2 -0.4 -0.3 0.6 -2 0.1 0.2 0.2 -0.2 0.6 0.6 0.5 -0.3 0 -0.6 0.3 0.1 -0.2 -1 0.4 0 0.6 1.3 -0.3 0.6 0.3 0.5 0.6 -0.3 -0.1 0.2 1.5 1.6 -0.2 0.6zM354.5 126.8l-0.5 0.4 0.4 0.4 -0.5 -0.4 -0.2 -0.3zM353.3 129.9l0.6 0.1 -0.2 0 0.3 0.5 -0.5 0.1 -0.3 -0.2 -0.8 -1.6 0.6 -0.2 -0.1 0.4 0.5 0.2 -0.4 0.7 0.5 0.1zM352.2 127.2l-0.6 0.6 0.2 -1.3 0.4 -1 0.9 -0.8 0.5 0.8 0 0.6 -0.3 0.4 0.2 -0.2 0 0.9 -0.3 -0.1 0.1 0.2 -0.6 0.1 0 0.3zM347 120.5l0.7 0.4 0.1 0.2 -0.5 -0.1zM346.5 118.2l0.4 0.7 -0.1 0.2 -2.2 -0.7 0.2 -0.2 -0.7 -0.3 -0.4 -1.1 -0.9 -0.5 -0.3 -0.6 -0.4 -0.1 -0.1 -0.5 -0.2 0.1 0 -0.3 -0.3 0 0.4 -0.5 2.1 -0.4 1 0.4 -0.1 0.5 -1 0.5 0.1 0.4 -0.1 0.1 0.9 0.3 0 0.3 -0.3 0 0.4 1.4 1.1 0.4zM46.9 125.1l-1.4 1.1 -0.1 0.8 0.2 0.3 -0.5 0.7 -0.3 0.7 0.1 0.2 -0.3 0.3 2.2 1.9 0.7 1.1 0.8 -0.3 0.9 0 -0.9 2 -1.1 -0.2 -0.4 0.4 -1.2 0.3 -0.4 1.3 -1.5 1.4 -0.3 1 -0.6 0.8 0.6 1 0.7 3.4 -1.1 -0.1 -3.4 1.9 -1.9 -0.2 0.2 0.3 -0.7 -0.5 -1.6 -0.6 -1.2 0.1 -0.8 -0.2 -0.8 0.2 -1.6 -0.5 -3.3 0.9 -0.7 0.4 -0.6 -0.1 1 -1.7 -0.1 -0.3 0.4 -0.4 0.2 -0.4 -0.2 -0.4 0.7 -1.2 0.2 -1.3 -0.3 -0.7 0.3 -1.1 0.5 -0.1 0 -0.2 -0.6 0 0 -1.9 -0.1 -0.3 -0.8 -0.3 0.8 -1.2 0.5 -1.4 -0.2 -1.9 -1 -0.9 -0.7 -0.4 0.5 -0.1 1.1 0.7 1.6 0.2 0.5 -0.1 -1.4 -0.4 -0.2 -0.4 0.2 -0.3 -0.4 -0.5 -0.4 0.4 0.3 0.2 -0.1 0.3 -1.3 -0.3 -0.5 0 -0.4 0.5 -0.6 0.3 -2 0.2 0.4 -0.6 0.1 -0.9 -0.8 -1.2 1.2 -0.2 0.4 0.3 -0.1 -0.3 0.7 -0.1 1.2 -0.9 -0.2 -0.9 -0.2 0.1 -0.3 -0.7 0.7 -1.2 1.3 -0.3 0.7 -0.6 -0.8 0.5 -1.1 0.2 -1.8 2.3 -0.1 1.2 -1.9 0.2 -0.4 0.3 -1 -0.3 -0.7 0 -0.2 -0.1 -0.1 -1.1 0.5 -0.5 0.4 -0.8 -0.2 -1.1 0.9 -1.9 0 -1.3 -0.6 -0.6 0.6 0.1 1 -0.6 0.5 0.1 0.1 -0.1 -0.2 -0.2 1.5 -1.6 0.2 -1.1 2.3 -4.9 0.1 -0.1 0.8 0.2 -0.4 -0.3 -0.9 -0.2 -0.1 -0.4 0.5 -0.8 1.2 -4 0.1 0.2 0.4 -0.4 0.2 0.1 -0.1 -0.3 0.4 0 0.2 -0.2 -0.2 -0.4 1 -0.3 -1.1 0.1 -0.1 -0.4 0.4 -0.5 -0.1 -0.2 -1.1 2.1 1.1 -3.7 -0.1 -1.6 0.2 -0.2 -0.4 -0.1 -0.6 -0.9 -0.1 -0.9 -0.4 -0.7 0.1 -0.9 -0.6 -2.2 1.4 -0.5 -1.4 0.3 -0.6 -0.5 0.2 -1.4 2.6 -2.1 3.1 -0.5 1.4 -0.6 0.2 0.9 0.7 0 0.5 0.3 -1.4 1.4 -0.1 0.4 0.6 0.4 -0.1 0.4 1 0 0.5 -0.1 0.6 -0.5 0.5 0 0.4 -0.6 0.1 0.7 2 -0.5 1.2 0.3 -0.2 0.3 0.2 0.2 0.7 -0.1 0.3 -0.3 0.5 0.1 0.3 0.5 0.6 -0.4 1.9 -0.4 0.2 -0.2 0 -0.7 0.4 -0.2 1.2 0.4 0.7 -0.2 0.5 0.2 1 0 0.3 -0.4 1.1 0.6 1.1 -0.2 0.2 -0.2 0.4 0.2 0 0.7 0.5 0.2 -0.6 1.4 0.4 0.9 0.5 0 0.4 -0.2 1.1 0.1 1 0.4 0.7 0.6 -0.8 0.8 -0.4 1 -0.7 0.1 0 0.2 -1.3 1 -1.6 0.3 -1.2 1.2 -0.1 0.5 -0.4 0.5 -1.2 0.1 -0.4 0.4 1.4 1.8 -0.2 0.2 0 0.9 0.2 1.2 -0.4 0.7 0.5 0.7 -0.5 0.8 0 0.4 0.7 0.6 -0.9 0.6 -0.1 0.4 -1.5 0.4 -0.3 0.5 0.3 0.7 0.7 0.2 0.8 1 -0.5 1 0 0.6 -0.8 0.7 -0.2 1.2 -1.8 0.2 -4.1 -0.1 0.4 1 1.3 1.1 1 0.4 -0.2 1.2 0.8 0.8 -0.1 0.5 0.2 0.3 0.9 0.3 0.1 0.7 1.3 0 0.6 0.5 0.1 0.5 -1 1.2 0.1 0.6zM38.7 145.4l0.4 -0.3 0.1 0.1 -0.5 0.3 -0.6 -0.2zM26.2 124.5l-0.2 0.4 -0.3 0.2 0.2 -0.4zM66.7 154.5l0.2 0.2 -0.1 0.2zM172.9 112.7l0.4 0.9 -0.4 -0.3 0 0.8 -0.6 0 -2.9 -1.3 -1.7 0 0.3 -0.5 -0.6 -0.4 0.2 -0.3 2.6 -0.1 0.6 -0.3 0.3 0.6 0.4 -0.4 0.1 0.3 0.8 0.4 0.2 0.3 -0.2 0.3zM162.8 114.5l1 0.4 -0.2 0.9 -1.4 1.5 -0.8 1.6 -2.1 1.2 -1.2 -1 -1.8 -0.1 -0.6 -1 0.2 -0.4 -0.1 -0.3 -0.7 -0.3 -1.2 0.3 -0.6 0.6 -0.3 0 -0.4 -0.7 -0.7 0.1 -0.4 -0.5 0 -0.4 2.4 -1.1 0.6 -0.7 2 -1.1 4.1 -1.1 0.4 0.2 -1.3 0.5 -0.1 0.3 1.3 -0.1 -0.2 0.4 -0.7 0.2 0.1 0.5 1 0.5zM105.7 74.8l0.1 0.5 0.6 0.6 1 -0.1 0.4 0.6 0.7 -0.4 1.3 0.2 0.4 0.2 -0.3 1.2 -0.7 0.6 0.4 0.4 1 0.1 0.2 -0.6 0.7 -0.2 -0.4 0.3 0.3 0.3 1.6 0.5 1.3 0.2 0.9 0.5 2 0 0.3 0.7 1 0.4 0.8 0.8 0.4 -0.1 0 -0.3 1.2 0.2 1.1 -0.6 1 0.7 0.8 -0.1 0.5 0.8 0.9 0.4 2.3 -0.5 0.7 0.2 0.4 0.4 0.9 -0.5 0.6 0.4 2.7 -0.1 0.1 -0.3 -0.3 -0.3 0.2 -1 1.7 0.1 1.2 0.5 0.4 -0.2 1.5 0.3 0.7 0.7 2.1 0 0.9 1.3 -0.2 0.7 0.4 0.3 -0.4 0.1 0.4 0.6 0.8 0.1 2.1 -0.8 2.4 0.7 0.4 0.8 0.5 0.2 0.6 -0.1 0.8 -0.7 1.6 -0.1 1.5 0.5 0.3 0.3 0.8 0.3 0.3 -0.3 1.3 0.2 -0.3 -0.4 0.6 -0.4 1.1 0 1.6 -0.7 1 0.1 0.6 0.4 1.1 0 0.1 0.9 1.4 0.2 -0.6 1 -1 -0.3 -0.6 0.5 0 0.9 1.1 0.7 -0.2 0.4 0.4 1 -0.9 1.1 -0.8 0.2 -0.1 0.3 -1.5 1 -1.1 0.2 -0.6 0.5 -3.7 1.2 -2 1 -1.5 1.6 -1.2 0.4 -5.3 0.8 -3.5 0.9 -0.5 0.6 -0.8 -0.2 -0.9 0.2 -3.3 2.6 -0.3 0.4 0.7 0.2 0.1 -0.2 1.2 0.6 -0.2 0.5 -0.8 0.2 -1.2 1.1 -0.6 0.1 -0.3 -0.3 0.8 0.1 0.8 -0.7 -1.5 0.2 -0.4 0.3 -2.3 3.4 -1.6 1.2 -0.7 1 -0.9 0.5 -1.7 2.1 -2.6 3.6 0 1 0.3 1.2 0.9 1.5 -0.3 0.2 0.2 0.6 0.8 1.2 0.5 0.7 1.1 0.7 1.8 0.5 0.3 0.3 -0.1 0 0.6 0.3 0.1 0.3 -1.7 0.9 0 0.4 -1.4 0.2 -0.3 0.8 -1.1 0.1 -1.7 0.6 -0.7 0.6 -0.3 0.6 -1 0.3 0.1 1.4 -1 0.2 -0.4 0.3 -0.3 1.9 -0.7 0.5 -0.4 0.9 -0.1 0.7 -0.3 -0.3 -0.2 0.6 -0.5 0.3 0.5 0.9 0.6 0.2 0.3 -0.1 0.2 0.4 -2.4 0.7 -1.8 -0.3 -0.3 0.3 0.1 0.2 -1.5 -0.5 -0.2 0.3 -0.7 -0.1 -1.6 0.9 -0.3 0.6 -1.9 0.7 -1.5 1.7 -1.1 2.4 0.1 0.5 -1 0.5 -0.9 1.4 -0.6 0.4 -0.8 0 -0.9 -0.8 -0.9 -0.3 -0.8 0.2 -1.4 0 -0.6 1 -1.1 0.5 -1.1 -0.4 -0.3 0.2 -1 -0.6 -4.3 0.1 -1 0.5 -1.4 -0.1 -0.6 -0.4 -1.4 0.2 -1.2 -0.3 -1.4 0.3 -1 -0.2 -1.9 0.4 -1.9 -0.2 -0.4 0.2 -1 1.4 -0.7 0.1 -0.8 0.7 -0.7 0.2 -1.9 -0.2 -1 0.6 -2.2 0.5 -0.7 1.2 -0.4 0.2 -0.5 1.5 -1 -0.4 -0.1 1.3 -1.9 0.6 -0.9 -0.6 -1.2 -0.2 -1.3 -1.1 -1.3 -0.1 -0.8 -1 -0.6 -0.2 -0.2 -0.8 -1.4 -1.8 0.6 0.2 0.3 0.5 0.5 -0.4 -0.5 0 -0.1 -0.7 -0.5 -0.4 -1.2 -0.3 -0.5 -1.3 1 -0.4 0.1 -1 0.4 -0.3 0.8 0.1 0.4 -0.4 -1.7 0.4 0 0.9 -0.5 0.1 -1.2 -1.7 -4.3 -2.2 -0.3 -0.6 0.7 -0.8 -0.8 0.6 -0.4 0 0.4 0.7 -1.9 -0.6 -0.3 0.1 0.5 0.1 -2.7 0.1 -0.6 0.2 -0.4 -0.1 -0.6 -3.1 -0.6 -0.9 0.1 -0.5 0.5 -0.4 0.3 -1 1.5 -1.4 0.4 -1.3 1.2 -0.3 0.4 -0.4 1.1 0.2 0.9 -2 -0.9 0 -0.8 0.3 -0.7 -1.1 -2.2 -1.9 0.3 -0.3 -0.1 -0.2 0.3 -0.7 0.5 -0.7 -0.2 -0.4 0.2 -0.9 1.3 -0.9 1.1 -0.4 -0.1 -0.6 1 -1.2 -0.5 -0.9 -0.5 -0.2 -1 0.1 -0.1 -0.7 -1 -0.4 0 -0.7 -0.8 -0.8 0.2 -1.2 -1 -0.4 -1.3 -1.1 -0.4 -1 4.1 0.1 1.8 -0.2 0.2 -1.2 0.8 -0.7 0 -0.6 0.5 -1 -0.8 -1 -0.7 -0.2 -0.3 -0.7 0.3 -0.5 1.5 -0.4 0.1 -0.4 0.9 -0.6 -0.7 -0.6 0 -0.4 0.5 -0.8 -0.5 -0.7 0.4 -0.7 -0.2 -1.2 0 -0.9 0.2 -0.2 -1.4 -1.8 0.4 -0.4 1.2 -0.1 0.4 -0.5 0.1 -0.5 1.2 -1.2 1.6 -0.3 1.3 -1 0 -0.2 0.7 -0.1 0.4 -1 0.8 -0.8 -0.7 -0.6 -1 -0.4 -1.1 -0.1 -0.4 0.2 -0.5 0 -0.4 -0.9 0.6 -1.4 -0.5 -0.2 0 -0.7 -0.4 -0.2 -0.2 0.2 -1.1 0.2 -1.1 -0.6 -0.3 0.4 -1 0 -0.5 -0.2 -0.7 0.2 -1 -0.5 -0.6 0.3 0 0.7 -0.2 0.2 -1.9 0.4 -0.6 0.4 -0.3 -0.5 -0.5 -0.1 -0.3 0.3 -0.7 0.1 -0.2 -0.2 0.2 -0.3 -1.2 -0.3 -2 0.5 -0.1 -0.7 -0.4 0.6 -0.5 0 -0.6 0.5 -1.5 0.1 0.1 -0.4 -0.5 -0.3 -0.1 -0.4 1.5 -1.5 -0.5 -0.3 -0.7 0 -0.2 -0.9 -1.4 0.6 -3.1 0.5 -0.5 0.6 -2.3 1.2 -0.2 -2.5 0.8 -0.1 -0.2 -0.4 2.4 -1.5 0.1 -0.5 -0.6 0.5 -1.2 0.4 -0.9 0.1 0.1 -0.6 0.3 0.1 0 -0.5 0.6 0 1.3 -1.1 -2.1 0.5 -0.5 -0.6 -0.6 -0.2 0.7 -0.3 0.2 0.2 -0.1 0.1 0.5 0.1 0 -1.2 0.6 -0.4 0.5 -0.9 -0.6 0.6 -0.6 -0.5 -0.4 0.7 -0.3 -0.1 -0.9 0.8 -0.3 0.3 -0.2 -0.2 -0.1 -0.4 -0.4 -0.2 0.5 -1.2 1.4 -0.9 0.1 -0.4 -0.2 -0.1 -0.5 0.5 -1 0 -0.3 0.3 -0.3 0.1 -0.4 -0.6 0.4 -0.3 -0.5 -0.2 0.1 -0.7 -0.7 -0.3 0 0.2 -0.3 -0.1 -0.5 0.5 -0.2 -0.4 0.4 -1 -0.3 -0.4 0.7 -0.7 0.3 0.2 0.9 -0.5 -1.1 0.1 -0.1 -0.2 0.9 -0.5 0.9 0 0.5 -0.4 0.8 0 0.2 -0.1 -0.8 -0.4 1.8 -0.7 1.5 0.6 1.1 -0.4 0.4 0.2 1.8 -0.8 0.4 0.4 0.3 -0.7 0.7 0.3 0.6 0.8 0 -0.9 0.4 -0.3 -1.5 -0.4 1.4 -0.2 0.1 -0.2 -1.8 0.2 0.2 -0.6 0.3 -0.1 -0.2 -0.3 0.8 -0.1 1.6 -0.9 0.2 0.2 0.2 -0.1 -0.2 -0.4 0.1 -0.3 0.9 -0.1 0.8 -0.5 0.3 0 0.4 0.5 -0.7 0.5 0.6 0 -0.1 -0.3 0.5 0 0.1 -0.3 1.1 -0.4 0.3 -0.3 0.1 0.2 -0.2 0.5 0.5 -0.3 0.3 0.7 0.8 -0.4 2 0.5 0.7 0.9 0.5 0.2 -0.2 0.2 2.5 0 0 0.9 0.5 -0.8 0.6 -0.1 2.7 0.1 0.6 -0.3 1.5 0.4 0.5 -0.1 -0.1 -0.2 1.7 0 1 -0.3 1.7 0.3 1.8 -0.2 0 -0.5 0.5 -0.1 0.1 -0.2 1.9 1.1 3.2 0.1 -0.3 0.5 0.7 -0.3 0.6 0 1.3 0.5 2.3 0.4 0.3 -0.2 2.3 0.6 2.5 0.2 0.3 0.2 0.5 -0.2 0.6 0.2 0.2 -0.2 1.9 -0.1 2 -0.5 0.3 0.2 0.5 -0.4 1.2 -0.3 0.6 0.2 -0.8 0.4 0.4 0.2 0.4 -0.3 0.3 0.2 -0.1 -0.4 1.9 -0.5 1.7 0.6 0 0.2 -0.5 -0.1 -0.3 0.3 0.4 0.2 0.2 -0.2 1.9 0.3 1.6 0.5 0.4 -0.1 0.9 0.5 -0.2 -0.6 1 -0.5 -0.1 -0.1 1.9 -0.3 0.6 0.3 0.3 0.7 0.3 -0.5 2 0.4 1.3 0.6 1.8 0 0.8 0.3 1.8 -0.6 0.5 0.3 0.1 -0.1 -0.2 -0.2zM158.4 121.1l-0.2 0.7 -0.4 0 -0.2 -0.4zM147.2 85.2l-0.2 -0.2 0.2 -0.2 0.4 0.4zM143.1 122l0.4 0.8 -1.3 1.1 -1 0.4 -0.2 0.6 -1.3 -0.4 -0.2 0.2 -0.5 -0.3 0 -0.8 0.9 -0.1 -0.1 -0.8 0.7 -0.5 1.8 -0.4zM142.8 126.5l0.2 0.4 -0.6 0.1 -0.8 -0.4 -0.8 0.4 0 -0.7 0.5 -0.5 0.6 0.7 0.5 0.1zM117.5 136.9l0 0.5 0.1 0.4 -0.2 -0.2 -0.1 -1zM98.8 165.1l0.1 0 -0.1 0zM93.2 163.5l0.4 0.6 -0.4 0.1 -0.2 -0.6zM66.9 157.8l-0.7 -0.9 1 0.3 0.3 -0.1zM66 157l0 0.1 0 -0.1z" fill="var(--accent-tint)" stroke="var(--accent)" stroke-width="1" stroke-linejoin="round"/>
+<path d="M595.7 88.6l-0.3 -0.1 -0.2 0.3 -1 0.4 -0.6 -0.2 -0.2 -0.5 0.3 -0.3 -0.3 -0.2 0.5 -1.2 0.7 0 0.5 0.4 0.9 0.1 -0.1 0.2 0.4 0.3 -0.4 0.2zM638.6 52.1l1.1 0.4 1 -0.4 0.6 0.1 1.3 -0.9 0.8 0.2 0.5 0.4 1 0.1 0.3 -0.6 0.8 -0.3 0.3 -1 0.6 -0.4 0.2 -0.8 -0.5 -0.6 0.1 -0.2 1.5 -1.1 0.2 -0.7 0.7 -0.2 0.3 0.4 0 2 0.6 0.2 0.7 1 0.6 0.2 0.3 -0.1 0.7 0.2 0.2 0.2 -0.5 1 0.8 0.3 0.3 0.7 0 0.7 0.7 0 0.5 -0.9 -0.7 -0.7 0.3 -0.3 -0.1 -0.5 0.4 -0.3 0.2 -0.8 1 -1.1 0.3 -1.1 -0.3 -1.1 0.3 -0.7 0.6 0 0.2 0.3 0.4 -0.3 0.1 1.3 0.7 0.8 1.1 0.1 0.3 -0.7 0.4 0.1 1.1 -0.4 0.4 0.2 0.6 1.4 0.3 0 0.6 -0.5 -0.6 -0.7 0.4 -0.8 -0.9 -0.4 0 -1 0.4 -0.8 0.8 -0.3 0.3 0.1 0 0.5 0.5 0.2 1.1 0.1 0.1 -0.9 -0.5 -0.2 -0.2 -0.3 0.4 -0.9 -0.1 -0.5 0.2 -0.7 0.6 0.2 0.8 -0.3 0.8 0.3 -0.1 0.5 2 0.1 0.4 -0.5 0.3 -1.1 0.5 -0.6 1.1 -0.3 0.7 0.1 0.4 -0.4 0.4 0.2 1.2 -0.1 0.4 0.2 3.3 -1.5 0.2 0.4 -0.7 0.7 0.2 0.9 1.1 0.4 0.1 0.8 0.5 0.2 0.6 0.8 1.1 0.4 1.4 0 0.7 0.3 2.4 0.1 0.7 0.3 1.8 -0.3 1.7 0.4 -0.1 0.7 -0.5 0.2 -1.2 1 -0.5 0.8 0.5 0.8 0.2 0 -0.2 -0.2 0.4 0 0.7 0.4 0.6 0 -0.1 0.6 -0.8 0.7 -0.3 0.7 0.4 0.4 0.7 -0.2 0.2 0.2 -0.3 1.5 1.7 0.8 1 1.1 -0.3 0.6 -1.1 0 0.2 -0.2 0.5 -0.1 -0.5 -0.3 0.1 -0.3 -0.3 -0.3 -1.2 -0.9 -0.4 0.4 0.3 0.2 -1.1 0.8 -0.2 -0.1 0.4 -0.3 -0.5 -0.4 -1.2 -0.2 -0.5 0.3 -0.3 -0.2 0.1 0.4 -0.3 0.1 0 0.3 0.5 -0.1 -0.4 0.7 -1.1 0.3 -1.2 0.9 -2.7 1.5 0.3 -0.7 0.5 0 0.4 -0.7 -0.3 0.2 -0.3 -0.4 -0.4 0.5 0.1 0.2 -0.4 0 -0.1 -0.3 -0.1 0.2 0.4 0.3 -0.9 0.1 -0.4 0.6 -0.2 1.4 -0.5 0 0.3 0.6 0.1 -0.4 0.1 0 0.2 1 0.3 0.1 0.3 -0.4 0.2 1.4 -0.2 -0.3 0 0.4 0.3 0.1 0.3 0.7 0 -0.6 1 1 0.1 -0.2 0.2 0.2 -0.5 1.7 -0.2 -0.9 -0.2 0.1 0.1 1 -0.3 0.1 -0.6 -0.5 -0.2 0.2 -0.1 1.3 0.4 1.2 0.1 1.2 1 2.9 2.5 2.4 2 0.6 2.7 2.2 1.8 0.8 0.4 -0.2 0.8 0.7 2.2 4.6 1.1 3.5 1.3 2.1 4.3 3.8 1.2 0.4 0.4 1 1.1 0.5 1 0.1 0.4 0.4 1.1 0.4 2.3 -0.1 4.6 -0.9 1 0.2 0.3 0.3 0.2 1.2 -2.1 2.1 0 0.8 0.6 0.8 5.5 2.2 3.9 0.9 2 0.9 1.8 1.4 4.1 1.2 0.1 0.3 0.4 -0.1 0.4 0.5 0 0.5 1.8 0.8 1.9 1.9 0.8 1.3 0.1 0.3 -0.7 1.5 0 1.8 -0.3 0.3 -2.4 -0.9 -0.8 -0.9 0.1 -0.4 -0.4 -0.2 0.3 -0.5 -0.8 -0.8 -0.2 -0.8 -0.5 -0.3 -2.9 0.2 -2.6 -0.8 -0.1 -0.2 0.3 -0.4 -0.2 -0.2 0.6 0 0.2 -0.3 -1.1 0.3 -0.3 -0.3 -0.9 0 -1 1 -0.9 1.7 -0.3 1.1 -0.9 1.4 0.4 1.3 -0.7 1 -0.3 1.2 0.6 1.2 0.7 0.3 1.4 0 0.6 0.6 1.4 0.5 0.7 0.7 0.7 0.1 -0.3 1.4 0.4 0.7 0 1.3 0.3 0.5 0.4 0.1 -0.7 1.5 -0.1 -0.2 -0.6 0.3 -0.3 -0.3 -0.4 0 -1.7 0.9 -1.1 1 -0.3 1.1 0.5 1.8 0.1 1.1 -0.5 0.7 -1.6 1.2 -1 1.6 -0.2 1.6 -0.3 0.7 -0.7 0.3 -2 0.2 -0.7 -0.2 -0.5 -0.6 0.2 -0.4 -0.4 -0.5 0.2 -0.6 -0.2 -0.8 1.4 -1.1 0.6 -1.9 0 -0.9 -0.8 -0.7 0.1 -0.4 1.2 -0.9 1.3 -0.2 0.4 -0.5 0 -0.9 -0.1 -0.7 -0.5 -0.3 -0.8 -1.3 -0.7 -2.9 -0.4 -0.9 -1.2 -1.3 -0.7 -1.4 -0.5 -2.1 -0.6 -0.9 -0.8 -1 -0.8 0.1 -0.9 1 -0.6 0 -0.3 -0.3 -0.4 0 0 -0.4 -1.3 -1 -0.6 0.1 -0.4 -0.4 -0.8 -0.3 0 -1 0.5 -0.3 0 -0.5 -1.1 -1.8 -0.9 -1 -1.3 0.4 -0.7 0.4 -0.5 -0.1 -1.1 0.8 -0.1 -0.6 1.1 -0.9 -0.1 -0.4 -1.5 -1 -0.6 0.1 -0.2 0.3 -1 -0.2 0.1 0.5 -0.3 0 -0.4 -1.5 -0.9 -1 -0.7 -1.3 -1.1 -1.1 -1.1 0.1 -0.2 0.2 0.1 0.3 -0.3 0.1 -2.2 -0.8 -1.9 0.9 -0.6 -1.1 -0.8 -0.7 -1.2 -0.2 -0.8 -0.4 -0.1 0.2 -1.7 -1.9 -1 -0.8 -0.8 -0.3 -0.6 -1.5 -1.3 -1.2 -0.9 -0.4 -0.7 0.1 -1.6 -2.6 -2.3 -1.3 -1.4 -0.1 -0.2 0.6 -0.6 -0.2 -0.1 -0.6 0.5 0 0.2 -0.4 -0.3 -0.9 -0.2 0.1 -0.5 -0.8 -0.6 -0.4 -0.5 -0.8 -1.8 -0.6 0.3 -0.3 -0.1 -1 -1 -0.3 -0.8 0.1 -0.1 0.3 -0.2 -0.2 -0.2 -0.5 0.3 -0.4 0.2 -1.4 -0.2 -1.1 -0.8 -1.5 -1 -1.1 -0.7 -3.9 -1.3 -1.8 -0.8 -0.4 -0.3 0.2 -1 -0.7 -0.2 0.2 0.3 0.2 -0.1 0.3 -2.9 -2.1 -0.3 0.1 -1.7 -1.2 -0.1 0.5 -0.9 -0.7 -2.7 -0.6 -2.3 1.5 -0.4 1.2 -1.2 0.7 -0.8 1.6 0.1 0.3 -0.7 0.7 -2.7 1.1 -1.8 0.1 -0.2 -0.8 1.6 -2.2 -0.3 -0.9 0.1 -0.3 -2.5 0.6 -1.6 -0.9 -1.3 -0.5 -0.9 -1.2 0.1 -0.6 0.3 -0.2 -0.4 -0.5 -0.2 -0.6 0.8 -1 0.1 -0.7 0.8 0 -0.4 -1.5 -0.6 -0.4 -0.6 0 -0.8 -0.5 -0.2 -1.2 -0.6 -0.2 -0.3 -0.8 1 -0.6 0.8 0.3 0.9 -0.8 0.6 -0.2 0.2 0.1 0.4 -0.5 -0.2 -0.7 0.6 -1 -1.4 -1.1 -0.2 -1.4 -1.1 -0.6 -0.3 -0.9 0.2 -0.5 1.1 -0.4zM681.8 72.7l0.2 -0.5 -0.1 -0.4 -0.5 0.2 -0.2 0.4 0.1 0.3zM712.4 131.8l0.8 0.3 -0.6 0.5 0.1 0.3 -0.5 1.3 -2.2 3.8 0.1 0.6 -0.3 1.5 -0.5 1.1 0.2 1.6 1.4 0.6 0.1 0.3 -0.2 -0.1 -0.2 0.3 -0.1 -0.3 -0.2 0.4 0.4 0.6 0.2 -0.1 -0.1 0.1 0.2 0.4 0.5 0.1 -0.1 0.6 0.3 0 0.1 0.3 -0.5 0.2 0 0.3 -0.9 0.7 -0.4 1.4 0.4 1.3 -0.3 0.2 -0.8 -0.4 -0.2 0.2 -0.9 -0.4 -0.9 0.4 -1.8 -0.7 -0.8 0 -1 -1.6 -1.1 -1 -1.4 -0.6 -2 0.3 -1.6 -0.7 -1.3 -1 -1.1 -0.2 -1.6 -0.9 -0.9 -1 -1.3 0.1 -0.8 -0.8 -2.5 0.2 -0.7 -0.9 -0.7 -0.1 -0.7 -1.4 0.3 -0.3 0.1 -2.2 0.7 -0.6 0.3 0.1 0.4 -0.6 0.3 0 0.2 -0.9 0.3 0.1 0.6 1.1 0.7 0.5 1.3 -0.7 -0.1 -0.6 0.4 -0.6 0.9 0.1 0.3 -0.4 0.6 -0.2 0.5 0.5 0.3 0.8 1 -0.2 0.3 0.6 1 0.5 1.2 0.2 1.9 -1 0.6 0.2 1.6 0 1.3 -0.5 0.7 0 1.1 -0.5 0.7 -0.9 1.5 -0.5 1.6 0.5 0.7 -0.4 0.4 -1.2 0.1 0.5 0.5 0zM709.1 126.5l-0.1 0.4 -0.2 -0.1 0.2 -0.3zM707.2 130.9l0.5 0.5 -0.2 0.2 -0.4 -0.3zM706.6 130.4l0.2 -0.5 0.3 0 0.2 0.3 -0.2 0.1 0 0.4zM706.3 129.8l-0.4 -0.1 -0.3 -0.2 0.7 -0.2zM703.8 129.7l-0.2 0.1 -0.1 -0.3 0.2 0zM701.9 130.2l0 -0.1 0.1 0.1zM696.6 106.4l-0.5 0.5 -0.4 -0.2 0.1 -0.5zM692.1 106.1l0 0.1 -0.1 0.1zM691.8 129.1l0 0.2 -0.2 0 0 -0.1zM691 160.4l0.3 0.2 -0.2 0zM689.2 164.5l-0.1 0.2 -0.7 -0.2 0.2 -0.1zM679.9 56l0.1 -0.1 0.4 0.2 -0.4 -0.1 -0.4 0.9zM684.7 138.2l0.2 -0.1 0.5 0.2 -0.6 0.1zM679.6 55.7l0.2 0.2 -0.3 0.1zM682.8 138l-0.2 0 -0.1 -0.3 0.2 0.1zM682.9 150.4l0.5 0.7 -0.2 0.3 -0.3 0 -0.7 -0.9zM670.2 90l0.5 0.6 -0.1 0.2 -0.6 -0.5zM666.1 84.9l0.2 0.9 -0.3 0.3 0.3 0.2 -0.1 0.4 -0.6 -0.6 -0.2 0.2 -0.1 -0.1 -0.5 0 -0.1 0.3 -1 -0.3 0.2 -0.6 1.1 0.1 0 -0.3 0.5 0 0.1 0.2zM665.4 90.9l0.2 -0.1 0 0.1zM663.6 87.8l0 0.5 -0.2 -0.1zM661.5 83l0 0.4 -0.3 0.2 -0.2 -0.2 0.2 -0.5zM662.3 110.8l-0.4 1.6 -0.4 0.3 -0.7 1.1 0.3 1.3 0.7 0.7 -0.4 1.3 0.3 0.3 -0.3 0.4 0.2 0.5 -0.5 3.9 0.2 0.2 -0.4 1.4 0.3 0.6 -0.5 0.7 0 1 -0.4 0.5 -0.2 -0.3 -0.4 0.1 -1.4 -1 -0.6 -0.1 -0.4 0.5 -1.3 -0.8 0.2 0.4 0.3 0 -0.5 0.8 0.3 1.1 -0.2 0.6 -1.4 1.3 -1.2 -0.5 -0.4 0.2 -0.2 0.5 0 -0.3 -0.4 -0.1 0.2 -0.5 -0.4 -0.1 -0.2 -1.1 -0.4 0 0 -0.3 -0.2 0.1 -1 -1.6 0.5 -0.8 -0.5 -0.9 0.2 -0.5 -0.1 -0.5 0.6 -1.2 -0.2 -1.9 0.6 0.5 0.4 0 -0.5 -0.2 0.4 -1.4 -0.3 -0.5 -0.5 -0.2 -0.2 0.2 0.2 0 -0.2 0.4 -0.3 -0.5 0 -1.3 -0.2 -0.1 0.7 -0.3 0.2 -0.5 -0.2 -0.6 0.1 -1.4 -0.8 -0.7 -0.1 -1.3 -0.8 -1.3 -0.6 0.3 -0.2 -0.1 0.2 -0.4 -0.2 -0.1 -0.2 0.6 -0.2 -0.3 0 -0.3 0.4 -0.8 -0.5 -0.4 0.7 -1.7 -0.4 -0.5 0.1 -0.4 0.3 0 0.1 0.6 0.6 0.7 1.8 0.2 0.6 -0.3 0.4 -0.5 0.5 -0.3 0.5 0.1 0.5 -0.4 1.4 -2 1.2 -0.3 0.2 -1 0.5 -0.3 0.3 0.3 0 0.4 0.1 0.1 0 -0.3 0 0.3 0.4 0 0 -0.2 0.8 0.3 -0.1 0.2 0.3 0.3 0 0.5 0.2 -0.6 0.4 -0.1 0.3 0.2 -0.3 1.3 0.2 -0.3 0.1 0.3 0.5 -0.1 0.4 0.2 -0.6 0.1 -0.1 0.6 -0.6 0.2 0.6 0.2 0.6 -0.2 -0.2 0.3 0.9 0.5 -0.5 0.5 0.7 1.3 0.2 0.9zM659.1 103.1l0.1 0.7 -0.1 0.1 -0.2 -0.2zM658.9 103.3l-0.5 0.1 0 -0.1 0.3 -0.4zM651.3 127.2l0.2 0 -0.4 1.1 -0.2 0.1 -0.6 -1.5 0.1 -0.2 0.8 0.1zM649.1 105.5l0 0.6 -0.3 0 0.1 -0.5 0.4 -0.3 0 -0.4 0.4 -0.3 0.2 0.6zM650 125.9l0 0.9 -0.3 0.1 -0.4 -0.8zM681.3 72.7l-0.1 -0.5 0.7 -0.4 -0.1 0.9zM706.2 159.2l0 0.4 -0.3 0.3 -0.9 -0.1 -0.8 -0.5 -0.3 -1.1 0.5 -0.2 -0.2 0.2 0.8 0.1zM703.5 157.2l0.5 0.3 -0.6 0.3 -0.7 -0.1 -0.1 -0.4zM689.6 54.9l-0.4 -0.3 -0.2 -0.5 1.4 -0.3 -0.4 -0.4 1.1 0 0.3 -0.6 -1 -1.1 -1.6 -0.6 0 -1.9 -0.7 0.2 -0.4 -0.4 0.3 -0.7 0.8 -0.7 0.1 -0.6 -0.6 0 -0.7 -0.4 -0.4 0 0.2 0.2 -0.2 0 -0.5 -0.8 0.5 -0.8 1.2 -1 0.5 -0.2 0.1 -0.7 2.7 0.1 0.8 0.4 1.9 -0.1 0.4 0.2 0.4 -0.1 0.3 0.4 0.3 -0.6 1.4 -0.9 0.5 -1.2 0.5 -0.2 0.2 0.2 0.3 -0.4 0.4 -0.2 2.4 -0.2 0.9 0.2 0.3 -0.6 0.6 -0.2 0 -0.4 0.7 0.1 0.9 -0.3 1.3 0.4 -0.4 -0.7 -0.1 -1 0.8 -0.4 1.3 -0.2 0.5 0.2 0 1.1 0.8 0.7 -0.3 0.3 1.2 1 0.1 0.4 -1.3 -0.3 -0.7 0.7 0.4 1.3 -0.6 0.1 -0.4 -0.3 -0.6 0.3 0.1 0.5 -0.3 0.4 -1.5 0.6 -0.4 0.6 -0.8 0.1 -0.3 1.1 0.9 0.7 -0.1 1.6 0.2 0.5 -0.4 0.3 -1.3 0.2 -0.1 0.5 -1.3 0.7 0.3 0.4 0.4 -0.1 0.3 0.5 -0.7 0.5 0.3 0.8 0.5 0.4 -0.2 0.4 -1.4 0.4 -0.7 -0.5 -1 -0.3 -0.3 0.5 -0.6 0.1 -0.2 -0.3 -0.9 -0.3 -0.8 -1.4 -0.6 0.8 -0.1 0.8 -0.7 0.6 -1.2 -0.1 -0.9 0.3 -1 -0.3 0.1 0.4 -0.6 0.6 -1.1 -0.3zM708.8 41l2.5 0.6 0.8 0.8 0.1 -0.1 0.5 0.1 0.5 0.9 1.4 1.4 0.6 0.2 0.7 0 0.6 1.1 0.4 0.1 -0.2 0.2 0.3 -0.1 0.1 0.3 0.3 -0.1 0.2 0.2 0.8 -0.2 0.6 0.1 0.5 0.4 0.1 0.5 1.2 0.2 0.5 0.4 0.2 -0.2 1.4 0 1 -0.3 1.5 0.3 1.2 -1 0.4 -1.1 1 0.2 0.1 -0.4 0.7 -0.3 -0.1 0.4 0.3 0.3 -0.4 0.2 0 0.4 1.2 1.5 -0.4 0.6 0 0.5 0.4 0.3 0.5 -0.4 0.8 0.5 -0.2 0.3 -0.5 0 -0.1 0.5 0.4 0.4 -0.4 0.3 0 0.2 0.9 0.2 0.2 0.4 0.5 0.2 1.7 0.3 0.3 0.2 -0.1 0.4 -0.8 0 -0.4 0.3 -0.9 -0.3 0.2 0.6 -0.7 0.2 0.4 0.5 0.2 1.2 0.4 0.2 -0.4 0.6 -0.4 -0.2 -0.2 0.1 0.3 0.6 -1 0.1 -0.9 -0.4 -0.1 -1 -0.4 -0.1 -0.5 -0.7 -0.2 0.3 -0.3 -0.3 -0.5 0.1 0 0.4 -0.2 0 -0.9 -0.5 -1.4 -0.3 -0.6 0.8 -1.2 -0.4 -0.6 0.8 -0.5 0.3 -1.3 -1 -0.8 0.6 -0.7 0.2 0.1 -0.4 -0.4 0.2 -0.1 -0.3 -0.4 0.3 -0.9 -0.5 -0.2 0.4 -0.4 0.2 -1.1 -0.5 -0.2 -0.3 -0.2 0.2 0 -0.3 -0.5 0.1 -0.2 -0.5 -0.7 1.3 -2.2 -0.2 -1 1.3 -0.2 1.2 -0.2 0.1 -0.8 -0.3 -0.8 -0.6 -0.9 -1.2 -1.1 0.1 -0.6 0.4 0 2.3 -0.2 0.6 0.5 0.8 -0.4 0.6 0.3 0.6 0.5 0.4 0.6 -0.3 0.7 0.8 0.5 0.1 0.2 0.4 -0.3 0.6 0.9 0.1 0.5 1.1 -0.1 0.4 0.5 0.2 0 0.8 0.3 0.8 1 1.3 0.7 0.2 0.3 0.4 0.5 0.2 1.6 1.5 0.3 0.7 2.8 2.2 1 0.5 1 0.2 0.4 1.7 1.4 1.5 1.6 1 0.4 0.8 -0.2 0.2 -0.9 0 -0.5 -0.5 0.3 -0.2 -0.6 0.2 0.2 -0.2 -0.3 -0.3 -0.1 0.1 -0.8 -0.7 -1.8 -0.7 -2.1 -1.9 -2 -0.3 -0.9 -0.5 -1 0.1 0.6 -0.4 -0.2 -0.1 -2.6 0.6 0.5 0.3 -0.5 0.2 -1.2 -0.2 0.1 -0.4 -0.5 -0.1 0.2 -0.1 -0.2 -0.1 -0.1 -0.6 0.4 -0.2 -0.5 0 0.3 -0.1 -0.1 -0.1 0.1 -0.3 -0.2 0.2 -1.1 -0.8 -0.7 0 -0.8 -0.6 0.4 0.1 0.1 -0.1 -1.9 -1 -2.7 -2.6 0 -0.5 -0.4 -0.3 0.2 -0.2 0.4 0.3 0.2 -0.2 -0.1 -0.3 0.8 0.4 0 -0.5 -0.4 -0.3 1.4 0.5 0.8 -0.1 -0.7 -0.1 -1.1 -0.6 -2.6 -2.1 -1.2 -1.6 -0.1 -1.5 0.2 -1.1 -0.7 -1.4 -1.6 -1 -0.7 -0.7 0 -0.2 -0.4 -0.3 0.1 0.3 -1.1 -0.5 -0.7 0 -0.4 2.2 -0.2 0.3 -0.2 -0.1 0.1 0.3 -0.3 0.5 0.1 0.9 -0.6 0.4 0.1 -0.4 -0.4 -0.6 0.3 0.6 -0.3 0.3 0 0.7 -0.4 0 0.2 0.3 -0.1 0.5 0.2 0.1 -0.9 -0.1 0.3 0.6 -0.1 0 -0.1 -0.4 -0.9 -0.6 0.3 0.1 0.1 -0.3 -0.4 0 -0.2 -0.8 -1.2 -1.1 -0.2 -0.4 0.9 -0.3 -1 0 -0.3 -1.3 0.2 -0.3 -0.2 -0.2 0.2 -0.2 -0.5 -0.2 -0.5 -1.8 1 0.5 1 -0.1 1.1 0.3 0.6 -0.6 -0.1 -0.4 1 0.3 0.9 -0.3 1.2 0.1 0.7 -0.6 0.1 -0.8 0.6 -0.8 0.8 1.4 0.9 0.3 0.2 0.3 0.6 -0.1 0.3 -0.5 1 0.3 0.7 0.5 1.4 -0.4 0.2 -0.4 -0.5 -0.4 -0.3 -0.8 0.7 -0.5 -0.3 -0.5 -0.4 0.1 -0.3 -0.4 1.3 -0.7 0.1 -0.5 1.3 -0.2 0.4 -0.3 -0.2 -0.5 0.1 -1.6 -0.9 -0.7 0.3 -1.1 0.8 -0.1 0.4 -0.6 1.5 -0.6 0.3 -0.4 -0.1 -0.5 0.6 -0.3 0.4 0.3 0.6 -0.1 -0.4 -1.3zM730.7 82.6l0.1 0.5 0.5 0.8 -2.2 -1.3 -0.3 -0.6 -1.1 -0.2 -0.4 -0.5 -0.1 0.1 -1.1 -0.5 -0.1 -0.4 -0.7 -0.2 -0.2 0.2 -0.5 -0.2 0.4 0.4 -0.1 0.1 -0.2 -0.3 -2.4 -0.5 -0.2 -0.4 -1.7 -0.5 -1.4 0 -0.4 -0.6 0.6 0.3 1.3 -0.2 1.3 0.3 0.6 0.6 0.8 0 1.5 0.6 -0.3 -0.5 -0.4 0 0 -0.1 1.2 -0.2 0.5 0.9 3.2 1.7 0.9 0.1zM724.4 81.4l0.6 0.3 -3.1 -0.4 -0.4 -0.2 0.5 -0.2 -0.1 0.1zM719.9 79.5l0.4 0.3 -1.4 0.1 -1.3 0.4 -1.6 -0.1 -0.1 -0.1 0.5 -0.4 -0.7 -0.1 0.7 -0.1 0.9 0.2 1.6 -0.5zM715.9 78l-2.5 -0.5 1 -0.3 0.7 0.2 -0.6 -0.4 0.4 0 0.8 0.1 0.6 0.5 1 -0.2 2.7 0.1zM718.3 81.6l0.2 0.2 -0.3 0.3 -0.5 0.1 -0.3 -0.3 0.2 -0.3zM713.6 76.2l-0.1 -0.2 0.2 0.1 0.2 -0.4 -0.3 -0.4 0.1 0 2 0 1.7 0.5 -0.3 0.5 -1.8 0.3zM713.3 76l-1.4 -0.4 -0.1 -0.2 0.8 -0.1 0.8 0.6zM712.2 74.2l0.9 0.1 -1.3 0.2zM712.6 79l-0.3 0.5 -1.1 0.3 0.1 -0.3 -0.3 -0.2 0.3 -0.3zM707.9 73.4l-0.6 -0.1 -0.5 -0.3 0.3 0zM704.6 70.5l-0.9 -0.9 1 0.3 0.6 0.9zM703.6 71.1l1 0.6 0.4 0.4 -0.7 -0.3zM703.5 69.4l-1 -0.6 -0.5 -0.7 1.3 0.9zM700.5 64.5l-1.7 -2.1 1 1.1 0.3 0.2 -0.1 -0.4 0.2 0 1.2 0.8 0.3 0.5 -1.4 -0.7 1.2 1.2 0.4 0.2 -0.5 -0.6 1.7 1.2 0 0.1 -0.6 -0.2 0.5 0.5 -0.7 -0.1 0.4 0.3 -0.5 -0.2 -0.3 -0.6 0.2 -0.1 -0.5 0 -1.3 -1zM703.5 70.7l-0.2 0.2 -0.5 -0.2 0.5 0.4 -0.6 -0.3 -1.1 -1.5 -1.3 -1.2 0.9 0.7 0.4 0.1 0.4 0.7zM700.1 68.2l0.4 0.3 -0.3 0 -0.1 -0.1zM698.8 61.7l0.1 0.1 -0.4 0 -0.4 -0.4 0.4 0.1 -0.1 -0.3 0.3 0.2 -0.4 -0.5 0.5 -0.1 -0.1 0.3 0.7 0.5 0.3 0.7zM698.7 59.7l-1 -0.2 -0.1 -0.7 0 0.2 -0.9 0 -0.7 -0.6 0.4 -0.4 0.4 -0.2 0 -1.2 0.4 0.1 0.2 0.6 -0.1 0.2 0.5 0 0.1 0.8 0.6 0.1 0 0.3 0.6 0.7 -0.4 0zM699.7 65.6l0 0.7 -0.3 -0.2 0 -0.6zM699.3 67l0.4 0.1 -0.3 0.1zM698.3 66.5l0.3 0.3 -0.5 -0.4zM696.5 61.6l0.8 1.7 -0.1 0.2 -0.3 0 -0.4 -0.3 -1.3 -2.7 0 -0.4 0.7 0.3 0 -0.5 0.1 0 -1.1 -1.6 0.3 -0.8 0.3 0.2 0.3 1.3 0.7 0.7zM697.4 64.8l-0.1 0.2 -0.6 -0.6 0.2 0 -0.2 -0.3 -0.6 0 0.1 -0.3 -0.5 -1.2 0.5 0.3 0.2 0.9zM695 63.6l0.3 -0.6 0 0.8zM724 79.6l-0.9 -0.4 0.5 0.1 -0.3 -0.2 0.6 -0.3 -0.4 -0.8 -1.6 -1 -1.4 -1.5 -0.4 -1.7 -1 -0.2 -1 -0.5 -2.8 -2.2 -0.3 -0.7 -1.6 -1.5 -0.5 -0.2 -0.3 -0.4 -0.7 -0.2 -1 -1.3 -0.3 -0.8 0 -0.8 -0.5 -0.2 0.1 -0.4 -0.5 -1.1 -0.9 -0.1 0.3 -0.6 -0.2 -0.4 -0.5 -0.1 -0.7 -0.8 -0.6 0.3 -0.7 -0.7 -0.1 -0.3 0.4 -0.6 -0.5 -0.8 0.2 -0.8 -0.1 -1.9 0.3 -0.5 1.5 -0.2 0.9 1.2 0.8 0.6 0.8 0.3 0.2 -0.1 0.2 -1.2 1 -1.3 2.2 0.2 0.7 -1.3 0.2 0.5 0.5 -0.1 0 0.3 0.2 -0.2 0.2 0.3 1.1 0.5 0.4 -0.2 0.2 -0.4 0.9 0.5 0.4 -0.3 0.1 0.3 0.4 -0.2 -0.1 0.4 0.7 -0.2 0.8 -0.6 1.3 1 0.5 -0.3 0.6 -0.8 1.2 0.4 0.6 -0.8 1.4 0.3 0.9 0.5 0.2 0 0 -0.4 0.5 -0.1 0.3 0.3 0.1 -0.3 0.6 0.7 0.4 0.1 0.1 1 0.9 0.4 1.4 -0.3 0.8 -0.7 0.1 0.2 0.8 -0.2 0.5 0.2 -0.1 1.9 -0.7 2.1 -0.4 0.3 0.3 0.9 -0.2 0.8 0.5 0.7 1.2 0 0.7 1 0.6 0.3 0.1 -0.1 0.6 0.6 0.7 0.3 0.1 0.4 -0.6 0.5 -1.3 0.2 -0.7 -0.3 -0.3 0.7 2.2 1.8 0.4 0.9 -0.1 0.7 0.2 0.5 -0.5 0 -0.1 0.4 -0.6 -0.7 -0.7 0.4 -0.2 0.6 -0.7 0.1 -0.5 0.4 -0.7 -0.4 -0.4 0.5 1.6 2 -0.6 0.6 -0.7 -0.8 -0.7 0.1 0.1 0.2 -1.2 1.2 0.2 0.1 -0.4 1.2 0.3 1 -0.8 0.1 -0.6 0.4 0 0.7 0.4 0.8 -0.2 0.5 1.1 1.5 -0.3 1.2 -0.9 0.1 -3.3 -1.5 -1.2 -0.7 -0.5 -0.9 -0.9 0zM731.6 84l-0.8 -0.7 -0.1 -0.9 0.4 -0.1 0.3 -1.2 -1 -1.3 -0.1 -0.4 0.2 -0.3 -0.5 -1 0.3 -0.7 1.2 -0.3 -0.3 -1 0.4 -1.2 -0.2 -0.1 1.2 -1.2 -0.1 -0.2 0.7 -0.1 0.7 0.8 0.6 -0.6 -0.7 -1 -0.9 -0.8 0.4 -0.7 0.7 0.4 0.5 -0.4 0.6 -0.1 -0.2 0.3 0.3 0.6 1.5 0.5 2.1 2 0.9 0 0.9 0.7 0.9 -0.4 1.7 1.3 0.9 0 1.1 0.6 0.1 0.7 -1 0.4 -0.2 0.7 -0.9 -0.2 -0.3 0.4 0.8 0.9 -0.1 1 -0.3 0.1 -0.3 0.6 -1.4 0.7 -0.6 -0.5 -0.1 -0.9 -0.2 -0.5 -0.4 0.1 -0.3 0.5 -0.2 0.8 -1.1 2 -0.8 2.1 0.9 0.9 0 0.8 0.2 0.4 -0.2 0.3 0.4 1.2 -0.6 -0.4 -1.1 -0.3 -0.5 -1.1 -0.5 -0.3 0 -0.4 -0.3 -0.2 -0.3 0 -0.9 -0.8 -0.4 -0.6 -0.5 0 -0.3 0.2 -1 -1.1 -0.4 0.3 -0.4 -0.2 -0.3 -0.3 0.1 -0.2 1.2 0.3 -0.2 -1 -0.3 0.4 -1.2 0.2zM748.5 87.4l0.2 0.7 -0.3 0.8 0.5 1.5 -0.6 0.5 0.1 0.6 0.9 0.9 0 0.5 -0.3 0.2 0.3 1.2 0.8 1.4 0.7 0.1 0.8 1.7 0.4 0.1 0.5 -0.4 1.1 0.1 0.2 1 -0.1 0.5 1 1.2 -0.1 1 -0.5 1 -0.7 0.1 -0.5 0.6 0.1 0.7 -0.4 1 -0.2 2.1 -0.5 0.3 -1.2 0.3 -0.3 0.8 -0.6 0.2 0.3 0.7 0.8 1 -0.2 0.4 -0.8 -0.1 0.3 0.9 -0.8 1 -0.8 -0.3 -0.7 -0.1 -0.2 0.2 -0.1 -2 -0.9 -0.3 0.2 -0.4 -0.8 -1.1 -0.7 -0.2 -0.1 0.2 -0.4 -0.5 -2.2 -0.8 -1.9 -2 0.5 -0.2 0.8 1 0.3 -0.3 -0.1 -1.1 -0.5 -0.4 -0.3 -0.2 -0.1 -0.3 0.5 0.4 0.1 -0.6 -0.4 -0.2 -0.2 0.3 -0.8 -1 0.3 -0.7 0 -1 0.2 -0.2 0 -0.6 -0.3 -0.3 0.4 -0.6 0.1 0.9 0.6 -0.6 -0.3 -0.9 -0.1 0.5 -0.2 0.3 0.2 -0.5 -0.4 -0.4 -0.2 -1.4 0.4 -1.3 -0.3 -0.5 -0.6 -0.1 -0.3 -0.9 0.3 0 0.5 -1.3 -0.7 -0.7 0.7 0 0.3 -0.1 0.1 -0.4 0.2 0.1 -0.5 -0.5 0 -1.8 -1.3 -0.3 -0.5 0.2 -0.4 -1.2 0.2 -0.3 -0.2 -0.4 0 -0.8 -0.9 -0.7 2.4 -5.6 0.2 -0.1 0.3 0.3 0.1 1 0.6 0.5 0.2 0.1 0.7 -0.6 0.6 -0.1 0.3 -0.6 1 0.6 1 1.7 0.8 -0.1 1.3 0.8 0.6 0.8 0.8 2zM739.1 42.3l0.5 0.7 1.8 0.7 1.2 1.5 0.4 -0.4 0.2 0.1 0.1 1.7 0.4 0.7 -0.1 0.6 1.9 1.3 0.9 0.4 0.3 -0.3 0.9 0.7 1.3 0.1 0.8 0.5 -0.3 1.3 -0.5 0.4 0.5 0.4 0.9 0.1 0.2 0.5 -1.3 0.6 0 0.3 0.5 0.3 1.4 -0.1 0.7 0.9 0.8 0 0.7 -0.4 1.1 0.2 0.6 0.9 0.8 0.6 0.4 -0.2 0.5 -1.9 0.8 -0.8 0.5 0 0.9 0.7 0.9 0 0.6 0.5 -0.4 0.5 -0.9 -0.1 -0.2 0.6 -0.4 0.3 0.5 1.3 0.6 0.4 0.8 0.1 0.2 0.8 -0.5 0.7 0.1 1.2 -1.3 1.1 0 2 0.7 1.3 0.5 0.3 0.8 1.8 1.8 0.7 1.5 1.4 0.8 0.2 0.1 0.2 -0.5 1.7 -0.7 0.7 -0.2 1.1 -0.4 0.3 -0.9 0 -0.9 1 0.6 0.7 -0.2 0.7 0.1 1.2 1.1 0.8 -0.1 0.9 -0.3 0.2 -0.2 0.7 -0.9 0.3 -0.4 -0.5 -1.2 0.9 -1.4 0 -1.8 1.4 -0.8 0.1 -0.7 -1 0.7 -0.6 -0.1 -0.7 0.6 -1.3 0.2 -1.3 -0.5 -0.1 -0.6 0.2 -0.6 -0.4 -1.5 0 0 -1.1 -1.2 -0.3 -0.6 -1.1 -0.5 0.1 -0.6 -1 -0.7 0.1 -1.4 -0.6 -0.1 -0.4 0.2 -0.1 -0.4 -0.4 -0.4 0 -1.2 0.9 0.3 0.8 0.4 0.1 -0.1 0.7 -0.3 0.5 -0.3 0 -0.7 0.8 0 0.3 0.5 0.4 -0.2 0.3 -0.9 0.5 -0.2 -0.9 -1.9 -0.4 -1.7 -1.3 -0.9 0.4 -0.9 -0.7 -0.9 0 -2.1 -2 -1.3 -0.4 -0.4 -0.4 0.4 -1.2 0.7 -0.4 0.6 0.7 0.1 -0.4 0.5 0 -0.2 -0.5 0.2 -0.4 -0.5 -1.2 -2.2 -1.8 0.1 -0.5 0.3 -0.2 0.6 0.3 1.3 -0.2 0.6 -0.7 -0.8 -0.5 -0.6 -0.6 -0.1 0.1 -0.7 -0.4 -0.5 -0.8 -1.3 -0.1 -0.4 -0.5 -0.2 -1.9 0.4 -0.3 0.7 -2.1 0.2 -1.6 -0.2 -0.4 -1.2 0.1 -0.1 -0.2 -1.2 0.9 -0.3 -0.6 0.2 -0.1 0.4 0.2 0.4 -0.6 -0.4 -0.2 -0.2 -1.2 -0.4 -0.5 0.7 -0.2 -0.2 -0.6 0.9 0.3 0.4 -0.3 0.8 0 0.1 -0.4 -0.3 -0.2 -1.7 -0.3 -0.5 -0.2 -0.2 -0.4 -0.9 -0.2 0 -0.2 0.4 -0.3 -0.4 -0.4 0.1 -0.5 0.5 0 0.2 -0.3 -0.8 -0.5 -0.5 0.4 -0.4 -0.3 0 -0.5 0.4 -0.6 -1.2 -1.5 0 -0.4 0.4 -0.2 -0.3 -0.3 0.1 -0.4 0.7 0 -0.1 -0.3 0.5 -0.2 0 -0.6 0.4 0 0.3 0.3 0.8 -0.1 0.3 -0.6 0.5 -0.1 0.5 -0.6 0.3 -0.4 -0.2 -0.3 0.5 -0.3 0.8 -0.3 1 0.4 1 -0.6 1.8 -0.1zM743.5 80.6l0.2 -1.2 -0.8 -0.7 0.1 -0.3 0.2 -0.3 0.9 0.2 0.3 -0.7 1.8 -0.9 0.2 -0.3 -0.5 -0.4 0 -0.3 0.7 -0.8 0.3 0 0.4 -0.9 -0.7 -1.2 1.4 -0.9 0.6 0.4 -0.2 0.1 0.1 0.4 1.4 0.6 0.7 -0.1 0.6 1 0.5 -0.1 0.6 1.1 1.2 0.3 0 1.1 1.5 0 0.6 0.4 0.8 -0.2 0.4 0.3 -0.9 2.4 0.1 0.7 -0.7 0.6 0.6 0.9 -1 0.2 0 0.4 -0.5 0 -0.4 0.9 0.1 0.6 -0.5 0 -1.3 -0.9 -0.6 0.8 -1.6 0.9 -0.2 1 0.2 0.9 -0.4 0.8 -0.4 -0.2 -0.3 0.3 -0.3 -0.2 0.1 -1 -1.2 -2.6 -1.5 -1 -0.8 0.1 -0.5 -1.1 -0.6 -0.8zM748.9 87.4l0.4 -0.2 0.4 0.2 0.3 -0.3 0.1 -2.4 1.6 -0.9 0.6 -0.8 1.3 0.9 0.4 0 0 -0.6 0.3 -0.8 0.6 -0.1 0 -0.4 1.9 -0.2 1.8 -1.4 1.1 0.1 1.5 -1 2.5 2.2 1.7 0.6 1 0.2 0.6 1.4 0.7 1.1 0.6 0.2 -0.4 1.5 0.6 2.8 -1.2 0.4 -0.2 0.3 0 1.9 -0.6 -0.3 -0.3 0.7 -1.1 0.3 -1.1 0.1 -0.1 -0.2 -0.8 0 -0.8 0.5 -0.5 -0.2 -1 0.8 -0.8 2.1 -0.6 0.1 -0.8 0.8 -0.6 -0.3 -0.9 0.1 -0.8 0.6 -2.6 0.6 -0.3 -0.6 -0.9 0 -0.5 0.4 -0.4 -0.1 -0.8 -1.7 -0.7 -0.1 -0.8 -1.4 -0.3 -1.2 0.3 -0.2 0 -0.5 -0.9 -0.9 -0.1 -0.6 0.6 -0.5 -0.5 -1.5 0.3 -0.8 -0.2 -0.7 0.2 -0.1zM822.4 132.3l0.1 0.7 -0.2 1.6 -0.6 1.5 0.3 0 0.1 0.6 -0.8 0.1 -1.1 1.9 -0.3 0.4 -0.5 -0.2 -0.2 -0.3 0.1 -1.5 -0.8 -0.6 0.6 -0.7 0.1 -0.8 0.6 -0.9 1.6 -1.5 0.6 -0.1 0.1 -0.4zM818.9 131.1l0.3 0.9 -0.3 0.2 0 -0.3 -0.5 0 0.1 -0.2 -0.4 0.1 0.2 -0.5 0.5 -0.4 -0.3 0.5zM817.7 135.7l0 0.3 -0.7 0.2 0 -0.3zM815.4 134.3l0.4 -0.1 0.1 0.3 -0.5 0.2 -0.3 -0.4 -0.3 0.2 -0.2 -0.6 0.1 0.2 0.4 -0.3zM813.4 129.3l0.7 0.3 -1.1 0.8 -0.5 0.8 -0.7 0 -0.4 0.4 0 0.8 -0.5 -0.2 -0.1 -0.6 0.2 -0.3 0.3 0.1 0.4 -0.9 0.8 -0.8zM815.3 143.3l1 1.4 -0.4 0.2 -0.3 0.8 0 -0.2 -0.4 -0.3 0.1 -0.4 -0.2 -0.7 -0.5 -0.4 0.5 -1.4 -0.2 -0.9 0.5 -0.5 0.2 1.1zM813.4 132.7l0.1 0.4 -0.6 0.1 0 -0.3zM809.4 120.7l0.3 0.5 -1.1 0.7 -0.4 0.4 -0.6 0.1 -0.3 -0.4 -0.5 -0.1 -0.8 0.6 -0.2 -0.4 0 -0.5 1.3 -0.9 0.6 -0.1 1.2 0.4 -0.3 -0.4 0.4 -0.2 0.6 0.1zM810.3 129.5l0.1 -0.8 -0.3 -0.1 -0.3 -0.4 0.8 0.2 0.3 0.5 0.2 -0.2 0.1 0.2 0.1 0.5 -0.4 0 0 0.3 -0.3 0.1zM814.4 145.6l0.2 0.4 -1 0.8 -0.3 -0.1 0.3 -0.8zM809.2 127.2l0.5 0.8 -0.4 0.1 0.1 -0.2 -0.3 0.1 -0.5 -0.6 0.2 -0.2zM753.7 97.8l2.9 -0.7 0.5 -0.5 0.9 -0.1 0.6 0.3 0.8 -0.8 0.6 -0.1 0.8 -2.1 1 -0.8 0.5 0.2 0.8 -0.5 0.8 0 0.1 0.2 1.1 -0.1 1.1 -0.3 0.3 -0.7 0.6 0.3 0 -1.9 0.2 -0.3 3 -0.4 0.3 -0.2 0.1 -0.6 0.5 -0.3 0.3 0.3 0.7 -0.5 1.6 0 0.4 -0.4 0.7 -0.1 0.1 -0.4 0.8 -0.6 0.5 0.2 0.4 -0.3 0.3 0 -0.1 -0.8 0.5 -0.2 0.5 0.2 0.4 -0.7 0.6 0.4 1.1 -0.4 0.5 -0.4 0.8 1.1 1 0.2 0.7 0.5 0.1 -0.5 0.7 -0.3 1.8 0.4 1.5 0.7 1.8 -0.9 0.3 -0.4 1 0 0.9 -0.8 0.7 0.3 1.7 -1 0.3 -0.9 -0.4 -0.4 0 -0.6 -0.6 -0.9 -0.4 -0.1 -0.2 -0.4 0.3 -0.7 0.9 -0.4 0.4 0.3 0.7 -0.2 1 0.2 0 0.3 1 0.4 0.1 -0.2 0.8 2.2 0 0.6 -0.2 0.2 -0.4 -0.1 -0.8 1.1 -0.7 0.4 0.5 1.9 0.5 0.3 -0.2 0.5 0.2 0.3 -0.4 0.5 0.1 0.2 -0.3 -0.1 -0.1 0.4 -0.2 -0.1 0.1 0.6 -0.8 1.4 -0.3 0.1 -0.5 -0.7 0.4 -0.3 -0.5 0 0 0.2 -0.7 -0.2 -3 0.5 -2.1 -0.5 -0.2 0.4 -0.7 0 -0.4 -0.2 0.2 -0.4 -0.3 -0.1 -0.7 0.2 -0.3 0.8 -0.7 0.4 -0.6 0.9 -0.7 0.2 -0.4 -0.3 -0.2 0.3 -0.7 -0.9 -0.6 0 -0.8 0.5 -0.5 0.7 0.2 0.3 -0.2 0.2 0.3 0 -1.6 1.5 -1 0.2 -1.2 -0.3 -0.8 0.5 -0.2 0.4 0.1 0.5 0.5 0.2 0.4 0.6 1.1 0.3 -0.7 0.5 0.6 0.9 0.8 0.2 0.3 -0.1 -0.2 -0.7 0.1 0 0.8 0.8 0.8 0 0.3 0.3 0.2 -0.1 1.6 1.5 -0.7 0.5 -1.3 -1.4 -1.3 -0.1 -0.8 -0.5 -1.6 0.4 -0.2 0.6 0.3 0.6 0.6 0.4 1.9 0.6 0.1 0.8 0.2 0 0.1 0.2 -0.3 0.6 0.2 0.2 -0.6 0 -0.7 -0.6 -0.1 0.2 -0.5 -0.8 -1.2 -1.2 -2 -0.2 -0.5 0.3 -0.2 0.4 0.4 0.8 0.3 0 1 0.9 1.5 0.3 0.3 0.5 0.4 0 -0.3 0.3 -2 -0.3 -0.9 0.3 0.1 -0.5 -0.8 -0.9 0 -0.8 -0.3 -0.6 -2.4 -0.6 -0.6 -0.5 -0.6 0.1 -0.1 -0.4 -0.7 -0.8 0.9 -0.3 0.3 -0.5 -0.8 -0.8 -0.4 0.1 0 0.5 -0.6 0.4 -0.1 0.6 -0.5 0 -0.1 0.6 -0.6 0.2 0.9 0.9 -0.5 2.4 0.4 1.2 1.2 0.8 0.4 0.8 1.1 0.8 1.2 2.1 1.4 0.6 1.8 1.7 0.9 1.4 -1 0.7 0.2 0.1 -0.2 0.2 -1.3 0.3 0.2 -0.5 0.2 -0.2 0 0.6 0.8 -1 -0.9 -1.1 -0.9 -0.1 -0.3 -0.4 -0.5 0.1 0.2 0.6 -0.8 0.3 0 0.8 0.3 0.6 0.1 -0.4 0.3 0.1 0.2 0.6 0.4 0 0.4 0.4 -0.2 0.7 0.8 -0.4 -0.5 1 -0.7 0.5 -0.4 0 0 0.4 -0.4 0.2 -0.8 0.2 -0.6 -0.3 -0.8 0.5 0.1 0.3 0.4 -0.2 -0.2 0.2 0.3 0.2 0.1 -0.2 0 0.2 0.9 -0.4 0.7 0.6 0.4 -0.1 0.4 0.2 0.3 -0.3 1.1 0.1 0.8 1.1 0.6 -0.3 0 -0.3 1 0.1 0.3 0.5 -0.3 0.3 0 0.3 0.2 -0.2 0.7 0.3 -0.4 0.4 2 -0.4 0.3 0.3 -0.2 0.2 1 0.9 2.4 0.2 1.2 0.8 0.2 0.4 -0.1 0.4 -0.2 -0.1 -0.4 0.3 0.6 1.1 0 1 0.3 0.1 -0.2 0.2 0.5 0.2 -0.1 0.5 0.4 0.3 -0.1 0.6 0.2 0.5 -0.3 0.5 -0.7 -0.2 -0.2 -0.5 -0.1 0.1 -0.3 -0.6 -0.4 -0.2 -0.5 -0.2 -0.2 0.4 -1 -1.3 -0.5 0.1 0.1 -0.2 -0.7 -0.1 0.2 -0.6 -0.3 -0.2 -1 0.5 -0.4 0.4 0.3 0.1 -0.1 0.1 -1.5 0.3 -1 0.9 -0.7 0 -0.1 0.5 0.2 0.3 0.9 -0.2 0.6 0.3 0.1 0.4 -0.5 0.5 0.5 0.1 0.2 1.2 1.5 0.5 0.2 -0.4 -0.5 -0.4 0.7 -0.4 -0.1 0.9 0.5 0.3 -0.2 0.1 0.7 0.2 0.5 0.4 -2.1 0.9 -0.2 0.3 0.4 0.2 -0.7 0.3 0.2 0.4 -0.3 0 -0.3 0 0.2 -0.2 -0.8 -0.2 -0.1 -0.5 0.2 0.1 0.1 -0.4 0.2 0.1 -0.1 -0.4 -0.7 0 -0.1 -0.3 -0.3 0.4 -0.3 -0.5 -0.5 -0.2 -0.6 0.3 -0.7 -0.7 -0.4 0.4 0.6 1.8 0.6 0.4 1 1.5 0.1 0.8 0.4 -0.1 0.3 0.4 -0.1 0 0.4 0.5 0.2 1 1 1.2 -0.1 0.3 0.3 0 -0.1 0.6 -0.4 -0.1 -0.1 0.3 0.1 0.3 0.2 0 -0.1 0.5 0.5 0.7 0.7 0.2 -0.1 0.4 0.7 0.5 -0.1 0.2 -0.8 0.1 -0.6 -0.8 -0.6 0.2 -0.5 -0.8 -0.5 -0.3 0 -0.2 -0.5 -0.3 -0.1 0.2 -0.5 -1.3 -0.9 0 -0.8 0.5 0.1 0.4 -0.4 0.7 0.3 0.4 -0.3 -0.2 0.1 0.6 -0.1 0.1 -0.1 -0.2 -0.1 0.2 0.5 1.5 -0.1 0.9 -0.3 -0.7 -0.5 -0.2 -0.3 0.1 -0.2 -0.3 0.2 -0.6 -0.1 -0.5 -0.2 0.1 0 -1.2 -0.3 0.1 -1.5 -1.9 -0.3 0.2 -0.4 -0.3 -0.1 -1.1 -0.9 0 -0.8 0.6 0.1 1.5 0.1 0.4 0.4 0.2 -0.6 0.9 -0.7 -0.8 -0.5 0.2 -0.5 -0.1 -0.3 -0.8 0.1 -0.6 -0.4 -0.1 0.1 -0.1 -0.1 0.1 -1.1 -1.5 -0.1 -0.9 0.9 -1.5 -0.4 -0.8 -1.3 -1.6 -1.4 -0.8 -0.5 -0.1 -0.2 0.4 -0.5 -1.5 -1.5 -0.4 -0.2 -0.4 0.1 -0.8 0.3 0.2 0.4 -0.3 0.8 -0.9 -0.1 -0.2 -0.2 0.3 0.5 -1.3 -0.1 -1.1 0.3 0.4 -0.1 -0.3 1.1 0.3 0.9 0 0.5 -0.7 0.4 -1.1 0.6 -0.6 1.5 0.1 0.3 0.3 0.6 0 1 0.7 0.9 -0.1 3.2 0.7 1.8 1 0.6 -0.2 0.2 -0.4 -1.1 -0.4 0.1 -0.2 0.5 -0.4 1.1 0 0.8 -0.4 0.3 -0.3 -0.4 -0.4 0.4 -0.2 -0.8 0 0.1 -0.2 -0.2 -0.2 -0.5 0.4 -0.2 0 0.1 -0.1 -0.3 -0.2 -0.6 0 -0.2 0.3 0.4 0 -0.5 0.1 -0.2 -0.5 -0.7 0.3 -0.4 -0.1 0.2 -0.4 -0.9 -0.3 -0.5 -0.7 -0.2 0.3 0.2 0 -0.3 0.1 -0.1 0.3 0.1 0.4 -0.2 0.1 -1.1 -1.2 -0.6 -0.3 0.1 1.3 -1.4 0 -0.2 0.5 -0.6 -0.5 -1.5 -0.1 -0.6 0.5 -0.4 -0.2 -0.5 0.9 -0.4 -0.3 -1 0.3 -0.5 0.7 -0.9 -0.2 0.6 0.1 -0.1 -0.5 -0.6 0 -0.1 -0.3 -0.3 0 -0.3 -0.7 -0.3 -0.3 0.3 0.7 0 0.4 -0.7 0.8 -0.5 0 0.2 0.2 -0.4 0.2 -0.2 -0.3 -0.4 0 0.3 -0.7 -0.4 0 -0.1 -0.3 0.2 0.1 0.1 -0.2 -0.2 -0.4 -0.2 0 0 -0.5 -0.5 0.3 -0.2 -1.1 -0.4 -0.5 -0.6 -0.1 -0.7 -1.2 -0.3 0.5 -0.3 0 -0.5 -0.4 0.1 -0.6 0.4 -0.2 -0.4 -0.3 0 -0.6 0.4 0.3 0.3 -0.4 0.1 0.3 0.4 -0.1 0 -0.3 1 0.1 0 0.4 0.6 0.3 0 -0.5 0.7 0.2 -0.4 -0.6 0.1 -0.7 -0.8 -0.6 0 0.3 -0.3 0.2 0.2 0.1 -0.9 -0.1 -0.1 -0.4 -0.4 0 -0.3 0.3 0.2 0.2 -0.3 0.1 0 -0.3 -0.2 -0.1 -0.1 -0.5 -0.4 0.4 0.2 0.4 -0.4 0.3 0.9 0.6 -0.6 -0.1 -0.2 0.3 -0.6 -1.2 -2 -1.4 0 -0.6 -1.4 0 -0.6 -0.9 -0.3 0 -0.2 -0.5 0.4 -0.1 -0.5 -0.5 0.4 -0.2 -1.1 0 0.2 -1.1 -1.6 -0.5 1.7 0.3 0.7 -1 -0.3 -0.9 0.8 0.1 0.1 -0.2 0 -0.4 -0.7 -0.8 -0.3 -0.7 0.6 -0.2 0.3 -0.8 1.2 -0.3 0.5 -0.3 0.2 -2.1 0.4 -1 -0.1 -0.7 0.5 -0.6 0.7 -0.1 0.6 -1.1 -0.1 -1.1 -0.9 -1zM802.9 107.9l0 0.3 -0.5 0 -0.2 -0.6 -0.4 -0.3 -0.4 0.2 1.1 0.8 -0.1 0.4 -0.8 0.3 -2.2 -0.1 -0.8 -0.5 1 -0.7 0.5 -0.7 -0.2 -0.1 -0.7 0.1 -0.8 1.4 -1.5 -0.2 -0.5 -0.3 -0.1 -0.5 0.5 -0.9 0.2 0.2 0.7 -0.3 0.1 -0.2 0.1 0.1 0.8 -0.6 -0.1 -0.6 1.5 -0.4 0 0.3 0.6 0.2 -0.2 0.6 1.6 0.9zM806.8 126l-0.4 0.3 0.2 0.6 -0.3 -0.2 -0.1 -0.8zM806.7 134l0.7 0.5 -0.7 0.3 -0.1 0.6 -0.4 0.1 -0.4 -0.3 -0.1 -0.5 0.7 0.2 0.4 -0.3 -0.4 -0.4zM804.1 122.9l-0.9 1.5 -0.8 0.3 -0.5 0.5 -0.6 0.2 -0.1 -0.3 0.6 -1.2 1 -0.1 0.6 -0.7zM808.9 148.5l-0.3 0.5 0.4 0.7 0.2 -0.2 -0.2 1.2 -0.2 0.8 -0.7 0.5 -1.4 -0.1 -1.4 0.7 -1.8 0.3 -0.8 0.5 -1.3 0.3 -1 0.6 -1.7 0.7 -2.4 0.5 0 -1.1 -0.3 -0.5 -1.6 0 -1.5 -0.6 -0.9 0.3 -0.8 -0.1 -1.3 0.5 -0.6 -0.4 -1.5 0.1 -1.1 0.6 -0.9 0 -0.7 -0.5 0.3 -0.3 -0.3 -0.6 0.2 -0.7 -0.2 -1.5 0.2 -0.5 0.3 1 0.3 0.1 0.5 -0.2 -0.3 -1.4 0.2 -0.5 0.3 0.1 0.2 1 0.4 0.4 1.8 -0.2 0.2 -0.4 0.4 -0.1 -0.2 -0.4 0.8 -0.1 0.3 0.4 -0.1 0.4 -0.9 0.1 0 0.2 1 0.3 0.5 -0.4 0.4 1.2 0.6 0.1 3.1 -1.6 1.1 0 0.4 -0.3 0.6 0.1 0.1 -0.2 0.7 0 0.3 0.6 2.6 -0.5 0.7 0.3 1.7 -1 0.9 0 -0.3 0.5 0.1 0.3 0.2 -0.2 0.1 0.2 -0.2 0.9 0.2 0.5 0.6 0.1 0.7 -1 1.3 -0.8 0.9 0.2 0.7 -1.2 0.3 -0.1 -0.1 -0.3 0.3 0zM800.3 113.9l0 0.9 0.3 0.1 0.4 1.8 -0.3 0.2 0.1 0.7 -0.5 0.4 -0.1 0.5 -0.4 0 -0.7 -0.5 -0.1 0.1 -0.1 -0.3 -0.2 0 0.1 -0.3 0.6 -0.5 0.1 -0.5 -0.6 -1 -1.1 -0.6 0 -0.6 1.4 -0.6 0.4 0.1 0.4 0.4zM802.7 131.6l0.8 0.3 -0.6 0.2 -0.8 1.2 -1 0.6 -0.2 -0.3 0.8 -0.3 0.1 -0.4 -0.1 -0.1 0.9 -0.7 -0.2 -0.2zM801.7 138.1l0.3 -0.3 0.8 0.2 -0.9 0.3zM800.8 130.2l-0.3 -0.2 0.4 -0.2 0.1 0.3zM792.4 94.7l-1 0.6 -1.1 -0.7 0.9 -0.6 0.9 0.2zM799.6 132.8l0.3 -0.3 0.3 0.2 -0.2 0.2zM795.7 114.5l0.3 0.2 0 0.5 -0.4 0.1 -0.4 -0.7zM798.3 129.7l0.6 0.5 0.2 1.3 -0.1 0.6 -0.8 0.8 -1.2 -1.6zM798.9 137.7l0.8 0.7 -0.3 0.7 -0.7 -0.1 0.5 -0.5 -0.2 -0.6 -0.5 0zM798.3 133.9l0 -0.4 0.3 -0.2 0 0.4zM796.6 127.6l-0.6 0.2 -0.1 -0.8 0.2 -0.3 0.3 0.4 0.1 -0.3 0.7 0.2zM791.3 99.5l0.1 0.4 -0.6 1.1 0.2 0 -0.2 0.3 0.4 0.6 -0.1 0.4 -1.1 -0.6 0.3 -0.4 -0.3 -0.3 -0.4 0.4 0.3 0 -0.3 0.6 0.4 0.3 -0.6 0 0.1 -0.5 -0.2 0.3 -0.2 -0.2 -0.5 0.4 -0.1 -1 -0.4 -0.7 1.5 -0.5 0.6 0.5 0.6 -0.9zM798.1 135.8l-1.1 -0.5 0 -0.5 0.3 -0.3 1 0.6zM796.4 131.8l-0.5 0.8 -0.8 -0.1 0.2 -1.1 0.7 -0.6 -0.1 0.2 0.3 0 0 -0.3 0.2 0zM795 126.7l-2.1 -0.7 -0.2 -0.4 0.6 -0.2 0.4 0.3 1.3 0 0.2 0.3zM796.4 135.5l-0.3 0.7 -0.5 0.4 0.2 -0.7zM794.9 133.2l-0.4 -0.5 0.4 -0.5 0 0.8 0.2 0.2zM789.2 105.4l0 0.3 -0.3 0.7 -0.2 -0.8 0.1 -0.3zM792.7 124.7l-0.2 0.8 -0.7 -0.7 -0.8 -0.5 -0.1 0.1 -0.3 -0.4 -0.3 -0.3 -0.2 0.2 -0.4 -0.5 0.1 -0.5 0.6 -0.4 0.5 0.3 0.2 0.5 0.9 -0.1 0.1 0.7 0.4 0.2 -0.2 0.5zM792.8 127.7l0.4 0.9 -0.6 0.5 -0.1 -0.3 -0.2 0 0.2 -0.6 -0.1 -0.7zM794.6 137l0.2 0.2 -0.3 0 -0.8 -0.5zM784.3 93.1l0.4 1.3 -0.2 0 -0.8 0.7 -0.6 -0.5 -0.5 0 -0.1 -0.9 0.7 -1.1 0.7 0.1 0.6 0.4zM791.9 133.1l0.5 0.7 -0.3 0.6 -0.9 -1.4zM790.8 126.5l-0.1 0.5 -0.5 -0.1zM787.8 114l-0.1 0.5 -0.5 -0.2 -0.2 0.4 -0.3 -0.3 0.3 -0.2 -0.2 -0.4 -0.5 0.1 -0.3 -0.3 -0.3 0.1 0.1 -1.2 0.8 0.2 0.3 0.7zM791.9 135.8l-0.1 0.4 -0.3 -0.3 0.1 -0.2zM791.4 135.4l-0.2 0.6 -0.4 -0.1 -0.1 -0.5zM788.5 121.1l0.2 1.1 -0.2 0.9 -0.5 0.3 -0.6 -0.5 -0.3 0.6 -1 -1 -0.7 0.1 0 -0.4 -0.2 -0.1 0.1 -0.4 -0.3 -0.5 -0.5 0.1 0.1 -0.7 -0.3 0.3 0 -0.6 -0.8 0 0.3 -0.3 -0.3 -0.5 -3.3 0.6 -0.4 -0.5 -0.1 0.1 0.2 -0.6 -0.3 -0.6 -0.9 -0.2 -0.7 -0.8 -2.3 -1.2 -1.1 0 -0.9 -0.3 0.2 0.5 -1.2 0.5 0 -0.4 1.4 -1.1 0.6 -1 1.5 -0.6 1.1 0.7 0.7 1.1 1 0.4 0 0.2 1.1 -0.1 0.4 0.4 0.9 0.2 1.8 -0.4 0.7 0.2 -0.2 0.2 0.1 0.4 1 0.7 -0.3 0.6 0.3 0.6 -0.2 0.1 0.8 1.1 0.2 0.7 0.9 0.6 1.1 0zM790.4 136.5l0.6 -0.2 0.1 0.8 -1.7 0.7 -0.2 -0.7 0.2 -0.4 0.5 0.4 0.5 -0.1 -0.1 -0.2 -0.5 -0.3zM789.2 131.9l0.7 -0.4 0.2 0.8 -0.1 -0.1 -0.1 0.4 -0.4 -0.3 -0.3 0.3zM788.2 129.3l0.5 -0.7 -0.1 0.5 0.5 0.2 -0.2 0.8 -0.5 0.6 0.2 -0.8zM788 126.9l-0.5 1.4 -0.3 0.1 -0.2 -0.9 0.2 -0.7 0.5 -0.2zM791.2 157.4l0.1 0.5 -0.8 -0.3 0.3 -0.3zM781.9 109.2l0 0.5 -0.1 0.1 -0.3 -0.4 0.2 -0.3zM781.1 110.5l-0.6 1.3 -0.3 0 0.7 -1.7zM785.3 136.5l0 0.1 -0.1 -0.1zM778.9 112.6l-0.8 -1 0.1 -0.1 1.2 0.7 0.6 0 -0.6 0.6zM781.8 131.4l-0.7 0.3 0 0.4 -1 0.4 0.6 -0.8zM779.2 125.9l0.6 -0.8 -0.6 0.2 0.3 -0.2 -0.3 -0.1 0.7 -0.3 0.4 0.5 0.2 -0.1 -0.4 0.7 -0.4 0.2zM780.8 127.1l-0.2 0.9 -0.6 0.1 0.1 -0.2 -0.5 -0.5zM780.5 129.6l0.4 0.2 -0.7 0.2 0.3 -0.3zM777.2 112.6l-0.5 0 -0.1 -0.2 0.4 -0.6 0.4 0.1 0.1 0.3 -0.1 0zM781.5 136.4l0.1 0.2 -0.1 -0.2zM781.9 147.7l0.5 0.3 0.1 0.4zM778.1 133.1l0.3 0.1 0 0.3 -0.6 -0.3zM778.9 143.8l0.9 0.6 -0.3 0.3 0.1 0.8 -0.6 0.2 -0.8 -0.6 -0.3 -1.3 0.2 -0.7 0.2 0zM767.5 141l0.2 0.2 0 0.4 -0.2 -0.1zM766.9 141.2l0.1 -0.6 0.1 0zM757.9 130.7l1.4 0.9 0.1 0.3 -0.9 -0.2 -0.4 0.4 0.1 0.5 -0.2 0.1 -2 -1.6 0 -0.4 0.4 -0.8 0.2 0 0.4 0.6zM757.4 121.7l0 0.3 -0.5 0.5 0.1 -0.7zM757.4 122.2l-0.2 0.6 -0.1 0.1 0.2 -0.7zM756.5 128.3l-1 -0.4 -0.4 0.4 -0.5 -0.1 -0.5 -0.9 0.4 0.1 -0.7 -0.9 0 1.1 -0.3 0.3 -0.4 -0.3 0.2 -2 0.7 0.4 0.4 -0.3 -0.1 -0.6 0.2 0 -0.2 -0.9 0.3 -0.1 0.6 1.3 -0.1 0.6 0.3 0.4 0.4 -0.3 1.3 1.6 0 0.5zM756.2 121.7l-0.3 0.5 0.4 0.3 -0.5 -0.3 -0.2 -0.2zM755.8 124.9l0.5 0.1 -0.2 0 0.3 0.5 -0.4 0.1 -0.3 -0.1 -0.8 -1.3 0.3 -0.5 0.1 0.5 0.4 0 -0.1 0.8 0.3 0zM754.6 122.4l-0.4 0.7 0.1 -2.3 0.6 -0.9 0.5 0.7 -0.2 1 0.2 -0.2 0.1 0.9 -0.2 -0.1 0.1 0.2 -0.4 0.2 0 0.2zM749.6 116.5l0.6 0.3 0.1 0.2 -0.4 -0.1zM748.9 114.2l0.3 0.9 -2 -0.7 -0.6 -1.2 -0.7 -0.4 -0.4 -0.5 -0.3 -0.1 -0.1 -0.4 -0.2 0.1 -0.3 -0.3 0.3 -0.6 1.5 -0.6 0.8 0.3 0 0.5 -0.7 0.6 0.1 0.5 0.7 0.2 -0.2 0.3 0.5 1.4 0.9 0.2zM518.7 120.6l-1.2 0.9 -0.3 0.8 0.2 0.4 -1.1 1.7 1.4 2.2 0.3 1.1 0.7 -0.2 0.7 0.2 -0.9 1.8 -0.8 -0.4 -0.4 0.4 -1 0.1 -0.5 1.3 -1.3 1.1 -0.4 1 -0.6 0.7 0.3 1.1 0 3.4 -0.8 -0.2 -2.9 1.4 -1.5 -0.4 0.1 0.3 -0.4 -0.6 -1.1 -0.8 -2.2 -0.3 -1.2 -0.7 -2.6 0.4 -0.7 0.3 -0.4 -0.2 1 -1.5 0 -0.3 0.4 -0.3 0.1 -0.9 0.8 -1 0.3 -1.3 -0.1 -0.7 0.4 -1 0.4 -0.1 0 -0.2 -0.4 0 0.3 -1.9 -0.6 -0.7 0.8 -1.1 0.6 -1.3 0.1 -1.9 -0.5 -1.1 -0.5 -0.4 0.3 0 0.8 0.8 1.2 0.4 0.4 0 -1 -0.6 0.1 -0.7 -0.2 -0.6 -0.4 0.4 0.2 0.3 -0.1 0.2 -0.9 -0.5 -0.4 0 -0.4 0.4 -0.5 0.2 -1.6 -0.1 0.5 -0.5 0.1 -0.9 -0.3 -1.3 0.9 0 0.3 0.3 0 -0.2 0.5 -0.1 1.1 -0.7 -0.4 -1.6 0.8 -1 1 -0.2 0.6 -0.4 -0.6 0.3 -0.9 0 -1.7 2.1 -0.4 1.2 -1.4 -0.1 -0.4 0.2 -0.6 -0.5 -0.5 0 -0.2 -0.1 0.1 -1.1 0.9 -1.2 0.1 -1.1 1 -1.7 0.2 -1.3 -0.3 -0.7 0.4 0.2 0.9 -0.4 0.3 0.2 -0.1 -0.4 1.5 -1.3 0.3 -1.1 2.5 -4.5 0.1 -0.1 0.6 0.3 -0.9 -0.7 0 -0.4 2.1 -4.5 0 0.3 0.4 -0.4 0.1 0.1 0 -0.3 0.3 0.1 0.2 -0.2 -0.1 -0.4 0.8 -0.2 -0.8 0 -0.1 -0.4 0.4 -0.4 0 -0.3 -1.2 2 1.5 -3.6 0.3 -1.7 -0.3 -0.1 -0.2 -1.1 0.1 -4.7 1.1 -0.3 -1.3 -0.1 0.1 -1.4 1.1 -0.9 0.2 -0.4 0.7 -0.2 0.4 -0.5 2.3 -0.1 1.1 -0.4 0 0.9 0.5 0.1 0.3 0.4 -1.3 1.3 0 0.4 0.3 0.2 -0.1 0.5 1 0.1 0.6 -0.4 0.4 0 0.3 -0.5 0 0.7 1.5 -0.3 0.8 0.5 0 0.5 0.5 0 0.3 -0.3 0.3 0.2 0.1 0.5 0.5 -0.3 1.4 -0.2 0.3 -0.9 0.4 -0.1 0.8 0.6 0.5 -0.2 0.3 0.3 0.7 0.1 0.4 -0.4 0.6 0.7 0.9 0 0.1 -0.2 0.3 0.3 -0.1 0.6 0.4 0.3 -0.7 1.3 0.2 0.9 0.3 0.1 0.3 -0.2 0.8 0.3 0.7 0.5 0.4 0.7 -1.2 1.6 -0.5 0 -1.1 1 -1.2 0.1 -1.1 1.1 -0.5 0.9 -0.9 0 -0.3 0.4 0.7 1.9 -0.3 1 0 1.2 -0.4 0.7 0.2 0.8 -0.5 0.7 0.4 1 -0.9 0.9 -1.2 0.3 -0.3 0.4 0.2 0.7 0.4 0.3 0.5 1.1 -0.6 1.5 -0.7 0.6 -0.4 1.1 -1.3 0 -3.1 -0.6 0.5 1.6 1.1 1.2 -0.3 1.2 0.5 0.9 -0.2 0.4 0.1 0.4 0.6 0.4 0 0.7 1 0.1 0.4 0.6 0 0.6 -1 1 0 0.6zM508.9 139.4l0.6 0.1 0.2 -0.2 -0.2 0.3zM503.2 117.3l-0.3 0.4 -0.2 0.1 0.2 -0.3zM530 152l0.1 0.2 0 0.2zM616 117.5l0.3 0.9 -0.3 -0.3 0 0.7 -0.4 0.1 -2.3 -1.4 -1.2 0 0.2 -0.6 -0.4 -0.2 0 -0.3 2.5 -0.4 0.3 0.6 0.3 -0.5 0.7 0.9 -0.1 0.4zM608.2 119.1l0.8 0.3 -0.2 1 -1.2 1.4 -0.6 1.5 -1.7 1.3 -0.8 -1.1 -1.5 -0.2 -0.4 -1 0.1 -0.7 -0.5 -0.4 -1 0.3 -0.6 0.6 -0.3 -0.7 -0.6 0.1 -0.2 -0.4 0 -0.6 1.8 -1 2.2 -1.7 3.1 -0.9 0.3 0.2 -1 0.4 -0.1 0.3 1 0 -0.2 0.4 -0.5 0.2 0.1 0.5 0.7 0.4zM568.4 76.5l0.4 1.2 0.8 0 0.2 0.6 0.5 -0.4 1.2 0.6 -0.3 1.1 -0.5 0.6 0.2 0.4 0.7 0.2 0.2 -0.7 0.5 -0.1 -0.3 0.3 0.2 0.3 1.1 0.7 0.9 0.2 0.7 0.5 1.4 0.2 0.1 0.7 0.7 0.4 0.6 0.9 0.3 -0.3 0.9 0.2 0.8 -0.5 0.7 0.7 0.6 -0.1 0.2 0.9 0.7 0.4 1.7 -0.3 0.5 0.2 0.3 0.5 0.6 -0.5 0.5 0.4 2 0.1 0.1 -0.3 -0.3 -0.3 0.3 -1 1.2 0.1 0.9 0.6 0.2 -0.1 1.1 0.3 0.4 0.8 1.6 0 0.6 1.3 -0.2 0.7 0.3 0.3 -0.3 0.2 0.3 0.6 0.5 0.1 1.6 -0.7 1.7 0.8 0.3 0.8 0.3 0.2 0.5 -0.1 0.6 -0.6 1.2 -0.1 1.1 0.6 0.7 0.7 0.3 -0.3 0.9 0.2 -0.1 -0.4 0.4 -0.3 0.8 -0.1 1.2 -0.6 0.8 0.1 0.4 0.5 0.8 -0.1 0 1 1 0.3 -0.4 0.9 -0.8 -0.3 -0.4 0.5 0 0.8 0.7 0.8 -0.2 0.4 0.3 1 -0.7 1.1 -0.6 0.2 -0.1 0.3 -1.2 0.9 -0.7 0.1 -0.6 0.5 -2.7 1.1 -1.6 0.9 -1.2 1.5 -7.6 1.8 -0.4 0.5 -0.6 -0.2 -0.7 0.2 -2.7 2.4 -0.2 0.3 0.5 0.3 0.1 -0.3 0.9 0.7 -0.2 0.5 -0.6 0.2 -1 1 -0.5 0.1 -0.2 -0.3 0.6 0.1 0.6 -0.6 -1.4 0.4 -2 3.2 -2.8 2.9 -3.5 5.1 0 2.1 0.6 1.6 -0.2 0.2 0.1 0.6 0.5 1.2 1 1.4 1.5 0.7 0.6 1 -1.3 0.8 -0.1 0.3 -1.1 0.2 -0.3 0.7 -0.9 0.1 -1.3 0.5 -0.6 0.6 -0.2 0.5 -0.9 0.2 0 1.5 -1.1 0.4 -0.4 1.8 -0.6 0.5 -0.5 1.6 -0.2 -0.3 -0.7 0.8 0.4 0.9 0.8 0.3 -0.2 0.4 -1.7 0.4 -1.4 -0.4 -0.3 0.2 0.1 0.3 -1.1 -0.6 -0.2 0.2 -0.6 -0.1 -1.3 0.7 -0.3 0.6 -1.5 0.6 -1.4 1.6 -1.1 2.3 0.1 0.5 -0.9 0.4 -0.8 1.2 -0.7 0.5 -0.5 -0.2 -0.6 -0.8 -0.7 -0.4 -0.6 0.2 -1.1 -0.2 -0.6 1 -0.9 0.4 -0.9 -0.5 -0.2 0.1 -0.7 -0.6 -3.5 -0.3 -0.8 0.4 -1.1 -0.3 -0.4 -0.4 -1.2 0.1 -0.9 -0.4 -1.1 0.1 -0.8 -0.3 -1.5 0.2 -1.5 -0.4 -1.2 1.5 -0.6 0 -0.7 0.6 -0.6 0.1 -1.5 -0.4 -0.9 0.5 -1.7 0.2 -0.7 1.2 -0.4 0.1 -0.6 1.5 -0.7 -0.6 -0.3 1.3 -1.5 0.4 -0.6 -0.8 -0.9 -0.3 -0.9 -1.2 -1.1 -0.3 -0.4 -1 -0.5 -0.4 -0.9 -2.6 0.4 0.2 0.2 0.5 0.5 -0.3 -0.4 -0.1 0 -0.7 -0.4 -0.5 -0.9 -0.4 -0.2 -1.3 0.8 -0.3 0.2 -1 0.4 -0.2 0.7 0.2 0.2 -0.3 -1.3 0.1 -0.1 0.9 -0.4 0.1 -0.7 -1.8 -3.1 -2.8 -0.1 -0.5 0.7 -0.8 -0.8 0.5 -0.3 0 0.2 0.7 -1.4 -0.8 -0.2 0.1 0.4 0.1 -2.7 -0.2 -0.2 -0.6 0 -2.6 -0.3 -1 1 -1.8 1.3 -1.1 0.5 -1.3 1 -0.1 0.4 -0.4 0.8 0.4 0.9 -1.8 -0.7 -0.2 -0.7 0.2 -0.3 -1.1 -1.4 -2.2 1.1 -1.7 -0.2 -0.4 0.3 -0.8 1.2 -0.9 0.8 -0.2 0 -0.6 1 -1 0 -0.6 -0.4 -0.6 -1 -0.1 0 -0.7 -0.6 -0.4 -0.1 -0.4 0.2 -0.4 -0.5 -0.9 0.3 -1.2 -1.1 -1.2 -0.5 -1.6 3.1 0.6 1.3 0 0.4 -1.1 0.7 -0.6 0.6 -1.5 -0.5 -1.1 -0.4 -0.3 -0.2 -0.7 0.3 -0.4 1.2 -0.3 0.9 -0.9 -0.4 -1 0.5 -0.7 -0.2 -0.8 0.4 -0.7 0 -1.2 0.3 -1 -0.7 -1.9 0.3 -0.4 0.9 0 0.5 -0.9 1.1 -1.1 1.2 -0.1 1.1 -1 0.5 0 1.2 -1.6 -0.4 -0.7 -0.7 -0.5 -0.8 -0.3 -0.3 0.2 -0.3 -0.1 -0.2 -0.9 0.7 -1.3 -0.4 -0.3 0.1 -0.6 -0.3 -0.3 -0.1 0.2 -0.9 0 -0.6 -0.7 -0.4 0.4 -0.7 -0.1 -0.3 -0.3 -0.5 0.2 -0.8 -0.6 -0.4 0.1 -0.3 0.9 -1.4 0.2 -0.5 0.3 -0.1 -0.5 -0.3 -0.2 -0.3 0.3 -0.5 0 0 -0.5 -0.8 -0.5 -1.5 0.3 0 -0.7 -0.3 0.5 -0.4 0 -0.6 0.4 -1 -0.1 0.1 -0.5 -0.3 -0.2 0 -0.4 1.3 -1.3 -0.3 -0.4 -0.5 -0.1 0 -0.9 -1.1 0.4 -2.3 0.1 -0.4 0.5 -1.9 0.9 0.3 -2.5 0.6 0 -0.1 -0.4 0.4 -0.3 1.7 -1 0 -0.4 -0.5 0.5 -0.9 0.2 -0.7 0 0.2 -0.5 0.2 0.1 0.1 -0.5 0.4 0.1 1.1 -0.9 -1.5 0.1 -0.2 -0.6 -0.4 -0.3 0.5 -0.2 0 0.3 0.3 0.2 0.3 -1.2 0.4 -0.3 0.5 -0.8 -0.5 0.4 -0.3 -0.5 -0.4 0.6 -0.1 -0.1 -0.4 0.2 0.1 0.1 -0.4 0.1 -0.5 0.5 -0.3 -0.8 0.6 -1.2 1.1 -0.7 0.2 -0.4 -0.1 -0.1 -0.5 0.4 -0.7 -0.1 -0.2 0.3 -0.3 0 -0.2 -0.7 0.4 -0.1 -0.3 -0.3 0.2 -0.7 -0.4 -0.4 -0.1 0.2 -0.3 -0.1 -0.3 0.4 -0.1 -0.4 0.5 -0.9 -0.2 -0.5 0.6 -0.5 0.2 0.1 0.7 -0.3 -0.8 -0.1 0 -0.2 0.4 -0.3 0.9 0.1 0.5 -0.4 0.6 0.2 0.1 -0.1 -0.5 -0.5 1.3 -0.4 1 0.7 0.9 -0.2 0.2 0.2 1.5 -0.6 0.2 0.5 0.3 -0.6 0.4 0.3 0.3 0.9 0.2 -0.9 0.3 -0.2 -1 -0.6 1.1 0 0.1 -0.2 -1.3 0 0.4 -0.6 -0.1 -0.4 0.6 0 1.3 -0.7 0.1 0.2 0.2 0 0 -0.7 0.7 0 0.6 -0.4 0.4 0.6 -0.2 -0.1 -0.1 0.4 -0.3 0.1 0.4 0.1 0 -0.3 0.4 0 0.1 -0.3 0.8 -0.2 0.3 -0.3 -0.2 0.7 0.4 -0.2 0.1 0.7 0.7 -0.4 1.2 0.8 0.4 1 0.3 0.2 -0.2 0.2 1.8 0.3 -0.2 0.9 0.5 -0.8 0.5 0 1.8 0.4 0.5 -0.2 1 0.5 0.4 0 0 -0.2 1.2 0.2 0.7 -0.2 1.2 0.5 1.3 0 0 -0.5 0.5 -0.3 1.2 1.3 2.2 0.4 -0.2 0.5 0.5 -0.2 0.4 0 0.9 0.7 1.5 0.5 0.3 -0.1 1.6 0.9 1.7 0.3 0.2 0.3 0.4 -0.2 0.4 0.3 1.5 -0.1 1.5 -0.3 0.2 0.2 0.4 -0.4 0.9 -0.1 0.4 0.3 -0.6 0.2 0.2 0.3 0.4 -0.3 0.1 0.2 0 -0.4 1.5 -0.3 1 0.7 0 0.2 -0.3 -0.1 -0.3 0.2 0.3 0.3 0.2 -0.2 1.3 0.4 1.1 0.7 0.3 -0.1 0.6 0.6 -0.1 -0.6 0.7 -0.6 1.4 0 0.4 0.3 0.2 0.7 0.2 -0.5 1.4 0.6 0.8 0.7 1.4 0.2 0.5 0.3 1.4 -0.5 0.3 0.3 0 -0.2zM604.6 125.9l-0.5 0.3 -0.1 -0.4 0.6 -0.4zM598.1 89.3l-0.4 -0.3 0.2 -0.2zM592.8 126l0.1 0.6 -1 1 -0.8 0.4 -0.2 0.6 -1 -0.5 -0.2 0.2 -0.3 -0.4 0 -0.7 0.8 -0.1 -0.1 -0.7 0.6 -0.5 1.4 -0.4zM592.2 130.2l0.2 0.5 -0.5 0 -0.6 -0.4 -0.6 0.4 0 -0.8 0.4 -0.4 0.5 0.7 0.3 0.2zM571.6 138.8l0.1 0.8 0.1 0.4 -0.2 -0.2zM554.5 165.7l0.1 0 -0.1 0zM550.3 164l-0.2 0.2 -0.2 -0.2 0.2 -0.5zM541.5 163.8l0.1 0 -0.1 0zM529.7 155.2l-0.4 -0.9 1 0.3zM529.1 154.4l0 0.1 0 -0.1z" fill="var(--accent-tint)" stroke="var(--accent)" stroke-width="1" stroke-linejoin="round"/>
+<text class="cmp-v" x="229.6" y="185.3" font-size="10.5" fill="var(--ink-faint)" text-anchor="middle">面積が約1.34倍に見える</text>
+<text class="cmp-v" x="660.8" y="185.3" font-size="10.5" fill="var(--ink-faint)" text-anchor="middle">約130万km²（17か国）</text>
+</g>
+<g class="cmp-scale">
+<line x1="441.6" y1="207.3" x2="496.6" y2="207.3" stroke="var(--ink-faint)" stroke-width="1.5"/>
+<line x1="441.6" y1="203.3" x2="441.6" y2="211.3" stroke="var(--ink-faint)"/><line x1="496.6" y1="203.3" x2="496.6" y2="211.3" stroke="var(--ink-faint)"/>
+<text x="504.6" y="211.3" font-size="10" fill="var(--ink-faint)" text-anchor="start">赤道での5度（約556km）</text>
+<text x="433.6" y="211.3" font-size="10" fill="var(--ink-faint)" text-anchor="end">左右とも同じ縮尺</text>
+</g></svg>
+        <figcaption>南ヨーロッパの17か国を、左は 2-1 の展開図のまま（赤道の縮尺）、右は17か国の本土の中心（北緯42.2度・東経6.6度）を真上から見た形（正射図法）で描いた。左右とも赤道での1度を同じ長さにしてある。17か国の面積で見ると、左は実際の<strong>約1.34倍</strong>に見える（西ヨーロッパは約1.51倍）。右の正射図法は中心から離れるほど縮むので、東西に長いこの地域では、実際より面積で約1.3%小さく描かれる（西ヨーロッパは約0.6%）。Natural Earth v5.1.2 から本教材が作成。</figcaption>
+      </figure>
+      <div class="box teach"><span class="lab">地域のカードでは、どれだけ残っているか</span>
+      <p>§04 のカードは標準緯線を北緯42度に置いたので、東西の縮みと伸びは \(\cos 42^\circ/\cos\varphi\) で、南の端（北緯35.8度）で約0.92倍、北の端（北緯47.1度）で約1.09倍です。展開図の1.23〜1.47倍に比べると、ずれは4分の1ほどに減っています。</p></div>
+
+      <h3 id="axis-plate">② プレートの境界——境界の線が国の中を通る</h3>
+      <p><a href="memoryverse_2-2.html#plates">2-2 §04</a> のカードで、境界の線と造山帯（斜線）を重ねて見てください。3-1 では、境界の線は9か国のどこも通らず、いちばん近いところでも約300km でした。<strong>南ヨーロッパでは、境界の線がイタリアとギリシャの国の中を通ります</strong>。</p>
+      <ul class="rule-list">
+        <li><strong>イタリア</strong>——アフリカとユーラシアの境界の線が、シチリア島の北の小さな島々（エオリエ諸島）と、シチリア島とイタリア半島のあいだ（メッシーナ海峡）で国の中を通る</li>
+        <li><strong>ギリシャ</strong>——エーゲ海プレートとユーラシアの境界の線が、ギリシャの中部（コリントス湾のあたり）を東西に約160km 通る。南西の沖（イオニア海の島から約26km、クレタ島から約28km）には、エーゲ海プレートとアフリカの「近づく」境界がある</li>
+        <li><strong>地中海の西</strong>——アフリカとユーラシアの境界の線は、ジブラルタルからアフリカの北岸（モロッコ・アルジェリア）に沿って東へ進む。イベリア半島の海岸からは約66km（アフリカの北岸の沖にあるスペインの小さな島からは約12km）</li>
+      </ul>
+      <div class="table-scroll">
+      <table class="mini-table">
+        <tr><th style="width:34%">国</th><th style="width:28%">境界の線まで</th><th>「アルプス」造山帯が陸を覆う割合</th></tr>
+        <tr><td>イタリア・ギリシャ</td><td><strong>0km（国の中を通る）</strong></td><td>イタリア 100%、ギリシャ 90%</td></tr>
+        <tr><td>スペイン・ポルトガル</td><td>66km（アフリカ側のスペインの小さな島からは12km）・82km</td><td><strong>0%</strong></td></tr>
+        <tr><td>アルバニア・北マケドニア・マルタ</td><td>131km・175km・172km</td><td>100%</td></tr>
+        <tr><td>セルビア・モンテネグロ・コソボ・クロアチア・ボスニア・ヘルツェゴビナ</td><td>299〜379km</td><td>100%</td></tr>
+        <tr><td>スロベニア</td><td>731km</td><td>100%</td></tr>
+        <tr><td>アンドラ</td><td>644km</td><td><strong>0%</strong></td></tr>
+      </table>
+      </div>
+      <p style="font-size:12.5px;color:var(--ink-faint)">PB2002（Bird 2003）の境界の線と造山帯の形と、Natural Earth v5.1.2 の国の形（ヨーロッパの陸だけ）から、本教材が計算した値。サンマリノ・バチカンも100%。</p>
+      <p><strong>PB2002 の「アルプス」造山帯は、アルプスだけの名前ではありません</strong>。イタリアとバルカン半島の全体、ギリシャの90%を覆っています。バルカンの内陸（スロベニアからコソボまで）は、境界の線から300〜730km 離れて造山帯の中にある——3-1 のアルプス（境界から約860km、造山帯の中）と同じ形です。一方、<strong>イベリア半島（スペイン・ポルトガル・アンドラ）は造山帯の外</strong>です。</p>
+
+      <p><strong>地震</strong>（<a href="memoryverse_2-2.html#quakes">2-2 §06</a> のデータ。M6.0以上、1900年から）で比べると、違いがはっきりします。</p>
+      <div class="table-scroll">
+      <table class="mini-table">
+        <tr><th style="width:34%">範囲</th><th style="width:22%">国の中</th><th>国から100km 以内</th></tr>
+        <tr><td><strong>南ヨーロッパの17か国</strong></td><td><strong>82件</strong></td><td><strong>220件</strong></td></tr>
+        <tr><td>西ヨーロッパの9か国（3-1）</td><td>1件</td><td>6件</td></tr>
+        <tr><td>ギリシャ</td><td>42件</td><td>168件（うちM7以上16件）</td></tr>
+        <tr><td>イタリア</td><td>16件</td><td>28件</td></tr>
+        <tr><td>アルバニア・北マケドニア・クロアチア</td><td>7件・4件・2件</td><td>18件・20件・15件</td></tr>
+        <tr><td>スペイン・ポルトガル</td><td>2件・1件</td><td>6件・2件</td></tr>
+        <tr><td>アンドラ・マルタ・ジブラルタル</td><td>0件</td><td>0件</td></tr>
+      </table>
+      </div>
+      <p style="font-size:12.5px;color:var(--ink-faint)">USGS の地震カタログ（2026年9月26日取得）から、本教材が数えた値。国は Natural Earth の形（ヨーロッパの陸だけ）。「100km 以内」は国が重なる地震を1回ずつ数えた。17か国の中の82件のうち47件は、境界の線から200km 以内。<strong>スペインとその50km 以内でいちばん大きい地震（1954年、M7.8）と、国の中の2010年のM6.3は、深さ約610〜630km の深い地震</strong>です。1900年より前の地震は、このデータには入っていません。</p>
+      <div class="box warn"><span class="lab">火山は、この回では示さない（取得待ち）</span>
+      <p>境界の線と地震が集まる場所には、火山も並ぶことが多いのですが、火山の位置のデータ（Smithsonian の Global Volcanism Program）を<strong>いま取れていません</strong>。2-2 と同じく、<strong>「取得待ち」</strong>として位置も名前も示しません。「無い」という意味ではありません。取れたら、2-2 と一緒にこの節に足します。</p></div>
+
+      <h3 id="axis-climate">③ 気候の帯と海流</h3>
+      <p><a href="memoryverse_2-3.html#bands">2-3 の帯</a>で見ると、17か国の陸は<strong>ほとんどが中緯度の帯</strong>（北緯32〜45.5度）で、北の端だけ冷たい帯（北緯45.5〜64度）に入ります。</p>
+      <div class="table-scroll">
+      <table class="mini-table">
+        <tr><th style="width:22%">国</th><th style="width:28%">帯</th><th style="width:28%">実際のケッペン</th><th>帯の予想と食い違う割合</th></tr>
+        <tr><td>スペイン</td><td>中緯度の帯 全部</td><td>C 83%・B 16%・D 1%</td><td>84%</td></tr>
+        <tr><td>ポルトガル</td><td>中緯度の帯 全部</td><td>C 100%</td><td>100%</td></tr>
+        <tr><td>イタリア</td><td>中緯度の帯 81%・冷たい帯 19%</td><td>C 88%・D 11%・E 1%</td><td>91%</td></tr>
+        <tr><td>ギリシャ</td><td>中緯度の帯 全部</td><td>C 98%・D 2%</td><td>100%</td></tr>
+        <tr><td>スロベニア</td><td>冷たい帯 全部</td><td>D 56%・C 45%</td><td>45%</td></tr>
+        <tr><td>クロアチア</td><td>中緯度の帯 64%・冷たい帯 36%</td><td>C 96%・D 4%</td><td>100%</td></tr>
+        <tr><td>セルビア</td><td>中緯度の帯 88%・冷たい帯 12%</td><td>C 81%・D 19%</td><td>100%</td></tr>
+        <tr><td>ボスニア・ヘルツェゴビナ</td><td>中緯度の帯 全部</td><td>C 63%・D 38%</td><td>100%</td></tr>
+        <tr><td>アルバニア・北マケドニア・コソボ・モンテネグロ</td><td>中緯度の帯 全部</td><td>C 50〜100%・残りは D</td><td>100%</td></tr>
+      </table>
+      </div>
+      <p style="font-size:12.5px;color:var(--ink-faint)">アンドラ・サンマリノ・バチカン・マルタ・ジブラルタルは、2-3 の0.5度の格子のセルより小さいので数えていません。値は、ヨーロッパの陸にある0.5度のセル（12か国で561セル）を面積で重みをつけて数えたもの（CRU TS 4.09、1991〜2020年。本教材の計算）。モンテネグロとコソボはセルが6つしかありません。</p>
+      <div class="box principle"><span class="lab">帯の予想がいちばん外れる地域——ただし「外れ値」とは重ならない</span>
+      <p>12か国の陸のうち<strong>90.8%</strong>で、実際のケッペンの分類が帯の予想と食い違います（3-1 の西ヨーロッパは81.3%、世界の陸全体は33.7%）。食い違いの88.2%は<strong>「中緯度の帯は B（乾燥）と予想するが、実際は C」</strong>です。中緯度の帯の陸でいちばん多いのは乾燥した B（2-3 §08）ですが、この地域はほとんどが C です。</p>
+      <p style="margin-top:8px">3-1 では、「その緯度にしては暖かすぎる場所（外れ値）」と「食い違う場所」が重なっていました。<strong>南ヨーロッパには、2-3 の外れ値の場所（降水量13か所・気温11か所）が1つもかかりません</strong>。だから 3-1 の「重なる」は、ここでは成り立ちません。食い違いは多いが、その緯度として異常な量ではない——西ヨーロッパとは別の形の「外れ方」です。なぜそうなるかは、地球と人類 第I部 第1章（準備中）で扱います。</p></div>
+
+      <p><strong>海流</strong>（<a href="memoryverse_2-3.html#currents">2-3 §09</a> の漂流ブイの年平均、版3.10）。2-3 で名前を付けた25の海流は、どれもこの地域の沿岸を通りません（カナリア海流の名前は北緯24度・西経16度、西サハラの沖）。</p>
+      <ul class="rule-list">
+        <li><strong>ジブラルタル海峡</strong>——海峡のすぐ東（北緯36.2度・西経4.1度）で、東北東へ<strong>0.65 m/s</strong>の流れが地中海に入る。この地域でいちばん速い流れ</li>
+        <li><strong>ポルトガルの沖</strong>——南向きの弱い流れ（0.03〜0.12 m/s）</li>
+        <li><strong>地中海</strong>——アフリカの北岸沿い（東南東へ0.12 m/s）とクレタ島の南（0.13 m/s）のほかは、0.02〜0.08 m/s</li>
+      </ul>
+      <div class="box warn"><span class="lab">エーゲ海は、観測が無い</span>
+      <p>漂流ブイの観測が足りない（1平方度あたり5日未満）海域は、<strong>エーゲ海の100%、アドリア海の73.5%</strong>、クレタ海の51.4%、アルボラン海の29.1%です。地中海全体（黒海を除く）では14.8%で、世界の海（11.6%）より多い。ギリシャのエーゲ海側とアドリア海の沿岸については、表層の流れが<strong>「無い」のではなく「観測が無い」</strong>ので、このデータでは何も言えません（2-3 §09 の図の斜線）。</p></div>
+    </section>
+
+    <section id="borders">
+      <div class="sec-head"><span class="idx">07</span><h2>国境</h2></div>
+      <p>3-1 には無かった節です。<a href="memoryverse_2-1.html#borders">2-1 §08</a> で決めた3つの欄——<strong>実効支配</strong>（地図の線はこれで引く）、<strong>主張</strong>、<strong>承認</strong>——で、この地域の3つの場所を書きます。どれも「分かっていること」で、決着していないのは政治と法の問題です（2-1 §08）。<strong>この教材の線の引き方は、どの主張を支持するものでもありません。</strong></p>
+      <div class="table-scroll">
+      <table class="mini-table">
+        <tr><th style="width:17%">場所</th><th style="width:27%">実効支配</th><th style="width:27%">主張</th><th>承認</th></tr>
+        <tr><td><strong>コソボ</strong></td><td>コソボの政府が治めている（この地図では別の区域として描いている）</td><td>セルビアが、自国の一部だと主張している</td><td><strong>数える人で数が違う</strong>（下）</td></tr>
+        <tr><td><strong>ジブラルタル</strong></td><td>イギリス（ジブラルタル政府）</td><td>スペインが主権を主張している（下）</td><td>——（国家の承認の問題ではない）</td></tr>
+        <tr><td><strong>サンマリノ・バチカン</strong></td><td>それぞれの政府</td><td>争いは無い</td><td>——</td></tr>
+      </table>
+      </div>
+
+      <h3>コソボの承認——1つの数に決めない</h3>
+      <p>コソボを国家として承認している国の数は、<strong>誰が数えるかで違います</strong>。この教材は1つの数に決めず、誰がいつ数えたかを添えて並べます。</p>
+      <ul class="rule-list">
+        <li><strong>コソボ外務省の一覧</strong>：121の国と地域（うちクック諸島とニウエは国際連合の加盟国ではない）。一覧の最後はバハマ（2025年12月19日）。ページの更新は2026年5月4日</li>
+        <li><strong>セルビア外務省</strong>：「この8年間で29か国が承認を撤回または停止した」（2025年11月3日の声明）。2026年4月9日の発表では「28か国が承認を撤回した」とあり、セルビアの発表どうしでも数が違う</li>
+      </ul>
+      <p>この地域の17か国のうち、<strong>コソボ外務省の一覧に載っているのは10か国</strong>です：アルバニア（2008年2月18日）・イタリア（2008年2月21日）・スロベニア（2008年3月5日）・クロアチア（2008年3月19日）・サンマリノ（2008年5月12日）・マルタ（2008年8月22日）・ポルトガル（2008年10月7日）・モンテネグロ（2008年10月9日）・北マケドニア（2008年10月9日）・アンドラ（2011年6月8日）。<strong>スペイン・ギリシャ・セルビア・ボスニア・ヘルツェゴビナ・バチカンの5つは、一覧に無い</strong>（ジブラルタルは国ではないので数えない）。ここでは「承認していない」ではなく「一覧に無い」と書きます——「承認していない」と書くには、それぞれの国の資料が要るからです。</p>
+
+      <h3>ジブラルタルの主張</h3>
+      <ul class="rule-list">
+        <li><strong>スペイン外務省</strong>：ジブラルタルはユトレヒト条約でイギリスに割譲された。ただし割譲されたのは町と要塞で、<strong>地峡（いまの空港のあたり）は割譲されておらず、スペインの主権の下にある</strong>と主張している。フェンスを国境とは認めていない</li>
+        <li><strong>イギリス政府</strong>：「double lock」——ジブラルタルの人びとが自由に民主的に示した意思に反して、他国の主権の下に移すことはしない、としている（2026年2月26日、イギリスと EU のジブラルタルについての協定案の要約）。同じ日に協定案が公表された</li>
+      </ul>
+      <p>この地図では、ジブラルタルの国のページの層1を OpenStreetMap の<strong>陸の境界</strong>で描いています（§04）。</p>
+
+      <h3>サンマリノとバチカン——イタリアに囲まれた国</h3>
+      <p>2つとも、周りをすべてイタリアに囲まれています。争いは無く、3つの欄のうち実効支配だけが埋まります。国境の欄にこの2つを入れたのは、<strong>「国境が1つの国とだけある」</strong>という形が、世界でも珍しいからです（§04 の隣り合い）。</p>
+      <p style="font-size:12.5px;color:var(--ink-faint)">出典（2026年9月28日確認）：コソボ外務省「Lista e Njohjeve」、セルビア外務省の声明（2025年11月3日・2026年4月9日）、スペイン外務省「Gibraltar」、イギリス政府「Summary: Draft UK–EU Agreement in respect of Gibraltar」（2026年2月26日）。</p>
+    </section>
+
+    <section id="countries">
+      <div class="sec-head"><span class="idx">08</span><h2>国のページへ</h2></div>
+      <p>17か国それぞれのページで、層1（位置と形）・層2（骨組み：川・湖・道路・鉄道）・層3（区画：区分・都市）を重ねて見られます。§09 の第3週から使います。どのページも縮尺は1度44px で、小さい国だけ「この図だけ○倍」です。<strong>バチカンとジブラルタルは、層1だけ OpenStreetMap</strong> です（ページに明記）。</p>
+      <div class="table-scroll">
+      <table class="mini-table clist">
+        <tr><th style="width:5%">順</th><th style="width:34%">国のページ</th><th>そのページで見られるもの</th></tr>
+        <tr><td>1</td><td><a href="country/and.html"><strong>アンドラ</strong></a>（この図だけ50倍）</td><td>川15本・湖10・主要幹線あり・高速道路 <strong>なし</strong>・鉄道 <strong>なし</strong>・区7・都市1</td></tr>
+        <tr><td>2</td><td><a href="country/ita.html"><strong>イタリア</strong></a></td><td>川15本・湖10・高速道路と主要幹線あり・高速鉄道と主要鉄道あり・県110・州20・都市20</td></tr>
+        <tr><td>3</td><td><a href="country/smr.html"><strong>サンマリノ</strong></a>（この図だけ100倍）</td><td>川1本・湖2・高速道路・主要幹線 <strong>なし</strong>・鉄道 <strong>なし</strong>・区9・都市1</td></tr>
+        <tr><td>4</td><td><a href="country/vat.html"><strong>バチカン</strong></a>（この図だけ1000倍。層1は OpenStreetMap）</td><td>川 <strong>なし</strong>・湖 <strong>なし</strong>・高速道路・主要幹線 <strong>なし</strong>・鉄道 <strong>なし</strong>・区分1（国全体）・都市1</td></tr>
+        <tr><td>5</td><td><a href="country/mlt.html"><strong>マルタ</strong></a>（この図だけ50倍）</td><td>川1本・湖6・主要幹線あり・高速道路 <strong>なし</strong>・鉄道 <strong>なし</strong>・区68・地域3・都市1</td></tr>
+        <tr><td>6</td><td><a href="country/svn.html"><strong>スロベニア</strong></a></td><td>川15本・湖10・高速道路と主要幹線あり・主要鉄道あり・高速鉄道 <strong>なし</strong>・区分193・統計地域12・都市2</td></tr>
+        <tr><td>7</td><td><a href="country/hrv.html"><strong>クロアチア</strong></a></td><td>川15本・湖10・高速道路と主要幹線あり・主要鉄道あり・高速鉄道 <strong>なし</strong>・区分21・都市10</td></tr>
+        <tr><td>8</td><td><a href="country/bih.html"><strong>ボスニア・ヘルツェゴビナ</strong></a></td><td>川15本・湖10・高速道路と主要幹線あり・主要鉄道あり・高速鉄道 <strong>なし</strong>・区分18・構成体2・都市6</td></tr>
+        <tr><td>9</td><td><a href="country/mne.html"><strong>モンテネグロ</strong></a></td><td>川15本・湖10・高速道路と主要幹線あり・主要鉄道あり・高速鉄道 <strong>なし</strong>・自治体21・都市1</td></tr>
+        <tr><td>10</td><td><a href="country/alb.html"><strong>アルバニア</strong></a></td><td>川15本・湖10・高速道路と主要幹線あり・主要鉄道あり・高速鉄道 <strong>なし</strong>・州12・都市20</td></tr>
+        <tr><td>11</td><td><a href="country/srb.html"><strong>セルビア</strong></a></td><td>川15本・湖10・高速道路と主要幹線あり・高速鉄道と主要鉄道あり・区分25・都市7</td></tr>
+        <tr><td>12</td><td><a href="country/kos.html"><strong>コソボ</strong></a>（この図だけ10倍）</td><td>川15本・湖10・高速道路と主要幹線あり・主要鉄道あり・高速鉄道 <strong>なし</strong>・区分30・都市3</td></tr>
+        <tr><td>13</td><td><a href="country/mkd.html"><strong>北マケドニア</strong></a></td><td>川15本・湖10・高速道路と主要幹線あり・主要鉄道あり・高速鉄道 <strong>なし</strong>・区分84・都市3</td></tr>
+        <tr><td>14</td><td><a href="country/grc.html"><strong>ギリシャ</strong></a></td><td>川15本・湖10・高速道路と主要幹線あり・高速鉄道と主要鉄道あり・区分14・都市20</td></tr>
+        <tr><td>15</td><td><a href="country/prt.html"><strong>ポルトガル</strong></a>（マデイラの図だけ10倍）</td><td>川15本・湖10・高速道路と主要幹線あり・高速鉄道と主要鉄道あり・県18と自治地域2・都市20</td></tr>
+        <tr><td>16</td><td><a href="country/gib.html"><strong>ジブラルタル</strong></a>（この図だけ200倍。層1は OpenStreetMap）</td><td>川 <strong>なし</strong>・湖 <strong>なし</strong>・主要幹線あり・高速道路 <strong>なし</strong>・鉄道 <strong>なし</strong>・区分1（全体）・都市1</td></tr>
+        <tr><td>17</td><td><a href="country/esp.html"><strong>スペイン</strong></a></td><td>川15本・湖10・高速道路と主要幹線あり・高速鉄道と主要鉄道あり・区分52・自治州19・都市20</td></tr>
+      </table>
+      </div>
+      <p style="font-size:12.5px;color:var(--ink-faint)">川・湖・道路・鉄道は OpenStreetMap（© OpenStreetMap contributors、ODbL）。絞り込みの基準は国のページの下に書いてあり、どの国も同じです（川は長い順に15本、湖は広い順に10、道路と鉄道は全部）。<strong>0のものは「なし」と出るだけで、埋めていません</strong>。数は 2026-09-26 の抽出で、国の輪郭の中だけを数えたものです。国の中の長さが0km の川は描いていません（スロベニアの国境の川 Sotla / Sutla は Natural Earth の粗い国境の線の外側に入るため外れた。各ページの注記）。</p>
+    </section>
+
+    <section id="menu">
+      <div class="sec-head"><span class="idx">09</span><h2>訓練メニュー</h2></div>
+      <p><strong>4週間</strong>（3-1 は3週間）。第1〜2週は地域、第3〜4週は国です。どの日も想起を先に取ります——カードや国のページを開く前に、白紙に書くか声に出して言ってください。</p>
+      <h3>第1〜2週：地域（1日20分）</h3>
+      <div class="box teach"><span class="lab">A 構築（12分）</span>
+      <p><strong>最初の5分</strong>（3-1 は3分）——毎日、白紙に17か国を描く。升目（北緯30〜60度の段と東経0度の線）→ 17か国の形 → 隣り合い → 首都、の順です。9か国より多いので、3分から5分に延ばしました。描き終えたら §04・§05 のカードと照らし、外れた国に印をつけます。<strong>残りの7分</strong>——その日の節（下の表）。</p></div>
+      <div class="box teach"><span class="lab">B 観察（5分）</span>
+      <p>2-1 の展開図と §04 のカードを見比べ、同じ国がどれだけ横に伸びて見えるかを言葉にします。3-1 の西ヨーロッパのカードとも並べて、<strong>南にあるぶん伸び方が小さい</strong>ことを確かめてください。</p></div>
+      <div class="box teach"><span class="lab">メモ（3分）</span>
+      <p>描けなかった国、抜けた隣り合い、言えなかった首都を書き留める。翌日のAの最初の5分は、ここに書いたものを確かめてから描き始めます。</p></div>
+      <div class="table-scroll">
+      <table class="mini-table">
+        <tr><th style="width:12%">日</th><th>第1〜2週：地域</th></tr>
+        <tr><td>1日目</td><td>教材を読む（50〜60分）。白紙に17か国を初めて描く</td></tr>
+        <tr><td>2日目</td><td>§03 升目の中の位置と、輪の切れ目。§04 の順番（東回り）。演習2</td></tr>
+        <tr><td>3日目</td><td>§04 の形：イタリアとその周り（サンマリノ・バチカン・マルタ）。拡大図で</td></tr>
+        <tr><td>4日目</td><td>§04 の形：スロベニアからコソボ・北マケドニアまで（バルカンの西と内陸）</td></tr>
+        <tr><td>5日目</td><td>§04 の形：ギリシャとイベリア（ポルトガル・ジブラルタル・スペイン・アンドラ）</td></tr>
+        <tr><td>6日目</td><td>§04 隣り合い（要はセルビアとモンテネグロ、1か国とだけ接する4つ、囲まれた2つ）。演習3</td></tr>
+        <tr><td>7日目</td><td>§05 首都。バルカンの4つの首都を海岸から内陸へ。演習4の(1)</td></tr>
+        <tr><td>8日目</td><td>§06 ① cos φ。3-1 と比べる。演習5</td></tr>
+        <tr><td>9日目</td><td>§06 ② プレートの境界と地震</td></tr>
+        <tr><td>10日目</td><td>§06 ③ 気候の帯と海流。演習6</td></tr>
+        <tr><td>11日目</td><td>§07 国境の3つの欄。演習4の(2)〜(4)</td></tr>
+        <tr><td>12〜13日目</td><td>1週目と2週目を通して。外した節をやり直す</td></tr>
+        <tr><td>14日目</td><td>演習1（白紙の17か国の採点）</td></tr>
+      </table>
+      </div>
+      <h3>第3〜4週：国（1日1〜3か国）</h3>
+      <p>Aの最初の5分は、第3週以降も白紙に17か国のままです。残りの時間で、国のページを1日1〜3か国、層1 → 層2 → 層3の順に1つずつ重ねて見ます。見たあとで、国のページを閉じて白紙にその国だけを描き、川1本と都市3つを書き込みます（小さい国は、都市の代わりに隣の国との位置関係を書く）。</p>
+      <div class="table-scroll">
+      <table class="mini-table">
+        <tr><th style="width:12%">日</th><th>国（東回りの順）</th></tr>
+        <tr><td>15日目</td><td>イタリア</td></tr>
+        <tr><td>16日目</td><td>サンマリノ・バチカン・マルタ（どれも拡大した図）</td></tr>
+        <tr><td>17日目</td><td>スロベニア・クロアチア</td></tr>
+        <tr><td>18日目</td><td>ボスニア・ヘルツェゴビナ・モンテネグロ</td></tr>
+        <tr><td>19日目</td><td>セルビア・コソボ</td></tr>
+        <tr><td>20日目</td><td>北マケドニア・アルバニア</td></tr>
+        <tr><td>21日目</td><td>ギリシャ</td></tr>
+        <tr><td>22日目</td><td>ポルトガル（アゾレス・マデイラの図も）</td></tr>
+        <tr><td>23日目</td><td>スペイン（カナリア諸島の図も）・アンドラ・ジブラルタル</td></tr>
+        <tr><td>24日目</td><td>17か国を通して。白紙の17か国に、各国の川を1本ずつ足して描く</td></tr>
+        <tr><td>25〜28日目</td><td>外した国を1日1〜2か国ずつやり直す。外した国が無ければ、演習1を2日おきに</td></tr>
+      </table>
+      </div>
+      <p>表の日割りより早く進んでも、遅くなっても構いません。Aの最初の5分は省かないでください。</p>
+      <div class="box warn"><span class="lab">進んでよい条件（3-3へ）</span>
+      <ul class="rule-list">
+        <li><strong>白紙の17か国</strong>——演習1で30点以上（35点満点）</li>
+        <li><strong>順番</strong>——東回り（アンドラ→スペイン）と西回り（スペイン→アンドラ）が、止まらずに言えること</li>
+        <li><strong>国境</strong>——コソボ・ジブラルタル・サンマリノとバチカンを、3つの欄で言えること</li>
+        <li><strong>国のページ</strong>——17か国とも、層1〜3を1度ずつ重ねたこと</li>
+      </ul></div>
+    </section>
+
+    <section id="drills">
+      <div class="sec-head"><span class="idx">10</span><h2>演習</h2></div>
+      <p>すべてカード・地図・国のページを見ずに答え、答えたあとで開いてください。間違えた項目は控えておき、翌日のAの最初に確かめます。</p>
+
+      <div class="ex"><div class="ex-head"><span class="ex-n">演習1</span><span class="ex-t">白紙に17か国</span></div>
+        <p>白紙に、2-1 の升目の北緯30〜60度の段の、西経30度〜東経30度の2つのマスを描き、東経0度の線を引いてください。そこに17か国の形をおおまかに描き、国名と首都を書き込みます。</p>
+        <details><summary>採点のしかた</summary><div class="ans">
+          <p>§04・§05 のカードと照らします。35点満点です。</p>
+          <ul class="rule-list">
+            <li><strong>升目（2点）</strong>——北緯30〜60度の段と2つのマスで1点、東経0度がスペインの東寄りを通っていて1点</li>
+            <li><strong>17か国の位置（17点）</strong>——国ごとに、隣り合う国が §04 の表と合っていれば1点（小さい国：アンドラはスペインとフランスのあいだ、サンマリノはイタリアのアドリア海側、バチカンはローマ、マルタはシチリア島の南、ジブラルタルはイベリア半島の南の端）</li>
+            <li><strong>首都（16点）</strong>——国の中の正しい側にあれば1点ずつ（ジブラルタルは国ではないので数えない）</li>
+          </ul>
+          <p>進んでよい条件の目安は30点以上です。外しやすいのは次の3つです。</p>
+          <ul class="rule-list">
+            <li><strong>東経0度をスペインの西の端に引く</strong>——東経0度はスペインの東寄り（バレンシアの近く）を通り、スペインの大部分は東経0度より西にある</li>
+            <li><strong>ボスニア・ヘルツェゴビナを海から離す</strong>——南のネウムのあたりで、短くアドリア海に面している。そのためクロアチアの南の端が切れる</li>
+            <li><strong>コソボと北マケドニアの上下を逆にする</strong>——コソボが北、北マケドニアが南（その南がギリシャ）</li>
+          </ul>
+        </div></details>
+      </div>
+
+      <div class="ex"><div class="ex-head"><span class="ex-n">演習2</span><span class="ex-t">西回りと、輪の切れ目</span></div>
+        <p>(1) 17か国を、西回り（スペインからアンドラへ）に言ってください。(2) 東経0度から東回りに並べると、ポルトガル・ジブラルタル・スペインが最後に来るのはなぜですか。輪の上で、最後のスペインは何番目の国と隣り合っていますか。</p>
+        <details><summary>解答</summary><div class="ans">
+          <p>(1) スペイン → ジブラルタル → ポルトガル → ギリシャ → 北マケドニア → コソボ → セルビア → アルバニア → モンテネグロ → ボスニア・ヘルツェゴビナ → クロアチア → スロベニア → マルタ → バチカン → サンマリノ → イタリア → アンドラ</p>
+          <p>(2) 3つとも中心が東経0度より西（西経8.0度・5.4度・3.6度）にあり、東経0度で切って東回りに数えると、いちばん遠い側になるから（2-1 付録Aの輪の切れ目と同じ規則）。スペインは、1番目のアンドラと接している</p>
+        </div></details>
+      </div>
+
+      <div class="ex"><div class="ex-head"><span class="ex-n">演習3</span><span class="ex-t">隣り合う国と、囲まれた国</span></div>
+        <p>(1) 域内でいちばん多くの国と接する国を2つ言ってください。(2) 1か国とだけ接する国を4つ言ってください。陸の隣国が無い国はどこですか。(3) 海に面していない国をすべて言ってください。この中に二重内陸国はありますか。(4) 周りをすべて1つの国に囲まれた国は、この地域に2つあります。世界でほかにどこがありますか。</p>
+        <details><summary>解答</summary><div class="ans">
+          <p>(1) セルビアとモンテネグロ（域内でそれぞれ5か国）。セルビアは域外の3か国を足すと8か国</p>
+          <p>(2) サンマリノ・バチカン（イタリアとだけ）、ポルトガル・ジブラルタル（スペインとだけ）。陸の隣国が無いのはマルタ</p>
+          <p>(3) 6か国：北マケドニア・コソボ・セルビア・アンドラ・サンマリノ・バチカン。二重内陸国は無い（どの国も、海に面した国と少なくとも1つ接している。サンマリノとバチカンの隣のイタリアも海に面している）</p>
+          <p>(4) レソト（南アフリカ共和国に囲まれる）。Natural Earth の国の形で数えると、この3つ（サンマリノ・バチカン・レソト）だけ</p>
+        </div></details>
+      </div>
+
+      <div class="ex"><div class="ex-head"><span class="ex-n">演習4</span><span class="ex-t">首都と国境の欄</span></div>
+        <p>(1) 17か国の首都を東回りの順に言ってください（ジブラルタルは飛ばす）。(2) コソボについて、実効支配・主張・承認の3つの欄を言ってください。承認の数が1つに決まらないのはなぜですか。(3) ジブラルタルについて、スペインの主張の中で「地峡」はどういう位置づけですか。(4) サンマリノとバチカンを国境の欄に入れたのはなぜですか。</p>
+        <details><summary>解答</summary><div class="ans">
+          <p>(1) アンドラ・ラ・ベリャ → ローマ → サンマリノ → バチカン → バレッタ → リュブリャナ → ザグレブ → サラエヴォ → ポドゴリツァ → ティラナ → ベオグラード → プリシュティナ → スコピエ → アテネ → リスボン →（ジブラルタル）→ マドリード</p>
+          <p>(2) 実効支配：コソボの政府。主張：セルビアが自国の一部と主張。承認：数える人で数が違う——コソボ外務省の一覧は121（2026年5月の更新）、セルビア外務省は「29か国が撤回・停止した」（2025年11月）としていて、同じ時点の数が一致しない</p>
+          <p>(3) スペイン外務省は、ユトレヒト条約で割譲されたのは町と要塞で、地峡（空港のあたり）は割譲されておらずスペインの主権の下にある、と主張している</p>
+          <p>(4) 周りをすべてイタリアに囲まれていて、国境が1つの国とだけある、という世界でも珍しい形だから（争いは無い）</p>
+        </div></details>
+      </div>
+
+      <div class="ex"><div class="ex-head"><span class="ex-n">演習5</span><span class="ex-t">cos φ——西ヨーロッパと比べる</span></div>
+        <p>(1) 17か国の本土は北緯何度から何度までにありますか。2-1 の展開図では東西に何倍から何倍に伸びて見えますか。西ヨーロッパと比べて、どう違いますか。(2) 17か国の面積は、2-1 の展開図で約何倍に見えますか。西ヨーロッパでは何倍でしたか。(3) ローマ・アテネ・バレッタと、ほぼ同じ緯度の日本の都市を言ってください。</p>
+        <details><summary>解答</summary><div class="ans">
+          <p>(1) 北緯35.8〜47.1度で、1.23〜1.47倍。西ヨーロッパ（1.35〜1.74倍）より倍率が小さく、幅も狭い</p>
+          <p>(2) 約1.34倍。西ヨーロッパは約1.51倍</p>
+          <p>(3) ローマは函館、アテネは仙台、バレッタは東京</p>
+        </div></details>
+      </div>
+
+      <div class="ex"><div class="ex-head"><span class="ex-n">演習6</span><span class="ex-t">3本の軸——西ヨーロッパとの違い</span></div>
+        <p>西ヨーロッパ（3-1）と比べて、南ヨーロッパの3本の軸の違いを6つ言ってください。</p>
+        <details><summary>解答</summary><div class="ans">
+          <ul class="rule-list">
+            <li><strong>cos φ</strong>：1.23〜1.47倍（西ヨーロッパは1.35〜1.74倍）。倍率が小さく、幅も狭い</li>
+            <li><strong>境界の線</strong>：イタリアとギリシャの国の中を通る（西ヨーロッパは9か国のどこも通らず、最も近くて約300km）</li>
+            <li><strong>造山帯</strong>：イタリアとバルカン全体、ギリシャの90%を覆う。イベリアは外（西ヨーロッパはスイス・リヒテンシュタイン・モナコが全部、オーストリア83%）</li>
+            <li><strong>地震</strong>：国から100km 以内に220件（西ヨーロッパは6件）</li>
+            <li><strong>ケッペン</strong>：食い違いが90.8%（西ヨーロッパは81.3%、世界は33.7%）。ただし外れ値の場所が1つもかからないので、3-1 の「外れ値と食い違いが重なる」は成り立たない</li>
+            <li><strong>海流</strong>：地中海の14.8%が観測の無い海域で、エーゲ海は100%（世界の海は11.6%）。「流れが無い」とは言えない</li>
+          </ul>
+        </div></details>
+      </div>
+    </section>
+
+    <section id="plan">
+      <div class="sec-head"><span class="idx">A</span><h2>この回で決めたこと</h2></div>
+      <p>3-2 を作るときに決めたこと・変えたことを記録します。</p>
+      <div class="table-scroll">
+      <table class="mini-table">
+        <tr><th style="width:26%">項目</th><th>決めたこと（理由）</th></tr>
+        <tr><td>3章の記事の型</td><td><strong>§06「横断する軸——3本」までは共通、それ以降は回による</strong>。3-2 では係争地があるので <strong>§07 国境</strong>を足し、国のページ・訓練・演習を1つずつ後ろにずらした</td></tr>
+        <tr><td>順番の規則</td><td>規則どおり、東経0度で切って東回り。東経0度より西のポルトガル・ジブラルタル・スペインが最後に来る。規則を曲げずに当てはめた結果で、2-1 付録Aの説明がそのまま使える</td></tr>
+        <tr><td>地域のカードの幅</td><td>17か国は1度44px で幅1,234px になり、本文の列に収まらない。<strong>縮尺を守るため、縮めずに横に送る</strong>。全体は「拡大 ⤢」で見る（地域のカードにだけ付けた。2章の全球の図には付けない）</td></tr>
+        <tr><td>倍率を上げる国</td><td>規則は3-1 のまま（1度44px で長いほうの辺が100px 未満の国だけ、300〜700px に収まる倍率）。<strong>スロベニア96px・北マケドニア84px・モンテネグロ75px は上げない</strong>（10倍だと700px を超え、合う倍率が無い。規則を増やさない。詳しくは国のページの拡大表示で見られる）。<strong>1000倍を足した</strong>（バチカン）</td></tr>
+        <tr><td>層1の出どころ</td><td>層1は Natural Earth。<strong>バチカンとジブラルタルの2つだけ例外で OpenStreetMap の輪郭</strong>（Natural Earth の形が使えないため）。国のページに「層1はこの国だけ OpenStreetMap」と明記した。記事では点で示す</td></tr>
+        <tr><td>層2の数え方</td><td><strong>数えるのは国の輪郭の中だけ</strong>。国境の0.1度外まで数えていたために、小さい国に隣の国のものが入る誤りがあった（バチカンに高速道路81km など）。川は国境の少し外まで含めて選ぶが、国の中の長さが0km の川は選ばない。3-1 の9か国の国のページも作り直した</td></tr>
+        <tr><td>火山</td><td>2-2 と同じく「取得待ち」。位置も名前も示さない</td></tr>
+        <tr><td>コソボの承認</td><td>1つの数に決めず、誰がいつ数えたかを添えて並べる。一覧に無い国を「承認していない」とは書かない</td></tr>
+      </table>
+      </div>
+    </section>
+
+    <section id="evidence">
+      <div class="sec-head"><span class="idx">B</span><h2>根拠と強度——この回で足した手順</h2></div>
+      <p>第1〜5回・2-1・3-1 の手順の根拠と強度は、それぞれの付録Bのとおりで、この回もそれを土台にしています。ここではこの回で新しく足した手順だけを挙げます。</p>
+      <div class="table-scroll">
+      <table class="mini-table">
+        <tr><th style="width:26%">要素</th><th style="width:32%">主な根拠</th><th style="width:28%">示していないこと</th><th>強度</th></tr>
+        <tr><td>毎日の白紙を3分から5分に延ばす</td><td>検証した研究は確認できていない。国の数が9から17に増えたことに合わせた設計判断</td><td>5分が最適であること</td><td>弱</td></tr>
+        <tr><td>国境の3つの欄を地域に当てはめる</td><td>学習の研究ではなく、何を事実として書くかの基準（2-1 §08）</td><td>——</td><td>——</td></tr>
+        <tr><td>承認を、誰がいつ数えたかと一緒に書く</td><td>学習の研究ではなく、事実の書き方の基準（各国外務省の資料。§07）</td><td>——</td><td>——</td></tr>
+      </table>
+      </div>
+      <p style="font-size:12.5px;color:var(--ink-faint)">この回の数値（中心・面積・隣り合い・倍率・境界までの距離・地震の数・帯と食い違いの割合・海流）は研究の成果ではなく、Natural Earth v5.1.2・PB2002・USGS・CRU TS 4.09・NOAA Global Drifter Program から本教材が計算したものです。同じデータと同じ手順で、誰でも再現できます。</p>
+    </section>
+
+    <section id="next">
+      <div class="sec-head"><span class="idx">C</span><h2>次回の予告</h2></div>
+      <div class="box teach"><span class="lab">3-3 の予告　北ヨーロッパ</span>
+      <p>次は北ヨーロッパです（<a href="memoryverse_2-1.html#plan">2-1 付録A</a>の表で北62° 東12°）。この回の南ヨーロッパとは逆に、<strong>緯度が高いので展開図で大きく伸びる</strong>地域です（北緯60度で2倍）。3-1・3-2 と同じ型で、§06 の3本の軸から書きます。</p></div>
+    </section>
+
+    <div class="foot"><p>国境・海岸線・中心・面積・隣り合い・倍率は Natural Earth v5.1.2（1:1000万の国境。パブリックドメイン）から本教材が計算したもので、国の公式統計とは一致しません。§04・§05 の図と §06 の図は本教材が作成しました（正距円筒図法。§04・§05 は標準緯線 北緯42度・1度44px、§06 は赤道の縮尺と正射図法）。プレートの境界は PB2002（Bird 2003）、地震は USGS、気候は CRU TS 4.09、海流は NOAA Global Drifter Program の年平均（版3.10）。国境の欄の出典は §07 にあります。国のページの層2は OpenStreetMap（© OpenStreetMap contributors、ODbL）で、出典の詳細は各ページの下にあります。国境の描き方は 2-1 §08 の基準によるもので、どの主張を支持するものでもありません。</p></div>
+  </main>
+</div>
+<div id="site-footer"><noscript><nav class="noscript-nav" aria-label="フッターナビゲーション"><a href="index.html">ホーム</a><a href="self-intro.html">自己紹介</a><a href="study.html">勉強の軌跡</a><a href="videos.html">動画</a><a href="blog.html">ブログ</a><a href="sns.html">各種SNS</a></nav></noscript></div>
+<script src="../js/memoryverse.js?v=r109"></script>
+<script src="../js/layout.js?v=r109"></script>
+<script src="../js/main.js?v=r109"></script>
+<script src="../js/starfield.js?v=r109"></script>
+<script src="../js/country-card.js?v=r109"></script>
+</body>
+</html>

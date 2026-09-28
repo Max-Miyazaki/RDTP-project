@@ -1,4 +1,4 @@
-# 地域のカード（3章の地域の記事に置く図）を描く。いまは 3-1 西ヨーロッパだけ。
+# 地域のカード（3章の地域の記事に置く図）を描く。3-1 西ヨーロッパ・3-2 南ヨーロッパ。
 #   python region.py 3-1
 # 書き出すもの（image/memoryverse/cards/）：
 #   r3-1-shape.svg     04「9か国の形と位置」の図（層1 形）
@@ -43,6 +43,33 @@ REGIONS = {
         'zoom': [
             ('LIE', 'リヒテンシュタイン', 20, (9.36, 9.73), (46.99, 47.33), 0.1, 5, [('スイス', 9.43, 47.05), ('オーストリア', 9.66, 47.29)]),
             ('MCO', 'モナコ', 100, (7.345, 7.46), (43.70, 43.782), 0.02, 1, [('フランス', 7.39, 43.772)]),
+        ],
+    },
+    '3-2': {
+        'title': '南ヨーロッパ',
+        'phi0': 42.0,                                  # 17か国の本土の重心は北緯42.20度・東経6.62度
+        'center': (42.20, 6.62),
+        'lon': (-10.0, 28.9), 'lat': (34.5, 47.4),
+        'members': [
+            ('AND', 'アンドラ', (1.55, 43.55)), ('ITA', 'イタリア', ('in', 13.9, 42.35)), ('SMR', 'サンマリノ', (13.55, 44.15)), ('VAT', 'バチカン', (11.1, 41.05)),
+            ('MLT', 'マルタ', (14.45, 35.2)), ('SVN', 'スロベニア', (13.9, 46.9)), ('HRV', 'クロアチア', ('in', 16.2, 45.55)),
+            ('BIH', 'ボスニア・ヘルツェゴビナ', (17.8, 46.75)), ('MNE', 'モンテネグロ', (17.6, 42.25)), ('ALB', 'アルバニア', (18.15, 41.3)),
+            ('SRB', 'セルビア', ('in', 20.95, 44.05)), ('KOS', 'コソボ', (22.75, 43.35)), ('MKD', '北マケドニア', (24.3, 42.25)),
+            ('GRC', 'ギリシャ', ('in', 22.2, 39.3)), ('PRT', 'ポルトガル', ('in', -8.0, 39.85)), ('GIB', 'ジブラルタル', (-7.4, 35.6)), ('ESP', 'スペイン', ('in', -3.6, 40.0)),
+        ],
+        'point_only': ['AND', 'SMR', 'VAT', 'MLT', 'GIB'],
+        'capitals': [
+            ('アンドラ・ラ・ベリャ', 1.5165, 42.5, 'capital', 'r'), ('ローマ', 12.4813, 41.8979, 'capital', 'r'), ('サンマリノ市', 12.4418, 43.9361, 'capital', 'r'),
+            ('バチカン（都市国家）', 12.4534, 41.9033, 'capital', 'l'), ('バレッタ', 14.5147, 35.8997, 'capital', 'r'), ('リュブリャナ', 14.515, 46.0553, 'capital', 'l'),
+            ('ザグレブ', 16.0, 45.8, 'capital', 'r'), ('サラエヴォ', 18.383, 43.85, 'capital', 'l'), ('ポドゴリツァ', 19.2663, 42.466, 'capital', 'l'),
+            ('ティラナ', 19.8189, 41.3275, 'capital', 'l'), ('ベオグラード', 20.466, 44.8206, 'capital', 'r'), ('プリシュティナ', 21.166, 42.6667, 'capital', 'r'),
+            ('スコピエ', 21.4335, 42.0, 'capital', 'r'), ('アテネ', 23.7314, 37.9853, 'capital', 'r'), ('リスボン', -9.1468, 38.7247, 'capital', 'b'),
+            ('マドリード', -3.6853, 40.402, 'capital', 'r'),
+        ],
+        'zoom': [
+            ('AND', 'アンドラ', 20, (1.36, 1.81), (42.39, 42.69), 0.1, 10, [('フランス', 1.66, 42.665), ('スペイン', 1.44, 42.41)]),
+            ('SMR', 'サンマリノ', 50, (12.37, 12.51), (43.875, 44.0), 0.05, 5, [('イタリア', 12.395, 43.99)]),
+            ('MLT', 'マルタ', 20, (14.14, 14.61), (35.76, 36.12), 0.1, 10, []),
         ],
     },
 }
@@ -174,7 +201,7 @@ def main_map(key, R, C, capitals):
          f'<rect x="{ML}" y="{MT}" width="{fmt(fr.w)}" height="{fmt(fr.h)}" fill="#05080d"/>']
     E += grid(fr)
     E.append(f'<g clip-path="url(#{cid})">')
-    mem = {a3 for a3, _, _ in R['members']}
+    mem = [a3 for a3, _, _ in R['members']]          # 並びを決めておく（set だと実行ごとに順が変わり、SVG が毎回変わる）
     nei = ''.join(d_polys(fr.cp(g)) for a3, (g, p) in C.items() if a3 not in mem and g.intersects(fr.bb))
     land = ''.join(d_polys(fr.cp(C[a3][0])) for a3 in mem)
     E.append('<g class="L1">')
@@ -276,7 +303,7 @@ def cmp_fig(R, C):
     """06：左＝展開図のまま（赤道の縮尺）、右＝地域の中心を真上から見た形（正射図法）。左右とも赤道での1度を同じ長さに。
     2-1 §07 のグリーンランドとコンゴ民主共和国の図と同じ形式・同じ色（記事の CSS 変数）。"""
     s = 11.0                                           # 赤道での1度 = 11px（左右とも）
-    lat0, lon0 = 48.50, 6.21                          # 9か国の本土の重心
+    lat0, lon0 = R.get('center', (48.50, 6.21))       # 地域の本土の重心（3-1 は9か国で北緯48.50度・東経6.21度）
     mem = [a3 for a3, _, _ in R['members']]
     # 左：経度・緯度をそのまま（正距円筒・赤道の縮尺）
     geoms = [C[a3][0].intersection(box(R['lon'][0], R['lat'][0], R['lon'][1], R['lat'][1])) for a3 in mem]
@@ -310,7 +337,7 @@ def cmp_fig(R, C):
     right_a = sum(g.area for g in right) * M ** 2
     ratio_left, ratio_right = left_a / true_a, right_a / true_a
     col = 'fill="var(--accent-tint)" stroke="var(--accent)" stroke-width="1" stroke-linejoin="round"'
-    E = [f'<svg viewBox="0 0 {fmt(W)} {fmt(H)}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="{R["title"]}の9か国を、展開図での見え方（左）と真上から見た形（右）で同じ縮尺に並べた図">',
+    E = [f'<svg viewBox="0 0 {fmt(W)} {fmt(H)}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="{R["title"]}の{len(mem)}か国を、展開図での見え方（左）と真上から見た形（右）で同じ縮尺に並べた図">',
          f'<text class="cmp-h" x="{fmt(ox + lw / 2)}" y="20" font-size="12.5" fill="var(--ink)" text-anchor="middle">展開図での見え方（赤道の縮尺）</text>',
          f'<text class="cmp-h" x="{fmt(rx + (ub[2] - ub[0]) / 2)}" y="20" font-size="12.5" fill="var(--ink)" text-anchor="middle">真上から見た形</text>',
          f'<line x1="{fmt(sep)}" y1="8" x2="{fmt(sep)}" y2="{fmt(H - 30)}" stroke="var(--line)" stroke-width="1"/>',
@@ -318,7 +345,7 @@ def cmp_fig(R, C):
     E.append(f'<path d="{"".join(d_polys(g.simplify(.15)) for g in left)}" {col}/>')
     E.append(f'<path d="{"".join(d_polys(g.simplify(.15)) for g in right)}" {col}/>')
     E.append(f'<text class="cmp-v" x="{fmt(ox + lw / 2)}" y="{fmt(oy + lh + 16)}" font-size="10.5" fill="var(--ink-faint)" text-anchor="middle">面積が約{ratio_left:.2f}倍に見える</text>')
-    E.append(f'<text class="cmp-v" x="{fmt(rx + (ub[2] - ub[0]) / 2)}" y="{fmt(oy + lh + 16)}" font-size="10.5" fill="var(--ink-faint)" text-anchor="middle">約{true_a / 1e10:.0f}万km²（9か国）</text>')
+    E.append(f'<text class="cmp-v" x="{fmt(rx + (ub[2] - ub[0]) / 2)}" y="{fmt(oy + lh + 16)}" font-size="10.5" fill="var(--ink-faint)" text-anchor="middle">約{true_a / 1e10:.0f}万km²（{len(mem)}か国）</text>')
     E.append('</g>')
     bar = 5 * s
     bx0 = sep - bar / 2

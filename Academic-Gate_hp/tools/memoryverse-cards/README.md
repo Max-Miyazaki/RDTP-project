@@ -12,7 +12,7 @@
 
 - `image/memoryverse/cards/<国>.svg`（図が2枚以上の国は `<国>-<図>.svg`。例：`jpn-main.svg`・`jpn-ryukyu.svg`）
 - `html/country/<国>.html`（**手で直さない**。直すなら `page_tpl.html` か `countries.py`）
-- `image/memoryverse/cards/r<回>-*.svg`：地域の記事のカード（`region.py`。いまは 3-1 の形・首都・拡大図）
+- `image/memoryverse/cards/r<回>-*.svg`：地域の記事のカード（`region.py`。3-1・3-2 の形・首都・拡大図）
 
 **入れないもの**：取ってきたデータと途中のファイル（`data/`、`*.osm.pbf`、`*.geojsonseq`）。サイズが大きいことと、
 OSM のデータベースそのものを配らないため（ODbL）。`.gitignore` に入っている。

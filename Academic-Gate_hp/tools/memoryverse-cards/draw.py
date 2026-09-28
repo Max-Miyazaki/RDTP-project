@@ -31,8 +31,10 @@ FINE = C.get('fine')
 RWORD = C.get('region_word', '地方')
 RSUF = C.get('region_suffix', '地方')     # 名前の後ろに付ける語（日本「東北」＋「地方」）
 RFS, RLS = C.get('region_fs', 15), C.get('region_ls', 3)                     # 倍率を上げた国の細い格子の間隔（度）
-ML, MR, MT, MB = 46, 14, 26, 26          # 余白（緯度ラベル・経度ラベル・見出し）
 PANELS = C['panels']
+ML, MR, MT, MB = 46, 14, 26, 26          # 余白（緯度ラベル・経度ラベル・見出し）
+if min([p.get('fine', FINE) or 1 for p in PANELS.values()]) < 0.1:
+    ML = 70                              # 細い格子のラベルが小数2桁以上（北緯36.16°・北緯41.908°）になる国は左の余白を広げる（46px では左が切れた）
 
 # ---------------- Natural Earth ----------------
 ne0 = json.load(open(os.path.join(NE, 'ne_10m_admin_0_countries.geojson')))
@@ -277,9 +279,9 @@ NAMES_ALL, NAMES_PLACED = defaultdict(set), defaultdict(set)   # 図に入る区
 
 
 def scale_bar(pn):
-    """縮尺の棒：図の幅の3分の1に収まる長さ（100・50・20・10・5・2・1・0.5km から）。右下の角に置く"""
+    """縮尺の棒：図の幅の3分の1に収まる長さ（100・50・20・10・5・2・1・0.5・0.2・0.1km から。0.2km 以下はバチカンの1000倍のため）。右下の角に置く"""
     km_px = pn.S / (math.pi * 6371.0088 / 180)                 # 1km が何 px か（南北。標準緯線上では東西も同じ）
-    km = next(k for k in (100, 50, 20, 10, 5, 2, 1, 0.5) if k * km_px <= min(120, pn.w / 3))
+    km = next(k for k in (100, 50, 20, 10, 5, 2, 1, 0.5, 0.2, 0.1) if k * km_px <= min(120, pn.w / 3))
     L = km * km_px
     return km, L, ML + pn.w - 12 - L, MT + pn.h - 12
 

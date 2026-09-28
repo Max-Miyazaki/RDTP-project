@@ -111,6 +111,8 @@
         'memoryverse:ch3': { label: '3章 各地域',                                  parent: 'memoryverse' },
         'memoryverse_3-1': { label: '3-1',          href: 'memoryverse_3-1.html',  parent: 'memoryverse:ch3',
                              title: '3-1　西ヨーロッパ' },
+        'memoryverse_3-2': { label: '3-2',          href: 'memoryverse_3-2.html',  parent: 'memoryverse:ch3',
+                             title: '3-2　南ヨーロッパ' },
     };
 
     // node から根までの並び（根が先頭）。

@@ -73,7 +73,7 @@
         var svg = fig.querySelector('svg');
         if (!svg || fig._zoom) return fig._zoom;
         var v0 = svg.getAttribute('viewBox').split(/[\s,]+/).map(Number);   // [x, y, w, h] 全体
-        var v = v0.slice(), deg = Number(fig.dataset.deg) || 44;
+        var v = v0.slice(), mixed = fig.dataset.deg === 'mixed', deg = Number(fig.dataset.deg) || 44;
         // 点の横に置いた都市名は、文字の端ではなく点を中心に縮め戻す（でないと拡大につれて点から離れる）
         [].forEach.call(svg.querySelectorAll('text[data-ax]'), function (t) {
             var b = t.getBBox();
@@ -101,7 +101,8 @@
             svg.style.setProperty('--inv', (s / ppu).toFixed(4));
             svg.style.touchAction = z() > 1.001 ? 'none' : 'pan-y';        // 全体のときは縦に送れる（日本は2枚を縦に並べる）
             var p1 = deg * px();
-            out.textContent = '1度＝' + Math.round(p1).toLocaleString() + 'px（覚えるための縮尺 1度' + deg.toLocaleString() + 'px の'
+            out.textContent = mixed ? '全体表示の' + z().toFixed(1) + '倍（枠ごとの倍率は図の中）'      // 拡大図：枠ごとに縮尺が違うので1度の長さは出さない
+                : '1度＝' + Math.round(p1).toLocaleString() + 'px（覚えるための縮尺 1度' + deg.toLocaleString() + 'px の'
                             + (p1 / deg).toFixed(1) + '倍）';
         }
         function zoomAt(f, cx, cy) {                                         // cx, cy は svg の左上からの画面上の px

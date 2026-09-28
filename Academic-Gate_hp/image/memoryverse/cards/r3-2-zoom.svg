@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1058.5 388.8" width="1058.5" height="388.8" class="cc-map" role="img" aria-label="拡大図：アンドラ（20倍）・サンマリノ（50倍）・マルタ（20倍）">
+<style>.cc-map text{font-family:"Hiragino Sans","Noto Sans JP",system-ui,sans-serif;paint-order:stroke;stroke:#000;stroke-width:2.6px;stroke-linejoin:round}</style>
+<g class="L2">
+<clipPath id="cc-r32-zand"><rect x="46" y="46" width="294.3" height="264"/></clipPath>
+<rect x="46" y="46" width="294.3" height="264" fill="#05080d"/>
+<g class="grid">
+<path d="M72.2 46V310M137.6 46V310M203 46V310M268.3 46V310M333.7 46V310M46 301.2H340.3M46 213.2H340.3M46 125.2H340.3" stroke="rgba(255,255,255,.07)" stroke-width=".6" stroke-dasharray="2 3" fill="none"/>
+<path d="" stroke="rgba(255,255,255,.06)" stroke-width=".5" fill="none"/>
+<path d="" stroke="rgba(255,255,255,.16)" stroke-width=".8" fill="none"/>
+<text x="72.2" y="325" font-size="9.5" fill="rgba(255,255,255,.55)" text-anchor="middle" stroke="none">東経1.4°</text>
+<text x="137.6" y="325" font-size="9.5" fill="rgba(255,255,255,.55)" text-anchor="middle" stroke="none">東経1.5°</text>
+<text x="203" y="325" font-size="9.5" fill="rgba(255,255,255,.55)" text-anchor="middle" stroke="none">東経1.6°</text>
+<text x="268.3" y="325" font-size="9.5" fill="rgba(255,255,255,.55)" text-anchor="middle" stroke="none">東経1.7°</text>
+<text x="41" y="304.7" font-size="9.5" fill="rgba(255,255,255,.55)" text-anchor="end" stroke="none">北緯42.4°</text>
+<text x="41" y="216.7" font-size="9.5" fill="rgba(255,255,255,.55)" text-anchor="end" stroke="none">北緯42.5°</text>
+<text x="41" y="128.7" font-size="9.5" fill="rgba(255,255,255,.55)" text-anchor="end" stroke="none">北緯42.6°</text>
+</g>
+<g clip-path="url(#cc-r32-zand)">
+<path d="M329 229.3l-40.7 -5.6 -12 -5 -0.1 -4.9 -3.3 -3 2.4 -22 7.2 -18.3 12 -11.5 16.4 -1.6 -8.1 -11.7 -15.2 -4.7 -10.5 -6.6 5.6 -17.9 -74.3 -7.2 -7.2 -3.4 -35.5 -24.1 -10 0.7 -19.2 7.3 -20.6 -1.1 -10.1 34.7 -14.5 5.9 -9.4 -12.3 -11.1 -30.2 -12.5 -17.2 -12.3 -21.1 0 -2.5 294.3 0 0 188zM58.3 69.6l12.5 17.2 11.1 30.2 9.4 12.3 -6.5 14.1 -0.8 8.3 5.4 3.7 0 3.4 -10.9 18.7 -2.1 10 14.7 -2 11.5 10.2 2.2 13.9 -12.9 9.3 -3.7 0.9 -11.1 5 18.9 29.3 0 11.1 7.5 5.5 39.6 5.3 5.3 -0.8 7.6 -4.1 10.6 -14.2 41.2 -5.4 21 -8.8 7.1 -23.7 2.4 -2.7 1.9 -1 1.8 0.7 1.7 2.7 7.8 2.9 7.9 -0.1 7.3 -3.4 6.2 -7.3 3.3 3 0.1 4.9 12 5 40.7 5.6 11.3 4.7 0 76 -294.3 0 0 -261.5z" fill="rgba(255,255,255,.05)" stroke="rgba(255,255,255,.18)" stroke-width=".7" stroke-linejoin="round"/>
+<path d="M266.7 218.1l-7.3 3.4 -7.9 0.1 -7.8 -2.9 -1.7 -2.7 -1.8 -0.7 -1.9 1 -2.4 2.7 -7.1 23.7 -21 8.8 -41.2 5.4 -10.6 14.2 -7.6 4.1 -5.3 0.8 -39.6 -5.3 -7.5 -5.5 0 -11.1 -18.9 -29.3 11.1 -5 3.7 -0.9 12.9 -9.3 -2.2 -13.9 -11.5 -10.2 -14.7 2 2.1 -10 10.9 -18.7 0 -3.4 -5.4 -3.7 0.8 -8.3 6.5 -14.1 14.5 -5.9 10.1 -34.7 20.6 1.1 19.2 -7.3 10 -0.7 35.5 24.1 7.2 3.4 74.3 7.2 -5.6 17.9 10.5 6.6 15.2 4.7 8.1 11.7 -16.4 1.6 -12 11.5 -7.2 18.3 -2.4 22z" fill="rgba(61,139,255,.16)" stroke="#6aa9ff" stroke-width=".8" stroke-linejoin="round"/>
+<text x="242.2" y="68" font-size="10.5" fill="rgba(255,255,255,.6)" text-anchor="middle">フランス</text>
+<text x="98.3" y="292.4" font-size="10.5" fill="rgba(255,255,255,.6)" text-anchor="middle">スペイン</text>
+<text x="174.6" y="180.9" font-size="12" fill="#fff" text-anchor="middle" font-weight="600">アンドラ</text>
+</g>
+<rect x="46" y="46" width="294.3" height="264" fill="none" stroke="#ffd166" stroke-width="1.2" stroke-dasharray="5 3"/>
+<text x="46" y="24" font-size="12" fill="#fff" text-anchor="start" font-weight="600" stroke="none">アンドラ</text>
+<text x="46" y="38" font-size="10.5" fill="#ffd166" text-anchor="start" font-weight="600" stroke="none">この図だけ 20倍（1度＝880px）</text>
+<path d="M249.1 294V298H328.3V294" fill="none" stroke="rgba(255,255,255,.7)" stroke-width="1.2"/>
+<text x="288.7" y="291" font-size="9.5" fill="rgba(255,255,255,.75)" text-anchor="middle">10 km</text>
+<clipPath id="cc-r32-zsmr"><rect x="424.3" y="46" width="228.9" height="275"/></clipPath>
+<rect x="424.3" y="46" width="228.9" height="275" fill="#05080d"/>
+<g class="grid">
+<path d="M473.3 46V321M555.1 46V321M636.8 46V321M424.3 266H653.2M424.3 156H653.2M424.3 46H653.2" stroke="rgba(255,255,255,.07)" stroke-width=".6" stroke-dasharray="2 3" fill="none"/>
+<path d="M424.3 46H653.2" stroke="rgba(255,255,255,.06)" stroke-width=".5" fill="none"/>
+<path d="" stroke="rgba(255,255,255,.16)" stroke-width=".8" fill="none"/>
+<text x="473.3" y="336" font-size="9.5" fill="rgba(255,255,255,.55)" text-anchor="middle" stroke="none">東経12.40°</text>
+<text x="555.1" y="336" font-size="9.5" fill="rgba(255,255,255,.55)" text-anchor="middle" stroke="none">東経12.45°</text>
+<text x="419.3" y="269.5" font-size="9.5" fill="rgba(255,255,255,.55)" text-anchor="end" stroke="none">北緯43.90°</text>
+<text x="419.3" y="159.5" font-size="9.5" fill="rgba(255,255,255,.55)" text-anchor="end" stroke="none">北緯43.95°</text>
+<text x="419.3" y="49.5" font-size="9.5" fill="rgba(255,255,255,.55)" text-anchor="end" stroke="none">北緯44.00°</text>
+</g>
+<g clip-path="url(#cc-r32-zsmr)">
+<path d="M424.3 321l0 -275 228.9 0 0 275zM572.2 276.4l29.1 -47.9 -1.3 -6.6 0.9 -7 2.5 -5.7 4.3 -4.6 13.3 -24.7 3.4 -38 -5.3 -36.7 -11.4 -20.8 -47.2 7.7 -52.2 26 -42.1 41.4 -16.4 52.5 22.8 46.9 48.9 24.6z" fill="rgba(255,255,255,.05)" stroke="rgba(255,255,255,.18)" stroke-width=".7" stroke-linejoin="round"/>
+<path d="M472.6 258.9l-22.8 -46.9 16.4 -52.5 42.1 -41.4 52.2 -26 47.2 -7.7 11.4 20.8 5.3 36.7 -3.4 38 -13.3 24.7 -4.3 4.6 -2.5 5.7 -0.9 7 1.3 6.6 -29.1 47.9 -50.7 7.1z" fill="rgba(61,139,255,.16)" stroke="#6aa9ff" stroke-width=".8" stroke-linejoin="round"/>
+<text x="465.2" y="68" font-size="10.5" fill="rgba(255,255,255,.6)" text-anchor="middle">イタリア</text>
+<text x="528.6" y="209.9" font-size="12" fill="#fff" text-anchor="middle" font-weight="600">サンマリノ</text>
+</g>
+<rect x="424.3" y="46" width="228.9" height="275" fill="none" stroke="#ffd166" stroke-width="1.2" stroke-dasharray="5 3"/>
+<text x="424.3" y="24" font-size="12" fill="#fff" text-anchor="start" font-weight="600" stroke="none">サンマリノ</text>
+<text x="424.3" y="38" font-size="10.5" fill="#ffd166" text-anchor="start" font-weight="600" stroke="none">この図だけ 50倍（1度＝2,200px）</text>
+<path d="M542.2 305V309H641.2V305" fill="none" stroke="rgba(255,255,255,.7)" stroke-width="1.2"/>
+<text x="591.7" y="302" font-size="9.5" fill="rgba(255,255,255,.75)" text-anchor="middle">5 km</text>
+<clipPath id="cc-r32-zmlt"><rect x="737.2" y="46" width="307.4" height="316.8"/></clipPath>
+<rect x="737.2" y="46" width="307.4" height="316.8" fill="#05080d"/>
+<g class="grid">
+<path d="M776.4 46V362.8M841.8 46V362.8M907.2 46V362.8M972.6 46V362.8M1038 46V362.8M737.2 327.6H1044.5M737.2 239.6H1044.5M737.2 151.6H1044.5M737.2 63.6H1044.5" stroke="rgba(255,255,255,.07)" stroke-width=".6" stroke-dasharray="2 3" fill="none"/>
+<path d="M737.2 151.6H1044.5" stroke="rgba(255,255,255,.06)" stroke-width=".5" fill="none"/>
+<path d="" stroke="rgba(255,255,255,.16)" stroke-width=".8" fill="none"/>
+<text x="776.4" y="377.8" font-size="9.5" fill="rgba(255,255,255,.55)" text-anchor="middle" stroke="none">東経14.2°</text>
+<text x="841.8" y="377.8" font-size="9.5" fill="rgba(255,255,255,.55)" text-anchor="middle" stroke="none">東経14.3°</text>
+<text x="907.2" y="377.8" font-size="9.5" fill="rgba(255,255,255,.55)" text-anchor="middle" stroke="none">東経14.4°</text>
+<text x="972.6" y="377.8" font-size="9.5" fill="rgba(255,255,255,.55)" text-anchor="middle" stroke="none">東経14.5°</text>
+<text x="732.2" y="331.1" font-size="9.5" fill="rgba(255,255,255,.55)" text-anchor="end" stroke="none">北緯35.8°</text>
+<text x="732.2" y="243.1" font-size="9.5" fill="rgba(255,255,255,.55)" text-anchor="end" stroke="none">北緯35.9°</text>
+<text x="732.2" y="155.1" font-size="9.5" fill="rgba(255,255,255,.55)" text-anchor="end" stroke="none">北緯36.0°</text>
+<text x="732.2" y="67.1" font-size="9.5" fill="rgba(255,255,255,.55)" text-anchor="end" stroke="none">北緯36.1°</text>
+</g>
+<g clip-path="url(#cc-r32-zmlt)">
+<path d="" fill="rgba(255,255,255,.05)" stroke="rgba(255,255,255,.18)" stroke-width=".7" stroke-linejoin="round"/>
+<path d="M1013.9 266l2.6 21.5 -3.5 13.9 -9 -5.5 -10.2 12.4 -3.2 7.4 0 10.8 -13.4 -6.5 -22.5 -2.5 -31.5 -10.7 -28.1 -17 -14.1 -23.5 -9.3 -5.5 -2 -4.2 0 -27.3 -2.9 -31 -3.7 -14 -6.9 -9.1 8.3 -8.1 8.4 -5.6 9.1 -3.2 10.4 -1.1 0 6.5 -6 1.2 -3.8 2.2 -8.5 8.1 51.7 6.6 10.9 4.7 22 20.6 19 7.4 3.3 6.8 0.7 17.6 3.5 0.7 18.8 8.8zM830.4 91.9l21.1 14.7 12.7 14.8 -8 6.3 -11.5 0.5 -17.5 8.7 -11.5 2.8 -12.2 -1 -13.4 -4 -12.9 -6 -10.7 -7.6 2.1 -9.4 -2.4 -9.6 -0.5 -7.5 7.8 -2.9 39.9 -6.6z" fill="rgba(61,139,255,.16)" stroke="#6aa9ff" stroke-width=".8" stroke-linejoin="round"/>
+<text x="932.1" y="256.5" font-size="12" fill="#fff" text-anchor="middle" font-weight="600">マルタ</text>
+</g>
+<rect x="737.2" y="46" width="307.4" height="316.8" fill="none" stroke="#ffd166" stroke-width="1.2" stroke-dasharray="5 3"/>
+<text x="737.2" y="24" font-size="12" fill="#fff" text-anchor="start" font-weight="600" stroke="none">マルタ</text>
+<text x="737.2" y="38" font-size="10.5" fill="#ffd166" text-anchor="start" font-weight="600" stroke="none">この図だけ 20倍（1度＝880px）</text>
+<path d="M953.4 346.8V350.8H1032.5V346.8" fill="none" stroke="rgba(255,255,255,.7)" stroke-width="1.2"/>
+<text x="993" y="343.8" font-size="9.5" fill="rgba(255,255,255,.75)" text-anchor="middle">10 km</text>
+</g></svg>

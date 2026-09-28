@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- ★ このファイルは tools/memoryverse-cards/draw.py が生成する。手で直さないこと（直すなら page_tpl.html）。 -->
+<!-- ★ 国のページは html/country/ にあり1階層深い。共通のヘッダー・フッター（js/layout.js）は
+     「index.html」のような相対リンクを書き出すので、base を html/ に合わせて、ほかの記事と同じ
+     パス（../css/ など）で読む。このページには #アンカーのリンクが無いので base の副作用は無い（DESIGN.md §100）。 -->
+<base href="../">
+<title>バチカン｜メモリーバース | Academic Gates</title>
+<meta name="description" content="バチカンの国のページ。位置と形・骨組み（川・湖・道路・鉄道）・区画の3層を重ねた地図（この国の図だけ1000倍）。メモリーバース 3-2 南ヨーロッパ。">
+<link rel="icon" href="../../favicon.ico" sizes="32x32">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;500&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/style.css?v=r109">
+<link rel="stylesheet" href="../css/country-card.css?v=r109">
+<link rel="stylesheet" href="../css/lesson-theme.css?v=r109">
+</head>
+<!-- data-node は付けない：国のページは CRUMBS に登録しない（約200枚でサイト構成ナビの木が使えなくなる。§100）。
+     代わりに上の「← メモリーバース」を1本置く。地域の記事ができたら、行き先をその記事に替える。 -->
+<body data-page="study">
+<canvas id="starfield" aria-hidden="true"></canvas>
+<div id="site-nav"><noscript><nav class="noscript-nav" aria-label="メインナビゲーション"><a href="index.html">ホーム</a><a href="self-intro.html">自己紹介</a><a href="study.html">勉強の軌跡</a><a href="videos.html">動画</a><a href="blog.html">ブログ</a><a href="sns.html">各種SNS</a></nav></noscript></div>
+<main>
+  <div class="page-header">
+    <nav class="page-up"><a href="memoryverse_3-2.html"><span class="ar" aria-hidden="true">←</span>3-2 南ヨーロッパ</a></nav>
+    <h1>バチカン</h1>
+    <p>3章 国のページ（試作）。層1と層3は Natural Earth、層2（骨組み）は OpenStreetMap。層は1つずつ重ねて見る。</p>
+  </div>
+  <section class="cc-page">
+    <div class="cc-card" data-cc="vat">
+      <div class="cc-ctl">
+        <div class="cc-row">
+          <button class="cc-lay" data-layer="L1" aria-pressed="true">層1 位置と形</button>
+          <button class="cc-lay" data-layer="L2" aria-pressed="true">層2 骨組み</button>
+          <button class="cc-lay" data-layer="L3" aria-pressed="true">層3 区画</button>
+          <button class="cc-full" type="button" aria-expanded="false" title="地図を画面いっぱいに広げる（Esc で閉じる）">拡大 ⤢</button>
+        </div>
+        <div class="cc-row"><button class="cc-sub cc-zero" data-layer="L2" data-k="river" aria-pressed="false" disabled title="この国のデータに無い"><i class="cc-sw" style="border-color:#5fd0ff"></i>川<em>なし</em></button><button class="cc-sub cc-zero" data-layer="L2" data-k="lake" aria-pressed="false" disabled title="この国のデータに無い"><i class="cc-sw" style="border-top-width:6px;border-color:rgba(95,208,255,.6)"></i>湖<em>なし</em></button><button class="cc-sub cc-zero" data-layer="L2" data-k="motorway" aria-pressed="false" disabled title="この国のデータに無い"><i class="cc-sw" style="border-color:#ffb46b"></i>高速道路<em>なし</em></button><button class="cc-sub cc-zero" data-layer="L2" data-k="trunk" aria-pressed="false" disabled title="この国のデータに無い"><i class="cc-sw" style="border-color:#a7784a;border-top-width:1px"></i>主要幹線<em>なし</em></button><button class="cc-sub cc-zero" data-layer="L2" data-k="hsr" aria-pressed="false" disabled title="この国のデータに無い"><i class="cc-sw dash" style="border-color:#8fe3c9;border-top-width:3px"></i>高速鉄道<em>なし</em></button><button class="cc-sub cc-zero" data-layer="L2" data-k="main" aria-pressed="false" disabled title="この国のデータに無い"><i class="cc-sw dash" style="border-color:#8fe3c9;border-top-width:1px"></i>主要鉄道<em>なし</em></button><span class="cc-sep"></span><button class="cc-sub cc-zero" data-layer="L3" data-k="region" aria-pressed="false" disabled title="この国のデータに無い">地方<em>なし</em></button><button class="cc-sub" data-layer="L3" data-k="prefname" aria-pressed="true">区分名</button><button class="cc-sub" data-layer="L3" data-k="city" aria-pressed="true">都市</button></div>
+        <p class="cc-zeros">この国のデータに<b>無いもの</b>：川・湖・高速道路・主要幹線・高速鉄道・主要鉄道・地方（0なので線も名前も描いていない）</p>
+      </div>
+      <div class="cc-maps"><div class="cc-scroll"><div class="cc-fig" style="--w:608;--h:492" data-deg="44000" data-src="../image/memoryverse/cards/vat.svg?v=r109"><p class="cc-status">地図を読み込み中…</p><p class="cc-fallback">地図を読み込めませんでした</p></div></div><div class="cc-side"><p class="cc-note"><b>層1はこの国だけ OpenStreetMap</b>。Natural Earth（1:1000万）の輪郭は7つの点・0.01km² しかなく、形として使えないため。OpenStreetMap の輪郭は257の点・0.49km²。</p><p class="cc-note">バチカンは、周りをすべてイタリア（ローマ）に囲まれている（3-2 §07）。層2は OpenStreetMap のイタリアの抽出から、この国の輪郭の中を数えている。</p><p class="cc-note"><b>川の長さ</b>：長さは国の輪郭の中だけを数えている（道路・鉄道も同じ）。<b>国境になっている川は、Natural Earth の粗い国境の線のどちら側に入ったかで長さが変わる</b>（モーゼル川はドイツで257km、ルクセンブルクで3.4km）。川そのものを分け合っているわけではない。どの川を図に入れるかは国境の少し外（0.1度）まで含めて選び、線も国境で切らずに描いている。国境になっている川はその国の骨組みの一部なので。</p><p class="cc-note"><b>湖の面積</b>：湖は国境で切らず、国の形を約2km 広げた範囲で測っている（国境をまたぐ湖は、隣の国の側の湖面も入る）。川の長さは「その国にどれだけあるか」、湖の面積は「その国から見える湖の大きさ」で、測っているものが違う。湖を国境で切ると、同じ湖が国によって違う大きさで出る。</p><p class="cc-note"><b>描いていない川</b>：Tevere・Aniene・Torrente Cremeraは、国の輪郭の中の長さが0km なので描いていない（川の数にも入れていない）。どれもイタリア（ローマ）を流れる川で、国の外にある（テヴェレ川は国から0.6km）。</p><p class="cc-note"><b>区分の呼び名</b>：Natural Earth に区分の種類が入っていない（国全体で1つ）。</p><p class="cc-note"><b>ラベルの言語</b>：日本語名があるものは日本語、無いものは原語で出している。層3（区分・都市）は Natural Earth の日本語名を使うのでほぼ日本語、層2（川・湖・道路・鉄道）は OpenStreetMap に日本語名が無いものが多いので原語が多い。</p><p class="cc-note"><b>この国の図だけ 1000倍</b>（経度を cos 41.9° = 0.7443 倍に縮めたうえで、1度 = 44,000px。ほかの国のページは1度 = 44px）。1度44pxのままだと国が約0.4px の点になり、形が読めないため。点線の格子は0.002度ごと。</p></div></div>
+      
+      <p class="cc-full-attr">層1：<b>この国だけ OpenStreetMap</b>　層3：Natural Earth　層2：© <a href="https://www.openstreetmap.org/copyright" rel="noopener">OpenStreetMap contributors</a>（ODbL）</p>
+      <div class="cc-src">
+        <p><b>層1</b>：<b>この国だけ OpenStreetMap</b>（© OpenStreetMap contributors、ODbL。リレーション 36989、層2と同じ抽出）。Natural Earth（1:1000万）の輪郭は7つの点・0.01km² しかなく、形として使えないため。OpenStreetMap の輪郭は257の点・0.49km²。ほかの国のページの層1は Natural Earth。</p><p><b>層3</b>：Natural Earth v5.1.2（パブリックドメイン）。区分（国全体で1つ）・都市（人口 POP_MAX の多い順に20。Natural Earth にバチカンの都市は1しか無い）。層3の区分の線は Natural Earth の形なので、層1（OpenStreetMap）の輪郭とは重ならない。</p>
+        <p><b>層2</b>：© <a href="https://www.openstreetmap.org/copyright" rel="noopener">OpenStreetMap contributors</a>（ODbL）。Geofabrik の抽出（italy-latest.osm.pbf、2026-09-26T20:22:51Z までのデータ）。</p>
+        <p><b>層2の絞り込み（どの国にも同じ基準）</b>：川は waterway=river のうち、同じ名前の区間をつないで長い順に15本。湖は natural=water かつ water=lake のうち広い順に10。高速道路は highway=motorway、主要幹線は highway=trunk（どちらも _link を除く全部）。高速鉄道は railway=rail かつ highspeed=yes、主要鉄道は railway=rail かつ usage=main（高速鉄道と重なるものは高速鉄道に入れる）。名前（ラベル）は name:ja、無ければ name。名前の無いものは線だけ引く。<b>川は OSM の <code>name</code> ごとに数える。</b>区間によって名前そのものが変われば別に数える（信濃川と千曲川）。同じ <code>name</code> の区間は、一部にだけ日本語名が入っていても1本として数え、ラベルには日本語名を使う（ライン川）。同じ名前の川がデータの上で途切れている（1km 以上離れている）ときは、つながずに別に数える（ドイツのエルベ川が2回出る）。つなげる判断を入れると国ごとに基準が揺れるため、データに書かれているとおりに数えている。<b>長さは国の輪郭の中だけを数える</b>。川は国境の少し外（0.1度）まで含めて選ぶ（国境になっている川も、その国の骨組みに入れる）。国境になっている川の長さは、粗い国境の線のどちら側に入ったかで変わる。道路・鉄道・湖は輪郭にかかるものだけを選ぶ。線はどれも国境で切らず、0.1度先まで描いている。湖の国の形を約2km広げた範囲で測っている。国境をまたぐ湖は、隣の国の側の湖面も含む（フランスのレマン湖は347km²と出るが、フランス側だけなら約234km²）。国境で切ると、同じ湖が国によって違う大きさになるため、切っていない。</p>
+        <p><b>ラベルの順</b>：ラベルは動かないものから先に置く（湖→川→高速鉄道→高速道路→主要鉄道→主要幹線、同じ種類の中は長い順、重なるものは飛ばす）。川と湖は地形で何百年も動かないが、道路と鉄道は人が作ったもので増えたり廃止されたりする。骨組みとして先に立つのは地形のほう。長さだけで順を決めると、国道のラベルが川を押しのける。</p>
+        <p><b>ラベルの名前</b>：道路の名前は、国によって書き方が違う。日本は「東名高速道路」のような固有の名前、チャドは「アベシェ - アティ - ンジャメナ」のような結ぶ町の列。どちらも直さずそのまま出している。1つの名前に複数の文字体系が並んでいるもの（「<bdi dir="auto">Lac Teli بحيرة تيلي</bdi>」など）は、文字体系が変わったところで切って先頭の1つだけを出す（JR のような大文字の略号は切り替えに数えない）。アラビア文字だけ、キリル文字だけの名前はそのまま出す。1行は全角14文字（半角28文字）までとし、超えたものは末尾を「…」にする。切り詰めた結果、同じ図の中で見分けがつかなくなるものは、前ではなく後ろを残す（「…N'Djaména - Sarh/Bongor」のように先頭を「…」にする）。「起点 - 経由 - 終点」の形の名前は、前が共通で後ろで分かれるため。図の枠からはみ出すラベルは置かない。</p>
+        <p><b>層の使い方</b>：層は1つずつ重ねて使う。全部を同時に出した状態は確かめのためのもので、覚えるための面ではない。</p>
+        <p><b>図</b>：本教材が作成。正距円筒図法、標準緯線 北緯41.9度（国の本土＝面積がいちばん大きい陸のかたまりの、面積で重みをつけた球面上の重心。海外領土や離島を含めると中心が本土から離れるため）。東経12.444〜12.460度・北緯41.899〜41.909度。圧縮後1度あたり44px。</p>
+      </div>
+    </div>
+  </section>
+</main>
+<div id="site-footer"><noscript><nav class="noscript-nav" aria-label="フッターナビゲーション"><a href="index.html">ホーム</a><a href="self-intro.html">自己紹介</a><a href="study.html">勉強の軌跡</a><a href="videos.html">動画</a><a href="blog.html">ブログ</a><a href="sns.html">各種SNS</a></nav></noscript></div>
+<script src="../js/layout.js?v=r109"></script>
+<script src="../js/main.js?v=r109"></script>
+<script src="../js/starfield.js?v=r109"></script>
+<script src="../js/country-card.js?v=r109"></script>
+</body>
+</html>

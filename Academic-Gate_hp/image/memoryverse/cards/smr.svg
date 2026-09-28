@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 502.2 562.4" width="502.2" height="562.4" class="cc-map" role="img" aria-label="サンマリノ（サンマリノ全土）：位置と形・骨組み・区画の3層">
+<style>.cc-map text{font-family:"Hiragino Sans","Noto Sans JP",system-ui,sans-serif;paint-order:stroke;stroke:#000;stroke-width:2.6px;stroke-linejoin:round}</style>
+<clipPath id="cc-smr-main"><rect x="70" y="26" width="418.2" height="510.4"/></clipPath>
+<rect x="70" y="26" width="418.2" height="510.4" fill="#05080d"/>
+<g class="grid">
+<path d="M92.2 26V536.4M155.5 26V536.4M218.9 26V536.4M282.3 26V536.4M345.6 26V536.4M409 26V536.4M472.4 26V536.4M70 532H488.2M70 444H488.2M70 356H488.2M70 268H488.2M70 180H488.2M70 92H488.2" stroke="rgba(255,255,255,.07)" stroke-width=".6" stroke-dasharray="2 3" fill="none"/>
+<path d="" stroke="rgba(255,255,255,.06)" stroke-width=".5" fill="none"/>
+<path d="" stroke="rgba(255,255,255,.16)" stroke-width=".8" fill="none"/>
+<text x="92.2" y="551.4" font-size="9.5" fill="rgba(255,255,255,.55)" text-anchor="middle" stroke="none">東経12.38°</text>
+<text x="155.5" y="551.4" font-size="9.5" fill="rgba(255,255,255,.55)" text-anchor="middle" stroke="none">東経12.40°</text>
+<text x="218.9" y="551.4" font-size="9.5" fill="rgba(255,255,255,.55)" text-anchor="middle" stroke="none">東経12.42°</text>
+<text x="282.3" y="551.4" font-size="9.5" fill="rgba(255,255,255,.55)" text-anchor="middle" stroke="none">東経12.44°</text>
+<text x="345.6" y="551.4" font-size="9.5" fill="rgba(255,255,255,.55)" text-anchor="middle" stroke="none">東経12.46°</text>
+<text x="409" y="551.4" font-size="9.5" fill="rgba(255,255,255,.55)" text-anchor="middle" stroke="none">東経12.48°</text>
+<text x="65" y="535.5" font-size="9.5" fill="rgba(255,255,255,.55)" text-anchor="end" stroke="none">北緯43.88°</text>
+<text x="65" y="447.5" font-size="9.5" fill="rgba(255,255,255,.55)" text-anchor="end" stroke="none">北緯43.90°</text>
+<text x="65" y="359.5" font-size="9.5" fill="rgba(255,255,255,.55)" text-anchor="end" stroke="none">北緯43.92°</text>
+<text x="65" y="271.5" font-size="9.5" fill="rgba(255,255,255,.55)" text-anchor="end" stroke="none">北緯43.94°</text>
+<text x="65" y="183.5" font-size="9.5" fill="rgba(255,255,255,.55)" text-anchor="end" stroke="none">北緯43.96°</text>
+<text x="65" y="95.5" font-size="9.5" fill="rgba(255,255,255,.55)" text-anchor="end" stroke="none">北緯43.98°</text>
+</g>
+<g clip-path="url(#cc-smr-main)">
+<g class="L1">
+<path class="nei" d="M70 536.4l0 -510.4 418.2 0 0 510.4zM347.1 464.9l56.5 -95.9 -2.5 -13.2 1.7 -14 4.9 -11.3 8.2 -9.3 25.8 -49.5 6.6 -75.9 -10.2 -73.5 -22.2 -41.6 -91.4 15.5 -101.2 52 -81.5 82.8 -31.8 105.1 44.2 93.7 94.7 49.2z" fill="rgba(255,255,255,.05)" stroke="rgba(255,255,255,.18)" stroke-width=".7" stroke-linejoin="round"/>
+<path class="land" d="M154.2 429.8l-44.2 -93.7 31.8 -105.1 81.5 -82.8 101.2 -52 91.4 -15.5 22.2 41.6 10.2 73.5 -6.6 75.9 -25.8 49.5 -8.2 9.3 -4.9 11.3 -1.7 14 2.5 13.2 -56.5 95.9 -98.2 14.1z" fill="rgba(61,139,255,.16)" stroke="#6aa9ff" stroke-width=".8" stroke-linejoin="round"/>
+</g>
+<g class="L2">
+<g class="k-lake"><path d="M247.2 470.4l0.5 -0.7 0.4 0 0.6 0.4 0.5 1 -1.7 -0.1zM251.7 471.4l0.7 -0.1 0.5 0.7 -0.9 0.5z" fill="#5fd0ff" fill-opacity=".55" stroke="#5fd0ff" stroke-width=".6"/></g>
+<g class="k-river"><path d="M276.9 412.2l-2 -5.2 -4.4 -7.5 -3.5 -4.4 -5.1 -4.6 -0.4 -1.3 -2.4 -1.9 -0.3 -1.3 -2.4 -0.9 -1.2 -2.9 -1.3 -6 -3.8 -2.9 -0.5 -1.8 -7.1 -5.1 -0.8 -1.5 -1 -4.1 0.3 -1.5 0.9 -1.5 0.4 -2.4 1.6 0.1 0.9 -0.6 -0.5 -4.1 -2.6 -8 -1.1 -0.7 -3.1 0.1 -1.1 -2.9 -2 -1 -2.1 -2 -2.5 -0.3 -6.7 2.2 -2.2 -0.1 -3.9 -1.5 -2.9 -1.3 -5.8 -5.5 -1.8 -4.2 -3.7 -23.4 -2.7 -3.6 -1.8 -6.3 -2.2 -3.9 -2.7 -3.4 1.4 -3.7 -0.2 -2.6 -5 -6 -6 -4.2 -3.3 -3.1 -2.7 -1.2 -5.4 -6.3 -0.4 -6.4 -1.4 -8 0.8 -1 0.4 -2.3 0.1 -7.8 -0.9 -3.7 -2 -2.2 -1.6 -7.3 -2.5 -4.4 -1.6 -5.2 1.9 -2.7 4.5 -10.3 0.5 -3.7 -0.3 -1.8 -3 -4.5 -8.4 -2.8 -6.1 -6.5 -3.6 -6.8 0.4 -3.2 -0.8 -0.8 -0.1 -2" fill="none" stroke="#5fd0ff" stroke-width="1.3" stroke-linejoin="round" stroke-linecap="round"/></g>
+<g class="k-trunk"><path d="" fill="none" stroke="#a7784a" stroke-width=".7" stroke-linejoin="round" stroke-opacity=".9"/></g>
+<g class="k-motorway"><path d="" fill="none" stroke="#ffb46b" stroke-width="1.3" stroke-linejoin="round"/></g>
+<g class="k-main"><path d="" fill="none" stroke="#8fe3c9" stroke-width=".9" stroke-dasharray="3 2"/></g>
+<g class="k-hsr"><path d="" fill="none" stroke="#8fe3c9" stroke-width="1.8" stroke-dasharray="6 2.5"/></g>
+</g>
+<g class="L3">
+<path class="pref-line" d="M430.9 163.5l-14.5 6.7M416.4 170.2l-29.9 10.7M386.5 180.9l-26.5 34.4M360 215.3l-24.8 -36.8M335.2 178.5l-27.3 24.9M307.9 203.4l-12.9 -29.6M295 173.8l0.9 -28.5M295.9 145.3l-8.6 -4.8M287.3 140.5l-23 9.5M264.3 150l-4.1 -2M431.5 241.9l-16.8 10.2M414.7 252.1l-9.4 7.1M405.3 259.2l-24.8 1.2M380.5 260.4l-16.3 22.6M364.2 283l-27.3 14.2M336.9 297.2l-26.5 -13.1M310.4 284.1l-12.8 -17.8M297.6 266.3l4.3 -29.6M301.9 236.7l6 -33.3M390.1 340.6l-7.1 -0.7M383 339.9l-11.9 4.8M371.1 344.7l-11.1 -8.3M360 336.4l6.8 -15.5M366.8 320.9l-0.8 -11.8M366 309.1l-16.3 0M349.7 309.1l-12.8 -11.9M356.7 420.7l-1 -8.4M355.7 412.3l2.6 -27.3M358.3 385l3.4 -16.6M361.7 368.4l7.7 -13.1M369.4 355.3l1.7 -10.6M282.4 456.4l-2.7 -12M279.7 444.4l-12.9 -17.9M266.8 426.5l13.7 -17.8M280.5 408.7l5.1 -28.4M285.6 380.3l27.4 0M313 380.3l24.8 -13.1M337.8 367.2l22.2 -30.8M138.5 364.4l14.7 -0.7M153.2 363.7l30.7 4.7M183.9 368.4l39.4 17.8M223.3 386.2l2.5 15.4M225.8 401.6l0 14.3M225.8 415.9l13.7 10.6M239.5 426.5l27.3 0M124.4 334l25.4 -3.6M149.8 330.4l29.9 -10.7M179.7 319.7l21.3 -13M201 306.7l12.9 -16.6M213.9 290.1l-0.9 -24.9M213 265.2l17.9 18.9M230.9 284.1l24 13.1M254.9 297.2l17.1 23.7M272 320.9l11.9 32.1M283.9 353l1.7 27.3M219.9 173.5l3.4 2.6M223.3 176.1l13.6 17.9M236.9 194l2.6 24.9M239.5 218.9l-15.4 11.8M224.1 230.7l-10.2 -5.9M213.9 224.8l0 10.7M213.9 235.5l-0.9 29.7" fill="none" stroke="rgba(255,255,255,.28)" stroke-width=".7"/>
+<g class="k-region"><path d="" fill="none" stroke="rgba(255,255,255,.62)" stroke-width="1.5" stroke-linejoin="round"/></g>
+</g>
+<g class="L2 lbl"><g class="k-river"><text x="199.9" y="293.7" font-size="10" fill="#9be3ff" text-anchor="middle">Rio San Marino</text></g></g>
+<g class="L3 lbl"><g class="k-prefname"><text x="362.7" y="141.8" font-size="9" fill="rgba(255,255,255,.8)" text-anchor="middle" data-ax="362.7" data-ay="138.8">セラヴァッレ</text><text x="339.8" y="252.4" font-size="9" fill="rgba(255,255,255,.8)" text-anchor="middle" data-ax="339.8" data-ay="249.4">ドマニャーノ</text><text x="394" y="298.3" font-size="9" fill="rgba(255,255,255,.8)" text-anchor="middle" data-ax="394" data-ay="295.3">ファエターノ</text><text x="382.3" y="372.3" font-size="9" fill="rgba(255,255,255,.8)" text-anchor="middle" data-ax="382.3" data-ay="369.3">モンテジャルディーノ</text><text x="316.7" y="430.6" font-size="9" fill="rgba(255,255,255,.8)" text-anchor="middle" data-ax="316.7" data-ay="427.6">フィオレンティーノ</text><text x="190.9" y="412.7" font-size="9" fill="rgba(255,255,255,.8)" text-anchor="middle" data-ax="190.9" data-ay="409.7">キエザヌオーヴァ</text><text x="230.9" y="343.5" font-size="9" fill="rgba(255,255,255,.8)" text-anchor="middle" data-ax="230.9" data-ay="340.5">サンマリノ市</text><text x="171.7" y="278.8" font-size="9" fill="rgba(255,255,255,.8)" text-anchor="middle" data-ax="171.7" data-ay="275.8">アックアヴィーヴァ</text><text x="259" y="257.2" font-size="9" fill="rgba(255,255,255,.8)" text-anchor="middle" data-ax="259" data-ay="254.2">ボルゴ・マッジョーレ</text></g><g class="k-city"><circle cx="287.9" cy="285.2" r="2.3" fill="#fff"/><text x="293.9" y="288.7" font-size="10" fill="#fff" text-anchor="start" font-weight="600" data-ax="287.9" data-ay="285.2">サンマリノ市</text></g></g>
+</g>
+<rect x="70" y="26" width="418.2" height="510.4" fill="none" stroke="rgba(255,255,255,.3)" stroke-width="1"/>
+<text x="70" y="17" font-size="12" fill="#fff" font-weight="600" stroke="none">サンマリノ全土</text>
+<text x="488.2" y="17" font-size="11" fill="#ffd166" font-weight="600" text-anchor="end" stroke="none">この図だけ 100倍（1度＝4,400px）</text>
+<path d="M397.1 520.4V524.4H476.2V520.4" fill="none" stroke="rgba(255,255,255,.7)" stroke-width="1.2"/>
+<text x="436.6" y="517.4" font-size="9.5" fill="rgba(255,255,255,.75)" text-anchor="middle">2 km</text>
+</svg>
