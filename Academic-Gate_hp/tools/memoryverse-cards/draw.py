@@ -631,11 +631,18 @@ if C.get('outline_osm'):
 else:
     attr13 = '層1・層3：Natural Earth'
     src13 = f'<p><b>層1・層3</b>：Natural Earth v5.1.2（パブリックドメイン）。{C["src13"]}。</p>'
+# 名前が入っている割合（長さで）。国によって大きく違うが、道路や鉄道が無いのではなく、OSM に名前が入っていない（DESIGN.md §117）
+share = []
+for k, lab in (('motorway', '高速道路'), ('trunk', '主要幹線'), ('hsr', '高速鉄道'), ('main', '主要鉄道')):
+    share.append(f'{lab} {round(STATS[k]["named_share_km"] * 100)}%' if STATS[k]['ways'] else f'{lab} なし')
+nameshare = ('<p><b>名前が入っている割合は国によって大きく違う</b>。日本はほぼ全部に名前があるが、ドイツの高速道路は2%、スイスの鉄道は0%。'
+             '<b>道路や鉄道が無いのではなく、OpenStreetMap に名前が入っていない</b>（名前の無いものも線は描いている）。ボタンの「なし」（データに無い）とは別。'
+             f'<b>この国で名前が入っている割合</b>（長さで）：{"・".join(share)}。</p>')
 html = open(os.path.join(D, 'page_tpl.html')).read()
 for a_, b_ in {'{{NAME}}': C['name'], '{{DESCRIPTION}}': C['description'], '{{CC}}': CC.lower(), '{{VER}}': VER,
                '{{UP_HREF}}': C.get('up_href', 'memoryverse.html'), '{{UP_LABEL}}': C.get('up_label', 'メモリーバース'),
                '{{BUTTONS}}': ''.join(btn), '{{ZEROS}}': zero_html, '{{FIGS}}': figs, '{{NOTES}}': notes, '{{FULL_NOTE}}': full_note,
-               '{{SRC13LINE}}': src13, '{{ATTR13}}': attr13, '{{PBF}}': C['geofabrik'].split('/')[-1], '{{OSM_TS}}': ts, '{{PHI0}}': f'{PHI0}', '{{FIG}}': C['fig']}.items():
+               '{{SRC13LINE}}': src13, '{{NAMESHARE}}': nameshare, '{{ATTR13}}': attr13, '{{PBF}}': C['geofabrik'].split('/')[-1], '{{OSM_TS}}': ts, '{{PHI0}}': f'{PHI0}', '{{FIG}}': C['fig']}.items():
     html = html.replace(a_, b_)
 assert '{{' not in html, re.findall(r'\{\{\w+\}\}', html)
 out = os.path.join(PAGE_DIR, f'{CC.lower()}.html')

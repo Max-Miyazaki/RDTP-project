@@ -16,9 +16,9 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;500&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../css/style.css?v=r110">
-<link rel="stylesheet" href="../css/country-card.css?v=r110">
-<link rel="stylesheet" href="../css/lesson-theme.css?v=r110">
+<link rel="stylesheet" href="../css/style.css?v=r111">
+<link rel="stylesheet" href="../css/country-card.css?v=r111">
+<link rel="stylesheet" href="../css/lesson-theme.css?v=r111">
 </head>
 <!-- data-node は付けない：国のページは CRUMBS に登録しない（約200枚でサイト構成ナビの木が使えなくなる。§100）。
      代わりに上の「← メモリーバース」を1本置く。地域の記事ができたら、行き先をその記事に替える。 -->
@@ -43,13 +43,14 @@
         <div class="cc-row"><button class="cc-sub" data-layer="L2" data-k="river" aria-pressed="true"><i class="cc-sw" style="border-color:#5fd0ff"></i>川</button><button class="cc-sub" data-layer="L2" data-k="lake" aria-pressed="true"><i class="cc-sw" style="border-top-width:6px;border-color:rgba(95,208,255,.6)"></i>湖</button><button class="cc-sub" data-layer="L2" data-k="motorway" aria-pressed="true"><i class="cc-sw" style="border-color:#ffb46b"></i>高速道路</button><button class="cc-sub" data-layer="L2" data-k="trunk" aria-pressed="true"><i class="cc-sw" style="border-color:#a7784a;border-top-width:1px"></i>主要幹線</button><button class="cc-sub cc-zero" data-layer="L2" data-k="hsr" aria-pressed="false" disabled title="この国のデータに無い"><i class="cc-sw dash" style="border-color:#8fe3c9;border-top-width:3px"></i>高速鉄道<em>なし</em></button><button class="cc-sub" data-layer="L2" data-k="main" aria-pressed="true"><i class="cc-sw dash" style="border-color:#8fe3c9;border-top-width:1px"></i>主要鉄道</button><span class="cc-sep"></span><button class="cc-sub cc-zero" data-layer="L3" data-k="region" aria-pressed="false" disabled title="この国のデータに無い">地方<em>なし</em></button><button class="cc-sub" data-layer="L3" data-k="prefname" aria-pressed="true">州名</button><button class="cc-sub" data-layer="L3" data-k="city" aria-pressed="true">都市</button></div>
         <p class="cc-zeros">この国のデータに<b>無いもの</b>：高速鉄道・地方（0なので線も名前も描いていない）</p>
       </div>
-      <div class="cc-maps"><div class="cc-scroll"><div class="cc-fig" style="--w:145;--h:220" data-deg="44" data-src="../image/memoryverse/cards/alb.svg?v=r110"><p class="cc-status">地図を読み込み中…</p><p class="cc-fallback">地図を読み込めませんでした</p></div></div><div class="cc-side"><p class="cc-note"><b>川の長さ</b>：長さは国の輪郭の中だけを数えている（道路・鉄道も同じ）。<b>国境になっている川は、Natural Earth の粗い国境の線のどちら側に入ったかで長さが変わる</b>（モーゼル川はドイツで257km、ルクセンブルクで3.4km）。川そのものを分け合っているわけではない。どの川を図に入れるかは国境の少し外（0.1度）まで含めて選び、線も国境で切らずに描いている。国境になっている川はその国の骨組みの一部なので。</p><p class="cc-note"><b>湖の面積</b>：湖は国境で切らず、国の形を約2km 広げた範囲で測っている（国境をまたぐ湖は、隣の国の側の湖面も入る）。川の長さは「その国にどれだけあるか」、湖の面積は「その国から見える湖の大きさ」で、測っているものが違う。湖を国境で切ると、同じ湖が国によって違う大きさで出る。</p><p class="cc-note"><b>区分の呼び名</b>：Natural Earth では12の区分の種類が <b>Qark</b>（チャルク）。読みは目安で、正確な発音ではない。</p><p class="cc-note"><b>ラベルの言語</b>：日本語名があるものは日本語、無いものは原語で出している。層3（区分・都市）は Natural Earth の日本語名を使うのでほぼ日本語、層2（川・湖・道路・鉄道）は OpenStreetMap に日本語名が無いものが多いので原語が多い。</p><p class="cc-note"><b>この縮尺で入りきらないラベルは置いていない。データには全部ある</b>（層3：州名は12のうち0、都市名は20のうち1を表示）。層2の川・湖・道路・鉄道の名前も、動かないものから長い順に置き、重なるものは飛ばしている。ボタンの<b>「なし」はデータに無いもの</b>で、これとは別。</p><p class="cc-note">縮尺（経度を cos 41.14° = 0.7531 倍に縮めたうえで、1度 = 44px。どの国も同じ）。細い格子は1度、中くらいは5度、太い線は30度（2-1 の升目）。</p></div></div>
+      <div class="cc-maps"><div class="cc-scroll"><div class="cc-fig" style="--w:145;--h:220" data-deg="44" data-src="../image/memoryverse/cards/alb.svg?v=r111"><p class="cc-status">地図を読み込み中…</p><p class="cc-fallback">地図を読み込めませんでした</p></div></div><div class="cc-side"><p class="cc-note"><b>川の長さ</b>：長さは国の輪郭の中だけを数えている（道路・鉄道も同じ）。<b>国境になっている川は、Natural Earth の粗い国境の線のどちら側に入ったかで長さが変わる</b>（モーゼル川はドイツで257km、ルクセンブルクで3.4km）。川そのものを分け合っているわけではない。どの川を図に入れるかは国境の少し外（0.1度）まで含めて選び、線も国境で切らずに描いている。国境になっている川はその国の骨組みの一部なので。</p><p class="cc-note"><b>湖の面積</b>：湖は国境で切らず、国の形を約2km 広げた範囲で測っている（国境をまたぐ湖は、隣の国の側の湖面も入る）。川の長さは「その国にどれだけあるか」、湖の面積は「その国から見える湖の大きさ」で、測っているものが違う。湖を国境で切ると、同じ湖が国によって違う大きさで出る。</p><p class="cc-note"><b>区分の呼び名</b>：Natural Earth では12の区分の種類が <b>Qark</b>（チャルク）。読みは目安で、正確な発音ではない。</p><p class="cc-note"><b>ラベルの言語</b>：日本語名があるものは日本語、無いものは原語で出している。層3（区分・都市）は Natural Earth の日本語名を使うのでほぼ日本語、層2（川・湖・道路・鉄道）は OpenStreetMap に日本語名が無いものが多いので原語が多い。</p><p class="cc-note"><b>この縮尺で入りきらないラベルは置いていない。データには全部ある</b>（層3：州名は12のうち0、都市名は20のうち1を表示）。層2の川・湖・道路・鉄道の名前も、動かないものから長い順に置き、重なるものは飛ばしている。ボタンの<b>「なし」はデータに無いもの</b>で、これとは別。</p><p class="cc-note">縮尺（経度を cos 41.14° = 0.7531 倍に縮めたうえで、1度 = 44px。どの国も同じ）。細い格子は1度、中くらいは5度、太い線は30度（2-1 の升目）。</p></div></div>
       <p class="cc-full-attr cc-full-omit"><b>拡大しても、ラベルは増えない</b>：この地図には、1度44pxの縮尺で入りきらなかったラベルは入っていない（層3：州名は12のうち0、都市名は20のうち1）。データには全部ある。</p>
       <p class="cc-full-attr">層1・層3：Natural Earth　層2：© <a href="https://www.openstreetmap.org/copyright" rel="noopener">OpenStreetMap contributors</a>（ODbL）</p>
       <div class="cc-src">
         <p><b>層1・層3</b>：Natural Earth v5.1.2（パブリックドメイン）。国境・海岸線・12州・都市（人口 POP_MAX の多い順に20）。</p>
         <p><b>層2</b>：© <a href="https://www.openstreetmap.org/copyright" rel="noopener">OpenStreetMap contributors</a>（ODbL）。Geofabrik の抽出（albania-latest.osm.pbf、2026-09-26T20:22:51Z までのデータ）。</p>
         <p><b>層2の絞り込み（どの国にも同じ基準）</b>：川は waterway=river のうち、同じ名前の区間をつないで長い順に15本。湖は natural=water かつ water=lake のうち広い順に10。高速道路は highway=motorway、主要幹線は highway=trunk（どちらも _link を除く全部）。高速鉄道は railway=rail かつ highspeed=yes、主要鉄道は railway=rail かつ usage=main（高速鉄道と重なるものは高速鉄道に入れる）。名前（ラベル）は name:ja、無ければ name。名前の無いものは線だけ引く。<b>川は OSM の <code>name</code> ごとに数える。</b>区間によって名前そのものが変われば別に数える（信濃川と千曲川）。同じ <code>name</code> の区間は、一部にだけ日本語名が入っていても1本として数え、ラベルには日本語名を使う（ライン川）。同じ名前の川がデータの上で途切れている（1km 以上離れている）ときは、つながずに別に数える（ドイツのエルベ川が2回出る）。つなげる判断を入れると国ごとに基準が揺れるため、データに書かれているとおりに数えている。<b>長さは国の輪郭の中だけを数える</b>。川は国境の少し外（0.1度）まで含めて選ぶ（国境になっている川も、その国の骨組みに入れる）。国境になっている川の長さは、粗い国境の線のどちら側に入ったかで変わる。道路・鉄道・湖は輪郭にかかるものだけを選ぶ。線はどれも国境で切らず、0.1度先まで描いている。湖の国の形を約2km広げた範囲で測っている。国境をまたぐ湖は、隣の国の側の湖面も含む（フランスのレマン湖は347km²と出るが、フランス側だけなら約234km²）。国境で切ると、同じ湖が国によって違う大きさになるため、切っていない。</p>
+        <p><b>名前が入っている割合は国によって大きく違う</b>。日本はほぼ全部に名前があるが、ドイツの高速道路は2%、スイスの鉄道は0%。<b>道路や鉄道が無いのではなく、OpenStreetMap に名前が入っていない</b>（名前の無いものも線は描いている）。ボタンの「なし」（データに無い）とは別。<b>この国で名前が入っている割合</b>（長さで）：高速道路 30%・主要幹線 28%・高速鉄道 なし・主要鉄道 2%。</p>
         <p><b>ラベルの順</b>：ラベルは動かないものから先に置く（湖→川→高速鉄道→高速道路→主要鉄道→主要幹線、同じ種類の中は長い順、重なるものは飛ばす）。川と湖は地形で何百年も動かないが、道路と鉄道は人が作ったもので増えたり廃止されたりする。骨組みとして先に立つのは地形のほう。長さだけで順を決めると、国道のラベルが川を押しのける。</p>
         <p><b>ラベルの名前</b>：道路の名前は、国によって書き方が違う。日本は「東名高速道路」のような固有の名前、チャドは「アベシェ - アティ - ンジャメナ」のような結ぶ町の列。どちらも直さずそのまま出している。1つの名前に複数の文字体系が並んでいるもの（「<bdi dir="auto">Lac Teli بحيرة تيلي</bdi>」など）は、文字体系が変わったところで切って先頭の1つだけを出す（JR のような大文字の略号は切り替えに数えない）。アラビア文字だけ、キリル文字だけの名前はそのまま出す。1行は全角14文字（半角28文字）までとし、超えたものは末尾を「…」にする。切り詰めた結果、同じ図の中で見分けがつかなくなるものは、前ではなく後ろを残す（「…N'Djaména - Sarh/Bongor」のように先頭を「…」にする）。「起点 - 経由 - 終点」の形の名前は、前が共通で後ろで分かれるため。図の枠からはみ出すラベルは置かない。</p>
         <p><b>層の使い方</b>：層は1つずつ重ねて使う。全部を同時に出した状態は確かめのためのもので、覚えるための面ではない。</p>
@@ -59,9 +60,9 @@
   </section>
 </main>
 <div id="site-footer"><noscript><nav class="noscript-nav" aria-label="フッターナビゲーション"><a href="index.html">ホーム</a><a href="self-intro.html">自己紹介</a><a href="study.html">勉強の軌跡</a><a href="videos.html">動画</a><a href="blog.html">ブログ</a><a href="sns.html">各種SNS</a></nav></noscript></div>
-<script src="../js/layout.js?v=r110"></script>
-<script src="../js/main.js?v=r110"></script>
-<script src="../js/starfield.js?v=r110"></script>
-<script src="../js/country-card.js?v=r110"></script>
+<script src="../js/layout.js?v=r111"></script>
+<script src="../js/main.js?v=r111"></script>
+<script src="../js/starfield.js?v=r111"></script>
+<script src="../js/country-card.js?v=r111"></script>
 </body>
 </html>

@@ -1004,6 +1004,10 @@ html.js .reveal.is-visible {
    the earlier 0.52/transparent-at-100% version clipped a still-visible gradient at the
    small box edge and read as a box (§31.2a). Scoped to .index-block__head — which exists
    ONLY on index.html (0 matches on the other 10 pages). Reversible: delete this rule. */
+/* ★ 上の .hero-scrim::before と下の .index-block__head::before は、左右に 2rem・2.6rem はみ出す下地。390px では右へ最大 22px
+   画面の外に出て、スマホで見えている範囲が横に 23px ずれた（DESIGN.md §117）。下地を載せる幅いっぱいの箱で横だけ切る。
+   clip はスクロールする入れ物を作らないので、.scene__content の sticky は壊れない。1440px では下地は画面の中なので見た目は変わらない */
+.scene, .index-block { overflow-x: clip; }
 .index-block__head::before {
     content: '';
     position: absolute;
