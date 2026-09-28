@@ -39,6 +39,13 @@ fi
 # ファイルの日付（Geofabrik の抽出の時刻）はここに残り、カードの出典に書かれる
 osmium fileinfo -e -j $PBF > fileinfo.json
 
+# --- 層1を OSM の輪郭で描く国（バチカン・ジブラルタル。countries.py の outline_osm、DESIGN.md §112）
+OUTLINE=$(cd $HERE && $PY -c "from countries import COUNTRIES; print(COUNTRIES['$CC'].get('outline_osm') or '')")
+if [[ -n $OUTLINE ]]; then
+  osmium getid -r -O $PBF r$OUTLINE -o outline.osm.pbf
+  osmium export -O outline.osm.pbf --geometry-types=polygon -a id -o ../outline.geojson
+fi
+
 # --- 層2のタグだけに絞る（参照するノード・メンバーも含む）
 osmium tags-filter -O $PBF \
   w/waterway=river \

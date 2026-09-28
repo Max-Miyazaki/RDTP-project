@@ -30,21 +30,37 @@ def read_seq(fn):
                 yield json.loads(ln)
 
 
-# その国の範囲 = Natural Earth v5.1.2 の国（海上の橋・河口・国境の川のため 0.1度だけ広げる）
-ne0 = json.load(open(os.path.join(NE, 'ne_10m_admin_0_countries.geojson')))
-JP = shape(next(f for f in ne0['features'] if f['properties']['ADM0_A3'] == CC)['geometry'])
-JPBUF = JP.buffer(0.1)
+# その国 = Natural Earth v5.1.2 の国（バチカン・ジブラルタルだけ OSM の輪郭。countries.py の outline_osm、DESIGN.md §112）。
+# ★ 数えるのは国の輪郭の中だけ（DESIGN.md §113）。帯で数えると、小さい国に隣の国のものが入る（バチカンに高速道路81km、サンマリノに鉄道）。
+#   選ぶ：川は0.1度の帯で選ぶ（国境になっている川はその国の骨組みの一部。ルクセンブルクのモーゼル川・ウール川・ザウアー川）。
+#         道路・鉄道・湖は輪郭にかかるものだけ。描くのはどれも帯まで（線を国境で切らない）。
+#   国境になっている川の長さは、粗い国境の線のどちら側に入ったかで変わる（モーゼル川はドイツで257km、ルクセンブルクで3.4km）
+from countries import outline
+JP = outline(CC).buffer(0)
+JPP = prep(JP)
+JPBUF = JP.buffer(0.1)       # 描く範囲（線を国境でぷつりと切らない）
 JPB = prep(JPBUF)
-JPIN = JP.buffer(0.02)       # 湖の面積を測る範囲（国の中のぶんだけ）
+JPIN = JP.buffer(0.02)       # 湖の面積を測る範囲（国境をまたぐ湖を国境で切らないため）
 
 
 def in_japan(g):
+    # 道路・鉄道・湖：国の輪郭にかかるものだけを選ぶ（帯の中だけにあるもの＝隣の国のものは選ばない）
+    return JPP.intersects(g)
+
+
+def in_band(g):
+    # 川：帯で選ぶ
     return JPB.intersects(g)
 
 
 def clip(g):
-    # 国の外に出た部分は測らない（川の長さは「その国で」の長さ）
+    # 描くのは帯まで
     return g if JPB.contains(g) else g.intersection(JPBUF)
+
+
+def inlen(g):
+    # 数えるのは国の輪郭の中の長さだけ
+    return glen(g if JPP.contains(g) else g.intersection(JP))
 
 
 def glen(g):
@@ -60,7 +76,7 @@ ja_of = defaultdict(list)                      # key → [(区間, name:ja)]（�
 n_river_ways = 0
 for f in read_seq('river.geojsonseq'):
     g = shape(f['geometry'])
-    if not in_japan(g):
+    if not in_band(g):
         continue
     n_river_ways += 1
     g = clip(g)
@@ -107,8 +123,14 @@ for nm, ls in by_name.items():
         clusters = list(cl.values())
     for c in clusters:
         mg = MultiLineString(c)
-        rivers.append({'name': river_label(nm, mg), 'key': nm, 'geom': mg, 'len_km': glen(mg) / 1000})
-rivers.sort(key=lambda r: -r['len_km'])
+        # 順位（上位15本）は帯の中の長さで決め、数（len_km）は輪郭の中の長さ
+        rivers.append({'name': river_label(nm, mg), 'key': nm, 'geom': mg, 'len_km': inlen(mg) / 1000, 'len_band_km': glen(mg) / 1000})
+rivers.sort(key=lambda r: -r['len_band_km'])
+# ★ 国の中の長さが0km の川は選ばない（DESIGN.md §113.6）。距離（帯）だけでは、国境の川と近くの川を区別できない
+#   （バチカンにテヴェレ川が載る）。「無いものを有ると言う」ほうが「有るものを載せ損ねる」より重いので、0km は外す。
+#   外したために帯の上位15本から消えた川は、国のページに名前を書く（載せ損ねたことも書く）
+out_top = [r for r in rivers[:15] if r['len_km'] <= 0]
+rivers = [r for r in rivers if r['len_km'] > 0]
 river_top = rivers[:15]
 
 # ---------- 湖：natural=water かつ water=lake、広い順に10 ----------
@@ -122,6 +144,8 @@ for f in read_seq('water.geojsonseq'):
         g = g.buffer(0)
     if not in_japan(g):
         continue
+    # 選ぶのは国の輪郭にかかる湖だけ（上の in_japan）。面積はこれまでどおり国の形を約2km 広げた範囲で測る
+    # （国境をまたぐ湖を国境で切らない。この規則を変えるかは未決。DESIGN.md §113）
     gi = g if JPIN.contains(g) else g.intersection(JPIN)
     a = sum(abs(G.geometry_area_perimeter(p)[0]) for p in polys_of(gi)) / 1e6
     lakes.append({'name': name_of(p), 'geom': g, 'area_km2': a, 'id': f.get('id') or p.get('@id')})
@@ -151,16 +175,18 @@ segs = {'motorway': roads['motorway'], 'trunk': roads['trunk'], 'hsr': rails['hs
 stats = {'river_ways': n_river_ways, 'rivers_named': sum(1 for r in river_top if r['name']), 'lakes_named': sum(1 for r in lake_top if r['name']),
          'lake_ways_total': len(lakes), 'river_candidates': len(rivers),
          'rivers': [(r['name'], round(r['len_km'], 1)) for r in river_top],
+         'rivers_outside': [(r['name'], round(r['len_band_km'], 1)) for r in out_top],
+         'rivers_outside_keys': [r['key'] for r in out_top],
          'rivers_next': [(r['name'], round(r['len_km'], 1)) for r in rivers[15:25]],
          'lakes': [(r['name'], round(r['area_km2'], 1)) for r in lake_top],
          'lakes_next': [(r['name'], round(r['area_km2'], 1)) for r in lakes[10:16]]}
 for k, v in segs.items():
-    tot = sum(glen(s['geom']) for s in v)
+    tot = sum(inlen(s['geom']) for s in v)
     named = [s for s in v if s['name']]
-    ntot = sum(glen(s['geom']) for s in named)
+    ntot = sum(inlen(s['geom']) for s in named)
     names = defaultdict(float)
     for s in named:
-        names[s['name']] += glen(s['geom']) / 1000
+        names[s['name']] += inlen(s['geom']) / 1000
     stats[k] = {'ways': len(v), 'named_ways': len(named), 'named_share_ways': round(len(named) / max(1, len(v)), 3),
                 'km': round(tot / 1000), 'named_share_km': round(ntot / max(1, tot), 3), 'n_names': len(names),
                 'top_names': sorted(((n, round(l)) for n, l in names.items()), key=lambda x: -x[1])[:25]}

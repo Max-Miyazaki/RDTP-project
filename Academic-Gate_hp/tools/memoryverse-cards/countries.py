@@ -97,6 +97,9 @@ COUNTRIES.update({
     'LUX': dict(W31, dir=os.path.join(DATA, 'LUX'),
         terms='<b>区分の呼び名</b>：地図の3つの区分は <b>District</b>（ディストリクト）と呼ばれていた（2015年に廃止。上の注記）。ルクセンブルク語の呼び名は Natural Earth に入っていない。', terms_reading=True, name='ルクセンブルク', geofabrik='europe/luxembourg-latest.osm.pbf', phi0=49.77,
         zoom=10, fine=0.2, zoom_why='幅約22px',
+        rivers_outside_note=('Our（ウール川）は国境の川で（OpenStreetMap の国境の線に沿って流れる。52.5km のうち48.8km）、国の外にあるわけではない。'
+                             '<b>Natural Earth の粗い国境の線の外側に入るため、この図には描いていない。</b>Prüm（プリュム川）はドイツ側を流れる川で'
+                             '（国境の線に沿うのは0.2km）、国の外にある。同じ東の国境の川でも、Mosel（モーゼル川）と Sauer（ザウアー川）は国の中に一部が入るので描いている。'),
         description='ルクセンブルクの国のページ。位置と形・骨組み（川・湖・道路・鉄道）・区画・都市の3層を重ねた地図（この国の図だけ10倍）。メモリーバース 3-1 西ヨーロッパ。',
         panels={'main': {'lon': (5.6, 6.62), 'lat': (49.36, 50.26), 'title': 'ルクセンブルク全土'}},
         regions={}, region_fill={}, admin1_word='区', city_strip=None,
@@ -143,3 +146,17 @@ COUNTRIES.update({
         src13='国境・9州・都市（人口 POP_MAX の多い順に20。Natural Earth にオーストリアの都市は9しか無い）',
         fig='東経9.2〜17.5度・北緯46.1〜49.3度'),
 })
+
+
+def outline(cc):
+    """その国の輪郭。Natural Earth v5.1.2 の国。ただし outline_osm のある国（バチカン・ジブラルタル）は OSM の輪郭
+    （Natural Earth の形が使えないため。extract.sh が data/<国>/outline.geojson に切り出す。DESIGN.md §112）"""
+    import json
+    from shapely.geometry import shape
+    c = COUNTRIES[cc]
+    if c.get('outline_osm'):
+        fs = json.load(open(os.path.join(c['dir'], 'outline.geojson')))['features']
+        f = next(f for f in fs if str(f['properties'].get('@id')) == str(c['outline_osm']) and f['geometry']['type'] in ('Polygon', 'MultiPolygon'))
+        return shape(f['geometry'])
+    ne0 = json.load(open(os.path.join(NE, 'ne_10m_admin_0_countries.geojson')))
+    return shape(next(f for f in ne0['features'] if f['properties']['ADM0_A3'] == cc)['geometry'])

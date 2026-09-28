@@ -36,14 +36,12 @@ PANELS = C['panels']
 
 # ---------------- Natural Earth ----------------
 ne0 = json.load(open(os.path.join(NE, 'ne_10m_admin_0_countries.geojson')))
-JP = None                                # その国（名前は日本の試作のときのまま）
+from countries import outline
+JP = outline(CC)                         # その国（名前は日本の試作のときのまま）。バチカン・ジブラルタルは OSM の輪郭（§112）
 NEI = []
 for f in ne0['features']:
-    g = shape(f['geometry'])
-    if f['properties']['ADM0_A3'] == CC:
-        JP = g
-    else:
-        NEI.append((f['properties']['NAME_JA'], g))
+    if f['properties']['ADM0_A3'] != CC:
+        NEI.append((f['properties']['NAME_JA'], shape(f['geometry'])))
 ne1 = json.load(open(os.path.join(NE, 'ne_10m_admin_1_states_provinces.geojson')))
 PREF = []
 for f in ne1['features']:
@@ -90,17 +88,21 @@ class Panel:
         self.lon0, self.lon1 = c['lon']
         self.lat0, self.lat1 = c['lat']
         self.bb = box(self.lon0, self.lat0, self.lon1, self.lat1)
-        self.w = (self.lon1 - self.lon0) * K * S
-        self.h = (self.lat1 - self.lat0) * S
+        self.zoom = c.get('zoom', ZOOM)      # 図ごとの倍率（ポルトガルのマデイラだけ10倍、本土は1倍。ふつうは国の倍率のまま）
+        self.S = 44.0 * self.zoom
+        self.fine = c.get('fine', FINE)
+        self.why = c.get('zoom_why', C.get('zoom_why'))
+        self.w = (self.lon1 - self.lon0) * K * self.S
+        self.h = (self.lat1 - self.lat0) * self.S
         self.W, self.H = ML + self.w + MR, MT + self.h + MB
         self.boxes = defaultdict(list)       # ラベルの衝突判定（グループごと）
 
     def xy(self, lon, lat):
-        return ML + (lon - self.lon0) * K * S, MT + (self.lat1 - lat) * S
+        return ML + (lon - self.lon0) * K * self.S, MT + (self.lat1 - lat) * self.S
 
     def proj(self, g):
         # 経度→x、緯度→y（線形）なのでアフィン変換で済む
-        return affinity.affine_transform(g, [K * S, 0, 0, -S, ML - self.lon0 * K * S, MT + self.lat1 * S])
+        return affinity.affine_transform(g, [K * self.S, 0, 0, -self.S, ML - self.lon0 * K * self.S, MT + self.lat1 * self.S])
 
     def netproj(self, g, tol):
         # 線網の間引き：図の上で 0.5px の格子に寄せてから重なりを消し、つなぎ直す。
@@ -276,7 +278,7 @@ NAMES_ALL, NAMES_PLACED = defaultdict(set), defaultdict(set)   # 図に入る区
 
 def scale_bar(pn):
     """縮尺の棒：図の幅の3分の1に収まる長さ（100・50・20・10・5・2・1・0.5km から）。右下の角に置く"""
-    km_px = S / (math.pi * 6371.0088 / 180)                 # 1km が何 px か（南北。標準緯線上では東西も同じ）
+    km_px = pn.S / (math.pi * 6371.0088 / 180)                 # 1km が何 px か（南北。標準緯線上では東西も同じ）
     km = next(k for k in (100, 50, 20, 10, 5, 2, 1, 0.5) if k * km_px <= min(120, pn.w / 3))
     L = km * km_px
     return km, L, ML + pn.w - 12 - L, MT + pn.h - 12
@@ -305,6 +307,7 @@ def build(pn):
     if g30:
         E.append(f'<path d="{"".join(g30)}" stroke="rgba(255,255,255,.42)" stroke-width="1.3" fill="none"/>')
     lab = []
+    FINE = pn.fine
     if FINE:
         # 倍率を上げた国：1度・5度の線はほとんど枠に入らないので、細い格子（FINE 度ごと）を引いてラベルもそれに付ける
         d = max(0, -int(math.floor(math.log10(FINE) + 1e-9)))
@@ -506,8 +509,8 @@ def build(pn):
     # 枠・見出し・縮尺
     E.append(f'<rect x="{ML}" y="{MT}" width="{fmt(pn.w)}" height="{fmt(pn.h)}" fill="none" stroke="rgba(255,255,255,.3)" stroke-width="1"/>')
     E.append(f'<text x="{ML}" y="{MT - 9}" font-size="12" fill="#fff" font-weight="600" stroke="none">{pn.title}</text>')
-    if ZOOM != 1:
-        E.append(f'<text x="{fmt(ML + pn.w)}" y="{MT - 9}" font-size="11" fill="#ffd166" font-weight="600" text-anchor="end" stroke="none">この図だけ {ZOOM}倍（1度＝{int(S):,}px）</text>')
+    if pn.zoom != 1:
+        E.append(f'<text x="{fmt(ML + pn.w)}" y="{MT - 9}" font-size="11" fill="#ffd166" font-weight="600" text-anchor="end" stroke="none">この図だけ {pn.zoom}倍（1度＝{int(pn.S):,}px）</text>')
     km, L, x0, y0 = scale_bar(pn)
     E.append(f'<path d="M{fmt(x0)} {fmt(y0 - 4)}V{fmt(y0)}H{fmt(x0 + L)}V{fmt(y0 - 4)}" fill="none" stroke="rgba(255,255,255,.7)" stroke-width="1.2"/>')
     E.append(f'<text x="{fmt(x0 + L / 2)}" y="{fmt(y0 - 7)}" font-size="9.5" fill="rgba(255,255,255,.75)" text-anchor="middle">{km:g} km</text>')
@@ -564,11 +567,24 @@ zero_html = (f'<p class="cc-zeros">この国のデータに<b>無いもの</b>�
 # 図は枠だけを書き、SVG は js/country-card.js がカードを開いたときに取りに行く（§100）。
 # 枠の縦横比を先に決めておくので、届くまでのあいだ下の段落が跳ねない。
 figs = ''.join(
-    f'<div class="cc-scroll"><div class="cc-fig" style="--w:{round(pn.W)};--h:{round(pn.H)}" data-deg="{S:g}" '
+    f'<div class="cc-scroll"><div class="cc-fig" style="--w:{round(pn.W)};--h:{round(pn.H)}" data-deg="{pn.S:g}" '
     f'data-src="../image/memoryverse/cards/{svg_name(k)}?v={VER}">'
     f'<p class="cc-status">地図を読み込み中…</p><p class="cc-fallback">地図を読み込めませんでした</p></div></div>'
     for k, pn in svgs.items())
 notes = ''.join(f'<p class="cc-note">{n}</p>' for n in C['notes'])
+# 層2の長さの数え方（DESIGN.md §113）。0.1度の帯は描くときだけで、数には入れない
+notes += ('<p class="cc-note"><b>川の長さ</b>：長さは国の輪郭の中だけを数えている（道路・鉄道も同じ）。<b>国境になっている川は、Natural Earth の粗い国境の線の'
+          'どちら側に入ったかで長さが変わる</b>（モーゼル川はドイツで257km、ルクセンブルクで3.4km）。川そのものを分け合っているわけではない。'
+          'どの川を図に入れるかは国境の少し外（0.1度）まで含めて選び、線も国境で切らずに描いている。国境になっている川はその国の骨組みの一部なので。</p>'
+          '<p class="cc-note"><b>湖の面積</b>：湖は国境で切らず、国の形を約2km 広げた範囲で測っている（国境をまたぐ湖は、隣の国の側の湖面も入る）。'
+          '川の長さは「その国にどれだけあるか」、湖の面積は「その国から見える湖の大きさ」で、測っているものが違う。湖を国境で切ると、同じ湖が国によって違う大きさで出る。</p>')
+# 輪郭の中の長さが0km なので描かなかった川（帯の上位15本に入るもの）。載せ損ねたことも書く（DESIGN.md §113.6）
+ro = [first_script(n) for n, _ in STATS.get('rivers_outside', []) if n]
+if ro:
+    notes += (f'<p class="cc-note"><b>描いていない川</b>：{"・".join(dict.fromkeys(ro))}は、国の輪郭の中の長さが0km なので描いていない（川の数にも入れていない）。'
+              + (C['rivers_outside_note'] if C.get('rivers_outside_note') else
+                 '国の外を流れる川と、Natural Earth の粗い国境の線の外側に入った国境の川の両方がありうるが、このデータでは区別できない。')
+              + '</p>')
 # 区分の呼び名（原語）。地図のラベルは日本語のまま、呼び名だけを注記に1行（DESIGN.md §107）。読みは目安
 if C.get('terms'):
     notes += f'<p class="cc-note">{C["terms"]}' + ('読みは目安で、正確な発音ではない。' if C.get('terms_reading') else '') + '</p>'
@@ -596,14 +612,28 @@ if miss or l2got < l2:
     full_note = ('<p class="cc-full-attr cc-full-omit"><b>拡大しても、ラベルは増えない</b>：この地図には、1度' + f'{int(S):,}' + 'pxの縮尺で入りきらなかったラベルは入っていない'
                  + (f'（層3：{parts}）' if parts else '') + '。データには全部ある。</p>')
 if ZOOM == 1:
-    notes += f'<p class="cc-note">{"2枚は同じ縮尺" if len(PANELS) > 1 else "縮尺"}（経度を cos {PHI0}° = {K:.4f} 倍に縮めたうえで、1度 = 44px。どの国も同じ）。細い格子は1度、中くらいは5度、太い線は30度（2-1 の升目）。</p>'
+    same = [pn for pn in svgs.values() if pn.zoom == 1]
+    notes += f'<p class="cc-note">{"2枚は同じ縮尺" if len(same) == 2 else ("3枚は同じ縮尺" if len(same) == 3 else "縮尺")}（経度を cos {PHI0}° = {K:.4f} 倍に縮めたうえで、1度 = 44px。どの国も同じ）。細い格子は1度、中くらいは5度、太い線は30度（2-1 の升目）。</p>'
+    for pn in svgs.values():            # 図の中の1枚だけ倍率を上げた（ポルトガルのマデイラ）
+        if pn.zoom != 1:
+            notes += f'<p class="cc-note"><b>「{pn.title}」の図だけ {pn.zoom}倍</b>（1度 = {int(pn.S):,}px）。1度44pxのままだと{pn.why}になり、形が読めないため。点線の格子は{pn.fine:g}度ごと。</p>'
 else:
     notes += f'<p class="cc-note"><b>この国の図だけ {ZOOM}倍</b>（経度を cos {PHI0}° = {K:.4f} 倍に縮めたうえで、1度 = {int(S):,}px。ほかの国のページは1度 = 44px）。1度44pxのままだと国が{C["zoom_why"]}になり、形が読めないため。点線の格子は{FINE:g}度ごと。</p>'
+# 層1の出どころ：Natural Earth。バチカン・ジブラルタルだけ OSM の輪郭（§112）。誤解されないよう、注記の先頭と出典欄・拡大表示の表示に書く
+if C.get('outline_osm'):
+    attr13 = '層1：<b>この国だけ OpenStreetMap</b>　層3：Natural Earth'
+    src13 = (f'<p><b>層1</b>：<b>この国だけ OpenStreetMap</b>（© OpenStreetMap contributors、ODbL。リレーション {C["outline_osm"]}、層2と同じ抽出）。'
+             f'{C["outline_why"]}ほかの国のページの層1は Natural Earth。</p>'
+             f'<p><b>層3</b>：Natural Earth v5.1.2（パブリックドメイン）。{C["src13"]}。</p>')
+    notes = f'<p class="cc-note"><b>層1はこの国だけ OpenStreetMap</b>。{C["outline_why"]}</p>' + notes
+else:
+    attr13 = '層1・層3：Natural Earth'
+    src13 = f'<p><b>層1・層3</b>：Natural Earth v5.1.2（パブリックドメイン）。{C["src13"]}。</p>'
 html = open(os.path.join(D, 'page_tpl.html')).read()
 for a_, b_ in {'{{NAME}}': C['name'], '{{DESCRIPTION}}': C['description'], '{{CC}}': CC.lower(), '{{VER}}': VER,
                '{{UP_HREF}}': C.get('up_href', 'memoryverse.html'), '{{UP_LABEL}}': C.get('up_label', 'メモリーバース'),
                '{{BUTTONS}}': ''.join(btn), '{{ZEROS}}': zero_html, '{{FIGS}}': figs, '{{NOTES}}': notes, '{{FULL_NOTE}}': full_note,
-               '{{SRC13}}': C['src13'], '{{PBF}}': C['geofabrik'].split('/')[-1], '{{OSM_TS}}': ts, '{{PHI0}}': f'{PHI0}', '{{FIG}}': C['fig']}.items():
+               '{{SRC13LINE}}': src13, '{{ATTR13}}': attr13, '{{PBF}}': C['geofabrik'].split('/')[-1], '{{OSM_TS}}': ts, '{{PHI0}}': f'{PHI0}', '{{FIG}}': C['fig']}.items():
     html = html.replace(a_, b_)
 assert '{{' not in html, re.findall(r'\{\{\w+\}\}', html)
 out = os.path.join(PAGE_DIR, f'{CC.lower()}.html')
