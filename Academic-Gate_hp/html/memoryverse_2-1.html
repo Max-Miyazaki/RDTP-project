@@ -11,13 +11,13 @@
 <!-- ★ ライト/ダーク切替は停止中（DESIGN.md §44）。サイト全体がダーク基調なので、
      記事だけテーマが変わるのは一貫性を欠くという判断。**復活させるには次の1行の
      コメントを外すだけでよい**（js/theme.js も css/lesson-theme.css も残してある）。 -->
-<!-- <script src="../js/theme.js?v=r111"></script> -->
+<!-- <script src="../js/theme.js?v=r112"></script> -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;500&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
 <!-- サイト共通 → 記事固有 → テーマ上書き の順で読む（lesson-theme.css は
      記事の <style> より後ろに置くこと。css/lesson-theme.css 冒頭の注記どおり） -->
-<link rel="stylesheet" href="../css/style.css?v=r111">
+<link rel="stylesheet" href="../css/style.css?v=r112">
 <!-- MathJax: 物理数学のページと同じ設定・同じ版（mathjax@3 の tex-svg）。メモリーバース全体で
      読み込む（第5回以降でも式を書くため。§94）。設定ブロックはローダーより「前」に置く、
      フォールバックは this.src= ではなく createElement 方式（どちらも DESIGN.md §11b）。
@@ -455,7 +455,7 @@ code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border
 @media (max-width:900px){.mod-b .row > .v{align-self:stretch}}
 
 </style>
-<link rel="stylesheet" href="../css/lesson-theme.css?v=r111">
+<link rel="stylesheet" href="../css/lesson-theme.css?v=r112">
 <body data-page="study" class="is-article" data-node="memoryverse_2-1">
 <canvas id="starfield" aria-hidden="true"></canvas>
 <div id="site-nav"><noscript><nav class="noscript-nav" aria-label="メインナビゲーション"><a href="index.html">ホーム</a><a href="self-intro.html">自己紹介</a><a href="study.html">勉強の軌跡</a><a href="videos.html">動画</a><a href="blog.html">ブログ</a><a href="sns.html">各種SNS</a></nav></noscript></div>
@@ -510,7 +510,7 @@ code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border
     <section id="view">
       <div class="sec-head"><span class="idx">02</span><h2>この回の見方</h2></div>
       <div class="box principle"><span class="lab">この回は、第1回にあたる「骨格の回」</span>
-      <p>第1回は、太陽と8惑星を<strong>配置図の上に並べる</strong>だけの回でした。地形や衛星は、その並びが決まってから後の回で足しました。この回も同じです。<strong>国ごとの詳細（産物・気候・民族・企業）は3章</strong>で、この回は置き場所の枠だけを作ります。</p>
+      <p>第1回は、太陽と8惑星を<strong>配置図の上に並べる</strong>だけの回でした。地形や衛星は、その並びが決まってから後の回で足しました。この回も同じです。<strong>国の形と位置は3章</strong>で、この回は置き場所の枠だけを作ります。</p>
       <p style="margin-top:8px">枠は3枚のカードでできています。<strong>§04 大陸と海</strong>（升目のどこに何があるか）、<strong>§05 基準線が通る国と地域</strong>（升目の線の上に並ぶ国）、<strong>§06 錨の11か国</strong>（大きな国を先に打ち込み、残りを「その隣」として置けるようにする）。そのあとに、展開図の歪みを直す式（§07）と、国境の線の引き方（§08）を置きます。</p></div>
 
       <div class="box teach"><span class="lab">カードは地域が1枚、国はその中の引き出し</span>
@@ -538,7 +538,7 @@ code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border
     <section id="continents">
       <div class="sec-head"><span class="idx">04</span><h2>大陸と海</h2></div>
       <p><strong>枠は横2・縦1</strong>です。30度ごとに線を引くと、<strong>縦12列・横6段</strong>の升目になります。中央の横線が<strong>赤道</strong>、中央の縦線が<strong>東経0度</strong>。上端が北極、下端が南極で、どちらも点のはずのものが横線に引き伸ばされています。<strong>左端と右端はどちらも180度で、同じ線</strong>です。球ではここがくっつきます。</p>
-      <div class="mod map-view has-globe" data-grid="equi" data-lon="we" data-open-label="ピン" data-globe="../image/memoryverse/earth-countries.png?v=r111">
+      <div class="mod map-view has-globe" data-grid="equi" data-lon="we" data-open-label="ピン" data-globe="../image/memoryverse/earth-countries.png?v=r112">
         <div class="mod-h"><span class="no">大陸と海</span><span class="ttl">升目のどこに、何があるか</span><span class="tag">CONTINENTS &amp; OCEANS</span></div>
         <div class="mod-b">
           <div class="vsw" role="group" aria-label="表示の切り替え" hidden>
@@ -587,7 +587,7 @@ code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border
     <section id="lines">
       <div class="sec-head"><span class="idx">05</span><h2>基準線が通る国と地域</h2></div>
       <p>升目の線のうち5本——<strong>赤道・北回帰線・南回帰線・東経0度・180度</strong>——の上に並ぶ国を覚えます。線は白紙にすぐ引けるので、国の並びを線に結びつけておくと、<strong>何もない空間に国名を浮かべずに済みます</strong>。</p>
-      <div class="mod map-view has-globe" data-grid="equi" data-lon="we" data-open-label="ピン" data-globe="../image/memoryverse/earth-lines.png?v=r111">
+      <div class="mod map-view has-globe" data-grid="equi" data-lon="we" data-open-label="ピン" data-globe="../image/memoryverse/earth-lines.png?v=r112">
         <div class="mod-h"><span class="no">基準線</span><span class="ttl">5本の線の上に並ぶ国</span><span class="tag">REFERENCE LINES</span></div>
         <div class="mod-b">
           <div class="vsw" role="group" aria-label="表示の切り替え" hidden>
@@ -625,7 +625,7 @@ code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border
     <section id="anchors">
       <div class="sec-head"><span class="idx">06</span><h2>錨の11か国</h2></div>
       <p>面積の大きい国を先に打ち込んでおくと、残りの国は「<strong>どの錨の隣か</strong>」で置けるようになります。順番は、太陽系で軌道の順に並べたのと同じく<strong>測れる数</strong>——<strong>中心の経度で、東経0度から東回り</strong>です。</p>
-      <div class="mod map-view has-globe" data-grid="equi" data-lon="we" data-open-label="ピン" data-globe="../image/memoryverse/earth-anchors.png?v=r111">
+      <div class="mod map-view has-globe" data-grid="equi" data-lon="we" data-open-label="ピン" data-globe="../image/memoryverse/earth-anchors.png?v=r112">
         <div class="mod-h"><span class="no">錨の11か国</span><span class="ttl">大きな国を先に打ち込む</span><span class="tag">ANCHOR COUNTRIES</span></div>
         <div class="mod-b">
           <div class="vsw" role="group" aria-label="表示の切り替え" hidden>
@@ -961,8 +961,8 @@ code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border
         <tr><th style="width:18%">項目</th><th style="width:34%">第5回の予告</th><th style="width:48%">この回で決めたこと（理由）</th></tr>
         <tr><td><strong>この回（2-1）の中身</strong></td><td>大陸と海洋、大きな山脈と川</td><td>大陸と海に、<strong>基準線と錨の11か国</strong>を入れた。<strong>山脈と川は後の回へ</strong>移した——プレートの境界や気候と一緒に扱うほうが、1つの仕組みでつながるため</td></tr>
         <tr><td><strong>2章（2-2以降）</strong></td><td>—</td><td>2章は、<strong>地球全体に1本で通る仕組み</strong>を扱う。cos φ（日射）、プレートの境界、海流——どれも全部の地域に同じように効くので、先に通しておけば、3章で地域ごとに繰り返さずに済む</td></tr>
-        <tr><td><strong>3章（地域の回）</strong></td><td>国と地名 → 産物と資源 → 人びと → 企業と観光地 → 統合</td><td>地域ごとに<strong>まず国の形と場所を置き</strong>、そのうえで<strong>2章の仕組みがその地域でどう現れるか</strong>（その地域の気候・地形）と、<strong>その地域にしかないもの</strong>（産物・民族・企業・観光地）を重ねる</td></tr>
-        <tr><td><strong>気候の回</strong></td><td>地球の2回目として「気候」</td><td><strong>2-3 として残るが、扱いを変えた</strong>。全球の気候帯を置く回であって、国ごとの気候は3章で各地域に重ねる</td></tr>
+        <tr><td><strong>3章（地域の回）</strong></td><td>国と地名 → 産物と資源 → 人びと → 企業と観光地 → 統合</td><td>3章は<strong>国の位置と構成を覚える場</strong>。地域ごとに<strong>国の形と場所・首都・隣り合い</strong>（係争地のある地域では国境）を置き、国の詳細は国のページへ送る。2章の仕組み（プレート・気候・海流）は 2-2・2-3 で完結させ、3章には持ち込まない（3-1・3-2 を書いたあとで見直した。3-1 の付録A）</td></tr>
+        <tr><td><strong>気候の回</strong></td><td>地球の2回目として「気候」</td><td><strong>2-3 として残るが、扱いを変えた</strong>。全球の気候帯を置く回で、国ごとの気候は扱わない（3章にも持ち込まない）</td></tr>
         <tr><td><strong>統合の回</strong></td><td>最後の回として「地球の統合」（1枚の地図・1本の巡回路・1つの表）</td><td><strong>3章の最後に置くが、形はまだ決めていない。</strong>3章を何回に分けるか（23の地域をそのまま使うか、小さい地域をまとめるか）が決まらないと、巡回路の長さも決まらないため。<strong>3章に入る前に決める</strong></td></tr>
         <tr><td><strong>図法</strong></td><td>（決めていなかった）</td><td>全球は<strong>正距円筒図法</strong>。30度の升目がそのまま読め、歪みは東西だけで \(1/\cos\varphi\) で直せ、同じ画像を球に貼れる（§07）</td></tr>
         <tr><td><strong>カードの単位</strong></td><td>（決めていなかった）</td><td><strong>地域が1枚、国はその中の引き出し</strong>（惑星の下に衛星、と同じ入れ子）</td></tr>
@@ -1040,9 +1040,9 @@ code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border
   </main>
 </div>
 <div id="site-footer"><noscript><nav class="noscript-nav" aria-label="フッターナビゲーション"><a href="index.html">ホーム</a><a href="self-intro.html">自己紹介</a><a href="study.html">勉強の軌跡</a><a href="videos.html">動画</a><a href="blog.html">ブログ</a><a href="sns.html">各種SNS</a></nav></noscript></div>
-<script src="../js/memoryverse.js?v=r111"></script>
-<script src="../js/layout.js?v=r111"></script>
-<script src="../js/main.js?v=r111"></script>
-<script src="../js/starfield.js?v=r111"></script>
+<script src="../js/memoryverse.js?v=r112"></script>
+<script src="../js/layout.js?v=r112"></script>
+<script src="../js/main.js?v=r112"></script>
+<script src="../js/starfield.js?v=r112"></script>
 </body>
 </html>

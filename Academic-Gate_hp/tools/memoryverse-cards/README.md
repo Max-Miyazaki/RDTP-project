@@ -87,8 +87,8 @@ zsh  tools/memoryverse-cards/extract.sh JPN          # 1) 取得（無ければ�
 
 - `r3-1-shape.svg`（形）・`r3-1-capitals.svg`（形＋首都）・`r3-1-zoom.svg`（点になる国の拡大図。枠ごとに「この図だけ○倍」）を
   `image/memoryverse/cards/` に書き出す。記事は `js/country-card.js` で取りに行く
-- `data/r3-1-cmp.svg`（§06 の見比べる図）は**記事に直接埋め込む**（2-1 §07 の比較図と同じ扱い。色は記事の CSS 変数）ので、
-  作り直したら記事の `<figure class="fig fig-cmp">` の中身を差し替える
+- 国名のラベルは、その国のページへのリンク（`<a class="cc-cty" href="country/<国>.html">`。記事の中に埋め込むので、記事から見た相対パス）
+- §06「横断する軸」の見比べる図（`data/r3-*-cmp.svg`）は、3章から §06 を削ったので作らない（DESIGN.md §118）
 - 地域の設定（範囲・国名ラベルの置き方・首都・拡大図）は `region.py` の `REGIONS`
 
 ## 全球のカード（`earth.py`）

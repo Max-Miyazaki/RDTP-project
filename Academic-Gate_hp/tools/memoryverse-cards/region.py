@@ -1,11 +1,10 @@
 # 地域のカード（3章の地域の記事に置く図）を描く。3-1 西ヨーロッパ・3-2 南ヨーロッパ。
 #   python region.py 3-1
 # 書き出すもの（image/memoryverse/cards/）：
-#   r3-1-shape.svg     04「9か国の形と位置」の図（層1 形）
+#   r3-1-shape.svg     04「9か国の形と位置」の図（層1 形。国名は国のページへのリンク）
 #   r3-1-capitals.svg  05「首都」の図（層1 形＋層3 首都）
 #   r3-1-zoom.svg      04 の拡大図（層2。モナコとリヒテンシュタイン。倍率を図の中に書く）
-#   data/r3-1-cmp.svg  06 の見比べる図（展開図のまま／真上から見た形）。記事の中にそのまま埋め込むので
-#                      image/ には置かない（2-1 §07 の比較図と同じ扱い。色は記事の CSS 変数）
+#   （§06「横断する軸」の見比べる図 data/r3-*-cmp.svg は、3章から §06 を削ったので作らない。DESIGN.md §118）
 # 縮尺は国のページと同じ「圧縮後1度＝44px」。標準緯線は地域の中心（本土の重心を丸めた値）。
 import json, math, os, sys
 from shapely.geometry import shape, box, Point, Polygon, MultiPolygon
@@ -231,7 +230,9 @@ def main_map(key, R, C, capitals):
             L1.append(f'<path d="M{fmt(cx)} {fmt(cy)}L{fmt(x)} {fmt(y - 4 if y > cy else y + 1)}" stroke="rgba(255,255,255,.55)" stroke-width=".8" fill="none"/>')
         w = tw(nm, fs)
         fr.boxes.append((x - w / 2, y - fs, x + w / 2, y + 3))
-        L1.append(text(x, y, nm, fs, '#fff', extra=' font-weight="600"'))
+        # 国名はその国のページへのリンク（面積に関係なく、点になる国も同じ。記事の中に埋め込むので、記事から見た相対パス。DESIGN.md §118）
+        L1.append(f'<a class="cc-cty" href="country/{a3.lower()}.html"><title>{nm}の国のページへ</title>'
+                  + text(x, y, nm, fs, '#fff', extra=' font-weight="600"') + '</a>')
     E.append('<g class="L1 lbl">' + ''.join(L1) + '</g>')
     if capitals:
         L3 = []
@@ -299,65 +300,6 @@ def zoom_map(key, R, C):
     return '\n'.join(E), frames
 
 
-def cmp_fig(R, C):
-    """06：左＝展開図のまま（赤道の縮尺）、右＝地域の中心を真上から見た形（正射図法）。左右とも赤道での1度を同じ長さに。
-    2-1 §07 のグリーンランドとコンゴ民主共和国の図と同じ形式・同じ色（記事の CSS 変数）。"""
-    s = 11.0                                           # 赤道での1度 = 11px（左右とも）
-    lat0, lon0 = R.get('center', (48.50, 6.21))       # 地域の本土の重心（3-1 は9か国で北緯48.50度・東経6.21度）
-    mem = [a3 for a3, _, _ in R['members']]
-    # 左：経度・緯度をそのまま（正距円筒・赤道の縮尺）
-    geoms = [C[a3][0].intersection(box(R['lon'][0], R['lat'][0], R['lon'][1], R['lat'][1])) for a3 in mem]
-    Lx0, Lx1, Ly0, Ly1 = R['lon'][0] + 0.4, R['lon'][1] - 0.4, R['lat'][0] + 0.3, R['lat'][1] - 0.3
-    lw, lh = (Lx1 - Lx0) * s, (Ly1 - Ly0) * s
-    ox, oy = 20, 34
-    left = [affinity.affine_transform(g, [s, 0, 0, -s, ox - Lx0 * s, oy + Ly1 * s]) for g in geoms]
-    # 右：正射図法（中心を正面に）。半径 = 1ラジアンぶんの長さ＝ s×180/π
-    Rr = s * 180 / math.pi
-    p0, l0 = math.radians(lat0), math.radians(lon0)
-    def ortho(lo, la):
-        p, l = math.radians(la), math.radians(lo)
-        x = Rr * math.cos(p) * math.sin(l - l0)
-        y = Rr * (math.cos(p0) * math.sin(p) - math.sin(p0) * math.cos(p) * math.cos(l - l0))
-        return x, y
-    from shapely.ops import transform
-    def ortho_xy(xs, ys, zs=None):
-        pts = [ortho(a, b) for a, b in zip(xs, ys)]
-        return [p[0] for p in pts], [p[1] for p in pts]
-    right0 = [transform(ortho_xy, g) for g in geoms]
-    ub = unary_union(right0).bounds
-    rx = ox + lw + 60                                  # 左右のあいだ
-    right = [affinity.affine_transform(g, [1, 0, 0, -1, rx - ub[0], oy + lh / 2 + (ub[1] + ub[3]) / 2]) for g in right0]
-    W = rx + (ub[2] - ub[0]) + 20
-    H = oy + lh + 52
-    sep = ox + lw + 30
-    # 面積の比（展開図の上の見かけの面積 / 実際の面積、正射図法の誤差）
-    true_a = sum(area(g) for g in geoms)                 # 楕円体の上の実際の面積
-    M = math.pi * 6371008.8 / 180 / s                     # 図の1px が何 m か（赤道での1度 ≒ 111.2km）
-    left_a = sum(g.area for g in left) * M ** 2
-    right_a = sum(g.area for g in right) * M ** 2
-    ratio_left, ratio_right = left_a / true_a, right_a / true_a
-    col = 'fill="var(--accent-tint)" stroke="var(--accent)" stroke-width="1" stroke-linejoin="round"'
-    E = [f'<svg viewBox="0 0 {fmt(W)} {fmt(H)}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="{R["title"]}の{len(mem)}か国を、展開図での見え方（左）と真上から見た形（右）で同じ縮尺に並べた図">',
-         f'<text class="cmp-h" x="{fmt(ox + lw / 2)}" y="20" font-size="12.5" fill="var(--ink)" text-anchor="middle">展開図での見え方（赤道の縮尺）</text>',
-         f'<text class="cmp-h" x="{fmt(rx + (ub[2] - ub[0]) / 2)}" y="20" font-size="12.5" fill="var(--ink)" text-anchor="middle">真上から見た形</text>',
-         f'<line x1="{fmt(sep)}" y1="8" x2="{fmt(sep)}" y2="{fmt(H - 30)}" stroke="var(--line)" stroke-width="1"/>',
-         '<g class="cmp-r1">']
-    E.append(f'<path d="{"".join(d_polys(g.simplify(.15)) for g in left)}" {col}/>')
-    E.append(f'<path d="{"".join(d_polys(g.simplify(.15)) for g in right)}" {col}/>')
-    E.append(f'<text class="cmp-v" x="{fmt(ox + lw / 2)}" y="{fmt(oy + lh + 16)}" font-size="10.5" fill="var(--ink-faint)" text-anchor="middle">面積が約{ratio_left:.2f}倍に見える</text>')
-    E.append(f'<text class="cmp-v" x="{fmt(rx + (ub[2] - ub[0]) / 2)}" y="{fmt(oy + lh + 16)}" font-size="10.5" fill="var(--ink-faint)" text-anchor="middle">約{true_a / 1e10:.0f}万km²（{len(mem)}か国）</text>')
-    E.append('</g>')
-    bar = 5 * s
-    bx0 = sep - bar / 2
-    E.append('<g class="cmp-scale">')
-    E.append(f'<line x1="{fmt(bx0)}" y1="{fmt(H - 14)}" x2="{fmt(bx0 + bar)}" y2="{fmt(H - 14)}" stroke="var(--ink-faint)" stroke-width="1.5"/>')
-    E.append(f'<line x1="{fmt(bx0)}" y1="{fmt(H - 18)}" x2="{fmt(bx0)}" y2="{fmt(H - 10)}" stroke="var(--ink-faint)"/><line x1="{fmt(bx0 + bar)}" y1="{fmt(H - 18)}" x2="{fmt(bx0 + bar)}" y2="{fmt(H - 10)}" stroke="var(--ink-faint)"/>')
-    E.append(text(bx0 + bar + 8, H - 10, '赤道での5度（約556km）', 10, 'var(--ink-faint)', 'start'))
-    E.append(text(bx0 - 8, H - 10, '左右とも同じ縮尺', 10, 'var(--ink-faint)', 'end'))
-    E.append('</g></svg>')
-    return '\n'.join(E), {'ratio_left': ratio_left, 'ratio_right': ratio_right, 'true_km2': true_a / 1e6, 'W': W, 'H': H}
-
-
 if __name__ == '__main__':
     key = sys.argv[1] if len(sys.argv) > 1 else '3-1'
     R = REGIONS[key]
@@ -372,9 +314,4 @@ if __name__ == '__main__':
     fn = os.path.join(SVG_DIR, f'r{key}-zoom.svg')
     open(fn, 'w').write(svg)
     out['zoom'] = {'kb': round(os.path.getsize(fn) / 1024, 1), 'frames': [(nm, z, round(fr.w), round(fr.h)) for _, nm, z, _, _, _, fr in frames]}
-    svg, info = cmp_fig(R, C)
-    fn = os.path.join(DATA, f'r{key}-cmp.svg')
-    open(fn, 'w').write(svg)
-    out['cmp'] = {k: (round(v, 4) if isinstance(v, float) else v) for k, v in info.items()}
-    out['cmp']['kb'] = round(os.path.getsize(fn) / 1024, 1)
     print(json.dumps(out, ensure_ascii=False, indent=1))

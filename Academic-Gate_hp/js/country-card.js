@@ -130,16 +130,31 @@
             var r = svg.getBoundingClientRect(); zoomAt(2, e.clientX - r.left, e.clientY - r.top);
         });
         // ドラッグで移動、2本の指でつまんで拡大（Pointer Events）
-        var pts = {}, last = null;
+        // ★ 国名のリンク（地域のカード。DESIGN.md §118）と区別する：押しただけでは捕まえず、4px 以上動いてから地図を動かす。
+        //   動かしたあとの click は取り消す（リンクに飛ばない）。押した時点で setPointerCapture すると、click が svg に吸われてリンクが効かない
+        var pts = {}, last = null, moved = false, MOVE = 4;
         function mid() { var a = Object.values(pts); return a.length < 2 ? null : { x: (a[0].x + a[1].x) / 2, y: (a[0].y + a[1].y) / 2, d: Math.hypot(a[0].x - a[1].x, a[0].y - a[1].y) }; }
         svg.addEventListener('pointerdown', function (e) {
             if (!fig.closest('.cc-card').classList.contains('is-full')) return;
-            if (e.pointerType === 'touch' && z() <= 1.001 && Object.keys(pts).length === 0) { pts[e.pointerId] = { x: e.clientX, y: e.clientY }; return; }
-            pts[e.pointerId] = { x: e.clientX, y: e.clientY }; svg.setPointerCapture(e.pointerId); last = mid();
+            if (Object.keys(pts).length === 0) moved = false;
+            pts[e.pointerId] = { x: e.clientX, y: e.clientY, sx: e.clientX, sy: e.clientY };
+            if (Object.keys(pts).length >= 2) {                                   // 2本目の指：つまむ操作。リンクではない
+                moved = true;
+                Object.keys(pts).forEach(function (id) { try { svg.setPointerCapture(Number(id)); } catch (err) {} });
+                last = mid();
+            }
         });
+        svg.addEventListener('click', function (e) {
+            if (moved) { e.preventDefault(); e.stopPropagation(); moved = false; }
+        }, true);
         svg.addEventListener('pointermove', function (e) {
             if (!(e.pointerId in pts)) return;
             var p = pts[e.pointerId], n = Object.keys(pts).length, r = svg.getBoundingClientRect();
+            if (n < 2 && !moved) {
+                if (Math.hypot(e.clientX - p.sx, e.clientY - p.sy) < MOVE) return;   // まだクリックかもしれない
+                if (e.pointerType === 'touch' && z() <= 1.001) return;               // 全体のときの1本指はページの縦送りに任せる
+                moved = true; try { svg.setPointerCapture(e.pointerId); } catch (err) {}
+            }
             if (n >= 2) {
                 pts[e.pointerId] = { x: e.clientX, y: e.clientY };
                 var m = mid();

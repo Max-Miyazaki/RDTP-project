@@ -67,6 +67,10 @@
     aspect-ratio: var(--w) / var(--h);
 }
 .cc-fig > svg { display: block; width: 100%; height: auto; }
+/* 地域のカードの国名は、その国のページへのリンク（region.py の a.cc-cty。DESIGN.md §118）。ふだんは白のまま（地図の形を読みやすく）、
+   乗せる・キーボードで選ぶとリンクの色と下線。スマホでは乗せられないので、カードの説明に「国名を押すと、その国のページへ」と書く */
+.cc-fig svg a.cc-cty { cursor: pointer; }
+.cc-fig svg a.cc-cty:hover text, .cc-fig svg a.cc-cty:focus-visible text { fill: var(--accent, #3d8bff); text-decoration: underline; }
 /* 横に送れるときだけ出る1行（country-card.js の setupHint。2-1 §07 の .fig.is-scrollable::before と同じ文言・大きさ） */
 .cc-scroll-hint { flex: 0 0 100%; margin: 0 0 -10px; font-size: 11px; letter-spacing: .06em; color: var(--ink-faint, var(--text-tertiary)); }   /* .cc-maps は flex-wrap（間隔18px）。1行で独立させ、図との間を8px に */
 .cc-scroll-hint[hidden] { display: none; }
