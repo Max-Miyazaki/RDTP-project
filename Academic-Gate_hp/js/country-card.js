@@ -210,10 +210,31 @@
         btn.addEventListener('click', function () { card.classList.contains('is-full') ? close() : open(); });
     }
 
+    // 横に送れるときだけ、図の上に1行「横に送ると続きが見られます →」を出す（2-1 §07 の .fig.is-scrollable と同じ文言・同じ考え方。
+    // 3-2 の地域のカードは1234px で本文の列を超え、最初に西半分しか見えない。幅に収まる図には出さない。DESIGN.md §115）
+    function setupHint(card) {
+        [].forEach.call(card.querySelectorAll('.cc-scroll'), function (sc) {
+            var hint = document.createElement('p');
+            hint.className = 'cc-scroll-hint';
+            hint.textContent = '横に送ると続きが見られます →';
+            hint.hidden = true;
+            sc.parentNode.insertBefore(hint, sc);
+            function upd() {
+                // 広げた表示（is-full）では送らないので出さない。層を切って図が消えているときも出さない
+                hint.hidden = card.classList.contains('is-full') || sc.offsetParent === null || sc.scrollWidth - sc.clientWidth <= 1;
+            }
+            window.addEventListener('resize', upd);
+            new MutationObserver(upd).observe(card, { attributes: true, attributeFilter: ['class'] });
+            if ('ResizeObserver' in window) new ResizeObserver(upd).observe(sc);
+            upd();
+        });
+    }
+
     function init() {
         var cards = [].slice.call(document.querySelectorAll('.cc-card'));
         cards.forEach(setupButtons);
         cards.forEach(setupFull);
+        cards.forEach(setupHint);
         if (!('IntersectionObserver' in window)) { cards.forEach(loadCard); return; }
         // 最初にカードが画面に近づいたときに取りに行く（2-1 の地図の loading="lazy" と同じ考え方）
         var io = new IntersectionObserver(function (entries) {

@@ -11,14 +11,14 @@
 <!-- ★ ライト/ダーク切替は停止中（DESIGN.md §44）。サイト全体がダーク基調なので、
      記事だけテーマが変わるのは一貫性を欠くという判断。**復活させるには次の1行の
      コメントを外すだけでよい**（js/theme.js も css/lesson-theme.css も残してある）。 -->
-<!-- <script src="../js/theme.js?v=r109"></script> -->
+<!-- <script src="../js/theme.js?v=r110"></script> -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;500&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
 <!-- サイト共通 → 記事固有 → テーマ上書き の順で読む（lesson-theme.css は
      記事の <style> より後ろに置くこと。css/lesson-theme.css 冒頭の注記どおり） -->
-<link rel="stylesheet" href="../css/style.css?v=r109">
-<link rel="stylesheet" href="../css/country-card.css?v=r109">
+<link rel="stylesheet" href="../css/style.css?v=r110">
+<link rel="stylesheet" href="../css/country-card.css?v=r110">
 <!-- MathJax: 物理数学のページと同じ設定・同じ版（mathjax@3 の tex-svg）。メモリーバース全体で
      読み込む（第5回以降でも式を書くため。§94）。設定ブロックはローダーより「前」に置く、
      フォールバックは this.src= ではなく createElement 方式（どちらも DESIGN.md §11b）。
@@ -240,7 +240,7 @@ code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border
 /* 全球のカード（country-card.css の .cc-card）を本文の列に置くときの間隔 */
 .main .cc-card{margin:18px 0}
 </style>
-<link rel="stylesheet" href="../css/lesson-theme.css?v=r109">
+<link rel="stylesheet" href="../css/lesson-theme.css?v=r110">
 <body data-page="study" class="is-article" data-node="memoryverse_2-3">
 <canvas id="starfield" aria-hidden="true"></canvas>
 <div id="site-nav"><noscript><nav class="noscript-nav" aria-label="メインナビゲーション"><a href="index.html">ホーム</a><a href="self-intro.html">自己紹介</a><a href="study.html">勉強の軌跡</a><a href="videos.html">動画</a><a href="blog.html">ブログ</a><a href="sns.html">各種SNS</a></nav></noscript></div>
@@ -347,7 +347,7 @@ code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border
           <button class="cc-lay" data-layer="L3" aria-pressed="true">層3 帯の境目と回帰線</button>
         </div></div>
         <div class="cc-maps">
-          <div class="cc-scroll"><div class="cc-fig" style="--w:1070;--h:552" data-src="../image/memoryverse/cards/e2-3-bands.svg?v=r109"><p class="cc-status">地図を読み込み中…</p><p class="cc-fallback">地図を読み込めませんでした</p></div></div>
+          <div class="cc-scroll"><div class="cc-fig" style="--w:1070;--h:552" data-src="../image/memoryverse/cards/e2-3-bands.svg?v=r110"><p class="cc-status">地図を読み込み中…</p><p class="cc-fallback">地図を読み込めませんでした</p></div></div>
         </div>
         <div class="cc-src">
           <p><b>図</b>：2-1 と同じ全球の正距円筒図法（左端は西経180度、横2・縦1）。層1・層2は陸だけ。年降水量は1度ごとに塗り分け、等温線（0℃・10℃・20℃）も1度ごとの値から引いた。<span style="color:#ffb46b">橙色の破線</span>が北回帰線・南回帰線（23.44度）。帯の名前は本教材が付けたもの。</p>
@@ -731,7 +731,7 @@ code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border
           <button class="cc-lay" data-layer="L3" aria-pressed="true">層3 帯の境目</button>
         </div></div>
         <div class="cc-maps">
-          <div class="cc-scroll"><div class="cc-fig" style="--w:1070;--h:552" data-src="../image/memoryverse/cards/e2-3-dry.svg?v=r109"><p class="cc-status">地図を読み込み中…</p><p class="cc-fallback">地図を読み込めませんでした</p></div></div>
+          <div class="cc-scroll"><div class="cc-fig" style="--w:1070;--h:552" data-src="../image/memoryverse/cards/e2-3-dry.svg?v=r110"><p class="cc-status">地図を読み込み中…</p><p class="cc-fallback">地図を読み込めませんでした</p></div></div>
         </div>
         <div class="cc-src">
           <p><b>図</b>：年降水量が、同じ緯度の陸の中央値（層1、<span style="color:#ffb46b">橙色</span>）または平均（層2、白い破線）の3分の1以下の場所。まとまりが10万km²以上のものだけ。場所の呼び名は本教材が付けたもの（Natural Earth の地名から）。</p>
@@ -787,7 +787,7 @@ code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border
           <button class="cc-lay" data-layer="L3" aria-pressed="true">層3 標高1000m以上（除いた範囲）</button>
         </div></div>
         <div class="cc-maps">
-          <div class="cc-scroll"><div class="cc-fig" style="--w:1070;--h:552" data-src="../image/memoryverse/cards/e2-3-temp.svg?v=r109"><p class="cc-status">地図を読み込み中…</p><p class="cc-fallback">地図を読み込めませんでした</p></div></div>
+          <div class="cc-scroll"><div class="cc-fig" style="--w:1070;--h:552" data-src="../image/memoryverse/cards/e2-3-temp.svg?v=r110"><p class="cc-status">地図を読み込み中…</p><p class="cc-fallback">地図を読み込めませんでした</p></div></div>
         </div>
         <div class="cc-src">
           <p><b>図</b>：年平均気温が、同じ緯度の陸の中央値より5℃以上高い（<span style="color:#ff6b6b">赤</span>）・低い（<span style="color:#5fb0ff">青</span>）場所。層1は標高1,000m未満の陸だけで比べたもの、層2（破線）は全部の陸で比べたもの。まとまりが10万km²以上のものだけ。場所の呼び名は本教材が付けたもの。</p>
@@ -866,7 +866,7 @@ code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border
           <button class="cc-lay" data-layer="L3" aria-pressed="true">層3 食い違う場所</button>
         </div></div>
         <div class="cc-maps">
-          <div class="cc-scroll"><div class="cc-fig" style="--w:1070;--h:552" data-src="../image/memoryverse/cards/e2-3-koppen.svg?v=r109"><p class="cc-status">地図を読み込み中…</p><p class="cc-fallback">地図を読み込めませんでした</p></div></div>
+          <div class="cc-scroll"><div class="cc-fig" style="--w:1070;--h:552" data-src="../image/memoryverse/cards/e2-3-koppen.svg?v=r110"><p class="cc-status">地図を読み込み中…</p><p class="cc-fallback">地図を読み込めませんでした</p></div></div>
         </div>
         <div class="cc-src">
           <p><b>図</b>：ケッペンの5分類（<span style="color:#3d7bd9">A</span>・<span style="color:#e0894a">B</span>・<span style="color:#7cc46a">C</span>・<span style="color:#8f7be8">D</span>・<span style="color:#b8c4cc">E</span>。1度ごとに塗り分け）。層2は左端の色の帯と「→」の後ろが、その帯でいちばん多い分類。層3の斜線は、実際の分類が帯の予想と違う場所（0.5度ごと）。</p>
@@ -914,7 +914,7 @@ code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border
           <button class="cc-lay" data-layer="L3" aria-pressed="true">層3 観測の無い海域</button>
         </div></div>
         <div class="cc-maps">
-          <div class="cc-scroll"><div class="cc-fig" style="--w:1070;--h:552" data-src="../image/memoryverse/cards/e2-3-currents.svg?v=r109"><p class="cc-status">地図を読み込み中…</p><p class="cc-fallback">地図を読み込めませんでした</p></div></div>
+          <div class="cc-scroll"><div class="cc-fig" style="--w:1070;--h:552" data-src="../image/memoryverse/cards/e2-3-currents.svg?v=r110"><p class="cc-status">地図を読み込み中…</p><p class="cc-fallback">地図を読み込めませんでした</p></div></div>
         </div>
         <div class="cc-src">
           <p><b>図</b>：年平均の表層の流れ。NOAA Global Drifter Program の漂流ブイの観測から作られた速度場（版3.10。Laurindo ほか 2017 の方法による）に、本教材が流線を引いた。線が太く明るいほど速い。</p>
@@ -1180,10 +1180,10 @@ code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border
   </main>
 </div>
 <div id="site-footer"><noscript><nav class="noscript-nav" aria-label="フッターナビゲーション"><a href="index.html">ホーム</a><a href="self-intro.html">自己紹介</a><a href="study.html">勉強の軌跡</a><a href="videos.html">動画</a><a href="blog.html">ブログ</a><a href="sns.html">各種SNS</a></nav></noscript></div>
-<script src="../js/memoryverse.js?v=r109"></script>
-<script src="../js/layout.js?v=r109"></script>
-<script src="../js/main.js?v=r109"></script>
-<script src="../js/starfield.js?v=r109"></script>
-<script src="../js/country-card.js?v=r109"></script>
+<script src="../js/memoryverse.js?v=r110"></script>
+<script src="../js/layout.js?v=r110"></script>
+<script src="../js/main.js?v=r110"></script>
+<script src="../js/starfield.js?v=r110"></script>
+<script src="../js/country-card.js?v=r110"></script>
 </body>
 </html>

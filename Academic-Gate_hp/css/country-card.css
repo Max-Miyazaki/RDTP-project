@@ -67,6 +67,9 @@
     aspect-ratio: var(--w) / var(--h);
 }
 .cc-fig > svg { display: block; width: 100%; height: auto; }
+/* 横に送れるときだけ出る1行（country-card.js の setupHint。2-1 §07 の .fig.is-scrollable::before と同じ文言・大きさ） */
+.cc-scroll-hint { flex: 0 0 100%; margin: 0 0 -10px; font-size: 11px; letter-spacing: .06em; color: var(--ink-faint, var(--text-tertiary)); }   /* .cc-maps は flex-wrap（間隔18px）。1行で独立させ、図との間を8px に */
+.cc-scroll-hint[hidden] { display: none; }
 /* 地域のカードが本文の列より広いとき（3-2 南ヨーロッパ 1234px）は縮めずに横へスクロールする（1度44px を守る。DESIGN.md §114） */
 .cc-fig.cc-1to1 { max-width: none; }
 .cc-status, .cc-fallback {
