@@ -87,19 +87,33 @@
         out.className = 'cc-zoomscale';
         fig.appendChild(bar); fig.appendChild(out);
         function px() { return svg.getBoundingClientRect().width / v[2]; }     // 画面の1px あたりの SVG 単位の逆数
-        function z() { return v0[2] / v[2]; }
+        // 全体を表示したときの範囲 B：拡大表示では枠を画面いっぱいにするので、v0 を枠の縦横比まで広げる（図は真ん中。DESIGN.md §119）
+        var B = v0.slice();
+        function base() {
+            var r = svg.getBoundingClientRect();
+            if (!r.width || !r.height) return false;
+            var w = v0[2], h = v0[3];
+            if (w / h < r.width / r.height) w = h * r.width / r.height; else h = w * r.height / r.width;
+            B = [v0[0] - (w - v0[2]) / 2, v0[1] - (h - v0[3]) / 2, w, h];
+            return true;
+        }
+        function z() { return B[2] / v[2]; }
+        // 図より広く見ている向きは真ん中に置き、狭く見ている向きは図の外へ出さない
         function clamp() {
-            v[0] = Math.min(Math.max(v[0], v0[0]), v0[0] + v0[2] - v[2]);
-            v[1] = Math.min(Math.max(v[1], v0[1]), v0[1] + v0[3] - v[3]);
+            for (var i = 0; i < 2; i++) {
+                if (v[i + 2] >= v0[i + 2]) v[i] = v0[i] - (v[i + 2] - v0[i + 2]) / 2;
+                else v[i] = Math.min(Math.max(v[i], v0[i]), v0[i] + v0[i + 2] - v[i + 2]);
+            }
         }
         function draw() {
+            if (!svg.getBoundingClientRect().width) return;                  // 切り替えで隠れている図
             clamp();
             svg.setAttribute('viewBox', v.map(function (n) { return +n.toFixed(3); }).join(' '));
             // 文字と点の大きさ：全体表示のときの大きさを保つ。ただし全体表示が作った大きさ（SVG の1単位＝1px）より小さい
             // 画面（390px など）では、拡大につれて作った大きさまでは大きくなり、そこから先は保つ
             var ppu = px(), s = Math.max(ppu / z(), Math.min(ppu, 1));
             svg.style.setProperty('--inv', (s / ppu).toFixed(4));
-            svg.style.touchAction = z() > 1.001 ? 'none' : 'pan-y';        // 全体のときは縦に送れる（日本は2枚を縦に並べる）
+            svg.style.touchAction = z() > 1.001 ? 'none' : 'pan-y';        // 全体のときは縦に送れる
             var p1 = deg * px();
             out.textContent = mixed ? '全体表示の' + z().toFixed(1) + '倍（枠ごとの倍率は図の中）'      // 拡大図：枠ごとに縮尺が違うので1度の長さは出さない
                 : '1度＝' + Math.round(p1).toLocaleString() + 'px（覚えるための縮尺 1度' + deg.toLocaleString() + 'px の'
@@ -108,16 +122,17 @@
         function zoomAt(f, cx, cy) {                                         // cx, cy は svg の左上からの画面上の px
             var nz = Math.min(Math.max(z() * f, 1), ZMAX), k = px();
             var sx = v[0] + cx / k, sy = v[1] + cy / k;
-            v[2] = v0[2] / nz; v[3] = v0[3] / nz;
+            v[2] = B[2] / nz; v[3] = B[3] / nz;
             var k2 = svg.getBoundingClientRect().width / v[2];
             v[0] = sx - cx / k2; v[1] = sy - cy / k2;
             draw();
         }
+        function fit() { if (base()) { v = B.slice(); draw(); } }
         function center(f) { var r = svg.getBoundingClientRect(); zoomAt(f, r.width / 2, r.height / 2); }
         bar.addEventListener('click', function (e) {
             var b = e.target.closest('button'); if (!b) return;
             if (b.dataset.z === 'in') center(1.6); else if (b.dataset.z === 'out') center(1 / 1.6);
-            else { v = v0.slice(); draw(); }
+            else fit();
         });
         svg.addEventListener('wheel', function (e) {
             if (!fig.closest('.cc-card').classList.contains('is-full')) return;
@@ -171,7 +186,13 @@
         function up(e) { delete pts[e.pointerId]; last = mid(); }
         svg.addEventListener('pointerup', up); svg.addEventListener('pointercancel', up);
         fig._zoom = {
-            reset: function () { v = v0.slice(); draw(); },
+            reset: fit,
+            // 画面の大きさが変わったとき（回転など）：倍率と見ている中心を保ったまま、B を測り直す
+            refit: function () {
+                var nz = z(), cx = v[0] + v[2] / 2, cy = v[1] + v[3] / 2;
+                if (!base()) return;
+                v = [0, 0, B[2] / nz, B[3] / nz]; v[0] = cx - v[2] / 2; v[1] = cy - v[3] / 2; draw();
+            },
             end: function () { v = v0.slice(); svg.setAttribute('viewBox', v0.join(' ')); svg.style.removeProperty('--inv'); svg.style.touchAction = ''; },
             draw: draw
         };
@@ -185,6 +206,60 @@
         if (!btn) return;
         var ph = null, y = 0;
         function onKey(e) { if (e.key === 'Escape') close(); }
+        // 図が2枚以上あるカード（日本・スペイン・ポルトガル・地域のカード）は、拡大表示では1枚ずつ出し、ボタンで切り替える（DESIGN.md §119）。
+        // 並べると画面いっぱいにできず、下の図へはスクロールが要るが、図の上のホイールは拡大に使っている。同じ縮尺で並べて見るのは通常表示で
+        var scs = [].slice.call(card.querySelectorAll('.cc-maps > .cc-scroll')), cur = 0, tabs = [];
+        // 層で消えている図（地域のカードの拡大図は層2）は選べない
+        function gone(sc) { return ['L1', 'L2', 'L3'].some(function (l) { return sc.classList.contains(l) && card.classList.contains('off-' + l); }); }
+        function show(i) {
+            cur = i;
+            scs.forEach(function (sc, j) { sc.classList.toggle('cc-inactive', j !== i); });
+            tabs.forEach(function (t, j) { set(t, j === i); t.disabled = gone(scs[j]); });
+            var fig = scs[i].querySelector('.cc-fig');
+            (function wait() {                                    // 図が読み込まれていれば拡大・移動を付ける（まだなら読み込み後に付ける）
+                if (!card.classList.contains('is-full') || cur !== i) return;
+                if (fig.querySelector('svg')) { var zz = zoomable(fig); if (zz) requestAnimationFrame(zz.reset); }
+                else setTimeout(wait, 150);
+            })();
+        }
+        // 名前は SVG の aria-label から（国のページ「日本（南西諸島（本土と同じ縮尺））：…」→「南西諸島」。地域のカードは「全体」「拡大図」）
+        function label(sc) {
+            var fig = sc.querySelector('.cc-fig');
+            if (fig.dataset.deg === 'mixed') return '拡大図';
+            var svg = fig.querySelector('svg'), m = svg && /（(.*)）：/.exec(svg.getAttribute('aria-label') || '');
+            return m ? m[1].replace(/（本土と同じ縮尺）$/, '').split('・')[0] : '全体';
+        }
+        if (scs.length > 1) {
+            var row = document.createElement('div');
+            row.className = 'cc-row cc-tabs';
+            row.setAttribute('aria-label', '図の切り替え');
+            scs.forEach(function (sc, j) {
+                var t = document.createElement('button');
+                t.type = 'button'; t.className = 'cc-tab';
+                t.addEventListener('click', function () { show(j); });
+                tabs.push(t); row.appendChild(t);
+            });
+            card.querySelector('.cc-ctl').appendChild(row);
+            // 層を切って今の図が消えたら、残っている図へ移る
+            new MutationObserver(function () {
+                if (!card.classList.contains('is-full')) return;
+                var i = gone(scs[cur]) ? scs.map(gone).indexOf(false) : cur;
+                show(i < 0 ? cur : i);
+            }).observe(card, { attributes: true, attributeFilter: ['class'] });
+        }
+        // 図の高さから引く分：上のボタンの段と、下の注記（省いたラベルの断り・OSM の表示）を測って足す（余白 12+8+10、注記ごとに 8）
+        function measure() {
+            var below = [].reduce.call(card.querySelectorAll('.cc-full-attr'), function (n, e) { return n + e.offsetHeight + 8; }, 0);
+            var h = (card.querySelector('.cc-ctl').offsetHeight + below + 34) + 'px';
+            if (card.style.getPropertyValue('--cc-ctl-h') === h) return;
+            card.style.setProperty('--cc-ctl-h', h);
+            onResize();
+        }
+        function onWin() { measure(); onResize(); }
+        function onResize() {
+            var fig = scs.length && scs[cur].querySelector('.cc-fig');
+            if (fig && fig._zoom) fig._zoom.refit();
+        }
         function open() {
             y = window.scrollY;
             ph = document.createElement('div');                    // カードが抜けたぶん、本文が詰まらないように
@@ -194,17 +269,18 @@
             card.setAttribute('role', 'dialog');
             card.setAttribute('aria-modal', 'true');
             document.body.classList.add('cc-full-open');
-            // 図の高さから引く分：上のボタンの段と、下の注記（省いたラベルの断り・OSM の表示）を測って足す（余白 12+8+10、注記ごとに 8）
-            var below = [].reduce.call(card.querySelectorAll('.cc-full-attr'), function (n, e) { return n + e.offsetHeight + 8; }, 0);
-            card.style.setProperty('--cc-ctl-h', (card.querySelector('.cc-ctl').offsetHeight + below + 34) + 'px');
             btn.textContent = '閉じる ✕';
             btn.setAttribute('aria-expanded', 'true');
             loadCard(card);
-            // 図が読み込まれていれば拡大・移動を付ける（まだなら読み込み後に付ける）
-            [].forEach.call(card.querySelectorAll('.cc-fig'), function wait(fig) {
-                if (fig.querySelector('svg')) { var zz = zoomable(fig); if (zz) requestAnimationFrame(zz.reset); }
-                else if (card.classList.contains('is-full')) setTimeout(function () { wait(fig); }, 150);
-            });
+            // 図の名前は SVG を読み込んでから付ける。名前でボタンの段が折り返すことがあるので、そのつど測り直す
+            (function names() {
+                if (!card.classList.contains('is-full')) return;
+                tabs.forEach(function (t, j) { t.textContent = label(scs[j]); });
+                measure();
+                if (scs.some(function (sc) { return !sc.querySelector('svg') && !sc.querySelector('.is-failed'); })) setTimeout(names, 150);
+            })();
+            if (scs.length) { var first = scs.map(gone).indexOf(false); show(first < 0 ? 0 : first); }
+            window.addEventListener('resize', onWin);
             document.addEventListener('keydown', onKey);
             btn.focus();
         }
@@ -219,6 +295,7 @@
             btn.textContent = '拡大 ⤢';
             btn.setAttribute('aria-expanded', 'false');
             document.removeEventListener('keydown', onKey);
+            window.removeEventListener('resize', onWin);
             window.scrollTo({ top: y, behavior: 'instant' });
             btn.focus({ preventScroll: true });
         }
