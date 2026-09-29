@@ -332,6 +332,16 @@ mjx-container[display="true"]{
    いまの記事はどれも block なので効かないが、箱の入れ子が増えたときの保険。 */
 .box,.drill,.sol,.attempt,.hint,.step{min-width:0}
 
+/* 手順の見出し（.step .sh）は、記事の <style> では display:flex。そのままだと
+   「番号の丸・文字・インライン数式・文字」がそれぞれ flex の部品になり、
+   ・数式の箱（上の overflow-x:auto で最小幅が 0 になる）が縮められて枠内スクロールする
+     （8-4 の \(x=0\) が 360px で 11px）
+   ・部品どうしの gap 10px が数式の前後にも入り、見出しが余計に折り返す
+   ふつうの行（block）に戻し、番号の丸だけ inline-block にして、丸と文字の間 10px を保つ。
+   物理数学の19記事の見出しの指定は同じ。物理数学以外に .step .sh は無い（実測） */
+.step .sh{display:block}
+.step .sh .sn{display:inline-block;margin-right:10px}
+
 @media (max-width:1024px){
   /* スクロールバーが数式の下端を欠けさせないための余白。記事側の `padding:2px 0`
      の下だけを広げる（lesson-theme.css は記事の <style> より後ろに読まれるので、
