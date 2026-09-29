@@ -236,8 +236,9 @@ def quakes_svg(D):
     q7 = [(lo, la) for lo, la, m in D['quakes'] if m >= 7]
     E_.append('<g class="L1">' + dots(q6, 2.2, '#ff8a8a', .55) + dots(q7, 4.2, '#ff5252', .75) + '</g>')
     if D['volcanoes']:
-        vd = ''.join(f'M{fmt(X(lo))} {fmt(Y(la) - 2.2)}l1.9 3.3h-3.8z' for lo, la, _ in D['volcanoes'])
-        E_.append(f'<g class="L2"><path d="{vd}" fill="#ffb46b" fill-opacity=".9" stroke="#000" stroke-width=".4"/></g>')
+        # 白い三角（黒の縁）。地震の赤い点とも、境界の線の3色（緑・赤・黄）とも重ならない色にする。通常の表示（約0.75倍）で幅約5px
+        vd = ''.join(f'M{fmt(X(lo))} {fmt(Y(la) - 3.4)}l3.6 6.2h-7.2z' for lo, la, _ in D['volcanoes'])
+        E_.append(f'<g class="L2"><path d="{vd}" fill="#fff" stroke="#000" stroke-width=".7" stroke-linejoin="round"/></g>')
     else:
         E_.append('<g class="L2"></g>')
     E_.append('</g>')
