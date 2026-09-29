@@ -74,6 +74,7 @@
         if (!svg || fig._zoom) return fig._zoom;
         var v0 = svg.getAttribute('viewBox').split(/[\s,]+/).map(Number);   // [x, y, w, h] 全体
         var v = v0.slice(), mixed = fig.dataset.deg === 'mixed', deg = Number(fig.dataset.deg) || 44;
+        var globe = fig.dataset.scale === 'globe';                          // 2章の全球の図（1度＝約2.84px。覚えるための縮尺 1度44px とは別。DESIGN.md §120）
         // 点の横に置いた都市名は、文字の端ではなく点を中心に縮め戻す（でないと拡大につれて点から離れる）
         [].forEach.call(svg.querySelectorAll('text[data-ax]'), function (t) {
             var b = t.getBBox();
@@ -116,6 +117,7 @@
             svg.style.touchAction = z() > 1.001 ? 'none' : 'pan-y';        // 全体のときは縦に送れる
             var p1 = deg * px();
             out.textContent = mixed ? '全体表示の' + z().toFixed(1) + '倍（枠ごとの倍率は図の中）'      // 拡大図：枠ごとに縮尺が違うので1度の長さは出さない
+                : globe ? '1度＝' + (p1 < 10 ? p1.toFixed(1) : Math.round(p1)) + 'px（全体表示の' + z().toFixed(1) + '倍）'
                 : '1度＝' + Math.round(p1).toLocaleString() + 'px（覚えるための縮尺 1度' + deg.toLocaleString() + 'px の'
                             + (p1 / deg).toFixed(1) + '倍）';
         }
