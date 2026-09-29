@@ -39,7 +39,7 @@ if min([p.get('fine', FINE) or 1 for p in PANELS.values()]) < 0.1:
 # ---------------- Natural Earth ----------------
 ne0 = json.load(open(os.path.join(NE, 'ne_10m_admin_0_countries.geojson')))
 from countries import outline
-JP = outline(CC)                         # その国（名前は日本の試作のときのまま）。バチカン・ジブラルタルは OSM の輪郭（§112）
+JP = outline(CC)                         # その国（名前は日本の試作のときのまま）。バチカン・ジブラルタル・オーランドは OSM の輪郭（§112.1）
 NEI = []
 for f in ne0['features']:
     if f['properties']['ADM0_A3'] != CC:
@@ -48,17 +48,18 @@ ne1 = json.load(open(os.path.join(NE, 'ne_10m_admin_1_states_provinces.geojson')
 PREF = []
 for f in ne1['features']:
     p = f['properties']
-    if p['adm0_a3'] != CC:
+    if p['adm0_a3'] != CC or C.get('admin1_off'):     # admin1_off：Natural Earth の区分が誤っている単位は使わない（層3の区分名は「なし」。理由は注記。§121）
         continue
     reg = p['region'] or C['region_fill'].get(p['name_ja'])
-    PREF.append({'name': label_name(p['name_ja'] or p['name']), 'region': C['regions'].get(reg), 'geom': shape(f['geometry']).buffer(0)})
+    ja = None if p['name'] in C.get('admin1_ja_wrong', ()) else p['name_ja']     # 日本語名が誤っている区分は原語で（ラトビア。§121）
+    PREF.append({'name': label_name(ja or p['name']), 'region': C['regions'].get(reg), 'geom': shape(f['geometry']).buffer(0)})
 REGIONS = defaultdict(list)
 for p in PREF:
     if p['region']:
         REGIONS[p['region']].append(p['geom'])
 REGIONS = {k: unary_union(v) for k, v in REGIONS.items()}
 PREF_ALL = unary_union([p['geom'] for p in PREF])
-COAST = PREF_ALL.boundary.buffer(0.004)
+COAST = PREF_ALL.boundary.buffer(0.004) if not PREF_ALL.is_empty else PREF_ALL
 def inner_lines(polys):
     if not polys:
         return MultiLineString()

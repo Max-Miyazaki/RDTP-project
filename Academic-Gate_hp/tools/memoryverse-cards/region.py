@@ -71,6 +71,34 @@ REGIONS = {
             ('MLT', 'マルタ', 20, (14.14, 14.61), (35.76, 36.12), 0.1, 10, []),
         ],
     },
+    '3-3': {
+        'title': '北ヨーロッパ',
+        'unit': '単位',                                # 15のうち5つは国ではない（3-3 §06）。見出しを「15か国」にしない
+        'phi0': 62.0,                                  # 15単位の本土の重心は北緯61.59度・東経12.17度
+        'center': (61.59, 12.17),
+        'lon': (-25.0, 32.0), 'lat': (48.6, 71.5),
+        'members': [
+            ('DNK', 'デンマーク', None), ('NOR', 'ノルウェー', ('in', 9.2, 61.6)), ('SWE', 'スウェーデン', ('in', 15.4, 63.4)),
+            ('ALD', 'オーランド諸島', (18.2, 61.2)), ('LTU', 'リトアニア', None), ('LVA', 'ラトビア', None), ('EST', 'エストニア', ('in', 25.9, 58.8)),
+            ('FIN', 'フィンランド', ('in', 26.6, 64.2)), ('ISL', 'アイスランド', None), ('IRL', 'アイルランド', None),
+            ('FRO', 'フェロー諸島', (-7.0, 63.4)), ('IMN', 'マン島', (-5.6, 53.75)), ('GGY', 'ガーンジー', (-4.6, 49.95)),
+            ('GBR', 'イギリス', ('in', -1.6, 52.6)), ('JEY', 'ジャージー', (-3.7, 49.05)),
+        ],
+        'point_only': ['IMN', 'GGY', 'JEY'],
+        # 首都：kind = capital（首都）/ seat（国でない単位の政府・議会の所在地。3-3 §05）
+        'capitals': [
+            ('コペンハーゲン', 12.5615, 55.6805, 'capital', 'r'), ('オスロ', 10.748, 59.9186, 'capital', 'l'), ('ストックホルム', 18.0954, 59.3527, 'capital', 'b'),
+            ('マリエハムン', 19.949, 60.097, 'seat', 'r'), ('ヴィリニュス', 25.3166, 54.6834, 'capital', 'r'), ('リガ', 24.1, 56.95, 'capital', 'l'),
+            ('タリン', 24.728, 59.4339, 'capital', 'b'), ('ヘルシンキ', 24.9322, 60.1775, 'capital', 'r'), ('レイキャヴィーク', -21.95, 64.15, 'capital', 'b'),
+            ('ダブリン', -6.2509, 53.335, 'capital', 'l'), ('トースハウン', -6.82, 62.03, 'seat', 'b'), ('ダグラス', -4.48, 54.1504, 'seat', 'r'),
+            ('セントピーターポート', -2.539, 49.4568, 'seat', 'r'), ('ロンドン', -0.1187, 51.5019, 'capital', 'r'), ('セントヘリア', -2.1102, 49.1857, 'seat', 'r'),
+        ],
+        'zoom': [
+            ('IMN', 'マン島', 10, (-4.86, -4.25), (54.02, 54.45), 0.2, 10, []),
+            ('GGY', 'ガーンジー（本島）', 50, (-2.70, -2.48), (49.40, 49.53), 0.05, 2, []),
+            ('JEY', 'ジャージー', 20, (-2.27, -1.98), (49.15, 49.29), 0.1, 5, []),
+        ],
+    },
 }
 
 
@@ -80,6 +108,11 @@ def load():
     for f in ne0['features']:
         p = f['properties']
         C[p['ADM0_A3']] = (shape(f['geometry']).buffer(0), p)
+    # 層1を OSM の輪郭で描く単位は、国のページと同じ輪郭にする（オーランド。DESIGN.md §112.1）
+    from countries import COUNTRIES, outline
+    for a3, c in COUNTRIES.items():
+        if c.get('outline_osm') and a3 in C and os.path.exists(os.path.join(c['dir'], 'outline.geojson')):
+            C[a3] = (outline(a3).buffer(0), C[a3][1])
     return C
 
 
@@ -195,7 +228,7 @@ def main_map(key, R, C, capitals):
     fr = Frame(R['lon'], R['lat'], R['phi0'])
     cid = f'cc-r{key.replace("-", "")}-{"cap" if capitals else "shape"}'
     E = [f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {fmt(fr.W)} {fmt(fr.H)}" width="{fmt(fr.W)}" height="{fmt(fr.H)}" class="cc-map" role="img" '
-         f'aria-label="{R["title"]}の{len(R["members"])}か国の{"首都" if capitals else "形と位置"}">', STYLE,
+         f'aria-label="{R["title"]}の{len(R["members"])}{R.get("unit", "か国")}の{"首都" if capitals else "形と位置"}">', STYLE,
          f'<clipPath id="{cid}"><rect x="{ML}" y="{MT}" width="{fmt(fr.w)}" height="{fmt(fr.h)}"/></clipPath>',
          f'<rect x="{ML}" y="{MT}" width="{fmt(fr.w)}" height="{fmt(fr.h)}" fill="#05080d"/>']
     E += grid(fr)
@@ -260,7 +293,7 @@ def main_map(key, R, C, capitals):
         E.append('<g class="L3">' + ''.join(L3) + '</g>')
     E.append('</g>')
     E.append(f'<rect x="{ML}" y="{MT}" width="{fmt(fr.w)}" height="{fmt(fr.h)}" fill="none" stroke="rgba(255,255,255,.3)" stroke-width="1"/>')
-    E.append(text(ML, MT - 9, f'{R["title"]}の{len(R["members"])}か国', 12, '#fff', 'start', ' font-weight="600" stroke="none"'))
+    E.append(text(ML, MT - 9, f'{R["title"]}の{len(R["members"])}{R.get("unit", "か国")}', 12, '#fff', 'start', ' font-weight="600" stroke="none"'))
     E += scale_bar(fr, 100)
     E.append('</svg>')
     return '\n'.join(E), fr
@@ -273,7 +306,8 @@ def zoom_map(key, R, C):
     for a3, nm, z, lon, lat, fine, km, labels in R['zoom']:
         fr = Frame(lon, lat, R['phi0'], zoom=z, ml=ML + W + (24 if W else 0), mt=MT + 20)
         frames.append((a3, nm, z, fine, km, labels, fr))
-        W = fr.ml + fr.w + MR
+        # 見出し（この図だけ○倍）が枠より長いときは、その分だけ幅を取る（枠が狭いと右で切れた。ジャージー。§121）
+        W = max(fr.ml + fr.w, fr.ml + tw(f'この図だけ {z}倍（1度＝{int(S * z):,}px）', 10.5)) + MR
         Hmax = max(Hmax, fr.mt + fr.h + MB)
     E = [f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {fmt(W)} {fmt(Hmax)}" width="{fmt(W)}" height="{fmt(Hmax)}" class="cc-map" role="img" aria-label="拡大図：'
          + '・'.join(f'{nm}（{z}倍）' for _, nm, z, *_ in R['zoom']) + '">', STYLE, '<g class="L2">']

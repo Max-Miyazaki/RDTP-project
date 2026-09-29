@@ -39,9 +39,18 @@ fi
 # ファイルの日付（Geofabrik の抽出の時刻）はここに残り、カードの出典に書かれる
 osmium fileinfo -e -j $PBF > fileinfo.json
 
-# --- 層1を OSM の輪郭で描く国（バチカン・ジブラルタル。countries.py の outline_osm、DESIGN.md §112）
+# --- 層1を OSM の輪郭で描く国（バチカン・ジブラルタル・オーランド。countries.py の outline_osm、DESIGN.md §112.1）
 OUTLINE=$(cd $HERE && $PY -c "from countries import COUNTRIES; print(COUNTRIES['$CC'].get('outline_osm') or '')")
-if [[ -n $OUTLINE ]]; then
+COASTBOX=$(cd $HERE && $PY -c "from countries import COUNTRIES; b = COUNTRIES['$CC'].get('outline_coast'); print(','.join(map(str, b['bbox'])) if b else '')")
+if [[ -n $COASTBOX ]]; then
+  # 行政の境界が海まで含む島の単位：境界の中の、海岸線で閉じた島を集める（outline_coast.py）
+  osmium getid -r -O $PBF r$OUTLINE -o adm.osm.pbf
+  osmium export -O adm.osm.pbf --geometry-types=polygon -a id -o adm.geojson
+  osmium extract -O -b $COASTBOX $PBF -o box.osm.pbf
+  osmium tags-filter -O box.osm.pbf w/natural=coastline -o coast.osm.pbf
+  osmium export -O coast.osm.pbf --geometry-types=linestring -o coast.geojson
+  (cd $HERE && $PY outline_coast.py $CC)
+elif [[ -n $OUTLINE ]]; then
   osmium getid -r -O $PBF r$OUTLINE -o outline.osm.pbf
   osmium export -O outline.osm.pbf --geometry-types=polygon -a id -o ../outline.geojson
 fi
