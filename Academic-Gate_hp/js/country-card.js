@@ -209,6 +209,9 @@
         // 図が2枚以上あるカード（日本・スペイン・ポルトガル・地域のカード）は、拡大表示では1枚ずつ出し、ボタンで切り替える（DESIGN.md §119）。
         // 並べると画面いっぱいにできず、下の図へはスクロールが要るが、図の上のホイールは拡大に使っている。同じ縮尺で並べて見るのは通常表示で
         var scs = [].slice.call(card.querySelectorAll('.cc-maps > .cc-scroll')), cur = 0, tabs = [];
+        // 地域のカードの拡大図（data-deg="mixed"）は後ろへ。開いた人が最初に見るのは全体（§04 も「まず形と位置を」から始まる）
+        function zm(sc) { return sc.querySelector('.cc-fig[data-deg="mixed"]') ? 1 : 0; }
+        scs.sort(function (a, b) { return zm(a) - zm(b); });
         // 層で消えている図（地域のカードの拡大図は層2）は選べない
         function gone(sc) { return ['L1', 'L2', 'L3'].some(function (l) { return sc.classList.contains(l) && card.classList.contains('off-' + l); }); }
         function show(i) {
