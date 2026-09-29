@@ -83,6 +83,8 @@
         'phys-math:ch9':   { label: '9章 線形代数の物理的な使い方',                parent: 'phys-math' },
         'phys-math_9-1':   { label: 'SECTION 9-1',  href: 'phys-math_9-1.html',    parent: 'phys-math:ch9',
                              title: '9-1　行列は線形変換' },
+        'phys-math_9-2':   { label: 'SECTION 9-2',  href: 'phys-math_9-2.html',    parent: 'phys-math:ch9',
+                             title: '9-2　固有値と対角化' },
         // 複合分野：学問分野と精神の圏域のあいだの枠（DESIGN.md §103）。いまは「地球と人類」だけ。
         'composite':       { label: '複合分野',     href: 'study_composite.html',  parent: 'study' },
         // ★ title は付けない：ツリーは title を label より優先するので、付けるとツリーが「地球の構造から人類を読み解く」になる。
