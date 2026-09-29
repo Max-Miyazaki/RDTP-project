@@ -109,9 +109,9 @@
             if (!svg.getBoundingClientRect().width) return;                  // 切り替えで隠れている図
             clamp();
             svg.setAttribute('viewBox', v.map(function (n) { return +n.toFixed(3); }).join(' '));
-            // 文字と点の大きさ：全体表示のときの大きさを保つ。ただし全体表示が作った大きさ（SVG の1単位＝1px）より小さい
-            // 画面（390px など）では、拡大につれて作った大きさまでは大きくなり、そこから先は保つ
-            var ppu = px(), s = Math.max(ppu / z(), Math.min(ppu, 1));
+            // 文字と点の大きさ：画面の上で作った大きさ（SVG の1単位＝1px。線の non-scaling-stroke と同じ）より大きくしない（DESIGN.md §108.2）。
+            // 全体表示が作った大きさより小さい画面（390px など）では、拡大につれて作った大きさまで大きくなり、そこから先は保つ
+            var ppu = px(), s = Math.min(ppu, 1);
             svg.style.setProperty('--inv', (s / ppu).toFixed(4));
             svg.style.touchAction = z() > 1.001 ? 'none' : 'pan-y';        // 全体のときは縦に送れる
             var p1 = deg * px();
