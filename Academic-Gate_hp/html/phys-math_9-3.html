@@ -1,0 +1,982 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>9-3 物理で出会う行列｜物理数学I 9章 | Academic Gates</title>
+<meta name="description" content="転置とエルミート共役、対称・直交・エルミート・ユニタリ行列とその性質の証明、パウリ行列とディラック行列。物理数学I 9章／9-3。">
+<link rel="icon" href="../../favicon.ico" sizes="32x32">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+<!-- ★ ライト/ダーク切替は停止中（DESIGN.md §44）。サイト全体がダーク基調なので、
+     記事だけテーマが変わるのは一貫性を欠くという判断。**復活させるには次の1行の
+     コメントを外すだけでよい**（js/theme.js も css/lesson-theme.css も残してある）。
+     data-theme を付ける主体がこれしか無いので、外しておけば :root[data-theme="light"]
+     は構造的にマッチしない。逆に読み込んだままボタンだけ消すと、OS がライト設定の
+     端末が勝手にライトになり、戻す手段が無くなる（§44.2）。
+     復活時の挙動: テーマは描画前に同期で決まり（FOUC 防止）、ボタンの設置は
+     layout.js がヘッダーを書き出したあと DOMContentLoaded で行われる。 -->
+<!-- <script src="../js/theme.js?v=r125"></script> -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;500&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+<!-- サイト共通 → 記事固有 → テーマ上書き の順で読む（lesson-theme.css は
+     記事の <style> より後ろに置くこと。css/lesson-theme.css 冒頭の注記どおり） -->
+<link rel="stylesheet" href="../css/style.css?v=r125">
+<!-- MathJax: 設定ブロックはローダーより「前」に置く（DESIGN.md §11b）。
+     フォールバックは this.src= ではなく createElement 方式（同§）。 -->
+<script>
+window.MathJax={tex:{inlineMath:[['\\(','\\)']],displayMath:[['\\[','\\]']],tags:'none'},svg:{fontCache:'global'},options:{skipHtmlTags:['script','noscript','style','textarea','pre','code']}};
+</script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"
+        onerror="this.onerror=null;var s=document.createElement('script');s.async=true;s.src='https://unpkg.com/mathjax@3/es5/tex-svg.js';document.head.appendChild(s);"></script>
+<style>
+/* 9-3 物理で出会う行列 — 記事固有のスタイルのみ。9-2 と同じ構成をそのまま使う。
+   共通のリセット・背景・星・ヘッダー/フッター・ボタン・見出し階層・本文リズムは
+   css/style.css が持つ（DESIGN.md §35, §36）。ここに残すのは、この教材の
+   構造（レール／演習ブロック／図版）と、教育用の色トークンだけ。 */
+:root{
+  /* 教材固有のトークン。本体と同値のもの（--bg --surface --nav-bg --ink --line
+     --line-strong --glow-cool --font --nav-clear --ease --radius-lg/md）は
+     css/style.css 側に定義があるので、ここでは持たない。
+     --ink-soft / --ink-faint は本体より明るい値を「意図的に」維持している。
+     本体値に寄せると 13.5px の解説文が 4.56:1 → 3.66:1 と AA を割るため（§36）。 */
+  --surface-2:rgba(255,255,255,.045);
+  --ink-soft:rgba(255,255,255,.68);
+  --ink-faint:rgba(255,255,255,.46);
+  --line-soft:rgba(255,255,255,.05);
+  --accent-deep:#a8c9ff;
+  --accent-tint:rgba(77,148,255,.12);
+  --amber:#ffb46b;--amber-tint:rgba(255,160,70,.08);--amber-line:rgba(255,160,70,.32);
+  --good:#72e3ad;--good-tint:rgba(114,227,173,.08);--good-line:rgba(114,227,173,.28);
+  --key:#ff6fa5;--key-tint:rgba(255,61,139,.08);--key-line:rgba(255,61,139,.28);
+  --teach:#a48bff;--teach-tint:rgba(123,77,255,.11);--teach-line:rgba(123,77,255,.38);
+  --mono:ui-monospace,'SFMono-Regular',Menlo,Consolas,monospace;
+  --rail-w:250px;
+}
+body{font-size:15.5px;line-height:1.9;line-break:strict;overflow-x:hidden}
+
+/* --- レイアウト（左に目次レール／右に本文の2カラム） ------------------------
+   本文列 760px は日本語の長文＋数式に合わせた measure。style.css の共通記事
+   ルールは `body.is-article main > section:not(.rail)`（詳細度 0,2,3）と
+   `… ~ section:not(.rail)`（0,3,4）で 900px と 160px パディングをかけてくる。
+   こちらは `.main` を噛ませて 0,3,2 / 0,4,3 とし、確実に上回る（§36）。 */
+/* 全幅。左寄せのレイアウトで、余った幅は右に流す（§43）。
+   §40 で一度 max-width を外して差し戻しているが、あれは「中央寄せのまま左右を
+   対称にする」変更で、本文の位置も幅も変わらなかったため戻した。今回は本文を
+   860px に広げて左揃えにするので、目的も結果も違う。
+   レールの左余白は 1280px → 1440px にかけて 0 → 32px。狭い画面ではまず余白を
+   削って本文幅に回す（レール幅 250px は目次の文字量で決まるので触らない）。 */
+.wrap{display:flex;padding-top:var(--nav-clearance);
+      padding-left:clamp(0px, calc((100vw - 1280px) * .2), 32px)}
+.rail{width:var(--rail-w);flex:0 0 var(--rail-w);position:sticky;top:var(--nav-clearance);height:calc(100vh - var(--nav-clearance));overflow-y:auto;padding:18px 14px 60px 22px;border-right:1px solid var(--line)}
+/* 左パディング＝レールと本文の間隔。1024px → 1280px にかけて 24 → 56px。
+   これも狭い画面では縮めて本文幅に回す。 */
+.main{flex:1 1 auto;min-width:0;
+      padding:0 clamp(24px, calc(24px + (100vw - 1024px) * .125), 56px) 110px}
+/* 本文列 860px。760px では display 数式が 6 本はみ出していた（解答の入れ子
+   パディングで、.sol の中は本文列より 132px 狭い箱になる）。全 82 本が収まる
+   最小幅は実測 853px（§43.2）。中央寄せをやめて左揃えにし、余りは右へ。 */
+body.is-article .main > .lesson-hero,
+body.is-article .main > section:not(.rail),
+body.is-article .main > .foot{max-width:860px;margin-left:0;margin-right:auto;padding-left:0;padding-right:0}
+.rail .brand{font-weight:400;font-size:15px;line-height:1.45;margin:2px 0 4px}
+.rail .brand small{display:block;font-size:10px;font-weight:500;color:var(--ink-faint);letter-spacing:.2em;margin-top:6px}
+.progress-wrap{height:2px;background:var(--line);border-radius:99px;margin:16px 0 18px;overflow:hidden}
+.progress-bar{height:100%;width:0;background:linear-gradient(90deg,var(--accent),#a8c9ff);transition:width .15s linear}
+.toc{list-style:none;margin:0;padding:0;font-size:12.5px}
+.toc .part{font-size:10px;letter-spacing:.2em;color:var(--ink-faint);margin:16px 0 5px;padding-left:2px}
+.toc a{display:block;text-decoration:none;color:var(--ink-soft);padding:4px 10px;border-radius:999px;transition:color var(--dur) var(--ease),background var(--dur) var(--ease)}
+.toc a:hover{color:var(--ink);background:var(--surface-2)}
+.toc a.active{color:var(--ink);background:var(--accent-tint)}
+.toc a .n{font-size:10.5px;color:var(--ink-faint);margin-right:8px;font-variant-numeric:tabular-nums}
+.toc a.active .n{color:var(--accent)}
+
+/* --- 記事の導入部。`.hero` は index.html 専用で、style.css が
+   `.hero h1/.hero p/.hero .eyebrow` に黒い text-shadow をかけるため使えない（§36）。 --- */
+.lesson-hero{padding:64px 0 34px;border-bottom:1px solid var(--line)}
+.lesson-hero h1{font-weight:300;font-size:clamp(28px,4vw,48px);line-height:1.25;letter-spacing:-.02em;margin:0 0 22px}
+.lesson-hero h1 .sub{display:block;font-size:.52em;font-weight:300;color:var(--ink-soft);letter-spacing:0;margin-top:12px}
+.lesson-hero p{color:var(--ink-soft);margin:0 0 12px}
+.lesson-hero .lead{font-size:16.5px;color:var(--ink-soft)}
+/* .eyebrow 本体は style.css の共通コンポーネント。色と余白だけ上書きする
+   （共通の --text-tertiary は 11px の小さな文字で 3.66:1 と AA を割るため） */
+.eyebrow{color:var(--ink-faint);margin-bottom:18px}
+
+section{border-bottom:1px solid var(--line-soft);scroll-margin-top:var(--nav-clearance)}
+/* 縦の余白も共通ルールに勝つ必要がある（先頭セクションも2つ目以降も同じ 56px） */
+body.is-article .main > section:not(.rail),
+body.is-article .main > section:not(.rail) ~ section:not(.rail){padding-top:56px;padding-bottom:12px}
+.sec-head{display:flex;align-items:baseline;gap:14px;margin-bottom:10px}
+.sec-head .idx{font-size:.72rem;font-weight:500;letter-spacing:.2em;color:var(--ink-faint);padding-top:4px;flex:0 0 auto;font-variant-numeric:tabular-nums}
+.sec-head .idx::after{content:' —'}
+body.is-article main h2{font-weight:400;font-size:clamp(21px,2.6vw,28px);line-height:1.3;letter-spacing:-.01em;margin:0}
+body.is-article main h3{font-weight:400;font-size:17px;margin:30px 0 6px;color:var(--ink)}
+body.is-article main h4{font-weight:500;font-size:14.5px;margin:18px 0 4px;color:var(--ink)}
+body.is-article main p{margin:10px 0;color:var(--ink-soft)}
+body.is-article main ul,body.is-article main ol{margin:10px 0;padding-left:1.3em;color:var(--ink-soft)}
+li{margin:4px 0}
+strong{font-weight:500;color:var(--ink)}
+code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);border-radius:6px;padding:1px 6px;color:var(--accent-deep)}
+mjx-container{color:var(--ink)}
+mjx-container[display="true"]{margin:14px 0!important;overflow-x:auto;overflow-y:hidden;padding:2px 0}
+
+/* 別行立て数式だけ、入れ子のパディングの外へ広げる（§46）。
+   解答や色付きボックスの中の数式は、section → .drill(20) → .attempt(22) →
+   .sol(20) と積み上がるパディングで、本文列より最大 132px 狭い箱に入っていた。
+   1024px では 82本中 6本がはみ出し、最大 +127px。**文章の字下げはそのまま**に、
+   数式だけを外へ出す。
+   値は「祖先のパディングの合計 − 8px」。8px 残すのは枠線に重ねないため。
+   全量（合計そのまま）だと .sol 左端の青いアクセントバーの上に分数が乗る。
+   はみ出しが無い幅では見た目が変わらない（箱が左右対称に広がるだけで中身は
+   中央揃えのまま。1440px で適用前後のピクセル差 0 を確認済み）。
+   !important は既存の margin:14px 0!important を上書きするため。
+   新しい入れ子を足すときは、この表に1行足すこと（現在 .hint の中に別行立ては無い）。
+     .box 20 / .drill 20 / .attempt 22 / .sol 20 */
+.box mjx-container[display="true"],
+.drill > mjx-container[display="true"]{margin:14px -12px!important}
+.attempt mjx-container[display="true"]{margin:14px -14px!important}
+.drill .attempt mjx-container[display="true"],
+.attempt .sol mjx-container[display="true"]{margin:14px -34px!important}
+.drill .attempt .sol mjx-container[display="true"]{margin:14px -54px!important}
+
+.box{border-radius:var(--radius-md);padding:16px 20px;margin:18px 0;border:1px solid var(--line);background:var(--surface)}
+.box .lab{font-size:.7rem;letter-spacing:.14em;font-weight:500;display:block;margin-bottom:6px}
+.box p{max-width:none}
+.box p:first-of-type{margin-top:2px}.box p:last-child{margin-bottom:0}
+/* 枠線は必ずトークン経由にすること。ここに直書きすると lesson-theme.css の
+   ライト上書きが効かず、暗い背景用の明るい色がライトでパステルになる（§41）。 */
+.box.principle{background:var(--key-tint);border-color:var(--key-line)}.box.principle .lab{color:var(--key)}
+.box.target{background:var(--good-tint);border-color:var(--good-line)}.box.target .lab{color:var(--good)}
+.box.warn{background:var(--amber-tint);border-color:var(--amber-line)}.box.warn .lab{color:var(--amber)}
+.box.teach{background:var(--teach-tint);border-color:var(--teach-line)}.box.teach .lab{color:var(--teach)}
+.box.teach .lab::before{content:"◎ "}
+
+.table-scroll{overflow-x:auto;margin:14px 0}
+.mini-table{width:100%;border-collapse:collapse;font-size:14px;margin:0;color:var(--ink-soft)}
+.mini-table th,.mini-table td{border:1px solid var(--line);padding:9px 11px;text-align:left;vertical-align:top}
+.mini-table th{background:var(--surface-2);font-weight:500;color:var(--ink)}
+
+.fig{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-lg);padding:18px 18px 12px;margin:20px 0}
+.fig > svg{width:100%;height:auto;display:block}
+.fig svg text{font-family:var(--font-body)}
+.fig figcaption{font-size:13px;color:var(--ink-soft);margin-top:10px;line-height:1.8;max-width:none}
+
+/* --- 演習まわり。`.ctl-btn` は style.css の `.btn`（サイト CTA。
+   `.btn::before` のホバーグローを持つ）と衝突しないよう改名したもの（§36）。 --- */
+.attempt{background:var(--surface);border:1px solid var(--amber-line);border-radius:var(--radius-lg);padding:18px 22px;margin:20px 0}
+.attempt .lab{font-size:.7rem;letter-spacing:.14em;color:var(--amber);font-weight:500;display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.attempt .lab::before{content:"✎"}
+.attempt p{max-width:none}
+.controls{display:flex;flex-wrap:wrap;gap:10px;margin:14px 0 4px}
+.ctl-btn{font-family:var(--font-body);font-size:12.5px;font-weight:500;border:1px solid var(--line);background:transparent;color:var(--ink-soft);padding:7px 16px;border-radius:var(--radius-pill);cursor:pointer;transition:color var(--dur) var(--ease),border-color var(--dur) var(--ease),background var(--dur) var(--ease)}
+.ctl-btn:hover{color:var(--ink);border-color:var(--line-strong);background:var(--surface-2)}
+.ctl-btn.amber{color:var(--amber);border-color:var(--amber-line)}
+.ctl-btn.amber:hover{background:var(--amber-tint)}
+.ctl-btn:disabled{opacity:.4;cursor:default;background:transparent}
+.hint{display:none;border-left:2px solid var(--amber);background:var(--amber-tint);border-radius:0 var(--radius-sm) var(--radius-sm) 0;padding:12px 16px;margin:10px 0}
+.hint .hn{font-size:.68rem;letter-spacing:.14em;color:var(--amber);font-weight:500;display:block;margin-bottom:3px}
+.hint p{max-width:none}.hint p:last-child{margin-bottom:0}.hint p:first-child{margin-top:0}
+.sol{display:none;border:1px solid var(--line);border-left:2px solid var(--accent);border-radius:0 var(--radius-md) var(--radius-md) 0;background:var(--surface-2);padding:8px 20px 16px;margin:12px 0}
+.sol p{max-width:none}
+.step{margin:18px 0}
+.step .sh{display:flex;gap:10px;align-items:baseline;font-weight:500;color:var(--ink);margin-bottom:2px}
+.step .sn{font-size:11px;font-weight:500;color:#06142e;background:var(--accent);border-radius:999px;padding:1px 10px;flex:0 0 auto}
+.step .why{font-size:13.5px;color:var(--ink-faint);border-left:1px solid var(--line);padding-left:12px;margin:5px 0 5px 2px;max-width:none}
+.transfer{background:var(--surface-2);border:1px solid var(--line);border-radius:var(--radius-md);padding:14px 18px;margin:18px 0}
+.transfer .lab{font-size:.7rem;letter-spacing:.14em;color:var(--accent);font-weight:500;display:block;margin-bottom:5px}
+.transfer p{max-width:none}
+.drill{background:var(--surface);border:1px solid var(--line);border-left:2px solid var(--accent);border-radius:0 var(--radius-md) var(--radius-md) 0;padding:14px 20px;margin:16px 0}
+.drill .qn{font-size:11px;font-weight:500;color:#06142e;background:var(--accent);border-radius:999px;padding:2px 11px;margin-right:8px}
+.drill p{max-width:none}
+.drill p:first-child{margin-top:2px}
+.drill .attempt{background:transparent;border-style:dashed}
+.foot{padding:34px 0 0;color:var(--ink-faint);font-size:12.5px}
+.foot p{color:var(--ink-faint);max-width:none}
+
+/* モバイル：レールを引き出しに。`.menu-btn` は位置だけを持ち、見た目は
+   共通コンポーネントの `.btn` を併用する。 */
+.menu-btn{display:none}
+.scrim{display:none}
+@media (max-width:900px){
+  .rail{position:fixed;left:0;top:0;height:100vh;z-index:1100;transform:translateX(-100%);transition:transform .25s var(--ease);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);padding-top:28px}
+  body.nav-open .rail{transform:translateX(0)}
+  .main{padding:0 20px 90px}
+  .menu-btn{display:inline-flex;position:fixed;bottom:18px;right:18px;z-index:1050;background:var(--nav-bg);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);color:var(--ink)}
+  .scrim{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:1090}
+  body.nav-open .scrim{display:block}
+  .lesson-hero{padding-top:40px}
+  /* 案A（§46.1）の負マージンをここで切る。マージンは固定 px なので、箱そのものが
+     狭いこの帯では数式が .sol の枠を大きく飛び出し、点線の .attempt 枠まで越えて
+     見える。390px では 28本が枠を横切っていた。はみ出し本数は 36→42 に増えるが、
+     どれも数式ごとの横スクロールで読める。§46.4 */
+  .box mjx-container[display="true"],
+  .drill > mjx-container[display="true"],
+  .attempt mjx-container[display="true"],
+  .drill .attempt mjx-container[display="true"],
+  .attempt .sol mjx-container[display="true"],
+  .drill .attempt .sol mjx-container[display="true"]{margin:14px 0!important}
+}
+@media print{
+  body{background:#fff;color:#000}
+  header,.rail,.menu-btn,.scrim,#starfield,footer{display:none!important}
+  .wrap{display:block;padding-top:0}
+  .hint,.sol{display:block!important}
+}
+</style>
+<link rel="stylesheet" href="../css/lesson-theme.css?v=r125">
+</head>
+<body data-page="study" class="is-article" data-node="phys-math_9-3">
+<canvas id="starfield" aria-hidden="true"></canvas>
+<div id="site-nav"><noscript><nav class="noscript-nav" aria-label="メインナビゲーション"><a href="index.html">ホーム</a><a href="self-intro.html">自己紹介</a><a href="study.html">勉強の軌跡</a><a href="videos.html">動画</a><a href="blog.html">ブログ</a><a href="sns.html">各種SNS</a></nav></noscript></div>
+<button class="menu-btn btn" id="menuBtn" aria-controls="rail" aria-expanded="false">目次 <span class="btn-disc" aria-hidden="true">≡</span></button>
+<div class="scrim" id="scrim"></div>
+<div class="wrap">
+  <nav class="rail" id="rail">
+    <!-- 科目へ戻る導線（レール上部の「← 一つ上」）は layout.js が CRUMBS から書き出す。 -->
+    <div class="brand">9-3　物理で出会う行列<small>SECTION 9-3 / PHYS. MATRICES</small></div>
+    <div class="progress-wrap"><div class="progress-bar" id="pbar"></div></div>
+    <ul class="toc" id="toc">
+      <li class="part">土台</li>
+      <li><a href="#m0"><span class="n">01</span>転置・共役・デルタ</a></li>
+      <li><a href="#d1"><span class="n">02</span>4種類の行列</a></li>
+      <li class="part">使ってみる</li>
+      <li><a href="#d2"><span class="n">03</span>パウリ行列</a></li>
+      <li><a href="#d3"><span class="n">04</span>ディラック行列</a></li>
+      <li class="part">仕上げ</li>
+      <li><a href="#howto"><span class="n">05</span>チェックリストと次回予告</a></li>
+    </ul>
+  </nav>
+
+  <main class="main">
+    <div class="lesson-hero">
+      <div class="eyebrow">物理数学 I ／ 9章 線形代数の物理的な使い方 ／ SECTION 9-3</div>
+      <h1>9-3　物理で出会う行列<span class="sub">名前の付いた行列と、その性質</span></h1>
+      <p class="lead">9-1・9-2 で、行列を「ベクトルを動かす操作」として読み、固有値と対角化を学びました。物理の本を開くと、行列には「エルミート」「ユニタリ」「パウリ」「ディラック」といった<strong>名前</strong>が付いて登場します。</p>
+      <p>この記事では、そうした名前の意味と、名前の付いた代表的な行列を紹介し、その性質をすべて証明します。行列の成分を添字で書いて計算する方法や、トレース・行列式・ガウス積分の公式は、次の 9-4 で扱います。</p>
+      <p>どれも、ここで深く使いこなす必要はありません。<strong>どこで使われるのか</strong>と、<strong>その性質がなぜ成り立つのか</strong>を押さえておけば、各分野のセクションで出会ったときに落ち着いて読めます。</p>
+      <p>読み方：解答は必ず閉じたまま、紙で挑戦してください。</p>
+    </div>
+
+    <!-- §01 -->
+    <section id="m0">
+      <div class="sec-head"><span class="idx">§01</span><h2>転置・共役・クロネッカーのデルタ</h2></div>
+
+      <p>§02 以降では、行列を「転置する」「複素共役を取る」という操作がたくさん出てきます。まず実数のベクトル、次に実数の行列で転置を導入し、そのあと複素数に広げます。</p>
+
+      <div class="box target"><span class="lab">この節で押さえること</span>
+      <ul style="margin:6px 0 0">
+        <li><strong>転置</strong>：行と列を入れ替える。内積は \(\vec u^{\mathsf T}\vec v\)、長さの2乗は \(\vec v^{\mathsf T}\vec v\) と書ける。</li>
+        <li><strong>エルミート共役</strong>：複素共役を取ってから転置する。複素数のベクトルの内積・長さは \(\dagger\) で書く。</li>
+        <li><strong>積の規則</strong>：\((AB)^{\mathsf T}=B^{\mathsf T}A^{\mathsf T}\)、\((AB)^\dagger=B^\dagger A^\dagger\)。<strong>順序が逆になる</strong>。</li>
+        <li><strong>クロネッカーのデルタ</strong> \(\delta_{jk}\)：番号が同じなら 1、違えば 0。</li>
+      </ul></div>
+
+      <h3>ベクトルの転置と内積</h3>
+      <p>これまで、ベクトルは成分を縦に並べた<strong>列ベクトル</strong>で書いてきました（9-1 §01）。この縦の並びを横に倒したものを<strong>行ベクトル</strong>といい、この操作を<strong>転置</strong>と呼んで、\(\vec v^{\mathsf T}\) と書きます。</p>
+      \[ \vec v=\begin{pmatrix}\color{#72e3ad}{v_1}\\\color{#72e3ad}{v_2}\end{pmatrix}\ \longrightarrow\ \vec v^{\mathsf T}=\begin{pmatrix}\color{#72e3ad}{v_1}&\color{#72e3ad}{v_2}\end{pmatrix} \]
+      <p>8-1 では、内積を \(\vec u\cdot\vec v\) とドットで書き、成分では \(\vec u\cdot\vec v=u_1v_1+u_2v_2\) と計算しました。この「対応する成分どうしを掛けて足す」計算は、9-1 §01 の行列の掛け算（行 × 列）とまったく同じ形です。そこで、左のベクトルだけを転置して行ベクトルにすれば、内積を行列の掛け算として書けます。</p>
+      \[ \begin{aligned}\vec u^{\mathsf T}\vec v&=\begin{pmatrix}u_1&u_2\end{pmatrix}\begin{pmatrix}v_1\\v_2\end{pmatrix}\\&=u_1v_1+u_2v_2\\&=\vec u\cdot\vec v\end{aligned} \]
+
+      <div class="box warn"><span class="lab">ドットの書き方と、転置の書き方</span>
+      <p>\(\vec u\cdot\vec v\) と \(\vec u^{\mathsf T}\vec v\) は、<strong>同じ数</strong>を表す2つの書き方です。ドットは「内積を取る」という操作の名前で、物理の本では、成分が実数のベクトルならこちらがよく使われます。転置の書き方は、その計算を<strong>行列の掛け算として行う</strong>方法を明示したもので、行列を間にはさんだ \(\vec u^{\mathsf T}A\vec v\) のような式や、このあと出てくる複素数のベクトルを扱うときに欠かせません。</p>
+      <p style="margin-top:8px">つまり、内積を計算するたびに実際に転置という操作をしているわけではなく、「対応する成分を掛けて足す」という中身を、行列の言葉で書くと転置が現れる、ということです。</p></div>
+      <p>とくに \(\vec v^{\mathsf T}\vec v=v_1^2+v_2^2=|\vec v|^2\) は長さの2乗です。<strong>内積や長さを行列の言葉で書くための道具</strong>が転置だ、と思っておいてください。§02 では、この形を使って「長さを変えない行列」を調べます。</p>
+
+      <h3>クロネッカーのデルタ</h3>
+      <p>8-1 で、基本ベクトルどうしの内積は、同じものなら 1、違うものなら 0 でした（\(\vec e_x\cdot\vec e_x=1\)、\(\vec e_x\cdot\vec e_y=0\)）。基本ベクトルに番号を付けて \(\vec e_1,\ \vec e_2\) と書くと、これらの内積は1本の式にまとめられます。</p>
+      \[ \vec e_j^{\mathsf T}\vec e_k=\delta_{jk} \]
+
+      <div class="box target"><span class="lab">クロネッカーのデルタ</span>
+      \[ \delta_{jk}=\begin{cases}1&(j=k)\\0&(j\neq k)\end{cases} \]
+      <p>2つの番号が同じなら 1、違えば 0 を表す記号です。場合分けを1つの記号にしまっておくための道具で、物理では「同じ向きどうしなら 1、違う向きなら 0」という関係を書くのにいつも使われます。</p></div>
+
+      <p>たとえば単位行列 \(I\) の \(j\) 行 \(k\) 列の成分は、対角（\(j=k\)）が 1、それ以外が 0 なので、ちょうど \(\delta_{jk}\) です。</p>
+
+      <h3>行列の転置</h3>
+      <p>行列の転置も同じ考え方です。9-1 §02 のとおり、行列は列ベクトルを横に並べたものと見られます。その<strong>各列を転置して行ベクトルにし、上から順に並べ直したもの</strong>が、行列の転置 \(A^{\mathsf T}\) です。色を付けて見ると、1列目（ピンク）が1行目に、2列目（緑）が2行目になっています。</p>
+      \[ \begin{pmatrix}\color{#ff6fa5}{a}&\color{#72e3ad}{b}\\\color{#ff6fa5}{c}&\color{#72e3ad}{d}\end{pmatrix}^{\mathsf T}=\begin{pmatrix}\color{#ff6fa5}{a}&\color{#ff6fa5}{c}\\\color{#72e3ad}{b}&\color{#72e3ad}{d}\end{pmatrix} \]
+      <p>成分で見ると、対角の \(a,\ d\) はそのままで、右上と左下が入れ替わります。</p>
+      <p>行列の積を転置すると、<strong>掛ける順序が逆</strong>になります。§02 の証明で使う大事な規則です。</p>
+      \[ (AB)^{\mathsf T}=B^{\mathsf T}A^{\mathsf T} \]
+      <p><strong>証明（2行2列）</strong>：\(A=\begin{pmatrix}a&b\\c&d\end{pmatrix}\)、\(B=\begin{pmatrix}p&q\\r&s\end{pmatrix}\) とします。9-1 §04 の積の公式で \(AB\) を作り、転置します。</p>
+      \[ \begin{aligned}AB&=\begin{pmatrix}ap+br&aq+bs\\cp+dr&cq+ds\end{pmatrix}\\(AB)^{\mathsf T}&=\begin{pmatrix}ap+br&cp+dr\\aq+bs&cq+ds\end{pmatrix}\end{aligned} \]
+      <p>一方、\(B^{\mathsf T}=\begin{pmatrix}p&r\\q&s\end{pmatrix}\)、\(A^{\mathsf T}=\begin{pmatrix}a&c\\b&d\end{pmatrix}\) を、この順に掛けると</p>
+      \[ B^{\mathsf T}A^{\mathsf T}=\begin{pmatrix}pa+rb&pc+rd\\qa+sb&qc+sd\end{pmatrix} \]
+      <p>で、4つの成分がすべて \((AB)^{\mathsf T}\) と一致します（数の掛け算は順序を入れ替えられるので、\(pa=ap\) などです）。順序が逆になるのは、「靴下をはいてから靴をはく」の逆を行うには、靴を先に脱ぐ必要があるのと同じです。</p>
+
+      <h3>複素数のベクトルと、エルミート共役</h3>
+      <p>量子力学では、成分が複素数のベクトルと行列が主役です。ところが複素数のベクトルでは、\(\vec z^{\mathsf T}\vec z=z_1^2+z_2^2\) は長さの2乗になりません（たとえば \(z_1=i\) なら \(z_1^2={-}1\) で負になります）。</p>
+      <p>4章のとおり、複素数 \(z\) の絶対値の2乗は \(|z|^2=\bar zz\) です（\(\bar z\) は \(z\) の<strong>複素共役</strong>。\(z=x+iy\) なら \(\bar z=x-iy\)）。そこで、行ベクトルにするときに<strong>転置に加えて複素共役も取る</strong>ことにします。</p>
+      \[ \vec z=\begin{pmatrix}z_1\\z_2\end{pmatrix}\ \longrightarrow\ \vec z^\dagger=\begin{pmatrix}\bar z_1&\bar z_2\end{pmatrix} \]
+      <p>すると \(\vec z^\dagger\vec z=\bar z_1z_1+\bar z_2z_2=|z_1|^2+|z_2|^2\) で、正しく長さの2乗になります。複素数のベクトルどうしの内積も \(\vec u^\dagger\vec v\) で表します。ドットの書き方のままでは複素共役を取ることが表せないので、<strong>複素数のベクトルでは、\(\dagger\) を使った書き方が基本</strong>になります（量子力学では、同じ内積をディラックが考えた<strong>ブラケット記法</strong>で \(\langle u|v\rangle\) と書くのが一般的です。中身は \(\vec u^\dagger\vec v\) と同じで、量子力学のセクションで扱います）。</p>
+
+      <div class="box target"><span class="lab">エルミート共役</span>
+      <p>行列の各成分を<strong>複素共役</strong>にし、さらに<strong>転置</strong>したものを<strong>エルミート共役</strong>といい、\(A^\dagger\)（エー・ダガー）と書きます。ベクトルの \(\vec z^\dagger\) も、同じ操作です。</p></div>
+
+      <p>2つの操作を、行う順に矢印でつなぐと次のとおりです。「共役」の矢印では各成分の \(i\) の符号を変え、「転置」の矢印では右上と左下を入れ替えています。</p>
+      \[ \begin{pmatrix}a&b\\c&d\end{pmatrix}\xrightarrow{\text{共役}}\begin{pmatrix}\bar a&\bar b\\\bar c&\bar d\end{pmatrix}\xrightarrow{\text{転置}}\begin{pmatrix}\bar a&\bar c\\\bar b&\bar d\end{pmatrix} \]
+      <p>最後の行列が \(A^\dagger\) です。</p>
+      <p><strong>例</strong>：\(A=\begin{pmatrix}1&i\\2&{-}i\end{pmatrix}\) なら</p>
+      \[ \begin{pmatrix}1&i\\2&{-}i\end{pmatrix}\xrightarrow{\text{共役}}\begin{pmatrix}1&{-}i\\2&i\end{pmatrix}\xrightarrow{\text{転置}}\begin{pmatrix}1&2\\{-}i&i\end{pmatrix} \]
+      <p>で、\(A^\dagger=\begin{pmatrix}1&2\\{-}i&i\end{pmatrix}\) です。成分がすべて実数なら、複素共役を取っても変わらないので、エルミート共役は転置と同じです。</p>
+      <p>積のエルミート共役も、転置と同じく<strong>順序が逆</strong>になります。</p>
+      \[ (AB)^\dagger=B^\dagger A^\dagger \]
+      <p>複素共役は積に分配でき（4章：\(\overline{zw}=\bar z\,\bar w\)、行列でも成分ごとに同じ）、そのあとの転置で、上で示した \((AB)^{\mathsf T}=B^{\mathsf T}A^{\mathsf T}\) により順序が逆になるからです。</p>
+
+      <div class="attempt"><span class="lab">まず自力で</span>
+      <p>\(A=\begin{pmatrix}2&1+i\\3i&4\end{pmatrix}\) について、転置 \(A^{\mathsf T}\)、複素共役 \(\bar A\)、エルミート共役 \(A^\dagger\) を求めてください。さらに、\(A^\dagger\) のエルミート共役 \((A^\dagger)^\dagger\) が \(A\) に戻ることを確かめてください。</p>
+      <div class="controls">
+        <button class="ctl-btn amber" data-hint>ヒントを表示</button>
+        <button class="ctl-btn" data-sol>解答を見る</button>
+      </div>
+      <div class="hint"><span class="hn">HINT 1</span><p>転置は右上と左下の入れ替え、複素共役は各成分の \(i\) の符号を変えること。エルミート共役は、その両方です。</p></div>
+      <div class="sol">
+        <div class="step"><div class="sh"><span class="sn">1</span>転置</div>
+        <div class="why">なぜ：右上と左下を入れ替えます。</div>
+        \[ A^{\mathsf T}=\begin{pmatrix}2&3i\\1+i&4\end{pmatrix} \]
+        </div>
+        <div class="step"><div class="sh"><span class="sn">2</span>複素共役</div>
+        <div class="why">なぜ：各成分の \(i\) の符号を変えます。実数の成分はそのままです。</div>
+        \[ \bar A=\begin{pmatrix}2&1-i\\{-}3i&4\end{pmatrix} \]
+        </div>
+        <div class="step"><div class="sh"><span class="sn">3</span>エルミート共役</div>
+        <div class="why">なぜ：\(\bar A\) をさらに転置します。</div>
+        \[ A^\dagger=\begin{pmatrix}2&{-}3i\\1-i&4\end{pmatrix} \]
+        </div>
+        <div class="step"><div class="sh"><span class="sn">4</span>もう一度エルミート共役を取る</div>
+        <div class="why">なぜ：複素共役を2回取ると元に戻り、転置も2回で元に戻るはずです。</div>
+        <p style="margin:4px 0">\(A^\dagger\) の各成分を複素共役にすると \(\begin{pmatrix}2&3i\\1+i&4\end{pmatrix}\)、それを転置すると \(\begin{pmatrix}2&1+i\\3i&4\end{pmatrix}=A\) です。</p>
+        <p style="font-size:13.5px;color:var(--ink-faint);margin:6px 0 0">\(A\) は、右上 \(1+i\) と左下 \(3i\) が複素共役どうしではないので、エルミート行列ではありません（\(A^\dagger\neq A\)）。<strong>エルミート共役を2回取ると元に戻る</strong>ことは、§02 の証明で何度も使います。</p></div>
+      </div>
+      </div>
+
+      <h3>計算ドリル（§01・全1問）</h3>
+
+      <div class="drill"><p><span class="qn">問1</span>\(A=\begin{pmatrix}1&2\\3&4\end{pmatrix}\)、\(B=\begin{pmatrix}0&1\\1&0\end{pmatrix}\) について、\((AB)^{\mathsf T}\) と \(B^{\mathsf T}A^{\mathsf T}\) を計算し、一致することを確かめよ。また、\(A^{\mathsf T}B^{\mathsf T}\) とは一致しないことも確かめよ。</p>
+      <div class="attempt" style="margin:10px 0 4px"><span class="lab">自分の答えを出してから</span>
+      <div class="controls"><button class="ctl-btn" data-sol>解答を見る</button></div>
+      <div class="sol"><p>\(AB=\begin{pmatrix}2&1\\4&3\end{pmatrix}\) なので、\((AB)^{\mathsf T}=\begin{pmatrix}2&4\\1&3\end{pmatrix}\)。</p>
+      <p>\(B^{\mathsf T}=B\)、\(A^{\mathsf T}=\begin{pmatrix}1&3\\2&4\end{pmatrix}\) なので</p>
+      \[ B^{\mathsf T}A^{\mathsf T}=\begin{pmatrix}2&4\\1&3\end{pmatrix} \]
+      <p>で一致します。一方、順序を入れ替えると</p>
+      \[ A^{\mathsf T}B^{\mathsf T}=\begin{pmatrix}3&1\\4&2\end{pmatrix} \]
+      <p>で、一致しません。</p>
+      <p style="font-size:13.5px;color:var(--ink-faint)">転置すると、<strong>掛ける順序が逆になる</strong>ことを、数値で確かめられました。順序を逆にしないと、正しい答えになりません。</p></div></div></div>
+
+      <div class="box teach"><span class="lab">この記事の到達目標</span>
+      <ul style="margin:6px 0 0">
+        <li>転置・複素共役・エルミート共役を計算し、積の規則を証明できる</li>
+        <li>対称・直交・エルミート・ユニタリ行列の性質を証明し、物理での役割を言える</li>
+        <li>パウリ行列の性質と、反交換関係・交換関係を計算で確かめられる</li>
+        <li>ディラック行列を2行2列の塊で読み、反交換関係を確かめられる</li>
+      </ul></div>
+
+      <div class="box principle"><span class="lab">前提として使うもの</span>
+      <ul style="margin:6px 0 0">
+        <li><strong>9-1・9-2</strong>：行列の積、逆行列、固有値</li>
+        <li><strong>8-1</strong>：内積、基本ベクトル</li>
+        <li><strong>4章</strong>：複素数、複素共役、オイラーの公式</li>
+      </ul></div>
+    </section>
+
+    <!-- §02 -->
+    <section id="d1">
+      <div class="sec-head"><span class="idx">§02</span><h2>対称・直交・エルミート・ユニタリ行列</h2></div>
+
+      <p>この節では、物理でよく使われる4種類の行列を扱います。まず実数の行列で2つ（対称行列・直交行列）を定義して意味を読み取り、次にそれを複素数に広げた2つ（エルミート行列・ユニタリ行列）を定義します。性質の証明は、最後にまとめて行います。</p>
+
+      <div class="box target"><span class="lab">この節で押さえること</span>
+      <ul style="margin:6px 0 0">
+        <li><strong>直交行列・ユニタリ行列</strong>は、ベクトルの<strong>長さを変えない</strong>（回転の仲間）。逆行列は、転置（またはエルミート共役）を取るだけで得られる。</li>
+        <li><strong>対称行列・エルミート行列</strong>は、<strong>固有値がすべて実数</strong>で、<strong>固有ベクトルが直交する</strong>。</li>
+        <li><strong>ユニタリ行列</strong>の固有値は、大きさ 1 の複素数 \(e^{i\varphi}\) になる。</li>
+        <li>物理では、エルミート行列が<strong>観測する量</strong>、ユニタリ行列が<strong>時間変化や対称性</strong>を表す。</li>
+      </ul>
+      <p style="margin-top:8px">この節の証明は、これらが<strong>なぜ成り立つのかを確かめる</strong>ためのものです。まず結論を押さえ、証明は1つずつ追ってください。</p></div>
+
+      <h3>対称行列</h3>
+      <div class="box target"><span class="lab">対称行列の定義</span>
+      \[ A^{\mathsf T}=A \]
+      <p>転置しても変わらない行列を<strong>対称行列</strong>といいます。§01 の色分けのとおり、転置では右上と左下が入れ替わるので、<strong>右上と左下が等しい</strong>行列のことです。</p></div>
+      <p>9-2 の \(\begin{pmatrix}2&1\\1&2\end{pmatrix}\) は対称行列です。9-2 で見たとおり、対称行列の固有値は実数で、固有ベクトルは直交します（下で証明します）。変換として見ると、<strong>直交する2つの向きに、それぞれ伸び縮みさせる</strong>操作です（下の図の右）。</p>
+
+      <h3>直交行列</h3>
+      <div class="box target"><span class="lab">直交行列の定義</span>
+      \[ R^{\mathsf T}R=I \]
+      <p>この式を満たす行列を<strong>直交行列</strong>といいます。言い換えると、<strong>転置 \(R^{\mathsf T}\) が、そのまま逆行列 \(R^{-1}\) になっている行列</strong>です。</p></div>
+
+      <p>この定義が何を意味しているのかを、3つの見方で読み取ります。</p>
+      <p><strong>① 元に戻す操作が、転置だけで作れる</strong>：\(R^{\mathsf T}R=I\) は「\(R\) で変換してから \(R^{\mathsf T}\) で変換すると、何もしなかったことになる」という意味です。9-1 §04 の逆行列の公式のような計算をしなくても、行と列を入れ替えるだけで元に戻せます。</p>
+      <p><strong>② 列は、長さ 1 で互いに直交している</strong>：\(R^{\mathsf T}R\) の \(j\) 行 \(k\) 列は「\(R^{\mathsf T}\) の \(j\) 行目と \(R\) の \(k\) 列目の内積」、つまり「\(R\) の \(j\) 列目と \(k\) 列目の内積」です。これが単位行列の成分 \(\delta_{jk}\) に等しいので、\(R\) の列を \(\vec r_1,\ \vec r_2\) とすると</p>
+      \[ \vec r_j\cdot\vec r_k=\delta_{jk} \]
+      <p>です。列は基本ベクトルの行き先（9-1 §02）なので、「互いに直交する長さ 1 の2本が、互いに直交する長さ 1 の2本に写る」ということです。「直交行列」という名前は、ここから来ています。</p>
+      <p><strong>③ どんなベクトルの長さも変えない</strong>：\((R\vec v)^{\mathsf T}=\vec v^{\mathsf T}R^{\mathsf T}\)（§01 の積の転置）を使うと</p>
+      \[ \begin{aligned}|R\vec v|^2&=(R\vec v)^{\mathsf T}(R\vec v)\\&=\vec v^{\mathsf T}(R^{\mathsf T}R)\vec v\\&=\vec v^{\mathsf T}\vec v\\&=|\vec v|^2\end{aligned} \]
+      <p>長さを変えない変換なので、平面では<strong>回転と折り返し</strong>がこれにあたります（回転の行列が直交行列であることは、この節の「まず自力で」で確かめます）。</p>
+
+      <figure class="fig">
+        <svg viewBox="0 0 640 344" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="直交行列と対称行列の違い"><line x1="42.4" y1="160.0" x2="270.6" y2="160.0" stroke="var(--ink-faint)" stroke-width="1.1"/><polygon points="277.6,160.0 270.6,162.9 270.6,157.1" fill="var(--ink-faint)" stroke="none" stroke-width="1.5" stroke-linejoin="round"/><line x1="160.0" y1="277.6" x2="160.0" y2="49.4" stroke="var(--ink-faint)" stroke-width="1.1"/><polygon points="160.0,42.4 162.9,49.4 157.1,49.4" fill="var(--ink-faint)" stroke="none" stroke-width="1.5" stroke-linejoin="round"/><polygon points="216.0,160.0 215.9,157.1 215.7,154.1 215.3,151.2 214.8,148.4 214.1,145.5 213.3,142.7 212.3,139.9 211.2,137.2 209.9,134.6 208.5,132.0 207.0,129.5 205.3,127.1 203.5,124.8 201.6,122.5 199.6,120.4 197.5,118.4 195.2,116.5 192.9,114.7 190.5,113.0 188.0,111.5 185.4,110.1 182.8,108.8 180.1,107.7 177.3,106.7 174.5,105.9 171.6,105.2 168.8,104.7 165.9,104.3 162.9,104.1 160.0,104.0 157.1,104.1 154.1,104.3 151.2,104.7 148.4,105.2 145.5,105.9 142.7,106.7 139.9,107.7 137.2,108.8 134.6,110.1 132.0,111.5 129.5,113.0 127.1,114.7 124.8,116.5 122.5,118.4 120.4,120.4 118.4,122.5 116.5,124.8 114.7,127.1 113.0,129.5 111.5,132.0 110.1,134.6 108.8,137.2 107.7,139.9 106.7,142.7 105.9,145.5 105.2,148.4 104.7,151.2 104.3,154.1 104.1,157.1 104.0,160.0 104.1,162.9 104.3,165.9 104.7,168.8 105.2,171.6 105.9,174.5 106.7,177.3 107.7,180.1 108.8,182.8 110.1,185.4 111.5,188.0 113.0,190.5 114.7,192.9 116.5,195.2 118.4,197.5 120.4,199.6 122.5,201.6 124.8,203.5 127.1,205.3 129.5,207.0 132.0,208.5 134.6,209.9 137.2,211.2 139.9,212.3 142.7,213.3 145.5,214.1 148.4,214.8 151.2,215.3 154.1,215.7 157.1,215.9 160.0,216.0 162.9,215.9 165.9,215.7 168.8,215.3 171.6,214.8 174.5,214.1 177.3,213.3 180.1,212.3 182.8,211.2 185.4,209.9 188.0,208.5 190.5,207.0 192.9,205.3 195.2,203.5 197.5,201.6 199.6,199.6 201.6,197.5 203.5,195.2 205.3,192.9 207.0,190.5 208.5,188.0 209.9,185.4 211.2,182.8 212.3,180.1 213.3,177.3 214.1,174.5 214.8,171.6 215.3,168.8 215.7,165.9 215.9,162.9" fill="none" stroke="var(--ink-faint)" stroke-width="1.2" stroke-linejoin="round" stroke-dasharray="4 4"/><polygon points="205.9,127.9 204.1,125.5 202.3,123.3 200.3,121.1 198.2,119.0 196.0,117.1 193.7,115.3 191.3,113.6 188.8,112.0 186.3,110.6 183.7,109.2 181.0,108.1 178.2,107.1 175.4,106.2 172.6,105.4 169.7,104.9 166.8,104.4 163.9,104.1 161.0,104.0 158.0,104.0 155.1,104.2 152.2,104.5 149.3,105.0 146.5,105.7 143.6,106.4 140.8,107.4 138.1,108.5 135.5,109.7 132.9,111.0 130.3,112.5 127.9,114.1 125.5,115.9 123.3,117.7 121.1,119.7 119.0,121.8 117.1,124.0 115.3,126.3 113.6,128.7 112.0,131.2 110.6,133.7 109.2,136.3 108.1,139.0 107.1,141.8 106.2,144.6 105.4,147.4 104.9,150.3 104.4,153.2 104.1,156.1 104.0,159.0 104.0,162.0 104.2,164.9 104.5,167.8 105.0,170.7 105.7,173.5 106.4,176.4 107.4,179.2 108.5,181.9 109.7,184.5 111.0,187.1 112.5,189.7 114.1,192.1 115.9,194.5 117.7,196.7 119.7,198.9 121.8,201.0 124.0,202.9 126.3,204.7 128.7,206.4 131.2,208.0 133.7,209.4 136.3,210.8 139.0,211.9 141.8,212.9 144.6,213.8 147.4,214.6 150.3,215.1 153.2,215.6 156.1,215.9 159.0,216.0 162.0,216.0 164.9,215.8 167.8,215.5 170.7,215.0 173.5,214.3 176.4,213.6 179.2,212.6 181.9,211.5 184.5,210.3 187.1,209.0 189.7,207.5 192.1,205.9 194.5,204.1 196.7,202.3 198.9,200.3 201.0,198.2 202.9,196.0 204.7,193.7 206.4,191.3 208.0,188.8 209.4,186.3 210.8,183.7 211.9,181.0 212.9,178.2 213.8,175.4 214.6,172.6 215.1,169.7 215.6,166.8 215.9,163.9 216.0,161.0 216.0,158.0 215.8,155.1 215.5,152.2 215.0,149.3 214.3,146.5 213.6,143.6 212.6,140.8 211.5,138.1 210.3,135.5 209.0,132.9 207.5,130.3" fill="none" stroke="var(--amber)" stroke-width="2.2" stroke-linejoin="round"/><line x1="160.0" y1="160.0" x2="198.5" y2="133.0" stroke="var(--key)" stroke-width="2.4"/><polygon points="205.9,127.9 200.7,136.1 196.3,129.9" fill="var(--key)" stroke="none" stroke-width="1.5" stroke-linejoin="round"/><line x1="160.0" y1="160.0" x2="133.0" y2="121.5" stroke="var(--good)" stroke-width="2.4"/><polygon points="127.9,114.1 136.1,119.3 129.9,123.7" fill="var(--good)" stroke="none" stroke-width="1.5" stroke-linejoin="round"/><text x="160.0" y="24.0" font-size="12" font-weight="500" fill="var(--ink)" text-anchor="middle" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">直交行列（回転）</text><text x="160.0" y="303.6" font-size="11" fill="var(--ink-soft)" text-anchor="middle" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">円は円のまま：長さが変わらない</text><line x1="362.4" y1="160.0" x2="590.6" y2="160.0" stroke="var(--ink-faint)" stroke-width="1.1"/><polygon points="597.6,160.0 590.6,162.9 590.6,157.1" fill="var(--ink-faint)" stroke="none" stroke-width="1.5" stroke-linejoin="round"/><line x1="480.0" y1="277.6" x2="480.0" y2="49.4" stroke="var(--ink-faint)" stroke-width="1.1"/><polygon points="480.0,42.4 482.9,49.4 477.1,49.4" fill="var(--ink-faint)" stroke="none" stroke-width="1.5" stroke-linejoin="round"/><polygon points="536.0,160.0 535.9,157.1 535.7,154.1 535.3,151.2 534.8,148.4 534.1,145.5 533.3,142.7 532.3,139.9 531.2,137.2 529.9,134.6 528.5,132.0 527.0,129.5 525.3,127.1 523.5,124.8 521.6,122.5 519.6,120.4 517.5,118.4 515.2,116.5 512.9,114.7 510.5,113.0 508.0,111.5 505.4,110.1 502.8,108.8 500.1,107.7 497.3,106.7 494.5,105.9 491.6,105.2 488.8,104.7 485.9,104.3 482.9,104.1 480.0,104.0 477.1,104.1 474.1,104.3 471.2,104.7 468.4,105.2 465.5,105.9 462.7,106.7 459.9,107.7 457.2,108.8 454.6,110.1 452.0,111.5 449.5,113.0 447.1,114.7 444.8,116.5 442.5,118.4 440.4,120.4 438.4,122.5 436.5,124.8 434.7,127.1 433.0,129.5 431.5,132.0 430.1,134.6 428.8,137.2 427.7,139.9 426.7,142.7 425.9,145.5 425.2,148.4 424.7,151.2 424.3,154.1 424.1,157.1 424.0,160.0 424.1,162.9 424.3,165.9 424.7,168.8 425.2,171.6 425.9,174.5 426.7,177.3 427.7,180.1 428.8,182.8 430.1,185.4 431.5,188.0 433.0,190.5 434.7,192.9 436.5,195.2 438.4,197.5 440.4,199.6 442.5,201.6 444.8,203.5 447.1,205.3 449.5,207.0 452.0,208.5 454.6,209.9 457.2,211.2 459.9,212.3 462.7,213.3 465.5,214.1 468.4,214.8 471.2,215.3 474.1,215.7 477.1,215.9 480.0,216.0 482.9,215.9 485.9,215.7 488.8,215.3 491.6,214.8 494.5,214.1 497.3,213.3 500.1,212.3 502.8,211.2 505.4,209.9 508.0,208.5 510.5,207.0 512.9,205.3 515.2,203.5 517.5,201.6 519.6,199.6 521.6,197.5 523.5,195.2 525.3,192.9 527.0,190.5 528.5,188.0 529.9,185.4 531.2,182.8 532.3,180.1 533.3,177.3 534.1,174.5 534.8,171.6 535.3,168.8 535.7,165.9 535.9,162.9" fill="none" stroke="var(--ink-faint)" stroke-width="1.2" stroke-linejoin="round" stroke-dasharray="4 4"/><polygon points="569.6,126.4 571.2,123.8 572.6,121.3 573.8,118.9 574.6,116.7 575.2,114.5 575.6,112.5 575.7,110.6 575.5,108.8 575.1,107.2 574.4,105.7 573.4,104.4 572.2,103.2 570.8,102.2 569.1,101.3 567.1,100.6 564.9,100.1 562.5,99.7 559.8,99.5 557.0,99.4 553.9,99.6 550.6,99.8 547.1,100.3 543.5,100.9 539.6,101.7 535.6,102.6 531.5,103.7 527.2,105.0 522.8,106.4 518.2,107.9 513.6,109.6 508.9,111.4 504.1,113.4 499.2,115.5 494.2,117.7 489.3,120.0 484.3,122.4 479.3,125.0 474.3,127.6 469.3,130.3 464.3,133.2 459.4,136.0 454.5,139.0 449.7,142.0 445.0,145.0 440.4,148.1 435.9,151.2 431.5,154.4 427.3,157.6 423.2,160.7 419.2,163.9 415.4,167.1 411.8,170.2 408.4,173.3 405.2,176.4 402.1,179.4 399.3,182.4 396.8,185.3 394.4,188.1 392.3,190.9 390.4,193.6 388.8,196.2 387.4,198.7 386.2,201.1 385.4,203.3 384.8,205.5 384.4,207.5 384.3,209.4 384.5,211.2 384.9,212.8 385.6,214.3 386.6,215.6 387.8,216.8 389.2,217.8 390.9,218.7 392.9,219.4 395.1,219.9 397.5,220.3 400.2,220.5 403.0,220.6 406.1,220.4 409.4,220.2 412.9,219.7 416.5,219.1 420.4,218.3 424.4,217.4 428.5,216.3 432.8,215.0 437.2,213.6 441.8,212.1 446.4,210.4 451.1,208.6 455.9,206.6 460.8,204.5 465.8,202.3 470.7,200.0 475.7,197.6 480.7,195.0 485.7,192.4 490.7,189.7 495.7,186.8 500.6,184.0 505.5,181.0 510.3,178.0 515.0,175.0 519.6,171.9 524.1,168.8 528.5,165.6 532.7,162.4 536.8,159.3 540.8,156.1 544.6,152.9 548.2,149.8 551.6,146.7 554.8,143.6 557.9,140.6 560.7,137.6 563.2,134.7 565.6,131.9 567.7,129.1" fill="none" stroke="var(--amber)" stroke-width="2.2" stroke-linejoin="round"/><line x1="480.0" y1="160.0" x2="561.2" y2="129.6" stroke="var(--key)" stroke-width="2.4"/><polygon points="569.6,126.4 562.5,133.1 559.8,126.0" fill="var(--key)" stroke="none" stroke-width="1.5" stroke-linejoin="round"/><line x1="480.0" y1="160.0" x2="508.6" y2="117.1" stroke="var(--good)" stroke-width="2.4"/><polygon points="513.6,109.6 511.8,119.2 505.5,115.0" fill="var(--good)" stroke="none" stroke-width="1.5" stroke-linejoin="round"/><line x1="382.9" y1="215.8" x2="577.1" y2="104.2" stroke="var(--accent)" stroke-width="1" stroke-dasharray="3 3" stroke-opacity=".8"/><line x1="424.2" y1="62.9" x2="535.8" y2="257.1" stroke="var(--accent)" stroke-width="1" stroke-dasharray="3 3" stroke-opacity=".8"/><text x="480.0" y="24.0" font-size="12" font-weight="500" fill="var(--ink)" text-anchor="middle" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">対称行列</text><text x="480.0" y="303.6" font-size="11" fill="var(--ink-soft)" text-anchor="middle" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">円が楕円に：軸（青の破線）は直交</text><text x="320.0" y="332.0" font-size="10.5" fill="var(--ink-faint)" text-anchor="middle" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">灰色の破線：元の円　オレンジ：変換後　ピンク・緑：基本ベクトルの行き先</text></svg>
+        <figcaption>左：直交行列（回転）で単位円を変換すると、円のまま回るだけで、どの向きの長さも変わりません。右：対称行列で変換すると、円は楕円になり、楕円の軸（青の破線）は固有ベクトルの向きで、互いに直交しています。</figcaption>
+      </figure>
+
+      <h3>複素数の行列へ広げる — エルミート行列とユニタリ行列</h3>
+      <p>量子力学では、成分が複素数のベクトルと行列を使います。§01 で見たとおり、複素数のベクトルの長さの2乗は \(\vec z^{\mathsf T}\vec z\) ではなく \(\vec z^\dagger\vec z\) です。そこで、対称行列と直交行列の定義にある転置 \(\mathsf T\) を、エルミート共役 \(\dagger\) に置き換えます。</p>
+
+      <div class="box target"><span class="lab">エルミート行列とユニタリ行列の定義</span>
+      <ul style="margin:6px 0 0">
+        <li><strong>エルミート行列</strong>：\(H^\dagger=H\)。対称行列 \(A^{\mathsf T}=A\) の複素数版です。対角の成分は実数（自分の複素共役と等しい）、右上と左下は複素共役どうしになります。</li>
+        <li><strong>ユニタリ行列</strong>：\(U^\dagger U=I\)。直交行列 \(R^{\mathsf T}R=I\) の複素数版で、<strong>エルミート共役 \(U^\dagger\) が、そのまま逆行列</strong>になっている行列です。</li>
+      </ul></div>
+
+      <p>定義を置き換えただけなので、性質もそのまま引き継がれます。エルミート行列は対称行列と同じく固有値が実数で固有ベクトルが直交し、ユニタリ行列は直交行列と同じく長さを変えません。複素数ならではの新しい性質として、ユニタリ行列の固有値は、大きさ 1 の複素数 \(e^{i\varphi}\) になります。</p>
+
+      <div class="box teach"><span class="lab">4種類の行列の対応表と、物理での役割</span>
+      <div class="table-scroll"><table class="mini-table">
+        <tr><th style="width:26%">実数の行列</th><th style="width:26%">複素数の行列</th><th>性質と、物理での役割</th></tr>
+        <tr><td>対称行列</td><td>エルミート行列</td><td>固有値が実数。量子力学で<strong>観測する量</strong>を表す（測定値は実数なので）</td></tr>
+        <tr><td>直交行列</td><td>ユニタリ行列</td><td>長さを保つ。空間の<strong>回転</strong>や、量子力学での<strong>時間変化</strong>・対称性を表す</td></tr>
+      </table></div>
+      <p style="margin-top:8px">実数だけの行列なら、エルミート行列は対称行列、ユニタリ行列は直交行列そのものです。<strong>複素数版は、実数版の自然な拡張</strong>になっています。</p></div>
+
+      <p>ここからは、「この節で押さえること」の性質が本当に成り立つことを、1つずつ確かめます。</p>
+
+      <h3>エルミート行列の固有値は実数、固有ベクトルは直交する</h3>
+      <div class="box target"><span class="lab">結論</span>
+      <p>エルミート行列（実数の対称行列も含む）では、</p>
+      <ul style="margin:6px 0 0">
+        <li>固有値は<strong>すべて実数</strong>になる</li>
+        <li>異なる固有値の固有ベクトルは<strong>直交する</strong>（\(\vec v_1^\dagger\vec v_2=0\)）</li>
+      </ul>
+      <p style="margin-top:8px">量子力学で観測する量をエルミート行列で表すのは、測定で得られる値（固有値）が実数でなければならないからです。</p></div>
+      <p>一般の証明に入る前に、具体例で結論が成り立つ様子を見ておきます。</p>
+
+      <p><strong>例</strong>：\(H=\begin{pmatrix}1&i\\{-}i&1\end{pmatrix}\) を考えます。</p>
+
+      <p><strong>① エルミート行列であることを確かめる</strong>：§01 の矢印の操作でエルミート共役を作ります。</p>
+      \[ \begin{pmatrix}1&i\\{-}i&1\end{pmatrix}\xrightarrow{\text{共役}}\begin{pmatrix}1&{-}i\\i&1\end{pmatrix}\xrightarrow{\text{転置}}\begin{pmatrix}1&i\\{-}i&1\end{pmatrix} \]
+      <p>元の \(H\) に戻ったので、\(H^\dagger=H\) で、エルミート行列です。</p>
+
+      <p><strong>② 固有値を求める</strong>：9-2 §02 のとおり、\(\det(H-\lambda I)=0\) を解きます。</p>
+      \[ \begin{aligned}&\det\begin{pmatrix}1-\lambda&i\\{-}i&1-\lambda\end{pmatrix}\\&=(1-\lambda)(1-\lambda)-i\cdot({-}i)\\&=(1-\lambda)^2-1\end{aligned} \]
+      <p>2行目の \(i\cdot({-}i)\) は \({-}i^2=1\) です。これが 0 になるので \((1-\lambda)^2=1\)、つまり \(1-\lambda={-}1\) または \(1-\lambda=1\) で</p>
+      \[ \lambda=2\quad\text{または}\quad\lambda=0 \]
+      <p>です。成分に \(i\) が入っているのに、<strong>固有値は実数</strong>になりました。</p>
+
+      <p><strong>③ 固有ベクトルを求める</strong>：固有ベクトルを \(\vec v=\begin{pmatrix}x\\y\end{pmatrix}\) とおき、9-2 §02 と同じく \((H-\lambda I)\vec v=\vec 0\) を成分で書きます。</p>
+      <p><strong>\(\lambda=2\) のとき</strong>：\(H-2I\) は、\(H\) の対角の成分から 2 を引いた行列です。</p>
+      \[ \begin{aligned}H-2I&=\begin{pmatrix}1-2&i\\{-}i&1-2\end{pmatrix}\\&=\begin{pmatrix}{-}1&i\\{-}i&{-}1\end{pmatrix}\end{aligned} \]
+      <p>これを \(\vec v\) に掛けて \(\vec 0\) とおきます。</p>
+      \[ \begin{aligned}\begin{pmatrix}{-}1&i\\{-}i&{-}1\end{pmatrix}\begin{pmatrix}x\\y\end{pmatrix}&=\begin{pmatrix}{-}x+iy\\{-}ix-y\end{pmatrix}\\&=\begin{pmatrix}0\\0\end{pmatrix}\end{aligned} \]
+      <p>1行目から \({-}x+iy=0\)、つまり \(x=iy\) です（2行目の式に \(x=iy\) を入れても \({-}i\cdot iy-y=y-y=0\) で成り立つので、同じ条件です。行列式が 0 なので、2本の式は同じことを言っています）。\(y=1\) とおくと \(x=i\) なので</p>
+      \[ \vec v_1=\begin{pmatrix}i\\1\end{pmatrix} \]
+      <p>です。掛けて確かめると</p>
+      \[ \begin{aligned}H\vec v_1&=\begin{pmatrix}1\cdot i+i\cdot1\\({-}i)\cdot i+1\cdot1\end{pmatrix}\\&=\begin{pmatrix}2i\\2\end{pmatrix}\\&=2\begin{pmatrix}i\\1\end{pmatrix}\end{aligned} \]
+      <p>で、確かに固有値 2 の固有ベクトルです（\(({-}i)\cdot i={-}i^2=1\)）。</p>
+
+      <p><strong>\(\lambda=0\) のとき</strong>：\(H-0I=H\) なので、\(H\vec v=\vec 0\) を解きます。</p>
+      \[ \begin{aligned}\begin{pmatrix}1&i\\{-}i&1\end{pmatrix}\begin{pmatrix}x\\y\end{pmatrix}&=\begin{pmatrix}x+iy\\{-}ix+y\end{pmatrix}\\&=\begin{pmatrix}0\\0\end{pmatrix}\end{aligned} \]
+      <p>1行目から \(x+iy=0\)、つまり \(x={-}iy\) です。\(y=1\) とおくと \(x={-}i\) なので</p>
+      \[ \vec v_2=\begin{pmatrix}{-}i\\1\end{pmatrix} \]
+      <p>です。掛けて確かめると</p>
+      \[ \begin{aligned}H\vec v_2&=\begin{pmatrix}1\cdot({-}i)+i\cdot1\\({-}i)\cdot({-}i)+1\cdot1\end{pmatrix}\\&=\begin{pmatrix}0\\0\end{pmatrix}\\&=0\,\vec v_2\end{aligned} \]
+      <p>で、確かに固有値 0 の固有ベクトルです（\(({-}i)\cdot({-}i)=i^2={-}1\)）。</p>
+
+      <p><strong>④ 固有ベクトルの内積を計算する</strong>：§01 のとおり、複素数のベクトルの内積は \(\vec v_1^\dagger\vec v_2\) です。\(\vec v_1=\begin{pmatrix}i\\1\end{pmatrix}\) の成分を複素共役にして横に並べると \(\vec v_1^\dagger=\begin{pmatrix}{-}i&1\end{pmatrix}\) なので</p>
+      \[ \begin{aligned}\vec v_1^\dagger\vec v_2&=\begin{pmatrix}{-}i&1\end{pmatrix}\begin{pmatrix}{-}i\\1\end{pmatrix}\\&=({-}i)\cdot({-}i)+1\cdot1\\&={-}1+1\\&=0\end{aligned} \]
+      <p>で、2つの固有ベクトルは<strong>直交</strong>しています。</p>
+      <p>なお、複素共役を取らずに \(\vec v_1^{\mathsf T}\vec v_2=i\cdot({-}i)+1\cdot1=2\) と計算すると 0 になりません。§01 で見たとおり、<strong>複素数のベクトルの内積には \(\dagger\) が必要</strong>です。</p>
+
+      <p>この2つのこと（固有値が実数、固有ベクトルが直交）が、どんなエルミート行列でも成り立つことを証明します。</p>
+
+      <div class="box principle"><span class="lab">証明（どんなエルミート行列でも成り立つこと）</span>
+      <div class="step"><div class="sh"><span class="sn">0</span>準備：\(\vec v^\dagger H\vec v\) は実数になる</div>
+      <div class="why">考え方：「自分自身の複素共役と等しい数は実数」ということを使います。</div>
+      <p style="margin:4px 0"><strong>(a) これはただの数</strong>：2行2列の場合を、成分で書いて確かめます。\(H=\begin{pmatrix}h_{11}&h_{12}\\h_{21}&h_{22}\end{pmatrix}\)、\(\vec v=\begin{pmatrix}v_1\\v_2\end{pmatrix}\) とし、右から順に計算します。まず \(H\vec v\) は列ベクトルです。</p>
+      \[ H\vec v=\begin{pmatrix}h_{11}v_1+h_{12}v_2\\h_{21}v_1+h_{22}v_2\end{pmatrix} \]
+      <p style="margin:4px 0">これに左から行ベクトル \(\vec v^\dagger=\begin{pmatrix}\bar v_1&\bar v_2\end{pmatrix}\) を掛けると、「行 × 列」で1つの数になります。</p>
+      \[ \begin{aligned}\vec v^\dagger H\vec v&=\begin{pmatrix}\bar v_1&\bar v_2\end{pmatrix}\begin{pmatrix}h_{11}v_1+h_{12}v_2\\h_{21}v_1+h_{22}v_2\end{pmatrix}\\&=\bar v_1(h_{11}v_1+h_{12}v_2)\\&\quad+\bar v_2(h_{21}v_1+h_{22}v_2)\end{aligned} \]
+      <p style="margin:4px 0">横1行 × 2行2列 × 縦1列で、結果は1行1列、つまり<strong>ただの数</strong>です。この数を \(c\) とします。</p>
+      <p style="margin:4px 0">上の例の \(H=\begin{pmatrix}1&i\\{-}i&1\end{pmatrix}\) と \(\vec v_1=\begin{pmatrix}i\\1\end{pmatrix}\) で計算してみると、\(H\vec v_1=\begin{pmatrix}2i\\2\end{pmatrix}\)（③で計算済み）なので</p>
+      \[ \begin{aligned}\vec v_1^\dagger H\vec v_1&=\begin{pmatrix}{-}i&1\end{pmatrix}\begin{pmatrix}2i\\2\end{pmatrix}\\&=({-}i)\cdot2i+1\cdot2\\&=2+2\\&=4\end{aligned} \]
+      <p style="margin:4px 0">で、確かにただの数、しかも実数になっています。これがいつでも実数になることを、以下で示します。</p>
+      <p style="margin:4px 0"><strong>(b) ただの数のエルミート共役は、複素共役</strong>：1行1列では転置しても何も変わらないので、エルミート共役を取ることは、複素共役を取ることと同じです（\(c^\dagger=\bar c\)）。</p>
+      <p style="margin:4px 0"><strong>(c) 3つの積のエルミート共役</strong>：§01 の規則 \((AB)^\dagger=B^\dagger A^\dagger\) は2つの積についてのものです。3つの積 \(ABC\) では、まず \(AB\) をひとまとめにして「\((AB)\) と \(C\) の2つの積」とみなし、規則を1回使います。次に、出てきた \((AB)^\dagger\) にもう1回使います。</p>
+      \[ \begin{aligned}(ABC)^\dagger&=\big((AB)\,C\big)^\dagger\\&=C^\dagger\,(AB)^\dagger\\&=C^\dagger B^\dagger A^\dagger\end{aligned} \]
+      <p style="margin:4px 0">2行目で1回目、3行目で2回目の規則を使いました。3つの積でも、<strong>順序がそっくり逆</strong>になります。</p>
+      <p style="margin:4px 0"><strong>(d) \(c\) のエルミート共役を計算する</strong>：(c) で \(A=\vec v^\dagger\)、\(B=H\)、\(C=\vec v\) とします。</p>
+      \[ \begin{aligned}\bar c&=(\vec v^\dagger H\vec v)^\dagger\\&=\vec v^\dagger H^\dagger(\vec v^\dagger)^\dagger\\&=\vec v^\dagger H\vec v\\&=c\end{aligned} \]
+      <p style="margin:4px 0">3行目では、\(H\) がエルミート行列なので \(H^\dagger=H\)、エルミート共役を2回取ると元に戻るので \((\vec v^\dagger)^\dagger=\vec v\) を使いました。</p>
+      <p style="margin:4px 0"><strong>(e) 結論</strong>：\(\bar c=c\) です。\(c=x+iy\) と書くと \(x-iy=x+iy\) なので \(y=0\)、つまり \(c\) は<strong>実数</strong>です。</p>
+      </div>
+
+      <div class="step"><div class="sh"><span class="sn">1</span>固有値は実数</div>
+      <div class="why">考え方：固有値の式 \(H\vec v=\lambda\vec v\) を、準備で実数と分かった形 \(\vec v^\dagger H\vec v\) に作り変えます。</div>
+      <p style="margin:4px 0">\(H\vec v=\lambda\vec v\)（\(\vec v\neq\vec 0\)）の両辺に、左から \(\vec v^\dagger\) を掛けます。右辺の \(\lambda\) はただの数なので、前に出せます。</p>
+      \[ \vec v^\dagger H\vec v=\lambda\,\vec v^\dagger\vec v \]
+      <p style="margin:4px 0">左辺は、準備から実数です。右辺の \(\vec v^\dagger\vec v=|v_1|^2+|v_2|^2\) は、§01 のとおり長さの2乗なので、正の実数です。したがって</p>
+      \[ \lambda=\frac{\vec v^\dagger H\vec v}{\vec v^\dagger\vec v} \]
+      <p style="margin:4px 0">は「実数 ÷ 正の実数」で、<strong>実数</strong>です。</p>
+      </div>
+
+      <div class="step"><div class="sh"><span class="sn">2</span>異なる固有値の固有ベクトルは直交する</div>
+      <div class="why">考え方：同じ1つの数 \(\vec v_1^\dagger H\vec v_2\) を、\(H\) を右に働かせる方法と、左に働かせる方法の2通りで計算し、結果を比べます。</div>
+      <p style="margin:4px 0">\(H\vec v_1=\lambda_1\vec v_1\)、\(H\vec v_2=\lambda_2\vec v_2\) で、\(\lambda_1\neq\lambda_2\) とします。</p>
+      <p style="margin:4px 0"><strong>(a) \(H\) を右の \(\vec v_2\) に働かせる</strong>：\(H\vec v_2=\lambda_2\vec v_2\) をそのまま入れて</p>
+      \[ \vec v_1^\dagger H\vec v_2=\lambda_2\,\vec v_1^\dagger\vec v_2 \]
+      <p style="margin:4px 0"><strong>(b) \(H\) を左の \(\vec v_1^\dagger\) に働かせる</strong>：そのためには \(\vec v_1^\dagger H\) が必要です。\(H\vec v_1=\lambda_1\vec v_1\) の両辺のエルミート共役を取ります。左辺は積の規則で \(\vec v_1^\dagger H^\dagger=\vec v_1^\dagger H\)、右辺は定数 \(\lambda_1\) が複素共役になって \(\bar\lambda_1\vec v_1^\dagger\) ですが、1 から \(\lambda_1\) は実数なので \(\bar\lambda_1=\lambda_1\) です。</p>
+      \[ \vec v_1^\dagger H=\lambda_1\vec v_1^\dagger \]
+      <p style="margin:4px 0">この両辺に、右から \(\vec v_2\) を掛けると</p>
+      \[ \vec v_1^\dagger H\vec v_2=\lambda_1\,\vec v_1^\dagger\vec v_2 \]
+      <p style="margin:4px 0"><strong>(c) 比べる</strong>：(a) と (b) は同じ数なので、右辺どうしを引くと</p>
+      \[ (\lambda_2-\lambda_1)\,\vec v_1^\dagger\vec v_2=0 \]
+      <p style="margin:4px 0">\(\lambda_1\neq\lambda_2\) なので、かっこの中は 0 ではありません。したがって \(\vec v_1^\dagger\vec v_2=0\)、つまり2つの固有ベクトルの内積は 0 で、<strong>直交</strong>しています。</p>
+      </div></div>
+
+      <p>上の例の \(\lambda=2,\ 0\) と \(\vec v_1^\dagger\vec v_2=0\) は、この2つの結果の具体例になっています。また、実数の対称行列はエルミート行列の特別な場合（成分が実数なら \(\dagger\) は \(\mathsf T\) と同じ）なので、この証明は 9-2 §03 で紹介した「対称行列の固有ベクトルは直交する」の証明にもなっています。</p>
+
+<h3>ユニタリ行列の性質</h3>
+      <div class="box target"><span class="lab">結論</span>
+      <ul style="margin:6px 0 0">
+        <li>ユニタリ行列は、ベクトルの<strong>長さを変えない</strong></li>
+        <li>固有値の大きさは<strong>必ず 1</strong>（\(e^{i\varphi}\) の形）</li>
+        <li>逆行列は、エルミート共役 \(U^\dagger\) そのもの</li>
+      </ul></div>
+      <div class="box principle"><span class="lab">証明</span>
+      <p style="margin-top:10px"><strong>① 長さを変えない</strong>：\((U\vec z)^\dagger=\vec z^\dagger U^\dagger\) なので</p>
+      \[ \begin{aligned}|U\vec z|^2&=(U\vec z)^\dagger(U\vec z)\\&=\vec z^\dagger(U^\dagger U)\vec z\\&=\vec z^\dagger\vec z\\&=|\vec z|^2\end{aligned} \]
+      <p>直交行列の証明（\(\mathsf T\) を使ったもの）と、まったく同じ形です。</p>
+
+      <p style="margin-top:10px"><strong>② 固有値の大きさは 1</strong>：\(U\vec v=\lambda\vec v\)（\(\vec v\neq\vec 0\)）とします。①から \(|U\vec v|=|\vec v|\)、一方 \(|U\vec v|=|\lambda\vec v|=|\lambda|\,|\vec v|\) なので</p>
+      \[ |\lambda|\,|\vec v|=|\vec v| \]
+      <p>で、\(|\vec v|\neq0\) で割ると \(|\lambda|=1\) です。大きさが 1 の複素数は、4章のとおり \(e^{i\varphi}\) と書けます。つまり<strong>ユニタリ行列の固有値は、どれも \(e^{i\varphi}\) の形</strong>で、伸び縮みせず「回る」だけです。</p>
+      <p>9-2 §02 で、回転の行列の固有値が \(e^{\pm i\theta}\) になったことを思い出してください。回転の行列は直交行列、つまり実数のユニタリ行列なので、固有値の大きさがちょうど 1 になっていたのです。</p>
+
+      <p style="margin-top:10px"><strong>③ 逆行列は \(U^\dagger\)</strong>：定義の \(U^\dagger U=I\) は、\(U^\dagger\) が \(U\) を元に戻すことを表しています。直交行列の逆行列が転置だったのと同じで、ユニタリ行列の逆行列は、エルミート共役を取るだけで得られます。</p></div>
+
+      <p style="margin-top:10px"><strong>例</strong>：\(U=\dfrac{1}{\sqrt2}\begin{pmatrix}1&1\\i&{-}i\end{pmatrix}\) がユニタリ行列であることを確かめます。矢印の操作で</p>
+      \[ \begin{pmatrix}1&1\\i&{-}i\end{pmatrix}\xrightarrow{\text{共役}}\begin{pmatrix}1&1\\{-}i&i\end{pmatrix}\xrightarrow{\text{転置}}\begin{pmatrix}1&{-}i\\1&i\end{pmatrix} \]
+      <p>なので \(U^\dagger=\dfrac{1}{\sqrt2}\begin{pmatrix}1&{-}i\\1&i\end{pmatrix}\) です。掛けると</p>
+      \[ \begin{aligned}U^\dagger U&=\tfrac12\begin{pmatrix}1+({-}i)i&1+({-}i)({-}i)\\1+i\cdot i&1+i({-}i)\end{pmatrix}\\&=\tfrac12\begin{pmatrix}2&0\\0&2\end{pmatrix}\\&=I\end{aligned} \]
+      <p>で、ユニタリ行列です（\(({-}i)i=1\)、\(({-}i)({-}i)={-}1\) を使いました）。</p>
+
+      <div class="box teach"><span class="lab">どこで使うか：量子力学の時間変化</span>
+      <p>量子力学では、状態を複素数のベクトルで表し、その長さの2乗が「どれかの結果が起こる確率の合計」、つまり 1 になるように決めます。時間がたっても確率の合計は 1 のままでなければならないので、<strong>状態の時間変化は長さを変えない変換、つまりユニタリ行列</strong>で表されます。固有値が \(e^{i\varphi}\) の形になることは、状態が時間とともに「回る」ように変化する様子に対応します。<strong>その意味は、量子力学のセクションで扱います</strong>。</p></div>
+
+      <div class="attempt"><span class="lab">まず自力で</span>
+      <p>回転の行列 \(R=\begin{pmatrix}\cos\theta&{-}\sin\theta\\\sin\theta&\cos\theta\end{pmatrix}\) が直交行列であること（\(R^{\mathsf T}R=I\)）を確かめてください。</p>
+      <div class="controls">
+        <button class="ctl-btn amber" data-hint>ヒントを表示</button>
+        <button class="ctl-btn" data-sol>解答を見る</button>
+      </div>
+      <div class="hint"><span class="hn">HINT 1</span><p>\(R^{\mathsf T}\) は、\(R\) の右上と左下を入れ替えたものです。掛けたあと、\(\cos^2\theta+\sin^2\theta=1\) を使います。</p></div>
+      <div class="sol">
+        <div class="step"><div class="sh"><span class="sn">1</span>転置を作る</div>
+        <div class="why">なぜ：行と列を入れ替えます。</div>
+        \[ R^{\mathsf T}=\begin{pmatrix}\cos\theta&\sin\theta\\{-}\sin\theta&\cos\theta\end{pmatrix} \]
+        </div>
+        <div class="step"><div class="sh"><span class="sn">2</span>掛ける</div>
+        <div class="why">なぜ：9-1 §04 の積の公式で、成分ごとに計算します。</div>
+        <p style="margin:4px 0">左上は \(\cos^2\theta+\sin^2\theta=1\)、右上は \({-}\cos\theta\sin\theta+\sin\theta\cos\theta=0\)、左下も同様に \(0\)、右下は \(\sin^2\theta+\cos^2\theta=1\) です。</p>
+        \[ \begin{aligned}R^{\mathsf T}R&=\begin{pmatrix}1&0\\0&1\end{pmatrix}\\&=I\end{aligned} \]
+        <p style="font-size:13.5px;color:var(--ink-faint);margin:6px 0 0">\(R^{\mathsf T}R=I\) は「\(R^{\mathsf T}\) が \(R\) の逆行列」ということでもあります。<strong>直交行列の逆行列は、転置するだけで得られる</strong>。回転を元に戻すには逆向きに回せばよい、ということと同じです。</p></div>
+      </div>
+      </div>
+
+      <h3>計算ドリル（§02・全1問）</h3>
+
+      <div class="drill"><p><span class="qn">問1</span>\(H=\begin{pmatrix}2&1-i\\1+i&3\end{pmatrix}\) がエルミート行列であることを確かめ、固有値を求めよ。</p>
+      <div class="attempt" style="margin:10px 0 4px"><span class="lab">自分の答えを出してから</span>
+      <div class="controls">
+        <button class="ctl-btn amber" data-hint>ヒントを表示</button>
+        <button class="ctl-btn" data-sol>解答を見る</button>
+      </div>
+      <div class="hint"><span class="hn">HINT 1</span><p>\((1-i)(1+i)=1-i^2=2\) です。</p></div>
+      <div class="sol"><p><strong>エルミートであること</strong>：対角の 2 と 3 は実数、右上 \(1-i\) の共役は \(1+i\) で、左下と一致します。</p>
+      <p><strong>固有値</strong>：固有方程式は</p>
+      \[ \begin{aligned}&(2-\lambda)(3-\lambda)\\&\quad-(1-i)(1+i)\\&=\lambda^2-5\lambda+6-2\\&=(\lambda-1)(\lambda-4)\end{aligned} \]
+      <p>で、固有値は \(\lambda=1,\ 4\) です。</p>
+      <p style="font-size:13.5px;color:var(--ink-faint)">成分に \(i\) が入っていても、固有値は実数になりました。右上と左下が複素共役どうしなので、掛けた \((1-i)(1+i)\) が実数 2 になり、固有方程式の係数がすべて実数になりました。§02 で証明したとおり、エルミート行列の固有値は必ず実数です。固有ベクトルが直交していることも、確かめてみてください。</p></div></div></div>
+
+          </section>
+
+    <!-- §03 -->
+    <section id="d2">
+      <div class="sec-head"><span class="idx">§03</span><h2>パウリ行列</h2></div>
+
+      <p>量子力学で電子の<strong>スピン</strong>（向きの自由度）を表すのに使われるのが、次の3つの行列です。物理学者パウリにちなんで、<strong>パウリ行列</strong>と呼ばれます。</p>
+      \[ \small\sigma_x=\begin{pmatrix}0&1\\1&0\end{pmatrix}\!,\ \ \sigma_y=\begin{pmatrix}0&{-}i\\i&0\end{pmatrix}\!,\ \ \sigma_z=\begin{pmatrix}1&0\\0&{-}1\end{pmatrix} \]
+
+      
+      <p>このうち実数だけでできた \(\sigma_z\) と \(\sigma_x\) は、平面のベクトルを動かす操作として図に描けます。行列を掛けると</p>
+      \[ \begin{aligned}\sigma_z\begin{pmatrix}x\\y\end{pmatrix}&=\begin{pmatrix}x\\{-}y\end{pmatrix}\\\sigma_x\begin{pmatrix}x\\y\end{pmatrix}&=\begin{pmatrix}y\\x\end{pmatrix}\end{aligned} \]
+      <p>で、どちらも「鏡に映す」操作（折り返し）になっています。</p>
+
+      <figure class="fig">
+        <svg viewBox="0 0 640 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="パウリ行列は折り返しで固有値は±1"><line x1="56.0" y1="178.0" x2="257.0" y2="178.0" stroke="var(--ink-faint)" stroke-width="1.1"/><polygon points="264.0,178.0 257.0,180.9 257.0,175.1" fill="var(--ink-faint)" stroke="none" stroke-width="1.5" stroke-linejoin="round"/><line x1="160.0" y1="282.0" x2="160.0" y2="81.0" stroke="var(--ink-faint)" stroke-width="1.1"/><polygon points="160.0,74.0 162.9,81.0 157.1,81.0" fill="var(--ink-faint)" stroke="none" stroke-width="1.5" stroke-linejoin="round"/><line x1="61.2" y1="178.0" x2="258.8" y2="178.0" stroke="var(--ink-soft)" stroke-width="1.6" stroke-dasharray="7 5"/><text x="258.8" y="168.0" font-size="11.5" font-weight="500" fill="var(--ink-soft)" text-anchor="middle" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">鏡</text><line x1="227.6" y1="149.4" x2="227.6" y2="206.6" stroke="var(--ink-faint)" stroke-width="1" stroke-dasharray="2 3"/><line x1="160.0" y1="178.0" x2="220.2" y2="152.5" stroke="var(--accent)" stroke-width="2.2"/><polygon points="227.6,149.4 221.5,155.6 218.9,149.4" fill="var(--accent)" stroke="none" stroke-width="1.5" stroke-linejoin="round"/><line x1="160.0" y1="178.0" x2="220.2" y2="203.5" stroke="var(--key)" stroke-width="2.2"/><polygon points="227.6,206.6 218.9,206.6 221.5,200.4" fill="var(--key)" stroke="none" stroke-width="1.5" stroke-linejoin="round"/><line x1="160.0" y1="178.0" x2="199.4" y2="178.0" stroke="var(--good)" stroke-width="3"/><polygon points="209.4,178.0 199.4,182.2 199.4,173.8" fill="var(--good)" stroke="none" stroke-width="1.5" stroke-linejoin="round"/><line x1="160.0" y1="178.0" x2="160.0" y2="138.6" stroke="var(--amber)" stroke-width="3"/><polygon points="160.0,128.6 164.2,138.6 155.8,138.6" fill="var(--amber)" stroke="none" stroke-width="1.5" stroke-linejoin="round"/><line x1="160.0" y1="178.0" x2="160.0" y2="219.4" stroke="var(--amber)" stroke-dasharray="4 3" stroke-width="1.8"/><polygon points="160.0,227.4 156.6,219.4 163.4,219.4" fill="var(--amber)" stroke="none" stroke-width="1.5" stroke-linejoin="round"/><g transform="translate(115.87,24.00) scale(0.01344)" style="color:var(--ink)"><g stroke="#05070d" fill="currentColor" stroke-width="170" stroke-linejoin="round" style="paint-order:stroke" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="msub"><g data-mml-node="mi"><path data-c="1D70E" d="M184 -11Q116 -11 74 34T31 147Q31 247 104 333T274 430Q275 431 414 431H552Q553 430 555 429T559 427T562 425T565 422T567 420T569 416T570 412T571 407T572 401Q572 357 507 357Q500 357 490 357T476 358H416L421 348Q439 310 439 263Q439 153 359 71T184 -11ZM361 278Q361 358 276 358Q152 358 115 184Q114 180 114 178Q106 141 106 117Q106 67 131 47T188 26Q242 26 287 73Q316 103 334 153T356 233T361 278Z"></path></g><g data-mml-node="mi" transform="translate(604,-150) scale(0.707)"><path data-c="1D467" d="M347 338Q337 338 294 349T231 360Q211 360 197 356T174 346T162 335T155 324L153 320Q150 317 138 317Q117 317 117 325Q117 330 120 339Q133 378 163 406T229 440Q241 442 246 442Q271 442 291 425T329 392T367 375Q389 375 411 408T434 441Q435 442 449 442H462Q468 436 468 434Q468 430 463 420T449 399T432 377T418 358L411 349Q368 298 275 214T160 106L148 94L163 93Q185 93 227 82T290 71Q328 71 360 90T402 140Q406 149 409 151T424 153Q443 153 443 143Q443 138 442 134Q425 72 376 31T278 -11Q252 -11 232 6T193 40T155 57Q111 57 76 -3Q70 -11 59 -11H54H41Q35 -5 35 -2Q35 13 93 84Q132 129 225 214T340 322Q352 338 347 338Z"></path></g></g><g data-mml-node="mo" transform="translate(1260.6,0)"><path data-c="3D" d="M56 347Q56 360 70 367H707Q722 359 722 347Q722 336 708 328L390 327H72Q56 332 56 347ZM56 153Q56 168 72 173H708Q722 163 722 153Q722 140 707 133H70Q56 140 56 153Z"></path></g><g data-mml-node="mrow" transform="translate(2316.4,0)"><g data-mml-node="mo" transform="translate(0 -0.5)"><path data-c="28" d="M701 -940Q701 -943 695 -949H664Q662 -947 636 -922T591 -879T537 -818T475 -737T412 -636T350 -511T295 -362T250 -186T221 17T209 251Q209 962 573 1361Q596 1386 616 1405T649 1437T664 1450H695Q701 1444 701 1441Q701 1436 681 1415T629 1356T557 1261T476 1118T400 927T340 675T308 359Q306 321 306 250Q306 -139 400 -430T690 -924Q701 -936 701 -940Z"></path></g><g data-mml-node="mtable" transform="translate(736,0)"><g data-mml-node="mtr" transform="translate(0,700)"><g data-mml-node="mtd"><g data-mml-node="mn"><path data-c="31" d="M213 578L200 573Q186 568 160 563T102 556H83V602H102Q149 604 189 617T245 641T273 663Q275 666 285 666Q294 666 302 660V361L303 61Q310 54 315 52T339 48T401 46H427V0H416Q395 3 257 3Q121 3 100 0H88V46H114Q136 46 152 46T177 47T193 50T201 52T207 57T213 61V578Z"></path></g></g><g data-mml-node="mtd" transform="translate(1889,0)"><g data-mml-node="mn"><path data-c="30" d="M96 585Q152 666 249 666Q297 666 345 640T423 548Q460 465 460 320Q460 165 417 83Q397 41 362 16T301 -15T250 -22Q224 -22 198 -16T137 16T82 83Q39 165 39 320Q39 494 96 585ZM321 597Q291 629 250 629Q208 629 178 597Q153 571 145 525T137 333Q137 175 145 125T181 46Q209 16 250 16Q290 16 318 46Q347 76 354 130T362 333Q362 478 354 524T321 597Z"></path></g></g></g><g data-mml-node="mtr" transform="translate(0,-700)"><g data-mml-node="mtd"><g data-mml-node="mn"><path data-c="30" d="M96 585Q152 666 249 666Q297 666 345 640T423 548Q460 465 460 320Q460 165 417 83Q397 41 362 16T301 -15T250 -22Q224 -22 198 -16T137 16T82 83Q39 165 39 320Q39 494 96 585ZM321 597Q291 629 250 629Q208 629 178 597Q153 571 145 525T137 333Q137 175 145 125T181 46Q209 16 250 16Q290 16 318 46Q347 76 354 130T362 333Q362 478 354 524T321 597Z"></path></g></g><g data-mml-node="mtd" transform="translate(1500,0)"><g data-mml-node="TeXAtom" data-mjx-texclass="ORD"><g data-mml-node="mo"><path data-c="2212" d="M84 237T84 250T98 270H679Q694 262 694 250T679 230H98Q84 237 84 250Z"></path></g></g><g data-mml-node="mn" transform="translate(778,0)"><path data-c="31" d="M213 578L200 573Q186 568 160 563T102 556H83V602H102Q149 604 189 617T245 641T273 663Q275 666 285 666Q294 666 302 660V361L303 61Q310 54 315 52T339 48T401 46H427V0H416Q395 3 257 3Q121 3 100 0H88V46H114Q136 46 152 46T177 47T193 50T201 52T207 57T213 61V578Z"></path></g></g></g></g><g data-mml-node="mo" transform="translate(3514,0) translate(0 -0.5)"><path data-c="29" d="M34 1438Q34 1446 37 1448T50 1450H56H71Q73 1448 99 1423T144 1380T198 1319T260 1238T323 1137T385 1013T440 864T485 688T514 485T526 251Q526 134 519 53Q472 -519 162 -860Q139 -885 119 -904T86 -936T71 -949H56Q43 -949 39 -947T34 -937Q88 -883 140 -813Q428 -430 428 251Q428 453 402 628T338 922T245 1146T145 1309T46 1425Q44 1427 42 1429T39 1433T36 1436L34 1438Z"></path></g></g></g></g></g><g transform="translate(110.18,58.00) scale(0.01288)" style="color:var(--amber)"><g stroke="#05070d" fill="currentColor" stroke-width="170" stroke-linejoin="round" style="paint-order:stroke" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="mo"><path data-c="28" d="M94 250Q94 319 104 381T127 488T164 576T202 643T244 695T277 729T302 750H315H319Q333 750 333 741Q333 738 316 720T275 667T226 581T184 443T167 250T184 58T225 -81T274 -167T316 -220T333 -241Q333 -250 318 -250H315H302L274 -226Q180 -141 137 -14T94 250Z"></path></g><g data-mml-node="mi" transform="translate(389,0)"><path data-c="1D465" d="M52 289Q59 331 106 386T222 442Q257 442 286 424T329 379Q371 442 430 442Q467 442 494 420T522 361Q522 332 508 314T481 292T458 288Q439 288 427 299T415 328Q415 374 465 391Q454 404 425 404Q412 404 406 402Q368 386 350 336Q290 115 290 78Q290 50 306 38T341 26Q378 26 414 59T463 140Q466 150 469 151T485 153H489Q504 153 504 145Q504 144 502 134Q486 77 440 33T333 -11Q263 -11 227 52Q186 -10 133 -10H127Q78 -10 57 16T35 71Q35 103 54 123T99 143Q142 143 142 101Q142 81 130 66T107 46T94 41L91 40Q91 39 97 36T113 29T132 26Q168 26 194 71Q203 87 217 139T245 247T261 313Q266 340 266 352Q266 380 251 392T217 404Q177 404 142 372T93 290Q91 281 88 280T72 278H58Q52 284 52 289Z"></path></g><g data-mml-node="mo" transform="translate(961,0)"><path data-c="2C" d="M78 35T78 60T94 103T137 121Q165 121 187 96T210 8Q210 -27 201 -60T180 -117T154 -158T130 -185T117 -194Q113 -194 104 -185T95 -172Q95 -168 106 -156T131 -126T157 -76T173 -3V9L172 8Q170 7 167 6T161 3T152 1T140 0Q113 0 96 17Z"></path></g><g data-mml-node="mstyle" transform="translate(1239,0)"><g data-mml-node="mspace"></g></g><g data-mml-node="mi" transform="translate(1572.7,0)"><path data-c="1D466" d="M21 287Q21 301 36 335T84 406T158 442Q199 442 224 419T250 355Q248 336 247 334Q247 331 231 288T198 191T182 105Q182 62 196 45T238 27Q261 27 281 38T312 61T339 94Q339 95 344 114T358 173T377 247Q415 397 419 404Q432 431 462 431Q475 431 483 424T494 412T496 403Q496 390 447 193T391 -23Q363 -106 294 -155T156 -205Q111 -205 77 -183T43 -117Q43 -95 50 -80T69 -58T89 -48T106 -45Q150 -45 150 -87Q150 -107 138 -122T115 -142T102 -147L99 -148Q101 -153 118 -160T152 -167H160Q177 -167 186 -165Q219 -156 247 -127T290 -65T313 -9T321 21L315 17Q309 13 296 6T270 -6Q250 -11 231 -11Q185 -11 150 11T104 82Q103 89 103 113Q103 170 138 262T173 379Q173 380 173 381Q173 390 173 393T169 400T158 404H154Q131 404 112 385T82 344T65 302T57 280Q55 278 41 278H27Q21 284 21 287Z"></path></g><g data-mml-node="mo" transform="translate(2062.7,0)"><path data-c="29" d="M60 749L64 750Q69 750 74 750H86L114 726Q208 641 251 514T294 250Q294 182 284 119T261 12T224 -76T186 -143T145 -194T113 -227T90 -246Q87 -249 86 -250H74Q66 -250 63 -250T58 -247T55 -238Q56 -237 66 -225Q221 -64 221 250T66 725Q56 737 55 738Q55 746 60 749Z"></path></g><g data-mml-node="mtext" transform="translate(2451.7,0)"><path data-c="A0" d=""></path></g><g data-mml-node="mo" transform="translate(2979.4,0)"><path data-c="2192" d="M56 237T56 250T70 270H835Q719 357 692 493Q692 494 692 496T691 499Q691 511 708 511H711Q720 511 723 510T729 506T732 497T735 481T743 456Q765 389 816 336T935 261Q944 258 944 250Q944 244 939 241T915 231T877 212Q836 186 806 152T761 85T740 35T732 4Q730 -6 727 -8T711 -11Q691 -11 691 0Q691 7 696 25Q728 151 835 230H70Q56 237 56 250Z"></path></g><g data-mml-node="mtext" transform="translate(4257.2,0)"><path data-c="A0" d=""></path></g><g data-mml-node="mo" transform="translate(4507.2,0)"><path data-c="28" d="M94 250Q94 319 104 381T127 488T164 576T202 643T244 695T277 729T302 750H315H319Q333 750 333 741Q333 738 316 720T275 667T226 581T184 443T167 250T184 58T225 -81T274 -167T316 -220T333 -241Q333 -250 318 -250H315H302L274 -226Q180 -141 137 -14T94 250Z"></path></g><g data-mml-node="mi" transform="translate(4896.2,0)"><path data-c="1D465" d="M52 289Q59 331 106 386T222 442Q257 442 286 424T329 379Q371 442 430 442Q467 442 494 420T522 361Q522 332 508 314T481 292T458 288Q439 288 427 299T415 328Q415 374 465 391Q454 404 425 404Q412 404 406 402Q368 386 350 336Q290 115 290 78Q290 50 306 38T341 26Q378 26 414 59T463 140Q466 150 469 151T485 153H489Q504 153 504 145Q504 144 502 134Q486 77 440 33T333 -11Q263 -11 227 52Q186 -10 133 -10H127Q78 -10 57 16T35 71Q35 103 54 123T99 143Q142 143 142 101Q142 81 130 66T107 46T94 41L91 40Q91 39 97 36T113 29T132 26Q168 26 194 71Q203 87 217 139T245 247T261 313Q266 340 266 352Q266 380 251 392T217 404Q177 404 142 372T93 290Q91 281 88 280T72 278H58Q52 284 52 289Z"></path></g><g data-mml-node="mo" transform="translate(5468.2,0)"><path data-c="2C" d="M78 35T78 60T94 103T137 121Q165 121 187 96T210 8Q210 -27 201 -60T180 -117T154 -158T130 -185T117 -194Q113 -194 104 -185T95 -172Q95 -168 106 -156T131 -126T157 -76T173 -3V9L172 8Q170 7 167 6T161 3T152 1T140 0Q113 0 96 17Z"></path></g><g data-mml-node="mstyle" transform="translate(5746.2,0)"><g data-mml-node="mspace"></g></g><g data-mml-node="TeXAtom" data-mjx-texclass="ORD" transform="translate(6079.9,0)"><g data-mml-node="mo"><path data-c="2212" d="M84 237T84 250T98 270H679Q694 262 694 250T679 230H98Q84 237 84 250Z"></path></g></g><g data-mml-node="mi" transform="translate(6857.9,0)"><path data-c="1D466" d="M21 287Q21 301 36 335T84 406T158 442Q199 442 224 419T250 355Q248 336 247 334Q247 331 231 288T198 191T182 105Q182 62 196 45T238 27Q261 27 281 38T312 61T339 94Q339 95 344 114T358 173T377 247Q415 397 419 404Q432 431 462 431Q475 431 483 424T494 412T496 403Q496 390 447 193T391 -23Q363 -106 294 -155T156 -205Q111 -205 77 -183T43 -117Q43 -95 50 -80T69 -58T89 -48T106 -45Q150 -45 150 -87Q150 -107 138 -122T115 -142T102 -147L99 -148Q101 -153 118 -160T152 -167H160Q177 -167 186 -165Q219 -156 247 -127T290 -65T313 -9T321 21L315 17Q309 13 296 6T270 -6Q250 -11 231 -11Q185 -11 150 11T104 82Q103 89 103 113Q103 170 138 262T173 379Q173 380 173 381Q173 390 173 393T169 400T158 404H154Q131 404 112 385T82 344T65 302T57 280Q55 278 41 278H27Q21 284 21 287Z"></path></g><g data-mml-node="mo" transform="translate(7347.9,0)"><path data-c="29" d="M60 749L64 750Q69 750 74 750H86L114 726Q208 641 251 514T294 250Q294 182 284 119T261 12T224 -76T186 -143T145 -194T113 -227T90 -246Q87 -249 86 -250H74Q66 -250 63 -250T58 -247T55 -238Q56 -237 66 -225Q221 -64 221 250T66 725Q56 737 55 738Q55 746 60 749Z"></path></g></g></g></g><line x1="376.0" y1="178.0" x2="577.0" y2="178.0" stroke="var(--ink-faint)" stroke-width="1.1"/><polygon points="584.0,178.0 577.0,180.9 577.0,175.1" fill="var(--ink-faint)" stroke="none" stroke-width="1.5" stroke-linejoin="round"/><line x1="480.0" y1="282.0" x2="480.0" y2="81.0" stroke="var(--ink-faint)" stroke-width="1.1"/><polygon points="480.0,74.0 482.9,81.0 477.1,81.0" fill="var(--ink-faint)" stroke="none" stroke-width="1.5" stroke-linejoin="round"/><line x1="410.1" y1="247.9" x2="549.9" y2="108.1" stroke="var(--ink-soft)" stroke-width="1.6" stroke-dasharray="7 5"/><text x="559.9" y="102.1" font-size="11.5" font-weight="500" fill="var(--ink-soft)" text-anchor="middle" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">鏡</text><line x1="550.2" y1="159.8" x2="498.2" y2="107.8" stroke="var(--ink-faint)" stroke-width="1" stroke-dasharray="2 3"/><line x1="480.0" y1="178.0" x2="542.5" y2="161.8" stroke="var(--accent)" stroke-width="2.2"/><polygon points="550.2,159.8 543.3,165.1 541.6,158.6" fill="var(--accent)" stroke="none" stroke-width="1.5" stroke-linejoin="round"/><line x1="480.0" y1="178.0" x2="496.2" y2="115.5" stroke="var(--key)" stroke-width="2.2"/><polygon points="498.2,107.8 499.4,116.4 492.9,114.7" fill="var(--key)" stroke="none" stroke-width="1.5" stroke-linejoin="round"/><line x1="480.0" y1="178.0" x2="507.9" y2="150.1" stroke="var(--good)" stroke-width="3"/><polygon points="514.9,143.1 510.8,153.1 504.9,147.2" fill="var(--good)" stroke="none" stroke-width="1.5" stroke-linejoin="round"/><line x1="480.0" y1="178.0" x2="507.9" y2="205.9" stroke="var(--amber)" stroke-width="3"/><polygon points="514.9,212.9 504.9,208.8 510.8,202.9" fill="var(--amber)" stroke="none" stroke-width="1.5" stroke-linejoin="round"/><line x1="480.0" y1="178.0" x2="450.7" y2="148.7" stroke="var(--amber)" stroke-dasharray="4 3" stroke-width="1.8"/><polygon points="445.1,143.1 453.1,146.3 448.3,151.1" fill="var(--amber)" stroke="none" stroke-width="1.5" stroke-linejoin="round"/><g transform="translate(440.59,24.00) scale(0.01344)" style="color:var(--ink)"><g stroke="#05070d" fill="currentColor" stroke-width="170" stroke-linejoin="round" style="paint-order:stroke" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="msub"><g data-mml-node="mi"><path data-c="1D70E" d="M184 -11Q116 -11 74 34T31 147Q31 247 104 333T274 430Q275 431 414 431H552Q553 430 555 429T559 427T562 425T565 422T567 420T569 416T570 412T571 407T572 401Q572 357 507 357Q500 357 490 357T476 358H416L421 348Q439 310 439 263Q439 153 359 71T184 -11ZM361 278Q361 358 276 358Q152 358 115 184Q114 180 114 178Q106 141 106 117Q106 67 131 47T188 26Q242 26 287 73Q316 103 334 153T356 233T361 278Z"></path></g><g data-mml-node="mi" transform="translate(604,-150) scale(0.707)"><path data-c="1D465" d="M52 289Q59 331 106 386T222 442Q257 442 286 424T329 379Q371 442 430 442Q467 442 494 420T522 361Q522 332 508 314T481 292T458 288Q439 288 427 299T415 328Q415 374 465 391Q454 404 425 404Q412 404 406 402Q368 386 350 336Q290 115 290 78Q290 50 306 38T341 26Q378 26 414 59T463 140Q466 150 469 151T485 153H489Q504 153 504 145Q504 144 502 134Q486 77 440 33T333 -11Q263 -11 227 52Q186 -10 133 -10H127Q78 -10 57 16T35 71Q35 103 54 123T99 143Q142 143 142 101Q142 81 130 66T107 46T94 41L91 40Q91 39 97 36T113 29T132 26Q168 26 194 71Q203 87 217 139T245 247T261 313Q266 340 266 352Q266 380 251 392T217 404Q177 404 142 372T93 290Q91 281 88 280T72 278H58Q52 284 52 289Z"></path></g></g><g data-mml-node="mo" transform="translate(1336.2,0)"><path data-c="3D" d="M56 347Q56 360 70 367H707Q722 359 722 347Q722 336 708 328L390 327H72Q56 332 56 347ZM56 153Q56 168 72 173H708Q722 163 722 153Q722 140 707 133H70Q56 140 56 153Z"></path></g><g data-mml-node="mrow" transform="translate(2392,0)"><g data-mml-node="mo" transform="translate(0 -0.5)"><path data-c="28" d="M701 -940Q701 -943 695 -949H664Q662 -947 636 -922T591 -879T537 -818T475 -737T412 -636T350 -511T295 -362T250 -186T221 17T209 251Q209 962 573 1361Q596 1386 616 1405T649 1437T664 1450H695Q701 1444 701 1441Q701 1436 681 1415T629 1356T557 1261T476 1118T400 927T340 675T308 359Q306 321 306 250Q306 -139 400 -430T690 -924Q701 -936 701 -940Z"></path></g><g data-mml-node="mtable" transform="translate(736,0)"><g data-mml-node="mtr" transform="translate(0,700)"><g data-mml-node="mtd"><g data-mml-node="mn"><path data-c="30" d="M96 585Q152 666 249 666Q297 666 345 640T423 548Q460 465 460 320Q460 165 417 83Q397 41 362 16T301 -15T250 -22Q224 -22 198 -16T137 16T82 83Q39 165 39 320Q39 494 96 585ZM321 597Q291 629 250 629Q208 629 178 597Q153 571 145 525T137 333Q137 175 145 125T181 46Q209 16 250 16Q290 16 318 46Q347 76 354 130T362 333Q362 478 354 524T321 597Z"></path></g></g><g data-mml-node="mtd" transform="translate(1500,0)"><g data-mml-node="mn"><path data-c="31" d="M213 578L200 573Q186 568 160 563T102 556H83V602H102Q149 604 189 617T245 641T273 663Q275 666 285 666Q294 666 302 660V361L303 61Q310 54 315 52T339 48T401 46H427V0H416Q395 3 257 3Q121 3 100 0H88V46H114Q136 46 152 46T177 47T193 50T201 52T207 57T213 61V578Z"></path></g></g></g><g data-mml-node="mtr" transform="translate(0,-700)"><g data-mml-node="mtd"><g data-mml-node="mn"><path data-c="31" d="M213 578L200 573Q186 568 160 563T102 556H83V602H102Q149 604 189 617T245 641T273 663Q275 666 285 666Q294 666 302 660V361L303 61Q310 54 315 52T339 48T401 46H427V0H416Q395 3 257 3Q121 3 100 0H88V46H114Q136 46 152 46T177 47T193 50T201 52T207 57T213 61V578Z"></path></g></g><g data-mml-node="mtd" transform="translate(1500,0)"><g data-mml-node="mn"><path data-c="30" d="M96 585Q152 666 249 666Q297 666 345 640T423 548Q460 465 460 320Q460 165 417 83Q397 41 362 16T301 -15T250 -22Q224 -22 198 -16T137 16T82 83Q39 165 39 320Q39 494 96 585ZM321 597Q291 629 250 629Q208 629 178 597Q153 571 145 525T137 333Q137 175 145 125T181 46Q209 16 250 16Q290 16 318 46Q347 76 354 130T362 333Q362 478 354 524T321 597Z"></path></g></g></g></g><g data-mml-node="mo" transform="translate(2736,0) translate(0 -0.5)"><path data-c="29" d="M34 1438Q34 1446 37 1448T50 1450H56H71Q73 1448 99 1423T144 1380T198 1319T260 1238T323 1137T385 1013T440 864T485 688T514 485T526 251Q526 134 519 53Q472 -519 162 -860Q139 -885 119 -904T86 -936T71 -949H56Q43 -949 39 -947T34 -937Q88 -883 140 -813Q428 -430 428 251Q428 453 402 628T338 922T245 1146T145 1309T46 1425Q44 1427 42 1429T39 1433T36 1436L34 1438Z"></path></g></g></g></g></g><g transform="translate(435.19,58.00) scale(0.01288)" style="color:var(--amber)"><g stroke="#05070d" fill="currentColor" stroke-width="170" stroke-linejoin="round" style="paint-order:stroke" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="mo"><path data-c="28" d="M94 250Q94 319 104 381T127 488T164 576T202 643T244 695T277 729T302 750H315H319Q333 750 333 741Q333 738 316 720T275 667T226 581T184 443T167 250T184 58T225 -81T274 -167T316 -220T333 -241Q333 -250 318 -250H315H302L274 -226Q180 -141 137 -14T94 250Z"></path></g><g data-mml-node="mi" transform="translate(389,0)"><path data-c="1D465" d="M52 289Q59 331 106 386T222 442Q257 442 286 424T329 379Q371 442 430 442Q467 442 494 420T522 361Q522 332 508 314T481 292T458 288Q439 288 427 299T415 328Q415 374 465 391Q454 404 425 404Q412 404 406 402Q368 386 350 336Q290 115 290 78Q290 50 306 38T341 26Q378 26 414 59T463 140Q466 150 469 151T485 153H489Q504 153 504 145Q504 144 502 134Q486 77 440 33T333 -11Q263 -11 227 52Q186 -10 133 -10H127Q78 -10 57 16T35 71Q35 103 54 123T99 143Q142 143 142 101Q142 81 130 66T107 46T94 41L91 40Q91 39 97 36T113 29T132 26Q168 26 194 71Q203 87 217 139T245 247T261 313Q266 340 266 352Q266 380 251 392T217 404Q177 404 142 372T93 290Q91 281 88 280T72 278H58Q52 284 52 289Z"></path></g><g data-mml-node="mo" transform="translate(961,0)"><path data-c="2C" d="M78 35T78 60T94 103T137 121Q165 121 187 96T210 8Q210 -27 201 -60T180 -117T154 -158T130 -185T117 -194Q113 -194 104 -185T95 -172Q95 -168 106 -156T131 -126T157 -76T173 -3V9L172 8Q170 7 167 6T161 3T152 1T140 0Q113 0 96 17Z"></path></g><g data-mml-node="mstyle" transform="translate(1239,0)"><g data-mml-node="mspace"></g></g><g data-mml-node="mi" transform="translate(1572.7,0)"><path data-c="1D466" d="M21 287Q21 301 36 335T84 406T158 442Q199 442 224 419T250 355Q248 336 247 334Q247 331 231 288T198 191T182 105Q182 62 196 45T238 27Q261 27 281 38T312 61T339 94Q339 95 344 114T358 173T377 247Q415 397 419 404Q432 431 462 431Q475 431 483 424T494 412T496 403Q496 390 447 193T391 -23Q363 -106 294 -155T156 -205Q111 -205 77 -183T43 -117Q43 -95 50 -80T69 -58T89 -48T106 -45Q150 -45 150 -87Q150 -107 138 -122T115 -142T102 -147L99 -148Q101 -153 118 -160T152 -167H160Q177 -167 186 -165Q219 -156 247 -127T290 -65T313 -9T321 21L315 17Q309 13 296 6T270 -6Q250 -11 231 -11Q185 -11 150 11T104 82Q103 89 103 113Q103 170 138 262T173 379Q173 380 173 381Q173 390 173 393T169 400T158 404H154Q131 404 112 385T82 344T65 302T57 280Q55 278 41 278H27Q21 284 21 287Z"></path></g><g data-mml-node="mo" transform="translate(2062.7,0)"><path data-c="29" d="M60 749L64 750Q69 750 74 750H86L114 726Q208 641 251 514T294 250Q294 182 284 119T261 12T224 -76T186 -143T145 -194T113 -227T90 -246Q87 -249 86 -250H74Q66 -250 63 -250T58 -247T55 -238Q56 -237 66 -225Q221 -64 221 250T66 725Q56 737 55 738Q55 746 60 749Z"></path></g><g data-mml-node="mtext" transform="translate(2451.7,0)"><path data-c="A0" d=""></path></g><g data-mml-node="mo" transform="translate(2979.4,0)"><path data-c="2192" d="M56 237T56 250T70 270H835Q719 357 692 493Q692 494 692 496T691 499Q691 511 708 511H711Q720 511 723 510T729 506T732 497T735 481T743 456Q765 389 816 336T935 261Q944 258 944 250Q944 244 939 241T915 231T877 212Q836 186 806 152T761 85T740 35T732 4Q730 -6 727 -8T711 -11Q691 -11 691 0Q691 7 696 25Q728 151 835 230H70Q56 237 56 250Z"></path></g><g data-mml-node="mtext" transform="translate(4257.2,0)"><path data-c="A0" d=""></path></g><g data-mml-node="mo" transform="translate(4507.2,0)"><path data-c="28" d="M94 250Q94 319 104 381T127 488T164 576T202 643T244 695T277 729T302 750H315H319Q333 750 333 741Q333 738 316 720T275 667T226 581T184 443T167 250T184 58T225 -81T274 -167T316 -220T333 -241Q333 -250 318 -250H315H302L274 -226Q180 -141 137 -14T94 250Z"></path></g><g data-mml-node="mi" transform="translate(4896.2,0)"><path data-c="1D466" d="M21 287Q21 301 36 335T84 406T158 442Q199 442 224 419T250 355Q248 336 247 334Q247 331 231 288T198 191T182 105Q182 62 196 45T238 27Q261 27 281 38T312 61T339 94Q339 95 344 114T358 173T377 247Q415 397 419 404Q432 431 462 431Q475 431 483 424T494 412T496 403Q496 390 447 193T391 -23Q363 -106 294 -155T156 -205Q111 -205 77 -183T43 -117Q43 -95 50 -80T69 -58T89 -48T106 -45Q150 -45 150 -87Q150 -107 138 -122T115 -142T102 -147L99 -148Q101 -153 118 -160T152 -167H160Q177 -167 186 -165Q219 -156 247 -127T290 -65T313 -9T321 21L315 17Q309 13 296 6T270 -6Q250 -11 231 -11Q185 -11 150 11T104 82Q103 89 103 113Q103 170 138 262T173 379Q173 380 173 381Q173 390 173 393T169 400T158 404H154Q131 404 112 385T82 344T65 302T57 280Q55 278 41 278H27Q21 284 21 287Z"></path></g><g data-mml-node="mo" transform="translate(5386.2,0)"><path data-c="2C" d="M78 35T78 60T94 103T137 121Q165 121 187 96T210 8Q210 -27 201 -60T180 -117T154 -158T130 -185T117 -194Q113 -194 104 -185T95 -172Q95 -168 106 -156T131 -126T157 -76T173 -3V9L172 8Q170 7 167 6T161 3T152 1T140 0Q113 0 96 17Z"></path></g><g data-mml-node="mstyle" transform="translate(5664.2,0)"><g data-mml-node="mspace"></g></g><g data-mml-node="mi" transform="translate(5997.9,0)"><path data-c="1D465" d="M52 289Q59 331 106 386T222 442Q257 442 286 424T329 379Q371 442 430 442Q467 442 494 420T522 361Q522 332 508 314T481 292T458 288Q439 288 427 299T415 328Q415 374 465 391Q454 404 425 404Q412 404 406 402Q368 386 350 336Q290 115 290 78Q290 50 306 38T341 26Q378 26 414 59T463 140Q466 150 469 151T485 153H489Q504 153 504 145Q504 144 502 134Q486 77 440 33T333 -11Q263 -11 227 52Q186 -10 133 -10H127Q78 -10 57 16T35 71Q35 103 54 123T99 143Q142 143 142 101Q142 81 130 66T107 46T94 41L91 40Q91 39 97 36T113 29T132 26Q168 26 194 71Q203 87 217 139T245 247T261 313Q266 340 266 352Q266 380 251 392T217 404Q177 404 142 372T93 290Q91 281 88 280T72 278H58Q52 284 52 289Z"></path></g><g data-mml-node="mo" transform="translate(6569.9,0)"><path data-c="29" d="M60 749L64 750Q69 750 74 750H86L114 726Q208 641 251 514T294 250Q294 182 284 119T261 12T224 -76T186 -143T145 -194T113 -227T90 -246Q87 -249 86 -250H74Q66 -250 63 -250T58 -247T55 -238Q56 -237 66 -225Q221 -64 221 250T66 725Q56 737 55 738Q55 746 60 749Z"></path></g></g></g></g><line x1="30.0" y1="300.0" x2="52.0" y2="300.0" stroke="var(--accent)" stroke-width="3"/><text x="58.0" y="304.0" font-size="10.5" fill="var(--accent)" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">元のベクトル</text><line x1="160.0" y1="300.0" x2="182.0" y2="300.0" stroke="var(--key)" stroke-width="3"/><text x="188.0" y="304.0" font-size="10.5" fill="var(--key)" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">その行き先（鏡に映した位置）</text><line x1="30.0" y1="324.0" x2="52.0" y2="324.0" stroke="var(--good)" stroke-width="3"/><text x="58.0" y="328.0" font-size="10.5" fill="var(--good)" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">鏡の向き：動かない（固有値</text><g transform="translate(196.50,328.00) scale(0.01176)" style="color:var(--good)"><g stroke="#05070d" fill="currentColor" stroke-width="170" stroke-linejoin="round" style="paint-order:stroke" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="mo"><path data-c="2B" d="M56 237T56 250T70 270H369V420L370 570Q380 583 389 583Q402 583 409 568V270H707Q722 262 722 250T707 230H409V-68Q401 -82 391 -82H389H387Q375 -82 369 -68V230H70Q56 237 56 250Z"></path></g><g data-mml-node="mn" transform="translate(778,0)"><path data-c="31" d="M213 578L200 573Q186 568 160 563T102 556H83V602H102Q149 604 189 617T245 641T273 663Q275 666 285 666Q294 666 302 660V361L303 61Q310 54 315 52T339 48T401 46H427V0H416Q395 3 257 3Q121 3 100 0H88V46H114Q136 46 152 46T177 47T193 50T201 52T207 57T213 61V578Z"></path></g></g></g></g><text x="213.5" y="328.0" font-size="10.5" fill="var(--good)" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">）</text><line x1="300.0" y1="324.0" x2="322.0" y2="324.0" stroke="var(--amber)" stroke-width="3"/><text x="328.0" y="328.0" font-size="10.5" fill="var(--amber)" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">鏡に垂直：逆向きになる（固有値</text><g transform="translate(487.50,328.00) scale(0.01176)" style="color:var(--amber)"><g stroke="#05070d" fill="currentColor" stroke-width="170" stroke-linejoin="round" style="paint-order:stroke" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="TeXAtom" data-mjx-texclass="ORD"><g data-mml-node="mo"><path data-c="2212" d="M84 237T84 250T98 270H679Q694 262 694 250T679 230H98Q84 237 84 250Z"></path></g></g><g data-mml-node="mn" transform="translate(778,0)"><path data-c="31" d="M213 578L200 573Q186 568 160 563T102 556H83V602H102Q149 604 189 617T245 641T273 663Q275 666 285 666Q294 666 302 660V361L303 61Q310 54 315 52T339 48T401 46H427V0H416Q395 3 257 3Q121 3 100 0H88V46H114Q136 46 152 46T177 47T193 50T201 52T207 57T213 61V578Z"></path></g></g></g></g><text x="504.5" y="328.0" font-size="10.5" fill="var(--amber)" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round">、破線が行き先）</text></svg>
+        <figcaption>左の \(\sigma_z\) は、\((x,y)\) を \((x,{-}y)\) に写します。\(y\) 成分の符号だけが変わるので、<strong>\(x\) 軸を鏡にした折り返し</strong>です。右の \(\sigma_x\) は、\((x,y)\) を \((y,x)\) に写し、<strong>直線 \(y=x\) を鏡にした折り返し</strong>です。どちらの図でも、青のベクトルは鏡の反対側のピンクの位置に写ります。鏡の上にあるベクトル（緑）は動かないので固有値 \(+1\)、鏡に垂直なベクトル（オレンジ）はちょうど逆向き（破線）になるので固有値 \({-}1\) です。折り返しを2回続けると元に戻るので、2乗すると単位行列になります。\(\sigma_y\) は成分に \(i\) を含むので、平面の図には描けません。</figcaption>
+      </figure>
+
+      <div class="box target"><span class="lab">パウリ行列について押さえること</span>
+      <ul style="margin:6px 0 0">
+        <li><strong>エルミート行列</strong>：3つとも \(\sigma^\dagger=\sigma\)。したがって固有値は実数です。</li>
+        <li><strong>2乗すると単位行列</strong>：\(\sigma_x^2=\sigma_y^2=\sigma_z^2=I\)。</li>
+        <li><strong>固有値は \(\pm1\)</strong>：行列式は \({-}1\)。</li>
+        <li><strong>反交換関係</strong>：種類の違う2つ（たとえば \(\sigma_x\) と \(\sigma_y\)）を掛けると、順序を入れ替えたとき符号が変わります（\(\sigma_x\sigma_y={-}\sigma_y\sigma_x\)）。</li>
+        <li><strong>掛けると3つ目が出る</strong>：\(\sigma_x\sigma_y=i\sigma_z\)（\(x\to y\to z\to x\) と順にずらした関係も同様）。</li>
+      </ul></div>
+
+      <h3>反交換関係と交換関係の書き方</h3>
+      <p>物理の本では、「順序を入れ替えて足したもの」「順序を入れ替えて引いたもの」を、括弧の記号でまとめて書きます。</p>
+      \[ \begin{aligned}\{A,\,B\}&=AB+BA\\{[A,\,B]}&=AB-BA\end{aligned} \]
+      <p>波括弧の \(\{A,B\}\) を<strong>反交換子</strong>、角括弧の \([A,B]\) を<strong>交換子</strong>といいます。\(\{A,B\}=0\) なら「\(A\) と \(B\) は反交換する」、\([A,B]=0\) なら「掛ける順序を入れ替えてよい（交換する）」という意味です。</p>
+      <p>この書き方を使うと、パウリ行列の性質は2本の式にまとまります。</p>
+
+      <div class="box target"><span class="lab">パウリ行列の反交換関係・交換関係</span>
+      \[ \{\sigma_j,\,\sigma_k\}=2\delta_{jk}I \]
+      \[ [\sigma_x,\,\sigma_y]=2i\sigma_z \]
+      <p>\(j,\ k\) は \(x,\ y,\ z\) のどれかで、\(\delta_{jk}\) は §01 のクロネッカーのデルタです。</p>
+      <ul style="margin:6px 0 0">
+        <li>\(j=k\) のとき：\(\{\sigma_x,\sigma_x\}=2\sigma_x^2=2I\)。つまり \(\sigma_x^2=I\)（2乗すると単位行列）</li>
+        <li>\(j\neq k\) のとき：\(\{\sigma_x,\sigma_y\}=0\)。つまり \(\sigma_x\sigma_y={-}\sigma_y\sigma_x\)（反交換）</li>
+      </ul>
+      <p style="margin-top:8px">交換関係は、\(x\to y\to z\to x\) と順にずらした \([\sigma_y,\sigma_z]=2i\sigma_x\)、\([\sigma_z,\sigma_x]=2i\sigma_y\) も成り立ちます。</p></div>
+
+      <div class="box principle"><span class="lab">確かめ：2乗すると単位行列、固有値は \(\pm1\)</span>
+      <p><strong>① 2乗すると単位行列</strong>：9-1 §04 の積の公式で、3つとも実際に2乗します。</p>
+      \[ \begin{aligned}\sigma_x^2&=\begin{pmatrix}0&1\\1&0\end{pmatrix}\begin{pmatrix}0&1\\1&0\end{pmatrix}\\&=\begin{pmatrix}0\cdot0+1\cdot1&0\cdot1+1\cdot0\\1\cdot0+0\cdot1&1\cdot1+0\cdot0\end{pmatrix}\\&=\begin{pmatrix}1&0\\0&1\end{pmatrix}\end{aligned} \]
+      <p>\(\sigma_y\) では、0 を掛けた項を省いて書きます（たとえば左上は \(0\cdot0+({-}i)\cdot i\)）。</p>
+      \[ \begin{aligned}\sigma_y^2&=\begin{pmatrix}0&{-}i\\i&0\end{pmatrix}\begin{pmatrix}0&{-}i\\i&0\end{pmatrix}\\&=\begin{pmatrix}({-}i)\cdot i&0\\0&i\cdot({-}i)\end{pmatrix}\\&=\begin{pmatrix}1&0\\0&1\end{pmatrix}\end{aligned} \]
+      <p>（\(({-}i)\cdot i={-}i^2=1\)、\(i\cdot({-}i)={-}i^2=1\)）。\(\sigma_z\) は対角だけなので、対角の数をそれぞれ2乗します。</p>
+      \[ \begin{aligned}\sigma_z^2&=\begin{pmatrix}1\cdot1&0\\0&({-}1)\cdot({-}1)\end{pmatrix}\\&=\begin{pmatrix}1&0\\0&1\end{pmatrix}\end{aligned} \]
+      <p>3つとも単位行列 \(I\) になりました。\(\sigma_x\) と \(\sigma_z\) については、図の「折り返しを2回行うと元に戻る」ことと一致しています。</p>
+
+      <p style="margin-top:10px"><strong>② 固有値は \(\pm1\)</strong>：①を使います。パウリ行列のどれかを \(\sigma\)、その固有ベクトルを \(\vec v\)（\(\vec v\neq\vec 0\)）、固有値を \(\lambda\) とすると \(\sigma\vec v=\lambda\vec v\) です。この両辺に、左からもう一度 \(\sigma\) を掛けます。</p>
+      \[ \sigma(\sigma\vec v)=\sigma(\lambda\vec v) \]
+      <p>左辺は、①から \(\sigma^2\vec v=I\vec v=\vec v\) です。右辺は、数 \(\lambda\) を前に出して \(\sigma\vec v=\lambda\vec v\) をもう一度使うと</p>
+      \[ \begin{aligned}\sigma(\lambda\vec v)&=\lambda\,\sigma\vec v\\&=\lambda\cdot\lambda\vec v\\&=\lambda^2\vec v\end{aligned} \]
+      <p>です。したがって \(\vec v=\lambda^2\vec v\)、つまり \((\lambda^2-1)\vec v=\vec 0\) です。\(\vec v\neq\vec 0\) なので \(\lambda^2-1=0\)、よって</p>
+      \[ \lambda=+1\quad\text{または}\quad\lambda={-}1 \]
+
+      <p style="margin-top:8px">反交換関係 \(\{\sigma_x,\sigma_y\}=0\) と交換関係 \([\sigma_x,\sigma_y]=2i\sigma_z\) は、このあとの「まず自力で」で確かめます。</p></div>
+
+      <div class="box teach"><span class="lab">どこで使うか：電子のスピン</span>
+      <p>電子のスピンを \(z\) の向きに測ると、得られる値はいつも2種類（上向きと下向き）だけです。これは \(\sigma_z\) の固有値が \(\pm1\) の2つだけであることに対応します。また、3つのパウリ行列が互いに掛ける順序を入れ替えられない（9-1 §04）ことが、「\(x\) の向きと \(z\) の向きのスピンを同時には決められない」という量子力学の性質に対応します。8-1 の場の分類表で名前を挙げた<strong>スピノル</strong>も、この行列と深く関わっています。<strong>その意味は、量子力学のセクションで扱います</strong>。</p></div>
+
+      <div class="attempt"><span class="lab">まず自力で</span>
+      <p>\(\sigma_x\sigma_y\) と \(\sigma_y\sigma_x\) を計算し、\(\sigma_x\sigma_y=i\sigma_z\) と \(\{\sigma_x,\sigma_y\}=0\)（反交換）を確かめてください。</p>
+      <div class="controls">
+        <button class="ctl-btn amber" data-hint>ヒントを表示</button>
+        <button class="ctl-btn" data-sol>解答を見る</button>
+      </div>
+      <div class="hint"><span class="hn">HINT 1</span><p>9-1 §04 の積の公式で、\(\sigma_x=\begin{pmatrix}0&1\\1&0\end{pmatrix}\) と \(\sigma_y=\begin{pmatrix}0&{-}i\\i&0\end{pmatrix}\) を掛けます。答えの左上は「\(\sigma_x\) の1行目と \(\sigma_y\) の1列目の内積」です。</p></div>
+      <div class="sol">
+        <div class="step"><div class="sh"><span class="sn">1</span>\(\sigma_x\sigma_y\)</div>
+        <div class="why">なぜ：行と列の内積を、成分ごとに取ります。</div>
+        \[ \begin{aligned}\sigma_x\sigma_y&=\begin{pmatrix}0&1\\1&0\end{pmatrix}\!\begin{pmatrix}0&{-}i\\i&0\end{pmatrix}\\&=\begin{pmatrix}1\cdot i&0\\0&1\cdot({-}i)\end{pmatrix}\\&=\begin{pmatrix}i&0\\0&{-}i\end{pmatrix}\\&=i\sigma_z\end{aligned} \]
+        <p style=\"margin:4px 0\">2行目では、0 を掛けた項を省いています（たとえば左上は \(0\cdot0+1\cdot i=i\)）。</p>
+        </div>
+        <div class="step"><div class="sh"><span class="sn">2</span>\(\sigma_y\sigma_x\)</div>
+        <div class="why">なぜ：順序を入れ替えて、同じように計算します。</div>
+        \[ \begin{aligned}\sigma_y\sigma_x&=\begin{pmatrix}0&{-}i\\i&0\end{pmatrix}\!\begin{pmatrix}0&1\\1&0\end{pmatrix}\\&=\begin{pmatrix}{-}i&0\\0&i\end{pmatrix}\\&={-}i\sigma_z\end{aligned} \]
+        </div>
+        <div class="step"><div class="sh"><span class="sn">3</span>足す</div>
+        <div class="why">なぜ：反交換は「順序を入れ替えたものを足すと 0」ということです。</div>
+        <p style="margin:4px 0">\(\{\sigma_x,\sigma_y\}=i\sigma_z+({-}i\sigma_z)=0\) で、反交換が確かめられました。引き算すれば \([\sigma_x,\sigma_y]=i\sigma_z-({-}i\sigma_z)=2i\sigma_z\) で、交換関係も確かめられます。</p>
+        <p style="font-size:13.5px;color:var(--ink-faint);margin:6px 0 0">順序を入れ替えると、符号だけが変わりました。数の掛け算ではありえない性質で、<strong>行列だからこそ表せる関係</strong>です。§04 のディラック行列は、この反交換の性質を 4行4列に広げたものです。</p></div>
+      </div>
+      </div>
+
+      <h3>計算ドリル（§03・全1問）</h3>
+
+      <div class="drill"><p><span class="qn">問1</span>\(\sigma_x\) の固有ベクトルが \(\begin{pmatrix}1\\1\end{pmatrix}\)（固有値 \(+1\)）と \(\begin{pmatrix}1\\{-}1\end{pmatrix}\)（固有値 \({-}1\)）であることを、掛けて確かめよ。</p>
+      <div class="attempt" style="margin:10px 0 4px"><span class="lab">自分の答えを出してから</span>
+      <div class="controls"><button class="ctl-btn" data-sol>解答を見る</button></div>
+      <div class="sol">
+      \[ \begin{aligned}\sigma_x\begin{pmatrix}1\\1\end{pmatrix}&=\begin{pmatrix}0\cdot1+1\cdot1\\1\cdot1+0\cdot1\end{pmatrix}\\&=\begin{pmatrix}1\\1\end{pmatrix}\end{aligned} \]
+      \[ \begin{aligned}\sigma_x\begin{pmatrix}1\\{-}1\end{pmatrix}&=\begin{pmatrix}{-}1\\1\end{pmatrix}\\&={-}\begin{pmatrix}1\\{-}1\end{pmatrix}\end{aligned} \]
+      <p style="font-size:13.5px;color:var(--ink-faint)">図の右（\(\sigma_x\)）で、鏡の向き \((1,1)\) がそのまま、鏡に垂直な \((1,{-}1)\) が逆向きになっていたことと一致します。2つの固有ベクトルが直交しているのは、\(\sigma_x\) がエルミート（ここでは実数なので対称）行列だからです。</p></div></div></div>
+    </section>
+
+    <!-- §04 -->
+    <section id="d3">
+      <div class="sec-head"><span class="idx">§04</span><h2>ディラック行列</h2></div>
+
+      <div class="box target"><span class="lab">この節で押さえること</span>
+      <ul style="margin:6px 0 0">
+        <li>ディラック行列は、相対性理論の2乗の関係 \(E^2=p^2+m^2\) の<strong>平方根を取る</strong>ために作られた行列。</li>
+        <li>そのために必要な性質は、<strong>2乗が \(\pm I\) になること</strong>と、<strong>番号の違うものどうしの反交換関係</strong>。まとめると \(\{\gamma^\mu,\gamma^\nu\}=2\eta^{\mu\nu}I\)。</li>
+        <li>空間が3次元なので反交換する行列が4つ必要になり、<strong>4行4列</strong>になる。</li>
+        <li>計算は、<strong>2行2列の塊</strong>（パウリ行列）に分けて行える。</li>
+      </ul></div>
+
+      <h3>何のための行列か：2乗の関係の「平方根」</h3>
+      <p>相対性理論では、粒子のエネルギー \(E\)、運動量 \(p\)、質量 \(m\) の間に、2乗どうしの関係 \(E^2=p^2+m^2\) が成り立ちます（光の速さを 1 とする単位。1次元で書いています）。</p>
+      <p>この2乗の関係をそのまま使って量子力学の方程式を作ると、困ったことが起こります。\(E^2=p^2+m^2\) を \(E\) について解くと \(E=\pm\sqrt{p^2+m^2}\) で、<strong>マイナスのエネルギー</strong>を持つ解も出てきてしまうのです。さらに、2乗の式から作った方程式では、「粒子がそこに見つかる確率」にあたる量がマイナスになることもあり、そのままでは確率として読めませんでした。</p>
+      <p>そこで物理学者ディラックは、エネルギーについて<strong>1乗の式</strong>で方程式を作ろうとしました。これで確率がマイナスになる問題は解決しました。マイナスのエネルギーの解は残りましたが、ディラックはそれを、電子と電荷が逆の<strong>新しい粒子（反粒子）</strong>があることの表れと読み解き、その粒子（陽電子）は実際に発見されました。</p>
+
+      <h3>1乗の式を作るには</h3>
+      <p>\(E\) を1乗で書くには、「\(E=\)（\(p\) と \(m\) の式）」の形にする必要があります。いちばん素直なのは、\(p\) と \(m\) をそれぞれ何倍かして足した、1次式の形です。</p>
+      \[ E=\alpha p+\beta m \]
+      <p>\(\alpha,\ \beta\) は、これから決める係数です。この式は、相対性理論の関係 \(E^2=p^2+m^2\) と食い違ってはいけません。つまり、両辺を2乗したときに</p>
+      \[ (\alpha p+\beta m)^2=p^2+m^2 \]
+      <p>が、どんな \(p,\ m\) についても成り立つように \(\alpha,\ \beta\) を選ぶ必要があります。</p>
+
+      <p><strong>ふつうの数では選べない</strong>：\(\alpha,\ \beta\) がふつうの数（<strong>実数でも複素数でも</strong>かまいません）だとして、左辺を展開します。</p>
+      \[ (\alpha p+\beta m)^2=\alpha^2p^2+2\alpha\beta\,pm+\beta^2m^2 \]
+      <p>これが \(p^2+m^2\) と等しくなるには、\(p^2\) の係数、\(m^2\) の係数、\(pm\) の係数をそれぞれ比べて</p>
+      \[ \alpha^2=1,\quad \beta^2=1,\quad 2\alpha\beta=0 \]
+      <p>が必要です。ところが最初の2つから \(\alpha\) も \(\beta\) も 0 ではないので、\(2\alpha\beta=0\) にはなりません。<strong>ふつうの数では、どう選んでも余分な \(pm\) の項が消えない</strong>のです。</p>
+      <div class="box warn"><span class="lab">複素数まで広げても同じ</span>
+      <p>ここでの「ふつうの数」は、実数だけでなく<strong>複素数も含みます</strong>。\(\alpha^2=1\) を満たすのは、複素数まで探しても \(\alpha=\pm1\) だけです。また、複素数でも実数と同じく、次の2つが成り立ちます。</p>
+      <ul style="margin:6px 0 0">
+        <li>掛ける順序を入れ替えてよい（\(\alpha\beta=\beta\alpha\)）ので、展開すると \(pm\) の係数は必ず \(2\alpha\beta\) にまとまる</li>
+        <li>0 でない2つの数を掛けて 0 になることはない（\(\alpha\neq0,\ \beta\neq0\) なら \(\alpha\beta\neq0\)）</li>
+      </ul>
+      <p style="margin-top:8px">そのため、複素数を使っても \(pm\) の項は消せません。この2つの性質のうち、1つ目を持たない（掛ける順序を入れ替えられない）のが行列で、それが次の突破口になります。</p></div>
+
+      <p><strong>行列なら選べる</strong>：ここで \(\alpha,\ \beta\) を<strong>行列</strong>にしてみます。行列は掛ける順序を入れ替えられない（9-1 §04）ので、\(\alpha\beta\) と \(\beta\alpha\) は別々に残り、展開は次のようになります。</p>
+      \[ \begin{aligned}&(\alpha p+\beta m)^2\\&=\alpha^2p^2+(\alpha\beta+\beta\alpha)pm+\beta^2m^2\end{aligned} \]
+      <p>ふつうの数なら \(\alpha\beta+\beta\alpha=2\alpha\beta\) でしたが、行列では \(\alpha\beta\) と \(\beta\alpha\) が打ち消し合うことができます。そこで係数を比べると、必要な条件は</p>
+      \[ \alpha^2=I,\quad \beta^2=I,\quad \alpha\beta+\beta\alpha=0 \]
+      <p>です。これを満たす行列があれば、\((\alpha p+\beta m)^2=(p^2+m^2)I\) となり、1乗の式 \(\alpha p+\beta m\) で2乗の関係を表せます。つまり、<strong>\(\alpha\) と \(\beta\) はそれぞれ2乗すると単位行列になり、\(\alpha\) と \(\beta\) の間には反交換関係 \(\{\alpha,\beta\}=0\) が成り立つ</strong>必要があります。§03 のパウリ行列が、まさにこの性質を持っていました。</p>
+
+      <h3>パウリ行列で、1次元なら平方根が取れる</h3>
+      <p>実際に \(\alpha=\sigma_x\)、\(\beta=\sigma_z\) とおいてみます。§03 のとおり \(\sigma_x^2=\sigma_z^2=I\)、\(\{\sigma_x,\sigma_z\}=0\) なので</p>
+      \[ \begin{aligned}&(\sigma_xp+\sigma_zm)^2\\&=\sigma_x^2p^2+\{\sigma_x,\sigma_z\}pm+\sigma_z^2m^2\\&=(p^2+m^2)I\end{aligned} \]
+      <p>で、確かに平方根が取れました。空間が1次元なら、2行2列のパウリ行列で足ります。</p>
+
+      <h3>3次元では、反交換する行列が4つ必要になる</h3>
+      <p>ところが実際の空間は3次元で、運動量は \(p_x,\ p_y,\ p_z\) の3成分を持ちます。関係は \(E^2=p_x^2+p_y^2+p_z^2+m^2\) になり、平方根を</p>
+      \[ \alpha_xp_x+\alpha_yp_y+\alpha_zp_z+\beta m \]
+      <p>の形で取ることになります。1次元のときと同じく、これを2乗したものが \(p_x^2+p_y^2+p_z^2+m^2\) に等しくなる必要があります。行列の掛ける順序に気をつけて、実際に展開してみます。</p>
+      \[ \begin{aligned}&(\alpha_xp_x+\alpha_yp_y+\alpha_zp_z+\beta m)^2\\&=\alpha_x^2p_x^2+\alpha_y^2p_y^2\\&\quad+\alpha_z^2p_z^2+\beta^2m^2\\&\quad+(\alpha_x\alpha_y+\alpha_y\alpha_x)\,p_xp_y\\&\quad+(\alpha_y\alpha_z+\alpha_z\alpha_y)\,p_yp_z\\&\quad+(\alpha_z\alpha_x+\alpha_x\alpha_z)\,p_zp_x\\&\quad+(\alpha_x\beta+\beta\alpha_x)\,p_xm\\&\quad+(\alpha_y\beta+\beta\alpha_y)\,p_ym\\&\quad+(\alpha_z\beta+\beta\alpha_z)\,p_zm\end{aligned} \]
+      <p>2・3行目は「同じ行列どうしの積」で、2乗の項です。4行目から下は「違う行列どうしの積」で、2つの量を掛けた項（\(p_xp_y\) や \(p_xm\) など）が 6 本並んでいます。4つの行列から2つを選ぶ選び方は 6 通りあり、それがちょうど 6 本の項に対応しています。</p>
+      <p>これを \(p_x^2+p_y^2+p_z^2+m^2\) と比べると、次のことが必要です。</p>
+      <ul>
+        <li><strong>2乗の項</strong>（2・3行目）：係数がすべて単位行列、つまり \(\alpha_x^2=\alpha_y^2=\alpha_z^2=\beta^2=I\)</li>
+        <li><strong>掛けた項</strong>（4行目から下の 6 本）：係数がすべて 0、つまり 6 通りすべての組で \(\alpha_x\alpha_y+\alpha_y\alpha_x=0\) のような反交換関係</li>
+      </ul>
+      <p>つまり、4つの行列 \(\alpha_x,\ \alpha_y,\ \alpha_z,\ \beta\) は、<strong>どの2つを選んでも反交換関係が成り立ち、それぞれの2乗が単位行列になる</strong>必要があります。</p>
+
+      <h3>2行2列では足りない</h3>
+      <p>上の展開から分かったことを、もう一度整理します。必要なのは、次の条件を満たす<strong>4つの行列</strong>です。</p>
+      <ul>
+        <li>どれも、2乗すると単位行列になる</li>
+        <li>どの2つを選んでも、反交換関係が成り立つ</li>
+      </ul>
+      <p>1次元のときは、必要な行列は \(\alpha\) と \(\beta\) の <strong>2つ</strong>だけで、パウリ行列から2つ（\(\sigma_x\) と \(\sigma_z\)）を選べば済みました。3次元では、これが <strong>4つ</strong>に増えます。</p>
+      <p>2行2列の行列で探すと、§03 のとおり、パウリ行列の3つ \(\sigma_x,\ \sigma_y,\ \sigma_z\) はこの条件を満たしています。あと1つ足りません。では、<strong>3つのパウリ行列のどれとも反交換する、4つ目の2行2列の行列</strong> \(M\) はあるでしょうか。実は、ありません。</p>
+
+      <div class="box principle"><span class="lab">確かめ：2行2列では4つ目が作れない</span>
+      <p>4つ目の候補を \(M=\begin{pmatrix}p&q\\r&s\end{pmatrix}\) とおき、3つのパウリ行列と1つずつ反交換させて、成分を絞り込んでいきます。</p>
+
+      <p style="margin-top:10px"><strong>① \(\sigma_z\) と反交換させる</strong>：\(\sigma_z=\begin{pmatrix}1&0\\0&{-}1\end{pmatrix}\) を左から掛けると2行目の符号が、右から掛けると2列目の符号が変わります。</p>
+      \[ \begin{aligned}\sigma_zM&=\begin{pmatrix}p&q\\{-}r&{-}s\end{pmatrix}\\M\sigma_z&=\begin{pmatrix}p&{-}q\\r&{-}s\end{pmatrix}\end{aligned} \]
+      <p>反交換関係 \(\sigma_zM+M\sigma_z=0\) が成り立つかを見るために、2つを足します。</p>
+      \[ \begin{aligned}&\sigma_zM+M\sigma_z\\&=\begin{pmatrix}p&q\\{-}r&{-}s\end{pmatrix}+\begin{pmatrix}p&{-}q\\r&{-}s\end{pmatrix}\\&=\begin{pmatrix}2p&0\\0&{-}2s\end{pmatrix}\end{aligned} \]
+      <p>これが零行列になるには \(p=0\)、\(s=0\) が必要です。ここまでで \(M=\begin{pmatrix}0&q\\r&0\end{pmatrix}\)。</p>
+
+      <p style="margin-top:10px"><strong>② \(\sigma_x\) と反交換させる</strong>：\(\sigma_x=\begin{pmatrix}0&1\\1&0\end{pmatrix}\) を掛けると、行（左から）または列（右から）が入れ替わります。</p>
+      \[ \begin{aligned}\sigma_xM&=\begin{pmatrix}r&0\\0&q\end{pmatrix}\\M\sigma_x&=\begin{pmatrix}q&0\\0&r\end{pmatrix}\end{aligned} \]
+      <p>反交換関係 \(\sigma_xM+M\sigma_x=0\) を調べるために、2つを足します。</p>
+      \[ \begin{aligned}&\sigma_xM+M\sigma_x\\&=\begin{pmatrix}r&0\\0&q\end{pmatrix}+\begin{pmatrix}q&0\\0&r\end{pmatrix}\\&=\begin{pmatrix}q+r&0\\0&q+r\end{pmatrix}\end{aligned} \]
+      <p>これが零行列になるには \(q+r=0\)、つまり \(r={-}q\) が必要です。ここまでで \(M=\begin{pmatrix}0&q\\{-}q&0\end{pmatrix}\)。</p>
+
+      <p style="margin-top:10px"><strong>③ \(\sigma_y\) と反交換させる</strong>：\(\sigma_y=\begin{pmatrix}0&{-}i\\i&0\end{pmatrix}\) と掛けると</p>
+      \[ \begin{aligned}\sigma_yM&=\begin{pmatrix}iq&0\\0&iq\end{pmatrix}\\M\sigma_y&=\begin{pmatrix}iq&0\\0&iq\end{pmatrix}\end{aligned} \]
+      <p>反交換関係 \(\sigma_yM+M\sigma_y=0\) を調べるために、2つを足します。</p>
+      \[ \begin{aligned}&\sigma_yM+M\sigma_y\\&=\begin{pmatrix}iq&0\\0&iq\end{pmatrix}+\begin{pmatrix}iq&0\\0&iq\end{pmatrix}\\&=\begin{pmatrix}2iq&0\\0&2iq\end{pmatrix}\end{aligned} \]
+      <p>これが零行列になるには \(q=0\) が必要です。</p>
+
+      <p style="margin-top:10px"><strong>④ 結論</strong>：成分がすべて 0 になり、\(M\) は零行列しかありません。ところが零行列は2乗しても零行列で、単位行列にはなりません。したがって、<strong>条件を満たす4つ目の2行2列の行列は存在しない</strong>のです。</p></div>
+
+      <p>2行2列では、条件を満たす行列は3つまでしか作れず、4つ目がどうしても足りません。そこで、行列の大きさを <strong>4行4列</strong>に広げます。4行4列なら、次に見るように、2行2列の行列（パウリ行列）を塊として並べることで、条件を満たす4つの行列が作れます。</p>
+
+      <h3>2行2列の塊で組み立てる</h3>
+      <p>4行4列の行列を、2行2列の塊（ブロック）4つに区切って書きます。塊どうしの掛け算は、<strong>塊を1つの成分とみなして、9-1 §04 の積の公式と同じ手順</strong>で計算できます（ただし塊どうしは行列なので、掛ける順序は保ちます）。</p>
+
+      <div class="box target"><span class="lab">ディラック行列</span>
+      \[ \begin{aligned}\gamma^0&=\begin{pmatrix}I&0\\0&{-}I\end{pmatrix}\\\gamma^k&=\begin{pmatrix}0&\sigma_k\\{-}\sigma_k&0\end{pmatrix}\end{aligned} \]
+      <p>\(k\) は \(x,\ y,\ z\)（\(1,\ 2,\ 3\) とも書く）の3つで、\(I\) は2行2列の単位行列、\(0\) は成分がすべて 0 の2行2列の行列です。4つの行列 \(\gamma^0,\ \gamma^1,\ \gamma^2,\ \gamma^3\) を<strong>ディラック行列</strong>（ガンマ行列）といいます。</p></div>
+
+      <figure class="fig">
+        <svg viewBox="0 0 640 312" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="ディラック行列を2行2列の塊で組み立てる"><g transform="translate(130.50,26.00) scale(0.01456)" style="color:var(--ink)"><g stroke="#05070d" fill="currentColor" stroke-width="170" stroke-linejoin="round" style="paint-order:stroke" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="msup"><g data-mml-node="mi"><path data-c="1D6FE" d="M31 249Q11 249 11 258Q11 275 26 304T66 365T129 418T206 441Q233 441 239 440Q287 429 318 386T371 255Q385 195 385 170Q385 166 386 166L398 193Q418 244 443 300T486 391T508 430Q510 431 524 431H537Q543 425 543 422Q543 418 522 378T463 251T391 71Q385 55 378 6T357 -100Q341 -165 330 -190T303 -216Q286 -216 286 -188Q286 -138 340 32L346 51L347 69Q348 79 348 100Q348 257 291 317Q251 355 196 355Q148 355 108 329T51 260Q49 251 47 251Q45 249 31 249Z"></path></g><g data-mml-node="mn" transform="translate(627.3,363) scale(0.707)"><path data-c="30" d="M96 585Q152 666 249 666Q297 666 345 640T423 548Q460 465 460 320Q460 165 417 83Q397 41 362 16T301 -15T250 -22Q224 -22 198 -16T137 16T82 83Q39 165 39 320Q39 494 96 585ZM321 597Q291 629 250 629Q208 629 178 597Q153 571 145 525T137 333Q137 175 145 125T181 46Q209 16 250 16Q290 16 318 46Q347 76 354 130T362 333Q362 478 354 524T321 597Z"></path></g></g></g></g></g><rect x="70" y="56" width="68" height="68" fill="rgba(114,227,173,.14)" stroke="var(--ink-soft)" stroke-width="2"/><rect x="138" y="56" width="68" height="68" fill="rgba(255,255,255,.02)" stroke="var(--ink-soft)" stroke-width="2"/><rect x="70" y="124" width="68" height="68" fill="rgba(255,255,255,.02)" stroke="var(--ink-soft)" stroke-width="2"/><rect x="138" y="124" width="68" height="68" fill="rgba(255,111,165,.14)" stroke="var(--ink-soft)" stroke-width="2"/><rect x="70" y="56" width="34" height="34" fill="none" stroke="var(--line-strong)" stroke-width=".8"/><g transform="translate(83.64,78.00) scale(0.01344)" style="color:var(--ink)"><g stroke="#05070d" fill="currentColor" stroke-width="170" stroke-linejoin="round" style="paint-order:stroke" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="mn"><path data-c="31" d="M213 578L200 573Q186 568 160 563T102 556H83V602H102Q149 604 189 617T245 641T273 663Q275 666 285 666Q294 666 302 660V361L303 61Q310 54 315 52T339 48T401 46H427V0H416Q395 3 257 3Q121 3 100 0H88V46H114Q136 46 152 46T177 47T193 50T201 52T207 57T213 61V578Z"></path></g></g></g></g><rect x="104" y="56" width="34" height="34" fill="none" stroke="var(--line-strong)" stroke-width=".8"/><g transform="translate(117.64,78.00) scale(0.01344)" style="color:var(--ink-faint)"><g stroke="#05070d" fill="currentColor" stroke-width="170" stroke-linejoin="round" style="paint-order:stroke" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="mn"><path data-c="30" d="M96 585Q152 666 249 666Q297 666 345 640T423 548Q460 465 460 320Q460 165 417 83Q397 41 362 16T301 -15T250 -22Q224 -22 198 -16T137 16T82 83Q39 165 39 320Q39 494 96 585ZM321 597Q291 629 250 629Q208 629 178 597Q153 571 145 525T137 333Q137 175 145 125T181 46Q209 16 250 16Q290 16 318 46Q347 76 354 130T362 333Q362 478 354 524T321 597Z"></path></g></g></g></g><rect x="138" y="56" width="34" height="34" fill="none" stroke="var(--line-strong)" stroke-width=".8"/><g transform="translate(151.64,78.00) scale(0.01344)" style="color:var(--ink-faint)"><g stroke="#05070d" fill="currentColor" stroke-width="170" stroke-linejoin="round" style="paint-order:stroke" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="mn"><path data-c="30" d="M96 585Q152 666 249 666Q297 666 345 640T423 548Q460 465 460 320Q460 165 417 83Q397 41 362 16T301 -15T250 -22Q224 -22 198 -16T137 16T82 83Q39 165 39 320Q39 494 96 585ZM321 597Q291 629 250 629Q208 629 178 597Q153 571 145 525T137 333Q137 175 145 125T181 46Q209 16 250 16Q290 16 318 46Q347 76 354 130T362 333Q362 478 354 524T321 597Z"></path></g></g></g></g><rect x="172" y="56" width="34" height="34" fill="none" stroke="var(--line-strong)" stroke-width=".8"/><g transform="translate(185.64,78.00) scale(0.01344)" style="color:var(--ink-faint)"><g stroke="#05070d" fill="currentColor" stroke-width="170" stroke-linejoin="round" style="paint-order:stroke" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="mn"><path data-c="30" d="M96 585Q152 666 249 666Q297 666 345 640T423 548Q460 465 460 320Q460 165 417 83Q397 41 362 16T301 -15T250 -22Q224 -22 198 -16T137 16T82 83Q39 165 39 320Q39 494 96 585ZM321 597Q291 629 250 629Q208 629 178 597Q153 571 145 525T137 333Q137 175 145 125T181 46Q209 16 250 16Q290 16 318 46Q347 76 354 130T362 333Q362 478 354 524T321 597Z"></path></g></g></g></g><rect x="70" y="90" width="34" height="34" fill="none" stroke="var(--line-strong)" stroke-width=".8"/><g transform="translate(83.64,112.00) scale(0.01344)" style="color:var(--ink-faint)"><g stroke="#05070d" fill="currentColor" stroke-width="170" stroke-linejoin="round" style="paint-order:stroke" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="mn"><path data-c="30" d="M96 585Q152 666 249 666Q297 666 345 640T423 548Q460 465 460 320Q460 165 417 83Q397 41 362 16T301 -15T250 -22Q224 -22 198 -16T137 16T82 83Q39 165 39 320Q39 494 96 585ZM321 597Q291 629 250 629Q208 629 178 597Q153 571 145 525T137 333Q137 175 145 125T181 46Q209 16 250 16Q290 16 318 46Q347 76 354 130T362 333Q362 478 354 524T321 597Z"></path></g></g></g></g><rect x="104" y="90" width="34" height="34" fill="none" stroke="var(--line-strong)" stroke-width=".8"/><g transform="translate(117.64,112.00) scale(0.01344)" style="color:var(--ink)"><g stroke="#05070d" fill="currentColor" stroke-width="170" stroke-linejoin="round" style="paint-order:stroke" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="mn"><path data-c="31" d="M213 578L200 573Q186 568 160 563T102 556H83V602H102Q149 604 189 617T245 641T273 663Q275 666 285 666Q294 666 302 660V361L303 61Q310 54 315 52T339 48T401 46H427V0H416Q395 3 257 3Q121 3 100 0H88V46H114Q136 46 152 46T177 47T193 50T201 52T207 57T213 61V578Z"></path></g></g></g></g><rect x="138" y="90" width="34" height="34" fill="none" stroke="var(--line-strong)" stroke-width=".8"/><g transform="translate(151.64,112.00) scale(0.01344)" style="color:var(--ink-faint)"><g stroke="#05070d" fill="currentColor" stroke-width="170" stroke-linejoin="round" style="paint-order:stroke" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="mn"><path data-c="30" d="M96 585Q152 666 249 666Q297 666 345 640T423 548Q460 465 460 320Q460 165 417 83Q397 41 362 16T301 -15T250 -22Q224 -22 198 -16T137 16T82 83Q39 165 39 320Q39 494 96 585ZM321 597Q291 629 250 629Q208 629 178 597Q153 571 145 525T137 333Q137 175 145 125T181 46Q209 16 250 16Q290 16 318 46Q347 76 354 130T362 333Q362 478 354 524T321 597Z"></path></g></g></g></g><rect x="172" y="90" width="34" height="34" fill="none" stroke="var(--line-strong)" stroke-width=".8"/><g transform="translate(185.64,112.00) scale(0.01344)" style="color:var(--ink-faint)"><g stroke="#05070d" fill="currentColor" stroke-width="170" stroke-linejoin="round" style="paint-order:stroke" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="mn"><path data-c="30" d="M96 585Q152 666 249 666Q297 666 345 640T423 548Q460 465 460 320Q460 165 417 83Q397 41 362 16T301 -15T250 -22Q224 -22 198 -16T137 16T82 83Q39 165 39 320Q39 494 96 585ZM321 597Q291 629 250 629Q208 629 178 597Q153 571 145 525T137 333Q137 175 145 125T181 46Q209 16 250 16Q290 16 318 46Q347 76 354 130T362 333Q362 478 354 524T321 597Z"></path></g></g></g></g><rect x="70" y="124" width="34" height="34" fill="none" stroke="var(--line-strong)" stroke-width=".8"/><g transform="translate(83.64,146.00) scale(0.01344)" style="color:var(--ink-faint)"><g stroke="#05070d" fill="currentColor" stroke-width="170" stroke-linejoin="round" style="paint-order:stroke" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="mn"><path data-c="30" d="M96 585Q152 666 249 666Q297 666 345 640T423 548Q460 465 460 320Q460 165 417 83Q397 41 362 16T301 -15T250 -22Q224 -22 198 -16T137 16T82 83Q39 165 39 320Q39 494 96 585ZM321 597Q291 629 250 629Q208 629 178 597Q153 571 145 525T137 333Q137 175 145 125T181 46Q209 16 250 16Q290 16 318 46Q347 76 354 130T362 333Q362 478 354 524T321 597Z"></path></g></g></g></g><rect x="104" y="124" width="34" height="34" fill="none" stroke="var(--line-strong)" stroke-width=".8"/><g transform="translate(117.64,146.00) scale(0.01344)" style="color:var(--ink-faint)"><g stroke="#05070d" fill="currentColor" stroke-width="170" stroke-linejoin="round" style="paint-order:stroke" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="mn"><path data-c="30" d="M96 585Q152 666 249 666Q297 666 345 640T423 548Q460 465 460 320Q460 165 417 83Q397 41 362 16T301 -15T250 -22Q224 -22 198 -16T137 16T82 83Q39 165 39 320Q39 494 96 585ZM321 597Q291 629 250 629Q208 629 178 597Q153 571 145 525T137 333Q137 175 145 125T181 46Q209 16 250 16Q290 16 318 46Q347 76 354 130T362 333Q362 478 354 524T321 597Z"></path></g></g></g></g><rect x="138" y="124" width="34" height="34" fill="none" stroke="var(--line-strong)" stroke-width=".8"/><g transform="translate(146.41,146.00) scale(0.01344)" style="color:var(--ink)"><g stroke="#05070d" fill="currentColor" stroke-width="170" stroke-linejoin="round" style="paint-order:stroke" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="TeXAtom" data-mjx-texclass="ORD"><g data-mml-node="mo"><path data-c="2212" d="M84 237T84 250T98 270H679Q694 262 694 250T679 230H98Q84 237 84 250Z"></path></g></g><g data-mml-node="mn" transform="translate(778,0)"><path data-c="31" d="M213 578L200 573Q186 568 160 563T102 556H83V602H102Q149 604 189 617T245 641T273 663Q275 666 285 666Q294 666 302 660V361L303 61Q310 54 315 52T339 48T401 46H427V0H416Q395 3 257 3Q121 3 100 0H88V46H114Q136 46 152 46T177 47T193 50T201 52T207 57T213 61V578Z"></path></g></g></g></g><rect x="172" y="124" width="34" height="34" fill="none" stroke="var(--line-strong)" stroke-width=".8"/><g transform="translate(185.64,146.00) scale(0.01344)" style="color:var(--ink-faint)"><g stroke="#05070d" fill="currentColor" stroke-width="170" stroke-linejoin="round" style="paint-order:stroke" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="mn"><path data-c="30" d="M96 585Q152 666 249 666Q297 666 345 640T423 548Q460 465 460 320Q460 165 417 83Q397 41 362 16T301 -15T250 -22Q224 -22 198 -16T137 16T82 83Q39 165 39 320Q39 494 96 585ZM321 597Q291 629 250 629Q208 629 178 597Q153 571 145 525T137 333Q137 175 145 125T181 46Q209 16 250 16Q290 16 318 46Q347 76 354 130T362 333Q362 478 354 524T321 597Z"></path></g></g></g></g><rect x="70" y="158" width="34" height="34" fill="none" stroke="var(--line-strong)" stroke-width=".8"/><g transform="translate(83.64,180.00) scale(0.01344)" style="color:var(--ink-faint)"><g stroke="#05070d" fill="currentColor" stroke-width="170" stroke-linejoin="round" style="paint-order:stroke" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="mn"><path data-c="30" d="M96 585Q152 666 249 666Q297 666 345 640T423 548Q460 465 460 320Q460 165 417 83Q397 41 362 16T301 -15T250 -22Q224 -22 198 -16T137 16T82 83Q39 165 39 320Q39 494 96 585ZM321 597Q291 629 250 629Q208 629 178 597Q153 571 145 525T137 333Q137 175 145 125T181 46Q209 16 250 16Q290 16 318 46Q347 76 354 130T362 333Q362 478 354 524T321 597Z"></path></g></g></g></g><rect x="104" y="158" width="34" height="34" fill="none" stroke="var(--line-strong)" stroke-width=".8"/><g transform="translate(117.64,180.00) scale(0.01344)" style="color:var(--ink-faint)"><g stroke="#05070d" fill="currentColor" stroke-width="170" stroke-linejoin="round" style="paint-order:stroke" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="mn"><path data-c="30" d="M96 585Q152 666 249 666Q297 666 345 640T423 548Q460 465 460 320Q460 165 417 83Q397 41 362 16T301 -15T250 -22Q224 -22 198 -16T137 16T82 83Q39 165 39 320Q39 494 96 585ZM321 597Q291 629 250 629Q208 629 178 597Q153 571 145 525T137 333Q137 175 145 125T181 46Q209 16 250 16Q290 16 318 46Q347 76 354 130T362 333Q362 478 354 524T321 597Z"></path></g></g></g></g><rect x="138" y="158" width="34" height="34" fill="none" stroke="var(--line-strong)" stroke-width=".8"/><g transform="translate(151.64,180.00) scale(0.01344)" style="color:var(--ink-faint)"><g stroke="#05070d" fill="currentColor" stroke-width="170" stroke-linejoin="round" style="paint-order:stroke" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="mn"><path data-c="30" d="M96 585Q152 666 249 666Q297 666 345 640T423 548Q460 465 460 320Q460 165 417 83Q397 41 362 16T301 -15T250 -22Q224 -22 198 -16T137 16T82 83Q39 165 39 320Q39 494 96 585ZM321 597Q291 629 250 629Q208 629 178 597Q153 571 145 525T137 333Q137 175 145 125T181 46Q209 16 250 16Q290 16 318 46Q347 76 354 130T362 333Q362 478 354 524T321 597Z"></path></g></g></g></g><rect x="172" y="158" width="34" height="34" fill="none" stroke="var(--line-strong)" stroke-width=".8"/><g transform="translate(180.41,180.00) scale(0.01344)" style="color:var(--ink)"><g stroke="#05070d" fill="currentColor" stroke-width="170" stroke-linejoin="round" style="paint-order:stroke" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="TeXAtom" data-mjx-texclass="ORD"><g data-mml-node="mo"><path data-c="2212" d="M84 237T84 250T98 270H679Q694 262 694 250T679 230H98Q84 237 84 250Z"></path></g></g><g data-mml-node="mn" transform="translate(778,0)"><path data-c="31" d="M213 578L200 573Q186 568 160 563T102 556H83V602H102Q149 604 189 617T245 641T273 663Q275 666 285 666Q294 666 302 660V361L303 61Q310 54 315 52T339 48T401 46H427V0H416Q395 3 257 3Q121 3 100 0H88V46H114Q136 46 152 46T177 47T193 50T201 52T207 57T213 61V578Z"></path></g></g></g></g><g transform="translate(102.29,226.00) scale(0.01344)" style="color:var(--amber)"><g stroke="#05070d" fill="currentColor" stroke-width="170" stroke-linejoin="round" style="paint-order:stroke" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="mo"><path data-c="3D" d="M56 347Q56 360 70 367H707Q722 359 722 347Q722 336 708 328L390 327H72Q56 332 56 347ZM56 153Q56 168 72 173H708Q722 163 722 153Q722 140 707 133H70Q56 140 56 153Z"></path></g><g data-mml-node="mrow" transform="translate(1055.8,0)"><g data-mml-node="mo" transform="translate(0 -0.5)"><path data-c="28" d="M701 -940Q701 -943 695 -949H664Q662 -947 636 -922T591 -879T537 -818T475 -737T412 -636T350 -511T295 -362T250 -186T221 17T209 251Q209 962 573 1361Q596 1386 616 1405T649 1437T664 1450H695Q701 1444 701 1441Q701 1436 681 1415T629 1356T557 1261T476 1118T400 927T340 675T308 359Q306 321 306 250Q306 -139 400 -430T690 -924Q701 -936 701 -940Z"></path></g><g data-mml-node="mtable" transform="translate(736,0)"><g data-mml-node="mtr" transform="translate(0,700)"><g data-mml-node="mtd"><g data-mml-node="mi"><path data-c="1D43C" d="M43 1Q26 1 26 10Q26 12 29 24Q34 43 39 45Q42 46 54 46H60Q120 46 136 53Q137 53 138 54Q143 56 149 77T198 273Q210 318 216 344Q286 624 286 626Q284 630 284 631Q274 637 213 637H193Q184 643 189 662Q193 677 195 680T209 683H213Q285 681 359 681Q481 681 487 683H497Q504 676 504 672T501 655T494 639Q491 637 471 637Q440 637 407 634Q393 631 388 623Q381 609 337 432Q326 385 315 341Q245 65 245 59Q245 52 255 50T307 46H339Q345 38 345 37T342 19Q338 6 332 0H316Q279 2 179 2Q143 2 113 2T65 2T43 1Z"></path></g></g><g data-mml-node="mtd" transform="translate(1895,0)"><g data-mml-node="mn"><path data-c="30" d="M96 585Q152 666 249 666Q297 666 345 640T423 548Q460 465 460 320Q460 165 417 83Q397 41 362 16T301 -15T250 -22Q224 -22 198 -16T137 16T82 83Q39 165 39 320Q39 494 96 585ZM321 597Q291 629 250 629Q208 629 178 597Q153 571 145 525T137 333Q137 175 145 125T181 46Q209 16 250 16Q290 16 318 46Q347 76 354 130T362 333Q362 478 354 524T321 597Z"></path></g></g></g><g data-mml-node="mtr" transform="translate(0,-700)"><g data-mml-node="mtd" transform="translate(2,0)"><g data-mml-node="mn"><path data-c="30" d="M96 585Q152 666 249 666Q297 666 345 640T423 548Q460 465 460 320Q460 165 417 83Q397 41 362 16T301 -15T250 -22Q224 -22 198 -16T137 16T82 83Q39 165 39 320Q39 494 96 585ZM321 597Q291 629 250 629Q208 629 178 597Q153 571 145 525T137 333Q137 175 145 125T181 46Q209 16 250 16Q290 16 318 46Q347 76 354 130T362 333Q362 478 354 524T321 597Z"></path></g></g><g data-mml-node="mtd" transform="translate(1504,0)"><g data-mml-node="TeXAtom" data-mjx-texclass="ORD"><g data-mml-node="mo"><path data-c="2212" d="M84 237T84 250T98 270H679Q694 262 694 250T679 230H98Q84 237 84 250Z"></path></g></g><g data-mml-node="mi" transform="translate(778,0)"><path data-c="1D43C" d="M43 1Q26 1 26 10Q26 12 29 24Q34 43 39 45Q42 46 54 46H60Q120 46 136 53Q137 53 138 54Q143 56 149 77T198 273Q210 318 216 344Q286 624 286 626Q284 630 284 631Q274 637 213 637H193Q184 643 189 662Q193 677 195 680T209 683H213Q285 681 359 681Q481 681 487 683H497Q504 676 504 672T501 655T494 639Q491 637 471 637Q440 637 407 634Q393 631 388 623Q381 609 337 432Q326 385 315 341Q245 65 245 59Q245 52 255 50T307 46H339Q345 38 345 37T342 19Q338 6 332 0H316Q279 2 179 2Q143 2 113 2T65 2T43 1Z"></path></g></g></g></g><g data-mml-node="mo" transform="translate(3522,0) translate(0 -0.5)"><path data-c="29" d="M34 1438Q34 1446 37 1448T50 1450H56H71Q73 1448 99 1423T144 1380T198 1319T260 1238T323 1137T385 1013T440 864T485 688T514 485T526 251Q526 134 519 53Q472 -519 162 -860Q139 -885 119 -904T86 -936T71 -949H56Q43 -949 39 -947T34 -937Q88 -883 140 -813Q428 -430 428 251Q428 453 402 628T338 922T245 1146T145 1309T46 1425Q44 1427 42 1429T39 1433T36 1436L34 1438Z"></path></g></g></g></g></g><g transform="translate(450.50,26.00) scale(0.01456)" style="color:var(--ink)"><g stroke="#05070d" fill="currentColor" stroke-width="170" stroke-linejoin="round" style="paint-order:stroke" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="msup"><g data-mml-node="mi"><path data-c="1D6FE" d="M31 249Q11 249 11 258Q11 275 26 304T66 365T129 418T206 441Q233 441 239 440Q287 429 318 386T371 255Q385 195 385 170Q385 166 386 166L398 193Q418 244 443 300T486 391T508 430Q510 431 524 431H537Q543 425 543 422Q543 418 522 378T463 251T391 71Q385 55 378 6T357 -100Q341 -165 330 -190T303 -216Q286 -216 286 -188Q286 -138 340 32L346 51L347 69Q348 79 348 100Q348 257 291 317Q251 355 196 355Q148 355 108 329T51 260Q49 251 47 251Q45 249 31 249Z"></path></g><g data-mml-node="mn" transform="translate(627.3,363) scale(0.707)"><path data-c="31" d="M213 578L200 573Q186 568 160 563T102 556H83V602H102Q149 604 189 617T245 641T273 663Q275 666 285 666Q294 666 302 660V361L303 61Q310 54 315 52T339 48T401 46H427V0H416Q395 3 257 3Q121 3 100 0H88V46H114Q136 46 152 46T177 47T193 50T201 52T207 57T213 61V578Z"></path></g></g></g></g></g><rect x="390" y="56" width="68" height="68" fill="rgba(255,255,255,.02)" stroke="var(--ink-soft)" stroke-width="2"/><rect x="458" y="56" width="68" height="68" fill="rgba(77,148,255,.16)" stroke="var(--ink-soft)" stroke-width="2"/><rect x="390" y="124" width="68" height="68" fill="rgba(77,148,255,.16)" stroke="var(--ink-soft)" stroke-width="2"/><rect x="458" y="124" width="68" height="68" fill="rgba(255,255,255,.02)" stroke="var(--ink-soft)" stroke-width="2"/><rect x="390" y="56" width="34" height="34" fill="none" stroke="var(--line-strong)" stroke-width=".8"/><g transform="translate(403.64,78.00) scale(0.01344)" style="color:var(--ink-faint)"><g stroke="#05070d" fill="currentColor" stroke-width="170" stroke-linejoin="round" style="paint-order:stroke" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="mn"><path data-c="30" d="M96 585Q152 666 249 666Q297 666 345 640T423 548Q460 465 460 320Q460 165 417 83Q397 41 362 16T301 -15T250 -22Q224 -22 198 -16T137 16T82 83Q39 165 39 320Q39 494 96 585ZM321 597Q291 629 250 629Q208 629 178 597Q153 571 145 525T137 333Q137 175 145 125T181 46Q209 16 250 16Q290 16 318 46Q347 76 354 130T362 333Q362 478 354 524T321 597Z"></path></g></g></g></g><rect x="424" y="56" width="34" height="34" fill="none" stroke="var(--line-strong)" stroke-width=".8"/><g transform="translate(437.64,78.00) scale(0.01344)" style="color:var(--ink-faint)"><g stroke="#05070d" fill="currentColor" stroke-width="170" stroke-linejoin="round" style="paint-order:stroke" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="mn"><path data-c="30" d="M96 585Q152 666 249 666Q297 666 345 640T423 548Q460 465 460 320Q460 165 417 83Q397 41 362 16T301 -15T250 -22Q224 -22 198 -16T137 16T82 83Q39 165 39 320Q39 494 96 585ZM321 597Q291 629 250 629Q208 629 178 597Q153 571 145 525T137 333Q137 175 145 125T181 46Q209 16 250 16Q290 16 318 46Q347 76 354 130T362 333Q362 478 354 524T321 597Z"></path></g></g></g></g><rect x="458" y="56" width="34" height="34" fill="none" stroke="var(--line-strong)" stroke-width=".8"/><g transform="translate(471.64,78.00) scale(0.01344)" style="color:var(--ink-faint)"><g stroke="#05070d" fill="currentColor" stroke-width="170" stroke-linejoin="round" style="paint-order:stroke" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="mn"><path data-c="30" d="M96 585Q152 666 249 666Q297 666 345 640T423 548Q460 465 460 320Q460 165 417 83Q397 41 362 16T301 -15T250 -22Q224 -22 198 -16T137 16T82 83Q39 165 39 320Q39 494 96 585ZM321 597Q291 629 250 629Q208 629 178 597Q153 571 145 525T137 333Q137 175 145 125T181 46Q209 16 250 16Q290 16 318 46Q347 76 354 130T362 333Q362 478 354 524T321 597Z"></path></g></g></g></g><rect x="492" y="56" width="34" height="34" fill="none" stroke="var(--line-strong)" stroke-width=".8"/><g transform="translate(505.64,78.00) scale(0.01344)" style="color:var(--ink)"><g stroke="#05070d" fill="currentColor" stroke-width="170" stroke-linejoin="round" style="paint-order:stroke" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="mn"><path data-c="31" d="M213 578L200 573Q186 568 160 563T102 556H83V602H102Q149 604 189 617T245 641T273 663Q275 666 285 666Q294 666 302 660V361L303 61Q310 54 315 52T339 48T401 46H427V0H416Q395 3 257 3Q121 3 100 0H88V46H114Q136 46 152 46T177 47T193 50T201 52T207 57T213 61V578Z"></path></g></g></g></g><rect x="390" y="90" width="34" height="34" fill="none" stroke="var(--line-strong)" stroke-width=".8"/><g transform="translate(403.64,112.00) scale(0.01344)" style="color:var(--ink-faint)"><g stroke="#05070d" fill="currentColor" stroke-width="170" stroke-linejoin="round" style="paint-order:stroke" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="mn"><path data-c="30" d="M96 585Q152 666 249 666Q297 666 345 640T423 548Q460 465 460 320Q460 165 417 83Q397 41 362 16T301 -15T250 -22Q224 -22 198 -16T137 16T82 83Q39 165 39 320Q39 494 96 585ZM321 597Q291 629 250 629Q208 629 178 597Q153 571 145 525T137 333Q137 175 145 125T181 46Q209 16 250 16Q290 16 318 46Q347 76 354 130T362 333Q362 478 354 524T321 597Z"></path></g></g></g></g><rect x="424" y="90" width="34" height="34" fill="none" stroke="var(--line-strong)" stroke-width=".8"/><g transform="translate(437.64,112.00) scale(0.01344)" style="color:var(--ink-faint)"><g stroke="#05070d" fill="currentColor" stroke-width="170" stroke-linejoin="round" style="paint-order:stroke" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="mn"><path data-c="30" d="M96 585Q152 666 249 666Q297 666 345 640T423 548Q460 465 460 320Q460 165 417 83Q397 41 362 16T301 -15T250 -22Q224 -22 198 -16T137 16T82 83Q39 165 39 320Q39 494 96 585ZM321 597Q291 629 250 629Q208 629 178 597Q153 571 145 525T137 333Q137 175 145 125T181 46Q209 16 250 16Q290 16 318 46Q347 76 354 130T362 333Q362 478 354 524T321 597Z"></path></g></g></g></g><rect x="458" y="90" width="34" height="34" fill="none" stroke="var(--line-strong)" stroke-width=".8"/><g transform="translate(471.64,112.00) scale(0.01344)" style="color:var(--ink)"><g stroke="#05070d" fill="currentColor" stroke-width="170" stroke-linejoin="round" style="paint-order:stroke" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="mn"><path data-c="31" d="M213 578L200 573Q186 568 160 563T102 556H83V602H102Q149 604 189 617T245 641T273 663Q275 666 285 666Q294 666 302 660V361L303 61Q310 54 315 52T339 48T401 46H427V0H416Q395 3 257 3Q121 3 100 0H88V46H114Q136 46 152 46T177 47T193 50T201 52T207 57T213 61V578Z"></path></g></g></g></g><rect x="492" y="90" width="34" height="34" fill="none" stroke="var(--line-strong)" stroke-width=".8"/><g transform="translate(505.64,112.00) scale(0.01344)" style="color:var(--ink-faint)"><g stroke="#05070d" fill="currentColor" stroke-width="170" stroke-linejoin="round" style="paint-order:stroke" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="mn"><path data-c="30" d="M96 585Q152 666 249 666Q297 666 345 640T423 548Q460 465 460 320Q460 165 417 83Q397 41 362 16T301 -15T250 -22Q224 -22 198 -16T137 16T82 83Q39 165 39 320Q39 494 96 585ZM321 597Q291 629 250 629Q208 629 178 597Q153 571 145 525T137 333Q137 175 145 125T181 46Q209 16 250 16Q290 16 318 46Q347 76 354 130T362 333Q362 478 354 524T321 597Z"></path></g></g></g></g><rect x="390" y="124" width="34" height="34" fill="none" stroke="var(--line-strong)" stroke-width=".8"/><g transform="translate(403.64,146.00) scale(0.01344)" style="color:var(--ink-faint)"><g stroke="#05070d" fill="currentColor" stroke-width="170" stroke-linejoin="round" style="paint-order:stroke" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="mn"><path data-c="30" d="M96 585Q152 666 249 666Q297 666 345 640T423 548Q460 465 460 320Q460 165 417 83Q397 41 362 16T301 -15T250 -22Q224 -22 198 -16T137 16T82 83Q39 165 39 320Q39 494 96 585ZM321 597Q291 629 250 629Q208 629 178 597Q153 571 145 525T137 333Q137 175 145 125T181 46Q209 16 250 16Q290 16 318 46Q347 76 354 130T362 333Q362 478 354 524T321 597Z"></path></g></g></g></g><rect x="424" y="124" width="34" height="34" fill="none" stroke="var(--line-strong)" stroke-width=".8"/><g transform="translate(432.41,146.00) scale(0.01344)" style="color:var(--ink)"><g stroke="#05070d" fill="currentColor" stroke-width="170" stroke-linejoin="round" style="paint-order:stroke" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="TeXAtom" data-mjx-texclass="ORD"><g data-mml-node="mo"><path data-c="2212" d="M84 237T84 250T98 270H679Q694 262 694 250T679 230H98Q84 237 84 250Z"></path></g></g><g data-mml-node="mn" transform="translate(778,0)"><path data-c="31" d="M213 578L200 573Q186 568 160 563T102 556H83V602H102Q149 604 189 617T245 641T273 663Q275 666 285 666Q294 666 302 660V361L303 61Q310 54 315 52T339 48T401 46H427V0H416Q395 3 257 3Q121 3 100 0H88V46H114Q136 46 152 46T177 47T193 50T201 52T207 57T213 61V578Z"></path></g></g></g></g><rect x="458" y="124" width="34" height="34" fill="none" stroke="var(--line-strong)" stroke-width=".8"/><g transform="translate(471.64,146.00) scale(0.01344)" style="color:var(--ink-faint)"><g stroke="#05070d" fill="currentColor" stroke-width="170" stroke-linejoin="round" style="paint-order:stroke" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="mn"><path data-c="30" d="M96 585Q152 666 249 666Q297 666 345 640T423 548Q460 465 460 320Q460 165 417 83Q397 41 362 16T301 -15T250 -22Q224 -22 198 -16T137 16T82 83Q39 165 39 320Q39 494 96 585ZM321 597Q291 629 250 629Q208 629 178 597Q153 571 145 525T137 333Q137 175 145 125T181 46Q209 16 250 16Q290 16 318 46Q347 76 354 130T362 333Q362 478 354 524T321 597Z"></path></g></g></g></g><rect x="492" y="124" width="34" height="34" fill="none" stroke="var(--line-strong)" stroke-width=".8"/><g transform="translate(505.64,146.00) scale(0.01344)" style="color:var(--ink-faint)"><g stroke="#05070d" fill="currentColor" stroke-width="170" stroke-linejoin="round" style="paint-order:stroke" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="mn"><path data-c="30" d="M96 585Q152 666 249 666Q297 666 345 640T423 548Q460 465 460 320Q460 165 417 83Q397 41 362 16T301 -15T250 -22Q224 -22 198 -16T137 16T82 83Q39 165 39 320Q39 494 96 585ZM321 597Q291 629 250 629Q208 629 178 597Q153 571 145 525T137 333Q137 175 145 125T181 46Q209 16 250 16Q290 16 318 46Q347 76 354 130T362 333Q362 478 354 524T321 597Z"></path></g></g></g></g><rect x="390" y="158" width="34" height="34" fill="none" stroke="var(--line-strong)" stroke-width=".8"/><g transform="translate(398.41,180.00) scale(0.01344)" style="color:var(--ink)"><g stroke="#05070d" fill="currentColor" stroke-width="170" stroke-linejoin="round" style="paint-order:stroke" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="TeXAtom" data-mjx-texclass="ORD"><g data-mml-node="mo"><path data-c="2212" d="M84 237T84 250T98 270H679Q694 262 694 250T679 230H98Q84 237 84 250Z"></path></g></g><g data-mml-node="mn" transform="translate(778,0)"><path data-c="31" d="M213 578L200 573Q186 568 160 563T102 556H83V602H102Q149 604 189 617T245 641T273 663Q275 666 285 666Q294 666 302 660V361L303 61Q310 54 315 52T339 48T401 46H427V0H416Q395 3 257 3Q121 3 100 0H88V46H114Q136 46 152 46T177 47T193 50T201 52T207 57T213 61V578Z"></path></g></g></g></g><rect x="424" y="158" width="34" height="34" fill="none" stroke="var(--line-strong)" stroke-width=".8"/><g transform="translate(437.64,180.00) scale(0.01344)" style="color:var(--ink-faint)"><g stroke="#05070d" fill="currentColor" stroke-width="170" stroke-linejoin="round" style="paint-order:stroke" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="mn"><path data-c="30" d="M96 585Q152 666 249 666Q297 666 345 640T423 548Q460 465 460 320Q460 165 417 83Q397 41 362 16T301 -15T250 -22Q224 -22 198 -16T137 16T82 83Q39 165 39 320Q39 494 96 585ZM321 597Q291 629 250 629Q208 629 178 597Q153 571 145 525T137 333Q137 175 145 125T181 46Q209 16 250 16Q290 16 318 46Q347 76 354 130T362 333Q362 478 354 524T321 597Z"></path></g></g></g></g><rect x="458" y="158" width="34" height="34" fill="none" stroke="var(--line-strong)" stroke-width=".8"/><g transform="translate(471.64,180.00) scale(0.01344)" style="color:var(--ink-faint)"><g stroke="#05070d" fill="currentColor" stroke-width="170" stroke-linejoin="round" style="paint-order:stroke" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="mn"><path data-c="30" d="M96 585Q152 666 249 666Q297 666 345 640T423 548Q460 465 460 320Q460 165 417 83Q397 41 362 16T301 -15T250 -22Q224 -22 198 -16T137 16T82 83Q39 165 39 320Q39 494 96 585ZM321 597Q291 629 250 629Q208 629 178 597Q153 571 145 525T137 333Q137 175 145 125T181 46Q209 16 250 16Q290 16 318 46Q347 76 354 130T362 333Q362 478 354 524T321 597Z"></path></g></g></g></g><rect x="492" y="158" width="34" height="34" fill="none" stroke="var(--line-strong)" stroke-width=".8"/><g transform="translate(505.64,180.00) scale(0.01344)" style="color:var(--ink-faint)"><g stroke="#05070d" fill="currentColor" stroke-width="170" stroke-linejoin="round" style="paint-order:stroke" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="mn"><path data-c="30" d="M96 585Q152 666 249 666Q297 666 345 640T423 548Q460 465 460 320Q460 165 417 83Q397 41 362 16T301 -15T250 -22Q224 -22 198 -16T137 16T82 83Q39 165 39 320Q39 494 96 585ZM321 597Q291 629 250 629Q208 629 178 597Q153 571 145 525T137 333Q137 175 145 125T181 46Q209 16 250 16Q290 16 318 46Q347 76 354 130T362 333Q362 478 354 524T321 597Z"></path></g></g></g></g><g transform="translate(414.84,226.00) scale(0.01344)" style="color:var(--amber)"><g stroke="#05070d" fill="currentColor" stroke-width="170" stroke-linejoin="round" style="paint-order:stroke" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="mo"><path data-c="3D" d="M56 347Q56 360 70 367H707Q722 359 722 347Q722 336 708 328L390 327H72Q56 332 56 347ZM56 153Q56 168 72 173H708Q722 163 722 153Q722 140 707 133H70Q56 140 56 153Z"></path></g><g data-mml-node="mrow" transform="translate(1055.8,0)"><g data-mml-node="mo" transform="translate(0 -0.5)"><path data-c="28" d="M701 -940Q701 -943 695 -949H664Q662 -947 636 -922T591 -879T537 -818T475 -737T412 -636T350 -511T295 -362T250 -186T221 17T209 251Q209 962 573 1361Q596 1386 616 1405T649 1437T664 1450H695Q701 1444 701 1441Q701 1436 681 1415T629 1356T557 1261T476 1118T400 927T340 675T308 359Q306 321 306 250Q306 -139 400 -430T690 -924Q701 -936 701 -940Z"></path></g><g data-mml-node="mtable" transform="translate(736,0)"><g data-mml-node="mtr" transform="translate(0,700)"><g data-mml-node="mtd" transform="translate(668.2,0)"><g data-mml-node="mn"><path data-c="30" d="M96 585Q152 666 249 666Q297 666 345 640T423 548Q460 465 460 320Q460 165 417 83Q397 41 362 16T301 -15T250 -22Q224 -22 198 -16T137 16T82 83Q39 165 39 320Q39 494 96 585ZM321 597Q291 629 250 629Q208 629 178 597Q153 571 145 525T137 333Q137 175 145 125T181 46Q209 16 250 16Q290 16 318 46Q347 76 354 130T362 333Q362 478 354 524T321 597Z"></path></g></g><g data-mml-node="mtd" transform="translate(2836.5,0)"><g data-mml-node="msub"><g data-mml-node="mi"><path data-c="1D70E" d="M184 -11Q116 -11 74 34T31 147Q31 247 104 333T274 430Q275 431 414 431H552Q553 430 555 429T559 427T562 425T565 422T567 420T569 416T570 412T571 407T572 401Q572 357 507 357Q500 357 490 357T476 358H416L421 348Q439 310 439 263Q439 153 359 71T184 -11ZM361 278Q361 358 276 358Q152 358 115 184Q114 180 114 178Q106 141 106 117Q106 67 131 47T188 26Q242 26 287 73Q316 103 334 153T356 233T361 278Z"></path></g><g data-mml-node="mi" transform="translate(604,-150) scale(0.707)"><path data-c="1D465" d="M52 289Q59 331 106 386T222 442Q257 442 286 424T329 379Q371 442 430 442Q467 442 494 420T522 361Q522 332 508 314T481 292T458 288Q439 288 427 299T415 328Q415 374 465 391Q454 404 425 404Q412 404 406 402Q368 386 350 336Q290 115 290 78Q290 50 306 38T341 26Q378 26 414 59T463 140Q466 150 469 151T485 153H489Q504 153 504 145Q504 144 502 134Q486 77 440 33T333 -11Q263 -11 227 52Q186 -10 133 -10H127Q78 -10 57 16T35 71Q35 103 54 123T99 143Q142 143 142 101Q142 81 130 66T107 46T94 41L91 40Q91 39 97 36T113 29T132 26Q168 26 194 71Q203 87 217 139T245 247T261 313Q266 340 266 352Q266 380 251 392T217 404Q177 404 142 372T93 290Q91 281 88 280T72 278H58Q52 284 52 289Z"></path></g></g></g></g><g data-mml-node="mtr" transform="translate(0,-700)"><g data-mml-node="mtd"><g data-mml-node="TeXAtom" data-mjx-texclass="ORD"><g data-mml-node="mo"><path data-c="2212" d="M84 237T84 250T98 270H679Q694 262 694 250T679 230H98Q84 237 84 250Z"></path></g></g><g data-mml-node="msub" transform="translate(778,0)"><g data-mml-node="mi"><path data-c="1D70E" d="M184 -11Q116 -11 74 34T31 147Q31 247 104 333T274 430Q275 431 414 431H552Q553 430 555 429T559 427T562 425T565 422T567 420T569 416T570 412T571 407T572 401Q572 357 507 357Q500 357 490 357T476 358H416L421 348Q439 310 439 263Q439 153 359 71T184 -11ZM361 278Q361 358 276 358Q152 358 115 184Q114 180 114 178Q106 141 106 117Q106 67 131 47T188 26Q242 26 287 73Q316 103 334 153T356 233T361 278Z"></path></g><g data-mml-node="mi" transform="translate(604,-150) scale(0.707)"><path data-c="1D465" d="M52 289Q59 331 106 386T222 442Q257 442 286 424T329 379Q371 442 430 442Q467 442 494 420T522 361Q522 332 508 314T481 292T458 288Q439 288 427 299T415 328Q415 374 465 391Q454 404 425 404Q412 404 406 402Q368 386 350 336Q290 115 290 78Q290 50 306 38T341 26Q378 26 414 59T463 140Q466 150 469 151T485 153H489Q504 153 504 145Q504 144 502 134Q486 77 440 33T333 -11Q263 -11 227 52Q186 -10 133 -10H127Q78 -10 57 16T35 71Q35 103 54 123T99 143Q142 143 142 101Q142 81 130 66T107 46T94 41L91 40Q91 39 97 36T113 29T132 26Q168 26 194 71Q203 87 217 139T245 247T261 313Q266 340 266 352Q266 380 251 392T217 404Q177 404 142 372T93 290Q91 281 88 280T72 278H58Q52 284 52 289Z"></path></g></g></g><g data-mml-node="mtd" transform="translate(3115.7,0)"><g data-mml-node="mn"><path data-c="30" d="M96 585Q152 666 249 666Q297 666 345 640T423 548Q460 465 460 320Q460 165 417 83Q397 41 362 16T301 -15T250 -22Q224 -22 198 -16T137 16T82 83Q39 165 39 320Q39 494 96 585ZM321 597Q291 629 250 629Q208 629 178 597Q153 571 145 525T137 333Q137 175 145 125T181 46Q209 16 250 16Q290 16 318 46Q347 76 354 130T362 333Q362 478 354 524T321 597Z"></path></g></g></g></g><g data-mml-node="mo" transform="translate(4630.9,0) translate(0 -0.5)"><path data-c="29" d="M34 1438Q34 1446 37 1448T50 1450H56H71Q73 1448 99 1423T144 1380T198 1319T260 1238T323 1137T385 1013T440 864T485 688T514 485T526 251Q526 134 519 53Q472 -519 162 -860Q139 -885 119 -904T86 -936T71 -949H56Q43 -949 39 -947T34 -937Q88 -883 140 -813Q428 -430 428 251Q428 453 402 628T338 922T245 1146T145 1309T46 1425Q44 1427 42 1429T39 1433T36 1436L34 1438Z"></path></g></g></g></g></g><text x="320.0" y="300.0" font-size="10.5" fill="var(--ink-soft)" text-anchor="middle" style="paint-order:stroke" stroke="#05070d" stroke-width="4.5" stroke-linejoin="round"><tspan dx="0.0" dy="0">太線で区切った4つの塊は、それぞれ2行2列の行列（</tspan><tspan font-family="'Times New Roman',Times,serif" font-style="italic" font-size="12" dx="2.0" dy="0">I</tspan><tspan dx="1.885714285714286" dy="0"> は単位行列、</tspan><tspan font-family="'Times New Roman',Times,serif" font-style="italic" font-size="12" dx="2.0" dy="0">σ</tspan><tspan dx="0.5" dy="4" font-size="8.2">x</tspan><tspan dx="1.885714285714286" dy="-4"> はパウリ行列）</tspan></text></svg>
+        <figcaption>4行4列のディラック行列 \(\gamma^0\)、\(\gamma^1\) を、2行2列の塊（太線の区切り）4つに分けて見たものです。塊の中身は、単位行列 \(I\) やパウリ行列 \(\sigma_x\) になっています。</figcaption>
+      </figure>
+
+      <h3>性質の確かめ</h3>
+      <div class="box principle"><span class="lab">確かめ：2乗が \(\pm I\) になること</span>
+      <p><strong>\(\gamma^0\) の2乗</strong>：塊の積の公式で計算します。0 の塊を含む積は 0 になるので、それらの項を省いて書くと</p>
+      \[ \begin{aligned}(\gamma^0)^2&=\begin{pmatrix}I\cdot I&0\\0&({-}I)({-}I)\end{pmatrix}\\&=\begin{pmatrix}I&0\\0&I\end{pmatrix}\end{aligned} \]
+      <p>で、4行4列の単位行列です。</p>
+      <p><strong>\(\gamma^1\) の2乗</strong>：\(\sigma_x^2=I\) を使うと</p>
+      \[ \begin{aligned}(\gamma^1)^2&=\begin{pmatrix}\sigma_x({-}\sigma_x)&0\\0&({-}\sigma_x)\sigma_x\end{pmatrix}\\&=\begin{pmatrix}{-}I&0\\0&{-}I\end{pmatrix}\end{aligned} \]
+      <p>で、単位行列の \({-}1\) 倍です（右上と左下は、どちらも 0 になります）。</p></div>
+
+      <div class="box target"><span class="lab">ディラック行列の反交換の関係</span>
+      <ul style="margin:6px 0 0">
+        <li>\((\gamma^0)^2=I\)、\((\gamma^1)^2=(\gamma^2)^2=(\gamma^3)^2={-}I\)</li>
+        <li>番号の違うものどうしは、反交換関係 \(\{\gamma^\mu,\gamma^\nu\}=0\)（\(\mu\neq\nu\)）を満たす</li>
+      </ul>
+      <p style="margin-top:8px">パウリ行列と同じく、反交換子を使って1本の式にまとめられます。</p>
+      \[ \{\gamma^\mu,\,\gamma^\nu\}=2\eta^{\mu\nu}I \]
+      <p>\(\mu,\ \nu\) は \(0,\ 1,\ 2,\ 3\) のどれかで、\(\eta^{\mu\nu}\) は \(\eta^{00}=1\)、\(\eta^{11}=\eta^{22}=\eta^{33}={-}1\)、それ以外は 0 です。</p>
+      <p style="margin-top:8px">2乗の符号が \(\gamma^0\) だけ \(+\) で、残り3つが \({-}\) なのは、相対性理論で時間と空間の符号が逆になることの反映です（9-4 で扱う計量 \(g\) の符号と同じ並び）。</p></div>
+
+      <div class="box teach"><span class="lab">どこで使うか：電子やクォークの方程式</span>
+      <p>ディラック行列を使った1乗の方程式（ディラック方程式）は、電子やクォークのような粒子を表します。その解は4つの成分を持つスピノル（8-1 の分類表のスピノル場）で、上で触れたマイナスのエネルギーの解から、<strong>反粒子</strong>（電子に対する陽電子など）の存在が導かれました。<strong>方程式の形と意味は、場の量子論のセクションで扱います</strong>。</p></div>
+
+      <div class="attempt"><span class="lab">まず自力で</span>
+      <p>塊の積の公式を使って、\(\gamma^0\gamma^1\) と \(\gamma^1\gamma^0\) を計算し、\(\gamma^0\gamma^1+\gamma^1\gamma^0=0\) を確かめてください。</p>
+      <div class="controls">
+        <button class="ctl-btn amber" data-hint>ヒントを表示</button>
+        <button class="ctl-btn" data-sol>解答を見る</button>
+      </div>
+      <div class="hint"><span class="hn">HINT 1</span><p>\(\gamma^0=\begin{pmatrix}I&0\\0&{-}I\end{pmatrix}\)、\(\gamma^1=\begin{pmatrix}0&\sigma_x\\{-}\sigma_x&0\end{pmatrix}\) を、塊を成分とみなして掛けます。\(I\sigma_x=\sigma_xI=\sigma_x\) です。</p></div>
+      <div class="sol">
+        <div class="step"><div class="sh"><span class="sn">1</span>\(\gamma^0\gamma^1\)</div>
+        <div class="why">なぜ：塊ごとに行と列の「内積」を取ります。</div>
+        \[ \gamma^0\gamma^1=\begin{pmatrix}0&\sigma_x\\\sigma_x&0\end{pmatrix} \]
+        <p style="margin:4px 0">右上は \(I\sigma_x+0\cdot0=\sigma_x\)、左下は \(0\cdot0+({-}I)({-}\sigma_x)=\sigma_x\) です。</p>
+        </div>
+        <div class="step"><div class="sh"><span class="sn">2</span>\(\gamma^1\gamma^0\)</div>
+        <div class="why">なぜ：順序を入れ替えて、同じように計算します。</div>
+        \[ \gamma^1\gamma^0=\begin{pmatrix}0&{-}\sigma_x\\{-}\sigma_x&0\end{pmatrix} \]
+        <p style="margin:4px 0">右上は \(0\cdot0+\sigma_x({-}I)={-}\sigma_x\)、左下は \(({-}\sigma_x)I+0\cdot0={-}\sigma_x\) です。</p>
+        </div>
+        <div class="step"><div class="sh"><span class="sn">3</span>足す</div>
+        <div class="why">なぜ：反交換を確かめます。</div>
+        <p style="margin:4px 0">塊ごとに足すと、どれも 0 になります。\(\gamma^0\gamma^1+\gamma^1\gamma^0=0\) です。</p>
+        <p style="font-size:13.5px;color:var(--ink-faint);margin:6px 0 0">4行4列の16個の成分を1つずつ計算しなくても、塊で考えれば2行2列の計算で済みました。<strong>大きな行列は、意味のある塊に区切って読む</strong>のが、物理でのよい習慣です。</p></div>
+      </div>
+      </div>
+
+      <h3>計算ドリル（§04・全2問）</h3>
+
+      <div class="drill"><p><span class="qn">問1</span>\(\gamma^2=\begin{pmatrix}0&\sigma_y\\{-}\sigma_y&0\end{pmatrix}\) について、\((\gamma^2)^2={-}I\) を確かめよ。</p>
+      <div class="attempt" style="margin:10px 0 4px"><span class="lab">自分の答えを出してから</span>
+      <div class="controls"><button class="ctl-btn" data-sol>解答を見る</button></div>
+      <div class="sol"><p>塊の積の公式で、左上は \(0\cdot0+\sigma_y({-}\sigma_y)={-}\sigma_y^2\)、右下は \(({-}\sigma_y)\sigma_y+0\cdot0={-}\sigma_y^2\)、右上と左下は 0 です。§03 の \(\sigma_y^2=I\) を使うと</p>
+      \[ (\gamma^2)^2=\begin{pmatrix}{-}I&0\\0&{-}I\end{pmatrix} \]
+      <p>で、4行4列の単位行列の \({-}1\) 倍です。</p>
+      <p style="font-size:13.5px;color:var(--ink-faint)">\(\sigma_y\) は成分に \(i\) を含みますが、2乗が \(I\) であることさえ分かっていれば、塊の計算は \(\gamma^1\) とまったく同じです。<strong>性質だけを使って計算できる</strong>のが、パウリ行列の性質を覚えておく利点です。</p></div></div></div>
+          <div class="drill"><p><span class="qn">問2</span><strong>口頭試問形式</strong>：次の3つを、公式を見ずに自分の言葉で説明せよ。<br>①エルミート行列とユニタリ行列は、それぞれどんな性質を持ち、量子力学で何を表すか。<br>②パウリ行列の固有値が \(\pm1\) になるのはなぜか。<br>③ディラック行列が反交換関係を満たさなければならないのはなぜか。なぜ 4行4列が必要か。</p>
+      <div class="attempt" style="margin:10px 0 4px"><span class="lab">自分の答えを出してから</span>
+      <div class="controls"><button class="ctl-btn" data-sol>解答例を見る</button></div>
+      <div class="sol"><p><strong>①</strong> エルミート行列（\(H^\dagger=H\)）は固有値が必ず実数で、固有ベクトルは直交する。観測する量を表す。ユニタリ行列（\(U^\dagger U=I\)）は複素数のベクトルの長さを保ち、固有値の大きさは 1。時間変化や対称性を表す。それぞれ、実数の対称行列と直交行列を複素数に広げたもの。</p>
+      <p><strong>②</strong> パウリ行列は2乗すると単位行列になる。\(\sigma\vec v=\lambda\vec v\) にもう一度 \(\sigma\) を掛けると \(\vec v=\lambda^2\vec v\) となるので、\(\lambda^2=1\)。図では、鏡に映す操作（折り返し）で、鏡の向きは動かず（\(+1\)）、鏡に垂直な向きは逆向きになる（\({-}1\)）。</p>
+      <p><strong>③</strong> \(E^2=p^2+m^2\) の平方根を \(\alpha p+\beta m\) の形で取りたい。2乗を展開すると \((\alpha\beta+\beta\alpha)pm\) という項が出るので、これが消えるように \(\alpha\) と \(\beta\) の間に反交換関係が成り立ち、それぞれの2乗が単位行列になる必要がある。3次元では、どの2つにも反交換関係が成り立つ行列が4つ必要だが、2行2列ではパウリ行列の3つまでしか作れないので、4行4列に広げる。</p>
+      <p style="font-size:13.5px;color:var(--ink-faint)">この3つが澱みなく言えれば、この記事は通過です。どれも深く使いこなす必要はありませんが、各分野のセクションで出会ったとき「9-3 のあれだ」と思い出せることが目標です。</p></div></div></div>
+    </section>
+
+        <!-- §05 -->
+    <section id="howto">
+      <div class="sec-head"><span class="idx">§05</span><h2>チェックリストと次回予告</h2></div>
+
+      <h3>この記事で答えられるようになるべき問い</h3>
+      <div class="box principle"><span class="lab">最終チェック</span>
+      <ul style="margin:8px 0 0">
+        <li>転置・複素共役・エルミート共役を計算できるか（§01）</li>
+        <li>\((AB)^{\mathsf T}=B^{\mathsf T}A^{\mathsf T}\)、\((AB)^\dagger=B^\dagger A^\dagger\) を証明できるか（§01）</li>
+        <li>クロネッカーのデルタの意味を言え、単位行列や直交行列の列と結びつけられるか（§01・§02）</li>
+        <li>直交行列・ユニタリ行列が長さを保つことを示せるか（§02）</li>
+        <li>エルミート行列の固有値が実数で、固有ベクトルが直交することを証明できるか（§02）</li>
+        <li>ユニタリ行列の固有値の大きさが 1 で、逆行列が \(U^\dagger\) であることを示せるか（§02）</li>
+        <li>4種類の行列の対応表と、物理での役割を言えるか（§02）</li>
+        <li>パウリ行列を書き、エルミート・2乗が単位行列・固有値 \(\pm1\) を確かめられるか（§03）</li>
+        <li>反交換子・交換子を書き、パウリ行列の関係を計算で確かめられるか（§03）</li>
+        <li>ディラック行列が必要になった理由を説明し、塊の積で反交換関係を確かめられるか（§04）</li>
+      </ul></div>
+
+      <h3>次節（9-4 添字で計算する行列の公式）への接続</h3>
+      <p>この記事では、パウリ行列の関係 \([\sigma_x,\sigma_y]=2i\sigma_z\) のように、\(x\to y\to z\to x\) と順にずらした式がいくつも出てきました。8-1 の外積や 8-3 の rot でも、同じ「順にずらす」形が現れていました。</p>
+      <p>次の 9-4 では、行列の成分を<strong>添字</strong>で書き、和の記号とアインシュタインの縮約で計算する方法を学びます。さらに、「順にずらす」形を1つの記号にまとめる<strong>エディントンのイプシロン</strong>を導入し、トレース・行列式・多変数のガウス積分の公式を、すべて証明します。</p>
+      <div class="box teach"><span class="lab">9-4 で扱う問い（予習用）</span>
+      <ul style="margin:6px 0 0">
+        <li>行列の計算を、成分の添字と和の記号でどう書くのか</li>
+        <li>アインシュタインの縮約とは何か。なぜ和の記号を省いてよいのか</li>
+        <li>外積・rot・パウリ行列の関係をまとめる、エディントンのイプシロンとは</li>
+        <li>場の量子論で使う多変数のガウス積分から、何が分かるのか</li>
+      </ul>
+      <p style="margin-top:8px"><strong>鍵となる一言</strong>：成分を添字で書くと、行列の計算は「数の計算」に戻ります。数どうしなら掛ける順序を入れ替えられるので、行列の公式の多くが、数行の計算で証明できるようになります。</p></div>
+
+      <h3>学習サイクルの推奨手順</h3>
+      <ol>
+        <li><strong>解答を開かず、紙で挑戦</strong>。詰まっても5分は粘ってください。詰まるのは失敗ではなく、<strong>まだ腑に落ちていない一点が表に出た合図</strong>です。そこを自分の手で越えた経験が、そのまま次に進む力になります。</li>
+        <li><strong>ヒントを1つずつ</strong>開き、詰まりが解けたら閉じて自力で続行。</li>
+        <li>名前の付いた行列に出会ったら、<strong>まず定義（\(A^{\mathsf T}=A\)、\(U^\dagger U=I\) など）を成分で確かめる</strong>。性質の多くは、定義から数行で出てきます。</li>
+        <li>翌日、何も見ずに §04 問2（口頭試問）を再現する。特に③を、2乗の展開を書きながら説明できるか確かめてください。</li>
+      </ol>
+
+      <div class="box warn"><span class="lab">この教材の立ち位置</span>
+      <p>本節では、物理で出会う行列を<strong>紹介と証明</strong>の範囲で扱いました。スピンとパウリ行列、エルミート行列とユニタリ行列の役割は<strong>量子力学</strong>、ディラック方程式と反粒子は<strong>場の量子論</strong>のセクションで扱います。</p>
+      <p style="margin-top:8px">また、固有値が重なる場合のエルミート行列の対角化、行列の大きさが無限の場合（演算子）の厳密な扱い、ディラック行列の別の選び方（表現）には踏み込んでいません。</p></div>
+
+      <div class="foot"><p>Academic Gates ／ 物理数学I 9章 線形代数の物理的な使い方 ／ 9-3「物理で出会う行列」。演習問題は本教材独自の構成です。続編：9-4「添字で計算する行列の公式」。</p></div>
+    </section>
+
+  </main>
+</div>
+
+<div id="site-footer"><noscript><nav class="noscript-nav" aria-label="フッターナビゲーション"><a href="index.html">ホーム</a><a href="self-intro.html">自己紹介</a><a href="study.html">勉強の軌跡</a><a href="videos.html">動画</a><a href="blog.html">ブログ</a><a href="sns.html">各種SNS</a></nav></noscript></div>
+
+<script>
+/* ヒント／解答トグル */
+document.querySelectorAll('[data-hint]').forEach(function(btn){
+  var box=btn.closest('.attempt');
+  var hints=[].slice.call(box.querySelectorAll('.hint'));
+  if(!hints.length){ btn.style.display='none'; return; }
+  var hideBtn=document.createElement('button');
+  hideBtn.type='button';hideBtn.className='ctl-btn amber';hideBtn.textContent='ヒントを隠す';hideBtn.style.display='none';
+  btn.after(hideBtn);
+  btn.addEventListener('click',function(){
+    var hidden=hints.filter(function(h){return h.style.display!=='block'});
+    if(hidden.length){ hidden[0].style.display='block'; hideBtn.style.display='';
+      if(hidden.length===1){ btn.textContent='ヒントは以上'; btn.disabled=true; }
+      else { btn.textContent='次のヒント ('+(hints.length-hidden.length+1)+'/'+hints.length+')'; }
+    }
+  });
+  hideBtn.addEventListener('click',function(){
+    hints.forEach(function(h){h.style.display='none'});
+    hideBtn.style.display='none';btn.disabled=false;btn.textContent='ヒントを表示';
+  });
+});
+document.querySelectorAll('[data-sol]').forEach(function(btn){
+  btn.addEventListener('click',function(){
+    var sol=btn.closest('.attempt').querySelector('.sol');
+    var open=sol.style.display==='block';
+    sol.style.display=open?'none':'block';
+    if(!btn.dataset.show) btn.dataset.show=btn.textContent;
+    btn.textContent=open?btn.dataset.show:'閉じる';
+    if(!open && window.MathJax && MathJax.typesetPromise) MathJax.typesetPromise([sol]);
+  });
+});
+
+/* 目次の追従 */
+var links=[].slice.call(document.querySelectorAll('.toc a[href^="#"]'));
+var secs=links.map(function(a){return document.querySelector(a.getAttribute('href'))});
+var pbar=document.getElementById('pbar');
+function onScroll(){
+  // getBoundingClientRect を使う（offsetTop ではない）。style.css の
+  // `main{position:relative}` で <main> が offsetParent になり、offsetTop が
+  // 文書基準でなくなるため、scrollY と直接比べると判定がずれる（§36）。
+  var idx=0;
+  secs.forEach(function(s,i){ if(s&&s.getBoundingClientRect().top<=140) idx=i; });
+  links.forEach(function(a){a.classList.remove('active')});
+  if(links[idx]) links[idx].classList.add('active');
+  var h=document.documentElement.scrollHeight-window.innerHeight;
+  pbar.style.width=(h>0?(window.scrollY/h*100):0)+'%';
+}
+window.addEventListener('scroll',onScroll,{passive:true});
+window.addEventListener('resize',onScroll); onScroll();
+var body=document.body,mb=document.getElementById('menuBtn'),scrim=document.getElementById('scrim');
+mb.addEventListener('click',function(){var o=body.classList.toggle('nav-open');mb.setAttribute('aria-expanded',o)});
+scrim.addEventListener('click',function(){body.classList.remove('nav-open')});
+document.getElementById('toc').addEventListener('click',function(e){if(e.target.closest('a'))body.classList.remove('nav-open')});
+</script>
+<script src="../js/layout.js?v=r125"></script>
+<script src="../js/main.js?v=r125"></script>
+<script src="../js/starfield.js?v=r125"></script>
+</body>
+</html>
