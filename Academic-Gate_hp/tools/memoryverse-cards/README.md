@@ -146,6 +146,8 @@ Geofabrik の抽出から `osmium getid -r` で切り出し、`data/<国>/outlin
 
 ## 国を足す
 
+★ **地域の記事（3-1・3-2・3-3 …）を作る・直すときは、先に DESIGN.md §100.0 のチェック項目を確かめる。**
+
 1. 標準緯線を出す：`.venv/bin/python tools/memoryverse-cards/centroid.py <ADM0_A3>`（本土の重心。例：`TCD` → `[15.28, 18.64]`）
 2. `countries.py` の `COUNTRIES` に1項目足す。必要なのは：
    - `geofabrik`（Geofabrik のパス。例：`africa/chad-latest.osm.pbf`）
