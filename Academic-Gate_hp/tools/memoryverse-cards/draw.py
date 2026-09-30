@@ -642,6 +642,17 @@ if C.get('outline_osm'):
 else:
     attr13 = '層1・層3：Natural Earth'
     src13 = f'<p><b>層1・層3</b>：Natural Earth v5.1.2（パブリックドメイン）。{C["src13"]}。</p>'
+# 注記の先頭（図にいちばん近い場所）に縮尺の1行。全ページ同じ形の文で、線は引かない（図が小さく見える国だけ、のような線を作らない）。
+# 倍率を上げた国は「どの国も1度44px」と並べると矛盾して見えるので、置き換える。DESIGN.md §128
+_pz = [pn for pn in svgs.values() if pn.zoom != 1]
+if ZOOM != 1:
+    scale_line = f'<b>この国の図だけ {ZOOM}倍</b>（ほかの国の図は1度44px で、地域のカードと同じ大きさ）。大きく見るときは右上の「拡大 ⤢」。'
+elif _pz:
+    scale_line = ('<b>図は1度44px</b>（地域のカードと同じ大きさ。' + '・'.join(f'「{pn.title}」' for pn in _pz)
+                  + f'の図だけ{_pz[0].zoom}倍）。大きく見るときは右上の「拡大 ⤢」。')
+else:
+    scale_line = '<b>図はどの国も1度44px</b>（地域のカードと同じ大きさ）。大きく見るときは右上の「拡大 ⤢」。'
+notes = f'<p class="cc-note">{scale_line}</p>' + notes
 # 名前が入っている割合（長さで）。国によって大きく違うが、道路や鉄道が無いのではなく、OSM に名前が入っていない（DESIGN.md §117）
 share = []
 for k, lab in (('motorway', '高速道路'), ('trunk', '主要幹線'), ('hsr', '高速鉄道'), ('main', '主要鉄道')):
