@@ -335,10 +335,11 @@ code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border
     <section id="shapes">
       <div class="sec-head"><span class="idx">04</span><h2>15の単位の形と位置</h2></div>
       <p>まず層1だけを出して、15の単位の形と位置を見てください。マン島・ガーンジー・ジャージーは、この縮尺では<strong>点</strong>になります（丸印と引き出し線）。この3つの形は層2の拡大図で見ます。フェロー諸島とオーランド諸島は小さい島の集まりとして見えます。</p>
+      <!-- 地域のカードは層1だけで開く（層2・層3は押すと出る）。本文の「まず層1だけを出して」と初期状態を合わせる。国のページと同じ。DESIGN.md §100.5・§127 -->
       <div class="cc-card" data-cc="r3-3-shape">
         <div class="cc-ctl"><div class="cc-row">
           <button class="cc-lay" data-layer="L1" aria-pressed="true">層1 形</button>
-          <button class="cc-lay" data-layer="L2" aria-pressed="true">層2 拡大図</button>
+          <button class="cc-lay" data-layer="L2" aria-pressed="false">層2 拡大図</button>
           <button class="cc-full" type="button" aria-expanded="false" title="地図を画面いっぱいに広げる（Esc で閉じる）">拡大 ⤢</button>
         </div></div>
         <div class="cc-maps">
@@ -418,7 +419,7 @@ code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border
       <div class="cc-card" data-cc="r3-3-capitals">
         <div class="cc-ctl"><div class="cc-row">
           <button class="cc-lay" data-layer="L1" aria-pressed="true">層1 形</button>
-          <button class="cc-lay" data-layer="L3" aria-pressed="true">層3 首都と政府の所在地</button>
+          <button class="cc-lay" data-layer="L3" aria-pressed="false">層3 首都と政府の所在地</button>
           <button class="cc-full" type="button" aria-expanded="false" title="地図を画面いっぱいに広げる（Esc で閉じる）">拡大 ⤢</button>
         </div></div>
         <div class="cc-maps">

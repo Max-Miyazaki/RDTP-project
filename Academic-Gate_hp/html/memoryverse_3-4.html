@@ -325,6 +325,7 @@ code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border
     <section id="shapes">
       <div class="sec-head"><span class="idx">04</span><h2>9か国の形と位置</h2></div>
       <p>層1で、9か国の形と位置を見てください。9か国とも、この縮尺で形が読めます。</p>
+      <!-- 地域のカードは層1だけで開く（層2・層3は押すと出る）。本文の「まず層1だけを出して」と初期状態を合わせる。国のページと同じ。DESIGN.md §100.5・§127 -->
       <div class="cc-card" data-cc="r3-4-shape">
         <div class="cc-ctl"><div class="cc-row">
           <button class="cc-lay" data-layer="L1" aria-pressed="true">層1 形</button>
@@ -390,7 +391,7 @@ code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border
       <div class="cc-card" data-cc="r3-4-capitals">
         <div class="cc-ctl"><div class="cc-row">
           <button class="cc-lay" data-layer="L1" aria-pressed="true">層1 形</button>
-          <button class="cc-lay" data-layer="L3" aria-pressed="true">層3 首都</button>
+          <button class="cc-lay" data-layer="L3" aria-pressed="false">層3 首都</button>
           <button class="cc-full" type="button" aria-expanded="false" title="地図を画面いっぱいに広げる（Esc で閉じる）">拡大 ⤢</button>
         </div></div>
         <div class="cc-maps">
