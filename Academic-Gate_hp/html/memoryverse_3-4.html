@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>3-4 東ヨーロッパ｜メモリーバース | Academic Gates</title>
+<meta name="description" content="東経0度から東回りに、東ヨーロッパの9か国（ロシアを除く。チェコからウクライナまで）の形・位置・隣り合い・首都と、国境——地図の描き方と実効支配のずれ——を置く。メモリーバース 3-4。">
+<link rel="icon" href="../../favicon.ico" sizes="32x32">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+<!-- ★ ライト/ダーク切替は停止中（DESIGN.md §44）。サイト全体がダーク基調なので、
+     記事だけテーマが変わるのは一貫性を欠くという判断。**復活させるには次の1行の
+     コメントを外すだけでよい**（js/theme.js も css/lesson-theme.css も残してある）。 -->
+<!-- <script src="../js/theme.js?v=r126"></script> -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;500&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+<!-- サイト共通 → 記事固有 → テーマ上書き の順で読む（lesson-theme.css は
+     記事の <style> より後ろに置くこと。css/lesson-theme.css 冒頭の注記どおり） -->
+<link rel="stylesheet" href="../css/style.css?v=r126">
+<link rel="stylesheet" href="../css/country-card.css?v=r126">
+<!-- MathJax: 物理数学のページと同じ設定・同じ版（mathjax@3 の tex-svg）。メモリーバース全体で
+     読み込む（第5回以降でも式を書くため。§94）。設定ブロックはローダーより「前」に置く、
+     フォールバックは this.src= ではなく createElement 方式（どちらも DESIGN.md §11b）。
+     式の無い回では何も組版されず、表示は変わらない（§94 で DOM を突き合わせて確認）。 -->
+<script>
+window.MathJax={tex:{inlineMath:[['\\(','\\)']],displayMath:[['\\[','\\]']],tags:'none'},svg:{fontCache:'global'},options:{skipHtmlTags:['script','noscript','style','textarea','pre','code']}};
+</script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"
+        onerror="this.onerror=null;var s=document.createElement('script');s.async=true;s.src='https://unpkg.com/mathjax@3/es5/tex-svg.js';document.head.appendChild(s);"></script>
+<style>
+/* メモリーバース v3 3-4（3章 各地域。3-1〜3-3 の <style> をそのまま使う）— 記事固有のスタイルのみ。2-1 の <style> から、この回が使う部品
+   （レール・見出し・箱・表・図・見比べる図・到達目標・演習）だけを写した。値は 2-1 と同じ（DESIGN.md §101）。
+   地図のピン（.mod / .orbit / .stat）と球（.globe）は、この回では使わないので持たない。地域のカードは
+   国のページと同じ部品（css/country-card.css・js/country-card.js）で描く。 */
+:root{
+  /* 教材固有のトークン。本体と同値のもの（--bg --surface --nav-bg --ink --line
+     --line-strong --glow-cool --font(=--font-body) --nav-clear(=--nav-clearance)
+     --ease --dur --radius-lg/md/sm）は css/style.css 側に定義があるので持たない。
+     --ink-soft / --ink-faint は本体より明るい値を「意図的に」維持している。
+     本体値に寄せると 13.5px の補足文が 4.56:1 → 3.66:1 と AA を割るため（§36.2）。
+     --accent / --accent-tint / --glow-cool は元はティール（#2bd9c4）だったが、
+     サイトの青に一本化した。--accent と --glow-cool は本体から継承するので
+     ここには無い。--accent-deep / --accent-tint はダークでの定義が本体にも
+     lesson-theme.css にも無いので、記事が持つ（§47.5）。 */
+  --surface-2:rgba(255,255,255,.045);
+  --ink-soft:rgba(255,255,255,.68);
+  --ink-faint:rgba(255,255,255,.46);
+  --line-soft:rgba(255,255,255,.05);
+  --accent-deep:#a8c9ff;
+  --accent-tint:rgba(77,148,255,.12);
+  --amber:#ffb46b;--amber-tint:rgba(255,160,70,.08);--amber-line:rgba(255,160,70,.32);
+  --good:#72e3ad;--good-tint:rgba(114,227,173,.08);--good-line:rgba(114,227,173,.28);
+  --key:#ff6fa5;--key-tint:rgba(255,61,139,.08);--key-line:rgba(255,61,139,.28);
+  --teach:#a48bff;--teach-tint:rgba(123,77,255,.11);--teach-line:rgba(123,77,255,.38);
+  --mono:ui-monospace,'SFMono-Regular',Menlo,Consolas,monospace;
+  --rail-w:250px;
+}
+body{font-size:15.5px;line-height:1.9;line-break:strict;overflow-x:hidden}
+
+/* --- レイアウト（左に目次レール／右に本文の2カラム）。phys-math_1-1 と同一。 ---
+   style.css の共通記事ルールは `body.is-article main > section:not(.rail)`
+   （詳細度 0,2,3）で 900px と 160px パディングをかけてくる。こちらは `.main` を
+   噛ませて 0,3,2 / 0,4,3 とし、確実に上回る（§36.5 B）。
+   レールの左余白は 1280px → 1440px にかけて 0 → 32px、レール↔本文の間隔は
+   1024px → 1280px にかけて 24 → 56px。狭い画面ではまず余白を削って本文幅に回す（§43.3）。 */
+.wrap{display:flex;padding-top:var(--nav-clearance);
+      padding-left:clamp(0px, calc((100vw - 1280px) * .2), 32px)}
+.rail{width:var(--rail-w);flex:0 0 var(--rail-w);position:sticky;top:var(--nav-clearance);height:calc(100vh - var(--nav-clearance));overflow-y:auto;padding:18px 14px 60px 22px;border-right:1px solid var(--line)}
+.main{flex:1 1 auto;min-width:0;
+      padding:0 clamp(24px, calc(24px + (100vw - 1024px) * .125), 56px) 110px}
+/* 本文列 860px（§43.2）。この記事に数式は無いので 853px という下限の根拠は
+   効かないが、教材どうしで本文幅が割れるほうが害なので phys-math_1-1 に揃える。
+   中央寄せをやめて左揃えにし、余りは右へ流す。 */
+body.is-article .main > .lesson-hero,
+body.is-article .main > section:not(.rail),
+body.is-article .main > .foot{max-width:860px;margin-left:0;margin-right:auto;padding-left:0;padding-right:0}
+.rail .brand{font-weight:400;font-size:15px;line-height:1.45;margin:2px 0 4px}
+.rail .brand small{display:block;font-size:10px;font-weight:500;color:var(--ink-faint);letter-spacing:.2em;margin-top:6px}
+/* --- 上の階層へ戻る導線（§64.1）。レールは sticky なので、読んでいる途中でも
+   親ページへ戻れる。狭い画面はレールが引き出しになるので .float-nav で補う。 --- */
+.progress-wrap{height:2px;background:var(--line);border-radius:99px;margin:16px 0 18px;overflow:hidden}
+.progress-bar{height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--accent-deep));transition:width .15s linear}
+.toc{list-style:none;margin:0;padding:0;font-size:12.5px}
+.toc .part{font-size:10px;letter-spacing:.2em;color:var(--ink-faint);margin:16px 0 5px;padding-left:2px}
+.toc a{display:block;text-decoration:none;color:var(--ink-soft);padding:4px 10px;border-radius:999px;transition:color var(--dur) var(--ease),background var(--dur) var(--ease)}
+.toc a:hover{color:var(--ink);background:var(--surface-2)}
+.toc a.active{color:var(--ink);background:var(--accent-tint)}
+.toc a .n{font-size:10.5px;color:var(--ink-faint);margin-right:8px;font-variant-numeric:tabular-nums}
+.toc a.active .n{color:var(--accent)}
+/* --- 記事の導入部。`.hero` は index.html 専用で、style.css が
+   `.hero h1/.hero p/.hero .eyebrow` に黒い text-shadow をかけるため使えない（§36.5 A）。
+   要素も <header> ではなく <div>（裸の header は浮遊ナビの定義を浴びる）。 --- */
+.lesson-hero{padding:64px 0 34px;border-bottom:1px solid var(--line)}
+.lesson-hero h1{font-weight:300;font-size:clamp(28px,4vw,48px);line-height:1.25;letter-spacing:-.02em;margin:0 0 22px}
+.lesson-hero h1 .sub{display:block;font-size:.52em;font-weight:300;color:var(--ink-soft);letter-spacing:0;margin-top:12px}
+.lesson-hero p{color:var(--ink-soft);margin:0 0 12px}
+.lesson-hero .lead{font-size:16.5px;color:var(--ink-soft)}
+/* .eyebrow 本体は style.css の共通コンポーネント。色と余白だけ上書きする
+   （共通の --text-tertiary は 11px の小さな文字で 3.66:1 と AA を割るため） */
+.eyebrow{color:var(--ink-faint);margin-bottom:18px}
+
+section{border-bottom:1px solid var(--line-soft);scroll-margin-top:var(--nav-clearance)}
+body.is-article .main > section:not(.rail),
+body.is-article .main > section:not(.rail) ~ section:not(.rail){padding-top:56px;padding-bottom:12px}
+.sec-head{display:flex;align-items:baseline;gap:14px;margin-bottom:10px}
+.sec-head .idx{font-size:.72rem;font-weight:500;letter-spacing:.2em;color:var(--ink-faint);padding-top:4px;flex:0 0 auto;font-variant-numeric:tabular-nums}
+.sec-head .idx::after{content:' —'}
+body.is-article main h2{font-weight:400;font-size:clamp(21px,2.6vw,28px);line-height:1.3;letter-spacing:-.01em;margin:0}
+body.is-article main h3{font-weight:400;font-size:17px;margin:28px 0 6px;color:var(--ink)}
+body.is-article main p{margin:10px 0;color:var(--ink-soft)}
+body.is-article main ul,body.is-article main ol{margin:10px 0;padding-left:1.3em;color:var(--ink-soft)}
+li{margin:4px 0}
+strong{font-weight:500;color:var(--ink)}
+/* リンクの中の太字は、リンクの色のまま（strong の白が勝つと、表の国名が押せると分からない。DESIGN.md §108） */
+a strong{color:inherit}
+code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);border-radius:6px;padding:1px 6px;color:var(--accent-deep)}
+
+.box{border-radius:var(--radius-md);padding:16px 20px;margin:18px 0;border:1px solid var(--line);background:var(--surface)}
+.box .lab{font-size:.7rem;letter-spacing:.14em;font-weight:500;display:block;margin-bottom:6px}
+.box p:first-of-type{margin-top:2px}.box p:last-child{margin-bottom:0}
+/* 枠線は必ずトークン経由にすること。ここに直書きすると lesson-theme.css の
+   ライト上書きが効かず、暗い背景用の明るい色がライトでパステルになる（§41.2）。 */
+.box.principle{background:var(--key-tint);border-color:var(--key-line)}.box.principle .lab{color:var(--key)}
+.box.target{background:var(--good-tint);border-color:var(--good-line)}.box.target .lab{color:var(--good)}
+.box.warn{background:var(--amber-tint);border-color:var(--amber-line)}.box.warn .lab{color:var(--amber)}
+.box.teach{background:var(--teach-tint);border-color:var(--teach-line)}.box.teach .lab{color:var(--teach)}
+
+.table-scroll{overflow-x:auto;margin:14px 0}
+.mini-table{width:100%;border-collapse:collapse;font-size:14px;margin:14px 0;color:var(--ink-soft)}
+.mini-table th,.mini-table td{border:1px solid var(--line);padding:9px 11px;text-align:left;vertical-align:top}
+.mini-table th{background:var(--surface-2);font-weight:500;color:var(--ink)}
+/* 根拠の強度バッジ。枠線は tint と同系のトークンへ（上と同じ理由） */
+.g{font-size:10.5px;font-weight:500;border-radius:999px;padding:2px 9px;white-space:nowrap}
+.g.s{background:var(--good-tint);color:var(--good);border:1px solid var(--good-line)}
+.g.m{background:var(--amber-tint);color:var(--amber);border:1px solid var(--amber-line)}
+.g.w{background:var(--key-tint);color:var(--key);border:1px solid var(--key-line)}
+
+.fig{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-lg);padding:18px 18px 12px;margin:20px 0}
+.fig > svg,.fig-scroll > svg{width:100%;height:auto;display:block}
+/* ★ 図は縮めずに横へ送る（§90.1）。viewBox 640 の図を 390px 幅で縮めると、
+   9.5 の注記が実寸 4.6px になって読めない。別の縦長の図は作らない —— 同じ図を
+   2つの形で覚えることになるため。本文の枠が 640px を割ったときだけ送れるようになる。
+   合図は3つ：上の1行（.is-scrollable のときだけ）、送れる側の端のフェード、細いスクロールバー。
+   iOS はスクロールバーを動かすまで出さないので、1行とフェードが主な合図。 */
+.fig-scroll{overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.28) transparent}
+.fig-scroll > svg{min-width:640px}
+.fig-scroll::-webkit-scrollbar{height:6px}
+.fig-scroll::-webkit-scrollbar-thumb{background:rgba(255,255,255,.28);border-radius:99px}
+.fig.is-scrollable .fig-scroll{padding-bottom:8px;
+  -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 28px,#000 calc(100% - 44px),transparent);
+          mask-image:linear-gradient(90deg,transparent 0,#000 28px,#000 calc(100% - 44px),transparent)}
+.fig.is-scrollable .fig-scroll.is-start{-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 44px),transparent);mask-image:linear-gradient(90deg,#000 calc(100% - 44px),transparent)}
+.fig.is-scrollable .fig-scroll.is-end{-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 28px);mask-image:linear-gradient(90deg,transparent 0,#000 28px)}
+.fig.is-scrollable .fig-scroll.is-start.is-end{-webkit-mask-image:none;mask-image:none}
+.fig.is-scrollable::before{content:'横に送ると続きが見られます →';display:block;margin:0 0 8px;font-size:11px;letter-spacing:.06em;color:var(--ink-faint)}
+
+.fig svg text{font-family:var(--font-body)}
+/* 見比べる図（§07 グリーンランドとコンゴ民主共和国、DESIGN §99.8）。左右を同時に見ることが中身そのものなので、
+   §90.1 の横送りを使わず、狭い画面でも2×2のまま全体を縮める。細かい注記は無いが、縮めると国名と倍率が
+   読めなくなるので、560px 以下だけ SVG の中の文字を大きくし（単位は viewBox の座標）、ラベルと2行目を
+   下へずらし、補足の目盛の行を隠す。 */
+@media (max-width:560px){
+  .fig.fig-cmp{padding:12px 8px 10px}
+  .fig-cmp .cmp-h{font-size:20px}
+  .fig-cmp .cmp-n{font-size:26px;transform:translateY(8px)}
+  .fig-cmp .cmp-v{font-size:22px;transform:translateY(20px)}
+  .fig-cmp .cmp-r2{transform:translateY(12px)}
+  .fig-cmp .cmp-scale{display:none}
+}
+.fig figcaption{font-size:13px;color:var(--ink-soft);margin-top:10px;line-height:1.8}
+/* 式のすぐ後ろの句読点を行頭へ送らない（§94.3）。インライン数式は lesson-theme.css で
+   inline-block になっているので、式と「、」「。」のあいだで改行できてしまう。 */
+.nb{white-space:nowrap}
+
+/* --- 到達目標の箱。`.goals` は style.css の `.card`（サイト共通カード。blog /
+   videos / study など6ページで使用中）と衝突したための改名（§47.6）。
+   そのままだと display:flex / gap / .card::before のホバーグロー / .card:hover の
+   背景変化が降ってきて、読むだけの箱がマウスに反応してしまう。 --- */
+.goals{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-lg);padding:20px 24px;margin:18px 0}
+.goals ol{counter-reset:q;list-style:none;padding-left:0;margin:6px 0 0}
+.goals ol li{counter-increment:q;position:relative;padding-left:44px;margin:14px 0}
+.goals ol li::before{content:"G" counter(q);position:absolute;left:0;top:3px;font-size:11px;font-weight:500;color:var(--accent);border:1px solid var(--accent);border-radius:999px;padding:1px 9px}
+.goals ol li b{display:block;font-size:15.5px;font-weight:400;color:var(--ink)}
+.goals ol li span{font-size:14px;color:var(--ink-soft)}
+
+/* --- 演習。解答は <details> なので、印刷時に開く仕掛けを下の @media print に置く --- */
+.ex{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-lg);padding:18px 22px;margin:18px 0}
+.ex .ex-h{font-weight:400;font-size:16.5px;margin:0 0 6px;color:var(--ink)}
+.ex .ex-h .num{font-size:11px;font-weight:500;color:var(--teach);border:1px solid var(--teach-line);background:var(--teach-tint);border-radius:999px;padding:2px 10px;margin-right:10px;vertical-align:2px}
+.ex details{margin-top:12px;border-top:1px solid var(--line);padding-top:10px}
+.ex summary{cursor:pointer;font-size:12.5px;font-weight:500;color:var(--ink-soft);list-style:none;display:inline-flex;align-items:center;gap:8px;padding:5px 6px 5px 14px;border:1px solid var(--line);border-radius:999px}
+/* ＋/− の丸。白文字は --teach(#a48bff) 上で 2.72:1 しか出ない。--on-accent なら
+   ダーク 7.58:1 / 印刷（--teach が #5a3fc0、--on-accent が #fff）7.29:1 で両立する。 */
+.ex summary::after{content:'+';display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;background:var(--teach);color:var(--on-accent);font-size:13px}
+.ex details[open] summary::after{content:'−'}
+.ex summary:hover{color:var(--ink);border-color:var(--line-strong)}
+.ex summary::-webkit-details-marker{display:none}
+.ex details[open] summary{margin-bottom:8px}
+.ex .ans{font-size:14.5px}
+
+.foot{padding:34px 0 0;color:var(--ink-faint);font-size:12.5px}
+.foot p{color:var(--ink-faint)}
+
+/* モバイル：レールを引き出しに。`.menu-btn` は位置だけを持ち、見た目は
+   共通コンポーネントの `.btn` を併用する。 */
+.menu-btn{display:none}
+.float-nav{display:none}
+.scrim{display:none}
+@media (max-width:900px){
+  .rail{position:fixed;left:0;top:0;height:100vh;z-index:1100;transform:translateX(-100%);transition:transform .25s var(--ease);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);padding-top:28px}
+  body.nav-open .rail{transform:translateX(0)}
+  .main{padding:0 20px 90px}
+  /* 「戻る」と「目次」を横並びで浮かせる。位置は入れ物が持ち、ボタン自身は
+     見た目だけを持つ（§64.2）。 */
+  .float-nav{display:flex;gap:10px;position:fixed;bottom:18px;right:18px;z-index:1050}
+  .menu-btn,.back-btn{position:static;display:inline-flex;background:var(--nav-bg);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);color:var(--ink);text-decoration:none}
+  .scrim{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:1090}
+  body.nav-open .scrim{display:block}
+  .lesson-hero{padding-top:40px}
+}
+@media print{
+  body{background:#fff;color:#000}
+  header,.rail,.menu-btn,.float-nav,.lesson-nav,.scrim,#starfield,footer{display:none!important}
+  .wrap{display:block;padding-top:0}
+  /* ★ 解答（<details>）を開く。元の教材にあった `.ex details>*{display:block}` は
+     **効かない**（実測：閉じた details の中身は ::details-content の
+     content-visibility:hidden で隠れているので、子の display を変えても出てこない）。
+     効くのは次の1行。Chrome 131 / Safari 18.4 / Firefox 139 以降。
+     それ以前のブラウザ向けには、下の beforeprint で open 属性を足している。 */
+  details::details-content{content-visibility:visible!important}
+}
+/* 地域のカード（country-card.css の .cc-card）を本文の列に置くときの間隔 */
+.main .cc-card{margin:18px 0}
+/* 国のページへの一覧。国名のリンクは本文の青（lesson-theme.css の a）のまま */
+.clist td:first-child{white-space:nowrap}
+</style>
+<link rel="stylesheet" href="../css/lesson-theme.css?v=r126">
+<body data-page="study" class="is-article" data-node="memoryverse_3-4">
+<canvas id="starfield" aria-hidden="true"></canvas>
+<div id="site-nav"><noscript><nav class="noscript-nav" aria-label="メインナビゲーション"><a href="index.html">ホーム</a><a href="self-intro.html">自己紹介</a><a href="study.html">勉強の軌跡</a><a href="videos.html">動画</a><a href="blog.html">ブログ</a><a href="sns.html">各種SNS</a></nav></noscript></div>
+<div class="float-nav"><a class="back-btn btn" href="memoryverse.html">戻る <span class="btn-disc" aria-hidden="true">←</span></a><button class="menu-btn btn" id="menuBtn" aria-controls="rail" aria-expanded="false">目次 <span class="btn-disc" aria-hidden="true">≡</span></button></div>
+<div class="scrim" id="scrim"></div>
+<div class="wrap">
+  <nav class="rail" id="rail">
+    <!-- 科目へ戻る導線（レール上部の「← 一つ上」）は layout.js が CRUMBS から書き出す。 -->
+    <div class="brand">3-4　東ヨーロッパ<small>SECTION 3-4 / EASTERN EUROPE</small></div>
+    <div class="progress-wrap"><div class="progress-bar" id="pbar"></div></div>
+    <ul class="toc" id="toc">
+      <li class="part">導入</li>
+      <li><a href="#goals"><span class="n">01</span>到達目標</a></li>
+      <li><a href="#view"><span class="n">02</span>この回の見方</a></li>
+      <li><a href="#grid"><span class="n">03</span>2-1 の升目のどこか</a></li>
+      <li class="part">9か国を置く</li>
+      <li><a href="#shapes"><span class="n">04</span>9か国の形と位置</a></li>
+      <li><a href="#capitals"><span class="n">05</span>首都</a></li>
+      <li class="part">国境・国のページ</li>
+      <li><a href="#borders"><span class="n">06</span>国境</a></li>
+      <li><a href="#countries"><span class="n">07</span>国のページへ</a></li>
+      <li class="part">訓練</li>
+      <li><a href="#menu"><span class="n">08</span>訓練メニュー</a></li>
+      <li><a href="#drills"><span class="n">09</span>演習</a></li>
+      <li class="part">付録</li>
+      <li><a href="#plan"><span class="n">A</span>この回で決めたこと</a></li>
+      <li><a href="#evidence"><span class="n">B</span>根拠と強度</a></li>
+    </ul>
+  </nav>
+
+  <main class="main">
+    <div class="lesson-hero">
+      <h1>3-4　東ヨーロッパ<span class="sub">東経0度から東へ、9か国を置く</span></h1>
+      <p class="lead">3-1〜3-3 に続いて、<strong>東ヨーロッパの9か国</strong>を置きます。東経0度から東回りに、<strong>チェコで始まり、ハンガリー・ポーランド・スロバキア、ルーマニアとブルガリア、ベラルーシとモルドバを通って、ウクライナ</strong>で終わります。<strong>ロシアは入れません</strong>——2-1 の付録Aで、ロシアを東ヨーロッパから切り出して独立の単位にしたためです（§03）。</p>
+      <p>この回で覚えるのは<strong>形・位置・隣り合い・首都</strong>と、<strong>国境の3つの欄</strong>です。この地域には、地図の線が実際に治めている範囲（実効支配）と合っていない場所があります。<strong>この教材はそこを描き直さず、どう描かれているかと、合っているかを文で書きます</strong>（§06）。</p>
+    </div>
+
+    <section id="goals">
+      <div class="sec-head"><span class="idx">01</span><h2>この回の到達目標</h2></div>
+      <div class="goals">
+        <ol>
+          <li><b>白紙の升目に9か国を描き、東経0度から東回りの順を言える</b><span>チェコ → ハンガリー → ポーランド → スロバキア → ルーマニア → ブルガリア → ベラルーシ → モルドバ → ウクライナ。ハンガリー・ポーランド・スロバキアは中心の経度がほぼ同じで、入れ替わりうることも言えること（§03・§04、演習1〜3）。</span></li>
+          <li><b>9か国の首都を言える</b><span>ウクライナの首都は、外務省の表記の<strong>キーウ</strong>（§05、演習4）。</span></li>
+          <li><b>クリミア・沿ドニエストル・ウクライナの東部と南部について、この地図の描き方と実効支配が合っているかを言え、なぜ描き直さないかを言える</b><span>§06、演習4。</span></li>
+        </ol>
+      </div>
+      <div class="box warn"><span class="lab">前提の確認</span>
+      <p><a href="memoryverse_3-1.html">3-1</a> の<strong>白紙の9か国</strong>、<a href="memoryverse_3-2.html">3-2</a> の<strong>白紙の17の単位</strong>を、止まらずに描けることを確かめてから入ってください。この回の9か国は、西ヨーロッパと南ヨーロッパの東にあります。チェコはドイツ・オーストリアと、ハンガリーはオーストリア・スロベニア・クロアチア・セルビアと、ブルガリアはセルビア・北マケドニア・ギリシャと接しています。</p></div>
+    </section>
+
+    <section id="view">
+      <div class="sec-head"><span class="idx">02</span><h2>この回の見方</h2></div>
+      <div class="box principle"><span class="lab">3-1〜3-3 と同じ型、§06 は国境</span>
+      <p>記事は位置を置き、国の詳細は国のページが持ちます（<strong>記事＝訓練、国のページ＝参照</strong>）。§05 までは 3-1〜3-3 と同じ型で、§06 は 3-2 と同じく<strong>国境</strong>です。9か国とも主権国家なので、「9か国」と書きます（3-2・3-3 は「単位」）。</p></div>
+
+      <div class="box teach"><span class="lab">地域のカードは、横に送って見る</span>
+      <p>§04・§05 のカードは、国のページと同じ<strong>1度44px</strong>で描いています。9か国は東西に約28度・南北に約15度あり、カードは<strong>幅897px</strong>で、本文の列をわずかに超えます。<strong>縮めずに、横に送って見てください</strong>。全体を一度に見たいときは、カードの右上の<strong>「拡大 ⤢」</strong>で画面いっぱいに広げられます。この回には、倍率を上げた図（「この図だけ○倍」）はありません——9か国とも、1度44px で形が読める大きさです。</p></div>
+
+      <div class="box warn"><span class="lab">カードの中でも形が少し歪む</span>
+      <p>カードは北緯49度を標準緯線にした正距円筒図法です。<strong>南の端（北緯41度）では横が実際の0.87倍に縮み、北の端（北緯56度）では1.18倍に伸びます</strong>。3-2（0.90〜1.10倍）より少し大きいので、ブルガリアは実際より細く、ベラルーシの北は実際より太く見えます。</p></div>
+
+      <div class="box warn"><span class="lab">国境の描き方——ウクライナの形にクリミアは入っていない</span>
+      <p>国境は <a href="memoryverse_2-1.html#borders">2-1 §08</a> のとおり、元データの Natural Earth v5.1.2（1:1000万）で描いています。<strong>Natural Earth はクリミア半島をロシアの形に入れている</strong>ので、この回の地図のウクライナにはクリミアが入っていません（カードでは隣の国と同じ灰色）。これが実効支配と合っているか、ほかにずれている場所はどこかは §06 に書きます。</p></div>
+    </section>
+
+    <section id="grid">
+      <div class="sec-head"><span class="idx">03</span><h2>2-1 の升目のどこか</h2></div>
+      <p>9か国は、2-1 の升目の<strong>北緯30〜60度の段</strong>にあり、<strong>東経0〜30度</strong>と<strong>東経30〜60度</strong>の2つのマスにまたがります。<strong>東経30度の線はベラルーシとウクライナを通ります</strong>。</p>
+      <div class="table-scroll">
+      <table class="mini-table">
+        <tr><th style="width:18%">端</th><th>本土（国ごとの、面積がいちばん大きい陸）</th></tr>
+        <tr><td><strong>西</strong></td><td>東経12.1度（チェコ）</td></tr>
+        <tr><td><strong>東</strong></td><td>東経40.2度（ウクライナ）</td></tr>
+        <tr><td><strong>南</strong></td><td>北緯41.2度（ブルガリア）</td></tr>
+        <tr><td><strong>北</strong></td><td>北緯56.2度（ベラルーシ）</td></tr>
+      </table>
+      </div>
+      <p>東西は約28度、南北は約15度。9か国の本土の中心は<strong>北緯49.3度・東経25.7度</strong>です（<a href="memoryverse_2-1.html#plan">2-1 付録A</a>の表では丸めて「北49° 東26°」）。南部アフリカ（東経22度）の次、東アフリカ（東経36度）の前で、2-1 付録Aの順番のとおりです。</p>
+
+      <div class="box principle"><span class="lab">ロシアを入れない理由</span>
+      <p>国連の地域分類では、ロシアは東ヨーロッパに入ります。<strong>ロシアを入れて中心を計算すると、北緯66.1度・東経86.5度</strong>になります——ロシアの面積に引っぱられて、東ヨーロッパの中心が中央アジア（東経66度）より東へ動き、<strong>ポーランドやウクライナが中央アジアより東に並んでしまいます</strong>。そこで <a href="memoryverse_2-1.html#plan">2-1 の付録A</a>でロシアだけを切り出し、独立の単位（北66° 東95°）にしました。この回の「北49° 東26°」は、ロシアを除いた9か国の値です。ロシアは別の回で扱います。</p></div>
+
+      <div class="box teach"><span class="lab">日本と同じ緯度に並べる</span>
+      <p>南の国は、日本の北の端と同じくらいの緯度です。<strong>ソフィア（北緯42.7度）は札幌（北緯43.1度）</strong>とほぼ同じ緯度、<strong>ブカレスト（北緯44.4度）は旭川（北緯43.8度）より北</strong>です。そこから北の首都——ブダペスト・ブラチスラヴァ・プラハ・キーウ・ワルシャワ・ミンスク——は、すべて日本より北にあります（Natural Earth の人口地点）。</p></div>
+    </section>
+
+    <section id="shapes">
+      <div class="sec-head"><span class="idx">04</span><h2>9か国の形と位置</h2></div>
+      <p>層1で、9か国の形と位置を見てください。9か国とも、この縮尺で形が読めます。</p>
+      <div class="cc-card" data-cc="r3-4-shape">
+        <div class="cc-ctl"><div class="cc-row">
+          <button class="cc-lay" data-layer="L1" aria-pressed="true">層1 形</button>
+          <button class="cc-full" type="button" aria-expanded="false" title="地図を画面いっぱいに広げる（Esc で閉じる）">拡大 ⤢</button>
+        </div></div>
+        <div class="cc-maps">
+          <div class="cc-scroll"><div class="cc-fig cc-1to1" style="--w:897;--h:747" data-deg="44" data-src="../image/memoryverse/cards/r3-4-shape.svg?v=r126"><p class="cc-status">地図を読み込み中…</p><p class="cc-fallback">地図を読み込めませんでした</p></div></div>
+        </div>
+        <div class="cc-src">
+          <p><b>国名を押すと、その国のページへ</b>（拡大表示の中でも。地図を動かしたときは飛ばない）。</p>
+          <p><b>形</b>：正距円筒図法。標準緯線は北緯49度（9か国の本土の重心、北緯49.3度を丸めた値）。経度を cos 49° = 0.6561 倍に縮めたうえで、<strong>1度 = 44px（国のページと同じ縮尺）</strong>。細い格子は1度、中くらいは5度、太い線は30度（2-1 の升目。この図では東経30度）。<strong>南の端（北緯41度）では横が実際の0.87倍、北の端（北緯56度）では1.18倍</strong>になる（§02）。</p>
+          <p>Natural Earth v5.1.2（パブリックドメイン）から本教材が作成。クリミア半島は Natural Earth のとおりロシアの形（灰色）で描いている（§06）。</p>
+        </div>
+      </div>
+
+      <h3>9か国と順番</h3>
+      <p>順番は 2-1・3-1〜3-3 と同じ規則です。国の<strong>本土</strong>（面積がいちばん大きい陸のかたまり）の、面積で重みをつけた球面上の重心の経度で、<strong>東経0度から東回り</strong>に並べます。</p>
+      <div class="table-scroll">
+      <table class="mini-table">
+        <tr><th style="width:5%">順</th><th style="width:17%">国</th><th style="width:15%">中心</th><th style="width:16%">本土の面積（km²）</th><th>形の手がかり</th></tr>
+        <tr><td>1</td><td><strong>チェコ</strong></td><td>北49.7° 東15.3°</td><td>78,759</td><td>横長。ドイツ・オーストリアに西と南を囲まれる。海に面さない</td></tr>
+        <tr><td>2</td><td><strong>ハンガリー</strong></td><td>北47.2° 東19.4°</td><td>93,201</td><td>7か国と接する内陸の国。海に面さない</td></tr>
+        <tr><td>3</td><td><strong>ポーランド</strong></td><td>北52.1° 東19.4°</td><td>313,431</td><td>四角に近い。北はバルト海。9か国で2番目に広い</td></tr>
+        <tr><td>4</td><td><strong>スロバキア</strong></td><td>北48.7° 東19.5°</td><td>48,458</td><td>チェコの東に続く横長。ポーランドとハンガリーのあいだ。海に面さない</td></tr>
+        <tr><td>5</td><td><strong>ルーマニア</strong></td><td>北45.9° 東25.0°</td><td>236,377</td><td>丸に近い。東は黒海</td></tr>
+        <tr><td>6</td><td><strong>ブルガリア</strong></td><td>北42.8° 東25.2°</td><td>112,761</td><td>ルーマニアの南。東は黒海。<strong>この回でいちばん南</strong></td></tr>
+        <tr><td>7</td><td><strong>ベラルーシ</strong></td><td>北53.5° 東28.0°</td><td>207,499</td><td>ポーランドの東、ウクライナの北。<strong>この回でいちばん北</strong>。海に面さない</td></tr>
+        <tr><td>8</td><td><strong>モルドバ</strong></td><td>北47.2° 東28.5°</td><td>33,206</td><td>ルーマニアとウクライナのあいだの細長い国。<strong>この回でいちばん小さい</strong>。海に面さない</td></tr>
+        <tr><td>9</td><td><strong>ウクライナ</strong></td><td>北49.2° 東31.3°</td><td>571,823</td><td>東西に長い。南は黒海。<strong>9か国でいちばん広い</strong>（クリミアを含まない面積）</td></tr>
+      </table>
+      </div>
+      <p style="font-size:12.5px;color:var(--ink-faint)">中心と面積は Natural Earth v5.1.2（1:1000万）から本教材が計算した値で、<strong>国の公式統計とは一致しません</strong>。ウクライナの値は、Natural Earth がロシアの形に入れているクリミアを含みません（§06）。<strong>ハンガリー（東経19.38度）・ポーランド（19.42度）・スロバキア（19.47度）は、中心の経度の差が0.05度以内しかなく</strong>、計算の方法やデータで順が入れ替わりえます。3-3 のガーンジー・イギリス・ジャージー（0.2〜0.3度）よりも近い組です。ルーマニアとブルガリア（0.2度）、ベラルーシとモルドバ（0.5度）も近い組です。</p>
+
+      <h3>隣り合い</h3>
+      <p>陸の国境で接している国を数えました（Natural Earth v5.1.2 の国境で、本教材が計算）。<strong>域内</strong>は9か国どうし、<strong>域外</strong>は9か国以外の国です。</p>
+      <div class="table-scroll">
+      <table class="mini-table">
+        <tr><th style="width:20%">国</th><th style="width:42%">域内で接する国</th><th>域外で接する国</th></tr>
+        <tr><td><strong>チェコ</strong></td><td>2（スロバキア・ポーランド）</td><td>2（ドイツ・オーストリア）</td></tr>
+        <tr><td><strong>ハンガリー</strong></td><td>3（スロバキア・ルーマニア・ウクライナ）</td><td>4（オーストリア・スロベニア・クロアチア・セルビア）</td></tr>
+        <tr><td><strong>ポーランド</strong></td><td>4（チェコ・スロバキア・ベラルーシ・ウクライナ）</td><td>3（ドイツ・リトアニア・ロシアの飛び地カリーニングラード）</td></tr>
+        <tr><td><strong>スロバキア</strong></td><td>4（チェコ・ポーランド・ハンガリー・ウクライナ）</td><td>1（オーストリア）</td></tr>
+        <tr><td><strong>ルーマニア</strong></td><td>4（ハンガリー・ブルガリア・モルドバ・ウクライナ）</td><td>1（セルビア）</td></tr>
+        <tr><td><strong>ブルガリア</strong></td><td>1（ルーマニア）</td><td>4（セルビア・北マケドニア・ギリシャ・トルコ）</td></tr>
+        <tr><td><strong>ベラルーシ</strong></td><td>2（ポーランド・ウクライナ）</td><td>3（リトアニア・ラトビア・ロシア）</td></tr>
+        <tr><td><strong>モルドバ</strong></td><td>2（ルーマニア・ウクライナ）</td><td><strong>0</strong></td></tr>
+        <tr><td><strong>ウクライナ</strong></td><td><strong>6</strong>（ポーランド・スロバキア・ハンガリー・ルーマニア・モルドバ・ベラルーシ）</td><td>1（ロシア）※</td></tr>
+      </table>
+      </div>
+      <p style="font-size:12.5px;color:var(--ink-faint)">※ ウクライナとロシアの国境には、Natural Earth がロシアに入れているクリミア半島との境も含まれます（§06）。</p>
+      <div class="box principle"><span class="lab">隣り合いから読める構造</span>
+      <ul>
+        <li><strong>要はウクライナ</strong>——域内の6か国と接する。域外のロシアを足すと7</li>
+        <li><strong>海に面していない国が5つ</strong>——チェコ・スロバキア・ハンガリー・ベラルーシ・モルドバ。海に面するのはポーランド（バルト海）、ルーマニア・ブルガリア・ウクライナ（黒海）の4つ</li>
+        <li><strong>モルドバはルーマニアとウクライナに挟まれる</strong>——接するのはこの2か国だけで、域外の国とは接しない</li>
+        <li><strong>ロシアと接する国が3つ</strong>——ウクライナ・ベラルーシ・ポーランド（ポーランドは飛び地のカリーニングラード）</li>
+      </ul></div>
+    </section>
+
+    <section id="capitals">
+      <div class="sec-head"><span class="idx">05</span><h2>首都</h2></div>
+      <p>§04 で形を置いてから、この図に進んでください。まず層1だけで首都の場所を指で差し、名前を言ってから層3を出します。</p>
+      <div class="cc-card" data-cc="r3-4-capitals">
+        <div class="cc-ctl"><div class="cc-row">
+          <button class="cc-lay" data-layer="L1" aria-pressed="true">層1 形</button>
+          <button class="cc-lay" data-layer="L3" aria-pressed="true">層3 首都</button>
+          <button class="cc-full" type="button" aria-expanded="false" title="地図を画面いっぱいに広げる（Esc で閉じる）">拡大 ⤢</button>
+        </div></div>
+        <div class="cc-maps">
+          <div class="cc-scroll"><div class="cc-fig cc-1to1" style="--w:897;--h:747" data-deg="44" data-src="../image/memoryverse/cards/r3-4-capitals.svg?v=r126"><p class="cc-status">地図を読み込み中…</p><p class="cc-fallback">地図を読み込めませんでした</p></div></div>
+        </div>
+        <div class="cc-src">
+          <p><b>国名を押すと、その国のページへ</b>（拡大表示の中でも。地図を動かしたときは飛ばない）。</p>
+          <p><b>首都</b>：黄色の点。縮尺は §04 と同じ（1度 = 44px、標準緯線は北緯49度）。位置は Natural Earth v5.1.2 の人口地点（首都として入っている9）。<strong>名前は、ウクライナの首都だけ外務省の表記（キーウ）</strong>で、ほかは Natural Earth の日本語名（下の注）。本教材が作成。</p>
+        </div>
+      </div>
+      <div class="table-scroll">
+      <table class="mini-table">
+        <tr><th style="width:5%">順</th><th style="width:22%">国</th><th style="width:22%">首都</th><th>注記</th></tr>
+        <tr><td>1</td><td>チェコ</td><td>プラハ</td><td>この回でいちばん西の首都</td></tr>
+        <tr><td>2</td><td>ハンガリー</td><td>ブダペスト</td><td>ドナウ川の岸</td></tr>
+        <tr><td>3</td><td>ポーランド</td><td>ワルシャワ</td><td>国のほぼ中央</td></tr>
+        <tr><td>4</td><td>スロバキア</td><td>ブラチスラヴァ</td><td>国の西の端。オーストリア・ハンガリーとの国境のすぐそば</td></tr>
+        <tr><td>5</td><td>ルーマニア</td><td>ブカレスト</td><td>国の南。ブルガリアとの国境（ドナウ川）の近く</td></tr>
+        <tr><td>6</td><td>ブルガリア</td><td>ソフィア</td><td>国の西の端</td></tr>
+        <tr><td>7</td><td>ベラルーシ</td><td>ミンスク</td><td>国のほぼ中央。この回でいちばん北の首都</td></tr>
+        <tr><td>8</td><td>モルドバ</td><td>キシナウ</td><td>国のほぼ中央</td></tr>
+        <tr><td>9</td><td>ウクライナ</td><td>キーウ</td><td>ドニプロ川の岸。国の北の中央。Natural Earth の日本語名は「キエフ」（下の注）</td></tr>
+      </table>
+      </div>
+      <p style="font-size:12.5px;color:var(--ink-faint)"><strong>ウクライナの首都は、Natural Earth の日本語名（キエフ）ではなく、外務省が2022年3月31日に変更した表記（キーウ）を使っています</strong>（外務省「ウクライナの首都等の呼称の変更」）。発表には首都以外の地名の一覧が無いので、<strong>ほかの地名は Natural Earth の日本語名のまま</strong>で、外務省の表記と合っているかは確かめていません。ベラルーシ・モルドバの地名も Natural Earth の日本語名のままで、外務省の表記と合っているかは確かめていません。</p>
+      <div class="box teach"><span class="lab">ドナウ川沿いの2つから覚える</span>
+      <p><strong>ブラチスラヴァとブダペスト</strong>は、どちらもドナウ川の岸で、約160km しか離れていません（1度44px の図で約110px）。ブラチスラヴァはスロバキアの西の端にあり、国の真ん中にはありません。まずこの2つを置き、そこから北（プラハ・ワルシャワ・ミンスク）、東（キーウ・キシナウ）、南（ブカレスト・ソフィア）へ広げると崩れにくくなります。</p></div>
+    </section>
+
+    <section id="borders">
+      <div class="sec-head"><span class="idx">06</span><h2>国境</h2></div>
+      <p>3-2 の §06 と同じく、<a href="memoryverse_2-1.html#borders">2-1 §08</a> で決めた欄——<strong>実効支配</strong>（地図の線はこれで引く）と<strong>主張</strong>——で、この地域の3つの場所を書きます。この回ではそれに、<strong>この地図（Natural Earth）がどう描いているか</strong>と、<strong>それが実効支配と合っているか</strong>を並べます。承認の欄は、この回では扱いません。<strong>この教材の線の引き方は、どの主張を支持するものでもありません。</strong></p>
+
+      <h3>地図の線と実効支配——合っているところ、合っていないところ</h3>
+      <div class="table-scroll">
+      <table class="mini-table">
+        <tr><th style="width:15%">場所</th><th style="width:22%">実効支配</th><th style="width:17%">主張</th><th style="width:28%">この地図（Natural Earth）の描き方</th><th>実効支配と</th></tr>
+        <tr><td><strong>クリミア</strong></td><td>ロシア（2014年から）</td><td>ウクライナ</td><td>国の形では<strong>ロシアに入れている</strong>。係争地の図層では Disputed（27,096km²）</td><td><strong>合っている</strong></td></tr>
+        <tr><td><strong>沿ドニエストル</strong></td><td>現地の当局（モルドバの政府は治めていない）</td><td>モルドバ</td><td>国の形では<strong>モルドバに入れている</strong>。係争地の図層では Breakaway（3,052km²）</td><td><strong>合っていない</strong></td></tr>
+        <tr><td><strong>ウクライナの東部・南部</strong></td><td>ドネツク・ルハンスクの両市は2014年から、マリウポリ・メリトポリは2022年から、ロシア側</td><td>ウクライナ</td><td>国の形では<strong>ウクライナに入れている</strong>。係争地の図層にあるのはドネツク・ルハンスクの2市の周りだけ（Breakaway、9,451km²・8,306km²）で、マリウポリ・メリトポリは無い</td><td><strong>合っていない</strong></td></tr>
+      </table>
+      </div>
+      <p style="font-size:12.5px;color:var(--ink-faint)">Natural Earth v5.1.2 の国の形（admin 0）と係争地の図層（admin 0 disputed areas）を、代表の町（シンフェロポリ・セヴァストポリ、ティラスポリ、ドネツク・ルハンスク・マリウポリ・メリトポリ）の位置で確かめました。実効支配の欄は <a href="memoryverse_2-1.html#borders">2-1 §08</a> の表と同じです。</p>
+
+      <div class="box principle"><span class="lab">なぜ描き直さないか</span>
+      <p>前線が動いている地域を線で描くには、<strong>どの時点の、誰の発表による線か</strong>を選ぶことになります。<strong>その選択自体が立場の表明になります。</strong>この教材は覚えるための地図なので、動いている線は描かず、Natural Earth がどう描いているかと、それが実効支配と合っているかを文で書きます。2-1 §08 で「実効支配で線を引く」と決めたのは、線を1本に決めるためでした。</p></div>
+
+      <h3>沿ドニエストル——同じデータの中で、扱いが3通り</h3>
+      <p>Natural Earth は、沿ドニエストル（モルドバの東、ドニエストル川の左岸の細長い地域）を、<strong>同じデータの中で3通りに扱っています</strong>。</p>
+      <ul>
+        <li><strong>国の形</strong>——モルドバに入れる（この回の地図もそう描いている）</li>
+        <li><strong>係争地の図層</strong>——Breakaway（自ら統治し、モルドバが主張している地域）として立てる。3,052km²</li>
+        <li><strong>区分（1級の行政区分）</strong>——1つにまとめず、6つの地区にまたがる。<strong>「Transnistria」という名前の区分は17km² しかなく</strong>、別の1つは「Rezina（レジナ）」という名前で入っているが、実際はルィブニツァ地区（OpenStreetMap の境界と98%が重なる。本物のレジナ地区は川の西に別にある）</li>
+      </ul>
+      <p>どれか1つが正しいのではなく、<strong>何を描くためのデータかで扱いが変わる</strong>ことを示しています。この回の地図は国の形を使っています。モルドバの国のページでは、区分の名前が実際と合わないので、区分を描いていません（§07）。</p>
+      <p style="font-size:12.5px;color:var(--ink-faint)">出典：Natural Earth v5.1.2（ne_10m_admin_0_countries・ne_10m_admin_0_disputed_areas・ne_10m_admin_1_states_provinces）、OpenStreetMap（モルドバの抽出、2026-09-29）。2026年9月30日確認。</p>
+    </section>
+
+    <section id="countries">
+      <div class="sec-head"><span class="idx">07</span><h2>国のページへ</h2></div>
+      <p>9か国それぞれのページで、層1（位置と形）・層2（骨組み：川・湖・道路・鉄道）・層3（区画：区分・都市）を重ねて見られます。§08 の第3週から使います。どのページも縮尺は1度44px です（この回には倍率を上げた国はありません）。</p>
+      <div class="table-scroll">
+      <table class="mini-table clist">
+        <tr><th style="width:5%">順</th><th style="width:30%">国のページ</th><th>そのページで見られるもの</th></tr>
+        <tr><td>1</td><td><a href="country/cze.html"><strong>チェコ</strong></a></td><td>川15本・湖10・高速道路と主要幹線あり・高速鉄道と主要鉄道あり・州14・都市12</td></tr>
+        <tr><td>2</td><td><a href="country/hun.html"><strong>ハンガリー</strong></a></td><td>川15本・湖10・高速道路と主要幹線あり・高速鉄道と主要鉄道あり・区分43・地方7・都市20</td></tr>
+        <tr><td>3</td><td><a href="country/pol.html"><strong>ポーランド</strong></a></td><td>川15本・湖10・高速道路と主要幹線あり・高速鉄道と主要鉄道あり・県16・都市20</td></tr>
+        <tr><td>4</td><td><a href="country/svk.html"><strong>スロバキア</strong></a></td><td>川15本・湖10・高速道路と主要幹線あり・主要鉄道あり・高速鉄道 <strong>なし</strong>・県8・都市7</td></tr>
+        <tr><td>5</td><td><a href="country/rou.html"><strong>ルーマニア</strong></a></td><td>川15本・湖10・高速道路と主要幹線あり・主要鉄道あり・高速鉄道 <strong>なし</strong>・県41とブカレスト・都市20</td></tr>
+        <tr><td>6</td><td><a href="country/bgr.html"><strong>ブルガリア</strong></a></td><td>川15本・湖10・高速道路と主要幹線あり・主要鉄道あり・高速鉄道 <strong>なし</strong>・州28・都市18</td></tr>
+        <tr><td>7</td><td><a href="country/blr.html"><strong>ベラルーシ</strong></a></td><td>川15本・湖10・高速道路と主要幹線あり・主要鉄道あり・高速鉄道 <strong>なし</strong>・州6とミンスク・都市15</td></tr>
+        <tr><td>8</td><td><a href="country/mda.html"><strong>モルドバ</strong></a></td><td>川15本・湖10・主要幹線あり・高速道路 <strong>なし</strong>・主要鉄道あり・高速鉄道 <strong>なし</strong>・区分 <strong>なし</strong>（使っていない）・都市5</td></tr>
+        <tr><td>9</td><td><a href="country/ukr.html"><strong>ウクライナ</strong></a></td><td>川15本・湖10・高速道路と主要幹線あり・主要鉄道あり・高速鉄道 <strong>なし</strong>・区分25（クリミアとセヴァストポリを除く）・都市20</td></tr>
+      </table>
+      </div>
+      <p style="font-size:12.5px;color:var(--ink-faint)">川・湖・道路・鉄道は OpenStreetMap（© OpenStreetMap contributors、ODbL）。絞り込みの基準は国のページの下に書いてあり、どの国も同じです（川は長い順に15本、湖は広い順に10、道路と鉄道は全部）。<strong>0のものは「なし」と出るだけで、埋めていません</strong>。数は 2026-09-29 の抽出で、国の輪郭の中だけを数えたものです。高速鉄道の「なし」は、OpenStreetMap の <code>highspeed=yes</code> の印が無いという意味で、実際に走っていないかは確かめていません（3-2 §07）。ハンガリーの高速鉄道は、印の付いた区間が1つだけです。</p>
+      <div class="box warn"><span class="lab">国のページで、区分や地名の扱いを変えた国</span>
+      <ul>
+        <li><strong>モルドバ</strong>——Natural Earth の区分（40）を使っていない。区分の1つ「Rezina」が実際はルィブニツァ地区で、原語に切り替えても直らないため（§06）。3-3 のガーンジー・フェロー諸島と同じ扱い</li>
+        <li><strong>ウクライナ</strong>——首都の名前を外務省の表記（キーウ）に。都市名と、区分の2つ（Natural Earth ではどちらも「キエフ」で、州と市を分ける語は付いていない）を「キーウ」にした。ほかの地名は Natural Earth のまま</li>
+        <li><strong>ハンガリー</strong>——Natural Earth の region（7つの地方）が全部の区分に入っているので使う（地方名は本教材の訳）</li>
+      </ul></div>
+    </section>
+
+    <section id="menu">
+      <div class="sec-head"><span class="idx">08</span><h2>訓練メニュー</h2></div>
+      <p><strong>3週間</strong>（9か国なので 3-1 と同じ）。第1〜2週は地域、第3週は国のページです。どの日も想起を先に取ります——カードや国のページを開く前に、白紙に書くか声に出して言ってください。</p>
+      <h3>第1〜2週：地域（1日20分）</h3>
+      <div class="box teach"><span class="lab">A 構築（12分）</span>
+      <p><strong>最初の3分</strong>——毎日、白紙に9か国を描く。升目（北緯30〜60度の段と東経30度の線）→ 9か国の形 → 隣り合い → 首都、の順です。描き終えたら §04・§05 のカードと照らし、外れた国に印をつけます。<strong>残りの9分</strong>——その日の節（下の表）。</p></div>
+      <div class="box teach"><span class="lab">B 観察（5分）</span>
+      <p>2-1 の展開図と §04 のカードを見比べ、同じ国がどれだけ横に伸びて見えるかを \(1/\cos\varphi\) で言います（北緯50度で約1.56倍）。3-2 の南ヨーロッパのカードとも並べて、<strong>北にあるぶん伸び方が大きい</strong>ことを確かめてください。</p></div>
+      <div class="box teach"><span class="lab">メモ（3分）</span>
+      <p>描けなかった国、抜けた隣り合い、言えなかった首都を書き留める。翌日のAの最初の3分は、ここに書いたものを確かめてから描き始めます。</p></div>
+      <div class="table-scroll">
+      <table class="mini-table">
+        <tr><th style="width:12%">日</th><th>第1〜2週：地域</th></tr>
+        <tr><td>1日目</td><td>教材を読む（40〜50分）。白紙に9か国を初めて描く</td></tr>
+        <tr><td>2日目</td><td>§03 升目の中の位置と、ロシアを入れない理由。§04 の順番（東回り）。演習2</td></tr>
+        <tr><td>3日目</td><td>§04 の形：チェコ・スロバキア・ハンガリー・ポーランド（中心がほぼ同じ経度の3つ）</td></tr>
+        <tr><td>4日目</td><td>§04 の形：ルーマニア・ブルガリア・モルドバ</td></tr>
+        <tr><td>5日目</td><td>§04 の形：ベラルーシ・ウクライナ（クリミアが Natural Earth でどう描かれているか）</td></tr>
+        <tr><td>6日目</td><td>§04 隣り合い（要はウクライナ、海に面さない5つ、挟まれたモルドバ）。演習3</td></tr>
+        <tr><td>7日目</td><td>§05 首都。ドナウ川沿いの2つから。演習4の(1)</td></tr>
+        <tr><td>8日目</td><td>§06 国境。3つの場所の描き方と実効支配、沿ドニエストルの3通りの扱い。演習4の(2)〜(4)</td></tr>
+        <tr><td>9日目</td><td>§07 国のページの見方（層1→層2→層3）を、大きい国と小さい国で1つずつ試す</td></tr>
+        <tr><td>10〜13日目</td><td>1週目と2週目を通して。外した節をやり直す。演習5</td></tr>
+        <tr><td>14日目</td><td>演習1（白紙の9か国の採点）</td></tr>
+      </table>
+      </div>
+      <h3>第3週：国（1日1〜2か国）</h3>
+      <p>Aの最初の3分は、第3週も白紙に9か国のままです。残りの時間で、国のページを1日1〜2か国、層1 → 層2 → 層3の順に1つずつ重ねて見ます。見たあとで、国のページを閉じて白紙にその国だけを描き、川1本と都市3つを書き込みます。</p>
+      <div class="table-scroll">
+      <table class="mini-table">
+        <tr><th style="width:12%">日</th><th>国（東回りの順）</th></tr>
+        <tr><td>15日目</td><td>チェコ・ハンガリー</td></tr>
+        <tr><td>16日目</td><td>ポーランド</td></tr>
+        <tr><td>17日目</td><td>スロバキア・ルーマニア</td></tr>
+        <tr><td>18日目</td><td>ブルガリア・ベラルーシ</td></tr>
+        <tr><td>19日目</td><td>モルドバ（沿ドニエストル）</td></tr>
+        <tr><td>20日目</td><td>ウクライナ（クリミアが入っていないこと）</td></tr>
+        <tr><td>21日目</td><td>9か国を通して。白紙の9か国に、各国の川を1本ずつ足して描く</td></tr>
+      </table>
+      </div>
+      <p>表の日割りより早く進んでも、遅くなっても構いません。Aの最初の3分は省かないでください。</p>
+      <div class="box warn"><span class="lab">進んでよい条件</span>
+      <ul>
+        <li><strong>白紙の9か国</strong>——演習1で17点以上（20点満点）</li>
+        <li><strong>順番</strong>——東回り（チェコ→ウクライナ）と西回り（ウクライナ→チェコ）が、止まらずに言えること</li>
+        <li><strong>国境</strong>——クリミア・沿ドニエストル・ウクライナの東部と南部を、描き方と実効支配で言えること</li>
+        <li><strong>国のページ</strong>——9か国とも、層1〜3を1度ずつ重ねたこと</li>
+      </ul></div>
+    </section>
+
+    <section id="drills">
+      <div class="sec-head"><span class="idx">09</span><h2>演習</h2></div>
+      <p>すべてカード・地図・国のページを見ずに答え、答えたあとで開いてください。間違えた項目は控えておき、翌日のAの最初に確かめます。</p>
+
+      <div class="ex"><p class="ex-h"><span class="num">演習1</span>白紙に9か国</p>
+        <p>白紙に、2-1 の升目の北緯30〜60度の段の、東経0〜30度と30〜60度の2つのマスを描き、東経30度の線を引いてください。そこに9か国の形をおおまかに描き、国名と首都を書き込みます。</p>
+        <details><summary>採点のしかた</summary><div class="ans">
+          <p>§04・§05 のカードと照らします。20点満点です。</p>
+          <ul>
+            <li><strong>升目（2点）</strong>——北緯30〜60度の段と2つのマスで1点、東経30度がベラルーシとウクライナを通っていて1点</li>
+            <li><strong>9か国の位置（9点）</strong>——国ごとに、隣り合う国が §04 の表と合っていれば1点</li>
+            <li><strong>首都（9点）</strong>——国の中の正しい側にあれば1点ずつ</li>
+          </ul>
+          <p>進んでよい条件の目安は17点以上です。外しやすいのは次の3つです。</p>
+          <ul>
+            <li><strong>スロバキアを描き落とす</strong>——チェコの東、ポーランドとハンガリーのあいだに横長にある</li>
+            <li><strong>ブラチスラヴァを国の真ん中に置く</strong>——スロバキアの西の端、ブダペストのすぐ北西</li>
+            <li><strong>ウクライナにクリミアを描く</strong>——この地図（Natural Earth）ではロシアの形に入っている。描き方と実効支配は §06</li>
+          </ul>
+        </div></details>
+      </div>
+
+      <div class="ex"><p class="ex-h"><span class="num">演習2</span>西回りと、ロシアを入れない理由</p>
+        <p>(1) 9か国を、西回り（ウクライナからチェコへ）に言ってください。(2) 順が入れ替わりうる組を1つ挙げてください。(3) ロシアを東ヨーロッパに入れると、中心はどこへ動きますか。それで何が困りますか。</p>
+        <details><summary>解答</summary><div class="ans">
+          <p>(1) ウクライナ → モルドバ → ベラルーシ → ブルガリア → ルーマニア → スロバキア → ポーランド → ハンガリー → チェコ</p>
+          <p>(2) ハンガリー・ポーランド・スロバキア（中心の経度の差が0.05度以内）。ルーマニアとブルガリア、ベラルーシとモルドバでもよい</p>
+          <p>(3) 北緯66度・東経87度へ動く。ポーランドやウクライナが、中央アジア（東経66度）より東に並んでしまう。そのため 2-1 付録Aでロシアを切り出した</p>
+        </div></details>
+      </div>
+
+      <div class="ex"><p class="ex-h"><span class="num">演習3</span>隣り合い</p>
+        <p>(1) 域内でいちばん多くの国と接する国はどこですか。いくつと接しますか。(2) 海に面していない国をすべて言ってください。(3) モルドバが接する国を言ってください。(4) ロシアと接する国を3つ言ってください。</p>
+        <details><summary>解答</summary><div class="ans">
+          <p>(1) ウクライナ。域内の6か国（域外のロシアを足すと7）</p>
+          <p>(2) チェコ・スロバキア・ハンガリー・ベラルーシ・モルドバ</p>
+          <p>(3) ルーマニアとウクライナだけ</p>
+          <p>(4) ウクライナ・ベラルーシ・ポーランド（ポーランドは飛び地のカリーニングラード）</p>
+        </div></details>
+      </div>
+
+      <div class="ex"><p class="ex-h"><span class="num">演習4</span>首都と国境</p>
+        <p>(1) 9か国の首都を東回りの順に言ってください。(2) クリミアは、この地図でどの国の形に入っていますか。それは実効支配と合っていますか。(3) 沿ドニエストルについて、Natural Earth の3通りの扱いを言ってください。(4) ウクライナの東部・南部の描き方が実効支配と合っていないのに、描き直さないのはなぜですか。</p>
+        <details><summary>解答</summary><div class="ans">
+          <p>(1) プラハ → ブダペスト → ワルシャワ → ブラチスラヴァ → ブカレスト → ソフィア → ミンスク → キシナウ → キーウ</p>
+          <p>(2) ロシアの形に入っている。2014年からロシアが支配していて、実効支配と合っている（主張はウクライナ）</p>
+          <p>(3) 国の形ではモルドバに入れる。係争地の図層では Breakaway として立てる。区分では1つにまとめず6つの地区にまたがり、「Transnistria」という名前の区分は17km² しかない</p>
+          <p>(4) 前線が動いている地域を線で描くには、どの時点の、誰の発表による線かを選ぶことになり、その選択自体が立場の表明になるから。この教材は動いている線は描かず、描き方と実効支配とのずれを文で書く</p>
+        </div></details>
+      </div>
+
+      <div class="ex"><p class="ex-h"><span class="num">演習5</span>カードの歪み</p>
+        <p>この回のカードは北緯49度を標準緯線にしています。ブルガリアの南の端（北緯41度）とベラルーシの北の端（北緯56度）は、カードの中でそれぞれ横が実際の何倍に見えますか。</p>
+        <details><summary>解答</summary><div class="ans">
+          <p>ブルガリアの南の端は約0.87倍（縮む）、ベラルーシの北の端は約1.18倍（伸びる）。どちらも \(\cos 49^\circ / \cos\varphi\)</p>
+        </div></details>
+      </div>
+    </section>
+
+    <section id="plan">
+      <div class="sec-head"><span class="idx">A</span><h2>この回で決めたこと</h2></div>
+      <p>3-4 を作るときに決めたこと・変えたことを記録します。</p>
+      <div class="table-scroll">
+      <table class="mini-table">
+        <tr><th style="width:26%">項目</th><th>決めたこと（理由）</th></tr>
+        <tr><td>ロシアを入れない</td><td>2-1 付録Aで、ロシアを東ヨーロッパから切り出して独立の単位にした。中心もロシアを除いて計算した（北緯49.3度・東経25.7度。2-1 付録Aの「北49° 東26°」と一致）。ロシアを入れると北緯66.1度・東経86.5度になる</td></tr>
+        <tr><td>§06 の名前</td><td>「国境」。3-2 の §06 と同じ種類の中身（2-1 §08 の欄で書く）なので、同じ名前にした。この回らしさ（描き方と実効支配のずれ）は、節の中の見出しで出す</td></tr>
+        <tr><td>係争地を描き直さない</td><td>2-1 §08 には「ずれている地域は、地域の回で出典と日付を添えて描き直します」と書いていたが、この回の下調べで改めた。2022年以降のウクライナの東部・南部は Natural Earth に形が無く、前線は動く。どの時点の、誰の発表による線かを選ぶこと自体が立場の表明になる。<strong>描き直さず、Natural Earth の描き方と実効支配のずれを文で書く</strong>（2-1 §08 の文も直した）</td></tr>
+        <tr><td>首都の表記</td><td>ウクライナの首都は、Natural Earth の日本語名（キエフ）ではなく、<strong>外務省の表記（キーウ）</strong>。日本語の読者に通じる表記を優先し、Natural Earth の日本語名は一次資料ではないため（3-3 でラトビアの区分の日本語名が20か所誤っていた）。外務省の発表（2022年3月31日）で名前が挙がっているのは首都だけなので、変えたのは首都だけ。ほかの地名は、原則から自分で読みを作ると本教材の判断になるので、変えていない</td></tr>
+        <tr><td>モルドバの区分</td><td>使わない。区分の1つ「Rezina」が実際はルィブニツァ地区で、原語に切り替えても直らないため（3-3 のガーンジー・フェロー諸島と同じ）</td></tr>
+        <tr><td>倍率・拡大図</td><td>9か国とも1度44px で長いほうの辺が100px 以上（いちばん小さいモルドバで133px）。倍率を上げる国はなく、§04 のカードに拡大図（層2）は無い</td></tr>
+        <tr><td>地域のカード</td><td>幅897px で本文の列をわずかに超えるので、3-2・3-3 と同じく縮めずに横に送る。標準緯線（北緯49度）からのずれが 3-2 より大きい（0.87〜1.18倍）ので、§02 とカードの注記に数字で書いた</td></tr>
+      </table>
+      </div>
+    </section>
+
+    <section id="evidence">
+      <div class="sec-head"><span class="idx">B</span><h2>根拠と強度——この回で足した手順</h2></div>
+      <p>第1〜5回・2-1・3-1〜3-3 の手順の根拠と強度は、それぞれの付録Bのとおりで、この回もそれを土台にしています。ここではこの回で新しく足した手順だけを挙げます。</p>
+      <div class="table-scroll">
+      <table class="mini-table">
+        <tr><th style="width:26%">要素</th><th style="width:32%">主な根拠</th><th style="width:28%">示していないこと</th><th>強度</th></tr>
+        <tr><td>ドナウ川沿いの2つの首都から覚える（§05）</td><td>検証した研究は確認できていない。近い2点を先に置く、という設計判断（3-2 の「密なところから覚える」と同じ扱い）</td><td>この順で覚えたほうが残ること</td><td>弱</td></tr>
+        <tr><td>地図の描き方と実効支配のずれを、文で書く（§06）</td><td>学習の研究ではなく、何を事実として書くかの基準（2-1 §08。Natural Earth の2つの図層を確かめた）</td><td>——</td><td>——</td></tr>
+        <tr><td>地名は公的な日本語表記を優先する（§05）</td><td>学習の研究ではなく、表記の基準（外務省の発表）</td><td>——</td><td>——</td></tr>
+      </table>
+      </div>
+      <p style="font-size:12.5px;color:var(--ink-faint)">この回の数値（中心・面積・隣り合い・歪み）は研究の成果ではなく、Natural Earth v5.1.2 から本教材が計算したものです。同じデータと同じ手順で、誰でも再現できます。</p>
+    </section>
+
+    <div class="foot"><p>国境・海岸線・中心・面積・隣り合いは Natural Earth v5.1.2（1:1000万の国境。パブリックドメイン）から本教材が計算したもので、国の公式統計とは一致しません。§04・§05 の図は本教材が作成しました（正距円筒図法。標準緯線 北緯49度・1度44px）。ウクライナの首都の名前は外務省「ウクライナの首都等の呼称の変更」（2022年3月31日）の表記です。§06 の出典は §06 にあります。国のページの層2は OpenStreetMap（© OpenStreetMap contributors、ODbL）で、出典の詳細は各ページの下にあります。国境の描き方は 2-1 §08 の基準によるもので、どの主張を支持するものでもありません。</p></div>
+  </main>
+</div>
+<div id="site-footer"><noscript><nav class="noscript-nav" aria-label="フッターナビゲーション"><a href="index.html">ホーム</a><a href="self-intro.html">自己紹介</a><a href="study.html">勉強の軌跡</a><a href="videos.html">動画</a><a href="blog.html">ブログ</a><a href="sns.html">各種SNS</a></nav></noscript></div>
+<script src="../js/memoryverse.js?v=r126"></script>
+<script src="../js/layout.js?v=r126"></script>
+<script src="../js/main.js?v=r126"></script>
+<script src="../js/starfield.js?v=r126"></script>
+<script src="../js/country-card.js?v=r126"></script>
+</body>
+</html>

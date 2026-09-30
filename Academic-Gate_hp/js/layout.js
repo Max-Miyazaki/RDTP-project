@@ -122,6 +122,8 @@
                              title: '3-2　南ヨーロッパ' },
         'memoryverse_3-3': { label: '3-3',          href: 'memoryverse_3-3.html',  parent: 'memoryverse:ch3',
                              title: '3-3　北ヨーロッパ' },
+        'memoryverse_3-4': { label: '3-4',          href: 'memoryverse_3-4.html',  parent: 'memoryverse:ch3',
+                             title: '3-4　東ヨーロッパ' },
     };
 
     // node から根までの並び（根が先頭）。

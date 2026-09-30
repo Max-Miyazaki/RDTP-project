@@ -20,10 +20,11 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
 const B = process.argv[2] || 'http://localhost:8795/Academic-Gate_hp/html/';
 const COUNTRIES = ['jpn', 'tcd', 'fra', 'bel', 'nld', 'lux', 'mco', 'che', 'lie', 'deu', 'aut',
   'and', 'ita', 'smr', 'vat', 'mlt', 'svn', 'hrv', 'bih', 'mne', 'alb', 'srb', 'kos', 'mkd', 'grc', 'prt', 'gib', 'esp',
-  'dnk', 'nor', 'swe', 'ald', 'ltu', 'lva', 'est', 'fin', 'isl', 'irl', 'fro', 'imn', 'ggy', 'gbr', 'jey'];
+  'dnk', 'nor', 'swe', 'ald', 'ltu', 'lva', 'est', 'fin', 'isl', 'irl', 'fro', 'imn', 'ggy', 'gbr', 'jey',
+  'cze', 'hun', 'pol', 'svk', 'rou', 'bgr', 'blr', 'mda', 'ukr'];
 const PAGES = ['index.html', 'study.html', 'memoryverse.html',
   'memoryverse_1-1.html', 'memoryverse_1-2.html', 'memoryverse_1-3.html', 'memoryverse_1-4.html', 'memoryverse_1-5.html',
-  'memoryverse_2-1.html', 'memoryverse_2-2.html', 'memoryverse_2-3.html', 'memoryverse_3-1.html', 'memoryverse_3-2.html', 'memoryverse_3-3.html',
+  'memoryverse_2-1.html', 'memoryverse_2-2.html', 'memoryverse_2-3.html', 'memoryverse_3-1.html', 'memoryverse_3-2.html', 'memoryverse_3-3.html', 'memoryverse_3-4.html',
   ...COUNTRIES.map(c => 'country/' + c + '.html')];
 
 // 実際に横へ送れるか：本物の操作（狭い画面はタッチ、広い画面はマウス）で右へ送り、ずれた量を見る。

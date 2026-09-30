@@ -52,6 +52,7 @@ for f in ne1['features']:
         continue
     reg = p['region'] or C['region_fill'].get(p['name_ja'])
     ja = None if p['name'] in C.get('admin1_ja_wrong', ()) else p['name_ja']     # 日本語名が誤っている区分は原語で（ラトビア。§121）
+    ja = C.get('ja_replace', {}).get(ja, ja)                                          # 公的な表記に差し替える日本語名（キエフ→キーウ。§125）
     PREF.append({'name': label_name(ja or p['name']), 'region': C['regions'].get(reg), 'geom': shape(f['geometry']).buffer(0)})
 REGIONS = defaultdict(list)
 for p in PREF:
@@ -73,6 +74,7 @@ for f in pp['features']:
     q = f['properties']
     if q['ADM0_A3'] == CC:
         nm = re.sub(C['city_strip'], '', q['NAME_JA']) if C['city_strip'] else (q['NAME_JA'] or q['NAME'])
+        nm = C.get('ja_replace', {}).get(nm, nm)                                     # 公的な表記に差し替える日本語名（§125）
         CITIES.append({'name': label_name(nm), 'lon': q['LONGITUDE'], 'lat': q['LATITUDE'], 'pop': q['POP_MAX']})
 CITIES.sort(key=lambda c: -c['pop'])
 CITIES = CITIES[:20]                     # 都市：人口（POP_MAX）の多い順に20

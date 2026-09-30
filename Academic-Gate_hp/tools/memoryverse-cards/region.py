@@ -98,6 +98,24 @@ REGIONS = {
             ('JEY', 'ジャージー', 20, (-2.27, -1.98), (49.15, 49.29), 0.1, 5, []),
         ],
     },
+    '3-4': {
+        'title': '東ヨーロッパ',
+        'phi0': 49.0,                                  # 9か国（ロシアを除く）の本土の重心は北緯49.34度・東経25.66度（2-1 付録Aの「北49° 東26°」）
+        'center': (49.34, 25.66),
+        'lon': (11.6, 40.6), 'lat': (40.8, 56.6),
+        'members': [
+            ('CZE', 'チェコ', None), ('HUN', 'ハンガリー', None), ('POL', 'ポーランド', None), ('SVK', 'スロバキア', None),
+            ('ROU', 'ルーマニア', None), ('BGR', 'ブルガリア', ('in', 25.9, 42.75)), ('BLR', 'ベラルーシ', None), ('MDA', 'モルドバ', ('in', 28.25, 47.85)), ('UKR', 'ウクライナ', None),
+        ],
+        'point_only': [],
+        'capitals': [
+            ('プラハ', 14.464, 50.085, 'capital', 'r'), ('ブダペスト', 19.081, 47.502, 'capital', 'r'), ('ワルシャワ', 20.998, 52.252, 'capital', 'r'),
+            ('ブラチスラヴァ', 17.117, 48.15, 'capital', 'l'), ('ブカレスト', 26.098, 44.435, 'capital', 'r'), ('ソフィア', 23.315, 42.685, 'capital', 'r'),
+            ('ミンスク', 27.565, 53.902, 'capital', 'r'), ('キシナウ', 28.858, 47.005, 'capital', 'r'),
+            ('キーウ', 30.515, 50.435, 'capital', 'r'),       # Natural Earth の日本語名は「キエフ」。外務省の表記（2022年3月31日）に（§125）
+        ],
+        'zoom': [],
+    },
 }
 
 
@@ -355,8 +373,9 @@ if __name__ == '__main__':
         fn = os.path.join(SVG_DIR, f'r{key}-{name}.svg')
         open(fn, 'w').write(svg)
         out[name] = {'W': round(fr.W, 1), 'H': round(fr.H, 1), 'kb': round(os.path.getsize(fn) / 1024, 1)}
-    svg, frames = zoom_map(key, R, C)
-    fn = os.path.join(SVG_DIR, f'r{key}-zoom.svg')
-    open(fn, 'w').write(svg)
-    out['zoom'] = {'kb': round(os.path.getsize(fn) / 1024, 1), 'frames': [(nm, z, round(fr.w), round(fr.h)) for _, nm, z, _, _, _, fr in frames]}
+    if R['zoom']:                                     # 拡大図が要る単位が無い地域（3-4 東ヨーロッパ）は拡大図を作らない
+        svg, frames = zoom_map(key, R, C)
+        fn = os.path.join(SVG_DIR, f'r{key}-zoom.svg')
+        open(fn, 'w').write(svg)
+        out['zoom'] = {'kb': round(os.path.getsize(fn) / 1024, 1), 'frames': [(nm, z, round(fr.w), round(fr.h)) for _, nm, z, _, _, _, fr in frames]}
     print(json.dumps(out, ensure_ascii=False, indent=1))
