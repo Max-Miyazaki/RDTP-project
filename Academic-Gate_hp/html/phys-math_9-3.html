@@ -547,7 +547,7 @@ mjx-container[display="true"]{margin:14px 0!important;overflow-x:auto;overflow-y
       \[ \begin{aligned}|U\vec z|^2&=(U\vec z)^\dagger(U\vec z)\\&=\vec z^\dagger(U^\dagger U)\vec z\\&=\vec z^\dagger\vec z\\&=|\vec z|^2\end{aligned} \]
       <p>直交行列の証明（\(\mathsf T\) を使ったもの）と、まったく同じ形です。</p>
 
-      <p style="margin-top:10px"><strong>② 固有値の大きさは 1</strong>：\(U\vec v=\lambda\vec v\)（\(\vec v\neq\vec 0\)）とします。①から \(|U\vec v|=|\vec v|\)、一方 \(|U\vec v|=|\lambda\vec v|=|\lambda|\,|\vec v|\) なので</p>
+      <p style="margin-top:10px"><strong>② 固有値の大きさは 1</strong>：\(U\vec v=\lambda\vec v\)（\(\vec v\neq\vec 0\)）とします。①から \(|U\vec v|=|\vec v|\)、一方 \(|U\vec v|=|\lambda\vec v|\)、これは \(|\lambda|\,|\vec v|\) なので</p>
       \[ |\lambda|\,|\vec v|=|\vec v| \]
       <p>で、\(|\vec v|\neq0\) で割ると \(|\lambda|=1\) です。大きさが 1 の複素数は、4章のとおり \(e^{i\varphi}\) と書けます。つまり<strong>ユニタリ行列の固有値は、どれも \(e^{i\varphi}\) の形</strong>で、伸び縮みせず「回る」だけです。</p>
       <p>9-2 §02 で、回転の行列の固有値が \(e^{\pm i\theta}\) になったことを思い出してください。回転の行列は直交行列、つまり実数のユニタリ行列なので、固有値の大きさがちょうど 1 になっていたのです。</p>
@@ -591,7 +591,7 @@ mjx-container[display="true"]{margin:14px 0!important;overflow-x:auto;overflow-y
         <button class="ctl-btn amber" data-hint>ヒントを表示</button>
         <button class="ctl-btn" data-sol>解答を見る</button>
       </div>
-      <div class="hint"><span class="hn">HINT 1</span><p>\((1-i)(1+i)=1-i^2=2\) です。</p></div>
+      <div class="hint"><span class="hn">HINT 1</span><p>\((1-i)(1+i)=1-i^2\) で、これは \(2\) です。</p></div>
       <div class="sol"><p><strong>エルミートであること</strong>：対角の 2 と 3 は実数、右上 \(1-i\) の共役は \(1+i\) で、左下と一致します。</p>
       <p><strong>固有値</strong>：固有方程式は</p>
       \[ \begin{aligned}&(2-\lambda)(3-\lambda)\\&\quad-(1-i)(1+i)\\&=\lambda^2-5\lambda+6-2\\&=(\lambda-1)(\lambda-4)\end{aligned} \]
@@ -682,7 +682,7 @@ mjx-container[display="true"]{margin:14px 0!important;overflow-x:auto;overflow-y
         </div>
         <div class="step"><div class="sh"><span class="sn">3</span>足す</div>
         <div class="why">なぜ：反交換は「順序を入れ替えたものを足すと 0」ということです。</div>
-        <p style="margin:4px 0">\(\{\sigma_x,\sigma_y\}=i\sigma_z+({-}i\sigma_z)=0\) で、反交換が確かめられました。引き算すれば \([\sigma_x,\sigma_y]=i\sigma_z-({-}i\sigma_z)=2i\sigma_z\) で、交換関係も確かめられます。</p>
+        <p style="margin:4px 0">\(\{\sigma_x,\sigma_y\}=i\sigma_z+({-}i\sigma_z)\)、つまり \(0\) で、反交換が確かめられました。引き算すれば \([\sigma_x,\sigma_y]=i\sigma_z-({-}i\sigma_z)\)、つまり \(2i\sigma_z\) で、交換関係も確かめられます。</p>
         <p style="font-size:13.5px;color:var(--ink-faint);margin:6px 0 0">順序を入れ替えると、符号だけが変わりました。数の掛け算ではありえない性質で、<strong>行列だからこそ表せる関係</strong>です。§04 のディラック行列は、この反交換の性質を 4行4列に広げたものです。</p></div>
       </div>
       </div>
