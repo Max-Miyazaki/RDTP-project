@@ -13,6 +13,8 @@
 // ★ 3章の地域の記事（memoryverse_3-*.html）は、DESIGN.md §100.0 の一覧のうち機械で確かめられる3つも見る（読み落としても止まるように）：
 //   ① 拡大図（層2）が地図より前にあるか（§106）　② 単位の名前のリンクが見出しの数と同じだけあり、国のページを指すか（§118）
 //   ③ 横に送れる図の上に「横に送ると続きが見られます →」が出ているか（§115）
+//   ④ 主権国家でない単位が混ざる地域で「か国」と書いていないか（§100.0）。地図の SVG の data-nonstate（region.py が Natural Earth の
+//     SOVEREIGNT・ADMIN・TYPE から書く）が空でなければ、見出しは「N単位」で、本文にも「Nか国」が無いこと。空なら見出しは「Nか国」
 const p = require('puppeteer-core');
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 const B = process.argv[2] || 'http://localhost:8795/Academic-Gate_hp/html/';
@@ -45,6 +47,15 @@ async function regionChecks(pg) {
         const m = (svg.getAttribute('aria-label') || '').match(/の(\d+)(か国|単位)/);
         const hrefs = [...new Set([...svg.querySelectorAll('a.cc-cty')].map(a => a.getAttribute('href')))];
         if (!m) out.push(`${cc}：見出しに数が無い`);
+        // ④ 単位の性質で判定する（形だけ見ると、3-2 の「17か国」のような誤りを見逃す）
+        const ns = svg.getAttribute('data-nonstate');
+        if (ns === null) out.push(`${cc}：主権国家でない単位の印（data-nonstate）が無い（region.py で作り直す）`);
+        else if (m) {
+          const want = ns.trim() ? '単位' : 'か国';
+          if (m[2] !== want) out.push(`${cc}：見出しが「${m[1]}${m[2]}」（${ns.trim() ? '主権国家でない単位 ' + ns.trim() + ' を含むので「単位」' : '全部が主権国家なので「か国」'}）`);
+          const txt = document.querySelector('main') ? document.querySelector('main').innerText : document.body.innerText;
+          if (ns.trim() && txt.includes(m[1] + 'か国')) out.push(`${cc}：本文に「${m[1]}か国」が残っている（${ns.trim()} を含む）`);
+        }
         else if (hrefs.length !== +m[1]) out.push(`${cc}：単位の名前のリンクが ${hrefs.length}（見出しは ${m[1]}）`);
         hrefs.filter(h => !countries.includes((h.match(/^country\/(\w+)\.html$/) || [])[1])).forEach(h => out.push(`${cc}：リンク先が国のページでない ${h}`));
       });

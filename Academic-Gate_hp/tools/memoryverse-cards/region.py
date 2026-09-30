@@ -73,7 +73,6 @@ REGIONS = {
     },
     '3-3': {
         'title': '北ヨーロッパ',
-        'unit': '単位',                                # 15のうち5つは国ではない（3-3 §06）。見出しを「15か国」にしない
         'phi0': 62.0,                                  # 15単位の本土の重心は北緯61.59度・東経12.17度
         'center': (61.59, 12.17),
         'lon': (-25.0, 32.0), 'lat': (48.6, 71.5),
@@ -224,11 +223,20 @@ LAND = 'fill="rgba(61,139,255,.16)" stroke="#6aa9ff" stroke-width=".8" stroke-li
 NEI = 'fill="rgba(255,255,255,.05)" stroke="rgba(255,255,255,.18)" stroke-width=".7" stroke-linejoin="round"'
 
 
+def nonstate(R, C):
+    """主権国家でない単位（Natural Earth で、主権の名前 SOVEREIGNT が単位の名前 ADMIN と違う、または TYPE が Disputed）。
+    1つでもあれば、見出しを「か国」ではなく「単位」にする（DESIGN.md §100.0・§123）。TYPE が Sovereign country かどうかでは分けない
+    （フランス・オランダ・デンマーク・フィンランド・イギリスは TYPE が Country）"""
+    return [a3 for a3, _, _ in R['members'] if C[a3][1]['SOVEREIGNT'] != C[a3][1]['ADMIN'] or C[a3][1]['TYPE'] == 'Disputed']
+
+
 def main_map(key, R, C, capitals):
     fr = Frame(R['lon'], R['lat'], R['phi0'])
+    ns = nonstate(R, C)
+    unit = '単位' if ns else 'か国'
     cid = f'cc-r{key.replace("-", "")}-{"cap" if capitals else "shape"}'
     E = [f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {fmt(fr.W)} {fmt(fr.H)}" width="{fmt(fr.W)}" height="{fmt(fr.H)}" class="cc-map" role="img" '
-         f'aria-label="{R["title"]}の{len(R["members"])}{R.get("unit", "か国")}の{"首都" if capitals else "形と位置"}">', STYLE,
+         f'aria-label="{R["title"]}の{len(R["members"])}{unit}の{"首都" if capitals else "形と位置"}" data-nonstate="{" ".join(ns)}">', STYLE,
          f'<clipPath id="{cid}"><rect x="{ML}" y="{MT}" width="{fmt(fr.w)}" height="{fmt(fr.h)}"/></clipPath>',
          f'<rect x="{ML}" y="{MT}" width="{fmt(fr.w)}" height="{fmt(fr.h)}" fill="#05080d"/>']
     E += grid(fr)
@@ -293,7 +301,7 @@ def main_map(key, R, C, capitals):
         E.append('<g class="L3">' + ''.join(L3) + '</g>')
     E.append('</g>')
     E.append(f'<rect x="{ML}" y="{MT}" width="{fmt(fr.w)}" height="{fmt(fr.h)}" fill="none" stroke="rgba(255,255,255,.3)" stroke-width="1"/>')
-    E.append(text(ML, MT - 9, f'{R["title"]}の{len(R["members"])}{R.get("unit", "か国")}', 12, '#fff', 'start', ' font-weight="600" stroke="none"'))
+    E.append(text(ML, MT - 9, f'{R["title"]}の{len(R["members"])}{unit}', 12, '#fff', 'start', ' font-weight="600" stroke="none"'))
     E += scale_bar(fr, 100)
     E.append('</svg>')
     return '\n'.join(E), fr
