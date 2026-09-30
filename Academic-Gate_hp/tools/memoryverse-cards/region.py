@@ -142,7 +142,8 @@ def mainland(g):
 
 
 def tw(text, fs):
-    return sum(fs if ord(ch) > 0x2000 else fs * 0.62 for ch in text)
+    # 文字幅の見積もり。draw.py と同じく、キリル文字・ギリシャ文字も全角として数える（DESIGN.md §126。地域のカードのラベルは日本語だけ）
+    return sum(fs if (ord(ch) > 0x2000 or 0x0370 <= ord(ch) < 0x0530) else fs * 0.62 for ch in text)
 
 
 class Frame:

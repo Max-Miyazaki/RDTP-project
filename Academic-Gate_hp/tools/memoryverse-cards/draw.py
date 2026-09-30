@@ -124,9 +124,16 @@ class Panel:
         return self.proj(g).simplify(tol, preserve_topology=False)
 
 
+def wide(ch):
+    """全角として数える字：日本語（0x2000 より上）と、キリル文字・ギリシャ文字。日本語の字体ではキリル文字・ギリシャ文字が全角に近い幅で描かれる
+    （52の国のページで1文字あたり字の大きさの0.94倍・0.96倍。半角の0.62倍で見積もると幅を約3分の2に取り、層2の中で重なった。DESIGN.md §126）"""
+    u = ord(ch)
+    return u > 0x2000 or 0x0370 <= u < 0x0530
+
+
 def tw(text, fs):
-    """文字幅の見積もり（全角 = fs、半角 = 0.62fs。欧文の太めの字に合わせて少し広めに見る）"""
-    return sum(fs if ord(ch) > 0x2000 else fs * 0.62 for ch in text)
+    """文字幅の見積もり（全角 = fs、半角 = 0.62fs。ラテン文字は1文字あたり0.54倍（中央値）・最大0.69倍、アラビア文字は0.42倍）"""
+    return sum(fs if wide(ch) else fs * 0.62 for ch in text)
 
 
 def overlaps(a, b, pad=2):
@@ -565,7 +572,8 @@ for sb in SUBS:
     if COUNT[k] == 0:     # 無いものは無いと見せる：押せないボタンに「なし」。図には何も足さない
         btn.append(f'<button class="cc-sub cc-zero" data-layer="{L}" data-k="{k}" aria-pressed="false" disabled title="この国のデータに無い">{swh}{lab}<em>なし</em></button>')
     else:
-        btn.append(f'<button class="cc-sub" data-layer="{L}" data-k="{k}" aria-pressed="true">{swh}{lab}</button>')
+        # 初期状態は層1だけ（層2・層3の中のボタンも押されていない）。層のボタンを押すと、その層の中のボタンがまとめて入る（country-card.js）。DESIGN.md §100.5
+        btn.append(f'<button class="cc-sub" data-layer="{L}" data-k="{k}" aria-pressed="false">{swh}{lab}</button>')
 NAMES = {'river': '川', 'lake': '湖', 'motorway': '高速道路', 'trunk': '主要幹線', 'hsr': '高速鉄道', 'main': '主要鉄道', 'region': RWORD, 'prefname': C['admin1_word'] + '名', 'city': '都市'}
 zeros = [NAMES[k] for k in COUNT if COUNT[k] == 0]
 zero_html = (f'<p class="cc-zeros">この国のデータに<b>無いもの</b>：{"・".join(zeros)}（0なので線も名前も描いていない）</p>') if zeros else ''
