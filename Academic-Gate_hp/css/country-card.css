@@ -98,7 +98,12 @@
     .cc-fig { max-width: none; width: calc(var(--w) * .88px); }
 }
 
-.cc-side { flex: 1 1 300px; min-width: 0; display: flex; flex-direction: column; gap: 14px; }
+/* 注記の欄：段落はサイト共通の p { max-width: 62ch } で折り返す（12.5px で448px）。欄もそれに合わせて上限を付け、
+   使わない幅を欄に取らせない（上限が無いと、図が小さい国で欄が739px になり、右の約290px が空いた。DESIGN.md §122） */
+.cc-side { flex: 1 1 300px; min-width: 0; max-width: 62ch; font-size: 12.5px; display: flex; flex-direction: column; gap: 14px; }
+/* 国のページだけ、図と注記の組を中央に寄せる（余った幅を左右に分ける。縮尺は1度44px のまま変えない）。
+   狭い画面（760px 以下）は注記が図の下に回るので、これまでどおり左寄せ */
+@media (min-width: 761px) { .cc-page .cc-maps { justify-content: center; } }
 .cc-note {
     font-size: 12.5px;
     color: var(--ink-soft, var(--text-secondary));
