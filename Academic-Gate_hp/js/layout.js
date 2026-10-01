@@ -87,6 +87,8 @@
                              title: '9-2　固有値と対角化' },
         'phys-math_9-3':   { label: 'SECTION 9-3',  href: 'phys-math_9-3.html',    parent: 'phys-math:ch9',
                              title: '9-3　物理で出会う行列' },
+        'phys-math_9-4':   { label: 'SECTION 9-4',  href: 'phys-math_9-4.html',    parent: 'phys-math:ch9',
+                             title: '9-4　添字で計算する行列の公式' },
         // 複合分野：学問分野と精神の圏域のあいだの枠（DESIGN.md §103）。いまは「地球と人類」だけ。
         'composite':       { label: '複合分野',     href: 'study_composite.html',  parent: 'study' },
         // ★ title は付けない：ツリーは title を label より優先するので、付けるとツリーが「地球の構造から人類を読み解く」になる。
