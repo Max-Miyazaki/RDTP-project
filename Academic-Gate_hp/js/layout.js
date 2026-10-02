@@ -92,6 +92,8 @@
         'phys-math:ch10':  { label: '10章 変分法',                                 parent: 'phys-math' },
         'phys-math_10-1':  { label: 'SECTION 10-1', href: 'phys-math_10-1.html',   parent: 'phys-math:ch10',
                              title: '10-1　変分法' },
+        'phys-math_10-2':  { label: 'SECTION 10-2', href: 'phys-math_10-2.html',   parent: 'phys-math:ch10',
+                             title: '10-2　条件付きの変分と場の変分' },
         // 複合分野：学問分野と精神の圏域のあいだの枠（DESIGN.md §103）。いまは「地球と人類」だけ。
         'composite':       { label: '複合分野',     href: 'study_composite.html',  parent: 'study' },
         // ★ title は付けない：ツリーは title を label より優先するので、付けるとツリーが「地球の構造から人類を読み解く」になる。
