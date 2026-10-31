@@ -2804,8 +2804,50 @@ a.tree-node {
 }
 
 .tree-note {
+    position: relative;
     margin-top: var(--space-4);
     font-size: 0.85rem;
+}
+
+/* --- 渦の途中も文字を読めるように（§135.7）-----------------------------------
+   移り目では粒子が画面全体に散って文字の下を通る。
+   ① 小さな文字には、旧ホームの見出しと同じ「読みやすさのための暗い影」（光らせる影ではない。§2 原則3 の例外として
+      .hero h1 などが既に使っている形）。番号ラベルは黒地でも 4.96:1 しか余裕が無いため
+   ② 05 のカードは、木の名前と同じ黒い下地（ふだんの面はほぼ透明で、後ろの粒子が透けた）
+   ③ 03 の注記にも見出しと同じふちの無い暗がり */
+.home .eyebrow,
+.tree-note,
+.home-block__head p,
+.roots__sub {
+    text-shadow: 0 0 6px rgba(0, 0, 0, 0.95), 0 0 14px rgba(0, 0, 0, 0.75);
+}
+
+/* 番号ラベルは文字が小さく余裕も少ないので、影を一段濃く */
+.home .eyebrow {
+    text-shadow: 0 0 3px #000, 0 0 8px rgba(0, 0, 0, 0.95), 0 0 18px rgba(0, 0, 0, 0.85);
+}
+
+.home-fruits .study-card {
+    background-color: rgba(0, 0, 0, 0.72);
+}
+
+@media (hover: hover) {
+    .home-fruits a.study-card:hover {
+        background: linear-gradient(var(--surface-hot), var(--surface-hot)), rgba(0, 0, 0, 0.72);
+    }
+}
+
+.tree-note::before {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    inset: -2rem -3rem;
+    pointer-events: none;
+    background: radial-gradient(ellipse closest-side,
+            rgba(0, 0, 0, 0.78) 0%,
+            rgba(0, 0, 0, 0.62) 55%,
+            rgba(0, 0, 0, 0.22) 82%,
+            transparent 100%);
 }
 
 /* 粒子が動いている画面（js/tree-scenes.js が html.has-particles を付ける）では、

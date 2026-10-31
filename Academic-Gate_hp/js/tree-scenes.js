@@ -97,7 +97,9 @@
         var S3 = new Float32Array(N * 4), S4 = new Float32Array(N * 4), S5 = new Float32Array(N * 4);
         var seedA = new Float32Array(N);
         for (var i = 0; i < N; i++) seedA[i] = rnd();
-        function put(A, i, x, y, b, c) { A[i * 4] = x; A[i * 4 + 1] = y; A[i * 4 + 2] = b; A[i * 4 + 3] = c; }
+        // 色番号の小数部に「揺れの段」を入れる（0：名前・実の近く 0.35 / 1：枝 1 / 2：にじみ 2 / 3：塵 3）。
+        // 色番号は四捨五入して読むので、小数部 0.0〜0.3 は色に影響しない
+        function put(A, i, x, y, b, c, sway) { A[i * 4] = x; A[i * 4 + 1] = y; A[i * 4 + 2] = b; A[i * 4 + 3] = c + (sway == null ? 1 : sway) / 10; }
         var pivots = [[0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0]];
         function total(a) { return a.reduce(function (s, l) { return s + l.len; }, 0); }
         var dens = {};   // 線 1px あたりの粒子の数（明るさの調整用）
@@ -107,11 +109,11 @@
             st = 0x11;
             for (var i = 0; i < N; i++) {
                 var r = rnd();
-                if (r < 0.07) put(S0, i, gauss(4), gauss(4), 1.0, 0);
+                if (r < 0.07) put(S0, i, gauss(4), gauss(4), 1.0, 0, 0);
                 else if (r < 0.30) { var a = rnd() * 6.2832, d = Math.abs(gauss(22)); put(S0, i, Math.cos(a) * d, Math.sin(a) * d, 0.32, 1); }
                 else {
                     var a2 = rnd() * 6.2832, rad = 460 * Math.pow(rnd(), 1.9);
-                    put(S0, i, Math.cos(a2) * rad * 1.9, Math.sin(a2) * rad * 0.55, 0.03 + 0.09 * (1 - rad / 460), rnd() < 0.5 ? 1 : 2);
+                    put(S0, i, Math.cos(a2) * rad * 1.9, Math.sin(a2) * rad * 0.55, 0.03 + 0.09 * (1 - rad / 460), rnd() < 0.5 ? 1 : 2, 3);
                 }
             }
             pivots[0] = [0, 0];
@@ -131,8 +133,8 @@
             for (var i = 0; i < N; i++) {
                 var r = rnd();
                 if (r < 0.50) { var l = pick(), q = onPoly(l, rnd()), j = gauss(l.w * 0.9); put(S1, i, q.x + q.nx * j, q.y + q.ny * j, 0.04 + 0.03 * l.w, 1); }
-                else if (r < 0.56) put(S1, i, seed.x + gauss(4), seed.y + gauss(4), 1.0, 0);
-                else put(S1, i, seed.x + gauss(W * 0.22), seed.y + Math.abs(gauss(H * 0.45)), 0.04, 2);
+                else if (r < 0.56) put(S1, i, seed.x + gauss(4), seed.y + gauss(4), 1.0, 0, 0);
+                else put(S1, i, seed.x + gauss(W * 0.22), seed.y + Math.abs(gauss(H * 0.45)), 0.04, 2, 3);
             }
             pivots[1] = [W / 2, H * 0.4];
             return true;
@@ -158,11 +160,11 @@
             for (var i = 0; i < N; i++) {
                 var r = rnd();
                 if (r < 0.70) { var l = pick(), q = onPoly(l, rnd()), j = gauss(l.w * 0.8); put(S2, i, q.x + q.nx * j, q.y + q.ny * j, l.b, l.c); }
-                else if (r < 0.74) put(S2, i, L.seed.x + gauss(4), L.seed.y + gauss(4), 1.0, 0);
+                else if (r < 0.74) put(S2, i, L.seed.x + gauss(4), L.seed.y + gauss(4), 1.0, 0, 0);
                 else {
                     // 葉：名前の茎側の端（小枝の先）に寄せる。名前の文字の下には入れない
                     var t = tip(), dir = t.align === 'left' ? 1 : -1;
-                    put(S2, i, t.x - dir * (6 + Math.abs(gauss(8))), t.y + gauss(7), 0.16, catIndex(t.cat));
+                    put(S2, i, t.x - dir * (6 + Math.abs(gauss(8))), t.y + gauss(7), 0.16, catIndex(t.cat), 0);
                 }
             }
             pivots[2] = [L.fork.x, L.fork.y];
@@ -193,9 +195,9 @@
                 var r = rnd(), l, q, j;
                 if (r < 0.34) { l = pm(); q = onPoly(l, rnd()); j = gauss(1.2); put(S3, i, q.x + q.nx * j, q.y + q.ny * j, bM, l.c === 2 ? 2 : catIndex('natural')); }
                 else if (r < 0.48) { q = onPoly(ext, rnd()); j = gauss(1.4); put(S3, i, q.x + q.nx * j, q.y + q.ny * j, bE, 1); }
-                else if (r < 0.56) put(S3, i, B.T.x + gauss(26), B.T.y - Math.abs(gauss(220)), 0.04 + 0.12 * rnd() * Math.sqrt(kN), rnd() < 0.5 ? 0 : 1);
+                else if (r < 0.56) put(S3, i, B.T.x + gauss(26), B.T.y - Math.abs(gauss(220)), 0.04 + 0.12 * rnd() * Math.sqrt(kN), rnd() < 0.5 ? 0 : 1, 3);
                 else if (r < 0.86) { l = pr(); q = onPoly(l, rnd()); j = gauss(1); put(S3, i, q.x + q.nx * j, q.y + q.ny * j, bR, l.c); }
-                else put(S3, i, B.P.x, B.P.y, 0, 0);
+                else put(S3, i, B.P.x, B.P.y, 0, 0, 0);
             }
             pivots[3] = [B.P.x, B.P.y];
             return true;
@@ -212,9 +214,9 @@
             for (var i = 0; i < N; i++) {
                 var r = rnd(), f = fs[Math.floor(rnd() * fs.length)];
                 if (r < 0.22) { var l = pb(), q = onPoly(l, rnd()), j = gauss(0.9); put(S4, i, q.x + q.nx * j, q.y + q.ny * j, bB, 2); }
-                else if (r < 0.60) put(S4, i, f.x + gauss(5.5), f.y + gauss(5.5), 0.03 * kN, 10 + f.i);
-                else if (r < 0.84) put(S4, i, f.x + gauss(20), f.y + gauss(20), 0.016 * kN, 10 + f.i);
-                else put(S4, i, f.x, f.y, 0, 10 + f.i);
+                else if (r < 0.60) put(S4, i, f.x + gauss(5.5), f.y + gauss(5.5), 0.03 * kN, 10 + f.i, 0);
+                else if (r < 0.84) put(S4, i, f.x + gauss(20), f.y + gauss(20), 0.016 * kN, 10 + f.i, 2);
+                else put(S4, i, f.x, f.y, 0, 10 + f.i, 0);
             }
             pivots[4] = [fruitsBox.clientWidth / 2, top];
             return true;
@@ -225,7 +227,7 @@
             st = 0x66;
             var W = stepBox.clientWidth, H = stepBox.clientHeight;
             for (var i = 0; i < N; i++) {
-                if (rnd() < 0.3) put(S5, i, W * (0.04 + 0.92 * rnd()), H * (0.35 + 0.65 * rnd()), 0.5 * Math.sqrt(kN), 3 + Math.floor(rnd() * 7));
+                if (rnd() < 0.3) put(S5, i, W * (0.04 + 0.92 * rnd()), H * (0.35 + 0.65 * rnd()), 0.5 * Math.sqrt(kN), 3 + Math.floor(rnd() * 7), 2);
                 else put(S5, i, W / 2, H, 0, 1);
             }
             pivots[5] = [W / 2, H * 0.55];
@@ -244,7 +246,8 @@
             'uniform float uF, uTime, uScroll, uW, uH, uSize, uDPR, uHot, uRise;',
             'uniform vec2 uOff[6]; uniform vec2 uPiv[6];',
             'uniform vec3 uPointer;',
-            'uniform vec4 uQuiet;',   // 06 の文字の箱（ページの座標 x0,y0,x1,y1）
+            'uniform vec4 uQuiet;',
+            'uniform float uSwirlB;',   // 06 の文字の箱（ページの座標 x0,y0,x1,y1）
             'uniform vec3 uPal[' + NP + '];',
             'varying vec3 vCol; varying float vB;',
             // 06 の葉：下から舞い上がって消える（0→1 を繰り返す）
@@ -256,6 +259,25 @@
             '  float pr=riseP(); vec2 q=aS5.xy+uOff[5]; q.y-=pr*uRise; q.x+=sin(uTime*0.5+aSeed*31.0)*22.0*pr;',
             '  return vec4(q, aS5.z*smoothstep(0.0,0.08,pr)*pow(1.0-pr,1.3), aS5.w); }',
             'vec2 pivOf(int k){ return uPiv[k]+uOff[k]; }',
+            // 旧ホーム（scroll-scenes.js）と同じ 3D simplex noise の curl。静止中の揺らぎと、移り目の散らばりに使う
+            'vec3 mod289(vec3 x){return x-floor(x*(1.0/289.0))*289.0;}',
+            'vec4 mod289(vec4 x){return x-floor(x*(1.0/289.0))*289.0;}',
+            'vec4 permute(vec4 x){return mod289(((x*34.0)+1.0)*x);}',
+            'vec4 taylorInvSqrt(vec4 r){return 1.79284291400159-0.85373472095314*r;}',
+            'float snoise(vec3 v){const vec2 C=vec2(1.0/6.0,1.0/3.0);const vec4 D=vec4(0.0,0.5,1.0,2.0);',
+            '  vec3 i=floor(v+dot(v,C.yyy));vec3 x0=v-i+dot(i,C.xxx);vec3 g=step(x0.yzx,x0.xyz);vec3 l=1.0-g;vec3 i1=min(g.xyz,l.zxy);vec3 i2=max(g.xyz,l.zxy);',
+            '  vec3 x1=x0-i1+C.xxx;vec3 x2=x0-i2+C.yyy;vec3 x3=x0-D.yyy;i=mod289(i);',
+            '  vec4 p=permute(permute(permute(i.z+vec4(0.0,i1.z,i2.z,1.0))+i.y+vec4(0.0,i1.y,i2.y,1.0))+i.x+vec4(0.0,i1.x,i2.x,1.0));',
+            '  float ns_=0.142857142857;vec3 ns=ns_*D.wyz-D.xzx;vec4 j=p-49.0*floor(p*ns.z*ns.z);vec4 x_=floor(j*ns.z);vec4 y_=floor(j-7.0*x_);',
+            '  vec4 x=x_*ns.x+ns.yyyy;vec4 y=y_*ns.x+ns.yyyy;vec4 h=1.0-abs(x)-abs(y);vec4 b0=vec4(x.xy,y.xy);vec4 b1=vec4(x.zw,y.zw);',
+            '  vec4 s0=floor(b0)*2.0+1.0;vec4 s1=floor(b1)*2.0+1.0;vec4 sh=-step(h,vec4(0.0));vec4 a0=b0.xzyw+s0.xzyw*sh.xxyy;vec4 a1=b1.xzyw+s1.xzyw*sh.zzww;',
+            '  vec3 p0=vec3(a0.xy,h.x);vec3 p1=vec3(a0.zw,h.y);vec3 p2=vec3(a1.xy,h.z);vec3 p3=vec3(a1.zw,h.w);',
+            '  vec4 norm=taylorInvSqrt(vec4(dot(p0,p0),dot(p1,p1),dot(p2,p2),dot(p3,p3)));p0*=norm.x;p1*=norm.y;p2*=norm.z;p3*=norm.w;',
+            '  vec4 m=max(0.6-vec4(dot(x0,x0),dot(x1,x1),dot(x2,x2),dot(x3,x3)),0.0);m=m*m;return 42.0*dot(m*m,vec4(dot(p0,x0),dot(p1,x1),dot(p2,x2),dot(p3,x3)));}',
+            'vec3 snoiseVec3(vec3 p){return vec3(snoise(p),snoise(p+17.1),snoise(p-43.7));}',
+            'vec3 curl(vec3 p){const float e=0.6;vec3 p0=snoiseVec3(p);vec3 px=snoiseVec3(p+vec3(e,0.,0.));vec3 py=snoiseVec3(p+vec3(0.,e,0.));vec3 pz=snoiseVec3(p+vec3(0.,0.,e));',
+            '  return vec3((py.z-p0.z)-(pz.y-p0.y),(pz.x-p0.x)-(px.z-p0.z),(px.y-p0.y)-(py.x-p0.x))/e;}',
+            'float swayOf(float w){ float c=floor(fract(w)*10.0+0.5); return c<0.5?0.35:c; }',
             'vec3 palOf(float i){ int k=int(i+0.5); vec3 c=uPal[0];',
             '  for(int j=1;j<' + NP + ';j++){ if(j==k) c=uPal[j]; } return c; }',
             'void main(){',
@@ -267,22 +289,28 @@
             // 場面の近くでは形を保ち（0〜0.22 と 0.78〜1）、そのあいだで移る
             '  float te=smoothstep(0.22,0.78,f);',
             '  vec2 p=mix(A.xy,B.xy,te);',
-            // 渦：移っている途中だけ、二つの場面の中心のまわりに回し、少しふくらませてから戻す
+            // 渦（§135.7）：移っている途中は、粒子が画面全体へ散らばり、画面の中心のまわりを大きく回ってから次の形へ。
+            // 散らばる先は粒子ごとに決まった画面上の点（aSeed から）。ピーク（te=0.5）で画面の端まで行き渡る
             '  float sw=sin(3.14159*te);',
-            '  vec2 pv=mix(pivOf(iA),pivOf(iA+1),te);',
-            '  vec2 d=p-pv; float r=length(d);',
-            '  float ang=sw*(1.6+1.4*aSeed)/(1.0+r/420.0);',
-            '  d=mat2(cos(ang),-sin(ang),sin(ang),cos(ang))*d*(1.0+0.22*sw*(aSeed-0.3));',
-            '  p=pv+d;',
-            '  p+=sw*26.0*vec2(sin(aSeed*91.0+uTime*0.7),cos(aSeed*53.0+uTime*0.6));',
-            // 止まっているときのかすかな揺らぎ
-            '  p+=0.7*vec2(sin(uTime*0.9+aSeed*40.0),cos(uTime*0.8+aSeed*70.0));',
+            '  vec2 vc=vec2(uW*0.5, uScroll+uH*0.5);',
+            '  vec2 sp=vec2(fract(sin(aSeed*12.9898)*43758.5453)*1.1-0.05, fract(sin(aSeed*78.233)*24634.6345)*1.1-0.05)*vec2(uW,uH)+vec2(0.0,uScroll);',
+            '  p=mix(p, sp, 0.94*smoothstep(0.0,1.0,sw));',
+            '  vec2 d=p-vc; float R=0.5*length(vec2(uW,uH)); float r=length(d);',
+            '  float ang=sw*((2.0+1.4*aSeed)*(1.0-0.5*r/R)+uTime*0.12);',
+            '  p=vc+mat2(cos(ang),-sin(ang),sin(ang),cos(ang))*d;',
+            // 揺らぎ（旧ホームと同じ式）：curl(目標×周波数 + 時間 + 粒子ごとのずれ)。止まっている場面でもゆらゆら流れる。
+            // 揺れの大きさは粒子ごとの段（名前の近くは小さく、塵は大きく）。移り目では旧 uDisperse のように大きく散らす
+            '  float spd=0.9+aSeed*0.6;',
+            '  vec3 cn=curl(vec3(mix(A.xy,B.xy,te)*0.0019, uTime*0.15*spd)+aSeed*7.0);',
+            '  float sway=mix(swayOf(A.w),swayOf(B.w),te);',
+            '  p+=cn.xy*(2.4*sway + 70.0*sw);',
             // ポインタ：近くの粒子をゆるく押しのける
             '  vec2 dp=p-uPointer.xy; float g=exp(-dot(dp,dp)/(2.0*85.0*85.0))*uPointer.z;',
             '  p+=normalize(dp+vec2(0.0001))*g*34.0;',
-            '  float b=mix(A.z,B.z,te)*(1.0-0.55*sw);',   // 渦の途中は暗く（広がった雲が文字の下に来るため）
+            // 渦の途中は、どの粒子もそろって uSwirlB の明るさに（形の明るさの差は消し、画面全体に均一な雲として見せる）
+            '  float b=mix(mix(A.z,B.z,te), uSwirlB, smoothstep(0.0,1.0,sw));',
             // 05：カードに触れているあいだ、その実を明るく
-            '  float hot=max(step(abs(A.w-uHot),0.1)*(1.0-te), step(abs(B.w-uHot),0.1)*te); b*=1.0+1.8*hot;',
+            '  float hot=max(step(abs(floor(A.w+0.05)-uHot),0.1)*(1.0-te), step(abs(floor(B.w+0.05)-uHot),0.1)*te); b*=1.0+1.8*hot;',
             '  vCol=mix(palOf(A.w),palOf(B.w),te);',
             // 06：舞い上がるほど白く（星の色に近づける）
             '  if(iA==4) vCol=mix(vCol, vec3(0.92,0.96,1.0), te*riseP());',
@@ -312,6 +340,7 @@
             uPiv: { value: [0, 1, 2, 3, 4, 5].map(function () { return new THREE.Vector2(); }) },
             uHot: { value: -1 }, uRise: { value: window.innerHeight * 1.1 },
             uQuiet: { value: new THREE.Vector4(0, 0, 0, 0) },
+            uSwirlB: { value: isMobile ? 0.26 : 0.32 },   // 渦のピークでの1粒の明るさ。画面全体に散るので粒子の数では割らない。スマホは1粒が大きい（uSize）ぶん控えめに
             uPointer: { value: new THREE.Vector3(-9999, -9999, 0) },
             uPal: { value: pal }
         };
