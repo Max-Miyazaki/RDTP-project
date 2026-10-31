@@ -13,7 +13,8 @@
      2. 枝・幹・種・またぐ線を SVG で描く（静止した完成形）。粒子のエンジンが
         動けない場合（動きを減らす設定・WebGL 無し）はこれがそのまま木になる
      3. 02 の根（.roots）を描き、先に「学び方」を置く
-     4. 配置を window.__tree に出す（粒子のエンジンが同じ形を使うため）
+     4. 配置を window.__tree に出し、描き直すたびに 'treelayout' を送る
+        （js/tree-scenes.js の粒子は、この SVG の線そのものから位置を取る）
 
    広い画面：分類ごとの列を横に7本並べ、列の上端を弧に揃える（樹冠）。
    狭い画面：中央の幹から左右に分類を振り分ける縦長の木。
@@ -95,6 +96,7 @@
             var L = W >= 900 ? layoutWide(cats, W) : layoutTall(cats, W);
             draw(L, W);
             window.__tree = L;
+            box.dispatchEvent(new CustomEvent('treelayout', { bubbles: true }));
         }
 
         /* ---- 名前の箱の大きさ（is-laid で絶対配置になったあとに測る） ---- */
@@ -294,6 +296,7 @@
             svg.appendChild(el('path', { class: 'root root--path', d: curve(seed, { x: seed.x + 6, y: seed.y + (end.y - seed.y) * 0.55 }, { x: end.x - (end.x - seed.x) * 0.45, y: end.y }, end) }));
             svg.appendChild(el('circle', { class: 'tree-seed__halo', cx: seed.x, cy: seed.y, r: 18 }));
             svg.appendChild(el('circle', { class: 'tree-seed', cx: seed.x, cy: seed.y, r: 4 }));
+            box.dispatchEvent(new CustomEvent('treelayout', { bubbles: true }));
         }
         (document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve()).then(function () { lastW = -1; draw(); });
         draw();

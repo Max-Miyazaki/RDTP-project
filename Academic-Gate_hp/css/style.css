@@ -2571,11 +2571,31 @@ a.study-card::before,
     max-width: 1200px;
     margin: 0 auto;
     padding: var(--space-12) var(--gutter);
+    overflow-x: clip;
 }
 
 .home-block__head {
+    position: relative;
     max-width: 62ch;
     margin-bottom: var(--space-6);
+}
+
+/* 見出しの列の後ろの、ふちの無い暗がり。旧ホームの .index-block__head::before（§20.2）と
+   同じ作り。場面の移り目に渦の雲が本文の下を通るので、その間も 4.5:1 を保つ（§135.4）。
+   箱の外へはみ出す分は .home-block の overflow-x: clip で横だけ切る（§117 と同じ） */
+.home-block__head::before {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    inset: -3rem -4rem;
+    pointer-events: none;
+    /* 楕円を箱の四辺に内接させ（closest-side）、ふちで必ず透明にする。
+       ふちに色が残ると箱の形が見える（§31.2a と同じ失敗） */
+    background: radial-gradient(ellipse closest-side,
+            rgba(0, 0, 0, 0.78) 0%,
+            rgba(0, 0, 0, 0.62) 55%,
+            rgba(0, 0, 0, 0.22) 82%,
+            transparent 100%);
 }
 
 .home-block__head h2,
@@ -2688,6 +2708,13 @@ a.study-card::before,
     white-space: nowrap;
 }
 
+/* 木に並べたときは、名前と同じ黒い下地を敷く（粒子の枝の上でも読めるように） */
+.tree.is-laid .tree-cat__name {
+    padding: 0.15rem 0.5rem;
+    background: rgba(0, 0, 0, 0.72);
+    border-radius: var(--radius-pill);
+}
+
 /* 名前のチップ。リンクは実線、準備中は破線（§75 と同じ合図）。
    地を黒く塗るのは、後ろを通る枝や粒子の上でも読めるようにするため。 */
 .tree-node {
@@ -2777,6 +2804,24 @@ a.tree-node {
 .tree-note {
     margin-top: var(--space-4);
     font-size: 0.85rem;
+}
+
+/* 粒子が動いている画面（js/tree-scenes.js が html.has-particles を付ける）では、
+   幹・枝・根・種の SVG を粒子に譲る。名前、分野をまたぐ線、「学び方」への点線は残す。 */
+.tree__branches,
+.tree-seed,
+.tree-seed__halo,
+.root,
+.home-seed__glyph {
+    transition: opacity 0.8s var(--ease);
+}
+
+.has-particles .tree__branches,
+.has-particles .tree-seed,
+.has-particles .tree-seed__halo,
+.has-particles .root:not(.root--path),
+.has-particles .home-seed__glyph {
+    opacity: 0;
 }
 
 /* --- 05 実り ---------------------------------------------------------------- */
