@@ -1,8 +1,8 @@
 /* ============================================================================
    tree-scenes.js — ホームの粒子（DESIGN.md §135 フェーズ2）
 
-   01 種 → 02 根 → 03 学問の樹。粒子は場面ごとに目標の位置を持ち、スクロールに
-   合わせて次の目標へ移る。途中は少し渦を巻いてから収束する。
+   01 種 → 02 根 → 03 学問の樹 → 04 私の枝 → 05 実り → 06 一歩。粒子は場面ごとに
+   目標の位置を持ち、スクロールに合わせて次の目標へ移る。途中は少し渦を巻いてから収束する。
 
    ★ 形は自分では決めない。js/academic-tree.js が描いた SVG の線（根・幹・枝・小枝）と
    名前の位置（window.__tree）から粒子を撒くので、粒子の枝先と HTML の名前は同じ
@@ -21,7 +21,11 @@
     var seedEl = document.querySelector('.home-seed__glyph');
     var rootsBox = document.querySelector('[data-roots]');
     var treeBox = document.querySelector('[data-tree]');
-    if (!seedEl || !rootsBox || !treeBox) return;
+    var branchBox = document.querySelector('[data-branch]');
+    var fruitsBox = document.querySelector('[data-fruits]');
+    var stepBox = document.getElementById('step');
+    var stepInner = stepBox && stepBox.querySelector('.home-step__inner');
+    if (!seedEl || !rootsBox || !treeBox || !branchBox || !fruitsBox || !stepBox || !stepInner) return;
     if (!hasWebGL()) return;
 
     var canvas = document.createElement('canvas');
@@ -57,9 +61,12 @@
         var N = urlN || (isMobile ? 36000 : lowPower ? 50000 : 80000);
         var DPR = Math.min(window.devicePixelRatio || 1, 1.5);
 
-        /* ---- 色。番号は粒子の属性に入れる（0 種の白 / 1 光の青 / 2 幹の青 / 3〜 分類） */
+        /* ---- 色。番号は粒子の属性に入れる（0 種の白 / 1 光の青 / 2 幹の青 / 3〜9 分類 / 10〜13 実） */
         var CATS = ['formal', 'natural', 'life', 'engineering', 'humanities', 'social', 'arts'];
-        var PAL = ['#e8f6ff', '#5fd0ff', '#3d8bff', '#8fb3ff', '#5fd9e6', '#63e0bd', '#a9c6ea', '#b8a4ff', '#d7a8ff', '#ff9ec4'];
+        var PAL = ['#e8f6ff', '#5fd0ff', '#3d8bff', '#8fb3ff', '#5fd9e6', '#63e0bd', '#a9c6ea', '#b8a4ff', '#d7a8ff', '#ff9ec4',
+            '#5fd0ff', '#8fb3ff', '#ff9ec4', '#63e0bd'];   // 実の色は CSS の --fruit-0〜3 と同じ
+        var NP = PAL.length;
+        var kN = 80000 / N;   // 粒子数が少ない画面では、1粒を明るくして見た目の濃さを揃える
         function catIndex(cat) { var i = CATS.indexOf(cat); return i < 0 ? 2 : 3 + i; }
 
         /* ---- 乱数（毎回同じ撒き方） */
@@ -87,10 +94,12 @@
 
         /* 場面ごとの目標：[x, y, 明るさ, 色番号]（箱の左上からの px） */
         var S0 = new Float32Array(N * 4), S1 = new Float32Array(N * 4), S2 = new Float32Array(N * 4);
+        var S3 = new Float32Array(N * 4), S4 = new Float32Array(N * 4), S5 = new Float32Array(N * 4);
         var seedA = new Float32Array(N);
         for (var i = 0; i < N; i++) seedA[i] = rnd();
         function put(A, i, x, y, b, c) { A[i * 4] = x; A[i * 4 + 1] = y; A[i * 4 + 2] = b; A[i * 4 + 3] = c; }
-        var pivots = [[0, 0], [0, 0], [0, 0]];
+        var pivots = [[0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0]];
+        function total(a) { return a.reduce(function (s, l) { return s + l.len; }, 0); }
         var dens = {};   // 線 1px あたりの粒子の数（明るさの調整用）
 
         // 01 種：芯（白）・にじみ（光の青）・周りの淡い塵
@@ -160,31 +169,101 @@
             return true;
         }
 
+        // 04 私の枝：小さな木（academic-tree.js が縮めて描いたもの）。物理学の枝は明るく、
+        // ほかは淡く。物理学から「初期宇宙理論」へ伸びる線と、その先の空へ散る光
+        function buildBranch() {
+            st = 0x44;
+            var B = branchBox.__branch;
+            if (!B) return false;
+            function lines(sel, scaled) {
+                return [].map.call(branchBox.querySelectorAll(sel), function (p) {
+                    var pl = poly(p, scaled ? 4 / B.s : 4);
+                    if (scaled) { for (var k = 0; k < pl.pts.length; k += 2) { pl.pts[k] = B.tx + pl.pts[k] * B.s; pl.pts[k + 1] = B.ty + pl.pts[k + 1] * B.s; } pl.len *= B.s; }
+                    var cm = /--tint-([a-z]+)/.exec(p.getAttribute('style') || '');
+                    pl.c = cm ? catIndex(cm[1]) : 2;
+                    return pl;
+                });
+            }
+            var mine = lines('.mini-branch.is-mine', true), rest = lines('.mini-branch:not(.is-mine)', true), ext = lines('.branch-ext', false)[0];
+            if (!mine.length || !ext) return false;
+            // 明るさは「線 1px あたりの光の量」で揃える（粒子の数と線の長さから逆算）
+            var bM = Math.min(0.9, 3.6 * total(mine) / (N * 0.34)), bE = Math.min(0.9, 4.2 * ext.len / (N * 0.14)), bR = Math.min(0.5, 0.45 * total(rest) / (N * 0.30));
+            var pm = picker(mine, function (l) { return l.len; }), pr = picker(rest, function (l) { return l.len; });
+            for (var i = 0; i < N; i++) {
+                var r = rnd(), l, q, j;
+                if (r < 0.34) { l = pm(); q = onPoly(l, rnd()); j = gauss(1.2); put(S3, i, q.x + q.nx * j, q.y + q.ny * j, bM, l.c === 2 ? 2 : catIndex('natural')); }
+                else if (r < 0.48) { q = onPoly(ext, rnd()); j = gauss(1.4); put(S3, i, q.x + q.nx * j, q.y + q.ny * j, bE, 1); }
+                else if (r < 0.56) put(S3, i, B.T.x + gauss(26), B.T.y - Math.abs(gauss(220)), 0.04 + 0.12 * rnd() * Math.sqrt(kN), rnd() < 0.5 ? 0 : 1);
+                else if (r < 0.86) { l = pr(); q = onPoly(l, rnd()); j = gauss(1); put(S3, i, q.x + q.nx * j, q.y + q.ny * j, bR, l.c); }
+                else put(S3, i, B.P.x, B.P.y, 0, 0);
+            }
+            pivots[3] = [B.P.x, B.P.y];
+            return true;
+        }
+
+        // 05 実り：カードの上の枝（淡い青）と、4つの実（カードの点と同じ色）
+        function buildFruits() {
+            st = 0x55;
+            var fs = [].map.call(fruitsBox.querySelectorAll('.fruit'), function (c) { return { x: +c.getAttribute('cx'), y: +c.getAttribute('cy'), i: +c.getAttribute('data-i') }; });
+            var bough = [].map.call(fruitsBox.querySelectorAll('.fruit-bough, .fruit-stem'), function (p) { return poly(p, 4); });
+            if (!fs.length || !bough.length) return false;
+            var bB = Math.min(0.6, 0.55 * total(bough) / (N * 0.22)), pb = picker(bough, function (l) { return l.len; });
+            var top = Math.min.apply(null, fs.map(function (f) { return f.y; }));
+            for (var i = 0; i < N; i++) {
+                var r = rnd(), f = fs[Math.floor(rnd() * fs.length)];
+                if (r < 0.22) { var l = pb(), q = onPoly(l, rnd()), j = gauss(0.9); put(S4, i, q.x + q.nx * j, q.y + q.ny * j, bB, 2); }
+                else if (r < 0.60) put(S4, i, f.x + gauss(5.5), f.y + gauss(5.5), 0.03 * kN, 10 + f.i);
+                else if (r < 0.84) put(S4, i, f.x + gauss(20), f.y + gauss(20), 0.016 * kN, 10 + f.i);
+                else put(S4, i, f.x, f.y, 0, 10 + f.i);
+            }
+            pivots[4] = [fruitsBox.clientWidth / 2, top];
+            return true;
+        }
+
+        // 06 一歩：葉。場面の下の方から舞い上がり、明るさを落として星空へ溶ける（動きはシェーダ）
+        function buildStep() {
+            st = 0x66;
+            var W = stepBox.clientWidth, H = stepBox.clientHeight;
+            for (var i = 0; i < N; i++) {
+                if (rnd() < 0.3) put(S5, i, W * (0.04 + 0.92 * rnd()), H * (0.35 + 0.65 * rnd()), 0.5 * Math.sqrt(kN), 3 + Math.floor(rnd() * 7));
+                else put(S5, i, W / 2, H, 0, 1);
+            }
+            pivots[5] = [W / 2, H * 0.55];
+            return true;
+        }
+
         /* ---- Three.js ------------------------------------------------------ */
         var geo = new THREE.BufferGeometry();
         geo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(N * 3), 3));
-        var a0 = new THREE.BufferAttribute(S0, 4), a1 = new THREE.BufferAttribute(S1, 4), a2 = new THREE.BufferAttribute(S2, 4);
-        geo.setAttribute('aS0', a0); geo.setAttribute('aS1', a1); geo.setAttribute('aS2', a2);
+        var attrs = [S0, S1, S2, S3, S4, S5].map(function (A, k) { var a = new THREE.BufferAttribute(A, 4); geo.setAttribute('aS' + k, a); return a; });
         geo.setAttribute('aSeed', new THREE.BufferAttribute(seedA, 1));
 
         var vertexShader = [
             'precision highp float;',
-            'attribute vec4 aS0, aS1, aS2; attribute float aSeed;',
-            'uniform float uF, uTime, uScroll, uW, uH, uSize, uDPR;',
-            'uniform vec2 uOff0, uOff1, uOff2, uPiv0, uPiv1, uPiv2;',
+            'attribute vec4 aS0, aS1, aS2, aS3, aS4, aS5; attribute float aSeed;',
+            'uniform float uF, uTime, uScroll, uW, uH, uSize, uDPR, uHot, uRise;',
+            'uniform vec2 uOff[6]; uniform vec2 uPiv[6];',
             'uniform vec3 uPointer;',
-            'uniform vec3 uPal[10];',
+            'uniform vec4 uQuiet;',   // 06 の文字の箱（ページの座標 x0,y0,x1,y1）
+            'uniform vec3 uPal[' + NP + '];',
             'varying vec3 vCol; varying float vB;',
-            'vec4 stageOf(int k){ if(k==0) return vec4(aS0.xy+uOff0, aS0.zw); if(k==1) return vec4(aS1.xy+uOff1, aS1.zw); return vec4(aS2.xy+uOff2, aS2.zw); }',
-            'vec2 pivOf(int k){ if(k==0) return uPiv0+uOff0; if(k==1) return uPiv1+uOff1; return uPiv2+uOff2; }',
+            // 06 の葉：下から舞い上がって消える（0→1 を繰り返す）
+            'float riseP(){ return fract(uTime*0.03*(0.5+aSeed)+aSeed*13.7); }',
+            'vec4 stageOf(int k){',
+            '  if(k==0) return vec4(aS0.xy+uOff[0], aS0.zw); if(k==1) return vec4(aS1.xy+uOff[1], aS1.zw);',
+            '  if(k==2) return vec4(aS2.xy+uOff[2], aS2.zw); if(k==3) return vec4(aS3.xy+uOff[3], aS3.zw);',
+            '  if(k==4) return vec4(aS4.xy+uOff[4], aS4.zw);',
+            '  float pr=riseP(); vec2 q=aS5.xy+uOff[5]; q.y-=pr*uRise; q.x+=sin(uTime*0.5+aSeed*31.0)*22.0*pr;',
+            '  return vec4(q, aS5.z*smoothstep(0.0,0.08,pr)*pow(1.0-pr,1.3), aS5.w); }',
+            'vec2 pivOf(int k){ return uPiv[k]+uOff[k]; }',
             'vec3 palOf(float i){ int k=int(i+0.5); vec3 c=uPal[0];',
-            '  for(int j=1;j<10;j++){ if(j==k) c=uPal[j]; } return c; }',
+            '  for(int j=1;j<' + NP + ';j++){ if(j==k) c=uPal[j]; } return c; }',
             'void main(){',
-            '  float F=clamp(uF,0.0,2.0); int iA=int(floor(F)); if(iA>1) iA=1;',
+            '  float F=clamp(uF,0.0,5.0); int iA=int(floor(F)); if(iA>4) iA=4;',
             '  float f=F-float(iA);',
             '  vec4 A=stageOf(iA), B=stageOf(iA+1);',
             // 種の塵は、種のまわりをゆっくり回る
-            '  if(iA==0 && aS0.z<0.2){ vec2 c=uOff0; vec2 d=A.xy-c; float a=uTime*0.025*(0.6+aSeed); A.xy=c+mat2(cos(a),-sin(a),sin(a),cos(a))*d; }',
+            '  if(iA==0 && aS0.z<0.2){ vec2 c=uOff[0]; vec2 d=A.xy-c; float a=uTime*0.025*(0.6+aSeed); A.xy=c+mat2(cos(a),-sin(a),sin(a),cos(a))*d; }',
             // 場面の近くでは形を保ち（0〜0.22 と 0.78〜1）、そのあいだで移る
             '  float te=smoothstep(0.22,0.78,f);',
             '  vec2 p=mix(A.xy,B.xy,te);',
@@ -202,7 +281,15 @@
             '  vec2 dp=p-uPointer.xy; float g=exp(-dot(dp,dp)/(2.0*85.0*85.0))*uPointer.z;',
             '  p+=normalize(dp+vec2(0.0001))*g*34.0;',
             '  float b=mix(A.z,B.z,te)*(1.0-0.55*sw);',   // 渦の途中は暗く（広がった雲が文字の下に来るため）
-            '  vCol=mix(palOf(A.w),palOf(B.w),te); vB=b;',
+            // 05：カードに触れているあいだ、その実を明るく
+            '  float hot=max(step(abs(A.w-uHot),0.1)*(1.0-te), step(abs(B.w-uHot),0.1)*te); b*=1.0+1.8*hot;',
+            '  vCol=mix(palOf(A.w),palOf(B.w),te);',
+            // 06：舞い上がるほど白く（星の色に近づける）
+            '  if(iA==4) vCol=mix(vCol, vec3(0.92,0.96,1.0), te*riseP());',
+            // 06：葉が文字の箱の後ろを通るあいだは暗く（ふちは 48px かけてなだらかに）
+            '  if(iA==4){ vec2 lo=uQuiet.xy-p, hi=p-uQuiet.zw; float out_=max(max(lo.x,hi.x),max(lo.y,hi.y));',
+            '    b*=mix(1.0, 0.12, te*(1.0-smoothstep(0.0,48.0,out_))); }',
+            '  vB=b;',
             '  gl_Position=vec4(p.x/uW*2.0-1.0, 1.0-(p.y-uScroll)/uH*2.0, 0.0, 1.0);',
             '  gl_PointSize=uSize*uDPR*(0.75+0.5*aSeed)*(1.0+0.6*step(0.9,b));',
             '}'
@@ -219,8 +306,10 @@
             uF: { value: 0 }, uTime: { value: 0 }, uScroll: { value: 0 },
             uW: { value: window.innerWidth }, uH: { value: window.innerHeight },
             uSize: { value: isMobile ? 2.6 : 2.4 }, uDPR: { value: DPR },
-            uOff0: { value: new THREE.Vector2() }, uOff1: { value: new THREE.Vector2() }, uOff2: { value: new THREE.Vector2() },
-            uPiv0: { value: new THREE.Vector2() }, uPiv1: { value: new THREE.Vector2() }, uPiv2: { value: new THREE.Vector2() },
+            uOff: { value: [0, 1, 2, 3, 4, 5].map(function () { return new THREE.Vector2(); }) },
+            uPiv: { value: [0, 1, 2, 3, 4, 5].map(function () { return new THREE.Vector2(); }) },
+            uHot: { value: -1 }, uRise: { value: window.innerHeight * 1.1 },
+            uQuiet: { value: new THREE.Vector4(0, 0, 0, 0) },
             uPointer: { value: new THREE.Vector3(-9999, -9999, 0) },
             uPal: { value: pal }
         };
@@ -243,11 +332,9 @@
         function rebuild() {
             builds++; builtW = treeBox.clientWidth;
             buildSeed();
-            var ok = buildRoots() && buildTree();
-            a0.needsUpdate = a1.needsUpdate = a2.needsUpdate = true;
-            uniforms.uPiv0.value.set(pivots[0][0], pivots[0][1]);
-            uniforms.uPiv1.value.set(pivots[1][0], pivots[1][1]);
-            uniforms.uPiv2.value.set(pivots[2][0], pivots[2][1]);
+            var ok = buildRoots() && buildTree() && buildBranch() && buildFruits() && buildStep();
+            attrs.forEach(function (a) { a.needsUpdate = true; });
+            pivots.forEach(function (p, k) { uniforms.uPiv.value[k].set(p[0], p[1]); });
             return ok;
         }
         var rebuildTimer = null;
@@ -256,23 +343,32 @@
         });
 
         /* ---- 箱の位置とスクロール → 場面の番号 ---------------------------------- */
-        var centers = [0, 0, 0];
+        var centers = [0, 0, 0, 0, 0, 0], K = 6;
         function readBoxes() {
-            var sy = window.scrollY, sx = window.scrollX;
-            var g = seedEl.getBoundingClientRect(), r = rootsBox.getBoundingClientRect(), t = treeBox.getBoundingClientRect();
-            uniforms.uOff0.value.set(g.left + g.width / 2 + sx, g.top + g.height / 2 + sy);
-            uniforms.uOff1.value.set(r.left + sx, r.top + sy);
-            uniforms.uOff2.value.set(t.left + sx, t.top + sy);
+            var sy = window.scrollY, sx = window.scrollX, o = uniforms.uOff.value, H = window.innerHeight;
+            var g = seedEl.getBoundingClientRect();
+            o[0].set(g.left + g.width / 2 + sx, g.top + g.height / 2 + sy);
             centers[0] = g.top + sy;
-            centers[1] = r.top + sy + r.height / 2;
+            [rootsBox, treeBox, branchBox, fruitsBox, stepBox].forEach(function (b, k) {
+                var r = b.getBoundingClientRect();
+                o[k + 1].set(r.left + sx, r.top + sy);
+                centers[k + 1] = r.top + sy + r.height / 2;
+            });
             // 縦長の木は中心で揃えると、上の方を読んでいるあいだ形が崩れたままになる。
             // 木の上端が画面の中ほどに来たところを、この場面の中心にする
-            centers[2] = t.top + sy + Math.min(t.height, window.innerHeight) * 0.35;
+            var qi = stepInner.getBoundingClientRect();
+            uniforms.uQuiet.value.set(qi.left + sx, qi.top + sy, qi.right + sx, qi.bottom + sy);
+            var t = treeBox.getBoundingClientRect();
+            centers[2] = t.top + sy + Math.min(t.height, H) * 0.35;
+            // 06 はページの最後。いちばん下まで送っても中心に届かないときは、届く所まで上げる
+            var maxMid = document.documentElement.scrollHeight - H + H / 2;
+            centers[5] = Math.min(centers[5], maxMid - 1);
+            for (var k = 1; k < K; k++) centers[k] = Math.max(centers[k], centers[k - 1] + 1);
         }
         function sceneFor(mid) {
             if (mid <= centers[0]) return 0;
-            for (var k = 0; k < 2; k++) if (mid < centers[k + 1]) return k + (mid - centers[k]) / Math.max(1, centers[k + 1] - centers[k]);
-            return 2;
+            for (var k = 0; k < K - 1; k++) if (mid < centers[k + 1]) return k + (mid - centers[k]) / Math.max(1, centers[k + 1] - centers[k]);
+            return K - 1;
         }
 
         /* ---- ポインタ（マウスは乗っているあいだ、タッチは触れているあいだ） ---- */
@@ -299,6 +395,7 @@
             ptr.s += ((ptr.on ? 1 : 0) - ptr.s) * Math.min(1, dt * 4);
             uniforms.uF.value = fEased; uniforms.uTime.value = clock; uniforms.uScroll.value = window.scrollY;
             uniforms.uPointer.value.set(ptr.x, ptr.y, ptr.s);
+            uniforms.uHot.value = fruitsBox.dataset.hot ? 10 + (+fruitsBox.dataset.hot) : -1;
             renderer.render(scene, camera);
             raf = requestAnimationFrame(frame);
         }
@@ -312,6 +409,7 @@
                 DPR = Math.min(window.devicePixelRatio || 1, 1.5);
                 renderer.setPixelRatio(DPR); renderer.setSize(window.innerWidth, window.innerHeight);
                 uniforms.uW.value = window.innerWidth; uniforms.uH.value = window.innerHeight; uniforms.uDPR.value = DPR;
+                uniforms.uRise.value = window.innerHeight * 1.1;
             }, 120);
         });
         document.addEventListener('visibilitychange', function () { if (document.hidden) stop(); else start(); });
@@ -331,12 +429,12 @@
             builds: function () { return builds; }, builtW: function () { return builtW; },
             // 木の葉（小枝の先）の目標を、ページの座標で返す（名前との位置合わせの確認用）
             tips: function () {
-                readBoxes(); var o = uniforms.uOff2.value, L = window.__tree;
+                readBoxes(); var o = uniforms.uOff.value[2], L = window.__tree;
                 return L.nodes.map(function (n) { return { e: n.e, x: n.x + o.x, y: n.y + o.y, align: n.align }; });
             },
             fps: function () { return fps; },
             sceneF: function () { return fEased; },
-            scrollFor: function (f) { readBoxes(); var k = Math.min(1, Math.floor(f)), u = f - k; return centers[k] + (centers[k + 1] - centers[k]) * u - window.innerHeight / 2; },
+            scrollFor: function (f) { readBoxes(); var k = Math.min(K - 2, Math.floor(f)), u = f - k; return centers[k] + (centers[k + 1] - centers[k]) * u - window.innerHeight / 2; },
             pause: stop, resume: start
         };
     }

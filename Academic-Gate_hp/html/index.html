@@ -14,7 +14,7 @@
         href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;500&family=Noto+Sans+JP:wght@300;400&display=swap"
         rel="stylesheet">
 
-    <link rel="stylesheet" href="../css/style.css?v=r138">
+    <link rel="stylesheet" href="../css/style.css?v=r139">
     <link rel="icon" href="../../favicon.ico" sizes="32x32">
     <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="../../apple-touch-icon.png">
@@ -158,6 +158,7 @@
 
         <!-- 04 — MY BRANCH -->
         <section class="home-block home-branch" id="branch" aria-labelledby="branch-h">
+            <div class="home-branch__grid">
             <div class="home-block__head reveal">
                 <p class="eyebrow"><span class="eyebrow__num">04</span> — My Branch</p>
                 <h2 id="branch-h" lang="ja">私の枝</h2>
@@ -166,6 +167,12 @@
                     <a href="self-intro.html" class="btn btn-primary">自己紹介 <span class="btn-disc" aria-hidden="true">→</span></a>
                     <a href="study.html" class="btn btn-secondary">勉強の軌跡 <span class="btn-disc" aria-hidden="true">→</span></a>
                 </div>
+            </div>
+            <!-- 学問の樹を小さく描き、物理学の枝だけを光らせて星空へ伸ばす（js/academic-tree.js） -->
+            <div class="branch reveal" data-branch aria-hidden="true">
+                <span class="branch__tag branch__tag--physics">物理学</span>
+                <span class="branch__tag branch__tag--cosmo">初期宇宙理論</span>
+            </div>
             </div>
         </section>
 
@@ -176,23 +183,24 @@
                 <h2 id="fruits-h" lang="ja">学びを、社会へ。</h2>
                 <p lang="ja">積み上げた知識は、ノート・動画・ブログ・創作・交流という回路を流れ、実を結んで社会へと届いていく。</p>
             </div>
-            <div class="home-fruits__grid">
-                <a class="study-card reveal" href="videos.html">
+            <!-- 各カードの上に、そのカードの実（色はカードの見出しの前の点と同じ） -->
+            <div class="home-fruits__grid" data-fruits>
+                <a class="study-card reveal" href="videos.html" data-fruit="0">
                     <span class="meta">Videos</span>
                     <h3 lang="ja">動画</h3>
                     <p lang="ja">研究や学問についての動画コンテンツ、シミュレーション映像。</p>
                 </a>
-                <a class="study-card reveal" href="blog.html">
+                <a class="study-card reveal" href="blog.html" data-fruit="1">
                     <span class="meta">Blog</span>
                     <h3 lang="ja">ブログ</h3>
                     <p lang="ja">研究や学問に関する記事、考察。</p>
                 </a>
-                <div class="study-card reveal">
+                <div class="study-card reveal" data-fruit="2">
                     <span class="meta">Creation</span>
                     <h3 lang="ja">創作活動</h3>
                     <p lang="ja">イラスト・動画・アニメーションなど、学びから生まれる創作。</p>
                 </div>
-                <a class="study-card reveal" href="sns.html">
+                <a class="study-card reveal" href="sns.html" data-fruit="3">
                     <span class="meta">Connect</span>
                     <h3 lang="ja">交流</h3>
                     <p lang="ja">各種SNSで、学問を通じた交流を。</p>
@@ -214,11 +222,11 @@
 
     <div id="site-footer"><noscript><nav class="noscript-nav" aria-label="フッターナビゲーション"><a href="index.html">ホーム</a><a href="self-intro.html">自己紹介</a><a href="study.html">勉強の軌跡</a><a href="videos.html">動画</a><a href="blog.html">ブログ</a><a href="sns.html">各種SNS</a></nav></noscript></div>
 
-    <script src="../js/layout.js?v=r138"></script>
-    <script src="../js/main.js?v=r138"></script>
-    <script src="../js/starfield.js?v=r138"></script>
-    <script src="../js/academic-tree.js?v=r138"></script>
-    <script src="../js/tree-scenes.js?v=r138"></script>
+    <script src="../js/layout.js?v=r139"></script>
+    <script src="../js/main.js?v=r139"></script>
+    <script src="../js/starfield.js?v=r139"></script>
+    <script src="../js/academic-tree.js?v=r139"></script>
+    <script src="../js/tree-scenes.js?v=r139"></script>
 </body>
 
 </html>

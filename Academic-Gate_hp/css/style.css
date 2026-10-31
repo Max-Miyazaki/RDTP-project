@@ -23,7 +23,9 @@
     /* Text */
     --text-primary: #ffffff;
     --text-secondary: rgba(255, 255, 255, 0.62);
-    --text-tertiary: rgba(255, 255, 255, 0.40);
+    /* §135.5：.40（黒地で 3.7:1、AA に届かない）→ .48（4.9:1）。番号ラベル・フッターの見出しなど
+       サイト共通の小さなラベルの色。--text-secondary（.62、7.8:1）とは段の差を残す。 */
+    --text-tertiary: rgba(255, 255, 255, 0.48);
 
     /* The spectrum (particles + accents) — teal-dominant, warm at cores only */
     --spec-blue-deep: #0b3be0;
@@ -2812,7 +2814,12 @@ a.tree-node {
 .tree-seed,
 .tree-seed__halo,
 .root,
-.home-seed__glyph {
+.home-seed__glyph,
+.mini-branch,
+.branch-ext,
+.branch-star,
+.fruit-bough,
+.fruit-stem {
     transition: opacity 0.8s var(--ease);
 }
 
@@ -2820,15 +2827,153 @@ a.tree-node {
 .has-particles .tree-seed,
 .has-particles .tree-seed__halo,
 .has-particles .root:not(.root--path),
-.has-particles .home-seed__glyph {
+.has-particles .home-seed__glyph,
+.has-particles .mini-branch,
+.has-particles .branch-ext,
+.has-particles .branch-star,
+.has-particles .fruit-bough,
+.has-particles .fruit-stem,
+.has-particles .fruit {
     opacity: 0;
 }
 
-/* --- 05 実り ---------------------------------------------------------------- */
-.home-fruits__grid {
+/* --- 04 私の枝 -------------------------------------------------------------- */
+.home-branch__grid {
     display: grid;
-    gap: var(--space-3);
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: var(--space-6);
+    align-items: center;
+}
+
+.home-branch .home-block__head {
+    margin-bottom: 0;
+}
+
+.branch {
+    position: relative;
+    height: 440px;
+}
+
+.branch__svg {
+    position: absolute;
+    inset: 0;
+    overflow: visible;
+}
+
+/* 小さな木：ほかの枝は淡く、物理学の枝だけ明るい。線の太さは縮尺に関係なく一定 */
+.mini-branch {
+    fill: none;
+    stroke: var(--tint, var(--spec-blue));
+    stroke-opacity: 0.16;
+    stroke-width: 1;
+    stroke-linecap: round;
+    vector-effect: non-scaling-stroke;
+}
+
+.mini-branch.is-mine {
+    stroke: var(--tint-natural);
+    stroke-opacity: 0.9;
+    stroke-width: 1.8;
+}
+
+.mini-branch--0.is-mine {
+    stroke: var(--spec-blue);
+    stroke-width: 2.6;
+}
+
+.branch-ext {
+    fill: none;
+    stroke: var(--tint-natural);
+    stroke-width: 1.8;
+    stroke-linecap: round;
+}
+
+.branch-star {
+    fill: #fff;
+    filter: drop-shadow(0 0 6px var(--spec-glow));
+}
+
+.branch__tag {
+    position: absolute;
+    z-index: 1;
+    padding: 0.2rem 0.75rem;
+    font-size: 0.82rem;
+    line-height: 1.5;
+    white-space: nowrap;
+    color: var(--text-primary);
+    background: rgba(0, 0, 0, 0.72);
+    border: 1px solid color-mix(in srgb, var(--tint-natural) 60%, transparent);
+    border-radius: var(--radius-pill);
+}
+
+/* JS が無いときは名前を左上に並べるだけ */
+.branch:not(.is-laid) .branch__tag {
+    position: static;
+    display: inline-block;
+    margin: 0 0.5rem 0.5rem 0;
+}
+
+/* --- 05 実り ---------------------------------------------------------------- */
+.home-fruits {
+    /* 実の色。カードの見出しの前の点と同じ色にして、どの実がどのカードかを示す */
+    --fruit-0: #5fd0ff;
+    --fruit-1: #8fb3ff;
+    --fruit-2: #ff9ec4;
+    --fruit-3: #63e0bd;
+}
+
+.home-fruits__grid {
+    position: relative;
+    display: grid;
+    gap: 3.5rem var(--space-3);
+    margin-top: var(--space-6);
     grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+}
+
+.fruits__svg {
+    position: absolute;
+    inset: 0;
+    overflow: visible;
+    pointer-events: none;
+}
+
+.fruit-bough,
+.fruit-stem {
+    fill: none;
+    stroke: rgba(95, 208, 255, 0.4);
+    stroke-width: 1.4;
+    stroke-linecap: round;
+}
+
+.fruit-stem {
+    stroke-width: 1;
+}
+
+.fruit {
+    fill: var(--fruit);
+    filter: drop-shadow(0 0 6px var(--fruit));
+    transition: r var(--dur) var(--ease);
+}
+
+.fruit.is-hot {
+    r: 10px;
+}
+
+.home-fruits [data-fruit="0"] { --fruit: var(--fruit-0); }
+.home-fruits [data-fruit="1"] { --fruit: var(--fruit-1); }
+.home-fruits [data-fruit="2"] { --fruit: var(--fruit-2); }
+.home-fruits [data-fruit="3"] { --fruit: var(--fruit-3); }
+
+.home-fruits [data-fruit] .meta::before {
+    content: '';
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    margin-right: 0.5em;
+    vertical-align: 0.1em;
+    border-radius: 50%;
+    background: var(--fruit);
+    box-shadow: 0 0 6px var(--fruit);
 }
 
 /* --- 06 一歩 ---------------------------------------------------------------- */
@@ -2837,7 +2982,23 @@ a.tree-node {
 }
 
 .home-step__inner {
+    position: relative;
     text-align: center;
+}
+
+/* 舞い上がる葉の上でも読めるように、02〜05 の見出しと同じふちの無い暗がり。
+   葉そのものも、この文字の箱の後ろでは暗くなる（tree-scenes.js の uQuiet） */
+.home-step__inner::before {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    inset: -3rem -4rem;
+    pointer-events: none;
+    background: radial-gradient(ellipse closest-side,
+            rgba(0, 0, 0, 0.78) 0%,
+            rgba(0, 0, 0, 0.62) 55%,
+            rgba(0, 0, 0, 0.22) 82%,
+            transparent 100%);
 }
 
 .home-step h2 {
@@ -2848,6 +3009,16 @@ a.tree-node {
 
 .home-step .home-actions {
     justify-content: center;
+}
+
+@media (max-width: 760px) {
+    .home-branch__grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .branch {
+        height: 340px;
+    }
 }
 
 @media (max-width: 600px) {
