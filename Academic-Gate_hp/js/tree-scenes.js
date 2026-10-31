@@ -298,7 +298,9 @@
             'precision highp float;',
             'varying vec3 vCol; varying float vB;',
             'void main(){ vec2 uv=gl_PointCoord-0.5; float d=length(uv); if(d>0.5) discard;',
-            '  float a=smoothstep(0.5,0.0,d); gl_FragColor=vec4(vCol, min(1.0, vB*a)); }'   // 加算合成（色 × α を足す）
+            '  float k=min(1.0, vB*smoothstep(0.5,0.0,d)); vec3 c=vCol*k;',
+            // 乗算済みの色（c）と、α＝いちばん明るい色の成分。色が α を超えない正しい乗算済みの画素にする
+            '  gl_FragColor=vec4(c, max(c.r,max(c.g,c.b))); }'
         ].join('\n');
 
         var pal = PAL.map(function (h) { return new THREE.Color(h); });
@@ -316,11 +318,13 @@
         var material = new THREE.ShaderMaterial({
             uniforms: uniforms, vertexShader: vertexShader, fragmentShader: fragmentShader,
             transparent: true, depthWrite: false, depthTest: false,
-            // 色だけを足し、キャンバスのα は 0 のままにする。α まで足すと、暗い粒子が
-            // 重なった所でページの背景（星・青い光）を隠し、周りより暗く見える（§135.4）
+            // 乗算済みの色をそのまま足す（色も α も One×One）。α は足した光のいちばん明るい成分なので、
+            // ページの背景は「足した光の分だけ」しか隠れず、粒子の下が周りより暗くなることはない。
+            // ★ α を 0 のままにして色だけ足すと（§135.4 の最初の直し方）、headless の撮影では見えるが、
+            // 実際の画面（macOS の合成）では α 0 の画素が透明として捨てられ、粒子がまったく出なかった（§135.6）
             blending: THREE.CustomBlending, blendEquation: THREE.AddEquation,
-            blendSrc: THREE.SrcAlphaFactor, blendDst: THREE.OneFactor,
-            blendSrcAlpha: THREE.ZeroFactor, blendDstAlpha: THREE.OneFactor
+            blendSrc: THREE.OneFactor, blendDst: THREE.OneFactor,
+            blendSrcAlpha: THREE.OneFactor, blendDstAlpha: THREE.OneFactor
         });
         var renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: false, alpha: true, powerPreference: 'high-performance' });
         renderer.setPixelRatio(DPR); renderer.setSize(window.innerWidth, window.innerHeight); renderer.setClearColor(0x000000, 0);
