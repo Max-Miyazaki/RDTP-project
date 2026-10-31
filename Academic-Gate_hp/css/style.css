@@ -1202,7 +1202,8 @@ footer a:hover {
 .video-card,
 .sns-link,
 .note-card,
-.study-card {
+.study-card,
+.profile-card {
     position: relative;
     display: flex;
     flex-direction: column;
@@ -1333,20 +1334,40 @@ footer a:hover {
     font-weight: 500;
 }
 
-/* Self-intro */
+/* Self-intro — ホームと同じ部品で組む：番号付きの eyebrow、hairline のカード
+   （下の共有カード規則に .profile-card を足しただけ）、.reveal のフェードイン。
+   カードはどれもリンクではないので、ホバーの光（§74）は付けない。 */
 .self-intro {
     max-width: 1000px;
     margin: 0 auto;
-    padding: calc(var(--space-16) + 40px) var(--gutter) var(--space-16);
+    padding: calc(var(--space-12) + 40px) var(--gutter) var(--space-12);
 }
 
-.profile-container {
+.si-block + .si-block {
+    margin-top: var(--space-12);
+}
+
+.si-head {
+    margin-bottom: var(--space-4);
+}
+
+.si-head h2 {
+    margin-bottom: var(--space-2);
+}
+
+/* ヒーロー：写真＋名前・所属・リード文 */
+.profile-hero {
     display: flex;
-    gap: var(--space-8);
-    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: var(--space-6);
+}
+
+.profile-image {
+    flex: none;
 }
 
 .profile-image img {
+    display: block;
     width: 220px;
     height: 220px;
     object-fit: cover;
@@ -1356,22 +1377,583 @@ footer a:hover {
 
 .profile-content {
     flex: 1;
-    min-width: 260px;
+    min-width: 0;
 }
 
-.profile-text h2 {
-    font-size: clamp(1.25rem, 2.5vw, 1.75rem);
-    margin: var(--space-6) 0 var(--space-2);
+.profile-content .eyebrow {
+    margin-bottom: var(--space-2);
 }
 
-.profile-text ul {
-    margin: var(--space-2) 0 var(--space-2) var(--space-3);
+/* 所属は札にする。以前の --text-tertiary の地の文は読みにくかった。
+   学年だけ、ホバーの光と同じ --spec-glow で色を付けて目に入るようにする。 */
+.affiliation {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1);
+    margin-top: var(--space-3);
+}
+
+.affiliation li {
+    padding: 0.35rem 0.85rem;
+    font-size: 0.85rem;
+    line-height: 1.5;
+    color: var(--text-primary);
+    background: var(--surface-hover);
+    border: 1px solid var(--hairline-strong);
+    border-radius: var(--radius-pill);
+}
+
+.affiliation li.is-key {
+    color: var(--spec-glow);
+    border-color: color-mix(in srgb, var(--spec-glow) 50%, transparent);
+    background: color-mix(in srgb, var(--spec-glow) 10%, transparent);
+}
+
+.profile-lead {
+    max-width: 36em;
+    margin-top: var(--space-3);
+    font-size: 1.02rem;
+    line-height: 2;
+    color: rgba(255, 255, 255, 0.78);
+}
+
+/* 要点カード・研究分野カード */
+.si-grid {
+    list-style: none;
+    display: grid;
+    gap: var(--space-2);
+    margin-top: var(--space-6);
+}
+
+.si-head + .si-grid {
+    margin-top: 0;
+}
+
+.si-grid--facts {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.profile-card {
+    gap: var(--space-1);
+    padding: var(--space-3);
+}
+
+.profile-card .meta {
+    font-size: 0.7rem;
+    font-weight: 500;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
     color: var(--text-secondary);
 }
 
-.affiliation {
+.profile-card h3 {
+    font-size: 1.15rem;
+    line-height: 1.4;
+}
+
+.profile-card p {
+    font-size: 0.85rem;
+    line-height: 1.7;
+}
+
+/* 研究分野：上ほど専門的な4層（テーマ1・トピック3・専門分野4・基礎分野1枚）。
+   層ラベルは左、層のあいだは細い縦線と上向きの山形で「基礎 → 専門」を示す。
+   上の層ほど目立たせる：テーマは --accent の面と太い線、トピックは --accent の
+   線、専門分野・基礎分野はヘアラインの線で文字も一段控えめ。 */
+
+/* 論文：1行目に題名（地の文）、2行目に掲載誌（--accent）・arXiv（控えめ）。
+   題名はスマホで折り返すので、リンクは題名と分けて2行目に置く。 */
+.rs-paper {
+    margin: var(--space-2) 0 0;
+    font-size: 0.72rem;
+    letter-spacing: 0.06em;
+    line-height: 1.7;
+    text-transform: none;
+}
+
+.rs-paper__title {
+    display: block;
+    color: var(--text-secondary);
+}
+
+.rs-paper__links {
+    display: block;
+    margin-top: 0.15rem;
+}
+
+.rs-paper__journal {
+    font-size: 0.8rem;
+}
+
+.rs-paper__sep {
+    margin: 0 0.5em;
     color: var(--text-tertiary);
-    margin-top: var(--space-2);
+}
+
+.rs-paper .rs-paper__arxiv {
+    color: var(--text-secondary);
+}
+
+.rs-paper .rs-paper__arxiv:hover {
+    color: var(--text-primary);
+}
+
+.rs-paper__arrow {
+    margin-left: 0.35em;
+}
+
+.rs-tier {
+    display: grid;
+    grid-template-columns: 7.5rem minmax(0, 1fr);
+    gap: var(--space-3);
+    align-items: center;
+}
+
+.rs-tier__label {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    font-size: 0.7rem;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+}
+
+.rs-tier__label span:lang(ja) {
+    font-weight: 400;
+    letter-spacing: 0.08em;
+}
+
+.rs-cards {
+    list-style: none;
+    display: grid;
+    gap: var(--space-2);
+}
+
+.rs-cards li {
+    display: flex;
+}
+
+.rs-cards li > * {
+    flex: 1;
+}
+
+/* ピラミッド：テーマ1枚を中央に、トピック3枚・基礎4枚を同じ幅に並べる */
+.rs-tier--theme .rs-cards {
+    grid-template-columns: minmax(0, 1fr);
+    width: min(100%, 22rem);
+    margin-inline: auto;
+}
+
+.rs-tier--topics .rs-cards {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.rs-tier--topics .rs-card {
+    padding-inline: 1.25rem;
+}
+
+.rs-tier--topics .rs-card h3 {
+    font-size: 1rem;
+}
+
+.rs-tier--fields .rs-cards {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+/* 文字は水平・垂直とも中央。左の線は中央寄せの文字と釣り合わないので、
+   上辺の中央の短い線（::after）に移した。::before は押せる面の光の輪（§70）が使う。 */
+.rs-card {
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.rs-card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 2.5rem;
+    height: 2px;
+    transform: translateX(-50%);
+    border-radius: 0 0 2px 2px;
+    background: var(--accent);
+}
+
+.rs-tier--theme .rs-card {
+    padding: var(--space-4) var(--space-3);
+    border-color: color-mix(in srgb, var(--accent) 45%, transparent);
+    background: color-mix(in srgb, var(--accent) 12%, transparent);
+    box-shadow: 0 0 28px var(--glow-cool);
+}
+
+.rs-tier--theme .rs-card .meta {
+    color: color-mix(in srgb, var(--accent) 55%, white);
+}
+
+.rs-tier--theme .rs-card h3 {
+    font-size: 1.5rem;
+}
+
+.rs-tier--theme .rs-card::after {
+    width: 3.5rem;
+    height: 3px;
+}
+
+.rs-tier--fields .rs-card::after {
+    background: var(--hairline-strong);
+}
+
+/* 02 のリード文はカード階層の右端まで（PROFILE のリード文は 36em のまま） */
+.rs-lead {
+    max-width: none;
+}
+
+.rs-tier--fields .rs-card h3 {
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.78);
+}
+
+/* 基礎分野：1枚の横長カードに科目のチップ。いちばん控えめ（面なし・線は最短のグレー）。
+   チップは、ページのある科目だけ <a>（実線・押せる面のホバー）、まだ無い科目は
+   破線の <span>（§75 の「準備中」のカードと同じ合図）。 */
+.rs-tier--foundations .rs-cards {
+    grid-template-columns: minmax(0, 1fr);
+}
+
+.rs-tier--foundations .rs-card {
+    gap: var(--space-2);
+    background: transparent;
+}
+
+.rs-tier--foundations .rs-card .meta {
+    color: var(--text-secondary);
+}
+
+.rs-tier--foundations .rs-card::after {
+    width: 1.5rem;
+    background: var(--hairline);
+}
+
+.rs-chips {
+    position: relative;
+    z-index: 2;
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem;
+    /* チップの隙間のクリックはカードの覆いへ通す */
+    pointer-events: none;
+}
+
+.rs-chips > li > * {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    font-size: 0.8rem;
+    line-height: 1.5;
+    color: var(--text-secondary);
+    border: 1px dashed var(--hairline);
+    border-radius: var(--radius-pill);
+}
+
+.rs-chips a {
+    position: relative;
+    pointer-events: auto;
+    color: rgba(255, 255, 255, 0.78);
+    border-style: solid;
+    border-color: var(--hairline-strong);
+}
+
+@media (hover: hover) {
+    .rs-chips a:hover {
+        color: var(--spec-glow);
+    }
+}
+
+/* 層のあいだ：縦の細線（下=基礎は薄く、上=専門へ向かって --accent）と山形 */
+.rs-link {
+    position: relative;
+    height: var(--space-6);
+    margin-left: calc(7.5rem + var(--space-3));
+}
+
+.rs-link::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 6px;
+    bottom: 6px;
+    width: 1px;
+    background: linear-gradient(to top, var(--hairline), color-mix(in srgb, var(--accent) 70%, transparent));
+}
+
+.rs-link::after {
+    content: '';
+    position: absolute;
+    left: calc(50% - 3px);
+    top: 6px;
+    width: 7px;
+    height: 7px;
+    border-top: 1px solid var(--accent);
+    border-left: 1px solid var(--accent);
+    transform: rotate(45deg);
+}
+
+/* 層ごとに上から順にフェードイン（同時に画面に入ったときの順番） */
+html.js .rs-stack > .reveal:nth-child(2) { transition-delay: 0.08s; }
+html.js .rs-stack > .reveal:nth-child(3) { transition-delay: 0.16s; }
+html.js .rs-stack > .reveal:nth-child(4) { transition-delay: 0.24s; }
+html.js .rs-stack > .reveal:nth-child(5) { transition-delay: 0.32s; }
+html.js .rs-stack > .reveal:nth-child(7) { transition-delay: 0.48s; }
+
+/* リンクのあるカード（.rs-card.is-linked、js/self-intro.js が作る）。
+   カードそのものは <div> のまま、中に全面を覆う <a class="rs-card__link"> を重ねる。
+   基礎分野のカードは中に科目のリンク（チップ）を持つので、カードを <a> にすると
+   <a> の入れ子になるため。チップの列は覆いの上に出し、チップ以外の所は覆いへ通す。
+   光と拡大はサイト共通の押せる面のホバー（§70 の一覧に足した）。
+   → は文字の幅を削らないように、英字ラベルの行の右端に置く。 */
+.rs-card__link {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    border-radius: inherit;
+}
+
+.rs-card__arrow {
+    pointer-events: none;
+    position: absolute;
+    right: 1rem;
+    top: 1rem;
+    transform: translateX(-4px);
+    opacity: 0;
+    color: var(--spec-glow);
+    transition: opacity var(--dur) var(--ease), transform var(--dur) var(--ease);
+}
+
+@media (hover: hover) {
+    .rs-card:has(> .rs-card__link:hover) .rs-card__arrow {
+        opacity: 1;
+        transform: none;
+    }
+
+    .rs-card:has(> .rs-card__link:hover) h3 {
+        color: var(--spec-glow);
+    }
+}
+
+/* 興味あること：分類ごとの行＋チップ */
+.interest-groups {
+    display: grid;
+    gap: var(--space-3);
+}
+
+.interest-group {
+    display: grid;
+    grid-template-columns: 4.5rem 1fr;
+    align-items: baseline;
+    gap: var(--space-2);
+}
+
+.interest-group__label {
+    font-size: 0.8rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    color: var(--text-secondary);
+}
+
+.chips {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.chips li {
+    padding: 0.3rem 0.8rem;
+    font-size: 0.85rem;
+    line-height: 1.5;
+    color: var(--text-primary);
+    background: var(--surface);
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius-pill);
+}
+
+.chips li.is-etc {
+    color: var(--text-secondary);
+    border-style: dashed;
+}
+
+.interest-note {
+    margin-top: var(--space-4);
+    padding-left: var(--space-2);
+    border-left: 1px solid var(--hairline-strong);
+    font-size: 0.9rem;
+}
+
+/* 経歴：年月を左、内容を右。点と線でつなぎ、最後（現在）の点だけ光らせる */
+.timeline {
+    list-style: none;
+    position: relative;
+}
+
+.timeline li {
+    position: relative;
+    display: grid;
+    grid-template-columns: 7.5rem 1fr;
+    gap: var(--space-3);
+    padding: 0 0 var(--space-3) 0;
+}
+
+.timeline li:last-child {
+    padding-bottom: 0;
+}
+
+/* 線：年月の列と内容の列のあいだ（7.5rem + gap の半分） */
+.timeline li::before {
+    content: '';
+    position: absolute;
+    left: calc(7.5rem + var(--space-3) / 2);
+    top: 0.75em;
+    bottom: -0.75em;
+    width: 1px;
+    background: var(--hairline-strong);
+}
+
+.timeline li:last-child::before {
+    display: none;
+}
+
+/* 点 */
+.timeline li::after {
+    content: '';
+    position: absolute;
+    left: calc(7.5rem + var(--space-3) / 2 - 4px);
+    top: calc(0.85em - 4px);
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--bg);
+    border: 1px solid var(--text-secondary);
+}
+
+.timeline time {
+    font-size: 0.85rem;
+    line-height: 1.7;
+    font-variant-numeric: tabular-nums;
+    color: var(--text-secondary);
+    text-align: right;
+}
+
+.timeline span {
+    padding-left: var(--space-2);
+    font-size: 0.95rem;
+    line-height: 1.7;
+    color: var(--text-secondary);
+}
+
+.timeline li.is-current time {
+    color: var(--spec-glow);
+}
+
+.timeline li.is-current span {
+    color: var(--text-primary);
+}
+
+.timeline li.is-current::after {
+    background: var(--spec-glow);
+    border-color: var(--spec-glow);
+    box-shadow: 0 0 10px color-mix(in srgb, var(--spec-glow) 60%, transparent);
+}
+
+.timeline__now {
+    display: inline-block;
+    margin-left: var(--space-1);
+    padding: 0 0.55rem;
+    font-size: 0.7rem;
+    font-style: normal;
+    letter-spacing: 0.08em;
+    line-height: 1.6;
+    vertical-align: 0.1em;
+    color: var(--spec-glow);
+    border: 1px solid color-mix(in srgb, var(--spec-glow) 50%, transparent);
+    border-radius: var(--radius-pill);
+}
+
+/* スマホ：写真と文字を縦に積む。要点カードは1列、分類名はチップの上、
+   経歴は年月の列を詰める。 */
+@media (max-width: 600px) {
+    .profile-hero {
+        flex-direction: column;
+        gap: var(--space-4);
+    }
+
+    .profile-image img {
+        width: 140px;
+        height: 140px;
+    }
+
+    .si-grid--facts {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .rs-tier {
+        grid-template-columns: minmax(0, 1fr);
+        gap: var(--space-2);
+    }
+
+    .rs-tier__label {
+        flex-direction: row;
+        gap: 0.75rem;
+    }
+
+    .rs-tier--theme .rs-cards {
+        width: 100%;
+    }
+
+    .rs-tier--topics .rs-cards {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .rs-tier--fields .rs-cards {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .rs-link {
+        height: var(--space-4);
+        margin-left: 0;
+    }
+
+
+    .interest-group {
+        grid-template-columns: minmax(0, 1fr);
+        gap: var(--space-1);
+    }
+
+    .timeline li {
+        grid-template-columns: 5.6rem 1fr;
+        gap: var(--space-2);
+    }
+
+    .timeline li::before {
+        left: calc(5.6rem + var(--space-2) / 2);
+    }
+
+    .timeline li::after {
+        left: calc(5.6rem + var(--space-2) / 2 - 4px);
+    }
+
+    .timeline time {
+        font-size: 0.78rem;
+    }
+
+    .timeline span {
+        padding-left: var(--space-1);
+        font-size: 0.9rem;
+    }
 }
 
 /* 記事 / 教材ページ (body.is-article) の本文列。ページ固有のクラスではなく
@@ -1555,9 +2137,6 @@ input[type="range"] {
         top: 14vh;
     }
 
-    .profile-container {
-        gap: var(--space-6);
-    }
 }
 
 /* Hero text must never clip on narrow phones */
@@ -1580,12 +2159,6 @@ input[type="range"] {
 @media (max-width: 375px) {
     :root {
         --gutter: 1.1rem;
-    }
-
-    .profile-image img {
-        width: 100%;
-        height: auto;
-        aspect-ratio: 1;
     }
 }
 
@@ -1837,6 +2410,8 @@ body.sitenav-open .sitenav { transform: none; }
 .page-up a,
 .rail-up a,
 a.study-card,
+.rs-card.is-linked,
+.rs-chips a,
 .lesson-nav a:not(.btn),
 .sitenav-tab {
     transition: color var(--dur) var(--ease), background var(--dur) var(--ease),
@@ -1848,6 +2423,8 @@ a.study-card,
 .page-up a::before,
 .rail-up a::before,
 a.study-card::before,
+.rs-card.is-linked::before,
+.rs-chips a::before,
 .lesson-nav a:not(.btn)::before,
 .sitenav-tab::before {
     content: '';
@@ -1873,6 +2450,8 @@ a.study-card::before,
     .page-up a:hover,
     .rail-up a:hover,
     a.study-card:hover,
+    .rs-card:has(> .rs-card__link:hover),
+    .rs-chips a:hover,
     .lesson-nav a:not(.btn):hover,
     .sitenav-tab:hover {
         background: var(--surface-hot, rgba(255, 255, 255, .07));
@@ -1890,6 +2469,8 @@ a.study-card::before,
     .page-up a:hover::before,
     .rail-up a:hover::before,
     a.study-card:hover::before,
+    .rs-card:has(> .rs-card__link:hover)::before,
+    .rs-chips a:hover::before,
     .lesson-nav a:not(.btn):hover::before,
     .sitenav-tab:hover::before {
         opacity: 1;
@@ -1903,6 +2484,8 @@ a.study-card::before,
     .page-up a:hover,
     .rail-up a:hover,
     a.study-card:hover,
+    .rs-card:has(> .rs-card__link:hover),
+    .rs-chips a:hover,
     .lesson-nav a:not(.btn):hover {
         transform: none;
     }

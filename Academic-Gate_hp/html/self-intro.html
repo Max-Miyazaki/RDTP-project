@@ -5,7 +5,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Academic Gates</title>
-    <link rel="stylesheet" href="../css/style.css?v=r130">
+
+    <!-- ホームと同じ書体（Inter Tight + Noto Sans JP）を読み込む -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;500&family=Noto+Sans+JP:wght@300;400&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet" href="../css/style.css?v=r136">
     <link rel="icon" href="../../favicon.ico" sizes="32x32">
     <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="../../apple-touch-icon.png">
@@ -15,49 +23,168 @@
     <canvas id="starfield" aria-hidden="true"></canvas>
 <div id="site-nav"><noscript><nav class="noscript-nav" aria-label="メインナビゲーション"><a href="index.html">ホーム</a><a href="self-intro.html">自己紹介</a><a href="study.html">勉強の軌跡</a><a href="videos.html">動画</a><a href="blog.html">ブログ</a><a href="sns.html">各種SNS</a></nav></noscript></div>
     <main class="self-intro">
-        <div class="profile-container">
-            <div class="profile-image">
-                <img src="../image/my-pic.jpg" alt="Max Miyazakiのプロフィール写真">
-            </div>
-            <div class="profile-content">
-                <p class="eyebrow"><span class="eyebrow__num">01</span> — Profile</p>
-                <h1>Max Miyazaki</h1>
-                <p class="affiliation">東京都立大学大学院理学研究科物理学専攻素粒子理論研究室修士1年</p>
 
-                <div class="profile-text">
-                    <p>興味のあることを自由気ままにやるのが好きなその辺に転がっている理系大学院生。物理学の興味関心は量子重力理論や初期宇宙論など標準理論を超えた物理 (<span class="bsm">BSM :
-                            Beyond Standard Model</span>)
-                        で理論物理学メイン。多面的なアプローチで新物理の理論を考えたいので、色々と学びたい。なかなか厳しいこと言っている自覚はありますが「物理飽きた」とならない限り挑戦し続け理解を深めていきたいと思う。
-                    </p>
-
-                    <h2>研究分野</h2>
-                    現在は研究のために基盤学問を学んでいるため、具体的な内容は未定である。ひとまず次の分野を深く理解することに専念する。
-                    <ul>
-                        <li>相対性理論</li>
-                        <li>量子力学</li>
-                        <li>場の量子論</li>
-                        <li>宇宙論</li>
+        <!-- 01 — PROFILE：写真・名前・所属・紹介文、その下に要点の小カード -->
+        <section class="si-block" aria-labelledby="profile-h">
+            <div class="profile-hero reveal">
+                <div class="profile-image">
+                    <img src="../image/my-pic.jpg" alt="Max Miyazakiのプロフィール写真">
+                </div>
+                <div class="profile-content">
+                    <p class="eyebrow"><span class="eyebrow__num">01</span> — Profile</p>
+                    <h1 id="profile-h">Max Miyazaki</h1>
+                    <ul class="affiliation" aria-label="所属">
+                        <li>東京都立大学大学院理学研究科物理学専攻</li>
+                        <li>素粒子理論研究室</li>
+                        <li class="is-key">修士2年</li>
                     </ul>
-                    <h2>興味あること</h2>
-                    <p>有機化学、生化学、薬理学、救急医学、航空宇宙、実践心理学、外国語、プログラミング、創作活動 (イラスト、動画作成、アニメーション)、チェス、ピアノ、テニス、武術 etc...
-                        ほぼ独学でやっているだけなので、詳しい方がいましたら是非教えてほしいです。</p>
-                    <h2>経歴</h2>
-                    <ul>
-                        <li>2018年4月 東京都立多摩科学技術高等学校 入学</li>
-                        <li>2021年3月 東京都立多摩科学技術高等学校 卒業</li>
-                        <li>2021年4月 東京都立大学理学部物理学科 入学</li>
-                        <li>2024年4月 東京都立大学理学部物理学科 高エネルギー理論研究室配属</li>
-                        <li>2025年3月 東京都立大学理学部物理学科 卒業</li>
-                        <li>2025年4月 東京都立大学理学研究科物理学専攻 入学＆素粒子理論研究室配属</li>
+                    <p class="profile-lead" lang="ja">その辺に転がっている落ちこぼれ理系大学院生。専門は物理学だが、学問全般に興味を持っており自主的に幅広く学んでいる。研究分野は「宇宙の始まり」で、詳しくは研究内容のページを参照。学問に関する発信活動もしており、それに伴い創作活動を行うほか、個人事業も営んでいる。</p>
+                </div>
+            </div>
+
+            <div class="si-grid si-grid--facts">
+                <div class="profile-card reveal">
+                    <span class="meta">所属</span>
+                    <h3 lang="ja">東京都立大学大学院</h3>
+                    <p lang="ja">素粒子理論研究室・修士2年</p>
+                </div>
+                <div class="profile-card reveal">
+                    <span class="meta">専門</span>
+                    <h3 lang="ja">物理学</h3>
+                    <p lang="ja">学問全般を自主的に幅広く学ぶ</p>
+                </div>
+                <div class="profile-card reveal">
+                    <span class="meta">研究テーマ</span>
+                    <h3 lang="ja">宇宙の始まり</h3>
+                </div>
+            </div>
+        </section>
+
+        <!-- 02 — RESEARCH：上ほど専門的、下ほど基礎的な3層。
+             カードもチップも、リンク先は js/self-intro.js の RESEARCH_LINKS に
+             data-topic をキーにして書き足すと有効になる（カードは全面の覆いの <a>、
+             チップは <span> が <a> に置き換わる）。 -->
+        <section class="si-block" aria-labelledby="research-h">
+            <div class="si-head reveal">
+                <p class="eyebrow"><span class="eyebrow__num">02</span> — Research</p>
+                <h2 id="research-h" lang="ja">研究分野</h2>
+                <p class="rs-lead" lang="ja">専門は初期宇宙理論。暗黒物質の有力候補である「アクシオン」が、宇宙の始まりにどのように生まれ、現在どれだけ残っているのかを理論的に研究している。初期宇宙でアクシオンのエネルギーが非常に大きいと、ゆっくり動いていても光（放射）のように振る舞い、その後「非線形遷移」を経て暗黒物質になる。この効果を取り入れてアクシオン暗黒物質の存在量やエネルギー分布を見直し、原始ブラックホールの形成などの関連現象も議論した研究は、学術誌 Journal of High Energy Physics に掲載されている。</p>
+                <p class="eyebrow rs-paper">
+                    <span class="rs-paper__title">Paper: Revisiting axion dark matter with nonlinear transitions</span>
+                    <span class="rs-paper__links"><a class="rs-paper__journal" href="https://doi.org/10.1007/JHEP05(2026)119" target="_blank" rel="noopener">JHEP 05 (2026) 119<span class="rs-paper__arrow" aria-hidden="true">↗</span></a><span class="rs-paper__sep" aria-hidden="true">・</span><a class="rs-paper__arxiv" href="https://arxiv.org/abs/2509.13292" target="_blank" rel="noopener">arXiv:2509.13292<span class="rs-paper__arrow" aria-hidden="true">↗</span></a></span>
+                </p>
+            </div>
+
+            <div class="rs-stack">
+                <div class="rs-tier rs-tier--theme reveal">
+                    <p class="rs-tier__label"><span>Theme</span><span lang="ja">研究テーマ</span></p>
+                    <ul class="rs-cards">
+                        <li><div class="profile-card rs-card" data-topic="early-universe"><span class="meta">Early Universe Cosmology</span><h3 lang="ja">初期宇宙理論</h3></div></li>
+                    </ul>
+                </div>
+                <div class="rs-link" aria-hidden="true"></div>
+                <div class="rs-tier rs-tier--topics reveal">
+                    <p class="rs-tier__label"><span>Topics</span><span lang="ja">研究トピック</span></p>
+                    <ul class="rs-cards">
+                        <li><div class="profile-card rs-card" data-topic="inflation"><span class="meta">Inflation</span><h3 lang="ja">インフレーション</h3></div></li>
+                        <li><div class="profile-card rs-card" data-topic="axion-dark-matter"><span class="meta">Axion Dark Matter</span><h3 lang="ja">アクシオンダークマター</h3></div></li>
+                        <li><div class="profile-card rs-card" data-topic="primordial-black-holes"><span class="meta">Primordial Black Holes</span><h3 lang="ja">原始ブラックホール</h3></div></li>
+                    </ul>
+                </div>
+                <div class="rs-link" aria-hidden="true"></div>
+                <div class="rs-tier rs-tier--fields reveal">
+                    <p class="rs-tier__label"><span>Fields</span><span lang="ja">専門分野</span></p>
+                    <ul class="rs-cards">
+                        <li><div class="profile-card rs-card" data-topic="particle-physics"><span class="meta">Particle Physics</span><h3 lang="ja">素粒子物理学</h3></div></li>
+                        <li><div class="profile-card rs-card" data-topic="quantum-field-theory"><span class="meta">Quantum Field Theory</span><h3 lang="ja">場の量子論</h3></div></li>
+                        <li><div class="profile-card rs-card" data-topic="general-relativity"><span class="meta">General Relativity</span><h3 lang="ja">一般相対性理論</h3></div></li>
+                        <li><div class="profile-card rs-card" data-topic="cosmology"><span class="meta">Cosmology</span><h3 lang="ja">宇宙論</h3></div></li>
+                    </ul>
+                </div>
+                <div class="rs-link" aria-hidden="true"></div>
+                <div class="rs-tier rs-tier--foundations reveal">
+                    <p class="rs-tier__label"><span>Foundations</span><span lang="ja">基礎分野</span></p>
+                    <ul class="rs-cards">
+                        <li><div class="profile-card rs-card" data-topic="core-physics" data-label="基礎領域（学部レベル）の科目一覧"><span class="meta">Core Physics</span>
+                            <!-- 科目と順番は study_physics.html の「基礎領域（学部レベル）」と同じ -->
+                            <ul class="rs-chips" lang="ja">
+                                <li><span data-topic="phys-math">物理数学</span></li>
+                                <li><span data-topic="classical-mechanics">古典力学</span></li>
+                                <li><span data-topic="analytical-mechanics">解析力学</span></li>
+                                <li><span data-topic="electromagnetism">電磁気学</span></li>
+                                <li><span data-topic="thermodynamics">熱力学</span></li>
+                                <li><span data-topic="statistical-mechanics">統計力学</span></li>
+                                <li><span data-topic="quantum-mechanics">量子力学</span></li>
+                                <li><span data-topic="special-relativity">特殊相対性理論</span></li>
+                            </ul>
+                        </div></li>
                     </ul>
                 </div>
             </div>
-        </div>
+        </section>
+
+        <!-- 03 — INTERESTS：興味あること（項目は元の文の順のまま、3つに分けただけ） -->
+        <section class="si-block" aria-labelledby="interests-h">
+            <div class="si-head reveal">
+                <p class="eyebrow"><span class="eyebrow__num">03</span> — Interests</p>
+                <h2 id="interests-h" lang="ja">興味あること</h2>
+            </div>
+            <div class="interest-groups reveal">
+                <div class="interest-group">
+                    <h3 class="interest-group__label" lang="ja">学問</h3>
+                    <ul class="chips" lang="ja">
+                        <li>有機化学</li>
+                        <li>生化学</li>
+                        <li>薬理学</li>
+                        <li>救急医学</li>
+                        <li>航空宇宙</li>
+                        <li>実践心理学</li>
+                        <li>外国語</li>
+                        <li>プログラミング</li>
+                    </ul>
+                </div>
+                <div class="interest-group">
+                    <h3 class="interest-group__label" lang="ja">創作</h3>
+                    <ul class="chips" lang="ja">
+                        <li>イラスト</li>
+                        <li>動画作成</li>
+                        <li>アニメーション</li>
+                    </ul>
+                </div>
+                <div class="interest-group">
+                    <h3 class="interest-group__label" lang="ja">趣味</h3>
+                    <ul class="chips" lang="ja">
+                        <li>チェス</li>
+                        <li>ピアノ</li>
+                        <li>テニス</li>
+                        <li>武術</li>
+                        <li class="is-etc">etc...</li>
+                    </ul>
+                </div>
+            </div>
+            <p class="interest-note reveal" lang="ja">ほぼ独学でやっているだけなので、詳しい方がいましたら是非教えてほしいです。</p>
+        </section>
+
+        <!-- 04 — HISTORY：経歴（縦タイムライン。最後の項目が現在） -->
+        <section class="si-block" aria-labelledby="history-h">
+            <div class="si-head reveal">
+                <p class="eyebrow"><span class="eyebrow__num">04</span> — History</p>
+                <h2 id="history-h" lang="ja">経歴</h2>
+            </div>
+            <ol class="timeline reveal" lang="ja">
+                <li><time datetime="2018-04">2018年4月</time><span>東京都立多摩科学技術高等学校 入学</span></li>
+                <li><time datetime="2021-03">2021年3月</time><span>東京都立多摩科学技術高等学校 卒業</span></li>
+                <li><time datetime="2021-04">2021年4月</time><span>東京都立大学理学部物理学科 入学</span></li>
+                <li><time datetime="2024-04">2024年4月</time><span>東京都立大学理学部物理学科 高エネルギー理論研究室配属</span></li>
+                <li><time datetime="2025-03">2025年3月</time><span>東京都立大学理学部物理学科 卒業</span></li>
+                <li class="is-current" aria-current="step"><time datetime="2025-04">2025年4月〜</time><span>東京都立大学理学研究科物理学専攻 入学＆素粒子理論研究室配属<em class="timeline__now">現在</em></span></li>
+            </ol>
+        </section>
     </main>
     <div id="site-footer"><noscript><nav class="noscript-nav" aria-label="フッターナビゲーション"><a href="index.html">ホーム</a><a href="self-intro.html">自己紹介</a><a href="study.html">勉強の軌跡</a><a href="videos.html">動画</a><a href="blog.html">ブログ</a><a href="sns.html">各種SNS</a></nav></noscript></div>
-    <script src="../js/layout.js?v=r130"></script>
-    <script src="../js/main.js?v=r130"></script>
-    <script src="../js/starfield.js?v=r130"></script>
-    <script src="../js/self-intro.js"></script>
+    <script src="../js/layout.js?v=r136"></script>
+    <script src="../js/main.js?v=r136"></script>
+    <script src="../js/starfield.js?v=r136"></script>
+    <script src="../js/self-intro.js?v=r136"></script>
 </body>
 </html>
