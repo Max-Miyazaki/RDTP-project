@@ -453,7 +453,7 @@
             '  gRain=clamp((rr-uBH.z)/span,0.0,1.0)*0.92+0.04;',
             // スマホでは締めの文が影に収まらず円盤の上に載るので、文字の箱の後ろの円盤は 15% まで暗く（PC では影の中なので効かない）
             '  vec2 wp=uOff[5]+uBH.xy+q;',
-            '  return vec4(wp, bOf(aS5.z)*(1.0-0.28*cos(th))*smoothstep(0.0,0.08,sp)*mix(1.0,0.15,inTextSoft(wp)), aS5.w); }',
+            '  return vec4(wp, bOf(aS5.z)*(1.0-0.28*cos(th))*smoothstep(0.0,0.08,sp)*mix(1.0,0.15,inText(wp)), aS5.w); }',
             'float zOf(int k){ if(k==0) return aS0.z; if(k==1) return aS1.z; if(k==2) return aS2.z; if(k==3) return aS3.z; if(k==4) return aS4.z; return aS5.z; }',
             'vec3 palOf(float i){ int k=int(i+0.5); vec3 c=uPal[0];',
             '  for(int j=1;j<' + NP + ';j++){ if(j==k) c=uPal[j]; } return c; }',
@@ -524,7 +524,8 @@
             // 着く途中（流れの筋から円盤の位置へ移るあいだ）も文字の後ろでは暗く。着く先の円盤の明るさ（bB）は円盤の位置で
             // 減光してあるが、途中の位置は文字の箱を横切ることがあるため（スマホで「06 — Step」の上を通った。§135.14）
             // 1 本の筋にカード1枚ぶんの粒子が重なるので、10% では足りない（スマホで 2.8:1）。2% まで落とす
-            '    b*=mix(1.0, 0.02, lv*mix(inText(p),inTextSoft(p),wv));',
+            // 着いた粒子（u→1）には効かせない（円盤の位置での減光は stageOf がする。ここで重ねるとスマホの円盤が消えた）
+            '    b*=mix(1.0, 0.02, lv*(1.0-smoothstep(0.95,1.0,u))*mix(inText(p),inTextSoft(p),wv));',
             '  } else {',
             // 捩れた線の束（§135.9）：粒子は 3 本の束 × 各 4 本の線（計 12 本）のどれかに乗り、線に沿って流れる。
             // 束は画面をうねりながら横切り、4 本の線は束の芯のまわりを捩れ合う。移り目の真ん中（0.3〜0.7）は束のまま保ち、
