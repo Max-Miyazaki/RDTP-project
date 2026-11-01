@@ -133,28 +133,6 @@ h1, h2, h3, h4,
     }
 }
 
-/* Round 14 — proximity scroll-snap on the hero (stages 01–04) only.
-   Native CSS snap (NOT a JS scroll hijack): the browser keeps ownership of
-   inertia, momentum, and mid-transition stops. `proximity` (never `mandatory`)
-   settles a deliberate scroll onto a motif but always leaves an escape, so
-   find-in-page, anchor jumps, keyboard scrolling, and resting between stages
-   all still work. Only elements with scroll-snap-align become snap points, so
-   the index blocks 05–10 (card grids + body copy people are reading) are left
-   as free scroll by simply never opting in.
-   Gated to (no-preference) so reduced-motion gets plain scrolling — snapping is
-   motion — and to (min-width:601px) so mobile gets the free-scroll version
-   (iOS momentum + snap is historically janky; pending the device pass this is
-   the safe default). Each .scene is 120vh, so its centre is exactly the peak-w
-   position; snap-align:center lands the form fully resolved. */
-@media (prefers-reduced-motion: no-preference) and (min-width: 601px) {
-    html {
-        scroll-snap-type: y proximity;
-    }
-
-    .hero .scene {
-        scroll-snap-align: center;
-    }
-}
 
 body {
     font-family: var(--font-body);
@@ -187,61 +165,6 @@ body::before {
         radial-gradient(55% 50% at 55% 6%, var(--spill-violet), transparent 74%);
 }
 
-/* Bracketed micro-labels along the bottom edge (reference detail) */
-.stage-labels {
-    position: fixed;
-    left: var(--gutter);
-    bottom: 16px;
-    z-index: 900;
-    display: flex;
-    gap: 1.1rem;
-    flex-wrap: wrap;
-    font-size: 0.6rem;
-    letter-spacing: 0.22em;
-    text-transform: uppercase;
-    color: var(--text-tertiary);
-    pointer-events: none;
-}
-
-/* Live telemetry (particles · frame budget · fps) — reference detail */
-#telemetry {
-    position: fixed;
-    right: var(--gutter);
-    bottom: 16px;
-    z-index: 900;
-    display: flex;
-    gap: 1rem;
-    font-size: 0.6rem;
-    letter-spacing: 0.1em;
-    color: var(--text-tertiary);
-    font-variant-numeric: tabular-nums;
-    pointer-events: none;
-    text-transform: uppercase;
-}
-
-#telemetry b {
-    color: var(--spec-teal);
-    font-weight: 500;
-    margin-right: 0.25em;
-}
-
-@media (max-width: 600px) {
-
-    .stage-labels,
-    #telemetry {
-        display: none;
-    }
-}
-
-/* Hero-only readouts: fade out once the hero has scrolled past, so they never sit
-   over the footer (Round-12 bug 3). position:fixed → no layout shift either way.
-   JS toggles body.hero-passed (scroll-scenes.js). */
-body.hero-passed .stage-labels,
-body.hero-passed #telemetry {
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.4s var(--ease);
-}
 
 img {
     max-width: 100%;
@@ -298,11 +221,6 @@ body.is-article #starfield {
     opacity: 1;
 }
 
-/* Fades out once the hero leaves the viewport so the calm card/footer region
-   settles onto pure black + the star field (motion stops, fully readable). */
-#scene-canvas.is-dormant {
-    opacity: 0;
-}
 
 /* ---------------------------------------------------------------------------
    4. TYPOGRAPHY
@@ -689,19 +607,6 @@ a.card:hover::before,
     color: var(--text-tertiary);
 }
 
-/* Spectrum media placeholder (thumbnails etc.) — teal/cyan register with a faint warm
-   accent only (§2.3: warm confined to hot cores; was a saturated blue+magenta block). */
-.media-placeholder {
-    aspect-ratio: 16 / 9;
-    border-radius: var(--radius-md);
-    background:
-        linear-gradient(135deg, rgba(43, 217, 196, 0.34), rgba(0, 194, 203, 0.12) 55%, transparent 82%),
-        radial-gradient(120% 130% at 22% 18%, rgba(43, 217, 196, 0.62), transparent 60%),
-        radial-gradient(110% 120% at 82% 84%, rgba(0, 194, 203, 0.5), transparent 64%),
-        radial-gradient(50% 50% at 60% 45%, rgba(255, 90, 60, 0.1), transparent 72%),
-        #0a161a;
-    opacity: 0.9;
-}
 
 /* ---------------------------------------------------------------------------
    8. LAYOUT HELPERS
@@ -800,158 +705,14 @@ html.js .reveal.is-visible {
     color: var(--text-primary);
 }
 
-/* Four text stages × 120vh = 480vh (Round-12 Part 6 — longer scenes, slower reveal).
-   Each text block is position:sticky so it holds pinned near centre for the whole
-   stage while the flow field forms and releases under it — a long, steady read. */
-.scene {
-    position: relative;
-    height: 120vh;
-    padding: 0 var(--gutter);
-}
-
-/* Left-aligned column on the dark left; the formation sits on the right (§comp).
-   .scene prefix raises specificity above .hero-scrim (which also sets position). */
-.scene .scene__content {
-    position: sticky;
-    top: 22vh;
-    z-index: 1;
-    width: 100%;
-    max-width: 30rem;
-    margin: 0 auto 0 0;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    text-align: left;
-    gap: var(--space-3);
-    /* Visible by default (JS off); JS drives opacity so one block reads at a time. */
-    transition: opacity 0.3s linear;
-}
-
-.scene-list {
-    list-style: none;
-    margin-top: var(--space-3);
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem 1.25rem;
-}
-
-.scene-list li {
-    position: relative;
-    padding-left: 1rem;
-    font-size: 0.9rem;
-    color: var(--text-secondary);
-}
-
-.scene-list li::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 0.6em;
-    width: 5px;
-    height: 5px;
-    border-radius: 50%;
-    background: var(--accent);
-}
-
-.cta-row {
-    display: flex;
-    gap: var(--space-2);
-    flex-wrap: wrap;
-    justify-content: flex-start;
-    margin-top: var(--space-2);
-}
-
 /* Per-glyph contrast comes from a DARK text-shadow (legibility, not glow) so
    there is no panel behind the text. The local scrim below is only soft ambient
    support — it feathers smoothly to transparent with no detectable edge. */
 .hero h1,
 .hero h2,
-.hero .gate-subtitle,
 .hero p,
-.hero .eyebrow,
-.hero .scene-list li {
+.hero .eyebrow {
     text-shadow: 0 0 8px rgba(0, 0, 0, 0.9), 0 0 18px rgba(0, 0, 0, 0.6);
-}
-
-/* The BEGINNING subtitle sits over the bright ring's inner bloom — a tighter
-   stacked shadow fills the gaps between its small glyphs, and a tighter
-   line-height removes the inter-line band a bright particle could show through. */
-.hero .gate-subtitle {
-    text-shadow: 0 0 6px #000, 0 0 14px rgba(0, 0, 0, 0.85), 0 0 24px rgba(0, 0, 0, 0.6);
-    line-height: 1.5;
-}
-
-.hero-scrim {
-    position: relative;
-}
-
-/* Dark enough over the text for ≥4.5:1, but a CONTINUOUS falloff (no shoulder/
-   plateau) plus a large blur means there is no detectable edge — it reads as a
-   soft vignette, not a panel. */
-.hero-scrim::before {
-    content: '';
-    position: absolute;
-    z-index: -1;
-    inset: -1.2rem -2rem;
-    /* Lighter now — left-aligned text sits on the dark left, so this is just a
-       gentle safety pool biased to the text (left), fully feathered, no edge. */
-    background: radial-gradient(ellipse 120% 130% at 35% 50%,
-            rgba(0, 0, 0, 0.70) 0%,
-            rgba(0, 0, 0, 0.42) 52%,
-            rgba(0, 0, 0, 0.14) 78%,
-            transparent 100%);
-    filter: blur(20px);
-    pointer-events: none;
-}
-
-/* Reference-aligned: moderate size, more weight (was oversized + thin at 300). */
-.gate-title {
-    font-size: clamp(2rem, 4.5vw, 3.4rem);
-    font-weight: 400;
-    letter-spacing: -0.02em;
-    line-height: 1.02;
-}
-
-/* Stage headings: moderate + weight 500 (Latin and JP). */
-.scene h2 {
-    font-size: clamp(1.9rem, 3.4vw, 3rem);
-    font-weight: 500;
-    line-height: 1.08;
-    letter-spacing: -0.01em;
-}
-
-.scene h2:lang(ja) {
-    font-weight: 500;
-}
-
-.gate-subtitle {
-    margin: 0;
-    color: var(--text-primary);
-    max-width: 42ch;
-    text-align: left;
-}
-
-/* Persistent scroll affordance — fades out by progress ~0.12 (JS sets --scroll-hint) */
-.scroll-hint {
-    position: absolute;
-    left: 50%;
-    bottom: 40px;
-    transform: translateX(-50%);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.4rem;
-    font-size: 0.65rem;
-    letter-spacing: 0.25em;
-    text-transform: uppercase;
-    color: var(--text-tertiary);
-    opacity: var(--scroll-hint, 1);
-    transition: opacity 0.4s var(--ease);
-    z-index: 2;
-}
-
-.scroll-hint__arrow {
-    animation: hint-bob 1.8s var(--ease) infinite;
 }
 
 @keyframes hint-bob {
@@ -964,135 +725,6 @@ html.js .reveal.is-visible {
     50% {
         transform: translateY(6px);
     }
-}
-
-@media (prefers-reduced-motion: reduce) {
-    .scroll-hint__arrow {
-        animation: none;
-    }
-}
-
-/* ---------------------------------------------------------------------------
-   11. INDEX — THE INDEX region (calm card grids, motion at rest)
-   --------------------------------------------------------------------------- */
-.index-region {
-    position: relative;
-    z-index: 1;
-    /* Semi-transparent veil (not solid #000) so the calm below-hero flow field shows
-       through behind the cards while card text keeps its contrast (Round-12 Part 2). */
-    background: linear-gradient(180deg, transparent, rgba(0, 0, 0, 0.42) 16%);
-}
-
-.index-block {
-    padding: var(--space-8) var(--gutter);
-    max-width: 1200px;
-    margin: 0 auto;
-    /* Even out the per-stage scroll dwell (Round-13 item 3): card heights are
-       content-dependent (blog/videos grids are taller), which made stages 05–10 morph
-       at uneven speeds. A min-height evens the block spans so each stage gets a
-       comparable scroll window; the flow field fills the added space (never empty). */
-    min-height: 60vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-}
-
-.index-block__head {
-    margin-bottom: var(--space-6);
-    max-width: 62ch;
-    position: relative;
-}
-
-/* §20.2 (Round-31): a soft scrim behind the index-block heading column — a feathered
-   radial like .hero-scrim::before, lighter. Index-block headings had no scrim, so a
-   full-bleed bright motif (waveforms under 最新動画) dropped to 3.71:1 / 19-of-24 frames
-   below AA at 1440×900. This lifts it to 6.2:1 (0 below, all viewports) with no motif
-   change (an overlay, not a field edit). z-index -1 sits above the fixed canvas, below
-   the text. The gradient fades fully to transparent at 88% (INSIDE the -1.6rem/-2.6rem
-   inset box), so the box edge is transparent and it reads as a vignette, not a panel —
-   the earlier 0.52/transparent-at-100% version clipped a still-visible gradient at the
-   small box edge and read as a box (§31.2a). Scoped to .index-block__head — which exists
-   ONLY on index.html (0 matches on the other 10 pages). Reversible: delete this rule. */
-/* ★ 上の .hero-scrim::before と下の .index-block__head::before は、左右に 2rem・2.6rem はみ出す下地。390px では右へ最大 22px
-   画面の外に出て、スマホで見えている範囲が横に 23px ずれた（DESIGN.md §117）。下地を載せる幅いっぱいの箱で横だけ切る。
-   clip はスクロールする入れ物を作らないので、.scene__content の sticky は壊れない。1440px では下地は画面の中なので見た目は変わらない */
-.scene, .index-block { overflow-x: clip; }
-.index-block__head::before {
-    content: '';
-    position: absolute;
-    z-index: -1;
-    inset: -1.6rem -2.6rem;
-    pointer-events: none;
-    background: radial-gradient(ellipse 80% 95% at 26% 40%,
-            rgba(0, 0, 0, 0.40) 0%,
-            rgba(0, 0, 0, 0.22) 42%,
-            rgba(0, 0, 0, 0.06) 70%,
-            transparent 88%);
-}
-
-.index-block__head h2 {
-    margin-bottom: var(--space-2);
-}
-
-.note-grid {
-    display: grid;
-    gap: var(--space-3);
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-}
-
-.final-message {
-    text-align: center;
-    /* Normal section rhythm — the old var(--space-16) (128px each side) isolated the
-       one line in a large black void (Round-12 bug 2). */
-    padding: var(--space-8) var(--gutter);
-}
-
-/* Round-23: give stage 7 a viewport-tall section so sceneF can REACH 7.0 at a true rest
-   on tall viewports. Reachability needs  FM_height + 2·footer + 92 ≥ viewport_height
-   (see DESIGN.md §26); at the old ~204px height that failed above 1188px tall, leaving the
-   closing region resting at a dissolved videos↔orbits blend (fc 0.477, w≈0.02). 100vh makes
-   the condition hold at every height. The text is BOTTOM-anchored (flex column, justify-end)
-   so the closing line stays exactly where it was on short viewports — the particle field fills
-   the space above it, so this is NOT the Round-12 bug-2 void (a lone line centred in black).
-   Gated to min-width:769px (the isMobile boundary): phones suppress the stage-7 motif and
-   already reach 7.0 via their short layout, so a full-height section there would only add an
-   empty region above the line. Not a snap point and not scroll-padding — pure document height. */
-@media (min-width: 769px) {
-    .final-message {
-        min-height: 100vh;
-        display: flex;
-        flex-direction: column;
-        justify-content: flex-end;
-    }
-}
-
-/* Round-24: wide/landscape composition for stage 7 — centred, footer kept (see DESIGN.md §27).
-   On a SHORT viewport the footer (a fixed ~446px) eats half the frame at the page-bottom rest,
-   so the Round-23 bottom-anchor leaves only a 240px band. Centring the closing line and holding
-   the rest at the FM-centre lifts the footer off the fold's pressure, opening the band to ~360px
-   while keeping motif → message → footer in one frame (closing 16:1, footer 19:1, both visible).
-   The snap point is LOAD-BEARING, not decorative: without it the page rests at the absolute bottom,
-   where the centred message rides to the top and TOUCHES the motif under the nav (order flips to
-   message → motif → footer) — the rejected Option-1 collision. scroll-snap-align holds the rest at
-   the FM-centre so the approved order survives. Boundary is a MAX-HEIGHT, not a width: the problem
-   is the footer's fixed px eating a SHORT viewport, i.e. a height problem; above 1100px the
-   bottom-anchor already gives ≥440px (growing to 1140px on tall), so tall/portrait keep §26 exactly
-   (measured Δ0). Overrides only min-height + justify-content; display/flex-direction carry from §26. */
-@media (min-width: 769px) and (max-height: 1100px) {
-    .final-message {
-        min-height: 70vh;
-        justify-content: center;
-        scroll-snap-align: center;
-    }
-}
-
-.final-message p {
-    max-width: none;
-    font-family: var(--font-display);
-    font-weight: 300;
-    font-size: clamp(1.5rem, 3.5vw, 2.5rem);
-    color: var(--text-primary);
-    letter-spacing: -0.01em;
 }
 
 /* ---------------------------------------------------------------------------
@@ -2180,11 +1812,7 @@ input[type="range"] {
         display: none;
     }
 
-    /* Mobile hero: the four text stages at ~55vh each (~220vh). MATTER + SOLAR
-       are skipped entirely (the JS builds only the four formations). */
-    .scene {
-        height: 90vh;   /* Round-12 Part 6 — longer mobile stages (4 × 90vh = 360vh) */
-    }
+    
 
     /* Head + tail spacers push the first/last scene centres off the 0/1 ends so the four
        scene centres land at 12.5 / 37.5 / 62.5 / 87.5% of scroll — i.e. exactly the
@@ -2195,28 +1823,8 @@ input[type="range"] {
         padding-block: 50vh;
     }
 
-    .scene .scene__content {
-        top: 14vh;
-    }
-
 }
 
-/* Hero text must never clip on narrow phones */
-@media (max-width: 480px) {
-    .gate-title {
-        font-size: clamp(1.85rem, 9vw, 2.4rem);
-        letter-spacing: -0.02em;
-    }
-
-    .gate-subtitle {
-        font-size: 0.9rem;
-        max-width: 100%;
-    }
-
-    .scene--split .scene__lead {
-        max-width: none;
-    }
-}
 
 @media (max-width: 375px) {
     :root {

@@ -261,7 +261,7 @@ than restoring this block.
 
 ---
 
-## 6. index.html — scroll choreography (cosmic origin → modern society)
+## 6. index.html — scroll choreography (cosmic origin → modern society) — ★ 履歴（2026-11 に §135 の「学問の樹」に置き換え。js/scroll-scenes.js は削除済み）
 
 One persistent `THREE.WebGLRenderer` + one `THREE.Points`, built **once**, morphs through a
 narrative that descends from the birth of the universe to the present day. Each stage is a
@@ -792,7 +792,7 @@ Recorded for your review; these differ from a naive reading of §1–12.
 ---
 ---
 
-# 14. Round 12 — Full-page flow field (IMPLEMENTED)
+# 14. Round 12 — Full-page flow field — ★ 履歴（§14〜§34 は旧ホームの記録。いまのホームは §135）
 
 A large change to a verified build: the particle field becomes a **continuous flow that runs
 the whole page**, scene forms become **attractors** in that flow, the composition goes
@@ -11151,3 +11151,29 @@ r100 のまま（html・DESIGN.md・climate.py だけの変更。css/js もカ�
 - 実際の画面（macOS の Chrome）：01 の球・赤い輪・虹の線、05→06 の筋（ふつうの速さ・一気に飛んだとき）、どれも 59〜60fps
 - コントラスト：ページの先頭と場面 0〜5（0.25 刻み）を 1440/375 で 521 の文字の箱、05→06 を 0.15 刻みで 96 の箱、フェードインを終えた状態で **4.5:1 未満 0**。最小 4.69（375、場面4.5「06 — Step」）
 - 位置合わせ・fps・静的な表示は §135.11 と同じ値（木の名前 最大 0.2/0.43px、fps 60.2/60.3）
+
+
+## 135.13 フェーズ4：仕上げ（r163）
+
+### 新しいホームの全体（§135.1〜§135.12 のまとめ）
+| 場面 | 文 | 粒子（js/tree-scenes.js） | 静的な表示（動きを減らす・WebGL 無し） |
+|---|---|---|---|
+| 01 種 | 一つの問いから、世界は広がる。 | 明るい青の球・赤い輪・中心から輪へ流れる虹の線 | CSS の球と輪 |
+| 02 根 | このサイトについて | 横に広く下に長い根、「学び方」への点線 | SVG の根 |
+| 03 学問の樹 | 分類 → 学問の2段（index.html のリストがデータ） | 分類の色の枝と枝先の葉 | SVG の木 |
+| 04 私の枝 | 研究の階層（js/research.js、自己紹介と共通） | 層の色（450〜650nm）の輪郭・物理学の小さな枝 | SVG の小さな木と枝・階層の色 |
+| 05 実り | 動画・ブログ・創作活動・交流 | カードの輪郭を流れる粒子と実 | SVG の枝と実 |
+| 06 一歩 | 締めの文・Connect | ブラックホールの降着円盤（ケプラー回転）と影 | SVG の円盤と影 |
+- 移り目：01→02 種へ縮んで根が伸びる / 02→03 捩れた線の束 / 03→04 色ごとの光の線にほどけて THEME へ集まる / 04→05 束 / 05→06 カードから剥がれた流れの筋が円盤へ
+- 文字の保護：見出しの列の暗がり、木の名前・分類名・カードの黒い下地、読みやすさのための暗い影、粒子が文字の箱（最大16）の後ろを通るときの減光
+- 確かめ方：コントラストは文字を透明にして背景の 99 パーセンタイルで計算（§135.4）。WebGL の合成は実際のブラウザの画面でも見る（§135.6）
+
+### 旧ホームの CSS を削除
+- 旧ホームだけが使っていた規則を style.css から削除（47 の規則。`.scene` 系・`.index-block` 系・`.index-region`・下部のラベル帯 `.stage-labels`・`#telemetry`・`body.hero-passed`・
+  `.gate-title`/`.gate-subtitle`・`.hero-scrim`・`.scroll-hint`・`.final-message`・`.note-grid`・`.media-placeholder`・`.cta-row`・`#scene-canvas.is-dormant`、
+  それと `html { scroll-snap-type }`（ホームのスクロールスナップ）。空になった @media も削除）。`.hero h1, …, .hero .gate-subtitle, …, .hero .scene-list li` は、旧ホームの2つの選択子だけを外した
+- ★ `.hero` の規則は残した（教材ページが使う）
+- 削除はセレクタ単位で機械的に行い（コメントを含めて CSS を解析、どの選択子も旧ホームの class だけなら削除）、**12 ページ × 1440/375 の全要素の computed style（23 の性質）が削除の前後で1つも変わらない**ことを確かめた
+  （index・self-intro・study・study_physics・phys-math・phys-math_1-1・memoryverse_1-1・earthhuman・sns・blog・videos・country/jpn）
+- 主要 9 ページを実際の画面（macOS の Chrome）で開いて確認、headless で 9 ページ × 2 幅のコンソールエラー 0（ローカルの favicon の 404 だけ）・横のはみ出し 0
+- `docs/stills/`：新しい基準 `home-*`（6場面 × 2幅、静的な表示）と `self-intro-research-*` を追加。旧ホームの基準は DESIGN.md から参照されているので残し、`docs/stills/README.md` に区別を書いた
