@@ -40,6 +40,13 @@
     --spec-magenta: #ff3d8b;
     --spec-ember: #ff5a3c;
 
+    /* 研究の階層の色（§135.9）：可視光のエネルギー順。上の層ほど高エネルギー（青）、下ほど低エネルギー（赤）。
+       どれも黒地で 6:1 以上（層ラベルの小さな文字に使うため）。 */
+    --nm-450: #6f8cff;
+    --nm-520: #4fdd8a;
+    --nm-590: #ffb547;
+    --nm-650: #ff5f52;
+
     /* Derived UI accents */
     --accent: #3d8bff;
     --accent-warm: #ff3d8b;
@@ -1705,12 +1712,93 @@ footer a:hover {
     transform: rotate(45deg);
 }
 
+/* --- 研究の階層：可視光のエネルギー順の色（§135.9）-------------------------------
+   上の層ほど高エネルギー（テーマ 450nm 青 → トピック 520nm 緑 → 専門分野 590nm 黄〜橙 → 基礎分野 650nm 赤）。
+   難しさの目安も兼ねる。色はカード上辺の線・層ラベルの英字・層のあいだの線だけで、カードの文字は白のまま。
+   ホームの粒子（tree-scenes.js）も同じ色を使う。 */
+.rs-stack {
+    position: relative;
+}
+
+.rs-tier--theme { --nm: var(--nm-450); }
+.rs-tier--topics { --nm: var(--nm-520); }
+.rs-tier--fields { --nm: var(--nm-590); }
+.rs-tier--foundations { --nm: var(--nm-650); }
+
+.rs-tier .rs-card::after {
+    background: var(--nm);
+}
+
+.rs-tier__label span:first-child {
+    color: var(--nm);
+}
+
+/* 層のあいだの線：下の層の色から上の層の色へ（エネルギーが上がっていく向き） */
+.rs-tier--theme + .rs-link { --lo: var(--nm-520); --hi: var(--nm-450); }
+.rs-tier--topics + .rs-link { --lo: var(--nm-590); --hi: var(--nm-520); }
+.rs-tier--fields + .rs-link { --lo: var(--nm-650); --hi: var(--nm-590); }
+
+.rs-link::before {
+    width: 2px;
+    margin-left: -0.5px;
+    background: linear-gradient(to top, var(--lo, var(--hairline)), var(--hi, var(--accent)));
+}
+
+.rs-link::after {
+    border-color: var(--hi, var(--accent));
+}
+
+/* 凡例：階層の左に細いスペクトルの帯、上下に「高エネルギー」「低エネルギー」 */
+.rs-stack::before {
+    content: '';
+    position: absolute;
+    left: -0.9rem;
+    top: 0.7rem;
+    bottom: 0.7rem;
+    width: 2px;
+    border-radius: 1px;
+    background: linear-gradient(to bottom, var(--nm-450), var(--nm-520), var(--nm-590), var(--nm-650));
+    opacity: 0.8;
+}
+
+.rs-energy {
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+    max-width: none;
+    margin: 0 0 var(--space-3);
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    line-height: 1.4;
+    color: var(--text-secondary);
+}
+
+.rs-energy--lo {
+    margin: var(--space-3) 0 0;
+}
+
+.rs-energy::before {
+    content: '';
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--nm-450);
+}
+
+.rs-energy--lo::before {
+    background: var(--nm-650);
+}
+
+@media (max-width: 600px) {
+    .rs-stack::before {
+        left: -0.65rem;
+    }
+}
+
 /* 層ごとに上から順にフェードイン（同時に画面に入ったときの順番） */
-html.js .rs-stack > .reveal:nth-child(2) { transition-delay: 0.08s; }
-html.js .rs-stack > .reveal:nth-child(3) { transition-delay: 0.16s; }
-html.js .rs-stack > .reveal:nth-child(4) { transition-delay: 0.24s; }
-html.js .rs-stack > .reveal:nth-child(5) { transition-delay: 0.32s; }
-html.js .rs-stack > .reveal:nth-child(7) { transition-delay: 0.48s; }
+html.js .rs-stack > .rs-tier--topics { transition-delay: 0.16s; }
+html.js .rs-stack > .rs-tier--fields { transition-delay: 0.32s; }
+html.js .rs-stack > .rs-tier--foundations { transition-delay: 0.48s; }
 
 /* リンクのあるカード（.rs-card.is-linked、js/self-intro.js が作る）。
    カードそのものは <div> のまま、中に全面を覆う <a class="rs-card__link"> を重ねる。
@@ -2943,7 +3031,7 @@ a.tree-node {
 
 .branch-ext {
     fill: none;
-    stroke: var(--tint-natural);
+    stroke: var(--tint-natural);   /* academic-tree.js が、枝の色から基礎分野の赤へのグラデーションに差し替える */
     stroke-width: 1.8;
     stroke-linecap: round;
 }

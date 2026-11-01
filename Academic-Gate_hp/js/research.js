@@ -6,7 +6,7 @@
    置き場所：<div class="rs-stack" data-research></div>
              data-research="compact" ならホーム用の小さい版（基礎分野の科目チップを省く）
 
-   上ほど専門的、下ほど基礎的な4層。リンク先は RESEARCH_LINKS に、data-topic を
+   上ほど専門的、下ほど基礎的な4層。色は可視光のエネルギー順（CSS の --nm-450〜650）。リンク先は RESEARCH_LINKS に、data-topic を
    キーにして書き足すと有効になる（カードは全面の覆いの <a> と右上の →、
    チップは <span> が <a> に置き換わる）。空のものはリンクなし（押せない・光らない）。
    ============================================================================ */
@@ -79,11 +79,12 @@ var RESEARCH_LINKS = {
     function render(stack) {
         var compact = stack.getAttribute('data-research') === 'compact';
         if (compact) stack.classList.add('rs-stack--compact');
-        stack.innerHTML = RESEARCH_TIERS.map(function (t) {
+        // 色は可視光のエネルギー順（上ほど高エネルギー＝青、下ほど低エネルギー＝赤。§135.9）。上下に凡例の1行
+        stack.innerHTML = '<p class="rs-energy rs-energy--hi" lang="ja">高エネルギー（専門）</p>' + RESEARCH_TIERS.map(function (t) {
             return '<div class="rs-tier rs-tier--' + t.mod + ' reveal">' +
                 '<p class="rs-tier__label"><span>' + t.en + '</span><span lang="ja">' + t.ja + '</span></p>' +
                 '<ul class="rs-cards">' + t.cards.map(function (c) { return card(c, compact); }).join('') + '</ul></div>';
-        }).join('<div class="rs-link" aria-hidden="true"></div>');
+        }).join('<div class="rs-link" aria-hidden="true"></div>') + '<p class="rs-energy rs-energy--lo" lang="ja">低エネルギー（基礎）</p>';
         link(stack);
     }
 

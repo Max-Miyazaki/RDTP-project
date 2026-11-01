@@ -304,7 +304,15 @@
                 var a = 0, t = 0, e = fc; while (e && e !== fig.offsetParent) { a += e.offsetLeft; t += e.offsetTop; e = e.offsetParent; }
                 T = { x: a + fc.offsetWidth / 2 - fig.offsetLeft, y: t + fc.offsetHeight - fig.offsetTop };
             }
-            svg.appendChild(el('path', { class: 'branch-ext', d: 'M' + f1(P.x) + ' ' + f1(P.y) + 'C' + f1(P.x) + ' ' + f1(P.y - (P.y - T.y) * 0.5) + ' ' + f1(T.x) + ' ' + f1(T.y + (P.y - T.y) * 0.5) + ' ' + f1(T.x) + ' ' + f1(T.y) }));
+            // 伸びた枝の色：物理学の枝（自然科学の色）から、流れ込む基礎分野の赤（650nm）へ（§135.9）
+            var grad = el('linearGradient', { id: 'branch-ext-grad', gradientUnits: 'userSpaceOnUse', x1: f1(P.x), y1: f1(P.y), x2: f1(T.x), y2: f1(T.y) });
+            var s0 = el('stop', { offset: '0' }), s1 = el('stop', { offset: '0.45' }), s2 = el('stop', { offset: '1' });
+            s0.style.stopColor = 'var(--tint-natural)'; s1.style.stopColor = 'var(--tint-natural)'; s2.style.stopColor = 'var(--nm-650)';
+            grad.appendChild(s0); grad.appendChild(s1); grad.appendChild(s2);
+            var defs = el('defs', {}); defs.appendChild(grad); svg.appendChild(defs);
+            var ext = el('path', { class: 'branch-ext', d: 'M' + f1(P.x) + ' ' + f1(P.y) + 'C' + f1(P.x) + ' ' + f1(P.y - (P.y - T.y) * 0.5) + ' ' + f1(T.x) + ' ' + f1(T.y + (P.y - T.y) * 0.5) + ' ' + f1(T.x) + ' ' + f1(T.y) });
+            ext.style.stroke = 'url(#branch-ext-grad)';
+            svg.appendChild(ext);
             // 名前：物理学は枝先の右
             tagP.style.left = f1(P.x + 8) + 'px'; tagP.style.top = f1(P.y - tagP.offsetHeight / 2) + 'px';
             fig.__branch = { P: P, T: T, s: s, tx: tx, ty: ty };

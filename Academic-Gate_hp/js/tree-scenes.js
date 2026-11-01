@@ -70,8 +70,10 @@
         /* ---- 色。番号は粒子の属性に入れる（0 白 / 1 光の青 / 2 幹の青 / 3〜9 分類 / 10〜13 実） */
         var CATS = ['formal', 'natural', 'life', 'engineering', 'humanities', 'social', 'arts'];
         var PAL = ['#e8f6ff', '#5fd0ff', '#3d8bff', '#8fb3ff', '#5fd9e6', '#63e0bd', '#a9c6ea', '#b8a4ff', '#d7a8ff', '#ff9ec4',
-            '#5fd0ff', '#8fb3ff', '#ff9ec4', '#63e0bd'];   // 実の色は CSS の --fruit-0〜3 と同じ
+            '#5fd0ff', '#8fb3ff', '#ff9ec4', '#63e0bd',    // 実の色は CSS の --fruit-0〜3 と同じ
+            '#6f8cff', '#4fdd8a', '#ffb547', '#ff5f52'];   // 14〜17 研究の階層（450・520・590・650nm、CSS の --nm-*。§135.9）
         var NP = PAL.length, NAT = 4;
+        var NM = [17, 16, 15, 14];   // 階層の下（基礎分野）から上（テーマ）への色番号
         var kN = 80000 / N;   // 粒子数が少ない画面では、1粒を明るくして見た目の濃さを揃える
         function catIndex(cat) { var i = CATS.indexOf(cat); return i < 0 ? 2 : 3 + i; }
 
@@ -258,16 +260,19 @@
             var yTop = tiers[tiers.length - 1][0].y, yBot = fr.y + fr.h;
             function dOf(y) { return Math.max(0, Math.min(1, (yBot - y) / Math.max(1, yBot - yTop))); }
             // 昇る道：伸びた枝 → 各層では中心線にかかるカードの輪郭（左右の両側）か、カードのあいだの隙間 → 層と層のあいだ
+            ext.c = NAT; ext.c2 = NM[0]; ext.grad = 'along';   // 枝の色から基礎分野の赤へ
             var route = [ext], outlines = [];
             tiers.forEach(function (row, k) {
                 // 中心線にかかるカード（スマホで縦に積まれた層では、その全部）は道の輪郭、ほかは淡い輪郭
                 var hits = row.filter(function (c) { return c.x <= X && X <= c.x + c.w; });
                 var top = Math.min.apply(null, row.map(function (c) { return c.y; })), bot = Math.max.apply(null, row.map(function (c) { return c.y + c.h; }));
-                row.forEach(function (c) { (hits.indexOf(c) < 0 ? outlines : route).push(rrect(c.x - 2, c.y - 2, c.w + 4, c.h + 4, 16)); });
-                if (!hits.length) route.push(fromPts([X, bot, X, top]));
+                row.forEach(function (c) { var o = rrect(c.x - 2, c.y - 2, c.w + 4, c.h + 4, 16); o.c = NM[k]; (hits.indexOf(c) < 0 ? outlines : route).push(o); });
+                if (!hits.length) { var v = fromPts([X, bot, X, top]); v.c = NM[k]; route.push(v); }
                 if (k < tiers.length - 1) {
                     var up = tiers[k + 1], ub = Math.max.apply(null, up.map(function (c) { return c.y + c.h; }));
-                    route.push(fromPts([X, top, X, ub]));
+                    // 層のあいだ：下の層の色から上の層の色へ（下から上へ、エネルギーが上がる）
+                    var lk = fromPts([X, top, X, ub]); lk.c = NM[k]; lk.c2 = NM[k + 1]; lk.grad = 'along';
+                    route.push(lk);
                 }
             });
             var theme = tiers[tiers.length - 1][0];
@@ -278,14 +283,19 @@
             var bO = Math.min(0.5, 0.7 * total(outlines) / (N * 0.16)), bRest = Math.min(0.5, 0.45 * total(rest) / (N * 0.16));
             for (var i = 0; i < N; i++) {
                 var r = rnd(), l, q, j, x, y;
-                if (r < 0.34) { l = pR(); q = onPoly(l, rnd()); j = gauss(1.1); x = q.x + q.nx * j; y = q.y + q.ny * j; put(3, i, x, y, bRoute, y < theme.y + theme.h + 4 ? 1 : NAT, 4, dOf(y)); }
+                if (r < 0.34) {
+                    l = pR(); var tt = rnd(); q = onPoly(l, tt); j = gauss(1.1); x = q.x + q.nx * j; y = q.y + q.ny * j;
+                    // 線の上の位置で色を混ぜる（1粒は1色なので、割合でグラデーションに見せる）
+                    var col = l.grad ? (rnd() < Math.pow(tt, l === ext ? 1.6 : 1) ? l.c2 : l.c) : l.c;
+                    put(3, i, x, y, bRoute, col, 4, dOf(y));
+                }
                 else if (r < 0.44) { l = pm(); q = onPoly(l, rnd()); j = gauss(1); x = q.x + q.nx * j; y = q.y + q.ny * j; put(3, i, x, y, bMine, l.c === 2 ? 2 : NAT, 1, dOf(y)); }
-                else if (r < 0.60) { l = pO(); q = onPoly(l, rnd()); j = gauss(1); x = q.x + q.nx * j; y = q.y + q.ny * j; put(3, i, x, y, bO, 2, 1, dOf(y)); }
+                else if (r < 0.60) { l = pO(); q = onPoly(l, rnd()); j = gauss(1); x = q.x + q.nx * j; y = q.y + q.ny * j; put(3, i, x, y, bO, l.c || 2, 1, dOf(y)); }
                 else if (r < 0.76) { l = pr(); q = onPoly(l, rnd()); j = gauss(0.8); x = q.x + q.nx * j; y = q.y + q.ny * j; put(3, i, x, y, bRest, l.c, 1, dOf(y) * 0.3); }
                 else if (r < 0.86) {
                     // テーマのカードの上から星空へ散る光（上へ行くほど淡い）
                     var up = Math.abs(gauss(isMobile ? 70 : 110));
-                    put(3, i, theme.x + theme.w / 2 + gauss(theme.w * 0.32), theme.y - 6 - up, (0.05 + 0.14 * rnd()) * Math.sqrt(kN) * (1 - Math.min(1, up / 260)), rnd() < 0.5 ? 0 : 1, 3, 1);
+                    put(3, i, theme.x + theme.w / 2 + gauss(theme.w * 0.32), theme.y - 6 - up, (0.05 + 0.14 * rnd()) * Math.sqrt(kN) * (1 - Math.min(1, up / 260)), rnd() < 0.5 ? 0 : NM[3], 3, 1);
                 }
                 else put(3, i, X, theme.y - 4, 0, 0, 0, 1);
             }
@@ -344,10 +354,11 @@
         var vertexShader = [
             'precision highp float;',
             'attribute vec4 aS0, aS1, aS2, aS3, aS4, aS5; attribute float aSeed, aZ0;',
-            'uniform float uF, uTime, uScroll, uW, uH, uSize, uDPR, uHot, uRise, uSwirlB, uR;',
+            'uniform float uF, uTime, uScroll, uW, uH, uSize, uDPR, uHot, uRise, uR;',
             'uniform vec2 uOff[6]; uniform vec2 uPiv[6]; uniform vec2 uRootSeed;',
             'uniform vec3 uPointer;',
             'uniform vec4 uQuiet;',   // 06 の文字の箱（ページの座標 x0,y0,x1,y1）
+            'uniform vec4 uQ[16]; uniform float uFilB;',   // 文字の箱（束が後ろを通るとき暗くする）と、束の明るさ
             'uniform vec3 uPal[' + NP + '];',
             'varying vec3 vCol; varying float vB;',
             // 旧ホーム（scroll-scenes.js）と同じ 3D simplex noise の curl
@@ -376,6 +387,8 @@
             'float flowOf(float w, float d){ return codeOf(w)>3.5 ? 0.3+0.7*pow(0.5+0.5*sin(6.2832*(d*4.0-uTime*0.45)),3.0) : 1.0; }',
             'float riseP(){ return fract(uTime*0.03*(0.5+aSeed)+aSeed*13.7); }',
             'mat2 rot(float a){ return mat2(cos(a),-sin(a),sin(a),cos(a)); }',
+            // 文字の箱の中なら 1、外へ 40px かけて 0
+            'float inText(vec2 p){ float q=0.0; for(int i=0;i<16;i++){ vec4 r=uQ[i]; vec2 lo=r.xy-p, hi=p-r.zw; float o=max(max(lo.x,hi.x),max(lo.y,hi.y)); q=max(q, 1.0-smoothstep(0.0,40.0,o)); } return q; }',
             // 01：球（と輪）を Y 軸まわりに回し、少し傾けて遠近をつける。塵は平面でゆっくり回る
             'vec4 seedStage(){',
             '  vec2 c=uOff[0]; float b=bOf(aS0.z);',
@@ -400,7 +413,7 @@
             '  float dA=dOf(zOf(iA)), dB=dOf(zOf(iA+1));',
             '  float bA=A.z*flowOf(A.w,dA), bB=B.z*flowOf(B.w,dB);',
             // 場面の近くでは形を保ち（0〜0.22 と 0.78〜1）、そのあいだで移る
-            '  float te=smoothstep(0.22,0.78,f);',
+            '  float te=smoothstep(0.14,0.86,f);',   // 形を保つのは場面の前後 14%。移り目を長めにとる
             '  vec2 p; float b; float sw=0.0; float mixT=te;',
             '  if(iA==0){',
             // 01→02：球が種のように縮んで根の種へ集まり（前半）、種から近い順に根が伸びる（後半）
@@ -413,22 +426,35 @@
             // 03→04：順番の小さい粒子（ほかの枝・小さな木）が先に移り、物理学の枝から上は下から順に伸びて昇る
             '    float g=smoothstep(dB*0.7, dB*0.7+0.3, te);',
             '    p=mix(A.xy,B.xy,g); b=mix(bA*(1.0-0.5*te),bB,g); mixT=g;',
+            // 飛んでいるあいだ（着く直前まで）、文字の後ろでは暗く。着いた先は文字の外なので、着いた粒子には効かない
+            '    b*=mix(1.0, 0.1, (1.0-smoothstep(0.92,1.0,g))*step(0.001,g)*inText(p));',
             '    p+=vec2(sin(aSeed*40.0),cos(aSeed*23.0))*30.0*sin(3.14159*g);',
             '  } else {',
-            // 渦（§135.7）：画面全体へ散らばり、画面の中心のまわりを大きく回ってから次の形へ
-            '    sw=sin(3.14159*te);',
-            '    p=mix(A.xy,B.xy,te);',
+            // 捩れた線の束（§135.9）：粒子は 3 本の束 × 各 4 本の線（計 12 本）のどれかに乗り、線に沿って流れる。
+            // 束は画面をうねりながら横切り、4 本の線は束の芯のまわりを捩れ合う。移り目の真ん中（0.3〜0.7）は束のまま保ち、
+            // 両端で前の形から束へ、束から次の形へ。束は画面に固定（スクロールしても画面の中にある）
+            '    float env=smoothstep(0.0,0.3,te)*(1.0-smoothstep(0.7,1.0,te)); sw=env;',
+            '    float h1=fract(sin(aSeed*12.9898)*43758.5453), h2=fract(sin(aSeed*78.233)*24634.6345), h3=fract(sin(aSeed*39.425)*11743.21);',
+            '    float fid=floor(h1*12.0), bu=floor(fid/4.0), sd=mod(fid,4.0);',
+            '    float sl=fract(h2+uTime*0.05*(0.8+0.4*h3));',   // 線の上の位置（流れる）
+            '    float an=-0.42+bu*0.42+0.12*sin(uTime*0.11+bu*1.7);',
+            '    vec2 dr=vec2(cos(an),sin(an)), nr=vec2(-dr.y,dr.x);',
             '    vec2 vc=vec2(uW*0.5, uScroll+uH*0.5);',
-            '    vec2 sp=vec2(fract(sin(aSeed*12.9898)*43758.5453)*1.1-0.05, fract(sin(aSeed*78.233)*24634.6345)*1.1-0.05)*vec2(uW,uH)+vec2(0.0,uScroll);',
-            '    p=mix(p, sp, 0.94*smoothstep(0.0,1.0,sw));',
-            '    vec2 d=p-vc; float R=0.5*length(vec2(uW,uH)); float r=length(d);',
-            '    p=vc+rot(sw*((2.0+1.4*aSeed)*(1.0-0.5*r/R)+uTime*0.12))*d;',
-            '    b=mix(mix(bA,bB,te), uSwirlB, smoothstep(0.0,1.0,sw));',
+            '    float Lf=1.3*length(vec2(uW,uH));',
+            '    vec2 fp=vc+dr*(sl-0.5)*Lf + nr*((bu-1.0)*uH*0.26 + uH*0.16*sin(6.2832*sl*(0.9+0.35*bu)+uTime*0.35+bu*2.1));',
+            '    float tw=6.2832*(sl*(2.2+0.8*bu)-uTime*0.22)+sd*1.5708;',   // 束の芯のまわりの捩れ
+            '    float rad=(22.0+9.0*bu)*(0.75+0.25*sin(6.2832*sl*1.3+bu));',
+            // 1本の線の太さは ±1.5px（線どうしが混ざって帯にならないように）
+            '    fp+=nr*rad*sin(tw)+dr*rad*0.35*cos(tw)+nr*(h3-0.5)*3.0;',
+            '    p=mix(mix(A.xy,B.xy,te), fp, env);',
+            '    b=mix(mix(bA,bB,te), uFilB*(0.75+0.5*h3), env);',
+            // 文字の後ろを通るあいだは暗く。移り目の入り口から早めに効かせる（形から束へ動き出した明るい粒子が文字を横切るため）
+            '    b*=mix(1.0, 0.1, smoothstep(0.0,0.12,env)*inText(p));',
             '  }',
             // 揺らぎ（旧ホームと同じ式）。名前の近くは小さく、塵は大きく。渦の途中は大きく散らす
             '  float spd=0.9+aSeed*0.6;',
             '  vec3 cn=curl(vec3(mix(A.xy,B.xy,mixT)*0.0019, uTime*0.15*spd)+aSeed*7.0);',
-            '  p+=cn.xy*(2.4*mix(swayOf(A.w),swayOf(B.w),mixT) + 70.0*sw);',
+            '  p+=cn.xy*2.4*mix(swayOf(A.w),swayOf(B.w),mixT)*(1.0-0.8*sw);',   // 束の中では揺らぎを抑える（線の形を保つ）
             // ポインタ：近くの粒子をゆるく押しのける
             '  vec2 dp=p-uPointer.xy; float gp=exp(-dot(dp,dp)/(2.0*85.0*85.0))*uPointer.z;',
             '  p+=normalize(dp+vec2(0.0001))*gp*34.0;',
@@ -463,7 +489,8 @@
             uPointer: { value: new THREE.Vector3(-9999, -9999, 0) },
             uHot: { value: -1 }, uRise: { value: window.innerHeight * 1.1 },
             uQuiet: { value: new THREE.Vector4(0, 0, 0, 0) },
-            uSwirlB: { value: isMobile ? 0.26 : 0.32 },   // 渦のピークでの1粒の明るさ（§135.7）
+            uQ: { value: Array.apply(null, Array(16)).map(function () { return new THREE.Vector4(-1e5, -1e5, -1e5, -1e5); }) },
+            uFilB: { value: (isMobile ? 0.5 : 0.42) * Math.sqrt(kN) },   // 束の1粒の明るさ（束に重なるので、ひと粒は控えめでも線は明るい）
             uPal: { value: PAL.map(function (h) { return new THREE.Color(h); }) }
         };
         var material = new THREE.ShaderMaterial({
@@ -497,6 +524,8 @@
 
         /* ---- 箱の位置とスクロール → 場面の番号 ---------------------------------- */
         var centers = [0, 0, 0, 0, 0, 0], K = 6;
+        // 束や飛んでいる粒子が後ろを通るとき暗くする文字の箱（最大 16）。研究の階層の層ラベルと凡例も
+        var textEls = [].slice.call(document.querySelectorAll('.home-seed__inner, .home-block__head, .tree-note, .home-step__inner, .home-branch__more, .roots__tip, [data-branch-viz] .rs-tier__label, [data-branch-viz] .rs-energy')).slice(0, 16);
         function readBoxes() {
             var sy = window.scrollY, sx = window.scrollX, o = uniforms.uOff.value, H = window.innerHeight;
             var g = seedEl.getBoundingClientRect();
@@ -507,6 +536,7 @@
                 o[k + 1].set(r.left + sx, r.top + sy);
                 centers[k + 1] = r.top + sy + r.height / 2;
             });
+            textEls.forEach(function (e, k) { var q = e.getBoundingClientRect(); uniforms.uQ.value[k].set(q.left + sx, q.top + sy, q.right + sx, q.bottom + sy); });
             var qi = stepInner.getBoundingClientRect();
             uniforms.uQuiet.value.set(qi.left + sx, qi.top + sy, qi.right + sx, qi.bottom + sy);
             // 縦長の木は中心で揃えると、上の方を読んでいるあいだ形が崩れたままになる。
@@ -547,7 +577,10 @@
             fpsN++; fpsT += dt; if (fpsT > 1) { fps = fpsN / fpsT; fpsN = 0; fpsT = 0; }
             readBoxes();
             var target = sceneFor(window.scrollY + window.innerHeight / 2);
-            fEased += (target - fEased) * Math.min(1, dt * 4.5);
+            // 追いつく速さに上限（1秒に 0.8 場面）：素早くスクロールしても、移り目の束が一瞬で終わらず
+            // 0.5 秒ほど見えてから次の形へ。ふつうの速さのスクロールは上限より遅いので、そのまま追従する
+            var gap = target - fEased, stepF = gap * Math.min(1, dt * 2.6), cap = dt * 0.8;
+            fEased += Math.max(-cap, Math.min(cap, stepF));
             ptr.s += ((ptr.on ? 1 : 0) - ptr.s) * Math.min(1, dt * 4);
             uniforms.uF.value = fEased; uniforms.uTime.value = clock; uniforms.uScroll.value = window.scrollY;
             uniforms.uPointer.value.set(ptr.x, ptr.y, ptr.s);
