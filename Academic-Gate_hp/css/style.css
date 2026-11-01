@@ -823,6 +823,13 @@ footer a:hover {
     color: var(--text-secondary);
 }
 
+/* 中身がまだ無いページの1行（blog / videos）。.page-header と同じ幅・左右の余白に揃える（§135.14） */
+.page-note {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 var(--gutter) var(--space-16);
+}
+
 /* Generic grids used by blog / videos / sns / study（分野カード）。
    `auto-fill` のままにしてあるのは意図的：`auto-fit` は「トラック数より要素が
    少ない」ときに空トラックを潰すため、カードが1枚だけの節（03 — TRAINING）で
@@ -2204,7 +2211,29 @@ a.study-card::before,
     text-align: center;
     /* 文字は上寄せ、下に球体（§135.8）。球体が文字の下に入らないように */
     padding: calc(var(--nav-clearance) + 7vh) var(--gutter) var(--space-12);
-    --sphere-r: min(220px, 25vw, 23vh);   /* §135.12：PC で球と輪が画面の高さの半分を超える大きさ */
+    /* §135.14：旧ホームの宇宙の球と同じ割合。PC は直径が画面の高さの 84%、スマホは画面の幅の 86%（旧の S=2.05・カメラ 8.5 の見え方）。
+       輪（球の 1.4〜1.9 倍）は画面の横からはみ出してよい（.home-seed で横だけ切る） */
+    --sphere-r: min(42vh, 43vw);
+    overflow-x: clip;
+}
+
+/* 球が大きく文字と重なるので（§135.14）、文字の列を球より手前に、後ろにふちの無い暗がり（02〜05 の見出しと同じ作り） */
+.home-seed__inner {
+    position: relative;
+    z-index: 1;
+}
+
+.home-seed__inner::before {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    inset: -3rem -5rem;
+    pointer-events: none;
+    background: radial-gradient(ellipse closest-side,
+            rgba(0, 0, 0, 0.72) 0%,
+            rgba(0, 0, 0, 0.58) 55%,
+            rgba(0, 0, 0, 0.2) 82%,
+            transparent 100%);
 }
 
 .home-seed__inner .eyebrow {
@@ -2230,13 +2259,13 @@ a.study-card::before,
 .home-seed__glyph {
     position: absolute;
     left: 50%;
-    top: 70%;
+    top: 54%;
     width: calc(var(--sphere-r) * 2);
     height: calc(var(--sphere-r) * 2);
     transform: translate(-50%, -50%);
     border-radius: 50%;
-    background: radial-gradient(circle at 42% 38%, rgba(232, 246, 255, 0.95) 0%, rgba(159, 210, 255, 0.6) 9%,
-            rgba(111, 176, 255, 0.28) 38%, rgba(111, 176, 255, 0.1) 68%, transparent 72%);
+    background: radial-gradient(circle at 50% 50%, rgba(232, 246, 255, 0.9) 0%, rgba(159, 210, 255, 0.45) 4%,
+            rgba(111, 176, 255, 0.16) 30%, rgba(111, 176, 255, 0.07) 66%, transparent 71%);
 }
 
 .home-seed__glyph::after {

@@ -150,6 +150,8 @@
         function buildSeed() {
             st = 0x11;
             R0 = seedEl.offsetWidth / 2 || 150;
+            // §135.14 で球を大きくした（PC 207→378px）。同じ粒子数が広い面に散るので、1粒を面積の比に近い割合で明るくする
+            var aK = Math.max(1, Math.pow(R0 / (isMobile ? 94 : 207), 1.6));
             for (var i = 0; i < N; i++) {
                 var r = rnd(), u, th, s3, rn, x, y, z;
                 if (r < 0.03) { put(0, i, gauss(R0 * 0.06), gauss(R0 * 0.06), 0.35, 0, 0); Z0[i] = gauss(R0 * 0.06); }
@@ -162,19 +164,19 @@
                     var shell = 0.72 + 0.28 * Math.sin(rn * 17.0);
                     x = dx * rn * R0; y = dy * rn * R0; z = dz * rn * R0;
                     // 球は明るい青（§135.12）。粒子数が多いぶん 1 粒は控えめ
-                    put(0, i, x, y, (0.06 + 0.26 * rn * rn) * shell * (0.6 + 0.9 * clump) * kN, rn < 0.55 ? 25 : 26, 1);
+                    put(0, i, x, y, (0.06 + 0.26 * rn * rn) * shell * (0.6 + 0.9 * clump) * kN * aK, rn < 0.55 ? 25 : 26, 1);
                     Z0[i] = z;
                 }
                 else if (r < 0.78) {
                     // 輪：球の外側を、球より速く回る（シェーダで回す）。色は赤（§135.12）
                     var a = rnd() * 6.2832, rr = R0 * (1.4 + 0.5 * Math.pow(rnd(), 0.7));
-                    put(0, i, Math.cos(a) * rr, gauss(R0 * 0.022), 0.16 * kN, NM[0], 2);
+                    put(0, i, Math.cos(a) * rr, gauss(R0 * 0.022), 0.16 * kN * aK, NM[0], 2);
                     Z0[i] = Math.sin(a) * rr;
                 }
                 else if (r < 0.92) {
-                    // 虹の光の線：中心から輪へ流れ込む 14 本（七色×2）。x＝線の向き（角度）、y＝線の上の位置の初期値。動きはシェーダ（揺れの段 5）
-                    var k = Math.floor(rnd() * 14);
-                    put(0, i, k / 14 * 6.2832 + 0.15 * Math.sin(k * 2.3), rnd(), 0.2 * kN, 18 + k % 7, 5);
+                    // 虹の帯：中心から輪へ流れ込む 6 本（§135.14）。x＝帯の向き（角度）、y＝帯の上の位置の初期値。形と色はシェーダ（揺れの段 5）
+                    var k = Math.floor(rnd() * 6);
+                    put(0, i, k / 6 * 6.2832 + 0.25 * Math.sin(k * 2.3), rnd(), 0.035 * kN * aK, 18, 5);
                     Z0[i] = 0;
                 }
                 else {
@@ -348,21 +350,17 @@
         // 色は内縁で白、内側でシアン、中ほどで青、外縁で淡い赤（内側ほど高温）
         var bh = { cx: 0, cy: 0, rin: 300, rout: 520, cosI: 0.5 };
         function buildStep() {
+            // §135.14：円盤は 4 本の渦の腕（カードごとに1本）。各腕は幅のある帯で、内縁から外縁まできつく巻く（1.4 周）。
+            // 腕は重なり合ってひとつの渦に見える。色はシェーダで半径から決める（内側＝青・外側＝赤の連続した虹）。
+            // x＝腕の上の位置の初期値（0 内縁〜1 外縁、時間とともに内へ流れる）、y＝帯の幅方向の位置（-1〜1）、色番号 30＋腕の番号
             st = 0x66;
             if (!stepBox.__bh) return false;
             bh = stepBox.__bh;
-            var RIN = bh.rin, ROUT = bh.rout, span = ROUT - RIN, clumps = [];
-            for (var c = 0; c < 9; c++) clumps.push([RIN + span * Math.pow(rnd(), 0.8) * 0.85, rnd() * 6.2832, 0.5 + rnd()]);
             for (var i = 0; i < N; i++) {
-                var r = rnd(), rr, th, x;
-                if (r < 0.12) { rr = RIN * (1 + Math.abs(gauss(0.025))); th = rnd() * 6.2832; }
-                else if (r < 0.4) { var cc = clumps[Math.floor(rnd() * clumps.length)]; rr = cc[0] + (rnd() * 2 - 1) * span * 0.05 * cc[2]; th = cc[1] + (rnd() * 2 - 1) * 0.45 * cc[2]; }
-                else { rr = RIN + span * Math.pow(rnd(), 1.7); th = rnd() * 6.2832; }
-                x = Math.max(0, Math.min(1, (rr - RIN) / span));
-                var col = x < 0.06 ? 0 : x < 0.3 ? 1 : x < 0.78 ? 2 : NM[0];
-                var b = (0.05 + 0.3 * Math.pow(1 - x, 2.2)) * kN * (col === NM[0] ? 0.7 : 1);
+                var arm = Math.floor(rnd() * 4), lat = gauss(0.55);
+                var b = 0.05 * kN * (1 - 0.6 * Math.min(1, Math.abs(lat)));
                 // 順番（d）は粒子ごとの乱数：05 からの移り目で、吸い込まれる時期をずらす
-                put(5, i, rr, th, b, col, 0, rnd());
+                put(5, i, rnd(), Math.max(-1, Math.min(1, lat)), b, 30 + arm, 0, rnd());
             }
             pivots[5] = [bh.cx, bh.cy];
             return true;
@@ -384,7 +382,9 @@
             'uniform vec3 uPointer;',
             'uniform vec4 uQ[16]; uniform float uFilB;',   // 文字の箱（束が後ろを通るとき暗くする）と、束の明るさ
             'uniform vec3 uPal[' + NP + '];',
-            'varying vec3 vCol; varying float vB;',
+            'varying vec3 vCol; varying float vB; varying float vSoft;',
+            'uniform float uBHout;',   // 降着円盤の外縁の半径
+            'float gRain;',   // stageOf が決める：虹の色の位置（0 青紫〜1 赤）。虹でない粒子は -1
             // 旧ホーム（scroll-scenes.js）と同じ 3D simplex noise の curl
             'vec3 mod289(vec3 x){return x-floor(x*(1.0/289.0))*289.0;}',
             'vec4 mod289(vec4 x){return x-floor(x*(1.0/289.0))*289.0;}',
@@ -411,43 +411,61 @@
             'float flowOf(float w, float d){ float c=codeOf(w); return (c>3.5&&c<4.5) ? 0.3+0.7*pow(0.5+0.5*sin(6.2832*(d*4.0-uTime*0.45)),3.0) : 1.0; }',
             'mat2 rot(float a){ return mat2(cos(a),-sin(a),sin(a),cos(a)); }',
             // 文字の箱の中なら 1、外へ 40px かけて 0
-            'float inText(vec2 p){ float q=0.0; for(int i=0;i<16;i++){ vec4 r=uQ[i]; vec2 lo=r.xy-p, hi=p-r.zw; float o=max(max(lo.x,hi.x),max(lo.y,hi.y)); q=max(q, 1.0-smoothstep(0.0,40.0,o)); } return q; }',
+            'float inTextM(vec2 p, float m){ float q=0.0; for(int i=0;i<16;i++){ vec4 r=uQ[i]; vec2 lo=r.xy-p, hi=p-r.zw; float o=max(max(lo.x,hi.x),max(lo.y,hi.y)); q=max(q, 1.0-smoothstep(0.0,m,o)); } return q; }',
+            'float inText(vec2 p){ return inTextM(p,40.0); }',
+            // 虹の帯の点は大きくぼかしてあるので、光が文字の箱へ届く範囲も広い。ふちを 110px にとる（§135.14）
+            'float inTextSoft(vec2 p){ return inTextM(p,110.0); }',
             // 01：球（と輪）を Y 軸まわりに回し、少し傾けて遠近をつける。塵は平面でゆっくり回る
+            // 虹：PAL の 18〜24（紫・青・水色・緑・黄・橙・赤）を連続につなぐ
+            'vec3 rainbow(float t){ t=clamp(t,0.0,1.0)*6.0; int i=int(floor(t)); float u=fract(t); vec3 a=uPal[18], b2=uPal[19];',
+            '  for(int j=0;j<6;j++){ if(j==i){ a=uPal[18+j]; b2=uPal[19+j]; } } if(i>=6){ a=uPal[24]; b2=uPal[24]; } return mix(a,b2,smoothstep(0.0,1.0,u)); }',
             'vec4 seedStage(){',
             '  vec2 c=uOff[0]; float b=bOf(aS0.z);',
-            // 虹の光の線（段 5）：中心から輪の内側まで、線の上を外へ流れ続ける。輪と同じ傾きで回す。両端で薄く
+            // 虹の帯（段 5、§135.14）：中心から輪の内側まで、幅のある柔らかい帯の上を光が外へ流れ続ける。
+            // 帯の幅（中心で細く、外へ行くほど広い）方向に、紫から赤までの虹。輪と同じ傾き・回転で回す。両端で薄く
             '  if(codeOf(aS0.w)>4.5){',
-            '    float sl=fract(aS0.y+uTime*0.11*(0.8+0.4*aSeed)), rr=mix(0.08,1.42,sl)*uR, an=aS0.x+0.35*sl;',
-            '    vec3 q=vec3(cos(an)*rr, (aSeed-0.5)*1.6, sin(an)*rr); q.xz=rot(uTime*0.2)*q.xz; q.yz=rot(0.38)*q.yz;',
-            '    float s=900.0/(900.0+q.z);',
-            '    return vec4(c+q.xy*s, b*sin(3.14159*sl), aS0.w); }',
+            '    float lat=fract(sin(aSeed*91.7)*43758.5453)*2.0-1.0;',
+            '    float sl=fract(aS0.y+uTime*0.09*(0.8+0.4*aSeed)), rr=mix(0.06,1.4,sl)*uR, an=aS0.x+0.4*sl;',
+            '    float wid=mix(0.012,0.16,sl)*uR;',
+            '    vec2 dir=vec2(cos(an),sin(an)), nrm=vec2(-dir.y,dir.x);',
+            '    vec2 xz=dir*rr+nrm*lat*wid;',
+            '    vec3 q=vec3(xz.x, 0.0, xz.y); q.xz=rot(uTime*0.2)*q.xz; q.yz=rot(0.38)*q.yz;',
+            '    float s=900.0/(900.0+q.z); gRain=(lat+1.0)*0.5;',
+            '    return vec4(c+q.xy*s, b*sin(3.14159*sl)*(1.0-0.5*abs(lat)), aS0.w); }',
             '  if(codeOf(aS0.w)>2.5){ return vec4(c+rot(uTime*0.025*(0.6+aSeed))*aS0.xy, b, aS0.w); }',
             '  vec3 q=vec3(aS0.x, aS0.y, aZ0); float spd=length(q)>1.3*uR ? 0.42 : 0.2;',
             '  q.xz=rot(uTime*spd)*q.xz; q.yz=rot(0.38)*q.yz;',
             '  float s=900.0/(900.0+q.z); float near=clamp(0.5-q.z/(2.6*uR),0.0,1.0);',
             '  return vec4(c+q.xy*s, b*mix(0.5,1.35,near), aS0.w); }',
             'vec4 stageOf(int k){',
+            '  gRain=-1.0;',
             '  if(k==0) return seedStage();',
             '  if(k==1) return vec4(aS1.xy+uOff[1], bOf(aS1.z), aS1.w); if(k==2) return vec4(aS2.xy+uOff[2], bOf(aS2.z), aS2.w);',
             '  if(k==3) return vec4(aS3.xy+uOff[3], bOf(aS3.z), aS3.w); if(k==4) return vec4(aS4.xy+uOff[4], bOf(aS4.z), aS4.w);',
-            // 06：降着円盤。ケプラー回転（角速度は r^-1.5、時間に比例して進むだけなので滑らか）。近づいてくる側（左）を少し明るく
-            '  float rr=aS5.x, th=aS5.y+uTime*0.22*pow(uBH.z/rr,1.5);',
-            '  vec2 q=vec2(rr*cos(th), rr*sin(th)*uBH.w+(aSeed-0.5)*5.0);',
+            // 06：降着円盤（§135.14）。4 本の渦の腕がそれぞれ幅のある虹の帯。腕の形は一定の速さで回り（滑らか）、
+            // 粒子は腕に沿って外から内へゆっくり流れ込む。帯の幅は半径方向で、色は半径で決まる（内側＝青、外側＝赤）ので、
+            // 腕が重なって、ひとつの虹の渦に見える。近づいてくる側（左）を少し明るく
+            '  float span=uBHout-uBH.z, arm=floor(aS5.w+0.05)-30.0;',
+            '  float sp=fract(aS5.x-uTime*0.012);',
+            '  float rr=uBH.z+span*(0.03+0.97*sp)+aS5.y*span*0.11;',
+            '  float th=arm*1.5708+(1.0-sp)*6.2832*1.4+uTime*0.16;',
+            '  vec2 q=vec2(rr*cos(th), rr*sin(th)*uBH.w);',
+            '  gRain=clamp((rr-uBH.z)/span,0.0,1.0)*0.92+0.04;',
             // スマホでは締めの文が影に収まらず円盤の上に載るので、文字の箱の後ろの円盤は 15% まで暗く（PC では影の中なので効かない）
             '  vec2 wp=uOff[5]+uBH.xy+q;',
-            '  return vec4(wp, bOf(aS5.z)*(1.0-0.28*cos(th))*mix(1.0,0.15,inText(wp)), aS5.w); }',
+            '  return vec4(wp, bOf(aS5.z)*(1.0-0.28*cos(th))*smoothstep(0.0,0.08,sp)*mix(1.0,0.15,inTextSoft(wp)), aS5.w); }',
             'float zOf(int k){ if(k==0) return aS0.z; if(k==1) return aS1.z; if(k==2) return aS2.z; if(k==3) return aS3.z; if(k==4) return aS4.z; return aS5.z; }',
             'vec3 palOf(float i){ int k=int(i+0.5); vec3 c=uPal[0];',
             '  for(int j=1;j<' + NP + ';j++){ if(j==k) c=uPal[j]; } return c; }',
             'void main(){',
             '  float F=clamp(uF,0.0,5.0); int iA=int(floor(F)); if(iA>4) iA=4;',
             '  float f=F-float(iA);',
-            '  vec4 A=stageOf(iA), B=stageOf(iA+1);',
+            '  vec4 A=stageOf(iA); float rA=gRain; vec4 B=stageOf(iA+1); float rB=gRain;',
             '  float dA=dOf(zOf(iA)), dB=dOf(zOf(iA+1));',
             '  float bA=A.z*flowOf(A.w,dA), bB=B.z*flowOf(B.w,dB);',
             // 場面の近くでは形を保ち（0〜0.22 と 0.78〜1）、そのあいだで移る
             '  float te=smoothstep(0.14,0.86,f);',   // 形を保つのは場面の前後 14%。移り目を長めにとる
-            '  vec2 p; float b; float sw=0.0; float mixT=te; float zd=0.0; vec3 colX=vec3(-1.0);',
+            '  vec2 p; float b; float sw=0.0; float mixT=te; float zd=0.0; vec3 colX=vec3(-1.0); float softX=-1.0;',
             '  if(iA==0){',
             // 01→02：球が種のように縮んで根の種へ集まり（前半）、種から近い順に根が伸びる（後半）
             '    float u1=smoothstep(0.0,0.5,te), u2=smoothstep(0.5,1.0,te);',
@@ -494,12 +512,19 @@
             '    vec2 va=(cc-C)/vec2(1.0,uBH.w); float ra=length(va), aa=atan(va.y,va.x);',
             '    float Rc=uBH.z*(1.25+0.15*ci);',
             '    float an=aa+6.2832*1.25*smoothstep(0.0,1.0,u), rad=mix(ra,Rc,smoothstep(0.0,0.85,u));',
-            '    vec2 path=C+vec2(cos(an),sin(an)*uBH.w)*rad+vec2(sin(aSeed*91.0),cos(aSeed*53.0))*2.0;',
+            // 着くにつれて、筋は幅のある虹の帯に広がる（幅は半径方向。色は帯の中の半径で決まる＝円盤と同じ）
+            '    float lat=fract(sin(aSeed*91.7)*43758.5453)*2.0-1.0, wv=smoothstep(0.3,0.95,u);',
+            '    float spanS=uBHout-uBH.z; rad+=lat*mix(2.0, spanS*0.13, wv);',
+            '    vec2 path=C+vec2(cos(an),sin(an)*uBH.w)*rad;',
+            '    float tr=clamp((rad-uBH.z)/spanS,0.0,1.0)*0.92+0.04;',
             '    float lv=smoothstep(0.0,0.12,u), ar=smoothstep(0.85,1.0,u);',
             '    p=mix(mix(A.xy,path,lv), B.xy, ar);',
             '    b=mix(mix(bA, uFilB*0.9, lv), bB, ar); mixT=ar;',
-            '    colX=mix(palOf(A.w), palOf(B.w), ar);',
-            '    b*=mix(1.0, 0.1, lv*(1.0-ar)*inText(p));',
+            '    colX=mix(mix(palOf(A.w), rainbow(tr), wv), rainbow(rB), ar); softX=wv;',
+            // 着く途中（流れの筋から円盤の位置へ移るあいだ）も文字の後ろでは暗く。着く先の円盤の明るさ（bB）は円盤の位置で
+            // 減光してあるが、途中の位置は文字の箱を横切ることがあるため（スマホで「06 — Step」の上を通った。§135.14）
+            // 1 本の筋にカード1枚ぶんの粒子が重なるので、10% では足りない（スマホで 2.8:1）。2% まで落とす
+            '    b*=mix(1.0, 0.02, lv*mix(inText(p),inTextSoft(p),wv));',
             '  } else {',
             // 捩れた線の束（§135.9）：粒子は 3 本の束 × 各 4 本の線（計 12 本）のどれかに乗り、線に沿って流れる。
             // 束は画面をうねりながら横切り、4 本の線は束の芯のまわりを捩れ合う。移り目の真ん中（0.3〜0.7）は束のまま保ち、
@@ -531,19 +556,24 @@
             '  p+=normalize(dp+vec2(0.0001))*gp*34.0;',
             // 05：カードに触れているあいだ、その実と輪郭を明るく
             '  float hot=max(step(abs(floor(A.w+0.05)-uHot),0.1)*(1.0-mixT), step(abs(floor(B.w+0.05)-uHot),0.1)*mixT); b*=1.0+1.8*hot;',
-            '  vCol = colX.x>=0.0 ? colX : mix(palOf(A.w),palOf(B.w),mixT);',
+            '  vec3 cA = rA>=0.0 ? rainbow(rA) : palOf(A.w), cB = rB>=0.0 ? rainbow(rB) : palOf(B.w);',
+            '  vCol = colX.x>=0.0 ? colX : mix(cA,cB,mixT);',
+            '  vSoft = softX>=0.0 ? softX : mix(step(0.0,rA), step(0.0,rB), mixT);',
             // 01：見出しとキャッチコピーの後ろでは暗く（球と輪が大きくなったため）
             '  if(iA==0) b*=mix(1.0, 0.12, (1.0-mixT)*inText(p));',
             '  vB=b;',
             '  gl_Position=vec4(p.x/uW*2.0-1.0, 1.0-(p.y-uScroll)/uH*2.0, 0.0, 1.0);',
-            '  gl_PointSize=uSize*uDPR*(0.75+0.5*aSeed)*(1.0+0.6*step(0.9,b))*(1.0+0.45*zd);',   // 03→04 の手前の粒子は大きく
+            // 03→04 の手前の粒子は大きく。虹の帯の粒子は大きく柔らかい点にして、隣と溶け合わせる
+            '  gl_PointSize=uSize*uDPR*(0.75+0.5*aSeed)*(1.0+0.6*step(0.9,b))*(1.0+0.45*zd)*mix(1.0,3.4,vSoft);',
             '}'
         ].join('\n');
         var fragmentShader = [
             'precision highp float;',
-            'varying vec3 vCol; varying float vB;',
+            'varying vec3 vCol; varying float vB; varying float vSoft;',
             'void main(){ vec2 uv=gl_PointCoord-0.5; float d=length(uv); if(d>0.5) discard;',
-            '  float k=min(1.0, vB*smoothstep(0.5,0.0,d)); vec3 c=vCol*k;',
+            // 虹の帯の点は縁がなだらか（ぼかし）
+            '  float fall=mix(smoothstep(0.5,0.0,d), pow(1.0-2.0*d,2.2), vSoft);',
+            '  float k=min(1.0, vB*fall); vec3 c=vCol*k;',
             // 乗算済みの色（c）と、α＝いちばん明るい色の成分。色が α を超えない正しい乗算済みの画素にする（§135.6）
             '  gl_FragColor=vec4(c, max(c.r,max(c.g,c.b))); }'
         ].join('\n');
@@ -556,7 +586,7 @@
             uPiv: { value: [0, 1, 2, 3, 4, 5].map(function () { return new THREE.Vector2(); }) },
             uRootSeed: { value: new THREE.Vector2() }, uR: { value: 150 },
             uPointer: { value: new THREE.Vector3(-9999, -9999, 0) },
-            uHot: { value: -1 }, uBH: { value: new THREE.Vector4(0, 0, 300, 0.5) }, uThemeC: { value: new THREE.Vector2() },
+            uHot: { value: -1 }, uBH: { value: new THREE.Vector4(0, 0, 300, 0.5) }, uBHout: { value: 520 }, uThemeC: { value: new THREE.Vector2() },
             uCard: { value: [0, 1, 2, 3].map(function () { return new THREE.Vector2(); }) },
             uQ: { value: Array.apply(null, Array(16)).map(function () { return new THREE.Vector4(-1e5, -1e5, -1e5, -1e5); }) },
             uFilB: { value: (isMobile ? 0.5 : 0.42) * Math.sqrt(kN) },   // 束の1粒の明るさ（束に重なるので、ひと粒は控えめでも線は明るい）
@@ -584,7 +614,7 @@
             attrs.forEach(function (a) { a.needsUpdate = true; }); aZ.needsUpdate = true;
             pivots.forEach(function (p, k) { uniforms.uPiv.value[k].set(p[0], p[1]); });
             uniforms.uR.value = R0; uniforms.uRootSeed.value.set(rootSeed.x, rootSeed.y);
-            uniforms.uBH.value.set(bh.cx, bh.cy, bh.rin, bh.cosI);
+            uniforms.uBH.value.set(bh.cx, bh.cy, bh.rin, bh.cosI); uniforms.uBHout.value = bh.rout;
             return ok;
         }
         var rebuildTimer = null;
