@@ -366,4 +366,47 @@
             c.addEventListener('focusout', function () { on(false); });
         });
     }
+
+    /* ---- 06：ブラックホール（§135.10）。締めの文の箱から大きさを決める。
+       PC：内縁（事象の地平面の影）が締めの文を包む大きさ。外縁は画面幅の 4 割以上。傾きは文の高さが影に収まるように
+       スマホ：外縁を画面幅に合わせる（文は影に収まらないので、影・暗がり・粒子の減光で読めるようにする）
+       粒子のエンジンは step.__bh を使う（中心は section の左上から、半径は px、cosI は円盤の傾き） ---- */
+    var bhBox = document.querySelector('[data-bh]');
+    if (bhBox) {
+        var step = bhBox.parentNode, inner = step.querySelector('.home-step__inner');
+        var bsvg = el('svg', { class: 'bh__svg', 'aria-hidden': 'true', focusable: 'false' });
+        bhBox.appendChild(bsvg);
+        watch(step, function (W, H) {
+            var vw = document.documentElement.clientWidth;
+            var cx = inner.offsetLeft + inner.offsetWidth / 2, cy = inner.offsetTop + inner.offsetHeight / 2;
+            var rin, rout, cosI;
+            if (vw > 600) {
+                var tw = Math.min(inner.offsetWidth, inner.querySelector('h2').offsetWidth + 40);
+                rin = Math.max(tw / 2 + 50, 250);
+                cosI = Math.max(0.42, Math.min(0.92, (inner.offsetHeight / 2 + 36) / rin));
+                rout = Math.max(rin * 1.7, vw * 0.4);
+            } else {
+                rout = vw * 0.54; rin = rout / 1.75; cosI = 0.55;
+            }
+            step.__bh = { cx: cx, cy: cy, rin: rin, rout: rout, cosI: cosI };
+            while (bsvg.firstChild) bsvg.removeChild(bsvg.firstChild);
+            var w = rout * 2 + 40, h = rout * 2 * cosI + 40;
+            bsvg.setAttribute('width', f1(w)); bsvg.setAttribute('height', f1(h)); bsvg.setAttribute('viewBox', '0 0 ' + f1(w) + ' ' + f1(h));
+            bsvg.style.left = f1(cx - w / 2) + 'px'; bsvg.style.top = f1(cy - h / 2) + 'px';
+            var defs = el('defs', {});
+            // 輪：内縁で白く、外へ青、外縁で淡い赤（内側ほど高温。研究の階層の 450→650nm と同じ向き）
+            var k = rin / rout;
+            var gr = el('radialGradient', { id: 'bh-ring' });
+            [[0, 'transparent', 0], [k * 0.995, 'transparent', 0], [k, '#e8f6ff', 0.85], [k + 0.06, '#5fd0ff', 0.55], [k + (1 - k) * 0.45, '#3d8bff', 0.32], [0.86, 'var(--nm-650)', 0.14], [1, 'var(--nm-650)', 0]].forEach(function (st) {
+                var e = el('stop', { offset: f1(Math.min(1, st[0]) * 1000) / 1000 }); e.style.stopColor = st[1]; e.style.stopOpacity = st[2]; gr.appendChild(e);
+            });
+            // 影：中心は黒、縁で背景へなじむ
+            var gh = el('radialGradient', { id: 'bh-hole' });
+            [[0, 0.96], [0.82, 0.92], [1, 0]].forEach(function (st) { var e = el('stop', { offset: st[0] }); e.style.stopColor = '#000'; e.style.stopOpacity = st[1]; gh.appendChild(e); });
+            defs.appendChild(gr); defs.appendChild(gh); bsvg.appendChild(defs);
+            bsvg.appendChild(el('ellipse', { class: 'bh__ring', cx: f1(w / 2), cy: f1(h / 2), rx: f1(rout), ry: f1(rout * cosI), fill: 'url(#bh-ring)' }));
+            bsvg.appendChild(el('ellipse', { class: 'bh__hole', cx: f1(w / 2), cy: f1(h / 2), rx: f1(rin * 1.02), ry: f1(rin * cosI * 1.02), fill: 'url(#bh-hole)' }));
+            done(step);
+        });
+    }
 })();

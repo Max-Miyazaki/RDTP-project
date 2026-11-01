@@ -79,12 +79,12 @@ var RESEARCH_LINKS = {
     function render(stack) {
         var compact = stack.getAttribute('data-research') === 'compact';
         if (compact) stack.classList.add('rs-stack--compact');
-        // 色は可視光のエネルギー順（上ほど高エネルギー＝青、下ほど低エネルギー＝赤。§135.9）。上下に凡例の1行
-        stack.innerHTML = '<p class="rs-energy rs-energy--hi" lang="ja">高エネルギー（専門）</p>' + RESEARCH_TIERS.map(function (t) {
+        // 色は可視光のエネルギー順（上ほど高エネルギー＝青、下ほど低エネルギー＝赤。§135.9）。凡例は左の細いスペクトルの帯だけ（§135.10）
+        stack.innerHTML = RESEARCH_TIERS.map(function (t) {
             return '<div class="rs-tier rs-tier--' + t.mod + ' reveal">' +
                 '<p class="rs-tier__label"><span>' + t.en + '</span><span lang="ja">' + t.ja + '</span></p>' +
                 '<ul class="rs-cards">' + t.cards.map(function (c) { return card(c, compact); }).join('') + '</ul></div>';
-        }).join('<div class="rs-link" aria-hidden="true"></div>') + '<p class="rs-energy rs-energy--lo" lang="ja">低エネルギー（基礎）</p>';
+        }).join('<div class="rs-link" aria-hidden="true"></div>');
         link(stack);
     }
 

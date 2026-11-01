@@ -1748,7 +1748,7 @@ footer a:hover {
     border-color: var(--hi, var(--accent));
 }
 
-/* 凡例：階層の左に細いスペクトルの帯、上下に「高エネルギー」「低エネルギー」 */
+/* 凡例：階層の左に細いスペクトルの帯（上＝高エネルギーの青 → 下＝低エネルギーの赤。文字は付けない §135.10） */
 .rs-stack::before {
     content: '';
     position: absolute;
@@ -1759,34 +1759,6 @@ footer a:hover {
     border-radius: 1px;
     background: linear-gradient(to bottom, var(--nm-450), var(--nm-520), var(--nm-590), var(--nm-650));
     opacity: 0.8;
-}
-
-.rs-energy {
-    display: flex;
-    align-items: center;
-    gap: 0.5em;
-    max-width: none;
-    margin: 0 0 var(--space-3);
-    font-size: 0.72rem;
-    letter-spacing: 0.08em;
-    line-height: 1.4;
-    color: var(--text-secondary);
-}
-
-.rs-energy--lo {
-    margin: var(--space-3) 0 0;
-}
-
-.rs-energy::before {
-    content: '';
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    background: var(--nm-450);
-}
-
-.rs-energy--lo::before {
-    background: var(--nm-650);
 }
 
 @media (max-width: 600px) {
@@ -3121,7 +3093,43 @@ a.tree-node {
 
 /* --- 06 一歩 ---------------------------------------------------------------- */
 .home-step {
+    position: relative;
     padding-bottom: var(--space-16);
+    /* ブラックホールは箱より広い（PC で画面幅の 7〜8 割、スマホで画面幅）。横のはみ出しは .home で切る */
+    overflow-x: visible;
+}
+
+.home {
+    overflow-x: clip;
+}
+
+/* PC では締めの文が事象の地平面の影に収まるよう、行を詰める */
+@media (min-width: 601px) {
+    .home-step .home-step__inner h2 {
+        max-width: 13em;
+    }
+}
+
+/* ブラックホール（§135.10）。academic-tree.js が SVG を描く：円盤の輪（静的な絵）と、事象の地平面の影。
+   粒子が動く画面では輪を粒子に譲り、影は残す（影が文字の後ろを暗く保つ） */
+.bh {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+}
+
+.bh__svg {
+    position: absolute;
+    overflow: visible;
+}
+
+.bh__ring {
+    transition: opacity 0.8s var(--ease);
+}
+
+.has-particles .bh__ring {
+    opacity: 0;
 }
 
 .home-step__inner {

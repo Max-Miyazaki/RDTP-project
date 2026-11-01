@@ -12,7 +12,8 @@
 
    移り方（§135.7・§135.8）
      01→02  球が種のように縮んで根の種の位置へ集まり、根が種から先へ伸びる
-     03→04  ほかの枝が先に移り、物理学の枝が下から順に伸びて階層を昇る
+     03→04  木が立体にねじれて枝どうしが巻きつき、物理学の枝へ収束して、階層を下から昇る
+     05→06  実の粒子が舞い上がり、らせん状にブラックホールへ吸い込まれて降着円盤になる
      ほか   画面全体へ散って大きく渦を巻き、次の形へ収束する
    止まっている場面でも、旧ホームと同じ curl noise でゆらゆら揺れる。
 
@@ -332,15 +333,29 @@
             return true;
         }
 
-        // 06 一歩：葉。場面の下の方から舞い上がり、明るさを落として星空へ溶ける（動きはシェーダ）
+        // 06 一歩：ブラックホールの降着円盤（旧ホームの §34 を移植、§135.10）。粒子は円盤の上の (半径, 最初の角度) だけを持ち、
+        // 角度はシェーダで θ = θ0 + 時間 × ω(r)、ω ∝ r^-1.5（ケプラー回転：内側ほど速い）で進める。傾けて投影する。
+        // 塊（clump）は狭い半径に集まった粒子で、内側の塊が外側を追い越すので、差のある回転が目に見える。
+        // 色は内縁で白、内側でシアン、中ほどで青、外縁で淡い赤（内側ほど高温）
+        var bh = { cx: 0, cy: 0, rin: 300, rout: 520, cosI: 0.5 };
         function buildStep() {
             st = 0x66;
-            var W = stepBox.clientWidth, H = stepBox.clientHeight;
+            if (!stepBox.__bh) return false;
+            bh = stepBox.__bh;
+            var RIN = bh.rin, ROUT = bh.rout, span = ROUT - RIN, clumps = [];
+            for (var c = 0; c < 9; c++) clumps.push([RIN + span * Math.pow(rnd(), 0.8) * 0.85, rnd() * 6.2832, 0.5 + rnd()]);
             for (var i = 0; i < N; i++) {
-                if (rnd() < 0.3) put(5, i, W * (0.04 + 0.92 * rnd()), H * (0.35 + 0.65 * rnd()), 0.5 * Math.sqrt(kN), 3 + Math.floor(rnd() * 7), 2);
-                else put(5, i, W / 2, H, 0, 1, 0);
+                var r = rnd(), rr, th, x;
+                if (r < 0.12) { rr = RIN * (1 + Math.abs(gauss(0.025))); th = rnd() * 6.2832; }
+                else if (r < 0.4) { var cc = clumps[Math.floor(rnd() * clumps.length)]; rr = cc[0] + (rnd() * 2 - 1) * span * 0.05 * cc[2]; th = cc[1] + (rnd() * 2 - 1) * 0.45 * cc[2]; }
+                else { rr = RIN + span * Math.pow(rnd(), 1.7); th = rnd() * 6.2832; }
+                x = Math.max(0, Math.min(1, (rr - RIN) / span));
+                var col = x < 0.06 ? 0 : x < 0.3 ? 1 : x < 0.78 ? 2 : NM[0];
+                var b = (0.05 + 0.3 * Math.pow(1 - x, 2.2)) * kN * (col === NM[0] ? 0.7 : 1);
+                // 順番（d）は粒子ごとの乱数：05 からの移り目で、吸い込まれる時期をずらす
+                put(5, i, rr, th, b, col, 0, rnd());
             }
-            pivots[5] = [W / 2, H * 0.55];
+            pivots[5] = [bh.cx, bh.cy];
             return true;
         }
 
@@ -354,10 +369,10 @@
         var vertexShader = [
             'precision highp float;',
             'attribute vec4 aS0, aS1, aS2, aS3, aS4, aS5; attribute float aSeed, aZ0;',
-            'uniform float uF, uTime, uScroll, uW, uH, uSize, uDPR, uHot, uRise, uR;',
+            'uniform float uF, uTime, uScroll, uW, uH, uSize, uDPR, uHot, uR;',
+            'uniform vec4 uBH;',   // ブラックホール：中心（06 の section の左上から）・内縁の半径・cos(傾き)
             'uniform vec2 uOff[6]; uniform vec2 uPiv[6]; uniform vec2 uRootSeed;',
             'uniform vec3 uPointer;',
-            'uniform vec4 uQuiet;',   // 06 の文字の箱（ページの座標 x0,y0,x1,y1）
             'uniform vec4 uQ[16]; uniform float uFilB;',   // 文字の箱（束が後ろを通るとき暗くする）と、束の明るさ
             'uniform vec3 uPal[' + NP + '];',
             'varying vec3 vCol; varying float vB;',
@@ -385,7 +400,6 @@
             'float swayOf(float w){ float c=codeOf(w); return c<0.5?0.35:(c>3.5?1.0:c); }',
             // 段4（流れ）：光の帯が順番の向きへ進む
             'float flowOf(float w, float d){ return codeOf(w)>3.5 ? 0.3+0.7*pow(0.5+0.5*sin(6.2832*(d*4.0-uTime*0.45)),3.0) : 1.0; }',
-            'float riseP(){ return fract(uTime*0.03*(0.5+aSeed)+aSeed*13.7); }',
             'mat2 rot(float a){ return mat2(cos(a),-sin(a),sin(a),cos(a)); }',
             // 文字の箱の中なら 1、外へ 40px かけて 0
             'float inText(vec2 p){ float q=0.0; for(int i=0;i<16;i++){ vec4 r=uQ[i]; vec2 lo=r.xy-p, hi=p-r.zw; float o=max(max(lo.x,hi.x),max(lo.y,hi.y)); q=max(q, 1.0-smoothstep(0.0,40.0,o)); } return q; }',
@@ -401,8 +415,12 @@
             '  if(k==0) return seedStage();',
             '  if(k==1) return vec4(aS1.xy+uOff[1], bOf(aS1.z), aS1.w); if(k==2) return vec4(aS2.xy+uOff[2], bOf(aS2.z), aS2.w);',
             '  if(k==3) return vec4(aS3.xy+uOff[3], bOf(aS3.z), aS3.w); if(k==4) return vec4(aS4.xy+uOff[4], bOf(aS4.z), aS4.w);',
-            '  float pr=riseP(); vec2 q=aS5.xy+uOff[5]; q.y-=pr*uRise; q.x+=sin(uTime*0.5+aSeed*31.0)*22.0*pr;',
-            '  return vec4(q, bOf(aS5.z)*smoothstep(0.0,0.08,pr)*pow(1.0-pr,1.3), aS5.w); }',
+            // 06：降着円盤。ケプラー回転（角速度は r^-1.5、時間に比例して進むだけなので滑らか）。近づいてくる側（左）を少し明るく
+            '  float rr=aS5.x, th=aS5.y+uTime*0.22*pow(uBH.z/rr,1.5);',
+            '  vec2 q=vec2(rr*cos(th), rr*sin(th)*uBH.w+(aSeed-0.5)*5.0);',
+            // スマホでは締めの文が影に収まらず円盤の上に載るので、文字の箱の後ろの円盤は 15% まで暗く（PC では影の中なので効かない）
+            '  vec2 wp=uOff[5]+uBH.xy+q;',
+            '  return vec4(wp, bOf(aS5.z)*(1.0-0.28*cos(th))*mix(1.0,0.15,inText(wp)), aS5.w); }',
             'float zOf(int k){ if(k==0) return aS0.z; if(k==1) return aS1.z; if(k==2) return aS2.z; if(k==3) return aS3.z; if(k==4) return aS4.z; return aS5.z; }',
             'vec3 palOf(float i){ int k=int(i+0.5); vec3 c=uPal[0];',
             '  for(int j=1;j<' + NP + ';j++){ if(j==k) c=uPal[j]; } return c; }',
@@ -414,7 +432,7 @@
             '  float bA=A.z*flowOf(A.w,dA), bB=B.z*flowOf(B.w,dB);',
             // 場面の近くでは形を保ち（0〜0.22 と 0.78〜1）、そのあいだで移る
             '  float te=smoothstep(0.14,0.86,f);',   // 形を保つのは場面の前後 14%。移り目を長めにとる
-            '  vec2 p; float b; float sw=0.0; float mixT=te;',
+            '  vec2 p; float b; float sw=0.0; float mixT=te; float zd=0.0;',
             '  if(iA==0){',
             // 01→02：球が種のように縮んで根の種へ集まり（前半）、種から近い順に根が伸びる（後半）
             '    float u1=smoothstep(0.0,0.5,te), u2=smoothstep(0.5,1.0,te);',
@@ -423,12 +441,37 @@
             '    p = te<0.5 ? mix(A.xy, rs, u1) : mix(rs, B.xy, g);',
             '    b = te<0.5 ? mix(bA, bA*0.5, u1) : mix(bA*0.5, bB, g); mixT = te<0.5 ? 0.0 : g;',
             '  } else if(iA==2){',
-            // 03→04：順番の小さい粒子（ほかの枝・小さな木）が先に移り、物理学の枝から上は下から順に伸びて昇る
-            '    float g=smoothstep(dB*0.7, dB*0.7+0.3, te);',
-            '    p=mix(A.xy,B.xy,g); b=mix(bA*(1.0-0.5*te),bB,g); mixT=g;',
+            // 03→04（§135.10）：木を立体に見立て、分かれ目を通る縦の軸のまわりに回す。高い所ほど多く回る（ねじれ）ので、
+            // 枝どうしがらせん状に巻きつく。回りながら半径を縮めて軸へ巻き込み（物理学の枝へ収束）、その柱を画面の中ほどへ寄せる。
+            // 最後に、順番の小さい粒子（小さな木・基礎分野）から順に研究の階層の形へ移り、下から上へ伸びる。
+            // 奥行き z は、手前ほど大きく明るく、奥ほど小さく暗くして前後を見せる
+            '    vec2 Fk=uPiv[2]+uOff[2], a=A.xy-Fk;',
+            '    float conv=smoothstep(0.08,0.6,te);',
+            '    float phi=te*3.6+max(0.0,-a.y)*0.0045*te*2.6+aSeed*0.2;',
+            '    float rs=1.0-0.88*conv;',
+            '    float x3=a.x*cos(phi)*rs, z3=a.x*sin(phi)*rs;',
+            '    vec2 vc=vec2(uW*0.5, uScroll+uH*0.5);',
+            '    vec2 col=mix(Fk, vc+vec2(0.0,uH*0.12), smoothstep(0.05,0.45,te));',
+            '    vec2 M=col+vec2(x3, a.y*mix(1.0,0.55,conv)+z3*0.22);',
+            '    float g=smoothstep(0.5+0.38*dB, 0.62+0.38*dB, te);',
+            '    p=mix(M,B.xy,g); b=mix(bA,bB,g); mixT=g;',
+            '    zd=(1.0-g)*clamp(z3/260.0,-1.0,1.0);',   // 手前 +1 / 奥 -1
+            '    b*=1.0+0.55*zd;',
             // 飛んでいるあいだ（着く直前まで）、文字の後ろでは暗く。着いた先は文字の外なので、着いた粒子には効かない
-            '    b*=mix(1.0, 0.1, (1.0-smoothstep(0.92,1.0,g))*step(0.001,g)*inText(p));',
-            '    p+=vec2(sin(aSeed*40.0),cos(aSeed*23.0))*30.0*sin(3.14159*g);',
+            '    b*=mix(1.0, 0.1, (1.0-smoothstep(0.92,1.0,g))*inText(p));',
+            '  } else if(iA==4){',
+            // 05→06（§135.10）：実と輪郭の粒子が舞い上がり、ブラックホールのまわりを回りながら半径を縮めて（らせん状に吸い込まれ）、
+            // 降着円盤のいまの位置に着く。円盤の面で考えて、角度を 1.5 周ぶん余分に回す
+            '    vec2 C=uOff[5]+uBH.xy;',
+            '    float g=smoothstep(dB*0.35, dB*0.35+0.65, te), g2=smoothstep(0.2,1.0,g);',
+            '    vec2 p0=A.xy+vec2(sin(aSeed*31.0+uTime)*18.0, -140.0*smoothstep(0.0,0.4,g));',
+            '    vec2 va=(p0-C)/vec2(1.0,uBH.w), vb=(B.xy-C)/vec2(1.0,uBH.w);',
+            '    float ra=length(va), rb=length(vb), aa=atan(va.y,va.x), ab=atan(vb.y,vb.x);',
+            '    float dA2=ab-aa; dA2-=6.2832*floor((dA2+3.14159)/6.2832);',
+            '    float an=aa+(dA2+6.2832*1.5)*g2, rad=mix(ra,rb,g2);',
+            '    p=C+vec2(cos(an),sin(an)*uBH.w)*rad;',
+            '    b=mix(bA,bB,g2); mixT=g2;',
+            '    b*=mix(1.0, 0.1, (1.0-smoothstep(0.9,1.0,g2))*step(0.001,g)*inText(p));',
             '  } else {',
             // 捩れた線の束（§135.9）：粒子は 3 本の束 × 各 4 本の線（計 12 本）のどれかに乗り、線に沿って流れる。
             // 束は画面をうねりながら横切り、4 本の線は束の芯のまわりを捩れ合う。移り目の真ん中（0.3〜0.7）は束のまま保ち、
@@ -461,13 +504,9 @@
             // 05：カードに触れているあいだ、その実と輪郭を明るく
             '  float hot=max(step(abs(floor(A.w+0.05)-uHot),0.1)*(1.0-mixT), step(abs(floor(B.w+0.05)-uHot),0.1)*mixT); b*=1.0+1.8*hot;',
             '  vCol=mix(palOf(A.w),palOf(B.w),mixT);',
-            // 06：舞い上がるほど白く。文字の箱の後ろを通るあいだは暗く
-            '  if(iA==4){ vCol=mix(vCol, vec3(0.92,0.96,1.0), te*riseP());',
-            '    vec2 lo=uQuiet.xy-p, hi=p-uQuiet.zw; float out_=max(max(lo.x,hi.x),max(lo.y,hi.y));',
-            '    b*=mix(1.0, 0.12, te*(1.0-smoothstep(0.0,48.0,out_))); }',
             '  vB=b;',
             '  gl_Position=vec4(p.x/uW*2.0-1.0, 1.0-(p.y-uScroll)/uH*2.0, 0.0, 1.0);',
-            '  gl_PointSize=uSize*uDPR*(0.75+0.5*aSeed)*(1.0+0.6*step(0.9,b));',
+            '  gl_PointSize=uSize*uDPR*(0.75+0.5*aSeed)*(1.0+0.6*step(0.9,b))*(1.0+0.45*zd);',   // 03→04 の手前の粒子は大きく
             '}'
         ].join('\n');
         var fragmentShader = [
@@ -487,8 +526,7 @@
             uPiv: { value: [0, 1, 2, 3, 4, 5].map(function () { return new THREE.Vector2(); }) },
             uRootSeed: { value: new THREE.Vector2() }, uR: { value: 150 },
             uPointer: { value: new THREE.Vector3(-9999, -9999, 0) },
-            uHot: { value: -1 }, uRise: { value: window.innerHeight * 1.1 },
-            uQuiet: { value: new THREE.Vector4(0, 0, 0, 0) },
+            uHot: { value: -1 }, uBH: { value: new THREE.Vector4(0, 0, 300, 0.5) },
             uQ: { value: Array.apply(null, Array(16)).map(function () { return new THREE.Vector4(-1e5, -1e5, -1e5, -1e5); }) },
             uFilB: { value: (isMobile ? 0.5 : 0.42) * Math.sqrt(kN) },   // 束の1粒の明るさ（束に重なるので、ひと粒は控えめでも線は明るい）
             uPal: { value: PAL.map(function (h) { return new THREE.Color(h); }) }
@@ -515,6 +553,7 @@
             attrs.forEach(function (a) { a.needsUpdate = true; }); aZ.needsUpdate = true;
             pivots.forEach(function (p, k) { uniforms.uPiv.value[k].set(p[0], p[1]); });
             uniforms.uR.value = R0; uniforms.uRootSeed.value.set(rootSeed.x, rootSeed.y);
+            uniforms.uBH.value.set(bh.cx, bh.cy, bh.rin, bh.cosI);
             return ok;
         }
         var rebuildTimer = null;
@@ -525,7 +564,7 @@
         /* ---- 箱の位置とスクロール → 場面の番号 ---------------------------------- */
         var centers = [0, 0, 0, 0, 0, 0], K = 6;
         // 束や飛んでいる粒子が後ろを通るとき暗くする文字の箱（最大 16）。研究の階層の層ラベルと凡例も
-        var textEls = [].slice.call(document.querySelectorAll('.home-seed__inner, .home-block__head, .tree-note, .home-step__inner, .home-branch__more, .roots__tip, [data-branch-viz] .rs-tier__label, [data-branch-viz] .rs-energy')).slice(0, 16);
+        var textEls = [].slice.call(document.querySelectorAll('.home-seed__inner, .home-block__head, .tree-note, .home-step__inner, .home-branch__more, .roots__tip, [data-branch-viz] .rs-tier__label')).slice(0, 16);
         function readBoxes() {
             var sy = window.scrollY, sx = window.scrollX, o = uniforms.uOff.value, H = window.innerHeight;
             var g = seedEl.getBoundingClientRect();
@@ -537,8 +576,6 @@
                 centers[k + 1] = r.top + sy + r.height / 2;
             });
             textEls.forEach(function (e, k) { var q = e.getBoundingClientRect(); uniforms.uQ.value[k].set(q.left + sx, q.top + sy, q.right + sx, q.bottom + sy); });
-            var qi = stepInner.getBoundingClientRect();
-            uniforms.uQuiet.value.set(qi.left + sx, qi.top + sy, qi.right + sx, qi.bottom + sy);
             // 縦長の木は中心で揃えると、上の方を読んでいるあいだ形が崩れたままになる。
             // 木の上端が画面の中ほどに来たところを、この場面の中心にする
             var t = treeBox.getBoundingClientRect();
@@ -598,7 +635,6 @@
                 DPR = Math.min(window.devicePixelRatio || 1, 1.5);
                 renderer.setPixelRatio(DPR); renderer.setSize(window.innerWidth, window.innerHeight);
                 uniforms.uW.value = window.innerWidth; uniforms.uH.value = window.innerHeight; uniforms.uDPR.value = DPR;
-                uniforms.uRise.value = window.innerHeight * 1.1;
             }, 120);
         });
         document.addEventListener('visibilitychange', function () { if (document.hidden) stop(); else start(); });
