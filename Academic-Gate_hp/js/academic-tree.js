@@ -5,12 +5,10 @@
    形を決める。分類・学問・細分野を足すと、枝の数も配置も自動で変わる。
      分類   li.tree-cat[data-cat]  > h3.tree-cat__name
      学問   li[data-key]           > .tree-node（<a> ならリンク、<span> なら準備中）
-     細分野 その li の中の ul > li[data-key]（最大3段）
-     またぐ線 li[data-cross="相手の key …"]
 
    やること
      1. 名前（HTML の要素）を木の枝先に並べる。文字は canvas に描かない
-     2. 枝・幹・種・またぐ線を SVG で描く（静止した完成形）。粒子のエンジンが
+     2. 枝・幹・種を SVG で描く（静止した完成形）。粒子のエンジンが
         動けない場合（動きを減らす設定・WebGL 無し）はこれがそのまま木になる
      3. 02 の根（.roots）を描き、先に「学び方」を置く
      4. 04 の小さな木（物理学の枝が星空へ伸びる）と、05 の実（カードの上の枝と実）を描く
@@ -63,19 +61,12 @@
 
     function readTree(box) {
         return [].map.call(box.querySelectorAll('.tree__data > .tree-cat'), function (c) {
-            function nodesOf(ul, depth) {
-                if (!ul) return [];
-                return [].filter.call(ul.children, function (li) { return li.tagName === 'LI'; }).map(function (li) {
-                    return {
-                        li: li, depth: depth,
-                        node: li.querySelector(':scope > .tree-node'),
-                        key: li.dataset.key || '',
-                        cross: (li.dataset.cross || '').split(/\s+/).filter(Boolean),
-                        subs: depth < 3 ? nodesOf(li.querySelector(':scope > ul'), depth + 1) : []
-                    };
-                });
-            }
-            return { li: c, cat: c.dataset.cat || '', label: c.querySelector(':scope > .tree-cat__name'), subjects: nodesOf(c.querySelector(':scope > ul'), 2) };
+            // 分類 → 学問の2段（§135.8 で細分野をやめた）
+            var ul = c.querySelector(':scope > ul');
+            var subjects = ul ? [].filter.call(ul.children, function (li) { return li.tagName === 'LI'; }).map(function (li) {
+                return { li: li, node: li.querySelector(':scope > .tree-node'), key: li.dataset.key || '' };
+            }) : [];
+            return { li: c, cat: c.dataset.cat || '', label: c.querySelector(':scope > .tree-cat__name'), subjects: subjects };
         });
     }
 
@@ -86,8 +77,6 @@
         box.insertBefore(svg, box.firstChild);
         box.classList.add('is-laid');
 
-        var byKey = {};
-        cats.forEach(function (c) { (function walk(list) { list.forEach(function (n) { if (n.key) byKey[n.key] = n; walk(n.subs); }); })(c.subjects); });
 
         var lastW = -1;
         function layout() {
@@ -105,17 +94,15 @@
         /* ---- 名前の箱の大きさ（is-laid で絶対配置になったあとに測る） ---- */
         function size(e) { return { w: e.offsetWidth, h: e.offsetHeight }; }
         function place(e, x, y) { e.style.left = f1(x) + 'px'; e.style.top = f1(y) + 'px'; }
-        function rowsOf(list) { var r = []; (function walk(l) { l.forEach(function (n) { r.push(n); walk(n.subs); }); })(list); return r; }
-
-        var ROW = 36, SUBROW = 31, SUBX = 20, TWIG = 14;
+        var ROW = 36, TWIG = 14;
 
         /* 広い画面：列ごとに、下に分類名、その上に学問・細分野を積む。
            列の下端（＝分類の節）を弧に並べて、中央ほど高い樹冠にする。 */
         function layoutWide(cats, W) {
             var n = cats.length, colW = W / n, arcH = 64, top = 8;
             var cols = cats.map(function (c, i) {
-                var rows = rowsOf(c.subjects);
-                var h = rows.reduce(function (s, r) { return s + (r.depth > 2 ? SUBROW : ROW); }, 0);
+                var rows = c.subjects;
+                var h = rows.length * ROW;
                 var t = n > 1 ? (i - (n - 1) / 2) / ((n - 1) / 2) : 0;
                 return { c: c, rows: rows, h: h, lift: arcH * (1 - t * t), stemX: colW * i + 14 };
             });
@@ -125,9 +112,8 @@
                 var base = A - k.lift;                         // 積み上げの下端
                 var y = base - k.h, items = [];
                 k.rows.forEach(function (r) {
-                    var rh = r.depth > 2 ? SUBROW : ROW;
-                    items.push({ n: r, x: k.stemX + TWIG + (r.depth > 2 ? SUBX : 0), y: y + rh / 2, align: 'left' });
-                    y += rh;
+                    items.push({ n: r, x: k.stemX + TWIG, y: y + ROW / 2, align: 'left' });
+                    y += ROW;
                 });
                 var lab = { x: k.stemX + TWIG, y: base + 4 + ROW / 2 };
                 return { c: k.c, stemX: k.stemX, items: items, label: lab, side: 1 };
@@ -140,13 +126,12 @@
             var mid = W / 2, gap = 30, h = [8, 8], cols = [];
             cats.forEach(function (c, i) {
                 var side = h[1] < h[0] ? 1 : h[0] < h[1] ? 0 : (i % 2 ? 0 : 1);
-                var rows = rowsOf(c.subjects);
+                var rows = c.subjects;
                 var y = h[side], items = [];
                 var stemX = side ? mid + 20 : mid - 20, dir = side ? 1 : -1;
                 rows.forEach(function (r) {
-                    var rh = r.depth > 2 ? SUBROW : ROW;
-                    items.push({ n: r, x: stemX + dir * (TWIG + (r.depth > 2 ? SUBX : 0)), y: y + rh / 2, align: side ? 'left' : 'right' });
-                    y += rh;
+                    items.push({ n: r, x: stemX + dir * TWIG, y: y + ROW / 2, align: side ? 'left' : 'right' });
+                    y += ROW;
                 });
                 var lab = { x: stemX + dir * TWIG, y: y + 4 + ROW / 2 };
                 h[side] = y + 4 + ROW + gap;
@@ -157,7 +142,7 @@
             return build(cols, { x: mid, y: bottom }, seed, seed.y + 34, 'tall');
         }
 
-        /* 配置から、名前の位置・枝の線・またぐ線を作る */
+        /* 配置から、名前の位置と枝の線を作る */
         function build(cols, fork, seed, H, mode) {
             var branches = [], nodes = [];
             // 幹
@@ -170,14 +155,12 @@
                 // 列の茎：分類の節から、いちばん上の名前まで
                 var topY = k.items.length ? k.items[0].y : node.y;
                 branches.push({ level: 2, cat: cat, d: 'M' + f1(node.x) + ' ' + f1(node.y) + 'L' + f1(node.x) + ' ' + f1(topY) });
-                // 小枝：茎から分類名・学問・細分野へ
+                // 小枝：茎から分類名・学問へ
                 branches.push({ level: 3, cat: cat, d: 'M' + f1(node.x) + ' ' + f1(lab.y) + 'L' + f1(lab.x) + ' ' + f1(lab.y) });
                 nodes.push({ e: k.c.label, x: lab.x, y: lab.y, align: k.side > 0 ? 'left' : 'right', cat: cat, kind: 'cat' });
                 k.items.forEach(function (it) {
-                    var sub = it.n.depth > 2;
-                    var sx = sub ? k.stemX + k.side * (TWIG * 0.5) : k.stemX;
-                    branches.push({ level: sub ? 4 : 3, cat: cat, key: it.n.key, d: 'M' + f1(sx) + ' ' + f1(it.y - (sub ? 14 : 0)) + 'Q' + f1(sx) + ' ' + f1(it.y) + ' ' + f1(it.x) + ' ' + f1(it.y) });
-                    nodes.push({ e: it.n.node, x: it.x, y: it.y, align: it.align, cat: cat, kind: sub ? 'sub' : 'subject', key: it.n.key, depth: it.n.depth });
+                    branches.push({ level: 3, cat: cat, key: it.n.key, d: 'M' + f1(k.stemX) + ' ' + f1(it.y) + 'L' + f1(it.x) + ' ' + f1(it.y) });
+                    nodes.push({ e: it.n.node, x: it.x, y: it.y, align: it.align, cat: cat, kind: 'subject', key: it.n.key });
                 });
             });
             // 狭い画面では幹が分かれ目より上へ続き、いちばん上の枝の根元まで伸びる
@@ -194,8 +177,8 @@
             svg.setAttribute('width', W); svg.setAttribute('height', Math.ceil(L.height));
             while (svg.firstChild) svg.removeChild(svg.firstChild);
 
-            var gB = el('g', { class: 'tree__branches' }), gX = el('g', { class: 'tree__cross' });
-            svg.appendChild(gB); svg.appendChild(gX);
+            var gB = el('g', { class: 'tree__branches' });
+            svg.appendChild(gB);
             L.branches.forEach(function (b) {
                 var p = el('path', { d: b.d, class: 'tree-branch tree-branch--' + b.level });
                 if (b.cat) p.style.setProperty('--tint', 'var(--tint-' + b.cat + ')');
@@ -207,50 +190,11 @@
             svg.appendChild(el('circle', { class: 'tree-seed', cx: s.x, cy: s.y, r: 4.5 }));
 
             // 名前：x は茎側の端（left なら左端、right なら右端）、y は中央
-            var rect = {};
             L.nodes.forEach(function (nd) {
                 var z = size(nd.e);
-                var x = nd.align === 'left' ? nd.x : nd.x - z.w;
-                place(nd.e, x, nd.y - z.h / 2);
-                if (nd.key) rect[nd.key] = { l: x, r: x + z.w, y: nd.y, cx: x + z.w / 2 };
-            });
-
-            // 分野をまたぐ線：向かい合う端どうしを、ゆるい弧で結ぶ
-            [].forEach.call(svg.querySelectorAll('.tree-cross'), function (p) { p.remove(); });
-            Object.keys(byKey).forEach(function (k) {
-                byKey[k].cross.forEach(function (to) {
-                    var a = rect[k], b = rect[to];
-                    if (!a || !b) return;
-                    var d;
-                    if (b.l >= a.r || a.l >= b.r) {          // 横に離れている
-                        var A = b.l >= a.r ? { x: a.r, y: a.y } : { x: a.l, y: a.y };
-                        var B = b.l >= a.r ? { x: b.l, y: b.y } : { x: b.r, y: b.y };
-                        var my = Math.min(A.y, B.y) - 26;
-                        d = curve(A, { x: A.x + (B.x - A.x) * 0.3, y: my }, { x: A.x + (B.x - A.x) * 0.7, y: my }, B);
-                    } else {                                 // 同じ列：外側にふくらませる
-                        var R = Math.max(a.r, b.r) + 34;
-                        d = curve({ x: a.r, y: a.y }, { x: R, y: a.y }, { x: R, y: b.y }, { x: b.r, y: b.y });
-                    }
-                    var p = el('path', { d: d, class: 'tree-cross', 'data-a': k, 'data-b': to });
-                    gX.appendChild(p);
-                });
+                place(nd.e, nd.align === 'left' ? nd.x : nd.x - z.w, nd.y - z.h / 2);
             });
         }
-
-        // 分野をまたぐ線：どちらかの名前に触れたら、線と相手を光らせる
-        function hot(key, on) {
-            [].forEach.call(svg.querySelectorAll('.tree-cross[data-a="' + key + '"], .tree-cross[data-b="' + key + '"]'), function (p) {
-                p.classList.toggle('is-hot', on);
-                [p.getAttribute('data-a'), p.getAttribute('data-b')].forEach(function (k2) {
-                    if (byKey[k2] && byKey[k2].node) byKey[k2].node.classList.toggle('is-hot', on);
-                });
-            });
-        }
-        Object.keys(byKey).forEach(function (k) {
-            var nd = byKey[k].node; if (!nd) return;
-            ['pointerenter', 'focus'].forEach(function (ev) { nd.addEventListener(ev, function () { hot(k, true); }); });
-            ['pointerleave', 'blur'].forEach(function (ev) { nd.addEventListener(ev, function () { hot(k, false); }); });
-        });
 
         function relayout() { lastW = -1; layout(); }
         (document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve()).then(relayout);
@@ -279,18 +223,19 @@
             svg.setAttribute('width', W); svg.setAttribute('height', H);
             while (svg.firstChild) svg.removeChild(svg.firstChild);
             var rnd = prng(20261101);
-            var seed = { x: W / 2, y: 16 }, unit = Math.min(H * 0.34, W * 0.16);
+            // 根は横に画面の大部分、下にも長く（§135.8）。長さは正規化した単位で決め、横と縦で別の倍率をかける
+            var seed = { x: W / 2, y: 16 }, SX = W * 0.17, SY = (H - 30) * 0.31;
 
             function grow(x, y, ang, len, depth, width) {
-                var ex = x + Math.sin(ang) * len, ey = y + Math.cos(ang) * len;
-                var bend = (rnd() - 0.5) * len * 0.5;
+                var ex = x + Math.sin(ang) * len * SX, ey = y + Math.cos(ang) * len * SY;
+                var bend = (rnd() - 0.5) * len * Math.min(SX, SY) * 0.5;
                 var cx = (x + ex) / 2 + Math.cos(ang) * bend, cy = (y + ey) / 2 - Math.sin(ang) * bend;
                 svg.appendChild(el('path', { class: 'root', d: 'M' + f1(x) + ' ' + f1(y) + 'Q' + f1(cx) + ' ' + f1(cy) + ' ' + f1(ex) + ' ' + f1(ey), 'stroke-width': f1(width) }));
                 if (depth <= 0) return;
                 var k = 2 + (rnd() < 0.35 ? 1 : 0);
                 for (var i = 0; i < k; i++) grow(ex, ey, ang + (rnd() - 0.5) * 1.1, len * (0.55 + rnd() * 0.2), depth - 1, width * 0.62);
             }
-            [-1.05, -0.5, 0, 0.45].forEach(function (a) { grow(seed.x, seed.y, a + (rnd() - 0.5) * 0.2, unit * (0.85 + rnd() * 0.3), 3, 2.2); });
+            [-1.2, -0.7, -0.25, 0.2, 0.65, 1.15].forEach(function (a) { grow(seed.x, seed.y, a + (rnd() - 0.5) * 0.15, 0.95 + rnd() * 0.25, 3, 2.4); });
 
             // 「学び方」へ伸びる1本：種から右下の名前の左端へ
             var tz = { w: tip.offsetWidth, h: tip.offsetHeight };
@@ -328,37 +273,40 @@
         go(true);
     }
 
-    /* ---- 04：学問の樹を小さく描き、物理学の枝（幹・自然科学の枝と茎・物理学と物理数学の小枝）だけを
-       明るくして、物理学から上へ「初期宇宙理論」まで伸ばす -------------------------------- */
+    /* ---- 04：階層の下に学問の樹を小さく描き、物理学の枝（幹・自然科学の枝と茎・物理学の小枝）だけを
+       明るくして、物理学から上へ、階層のいちばん下（基礎分野のカードの下辺の中央）まで伸ばす ---- */
     var fig = document.querySelector('[data-branch]');
     if (fig) {
         var svg = el('svg', { class: 'branch__svg', 'aria-hidden': 'true', focusable: 'false' });
         fig.insertBefore(svg, fig.firstChild);
-        var tagP = fig.querySelector('.branch__tag--physics'), tagE = fig.querySelector('.branch__tag--cosmo');
+        var tagP = fig.querySelector('.branch__tag--physics');
         fig.classList.add('is-laid');
         watch(fig, function (W, H) {
             var L = window.__treeWide; if (!L) return;
             while (svg.firstChild) svg.removeChild(svg.firstChild);
             svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H); svg.setAttribute('width', W); svg.setAttribute('height', H);
-            var s = Math.min(W * 0.98 / L.width, H * 0.6 / L.height);
+            var s = Math.min(W * 0.98 / L.width, H * 0.72 / L.height);
             var tx = (W - L.width * s) / 2, ty = H - L.height * s;
             var g = el('g', { class: 'branch-mini', transform: 'translate(' + f1(tx) + ' ' + f1(ty) + ') scale(' + s.toFixed(4) + ')', 'data-s': s, 'data-tx': tx, 'data-ty': ty });
             svg.appendChild(g);
             L.branches.forEach(function (b) {
-                var mine = b.level === 0 || (b.cat === 'natural' && b.level <= 2) || b.key === 'physics' || b.key === 'phys-math';
+                var mine = b.level === 0 || (b.cat === 'natural' && b.level <= 2) || b.key === 'physics';
                 var p = el('path', { d: b.d, class: 'mini-branch mini-branch--' + b.level + (mine ? ' is-mine' : '') });
                 if (b.cat) p.style.setProperty('--tint', 'var(--tint-' + b.cat + ')');
                 g.appendChild(p);
             });
             var pn = L.nodes.filter(function (n) { return n.key === 'physics'; })[0];
             var P = { x: tx + pn.x * s, y: ty + pn.y * s };
-            var T = { x: Math.min(W - 24, P.x + W * 0.16), y: 22 };
-            svg.appendChild(el('path', { class: 'branch-ext', d: 'M' + f1(P.x) + ' ' + f1(P.y) + 'C' + f1(P.x - 10) + ' ' + f1(P.y - (P.y - T.y) * 0.45) + ' ' + f1(T.x + 20) + ' ' + f1(T.y + (P.y - T.y) * 0.4) + ' ' + f1(T.x) + ' ' + f1(T.y) }));
-            svg.appendChild(el('circle', { class: 'branch-star', cx: f1(T.x), cy: f1(T.y), r: 3.5 }));
-            // 名前：物理学は枝先の右、初期宇宙理論は伸びた先の左（はみ出さない側）
+            // 伸びる先：基礎分野のカードの下辺の中央（図の上端より上。図と階層のあいだの余白をまたぐ）
+            var fc = document.querySelector('[data-branch-viz] .rs-tier--foundations .rs-card');
+            var T = { x: W / 2, y: 0 };
+            if (fc) {
+                var a = 0, t = 0, e = fc; while (e && e !== fig.offsetParent) { a += e.offsetLeft; t += e.offsetTop; e = e.offsetParent; }
+                T = { x: a + fc.offsetWidth / 2 - fig.offsetLeft, y: t + fc.offsetHeight - fig.offsetTop };
+            }
+            svg.appendChild(el('path', { class: 'branch-ext', d: 'M' + f1(P.x) + ' ' + f1(P.y) + 'C' + f1(P.x) + ' ' + f1(P.y - (P.y - T.y) * 0.5) + ' ' + f1(T.x) + ' ' + f1(T.y + (P.y - T.y) * 0.5) + ' ' + f1(T.x) + ' ' + f1(T.y) }));
+            // 名前：物理学は枝先の右
             tagP.style.left = f1(P.x + 8) + 'px'; tagP.style.top = f1(P.y - tagP.offsetHeight / 2) + 'px';
-            var ex = T.x - tagE.offsetWidth - 10;
-            tagE.style.left = f1(Math.max(0, ex)) + 'px'; tagE.style.top = f1(T.y - tagE.offsetHeight / 2) + 'px';
             fig.__branch = { P: P, T: T, s: s, tx: tx, ty: ty };
             done(fig);
         });

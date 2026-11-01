@@ -13,7 +13,7 @@
         href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;500&family=Noto+Sans+JP:wght@300;400&display=swap"
         rel="stylesheet">
 
-    <link rel="stylesheet" href="../css/style.css?v=r146">
+    <link rel="stylesheet" href="../css/style.css?v=r149">
     <link rel="icon" href="../../favicon.ico" sizes="32x32">
     <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="../../apple-touch-icon.png">
@@ -60,11 +60,9 @@
             </div>
         </section>
 
-        <!-- 02 — RESEARCH：上ほど専門的、下ほど基礎的な3層。
-             カードもチップも、リンク先は js/self-intro.js の RESEARCH_LINKS に
-             data-topic をキーにして書き足すと有効になる（カードは全面の覆いの <a>、
-             チップは <span> が <a> に置き換わる）。 -->
-        <section class="si-block" aria-labelledby="research-h">
+        <!-- 02 — RESEARCH：上ほど専門的、下ほど基礎的な4層。データ・リンクは js/research.js
+             （RESEARCH_LINKS に data-topic をキーにして書き足すと有効になる）。 -->
+        <section class="si-block" id="research" aria-labelledby="research-h">
             <div class="si-head reveal">
                 <p class="eyebrow"><span class="eyebrow__num">02</span> — Research</p>
                 <h2 id="research-h" lang="ja">研究分野</h2>
@@ -75,52 +73,8 @@
                 </p>
             </div>
 
-            <div class="rs-stack">
-                <div class="rs-tier rs-tier--theme reveal">
-                    <p class="rs-tier__label"><span>Theme</span><span lang="ja">研究テーマ</span></p>
-                    <ul class="rs-cards">
-                        <li><div class="profile-card rs-card" data-topic="early-universe"><span class="meta">Early Universe Cosmology</span><h3 lang="ja">初期宇宙理論</h3></div></li>
-                    </ul>
-                </div>
-                <div class="rs-link" aria-hidden="true"></div>
-                <div class="rs-tier rs-tier--topics reveal">
-                    <p class="rs-tier__label"><span>Topics</span><span lang="ja">研究トピック</span></p>
-                    <ul class="rs-cards">
-                        <li><div class="profile-card rs-card" data-topic="inflation"><span class="meta">Inflation</span><h3 lang="ja">インフレーション</h3></div></li>
-                        <li><div class="profile-card rs-card" data-topic="axion-dark-matter"><span class="meta">Axion Dark Matter</span><h3 lang="ja">アクシオンダークマター</h3></div></li>
-                        <li><div class="profile-card rs-card" data-topic="primordial-black-holes"><span class="meta">Primordial Black Holes</span><h3 lang="ja">原始ブラックホール</h3></div></li>
-                    </ul>
-                </div>
-                <div class="rs-link" aria-hidden="true"></div>
-                <div class="rs-tier rs-tier--fields reveal">
-                    <p class="rs-tier__label"><span>Fields</span><span lang="ja">専門分野</span></p>
-                    <ul class="rs-cards">
-                        <li><div class="profile-card rs-card" data-topic="particle-physics"><span class="meta">Particle Physics</span><h3 lang="ja">素粒子物理学</h3></div></li>
-                        <li><div class="profile-card rs-card" data-topic="quantum-field-theory"><span class="meta">Quantum Field Theory</span><h3 lang="ja">場の量子論</h3></div></li>
-                        <li><div class="profile-card rs-card" data-topic="general-relativity"><span class="meta">General Relativity</span><h3 lang="ja">一般相対性理論</h3></div></li>
-                        <li><div class="profile-card rs-card" data-topic="cosmology"><span class="meta">Cosmology</span><h3 lang="ja">宇宙論</h3></div></li>
-                    </ul>
-                </div>
-                <div class="rs-link" aria-hidden="true"></div>
-                <div class="rs-tier rs-tier--foundations reveal">
-                    <p class="rs-tier__label"><span>Foundations</span><span lang="ja">基礎分野</span></p>
-                    <ul class="rs-cards">
-                        <li><div class="profile-card rs-card" data-topic="core-physics" data-label="基礎領域（学部レベル）の科目一覧"><span class="meta">Core Physics</span>
-                            <!-- 科目と順番は study_physics.html の「基礎領域（学部レベル）」と同じ -->
-                            <ul class="rs-chips" lang="ja">
-                                <li><span data-topic="phys-math">物理数学</span></li>
-                                <li><span data-topic="classical-mechanics">古典力学</span></li>
-                                <li><span data-topic="analytical-mechanics">解析力学</span></li>
-                                <li><span data-topic="electromagnetism">電磁気学</span></li>
-                                <li><span data-topic="thermodynamics">熱力学</span></li>
-                                <li><span data-topic="statistical-mechanics">統計力学</span></li>
-                                <li><span data-topic="quantum-mechanics">量子力学</span></li>
-                                <li><span data-topic="special-relativity">特殊相対性理論</span></li>
-                            </ul>
-                        </div></li>
-                    </ul>
-                </div>
-            </div>
+            <!-- 階層の中身は js/research.js（ホームの 04 と共通） -->
+            <div class="rs-stack" data-research></div>
         </section>
 
         <!-- 03 — INTERESTS：興味あること（項目は元の文の順のまま、3つに分けただけ） -->
@@ -182,9 +136,10 @@
         </section>
     </main>
     <div id="site-footer"><noscript><nav class="noscript-nav" aria-label="フッターナビゲーション"><a href="index.html">ホーム</a><a href="self-intro.html">自己紹介</a><a href="study.html">勉強の軌跡</a><a href="videos.html">動画</a><a href="blog.html">ブログ</a><a href="sns.html">各種SNS</a></nav></noscript></div>
-    <script src="../js/layout.js?v=r146"></script>
-    <script src="../js/main.js?v=r146"></script>
-    <script src="../js/starfield.js?v=r146"></script>
-    <script src="../js/self-intro.js?v=r146"></script>
+    <script src="../js/layout.js?v=r149"></script>
+    <script src="../js/main.js?v=r149"></script>
+    <script src="../js/starfield.js?v=r149"></script>
+    <script src="../js/research.js?v=r149"></script>
+    <script src="../js/self-intro.js?v=r149"></script>
 </body>
 </html>

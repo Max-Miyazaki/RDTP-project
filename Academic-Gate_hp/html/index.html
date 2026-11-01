@@ -14,7 +14,7 @@
         href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;500&family=Noto+Sans+JP:wght@300;400&display=swap"
         rel="stylesheet">
 
-    <link rel="stylesheet" href="../css/style.css?v=r146">
+    <link rel="stylesheet" href="../css/style.css?v=r149">
     <link rel="icon" href="../../favicon.ico" sizes="32x32">
     <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="../../apple-touch-icon.png">
@@ -52,10 +52,10 @@
         </section>
 
         <!-- 03 — TREE：学問の樹。
-             ★ この入れ子のリストが木のデータそのもの（分類 → 学問 → 細分野）。js/academic-tree.js が
-             ここから木の形を作る。学問を足すと枝が増える。
+             ★ この入れ子のリストが木のデータそのもの（分類 → 学問の2段）。js/academic-tree.js が
+             ここから木の形を作る。学問を足すと枝が増える。ホームには代表的な学問だけを置く（§135.8）
              - リンク：ページがあれば <a href>、無ければ <span>（破線＝準備中）。URL を入れるだけで有効になる
-             - data-key：分野をまたぐ線の相手を指す名前。data-cross="相手の key（空白区切り）"
+             - data-key：学問の名前（04 で物理学の枝を見つけるのに使う）
              - 分類の差し色は CSS の data-cat で決める -->
         <section class="home-block home-tree" id="tree" aria-labelledby="tree-h">
             <div class="home-block__head reveal">
@@ -77,17 +77,8 @@
                     <li class="tree-cat" data-cat="natural">
                         <h3 class="tree-cat__name">自然科学</h3>
                         <ul>
-                            <li data-key="physics"><a class="tree-node" href="study_physics.html">物理学</a>
-                                <ul>
-                                    <li data-key="phys-math" data-cross="math"><a class="tree-node" href="phys-math.html">物理数学</a></li>
-                                </ul>
-                            </li>
-                            <li data-key="chemistry"><span class="tree-node">化学</span>
-                                <ul>
-                                    <li data-key="physical-chemistry" data-cross="physics"><span class="tree-node">物理化学</span></li>
-                                    <li data-key="biochemistry" data-cross="biology"><span class="tree-node">生化学</span></li>
-                                </ul>
-                            </li>
+                            <li data-key="physics"><a class="tree-node" href="study_physics.html">物理学</a></li>
+                            <li data-key="chemistry"><span class="tree-node">化学</span></li>
                             <li data-key="biology"><span class="tree-node">生物学</span></li>
                             <li data-key="earth-science"><span class="tree-node">地球科学</span></li>
                             <li data-key="astronomy"><span class="tree-node">天文学</span></li>
@@ -96,11 +87,7 @@
                     <li class="tree-cat" data-cat="life">
                         <h3 class="tree-cat__name">生命・医療</h3>
                         <ul>
-                            <li data-key="medicine"><span class="tree-node">医学</span>
-                                <ul>
-                                    <li data-key="emergency-medicine"><span class="tree-node">救急医学</span></li>
-                                </ul>
-                            </li>
+                            <li data-key="medicine"><span class="tree-node">医学</span></li>
                             <li data-key="pharmacy"><span class="tree-node">薬学</span></li>
                             <li data-key="agriculture"><span class="tree-node">農学</span></li>
                         </ul>
@@ -110,11 +97,7 @@
                         <ul>
                             <li data-key="mechanical"><span class="tree-node">機械工学</span></li>
                             <li data-key="electrical"><span class="tree-node">電気電子工学</span></li>
-                            <li data-key="civil"><span class="tree-node">土木工学</span>
-                                <ul>
-                                    <li data-key="hydraulics"><span class="tree-node">水理学</span></li>
-                                </ul>
-                            </li>
+                            <li data-key="civil"><span class="tree-node">土木工学</span></li>
                             <li data-key="aerospace"><span class="tree-node">航空宇宙工学</span></li>
                             <li data-key="architecture"><span class="tree-node">建築学</span></li>
                         </ul>
@@ -153,12 +136,12 @@
                     </li>
                 </ol>
             </div>
-            <p class="tree-note reveal" lang="ja">実線の学問は、サイト内のノートや教材へ。破線はまだ準備中です。点線は、分野をまたぐつながり。</p>
+            <p class="tree-note reveal" lang="ja">実線の学問は、サイト内のノートや教材へ。破線はまだ準備中です。</p>
         </section>
 
-        <!-- 04 — MY BRANCH -->
+        <!-- 04 — MY BRANCH：文章の下に研究の階層（js/research.js、自己紹介と共通）。
+             その下の小さな木から物理学の枝が伸びて、階層のいちばん下に流れ込む（js/academic-tree.js） -->
         <section class="home-block home-branch" id="branch" aria-labelledby="branch-h">
-            <div class="home-branch__grid">
             <div class="home-block__head reveal">
                 <p class="eyebrow"><span class="eyebrow__num">04</span> — My Branch</p>
                 <h2 id="branch-h" lang="ja">私の枝</h2>
@@ -168,11 +151,12 @@
                     <a href="study.html" class="btn btn-secondary">勉強の軌跡 <span class="btn-disc" aria-hidden="true">→</span></a>
                 </div>
             </div>
-            <!-- 学問の樹を小さく描き、物理学の枝だけを光らせて星空へ伸ばす（js/academic-tree.js） -->
-            <div class="branch reveal" data-branch aria-hidden="true">
-                <span class="branch__tag branch__tag--physics">物理学</span>
-                <span class="branch__tag branch__tag--cosmo">初期宇宙理論</span>
-            </div>
+            <div class="home-branch__viz" data-branch-viz>
+                <div class="rs-stack" data-research="compact"></div>
+                <div class="branch reveal" data-branch aria-hidden="true">
+                    <span class="branch__tag branch__tag--physics">物理学</span>
+                </div>
+                <p class="home-branch__more reveal"><a href="self-intro.html#research" class="btn btn-secondary">研究について詳しく <span class="btn-disc" aria-hidden="true">→</span></a></p>
             </div>
         </section>
 
@@ -222,11 +206,12 @@
 
     <div id="site-footer"><noscript><nav class="noscript-nav" aria-label="フッターナビゲーション"><a href="index.html">ホーム</a><a href="self-intro.html">自己紹介</a><a href="study.html">勉強の軌跡</a><a href="videos.html">動画</a><a href="blog.html">ブログ</a><a href="sns.html">各種SNS</a></nav></noscript></div>
 
-    <script src="../js/layout.js?v=r146"></script>
-    <script src="../js/main.js?v=r146"></script>
-    <script src="../js/starfield.js?v=r146"></script>
-    <script src="../js/academic-tree.js?v=r146"></script>
-    <script src="../js/tree-scenes.js?v=r146"></script>
+    <script src="../js/layout.js?v=r149"></script>
+    <script src="../js/main.js?v=r149"></script>
+    <script src="../js/starfield.js?v=r149"></script>
+    <script src="../js/research.js?v=r149"></script>
+    <script src="../js/academic-tree.js?v=r149"></script>
+    <script src="../js/tree-scenes.js?v=r149"></script>
 </body>
 
 </html>
