@@ -12,7 +12,7 @@
 
    移り方（§135.7・§135.8）
      01→02  球が種のように縮んで根の種の位置へ集まり、根が種から先へ伸びる
-     03→04  木が立体にねじれて枝どうしが巻きつき、物理学の枝へ収束して、階層を下から昇る
+     03→04  木が大分類の色ごとの光の線にほどけて画面に散らばり、曲線を描いて THEME へ集まり、04 の形へ落ち着く
      05→06  実の粒子が舞い上がり、らせん状にブラックホールへ吸い込まれて降着円盤になる
      ほか   画面全体へ散って大きく渦を巻き、次の形へ収束する
    止まっている場面でも、旧ホームと同じ curl noise でゆらゆら揺れる。
@@ -370,7 +370,7 @@
             'precision highp float;',
             'attribute vec4 aS0, aS1, aS2, aS3, aS4, aS5; attribute float aSeed, aZ0;',
             'uniform float uF, uTime, uScroll, uW, uH, uSize, uDPR, uHot, uR;',
-            'uniform vec4 uBH;',   // ブラックホール：中心（06 の section の左上から）・内縁の半径・cos(傾き)
+            'uniform vec4 uBH; uniform vec2 uThemeC;',   // uThemeC：04 の THEME のカードの中心（ページの座標）   // ブラックホール：中心（06 の section の左上から）・内縁の半径・cos(傾き)
             'uniform vec2 uOff[6]; uniform vec2 uPiv[6]; uniform vec2 uRootSeed;',
             'uniform vec3 uPointer;',
             'uniform vec4 uQ[16]; uniform float uFilB;',   // 文字の箱（束が後ろを通るとき暗くする）と、束の明るさ
@@ -432,7 +432,7 @@
             '  float bA=A.z*flowOf(A.w,dA), bB=B.z*flowOf(B.w,dB);',
             // 場面の近くでは形を保ち（0〜0.22 と 0.78〜1）、そのあいだで移る
             '  float te=smoothstep(0.14,0.86,f);',   // 形を保つのは場面の前後 14%。移り目を長めにとる
-            '  vec2 p; float b; float sw=0.0; float mixT=te; float zd=0.0;',
+            '  vec2 p; float b; float sw=0.0; float mixT=te; float zd=0.0; vec3 colX=vec3(-1.0);',
             '  if(iA==0){',
             // 01→02：球が種のように縮んで根の種へ集まり（前半）、種から近い順に根が伸びる（後半）
             '    float u1=smoothstep(0.0,0.5,te), u2=smoothstep(0.5,1.0,te);',
@@ -441,24 +441,31 @@
             '    p = te<0.5 ? mix(A.xy, rs, u1) : mix(rs, B.xy, g);',
             '    b = te<0.5 ? mix(bA, bA*0.5, u1) : mix(bA*0.5, bB, g); mixT = te<0.5 ? 0.0 : g;',
             '  } else if(iA==2){',
-            // 03→04（§135.10）：木を立体に見立て、分かれ目を通る縦の軸のまわりに回す。高い所ほど多く回る（ねじれ）ので、
-            // 枝どうしがらせん状に巻きつく。回りながら半径を縮めて軸へ巻き込み（物理学の枝へ収束）、その柱を画面の中ほどへ寄せる。
-            // 最後に、順番の小さい粒子（小さな木・基礎分野）から順に研究の階層の形へ移り、下から上へ伸びる。
-            // 奥行き z は、手前ほど大きく明るく、奥ほど小さく暗くして前後を見せる
-            '    vec2 Fk=uPiv[2]+uOff[2], a=A.xy-Fk;',
-            '    float conv=smoothstep(0.08,0.6,te);',
-            '    float phi=te*3.6+max(0.0,-a.y)*0.0045*te*2.6+aSeed*0.2;',
-            '    float rs=1.0-0.88*conv;',
-            '    float x3=a.x*cos(phi)*rs, z3=a.x*sin(phi)*rs;',
+            // 03→04（§135.11）：ばらけて、THEME へ集まる。
+            //  ① ばらける（te 0〜0.35）：木の粒子は大分類の色ごとに 2 本ずつ（計 16 本）の「ゆるくうねる光の線」へ移り、線は画面全体に散らばる。粒子は線に沿って流れる
+            //  ② 集まる（0.42〜0.85）：各線が曲線を描きながら（中心のまわりに回りつつ縮んで）THEME のカードへ寄る。線の形は保つ。色は大分類の色から THEME の青へ
+            //  ③ 落ち着く（0.82〜1）：THEME に近い粒子から順に、04 のふだんの形（各層の輪郭・物理学の小さな枝）へ。初期宇宙から下の層へ灯っていく
+            '    float h1=fract(sin(aSeed*12.9898)*43758.5453), h2=fract(sin(aSeed*78.233)*24634.6345), h3=fract(sin(aSeed*39.425)*11743.21);',
+            '    float grp=clamp(floor(A.w+0.05)-2.0, 0.0, 7.0), lid=grp*2.0+floor(h1*2.0);',
+            '    float r1=fract(sin(lid*17.13+1.0)*43758.5453), r2=fract(sin(lid*31.7+2.0)*24634.6345), r3=fract(sin(lid*7.77+3.0)*11743.21);',
             '    vec2 vc=vec2(uW*0.5, uScroll+uH*0.5);',
-            '    vec2 col=mix(Fk, vc+vec2(0.0,uH*0.12), smoothstep(0.05,0.45,te));',
-            '    vec2 M=col+vec2(x3, a.y*mix(1.0,0.55,conv)+z3*0.22);',
-            '    float g=smoothstep(0.5+0.38*dB, 0.62+0.38*dB, te);',
-            '    p=mix(M,B.xy,g); b=mix(bA,bB,g); mixT=g;',
-            '    zd=(1.0-g)*clamp(z3/260.0,-1.0,1.0);',   // 手前 +1 / 奥 -1
-            '    b*=1.0+0.55*zd;',
-            // 飛んでいるあいだ（着く直前まで）、文字の後ろでは暗く。着いた先は文字の外なので、着いた粒子には効かない
-            '    b*=mix(1.0, 0.1, (1.0-smoothstep(0.92,1.0,g))*inText(p));',
+            '    vec2 ctr=vc+(vec2(r1,r2)-0.5)*vec2(uW*0.78,uH*0.72);',
+            '    float ang=r3*6.2832+uTime*0.05*(r1-0.5); vec2 dr=vec2(cos(ang),sin(ang)), nr=vec2(-dr.y,dr.x);',
+            '    float len=(0.32+0.26*r2)*length(vec2(uW,uH)), sl=fract(h2+uTime*0.04*(0.6+0.8*r1));',
+            '    vec2 Ls=ctr+dr*(sl-0.5)*len+nr*(uH*0.07*sin(6.2832*(sl*1.3+r1)+uTime*0.5)+(h3-0.5)*3.0);',
+            '    float sc=smoothstep(0.0,0.35,te), cv=smoothstep(0.42,0.85,te);',
+            // 線の先頭（sl が小さい側）から順に THEME へ流れ込む。尾はまだ遠くにあるので、最後まで曲がった光の流れとして見える。
+            // 近づくほど THEME のまわりを回る（らせん状に寄る）
+            '    float k=smoothstep(0.0,1.0,cv*1.5-sl*0.5);',
+            '    float th=k*(1.6+1.4*r1)*(r2<0.5?-1.0:1.0);',
+            '    vec2 Lc=uThemeC+rot(th)*(Ls-uThemeC)*(1.0-k);',
+            '    vec2 P1=mix(A.xy, Lc, sc);',
+            '    float dn=clamp(length(B.xy-uThemeC)/(uH*1.2),0.0,1.0), g=smoothstep(0.82+0.12*dn, 0.88+0.12*dn, te);',
+            '    p=mix(P1,B.xy,g);',
+            '    float lb=uFilB*(0.75+0.5*h3);',
+            '    b=mix(mix(bA,lb,sc), bB, g); mixT=g;',
+            '    colX=mix(mix(palOf(A.w), palOf(14.0), cv), palOf(B.w), g);',
+            '    b*=mix(1.0, 0.1, (1.0-smoothstep(0.92,1.0,g))*smoothstep(0.0,0.1,sc)*inText(p));',
             '  } else if(iA==4){',
             // 05→06（§135.10）：実と輪郭の粒子が舞い上がり、ブラックホールのまわりを回りながら半径を縮めて（らせん状に吸い込まれ）、
             // 降着円盤のいまの位置に着く。円盤の面で考えて、角度を 1.5 周ぶん余分に回す
@@ -503,7 +510,7 @@
             '  p+=normalize(dp+vec2(0.0001))*gp*34.0;',
             // 05：カードに触れているあいだ、その実と輪郭を明るく
             '  float hot=max(step(abs(floor(A.w+0.05)-uHot),0.1)*(1.0-mixT), step(abs(floor(B.w+0.05)-uHot),0.1)*mixT); b*=1.0+1.8*hot;',
-            '  vCol=mix(palOf(A.w),palOf(B.w),mixT);',
+            '  vCol = colX.x>=0.0 ? colX : mix(palOf(A.w),palOf(B.w),mixT);',
             '  vB=b;',
             '  gl_Position=vec4(p.x/uW*2.0-1.0, 1.0-(p.y-uScroll)/uH*2.0, 0.0, 1.0);',
             '  gl_PointSize=uSize*uDPR*(0.75+0.5*aSeed)*(1.0+0.6*step(0.9,b))*(1.0+0.45*zd);',   // 03→04 の手前の粒子は大きく
@@ -526,7 +533,7 @@
             uPiv: { value: [0, 1, 2, 3, 4, 5].map(function () { return new THREE.Vector2(); }) },
             uRootSeed: { value: new THREE.Vector2() }, uR: { value: 150 },
             uPointer: { value: new THREE.Vector3(-9999, -9999, 0) },
-            uHot: { value: -1 }, uBH: { value: new THREE.Vector4(0, 0, 300, 0.5) },
+            uHot: { value: -1 }, uBH: { value: new THREE.Vector4(0, 0, 300, 0.5) }, uThemeC: { value: new THREE.Vector2() },
             uQ: { value: Array.apply(null, Array(16)).map(function () { return new THREE.Vector4(-1e5, -1e5, -1e5, -1e5); }) },
             uFilB: { value: (isMobile ? 0.5 : 0.42) * Math.sqrt(kN) },   // 束の1粒の明るさ（束に重なるので、ひと粒は控えめでも線は明るい）
             uPal: { value: PAL.map(function (h) { return new THREE.Color(h); }) }
@@ -563,6 +570,7 @@
 
         /* ---- 箱の位置とスクロール → 場面の番号 ---------------------------------- */
         var centers = [0, 0, 0, 0, 0, 0], K = 6;
+        var themeCard = vizBox.querySelector('.rs-tier--theme .rs-card') || vizBox;
         // 束や飛んでいる粒子が後ろを通るとき暗くする文字の箱（最大 16）。研究の階層の層ラベルと凡例も
         var textEls = [].slice.call(document.querySelectorAll('.home-seed__inner, .home-block__head, .tree-note, .home-step__inner, .home-branch__more, .roots__tip, [data-branch-viz] .rs-tier__label')).slice(0, 16);
         function readBoxes() {
@@ -575,6 +583,8 @@
                 o[k + 1].set(r.left + sx, r.top + sy);
                 centers[k + 1] = r.top + sy + r.height / 2;
             });
+            var thc = themeCard.getBoundingClientRect();
+            uniforms.uThemeC.value.set(thc.left + thc.width / 2 + sx, thc.top + thc.height / 2 + sy);
             textEls.forEach(function (e, k) { var q = e.getBoundingClientRect(); uniforms.uQ.value[k].set(q.left + sx, q.top + sy, q.right + sx, q.bottom + sy); });
             // 縦長の木は中心で揃えると、上の方を読んでいるあいだ形が崩れたままになる。
             // 木の上端が画面の中ほどに来たところを、この場面の中心にする
@@ -616,7 +626,8 @@
             var target = sceneFor(window.scrollY + window.innerHeight / 2);
             // 追いつく速さに上限（1秒に 0.8 場面）：素早くスクロールしても、移り目の束が一瞬で終わらず
             // 0.5 秒ほど見えてから次の形へ。ふつうの速さのスクロールは上限より遅いので、そのまま追従する
-            var gap = target - fEased, stepF = gap * Math.min(1, dt * 2.6), cap = dt * 0.8;
+            // 03→04 は「ばらける」と「集まる」の2段なので、ここだけ上限を 0.45 場面/秒に（それぞれが約 0.5 秒見える。§135.11）
+            var gap = target - fEased, stepF = gap * Math.min(1, dt * 2.6), cap = dt * (fEased > 2.05 && fEased < 2.95 ? 0.45 : 0.8);
             fEased += Math.max(-cap, Math.min(cap, stepF));
             ptr.s += ((ptr.on ? 1 : 0) - ptr.s) * Math.min(1, dt * 4);
             uniforms.uF.value = fEased; uniforms.uTime.value = clock; uniforms.uScroll.value = window.scrollY;
