@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Academic Gates</title>
-    <meta name="description" content="科学技術の面白さを伝え、研究に挑む学生の声を届けるプラットフォーム。">
+    <meta name="description" content="一つの問いから、世界は広がる。学問の楽しさと広さを、学びの記録・動画・創作で伝えるサイト。">
 
     <!-- Fonts: Inter Tight (Latin) + Noto Sans JP (Japanese), light display weights -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -14,206 +14,206 @@
         href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;500&family=Noto+Sans+JP:wght@300;400&display=swap"
         rel="stylesheet">
 
-    <link rel="stylesheet" href="../css/style.css?v=r136">
+    <link rel="stylesheet" href="../css/style.css?v=r163">
     <link rel="icon" href="../../favicon.ico" sizes="32x32">
     <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="../../apple-touch-icon.png">
-    <!-- Three.js is injected non-blocking by js/scroll-scenes.js, and NOT downloaded
-         at all under prefers-reduced-motion. Version pinned to 0.160.0 there. -->
 </head>
 
 <body data-page="index">
-    <!-- Cosmic layers -->
     <canvas id="starfield" aria-hidden="true"></canvas>
-    <canvas id="scene-canvas" aria-hidden="true"></canvas>
 
     <div id="site-nav"><noscript><nav class="noscript-nav" aria-label="メインナビゲーション"><a href="index.html">ホーム</a><a href="self-intro.html">自己紹介</a><a href="study.html">勉強の軌跡</a><a href="videos.html">動画</a><a href="blog.html">ブログ</a><a href="sns.html">各種SNS</a></nav></noscript></div>
 
-    <main>
-        <!-- ======== HERO: continuous flow field, four motifs (Round 12) ====== -->
-        <!-- 宇宙 cosmos → 自然 nature → 社会 network → 情報基盤 infrastructure.
-             A curl-noise flow field runs the whole page; each motif is an attractor
-             the flow concentrates into and releases. Each text block is position:sticky
-             so it holds legibly while the field forms and disperses under it. -->
-        <div class="hero">
+    <!-- 「一本の木が枝分かれして、学問の樹形図になる」（DESIGN.md §135）。
+         01 種 → 02 根 → 03 学問の樹 → 04 私の枝 → 05 実り → 06 一歩。 -->
+    <main class="home">
 
-            <!-- ① 宇宙 COSMOS — the ring, viewer inside it -->
-            <section class="scene scene--center scene-cosmos" data-stage="cosmos" aria-labelledby="s1">
-                <div class="scene__content hero-scrim">
-                    <p class="eyebrow"><span class="eyebrow__num">01</span> — 宇宙 / Cosmos</p>
-                    <h1 class="gate-title" id="s1">Academic Gates</h1>
-                    <p class="gate-subtitle" lang="ja">科学技術の面白さを伝え、研究に挑む学生の声を届ける。<br>宇宙のはじまりから、いまへ。</p>
-                </div>
-                <div class="scroll-hint" aria-hidden="true">
-                    <span>Scroll</span><span class="scroll-hint__arrow">↓</span>
-                </div>
-            </section>
+        <!-- 01 — SEED -->
+        <section class="home-seed" id="seed" aria-labelledby="seed-h">
+            <div class="home-seed__inner">
+                <p class="eyebrow"><span class="eyebrow__num">01</span> — Seed</p>
+                <h1 id="seed-h" class="home-title">Academic Gates</h1>
+                <p class="home-catch" lang="ja">一つの問いから、<br>世界は広がる。</p>
+            </div>
+            <div class="home-seed__glyph" aria-hidden="true"></div>
+        </section>
 
-            <!-- ② 自然 NATURE — branching filaments; 勉強の軌跡 -->
-            <section class="scene scene--center scene-nature" data-stage="nature" aria-labelledby="s2">
-                <div class="scene__content hero-scrim">
-                    <p class="eyebrow"><span class="eyebrow__num">02</span> — 自然 / Nature</p>
-                    <h2 id="s2" lang="ja">学びは、<br>根を張る。</h2>
-                    <p lang="ja">一つの問いが枝分かれし、つながりながら伸びていく。基礎から専門へ——根から枝先へと広がる、知の成長。</p>
-                    <div class="cta-row">
-                        <a href="study.html" class="btn btn-primary">勉強の軌跡を見る <span class="btn-disc"
-                                aria-hidden="true">→</span></a>
-                    </div>
-                </div>
-            </section>
+        <!-- 02 — ROOTS：このサイトについて。根の先に「学び方」（精神の圏域）。 -->
+        <section class="home-block home-roots" id="roots" aria-labelledby="roots-h">
+            <div class="home-block__head reveal">
+                <p class="eyebrow"><span class="eyebrow__num">02</span> — Roots</p>
+                <h2 id="roots-h" lang="ja">学びは、根を張る。</h2>
+                <p lang="ja">Academic Gates は、学問の面白さと楽しさを伝え、興味をもつきっかけをつくるためのサイトです。運営者の専門は物理学ですが、ここで扱うのは物理に限りません。学んだことや人との交流から生まれたものを、学びの記録・動画・創作活動を通じて発信しています。</p>
+            </div>
+            <div class="roots reveal" data-roots>
+                <a class="roots__tip" href="study_skills.html"><span class="roots__label">学び方</span><span class="roots__sub">記憶術など、学ぶための技術</span></a>
+            </div>
+        </section>
 
-            <!-- ④ 情報基盤 INFRASTRUCTURE — lattice + streaming; 発信 (cards below) -->
-            <section class="scene scene--center scene-infra" data-stage="infra" aria-labelledby="s4">
-                <div class="scene__content hero-scrim">
-                    <p class="eyebrow"><span class="eyebrow__num">04</span> — 情報基盤</p>
-                    <h2 id="s4" lang="ja">学びを、<br>社会へ。</h2>
-                    <p lang="ja">積み上げた知識は、ノート・ブログ・動画・SNSという回路を流れ、構造化されて社会へと届いていく。</p>
-                </div>
-            </section>
-        </div>
+        <!-- 03 — TREE：学問の樹。
+             ★ この入れ子のリストが木のデータそのもの（分類 → 学問の2段）。js/academic-tree.js が
+             ここから木の形を作る。学問を足すと枝が増える。ホームには代表的な学問だけを置く（§135.8）
+             - リンク：ページがあれば <a href>、無ければ <span>（破線＝準備中）。URL を入れるだけで有効になる
+             - data-key：学問の名前（04 で物理学の枝を見つけるのに使う）
+             - 分類の差し色は CSS の data-cat で決める -->
+        <section class="home-block home-tree" id="tree" aria-labelledby="tree-h">
+            <div class="home-block__head reveal">
+                <p class="eyebrow"><span class="eyebrow__num">03</span> — Tree</p>
+                <h2 id="tree-h" lang="ja">学問の樹</h2>
+                <p lang="ja">一本の幹から、無数の枝へ。<br>世界のすべてを、ひとつの視点で描き尽くすことはできません。だから学問は、素粒子から宇宙、心から社会まで、さまざまなスケールと角度から世界に迫ります。どの枝も、世界を見るためのひとつの窓です。</p>
+            </div>
+            <div class="tree reveal" data-tree>
+                <ol class="tree__data" aria-label="学問の分類">
+                    <li class="tree-cat" data-cat="formal">
+                        <h3 class="tree-cat__name">形式科学</h3>
+                        <ul>
+                            <li data-key="math"><span class="tree-node">数学</span></li>
+                            <li data-key="statistics"><span class="tree-node">統計学</span></li>
+                            <li data-key="logic"><span class="tree-node">論理学</span></li>
+                            <li data-key="cs"><span class="tree-node">情報科学</span></li>
+                        </ul>
+                    </li>
+                    <li class="tree-cat" data-cat="natural">
+                        <h3 class="tree-cat__name">自然科学</h3>
+                        <ul>
+                            <li data-key="physics"><a class="tree-node" href="study_physics.html">物理学</a></li>
+                            <li data-key="chemistry"><span class="tree-node">化学</span></li>
+                            <li data-key="biology"><span class="tree-node">生物学</span></li>
+                            <li data-key="earth-science"><span class="tree-node">地球科学</span></li>
+                            <li data-key="astronomy"><span class="tree-node">天文学</span></li>
+                        </ul>
+                    </li>
+                    <li class="tree-cat" data-cat="life">
+                        <h3 class="tree-cat__name">生命・医療</h3>
+                        <ul>
+                            <li data-key="medicine"><span class="tree-node">医学</span></li>
+                            <li data-key="pharmacy"><span class="tree-node">薬学</span></li>
+                            <li data-key="agriculture"><span class="tree-node">農学</span></li>
+                        </ul>
+                    </li>
+                    <li class="tree-cat" data-cat="engineering">
+                        <h3 class="tree-cat__name">工学</h3>
+                        <ul>
+                            <li data-key="mechanical"><span class="tree-node">機械工学</span></li>
+                            <li data-key="electrical"><span class="tree-node">電気電子工学</span></li>
+                            <li data-key="civil"><span class="tree-node">土木工学</span></li>
+                            <li data-key="aerospace"><span class="tree-node">航空宇宙工学</span></li>
+                            <li data-key="architecture"><span class="tree-node">建築学</span></li>
+                        </ul>
+                    </li>
+                    <li class="tree-cat" data-cat="humanities">
+                        <h3 class="tree-cat__name">人文学</h3>
+                        <ul>
+                            <li data-key="philosophy"><a class="tree-node" href="earthhuman.html#eh-philosophy">哲学</a></li>
+                            <li data-key="history"><a class="tree-node" href="earthhuman.html#eh-history">歴史学</a></li>
+                            <li data-key="geography"><a class="tree-node" href="earthhuman.html#eh-geography">地理学</a></li>
+                            <li data-key="religious-studies"><a class="tree-node" href="earthhuman.html#eh-religion">宗教学</a></li>
+                            <li data-key="literature"><span class="tree-node">文学</span></li>
+                            <li data-key="linguistics"><span class="tree-node">言語学</span></li>
+                            <li data-key="languages"><span class="tree-node">外国語</span></li>
+                        </ul>
+                    </li>
+                    <li class="tree-cat" data-cat="social">
+                        <h3 class="tree-cat__name">社会科学</h3>
+                        <ul>
+                            <li data-key="economics"><span class="tree-node">経済学</span></li>
+                            <li data-key="law"><span class="tree-node">法学</span></li>
+                            <li data-key="politics"><a class="tree-node" href="earthhuman.html#eh-geopolitics">政治学</a></li>
+                            <li data-key="sociology"><span class="tree-node">社会学</span></li>
+                            <li data-key="psychology"><span class="tree-node">心理学</span></li>
+                            <li data-key="education"><span class="tree-node">教育学</span></li>
+                        </ul>
+                    </li>
+                    <li class="tree-cat" data-cat="arts">
+                        <h3 class="tree-cat__name">芸術・創作</h3>
+                        <ul>
+                            <li data-key="fine-art"><a class="tree-node" href="earthhuman.html#eh-art">美術</a></li>
+                            <li data-key="music"><span class="tree-node">音楽</span></li>
+                            <li data-key="design"><span class="tree-node">デザイン</span></li>
+                            <li data-key="film"><span class="tree-node">映像</span></li>
+                        </ul>
+                    </li>
+                </ol>
+            </div>
+            <p class="tree-note reveal" lang="ja">実線の学問は、サイト内のノートや教材へ。破線はまだ準備中です。</p>
+        </section>
 
-        <!-- ======================= THE INDEX (calm card grids) ============ -->
-        <div class="index-region">
-
-            <!-- 基礎領域 — foundational studies. Round-20: split back out of the merged study block
-                 (the 専門領域 block follows). Keeps its intro paragraph and the 6-item list; the
-                 second paragraph + 3-item list moved to #stage-specialty. Motif: foundation stack
-                 (stage 3), hot core at the base; the core migrates to 専門's apex (see DESIGN.md §23). -->
-            <section class="index-block" id="stage-study" aria-labelledby="found-h">
-                <div class="index-block__head reveal">
-                    <p class="eyebrow"><span class="eyebrow__num">05</span> — 基礎領域</p>
-                    <h2 id="found-h" lang="ja"><a class="stage-jump" href="#stage-study">学びの土台</a></h2>
-                    <p lang="ja">カオスから構造が生まれるように、学びもまた基礎から立ち上がる。まずは土台となる学部レベルの学問を、一つずつ積み上げていく。</p>
-                    <ul class="scene-list" lang="ja">
-                        <li>物理数学</li>
-                        <li>古典力学・解析力学</li>
-                        <li>電磁気学</li>
-                        <li>熱力学・統計力学</li>
-                        <li>量子力学</li>
-                        <li>特殊相対性理論</li>
-                    </ul>
-                    <p style="margin-top: 1.5rem;">
-                        <a href="study.html" class="btn btn-secondary">勉強の軌跡を見る <span class="btn-disc"
-                                aria-hidden="true">→</span></a>
-                    </p>
+        <!-- 04 — MY BRANCH：文章の下に研究の階層（js/research.js、自己紹介と共通）。
+             その下の小さな木から物理学の枝が伸びて、階層のいちばん下に流れ込む（js/academic-tree.js） -->
+        <section class="home-block home-branch" id="branch" aria-labelledby="branch-h">
+            <div class="home-block__head reveal">
+                <p class="eyebrow"><span class="eyebrow__num">04</span> — My Branch</p>
+                <h2 id="branch-h" lang="ja">私の枝</h2>
+                <p lang="ja">運営者の専門は物理学、なかでも初期宇宙理論。既知の物理法則を土台に仮説を立て、理論を組み立てることで、まだ直接観測できない領域の物理現象を研究しています。</p>
+                <div class="home-actions">
+                    <a href="self-intro.html" class="btn btn-primary">自己紹介 <span class="btn-disc" aria-hidden="true">→</span></a>
+                    <a href="study.html" class="btn btn-secondary">勉強の軌跡 <span class="btn-disc" aria-hidden="true">→</span></a>
                 </div>
-            </section>
-
-            <!-- 専門領域 — specialized fields. Round-20: split back out of the merged study block.
-                 Copy (eyebrow, heading 専門という軌道, paragraph, 3-item list, button ノートを読む)
-                 restored VERBATIM from pre-merge commit 4c64a53. Structural wrapper (id, index-block__head
-                 reveal, stage-jump self-link) mirrors the sibling index-blocks for parity. -->
-            <section class="index-block" id="stage-specialty" aria-labelledby="spec-h">
-                <div class="index-block__head reveal">
-                    <p class="eyebrow"><span class="eyebrow__num">06</span> — 専門領域</p>
-                    <h2 id="spec-h" lang="ja"><a class="stage-jump" href="#stage-specialty">専門という軌道</a></h2>
-                    <p lang="ja">一つひとつの分野が、恒星をめぐる惑星の軌道のように。基礎の上に、素粒子・重力・宇宙の専門領域を重ねていく。</p>
-                    <ul class="scene-list" lang="ja">
-                        <li>場の量子論</li>
-                        <li>一般相対性理論</li>
-                        <li>宇宙論</li>
-                    </ul>
-                    <p style="margin-top: 1.5rem;">
-                        <a href="study.html" class="btn btn-secondary">ノートを読む <span class="btn-disc"
-                                aria-hidden="true">→</span></a>
-                    </p>
+            </div>
+            <div class="home-branch__viz" data-branch-viz>
+                <div class="rs-stack" data-research="compact"></div>
+                <div class="branch reveal" data-branch aria-hidden="true">
+                    <span class="branch__tag branch__tag--physics">物理学</span>
                 </div>
-            </section>
+                <p class="home-branch__more reveal"><a href="self-intro.html#research" class="btn btn-secondary">研究について詳しく <span class="btn-disc" aria-hidden="true">→</span></a></p>
+            </div>
+        </section>
 
-            <!-- Blog -->
-            <section class="index-block" id="stage-blog" aria-labelledby="blog-h">
-                <div class="index-block__head reveal">
-                    <p class="eyebrow"><span class="eyebrow__num">08</span> — Blog</p>
-                    <h2 id="blog-h" lang="ja"><a class="stage-jump" href="#stage-blog">最新ブログ</a></h2>
-                    <p lang="ja">研究や学問に関する記事、考察を発信しています。</p>
-                </div>
-                <!-- Cards hidden until there are real articles to link. The three below were
-                     sample content (fabricated titles); restore/replace them when blog.html has
-                     actual posts. See also the matching block in blog.html. -->
-                <!--
-                <div class="note-grid">
-                    <a href="blog.html" class="card reveal">
-                        <div class="media-placeholder" aria-hidden="true"></div>
-                        <span class="meta">Physics</span>
-                        <h4 lang="ja">量子コンピュータの現在地</h4>
-                    </a>
-                    <a href="blog.html" class="card reveal">
-                        <div class="media-placeholder" aria-hidden="true"></div>
-                        <span class="meta">Technology</span>
-                        <h4 lang="ja">AIエージェントと協働する未来</h4>
-                    </a>
-                    <a href="blog.html" class="card reveal">
-                        <div class="media-placeholder" aria-hidden="true"></div>
-                        <span class="meta">Math</span>
-                        <h4 lang="ja">トポロジーとデータ解析</h4>
-                    </a>
-                </div>
-                -->
-                <p class="reveal" style="margin-top: 1.5rem;">
-                    <a href="blog.html" class="btn btn-secondary">ブログへ <span class="btn-disc"
-                            aria-hidden="true">→</span></a>
-                </p>
-            </section>
-
-            <!-- Videos (reachable from the homepage) -->
-            <section class="index-block" id="stage-videos" aria-labelledby="videos-h">
-                <div class="index-block__head reveal">
-                    <p class="eyebrow"><span class="eyebrow__num">09</span> — Videos</p>
-                    <h2 id="videos-h" lang="ja"><a class="stage-jump" href="#stage-videos">最新動画</a></h2>
+        <!-- 05 — FRUITS：発信。行き先の無いカードは <div>（layout.js が「準備中」を付ける） -->
+        <section class="home-block home-fruits" id="fruits" aria-labelledby="fruits-h">
+            <div class="home-block__head reveal">
+                <p class="eyebrow"><span class="eyebrow__num">05</span> — Fruits</p>
+                <h2 id="fruits-h" lang="ja">学びを、社会へ。</h2>
+                <p lang="ja">積み上げた知識を、次の世代の未来へとつなぐ。<br>物事を客観的に分析し、その力を社会に還元できる人を育てるために。</p>
+            </div>
+            <!-- 各カードの上に、そのカードの実（色はカードの見出しの前の点と同じ） -->
+            <div class="home-fruits__grid" data-fruits>
+                <a class="study-card reveal" href="videos.html" data-fruit="0">
+                    <span class="meta">Videos</span>
+                    <h3 lang="ja">動画</h3>
                     <p lang="ja">研究や学問についての動画コンテンツ、シミュレーション映像。</p>
+                </a>
+                <a class="study-card reveal" href="blog.html" data-fruit="1">
+                    <span class="meta">Blog</span>
+                    <h3 lang="ja">ブログ</h3>
+                    <p lang="ja">研究や学問に関する記事、考察。</p>
+                </a>
+                <div class="study-card reveal" data-fruit="2">
+                    <span class="meta">Creation</span>
+                    <h3 lang="ja">創作活動</h3>
+                    <p lang="ja">イラスト・動画・アニメーションなど、学びから生まれる創作。</p>
                 </div>
-                <!-- Cards hidden until there are real videos to link. The three below were
-                     sample content (fabricated titles); restore/replace them when videos.html has
-                     actual videos. See also the matching block in videos.html. -->
-                <!--
-                <div class="note-grid">
-                    <a href="videos.html" class="card reveal">
-                        <div class="media-placeholder" aria-hidden="true"></div>
-                        <h4 lang="ja">量子場理論入門 — 第1回</h4>
-                        <p lang="ja">量子場理論の基礎概念を分かりやすく解説します。</p>
-                    </a>
-                    <a href="videos.html" class="card reveal">
-                        <div class="media-placeholder" aria-hidden="true"></div>
-                        <h4 lang="ja">研究生活のリアル</h4>
-                        <p lang="ja">大学院生の一日。実際の研究生活を紹介します。</p>
-                    </a>
-                    <a href="videos.html" class="card reveal">
-                        <div class="media-placeholder" aria-hidden="true"></div>
-                        <h4 lang="ja">素粒子物理学の最前線</h4>
-                        <p lang="ja">最新の研究動向とその意義について解説します。</p>
-                    </a>
-                </div>
-                -->
-                <p class="reveal" style="margin-top: 1.5rem;">
-                    <a href="videos.html" class="btn btn-secondary">動画一覧へ <span class="btn-disc"
-                            aria-hidden="true">→</span></a>
-                </p>
-            </section>
+                <a class="study-card reveal" href="sns.html" data-fruit="3">
+                    <span class="meta">Connect</span>
+                    <h3 lang="ja">交流</h3>
+                    <p lang="ja">各種SNSで、学問を通じた交流を。</p>
+                </a>
+            </div>
+        </section>
 
-            <!-- Closing — Round-17: promoted to the convergence stage (stage 6). The scene engine
-                 now treats this section as a stage centre (see js/scroll-scenes.js indexBlocks
-                 selector); its copy is unchanged. -->
-            <section class="final-message reveal">
-                <p lang="ja">学問の世界へ、あなたも一歩を踏み出してみませんか。</p>
-            </section>
-        </div>
+        <!-- 06 — STEP -->
+        <section class="home-block home-step" id="step" aria-labelledby="step-h">
+            <!-- ブラックホール（§135.10）：降着円盤と事象の地平面の影。締めの文は影の中に置く。形は js/academic-tree.js、粒子は tree-scenes.js -->
+            <div class="bh" data-bh aria-hidden="true"></div>
+            <div class="home-step__inner reveal">
+                <p class="eyebrow"><span class="eyebrow__num">06</span> — Step</p>
+                <h2 id="step-h" lang="ja">学問の世界へ、あなたも一歩を踏み出してみませんか。</h2>
+                <div class="home-actions">
+                    <a href="sns.html" class="btn btn-primary">Connect <span class="btn-disc" aria-hidden="true">→</span></a>
+                </div>
+            </div>
+        </section>
     </main>
 
-    <!-- Unified footer -->
     <div id="site-footer"><noscript><nav class="noscript-nav" aria-label="フッターナビゲーション"><a href="index.html">ホーム</a><a href="self-intro.html">自己紹介</a><a href="study.html">勉強の軌跡</a><a href="videos.html">動画</a><a href="blog.html">ブログ</a><a href="sns.html">各種SNS</a></nav></noscript></div>
 
-    <!-- Bracketed micro-labels along the bottom edge -->
-    <div class="stage-labels" aria-hidden="true">
-        <span>[ 基礎領域 ]</span>
-        <span>[ 専門領域 ]</span>
-        <span>[ ARCHIVE ]</span>
-    </div>
-
-    <!-- Shared behaviour, then the star field, then the scene engine (loads Three.js) -->
-    <script src="../js/layout.js?v=r136"></script>
-    <script src="../js/main.js?v=r136"></script>
-    <script src="../js/starfield.js?v=r136"></script>
-    <script src="../js/scroll-scenes.js?v=r136"></script>
+    <script src="../js/layout.js?v=r163"></script>
+    <script src="../js/main.js?v=r163"></script>
+    <script src="../js/starfield.js?v=r163"></script>
+    <script src="../js/research.js?v=r163"></script>
+    <script src="../js/academic-tree.js?v=r163"></script>
+    <script src="../js/tree-scenes.js?v=r163"></script>
 </body>
 
 </html>

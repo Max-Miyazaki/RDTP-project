@@ -23,7 +23,9 @@
     /* Text */
     --text-primary: #ffffff;
     --text-secondary: rgba(255, 255, 255, 0.62);
-    --text-tertiary: rgba(255, 255, 255, 0.40);
+    /* §135.5：.40（黒地で 3.7:1、AA に届かない）→ .48（4.9:1）。番号ラベル・フッターの見出しなど
+       サイト共通の小さなラベルの色。--text-secondary（.62、7.8:1）とは段の差を残す。 */
+    --text-tertiary: rgba(255, 255, 255, 0.48);
 
     /* The spectrum (particles + accents) — teal-dominant, warm at cores only */
     --spec-blue-deep: #0b3be0;
@@ -37,6 +39,13 @@
     --spec-violet: #7b4dff;
     --spec-magenta: #ff3d8b;
     --spec-ember: #ff5a3c;
+
+    /* 研究の階層の色（§135.9）：可視光のエネルギー順。上の層ほど高エネルギー（青）、下ほど低エネルギー（赤）。
+       どれも黒地で 6:1 以上（層ラベルの小さな文字に使うため）。 */
+    --nm-450: #6f8cff;
+    --nm-520: #4fdd8a;
+    --nm-590: #ffb547;
+    --nm-650: #ff5f52;
 
     /* Derived UI accents */
     --accent: #3d8bff;
@@ -124,28 +133,6 @@ h1, h2, h3, h4,
     }
 }
 
-/* Round 14 — proximity scroll-snap on the hero (stages 01–04) only.
-   Native CSS snap (NOT a JS scroll hijack): the browser keeps ownership of
-   inertia, momentum, and mid-transition stops. `proximity` (never `mandatory`)
-   settles a deliberate scroll onto a motif but always leaves an escape, so
-   find-in-page, anchor jumps, keyboard scrolling, and resting between stages
-   all still work. Only elements with scroll-snap-align become snap points, so
-   the index blocks 05–10 (card grids + body copy people are reading) are left
-   as free scroll by simply never opting in.
-   Gated to (no-preference) so reduced-motion gets plain scrolling — snapping is
-   motion — and to (min-width:601px) so mobile gets the free-scroll version
-   (iOS momentum + snap is historically janky; pending the device pass this is
-   the safe default). Each .scene is 120vh, so its centre is exactly the peak-w
-   position; snap-align:center lands the form fully resolved. */
-@media (prefers-reduced-motion: no-preference) and (min-width: 601px) {
-    html {
-        scroll-snap-type: y proximity;
-    }
-
-    .hero .scene {
-        scroll-snap-align: center;
-    }
-}
 
 body {
     font-family: var(--font-body);
@@ -178,61 +165,6 @@ body::before {
         radial-gradient(55% 50% at 55% 6%, var(--spill-violet), transparent 74%);
 }
 
-/* Bracketed micro-labels along the bottom edge (reference detail) */
-.stage-labels {
-    position: fixed;
-    left: var(--gutter);
-    bottom: 16px;
-    z-index: 900;
-    display: flex;
-    gap: 1.1rem;
-    flex-wrap: wrap;
-    font-size: 0.6rem;
-    letter-spacing: 0.22em;
-    text-transform: uppercase;
-    color: var(--text-tertiary);
-    pointer-events: none;
-}
-
-/* Live telemetry (particles · frame budget · fps) — reference detail */
-#telemetry {
-    position: fixed;
-    right: var(--gutter);
-    bottom: 16px;
-    z-index: 900;
-    display: flex;
-    gap: 1rem;
-    font-size: 0.6rem;
-    letter-spacing: 0.1em;
-    color: var(--text-tertiary);
-    font-variant-numeric: tabular-nums;
-    pointer-events: none;
-    text-transform: uppercase;
-}
-
-#telemetry b {
-    color: var(--spec-teal);
-    font-weight: 500;
-    margin-right: 0.25em;
-}
-
-@media (max-width: 600px) {
-
-    .stage-labels,
-    #telemetry {
-        display: none;
-    }
-}
-
-/* Hero-only readouts: fade out once the hero has scrolled past, so they never sit
-   over the footer (Round-12 bug 3). position:fixed → no layout shift either way.
-   JS toggles body.hero-passed (scroll-scenes.js). */
-body.hero-passed .stage-labels,
-body.hero-passed #telemetry {
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.4s var(--ease);
-}
 
 img {
     max-width: 100%;
@@ -289,11 +221,6 @@ body.is-article #starfield {
     opacity: 1;
 }
 
-/* Fades out once the hero leaves the viewport so the calm card/footer region
-   settles onto pure black + the star field (motion stops, fully readable). */
-#scene-canvas.is-dormant {
-    opacity: 0;
-}
 
 /* ---------------------------------------------------------------------------
    4. TYPOGRAPHY
@@ -680,19 +607,6 @@ a.card:hover::before,
     color: var(--text-tertiary);
 }
 
-/* Spectrum media placeholder (thumbnails etc.) — teal/cyan register with a faint warm
-   accent only (§2.3: warm confined to hot cores; was a saturated blue+magenta block). */
-.media-placeholder {
-    aspect-ratio: 16 / 9;
-    border-radius: var(--radius-md);
-    background:
-        linear-gradient(135deg, rgba(43, 217, 196, 0.34), rgba(0, 194, 203, 0.12) 55%, transparent 82%),
-        radial-gradient(120% 130% at 22% 18%, rgba(43, 217, 196, 0.62), transparent 60%),
-        radial-gradient(110% 120% at 82% 84%, rgba(0, 194, 203, 0.5), transparent 64%),
-        radial-gradient(50% 50% at 60% 45%, rgba(255, 90, 60, 0.1), transparent 72%),
-        #0a161a;
-    opacity: 0.9;
-}
 
 /* ---------------------------------------------------------------------------
    8. LAYOUT HELPERS
@@ -791,158 +705,14 @@ html.js .reveal.is-visible {
     color: var(--text-primary);
 }
 
-/* Four text stages × 120vh = 480vh (Round-12 Part 6 — longer scenes, slower reveal).
-   Each text block is position:sticky so it holds pinned near centre for the whole
-   stage while the flow field forms and releases under it — a long, steady read. */
-.scene {
-    position: relative;
-    height: 120vh;
-    padding: 0 var(--gutter);
-}
-
-/* Left-aligned column on the dark left; the formation sits on the right (§comp).
-   .scene prefix raises specificity above .hero-scrim (which also sets position). */
-.scene .scene__content {
-    position: sticky;
-    top: 22vh;
-    z-index: 1;
-    width: 100%;
-    max-width: 30rem;
-    margin: 0 auto 0 0;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    text-align: left;
-    gap: var(--space-3);
-    /* Visible by default (JS off); JS drives opacity so one block reads at a time. */
-    transition: opacity 0.3s linear;
-}
-
-.scene-list {
-    list-style: none;
-    margin-top: var(--space-3);
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem 1.25rem;
-}
-
-.scene-list li {
-    position: relative;
-    padding-left: 1rem;
-    font-size: 0.9rem;
-    color: var(--text-secondary);
-}
-
-.scene-list li::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 0.6em;
-    width: 5px;
-    height: 5px;
-    border-radius: 50%;
-    background: var(--accent);
-}
-
-.cta-row {
-    display: flex;
-    gap: var(--space-2);
-    flex-wrap: wrap;
-    justify-content: flex-start;
-    margin-top: var(--space-2);
-}
-
 /* Per-glyph contrast comes from a DARK text-shadow (legibility, not glow) so
    there is no panel behind the text. The local scrim below is only soft ambient
    support — it feathers smoothly to transparent with no detectable edge. */
 .hero h1,
 .hero h2,
-.hero .gate-subtitle,
 .hero p,
-.hero .eyebrow,
-.hero .scene-list li {
+.hero .eyebrow {
     text-shadow: 0 0 8px rgba(0, 0, 0, 0.9), 0 0 18px rgba(0, 0, 0, 0.6);
-}
-
-/* The BEGINNING subtitle sits over the bright ring's inner bloom — a tighter
-   stacked shadow fills the gaps between its small glyphs, and a tighter
-   line-height removes the inter-line band a bright particle could show through. */
-.hero .gate-subtitle {
-    text-shadow: 0 0 6px #000, 0 0 14px rgba(0, 0, 0, 0.85), 0 0 24px rgba(0, 0, 0, 0.6);
-    line-height: 1.5;
-}
-
-.hero-scrim {
-    position: relative;
-}
-
-/* Dark enough over the text for ≥4.5:1, but a CONTINUOUS falloff (no shoulder/
-   plateau) plus a large blur means there is no detectable edge — it reads as a
-   soft vignette, not a panel. */
-.hero-scrim::before {
-    content: '';
-    position: absolute;
-    z-index: -1;
-    inset: -1.2rem -2rem;
-    /* Lighter now — left-aligned text sits on the dark left, so this is just a
-       gentle safety pool biased to the text (left), fully feathered, no edge. */
-    background: radial-gradient(ellipse 120% 130% at 35% 50%,
-            rgba(0, 0, 0, 0.70) 0%,
-            rgba(0, 0, 0, 0.42) 52%,
-            rgba(0, 0, 0, 0.14) 78%,
-            transparent 100%);
-    filter: blur(20px);
-    pointer-events: none;
-}
-
-/* Reference-aligned: moderate size, more weight (was oversized + thin at 300). */
-.gate-title {
-    font-size: clamp(2rem, 4.5vw, 3.4rem);
-    font-weight: 400;
-    letter-spacing: -0.02em;
-    line-height: 1.02;
-}
-
-/* Stage headings: moderate + weight 500 (Latin and JP). */
-.scene h2 {
-    font-size: clamp(1.9rem, 3.4vw, 3rem);
-    font-weight: 500;
-    line-height: 1.08;
-    letter-spacing: -0.01em;
-}
-
-.scene h2:lang(ja) {
-    font-weight: 500;
-}
-
-.gate-subtitle {
-    margin: 0;
-    color: var(--text-primary);
-    max-width: 42ch;
-    text-align: left;
-}
-
-/* Persistent scroll affordance — fades out by progress ~0.12 (JS sets --scroll-hint) */
-.scroll-hint {
-    position: absolute;
-    left: 50%;
-    bottom: 40px;
-    transform: translateX(-50%);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.4rem;
-    font-size: 0.65rem;
-    letter-spacing: 0.25em;
-    text-transform: uppercase;
-    color: var(--text-tertiary);
-    opacity: var(--scroll-hint, 1);
-    transition: opacity 0.4s var(--ease);
-    z-index: 2;
-}
-
-.scroll-hint__arrow {
-    animation: hint-bob 1.8s var(--ease) infinite;
 }
 
 @keyframes hint-bob {
@@ -955,135 +725,6 @@ html.js .reveal.is-visible {
     50% {
         transform: translateY(6px);
     }
-}
-
-@media (prefers-reduced-motion: reduce) {
-    .scroll-hint__arrow {
-        animation: none;
-    }
-}
-
-/* ---------------------------------------------------------------------------
-   11. INDEX — THE INDEX region (calm card grids, motion at rest)
-   --------------------------------------------------------------------------- */
-.index-region {
-    position: relative;
-    z-index: 1;
-    /* Semi-transparent veil (not solid #000) so the calm below-hero flow field shows
-       through behind the cards while card text keeps its contrast (Round-12 Part 2). */
-    background: linear-gradient(180deg, transparent, rgba(0, 0, 0, 0.42) 16%);
-}
-
-.index-block {
-    padding: var(--space-8) var(--gutter);
-    max-width: 1200px;
-    margin: 0 auto;
-    /* Even out the per-stage scroll dwell (Round-13 item 3): card heights are
-       content-dependent (blog/videos grids are taller), which made stages 05–10 morph
-       at uneven speeds. A min-height evens the block spans so each stage gets a
-       comparable scroll window; the flow field fills the added space (never empty). */
-    min-height: 60vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-}
-
-.index-block__head {
-    margin-bottom: var(--space-6);
-    max-width: 62ch;
-    position: relative;
-}
-
-/* §20.2 (Round-31): a soft scrim behind the index-block heading column — a feathered
-   radial like .hero-scrim::before, lighter. Index-block headings had no scrim, so a
-   full-bleed bright motif (waveforms under 最新動画) dropped to 3.71:1 / 19-of-24 frames
-   below AA at 1440×900. This lifts it to 6.2:1 (0 below, all viewports) with no motif
-   change (an overlay, not a field edit). z-index -1 sits above the fixed canvas, below
-   the text. The gradient fades fully to transparent at 88% (INSIDE the -1.6rem/-2.6rem
-   inset box), so the box edge is transparent and it reads as a vignette, not a panel —
-   the earlier 0.52/transparent-at-100% version clipped a still-visible gradient at the
-   small box edge and read as a box (§31.2a). Scoped to .index-block__head — which exists
-   ONLY on index.html (0 matches on the other 10 pages). Reversible: delete this rule. */
-/* ★ 上の .hero-scrim::before と下の .index-block__head::before は、左右に 2rem・2.6rem はみ出す下地。390px では右へ最大 22px
-   画面の外に出て、スマホで見えている範囲が横に 23px ずれた（DESIGN.md §117）。下地を載せる幅いっぱいの箱で横だけ切る。
-   clip はスクロールする入れ物を作らないので、.scene__content の sticky は壊れない。1440px では下地は画面の中なので見た目は変わらない */
-.scene, .index-block { overflow-x: clip; }
-.index-block__head::before {
-    content: '';
-    position: absolute;
-    z-index: -1;
-    inset: -1.6rem -2.6rem;
-    pointer-events: none;
-    background: radial-gradient(ellipse 80% 95% at 26% 40%,
-            rgba(0, 0, 0, 0.40) 0%,
-            rgba(0, 0, 0, 0.22) 42%,
-            rgba(0, 0, 0, 0.06) 70%,
-            transparent 88%);
-}
-
-.index-block__head h2 {
-    margin-bottom: var(--space-2);
-}
-
-.note-grid {
-    display: grid;
-    gap: var(--space-3);
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-}
-
-.final-message {
-    text-align: center;
-    /* Normal section rhythm — the old var(--space-16) (128px each side) isolated the
-       one line in a large black void (Round-12 bug 2). */
-    padding: var(--space-8) var(--gutter);
-}
-
-/* Round-23: give stage 7 a viewport-tall section so sceneF can REACH 7.0 at a true rest
-   on tall viewports. Reachability needs  FM_height + 2·footer + 92 ≥ viewport_height
-   (see DESIGN.md §26); at the old ~204px height that failed above 1188px tall, leaving the
-   closing region resting at a dissolved videos↔orbits blend (fc 0.477, w≈0.02). 100vh makes
-   the condition hold at every height. The text is BOTTOM-anchored (flex column, justify-end)
-   so the closing line stays exactly where it was on short viewports — the particle field fills
-   the space above it, so this is NOT the Round-12 bug-2 void (a lone line centred in black).
-   Gated to min-width:769px (the isMobile boundary): phones suppress the stage-7 motif and
-   already reach 7.0 via their short layout, so a full-height section there would only add an
-   empty region above the line. Not a snap point and not scroll-padding — pure document height. */
-@media (min-width: 769px) {
-    .final-message {
-        min-height: 100vh;
-        display: flex;
-        flex-direction: column;
-        justify-content: flex-end;
-    }
-}
-
-/* Round-24: wide/landscape composition for stage 7 — centred, footer kept (see DESIGN.md §27).
-   On a SHORT viewport the footer (a fixed ~446px) eats half the frame at the page-bottom rest,
-   so the Round-23 bottom-anchor leaves only a 240px band. Centring the closing line and holding
-   the rest at the FM-centre lifts the footer off the fold's pressure, opening the band to ~360px
-   while keeping motif → message → footer in one frame (closing 16:1, footer 19:1, both visible).
-   The snap point is LOAD-BEARING, not decorative: without it the page rests at the absolute bottom,
-   where the centred message rides to the top and TOUCHES the motif under the nav (order flips to
-   message → motif → footer) — the rejected Option-1 collision. scroll-snap-align holds the rest at
-   the FM-centre so the approved order survives. Boundary is a MAX-HEIGHT, not a width: the problem
-   is the footer's fixed px eating a SHORT viewport, i.e. a height problem; above 1100px the
-   bottom-anchor already gives ≥440px (growing to 1140px on tall), so tall/portrait keep §26 exactly
-   (measured Δ0). Overrides only min-height + justify-content; display/flex-direction carry from §26. */
-@media (min-width: 769px) and (max-height: 1100px) {
-    .final-message {
-        min-height: 70vh;
-        justify-content: center;
-        scroll-snap-align: center;
-    }
-}
-
-.final-message p {
-    max-width: none;
-    font-family: var(--font-display);
-    font-weight: 300;
-    font-size: clamp(1.5rem, 3.5vw, 2.5rem);
-    color: var(--text-primary);
-    letter-spacing: -0.01em;
 }
 
 /* ---------------------------------------------------------------------------
@@ -1703,12 +1344,65 @@ footer a:hover {
     transform: rotate(45deg);
 }
 
+/* --- 研究の階層：可視光のエネルギー順の色（§135.9）-------------------------------
+   上の層ほど高エネルギー（テーマ 450nm 青 → トピック 520nm 緑 → 専門分野 590nm 黄〜橙 → 基礎分野 650nm 赤）。
+   難しさの目安も兼ねる。色はカード上辺の線・層ラベルの英字・層のあいだの線だけで、カードの文字は白のまま。
+   ホームの粒子（tree-scenes.js）も同じ色を使う。 */
+.rs-stack {
+    position: relative;
+}
+
+.rs-tier--theme { --nm: var(--nm-450); }
+.rs-tier--topics { --nm: var(--nm-520); }
+.rs-tier--fields { --nm: var(--nm-590); }
+.rs-tier--foundations { --nm: var(--nm-650); }
+
+.rs-tier .rs-card::after {
+    background: var(--nm);
+}
+
+.rs-tier__label span:first-child {
+    color: var(--nm);
+}
+
+/* 層のあいだの線：下の層の色から上の層の色へ（エネルギーが上がっていく向き） */
+.rs-tier--theme + .rs-link { --lo: var(--nm-520); --hi: var(--nm-450); }
+.rs-tier--topics + .rs-link { --lo: var(--nm-590); --hi: var(--nm-520); }
+.rs-tier--fields + .rs-link { --lo: var(--nm-650); --hi: var(--nm-590); }
+
+.rs-link::before {
+    width: 2px;
+    margin-left: -0.5px;
+    background: linear-gradient(to top, var(--lo, var(--hairline)), var(--hi, var(--accent)));
+}
+
+.rs-link::after {
+    border-color: var(--hi, var(--accent));
+}
+
+/* 凡例：階層の左に細いスペクトルの帯（上＝高エネルギーの青 → 下＝低エネルギーの赤。文字は付けない §135.10） */
+.rs-stack::before {
+    content: '';
+    position: absolute;
+    left: -0.9rem;
+    top: 0.7rem;
+    bottom: 0.7rem;
+    width: 2px;
+    border-radius: 1px;
+    background: linear-gradient(to bottom, var(--nm-450), var(--nm-520), var(--nm-590), var(--nm-650));
+    opacity: 0.8;
+}
+
+@media (max-width: 600px) {
+    .rs-stack::before {
+        left: -0.65rem;
+    }
+}
+
 /* 層ごとに上から順にフェードイン（同時に画面に入ったときの順番） */
-html.js .rs-stack > .reveal:nth-child(2) { transition-delay: 0.08s; }
-html.js .rs-stack > .reveal:nth-child(3) { transition-delay: 0.16s; }
-html.js .rs-stack > .reveal:nth-child(4) { transition-delay: 0.24s; }
-html.js .rs-stack > .reveal:nth-child(5) { transition-delay: 0.32s; }
-html.js .rs-stack > .reveal:nth-child(7) { transition-delay: 0.48s; }
+html.js .rs-stack > .rs-tier--topics { transition-delay: 0.16s; }
+html.js .rs-stack > .rs-tier--fields { transition-delay: 0.32s; }
+html.js .rs-stack > .rs-tier--foundations { transition-delay: 0.48s; }
 
 /* リンクのあるカード（.rs-card.is-linked、js/self-intro.js が作る）。
    カードそのものは <div> のまま、中に全面を覆う <a class="rs-card__link"> を重ねる。
@@ -2118,11 +1812,7 @@ input[type="range"] {
         display: none;
     }
 
-    /* Mobile hero: the four text stages at ~55vh each (~220vh). MATTER + SOLAR
-       are skipped entirely (the JS builds only the four formations). */
-    .scene {
-        height: 90vh;   /* Round-12 Part 6 — longer mobile stages (4 × 90vh = 360vh) */
-    }
+    
 
     /* Head + tail spacers push the first/last scene centres off the 0/1 ends so the four
        scene centres land at 12.5 / 37.5 / 62.5 / 87.5% of scroll — i.e. exactly the
@@ -2133,28 +1823,8 @@ input[type="range"] {
         padding-block: 50vh;
     }
 
-    .scene .scene__content {
-        top: 14vh;
-    }
-
 }
 
-/* Hero text must never clip on narrow phones */
-@media (max-width: 480px) {
-    .gate-title {
-        font-size: clamp(1.85rem, 9vw, 2.4rem);
-        letter-spacing: -0.02em;
-    }
-
-    .gate-subtitle {
-        font-size: 0.9rem;
-        max-width: 100%;
-    }
-
-    .scene--split .scene__lead {
-        max-width: none;
-    }
-}
 
 @media (max-width: 375px) {
     :root {
@@ -2412,6 +2082,8 @@ body.sitenav-open .sitenav { transform: none; }
 a.study-card,
 .rs-card.is-linked,
 .rs-chips a,
+.tree a.tree-node,
+.roots__tip,
 .lesson-nav a:not(.btn),
 .sitenav-tab {
     transition: color var(--dur) var(--ease), background var(--dur) var(--ease),
@@ -2425,6 +2097,8 @@ a.study-card,
 a.study-card::before,
 .rs-card.is-linked::before,
 .rs-chips a::before,
+.tree a.tree-node::before,
+.roots__tip::before,
 .lesson-nav a:not(.btn)::before,
 .sitenav-tab::before {
     content: '';
@@ -2452,6 +2126,8 @@ a.study-card::before,
     a.study-card:hover,
     .rs-card:has(> .rs-card__link:hover),
     .rs-chips a:hover,
+    .tree a.tree-node:hover,
+    .roots__tip:hover,
     .lesson-nav a:not(.btn):hover,
     .sitenav-tab:hover {
         background: var(--surface-hot, rgba(255, 255, 255, .07));
@@ -2471,6 +2147,8 @@ a.study-card::before,
     a.study-card:hover::before,
     .rs-card:has(> .rs-card__link:hover)::before,
     .rs-chips a:hover::before,
+    .tree a.tree-node:hover::before,
+    .roots__tip:hover::before,
     .lesson-nav a:not(.btn):hover::before,
     .sitenav-tab:hover::before {
         opacity: 1;
@@ -2486,11 +2164,625 @@ a.study-card::before,
     a.study-card:hover,
     .rs-card:has(> .rs-card__link:hover),
     .rs-chips a:hover,
+    .tree a.tree-node:hover,
+    .roots__tip:hover,
     .lesson-nav a:not(.btn):hover {
         transform: none;
     }
 
     .sitenav-tab:hover {
         transform: translateY(-50%);
+    }
+}
+
+/* ===========================================================================
+   ホーム「一本の木が枝分かれして、学問の樹形図になる」（DESIGN.md §135）
+   01 種 / 02 根 / 03 学問の樹 / 04 私の枝 / 05 実り / 06 一歩。
+   ★ 旧ホームの .hero / .scene / .index-block は使わない（.hero は教材ページも使う
+   ので、そのルールには触れていない）。木の配置は js/academic-tree.js。
+   =========================================================================== */
+.home {
+    /* 分類ごとの控えめな差し色。名前の文字と枝の線に使う。
+       どれも黒の上で 12px でも読める明るさ（AA）に寄せてある。 */
+    --tint-formal: #8fb3ff;
+    --tint-natural: #5fd9e6;
+    --tint-life: #63e0bd;
+    --tint-engineering: #a9c6ea;
+    --tint-humanities: #b8a4ff;
+    --tint-social: #d7a8ff;
+    --tint-arts: #ff9ec4;
+}
+
+/* --- 01 種 ---------------------------------------------------------------- */
+.home-seed {
+    position: relative;
+    min-height: 100vh;
+    min-height: 100svh;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    text-align: center;
+    /* 文字は上寄せ、下に球体（§135.8）。球体が文字の下に入らないように */
+    padding: calc(var(--nav-clearance) + 7vh) var(--gutter) var(--space-12);
+    --sphere-r: min(220px, 25vw, 23vh);   /* §135.12：PC で球と輪が画面の高さの半分を超える大きさ */
+}
+
+.home-seed__inner .eyebrow {
+    margin-bottom: var(--space-2);
+}
+
+.home-title {
+    font-size: clamp(2.6rem, 7vw, 5.25rem);
+    font-weight: 300;
+    letter-spacing: -0.03em;
+}
+
+.home-catch {
+    max-width: none;
+    margin-top: var(--space-3);
+    font-size: clamp(1.05rem, 2.2vw, 1.45rem);
+    line-height: 1.8;
+    color: rgba(255, 255, 255, 0.86);
+}
+
+/* 球体（§135.8、旧ホームの宇宙の球を青・シアンで）。粒子のエンジンはこの箱の中心と半径を使い、
+   動く画面では粒子の球に置き換わる。動きを減らす設定・WebGL 無しでは、この静かな球と輪が残る */
+.home-seed__glyph {
+    position: absolute;
+    left: 50%;
+    top: 70%;
+    width: calc(var(--sphere-r) * 2);
+    height: calc(var(--sphere-r) * 2);
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    background: radial-gradient(circle at 42% 38%, rgba(232, 246, 255, 0.95) 0%, rgba(159, 210, 255, 0.6) 9%,
+            rgba(111, 176, 255, 0.28) 38%, rgba(111, 176, 255, 0.1) 68%, transparent 72%);
+}
+
+.home-seed__glyph::after {
+    content: '';
+    position: absolute;
+    left: -45%;
+    right: -45%;
+    top: 36%;
+    bottom: 36%;
+    border-radius: 50%;
+    border: 2px solid color-mix(in srgb, var(--nm-650) 55%, transparent);
+    transform: rotate(-8deg);
+}
+
+/* --- 02〜06 の共通の箱 ------------------------------------------------------ */
+.home-block {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: var(--space-12) var(--gutter);
+    overflow-x: clip;
+}
+
+.home-block__head {
+    position: relative;
+    max-width: 62ch;
+    margin-bottom: var(--space-6);
+}
+
+/* 見出しの列の後ろの、ふちの無い暗がり。旧ホームの .index-block__head::before（§20.2）と
+   同じ作り。場面の移り目に渦の雲が本文の下を通るので、その間も 4.5:1 を保つ（§135.4）。
+   箱の外へはみ出す分は .home-block の overflow-x: clip で横だけ切る（§117 と同じ） */
+.home-block__head::before {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    inset: -3rem -4rem;
+    pointer-events: none;
+    /* 楕円を箱の四辺に内接させ（closest-side）、ふちで必ず透明にする。
+       ふちに色が残ると箱の形が見える（§31.2a と同じ失敗） */
+    background: radial-gradient(ellipse closest-side,
+            rgba(0, 0, 0, 0.78) 0%,
+            rgba(0, 0, 0, 0.62) 55%,
+            rgba(0, 0, 0, 0.22) 82%,
+            transparent 100%);
+}
+
+.home-block__head h2,
+.home-step h2 {
+    font-size: clamp(1.8rem, 3.6vw, 2.6rem);
+    margin-bottom: var(--space-2);
+}
+
+.home-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin-top: var(--space-4);
+}
+
+/* --- 02 根 ----------------------------------------------------------------- */
+.roots {
+    position: relative;
+    height: 480px;
+}
+
+.roots__svg {
+    position: absolute;
+    inset: 0;
+    overflow: visible;
+}
+
+.root {
+    fill: none;
+    stroke: rgba(95, 208, 255, 0.32);
+    stroke-linecap: round;
+}
+
+.root--path {
+    stroke: rgba(95, 208, 255, 0.6);
+    stroke-width: 1.4;
+    stroke-dasharray: 2 5;
+}
+
+/* JS が無いときは名前だけを左に置く */
+.roots__tip {
+    position: relative;
+    display: inline-flex;
+    flex-direction: column;
+    gap: 0.1rem;
+    padding: 0.45rem 1rem;
+    border: 1px solid var(--hairline-strong);
+    border-radius: var(--radius-md);
+    background: rgba(0, 0, 0, 0.6);
+    color: var(--text-primary);
+}
+
+.roots.is-laid .roots__tip {
+    position: absolute;
+}
+
+.roots__label {
+    font-size: 0.9rem;
+}
+
+.roots__sub {
+    font-size: 0.72rem;
+    color: var(--text-secondary);
+}
+
+/* --- 03 学問の樹 ------------------------------------------------------------ */
+.tree {
+    position: relative;
+}
+
+/* JS が無い・配置に失敗したとき：分類ごとの箱を並べた一覧 */
+.tree__data {
+    list-style: none;
+    display: grid;
+    gap: var(--space-4) var(--space-3);
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+}
+
+.tree__data ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.4rem;
+    margin-top: var(--space-1);
+}
+
+.tree-cat {
+    --tint: var(--text-secondary);
+}
+
+.tree-cat[data-cat="formal"] { --tint: var(--tint-formal); }
+.tree-cat[data-cat="natural"] { --tint: var(--tint-natural); }
+.tree-cat[data-cat="life"] { --tint: var(--tint-life); }
+.tree-cat[data-cat="engineering"] { --tint: var(--tint-engineering); }
+.tree-cat[data-cat="humanities"] { --tint: var(--tint-humanities); }
+.tree-cat[data-cat="social"] { --tint: var(--tint-social); }
+.tree-cat[data-cat="arts"] { --tint: var(--tint-arts); }
+
+.tree-cat__name {
+    font-size: 0.8rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    line-height: 1.4;
+    color: var(--tint);
+    white-space: nowrap;
+}
+
+/* 木に並べたときは、名前と同じ黒い下地を敷く（粒子の枝の上でも読めるように） */
+.tree.is-laid .tree-cat__name {
+    padding: 0.15rem 0.5rem;
+    background: rgba(0, 0, 0, 0.72);
+    border-radius: var(--radius-pill);
+}
+
+/* 名前のチップ。リンクは実線、準備中は破線（§75 と同じ合図）。
+   地を黒く塗るのは、後ろを通る枝や粒子の上でも読めるようにするため。 */
+.tree-node {
+    display: inline-block;
+    padding: 0.2rem 0.75rem;
+    font-size: 0.82rem;
+    line-height: 1.5;
+    white-space: nowrap;
+    color: var(--text-secondary);
+    background: rgba(0, 0, 0, 0.72);
+    border: 1px dashed var(--hairline-strong);
+    border-radius: var(--radius-pill);
+    transition: color var(--dur) var(--ease), border-color var(--dur) var(--ease);
+}
+
+a.tree-node {
+    color: var(--text-primary);
+    border-style: solid;
+    border-color: color-mix(in srgb, var(--tint) 60%, transparent);
+}
+
+/* 配置したあと：名前を枝先に絶対配置し、リストの箱は高さを持たない */
+.tree.is-laid .tree__data,
+.tree.is-laid .tree__data ul {
+    display: block;
+    margin: 0;
+}
+
+.tree.is-laid .tree-node,
+.tree.is-laid .tree-cat__name {
+    position: absolute;
+    z-index: 1;
+}
+
+.tree__svg {
+    position: absolute;
+    inset: 0;
+    overflow: visible;
+}
+
+.tree-branch {
+    fill: none;
+    stroke: var(--tint, var(--spec-blue));
+    stroke-linecap: round;
+    stroke-opacity: 0.5;
+}
+
+.tree-branch--0 { stroke: var(--spec-blue); stroke-width: 4; stroke-opacity: 0.75; }
+.tree-branch--1 { stroke-width: 2.4; stroke-opacity: 0.6; }
+.tree-branch--2 { stroke-width: 1.5; }
+.tree-branch--3 { stroke-width: 1; stroke-opacity: 0.45; }
+
+.tree-seed {
+    fill: #fff;
+}
+
+.tree-seed__halo {
+    fill: rgba(95, 208, 255, 0.18);
+}
+
+.tree-note {
+    position: relative;
+    margin-top: var(--space-4);
+    font-size: 0.85rem;
+}
+
+/* --- 渦の途中も文字を読めるように（§135.7）-----------------------------------
+   移り目では粒子が画面全体に散って文字の下を通る。
+   ① 小さな文字には、旧ホームの見出しと同じ「読みやすさのための暗い影」（光らせる影ではない。§2 原則3 の例外として
+      .hero h1 などが既に使っている形）。番号ラベルは黒地でも 4.96:1 しか余裕が無いため
+   ② 05 のカードは、木の名前と同じ黒い下地（ふだんの面はほぼ透明で、後ろの粒子が透けた）
+   ③ 03 の注記にも見出しと同じふちの無い暗がり */
+.home .eyebrow,
+.tree-note,
+.home-block__head p,
+.roots__sub {
+    text-shadow: 0 0 6px rgba(0, 0, 0, 0.95), 0 0 14px rgba(0, 0, 0, 0.75);
+}
+
+/* 番号ラベルは文字が小さく余裕も少ないので、影を一段濃く */
+.home .eyebrow {
+    text-shadow: 0 0 3px #000, 0 0 8px rgba(0, 0, 0, 0.95), 0 0 18px rgba(0, 0, 0, 0.85);
+}
+
+.home-fruits .study-card {
+    background-color: rgba(0, 0, 0, 0.72);
+}
+
+@media (hover: hover) {
+    .home-fruits a.study-card:hover {
+        background: linear-gradient(var(--surface-hot), var(--surface-hot)), rgba(0, 0, 0, 0.72);
+    }
+}
+
+.tree-note::before {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    inset: -2rem -3rem;
+    pointer-events: none;
+    background: radial-gradient(ellipse closest-side,
+            rgba(0, 0, 0, 0.78) 0%,
+            rgba(0, 0, 0, 0.62) 55%,
+            rgba(0, 0, 0, 0.22) 82%,
+            transparent 100%);
+}
+
+/* 粒子が動いている画面（js/tree-scenes.js が html.has-particles を付ける）では、
+   幹・枝・根・種の SVG を粒子に譲る。名前、分野をまたぐ線、「学び方」への点線は残す。 */
+.tree__branches,
+.tree-seed,
+.tree-seed__halo,
+.root,
+.home-seed__glyph,
+.mini-branch,
+.branch-ext,
+.fruit-bough,
+.fruit-stem {
+    transition: opacity 0.8s var(--ease);
+}
+
+.has-particles .tree__branches,
+.has-particles .tree-seed,
+.has-particles .tree-seed__halo,
+.has-particles .root:not(.root--path),
+.has-particles .home-seed__glyph,
+.has-particles .mini-branch,
+.has-particles .branch-ext,
+.has-particles .fruit-bough,
+.has-particles .fruit-stem,
+.has-particles .fruit {
+    opacity: 0;
+}
+
+/* --- 04 私の枝 -------------------------------------------------------------- */
+/* 文章の下に研究の階層（js/research.js、自己紹介と共通）、その下に小さな木。
+   ★ position: relative は、木の物理学の枝の行き先（基礎分野のカード）と粒子の位置を、この箱から測るため */
+.home-branch__viz {
+    position: relative;
+}
+
+.branch {
+    position: relative;
+    height: 190px;
+    margin-top: var(--space-4);
+}
+
+.home-branch__more {
+    margin-top: var(--space-4);
+    text-align: center;
+}
+
+/* ホームの階層：自己紹介より一回り小さく。カードは木の名前と同じ黒い下地
+   （粒子の流れと、移り目の渦が後ろを通るため。自己紹介のほうは粒子が無いので変えない） */
+.rs-stack--compact .rs-card {
+    padding: var(--space-2) 1.25rem;
+    background-color: rgba(0, 0, 0, 0.78);
+}
+
+.rs-stack--compact .rs-tier--theme .rs-card {
+    padding: var(--space-3) 1.25rem;
+    background: linear-gradient(color-mix(in srgb, var(--accent) 14%, transparent), color-mix(in srgb, var(--accent) 14%, transparent)), rgba(0, 0, 0, 0.82);
+}
+
+.rs-stack--compact .rs-tier--theme .rs-card h3 {
+    font-size: 1.3rem;
+}
+
+.rs-stack--compact .rs-card h3 {
+    font-size: 0.95rem;
+}
+
+.rs-stack--compact .rs-link {
+    height: var(--space-4);
+}
+
+.rs-card__sub {
+    font-size: 0.85rem;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.78);
+}
+
+.home .rs-tier__label {
+    text-shadow: 0 0 3px #000, 0 0 8px rgba(0, 0, 0, 0.95), 0 0 18px rgba(0, 0, 0, 0.85);
+}
+
+.branch__svg {
+    position: absolute;
+    inset: 0;
+    overflow: visible;
+}
+
+/* 小さな木：ほかの枝は淡く、物理学の枝だけ明るい。線の太さは縮尺に関係なく一定 */
+.mini-branch {
+    fill: none;
+    stroke: var(--tint, var(--spec-blue));
+    stroke-opacity: 0.16;
+    stroke-width: 1;
+    stroke-linecap: round;
+    vector-effect: non-scaling-stroke;
+}
+
+.mini-branch.is-mine {
+    stroke: var(--tint-natural);
+    stroke-opacity: 0.9;
+    stroke-width: 1.8;
+}
+
+.mini-branch--0.is-mine {
+    stroke: var(--spec-blue);
+    stroke-width: 2.6;
+}
+
+.branch-ext {
+    fill: none;
+    stroke: var(--tint-natural);   /* academic-tree.js が、枝の色から基礎分野の赤へのグラデーションに差し替える */
+    stroke-width: 1.8;
+    stroke-linecap: round;
+}
+
+.branch__tag {
+    position: absolute;
+    z-index: 1;
+    padding: 0.2rem 0.75rem;
+    font-size: 0.82rem;
+    line-height: 1.5;
+    white-space: nowrap;
+    color: var(--text-primary);
+    background: rgba(0, 0, 0, 0.72);
+    border: 1px solid color-mix(in srgb, var(--tint-natural) 60%, transparent);
+    border-radius: var(--radius-pill);
+}
+
+/* JS が無いときは名前を左上に並べるだけ */
+.branch:not(.is-laid) .branch__tag {
+    position: static;
+    display: inline-block;
+    margin: 0 0.5rem 0.5rem 0;
+}
+
+/* --- 05 実り ---------------------------------------------------------------- */
+.home-fruits {
+    /* 実の色。カードの見出しの前の点と同じ色にして、どの実がどのカードかを示す */
+    --fruit-0: #5fd0ff;
+    --fruit-1: #8fb3ff;
+    --fruit-2: #ff9ec4;
+    --fruit-3: #63e0bd;
+}
+
+.home-fruits__grid {
+    position: relative;
+    display: grid;
+    gap: 3.5rem var(--space-3);
+    margin-top: var(--space-6);
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+}
+
+.fruits__svg {
+    position: absolute;
+    inset: 0;
+    overflow: visible;
+    pointer-events: none;
+}
+
+.fruit-bough,
+.fruit-stem {
+    fill: none;
+    stroke: rgba(95, 208, 255, 0.4);
+    stroke-width: 1.4;
+    stroke-linecap: round;
+}
+
+.fruit-stem {
+    stroke-width: 1;
+}
+
+.fruit {
+    fill: var(--fruit);
+    filter: drop-shadow(0 0 6px var(--fruit));
+    transition: r var(--dur) var(--ease);
+}
+
+.fruit.is-hot {
+    r: 10px;
+}
+
+.home-fruits [data-fruit="0"] { --fruit: var(--fruit-0); }
+.home-fruits [data-fruit="1"] { --fruit: var(--fruit-1); }
+.home-fruits [data-fruit="2"] { --fruit: var(--fruit-2); }
+.home-fruits [data-fruit="3"] { --fruit: var(--fruit-3); }
+
+.home-fruits [data-fruit] .meta::before {
+    content: '';
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    margin-right: 0.5em;
+    vertical-align: 0.1em;
+    border-radius: 50%;
+    background: var(--fruit);
+    box-shadow: 0 0 6px var(--fruit);
+}
+
+/* --- 06 一歩 ---------------------------------------------------------------- */
+.home-step {
+    position: relative;
+    padding-bottom: var(--space-16);
+    /* ブラックホールは箱より広い（PC で画面幅の 7〜8 割、スマホで画面幅）。横のはみ出しは .home で切る */
+    overflow-x: visible;
+}
+
+.home {
+    overflow-x: clip;
+}
+
+/* PC では締めの文が事象の地平面の影に収まるよう、行を詰める */
+@media (min-width: 601px) {
+    .home-step .home-step__inner h2 {
+        max-width: 13em;
+    }
+}
+
+/* ブラックホール（§135.10）。academic-tree.js が SVG を描く：円盤の輪（静的な絵）と、事象の地平面の影。
+   粒子が動く画面では輪を粒子に譲り、影は残す（影が文字の後ろを暗く保つ） */
+.bh {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+}
+
+.bh__svg {
+    position: absolute;
+    overflow: visible;
+}
+
+.bh__ring {
+    transition: opacity 0.8s var(--ease);
+}
+
+.has-particles .bh__ring {
+    opacity: 0;
+}
+
+.home-step__inner {
+    position: relative;
+    text-align: center;
+}
+
+/* 舞い上がる葉の上でも読めるように、02〜05 の見出しと同じふちの無い暗がり。
+   葉そのものも、この文字の箱の後ろでは暗くなる（tree-scenes.js の uQuiet） */
+.home-step__inner::before {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    inset: -3rem -4rem;
+    pointer-events: none;
+    background: radial-gradient(ellipse closest-side,
+            rgba(0, 0, 0, 0.78) 0%,
+            rgba(0, 0, 0, 0.62) 55%,
+            rgba(0, 0, 0, 0.22) 82%,
+            transparent 100%);
+}
+
+.home-step h2 {
+    max-width: 18em;
+    margin-inline: auto;
+    line-height: 1.5;
+}
+
+.home-step .home-actions {
+    justify-content: center;
+}
+
+@media (max-width: 760px) {
+    .branch {
+        height: 150px;
+    }
+}
+
+@media (max-width: 600px) {
+    .roots {
+        height: 380px;
+    }
+
+    .tree-node {
+        font-size: 0.78rem;
+        padding: 0.18rem 0.6rem;
     }
 }
