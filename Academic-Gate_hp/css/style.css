@@ -2229,10 +2229,11 @@ a.study-card::before,
     z-index: -1;
     inset: -3rem -5rem;
     pointer-events: none;
+    /* §135.15：見出しとキャッチコピーは大きな文字（3:1 の基準）なので薄く、球が透けて見えるように */
     background: radial-gradient(ellipse closest-side,
-            rgba(0, 0, 0, 0.72) 0%,
-            rgba(0, 0, 0, 0.58) 55%,
-            rgba(0, 0, 0, 0.2) 82%,
+            rgba(0, 0, 0, 0.16) 0%,
+            rgba(0, 0, 0, 0.12) 55%,
+            rgba(0, 0, 0, 0.04) 82%,
             transparent 100%);
 }
 
@@ -2249,6 +2250,8 @@ a.study-card::before,
 .home-catch {
     max-width: none;
     margin-top: var(--space-3);
+    /* 1行（§135.15）。15字なので 320px 幅でも 1.05rem（16.8px）で 252px に収まる */
+    white-space: nowrap;
     font-size: clamp(1.05rem, 2.2vw, 1.45rem);
     line-height: 1.8;
     color: rgba(255, 255, 255, 0.86);

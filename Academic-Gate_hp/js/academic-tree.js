@@ -396,9 +396,8 @@
             var defs = el('defs', {});
             var k = rin / rout;
             var gr = el('radialGradient', { id: 'bh-ring' });
-            // §135.14：内側＝青から外側＝赤への虹（粒子の円盤と同じ並び）
-            var q = function (t) { return k + (1 - k) * t; };
-            [[0, 'transparent', 0], [k * 0.995, 'transparent', 0], [k, '#9b6bff', 0.5], [q(0.12), '#5a7dff', 0.5], [q(0.3), '#4fd8ff', 0.42], [q(0.48), '#4fdd8a', 0.34], [q(0.64), '#ffe14d', 0.28], [q(0.8), '#ffa040', 0.2], [q(0.92), '#ff5f52', 0.12], [1, '#ff5f52', 0]].forEach(function (st) {
+            // 輪：内縁で白く、外へ青、外縁で淡い赤（内側ほど高温。§135.15 で青基調に戻した）
+            [[0, 'transparent', 0], [k * 0.995, 'transparent', 0], [k, '#e8f6ff', 0.85], [k + 0.06, '#5fd0ff', 0.55], [k + (1 - k) * 0.45, '#3d8bff', 0.32], [0.86, 'var(--nm-650)', 0.14], [1, 'var(--nm-650)', 0]].forEach(function (st) {
                 var e = el('stop', { offset: f1(Math.min(1, st[0]) * 1000) / 1000 }); e.style.stopColor = st[1]; e.style.stopOpacity = st[2]; gr.appendChild(e);
             });
             // 影：中心は黒、縁で背景へなじむ

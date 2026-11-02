@@ -350,17 +350,21 @@
         // 色は内縁で白、内側でシアン、中ほどで青、外縁で淡い赤（内側ほど高温）
         var bh = { cx: 0, cy: 0, rin: 300, rout: 520, cosI: 0.5 };
         function buildStep() {
-            // §135.14：円盤は 4 本の渦の腕（カードごとに1本）。各腕は幅のある帯で、内縁から外縁まできつく巻く（1.4 周）。
-            // 腕は重なり合ってひとつの渦に見える。色はシェーダで半径から決める（内側＝青・外側＝赤の連続した虹）。
-            // x＝腕の上の位置の初期値（0 内縁〜1 外縁、時間とともに内へ流れる）、y＝帯の幅方向の位置（-1〜1）、色番号 30＋腕の番号
             st = 0x66;
             if (!stepBox.__bh) return false;
             bh = stepBox.__bh;
+            var RIN = bh.rin, ROUT = bh.rout, span = ROUT - RIN, clumps = [];
+            for (var c = 0; c < 9; c++) clumps.push([RIN + span * Math.pow(rnd(), 0.8) * 0.85, rnd() * 6.2832, 0.5 + rnd()]);
             for (var i = 0; i < N; i++) {
-                var arm = Math.floor(rnd() * 4), lat = gauss(0.55);
-                var b = 0.05 * kN * (1 - 0.6 * Math.min(1, Math.abs(lat)));
+                var r = rnd(), rr, th, x;
+                if (r < 0.12) { rr = RIN * (1 + Math.abs(gauss(0.025))); th = rnd() * 6.2832; }
+                else if (r < 0.4) { var cc = clumps[Math.floor(rnd() * clumps.length)]; rr = cc[0] + (rnd() * 2 - 1) * span * 0.05 * cc[2]; th = cc[1] + (rnd() * 2 - 1) * 0.45 * cc[2]; }
+                else { rr = RIN + span * Math.pow(rnd(), 1.7); th = rnd() * 6.2832; }
+                x = Math.max(0, Math.min(1, (rr - RIN) / span));
+                var col = x < 0.06 ? 0 : x < 0.3 ? 1 : x < 0.78 ? 2 : NM[0];
+                var b = (0.05 + 0.3 * Math.pow(1 - x, 2.2)) * kN * (col === NM[0] ? 0.7 : 1);
                 // 順番（d）は粒子ごとの乱数：05 からの移り目で、吸い込まれる時期をずらす
-                put(5, i, rnd(), Math.max(-1, Math.min(1, lat)), b, 30 + arm, 0, rnd());
+                put(5, i, rr, th, b, col, 0, rnd());
             }
             pivots[5] = [bh.cx, bh.cy];
             return true;
@@ -377,7 +381,7 @@
             'precision highp float;',
             'attribute vec4 aS0, aS1, aS2, aS3, aS4, aS5; attribute float aSeed, aZ0;',
             'uniform float uF, uTime, uScroll, uW, uH, uSize, uDPR, uHot, uR;',
-            'uniform vec4 uBH; uniform vec2 uThemeC; uniform vec2 uCard[4];',   // uThemeC：04 の THEME のカードの中心（ページの座標）   // ブラックホール：中心（06 の section の左上から）・内縁の半径・cos(傾き)
+            'uniform vec4 uBH; uniform vec2 uThemeC; uniform vec2 uCard[4]; uniform vec4 uHeroBig; uniform vec4 uHeroCatch; uniform vec3 uJ;',   // uThemeC：04 の THEME のカードの中心（ページの座標）   // ブラックホール：中心（06 の section の左上から）・内縁の半径・cos(傾き)
             'uniform vec2 uOff[6]; uniform vec2 uPiv[6]; uniform vec2 uRootSeed;',
             'uniform vec3 uPointer;',
             'uniform vec4 uQ[16]; uniform float uFilB;',   // 文字の箱（束が後ろを通るとき暗くする）と、束の明るさ
@@ -442,22 +446,34 @@
             '  if(k==0) return seedStage();',
             '  if(k==1) return vec4(aS1.xy+uOff[1], bOf(aS1.z), aS1.w); if(k==2) return vec4(aS2.xy+uOff[2], bOf(aS2.z), aS2.w);',
             '  if(k==3) return vec4(aS3.xy+uOff[3], bOf(aS3.z), aS3.w); if(k==4) return vec4(aS4.xy+uOff[4], bOf(aS4.z), aS4.w);',
-            // 06：降着円盤（§135.14）。4 本の渦の腕がそれぞれ幅のある虹の帯。腕の形は一定の速さで回り（滑らか）、
-            // 粒子は腕に沿って外から内へゆっくり流れ込む。帯の幅は半径方向で、色は半径で決まる（内側＝青、外側＝赤）ので、
-            // 腕が重なって、ひとつの虹の渦に見える。近づいてくる側（左）を少し明るく
-            '  float span=uBHout-uBH.z, arm=floor(aS5.w+0.05)-30.0;',
-            '  float sp=fract(aS5.x-uTime*0.012);',
-            '  float rr=uBH.z+span*(0.03+0.97*sp)+aS5.y*span*0.11;',
-            '  float th=arm*1.5708+(1.0-sp)*6.2832*1.4+uTime*0.16;',
-            '  vec2 q=vec2(rr*cos(th), rr*sin(th)*uBH.w);',
-            '  gRain=clamp((rr-uBH.z)/span,0.0,1.0)*0.92+0.04;',
+            // 06：降着円盤（§135.10 の青基調。§135.15 で戻した）。ケプラー回転（角速度は r^-1.5、時間に比例して進むだけなので滑らか）。
+            // 近づいてくる側（左）を少し明るく。虹の帯は 05→06 の移り目の筋だけ
+            '  float rr=aS5.x, th=aS5.y+uTime*0.22*pow(uBH.z/rr,1.5);',
+            '  vec2 q=vec2(rr*cos(th), rr*sin(th)*uBH.w+(aSeed-0.5)*5.0);',
             // スマホでは締めの文が影に収まらず円盤の上に載るので、文字の箱の後ろの円盤は 15% まで暗く（PC では影の中なので効かない）
             '  vec2 wp=uOff[5]+uBH.xy+q;',
-            '  return vec4(wp, bOf(aS5.z)*(1.0-0.28*cos(th))*smoothstep(0.0,0.08,sp)*mix(1.0,0.15,inText(wp)), aS5.w); }',
+            '  return vec4(wp, bOf(aS5.z)*(1.0-0.28*cos(th))*mix(1.0,0.15,inText(wp)), aS5.w); }',
             'float zOf(int k){ if(k==0) return aS0.z; if(k==1) return aS1.z; if(k==2) return aS2.z; if(k==3) return aS3.z; if(k==4) return aS4.z; return aS5.z; }',
             'vec3 palOf(float i){ int k=int(i+0.5); vec3 c=uPal[0];',
             '  for(int j=1;j<' + NP + ';j++){ if(j==k) c=uPal[j]; } return c; }',
+            // 場面の番号 F の形を、隣の2場面の単純な混ぜ合わせで返す（直接の移動 uJ に使う。§135.15）
+            'void linF(float F, out vec2 p, out float b, out vec3 c, out float soft){',
+            '  F=clamp(F,0.0,5.0); int k=int(floor(F)); if(k>4) k=4; float u=smoothstep(0.14,0.86,F-float(k));',
+            '  vec4 A=stageOf(k); float rA=gRain; vec4 B=stageOf(k+1); float rB=gRain;',
+            '  p=mix(A.xy,B.xy,u); b=mix(A.z,B.z,u);',
+            '  c=mix(rA>=0.0?rainbow(rA):palOf(A.w), rB>=0.0?rainbow(rB):palOf(B.w), u); soft=mix(step(0.0,rA),step(0.0,rB),u); }',
             'void main(){',
+            // 直接の移動（§135.15）：2場面以上離れた所へ一気に動いたとき、途中の場面を通らずに、いまの形（uJ.x）から目的の形（uJ.y）へ
+            // ゆるい弧を描いて移る。途中は文字の後ろで暗く
+            '  if(uJ.z>=0.0){',
+            '    vec2 p0,p1; float b0,b1,s0,s1; vec3 c0,c1; linF(uJ.x,p0,b0,c0,s0); linF(uJ.y,p1,b1,c1,s1);',
+            '    float e=smoothstep(0.0,1.0,uJ.z), m=sin(3.14159*e);',
+            '    vec2 dd=p1-p0; vec2 nn=normalize(vec2(-dd.y,dd.x)+vec2(0.0001));',
+            '    vec2 pj=mix(p0,p1,e)+nn*m*(aSeed-0.5)*0.35*length(dd);',
+            '    float bj=mix(b0,b1,e)*(1.0-0.3*m)*mix(1.0,0.1,m*inText(pj));',
+            '    vCol=mix(c0,c1,e); vSoft=mix(s0,s1,e); vB=bj;',
+            '    gl_Position=vec4(pj.x/uW*2.0-1.0, 1.0-(pj.y-uScroll)/uH*2.0, 0.0, 1.0);',
+            '    gl_PointSize=uSize*uDPR*(0.75+0.5*aSeed)*mix(1.0,3.4,vSoft); return; }',
             '  float F=clamp(uF,0.0,5.0); int iA=int(floor(F)); if(iA>4) iA=4;',
             '  float f=F-float(iA);',
             '  vec4 A=stageOf(iA); float rA=gRain; vec4 B=stageOf(iA+1); float rB=gRain;',
@@ -520,7 +536,9 @@
             '    float lv=smoothstep(0.0,0.12,u), ar=smoothstep(0.85,1.0,u);',
             '    p=mix(mix(A.xy,path,lv), B.xy, ar);',
             '    b=mix(mix(bA, uFilB*0.9, lv), bB, ar); mixT=ar;',
-            '    colX=mix(mix(palOf(A.w), rainbow(tr), wv), rainbow(rB), ar); softX=wv;',
+            // 着くあいだに、虹の帯から円盤の青基調の色・ふつうの点へ滑らかに変わる（§135.15）
+            '    float ac=smoothstep(0.82,1.0,u);',
+            '    colX=mix(mix(palOf(A.w), rainbow(tr), wv), palOf(B.w), ac); softX=wv*(1.0-ac);',
             // 着く途中（流れの筋から円盤の位置へ移るあいだ）も文字の後ろでは暗く。着く先の円盤の明るさ（bB）は円盤の位置で
             // 減光してあるが、途中の位置は文字の箱を横切ることがあるため（スマホで「06 — Step」の上を通った。§135.14）
             // 1 本の筋にカード1枚ぶんの粒子が重なるので、10% では足りない（スマホで 2.8:1）。2% まで落とす
@@ -561,7 +579,12 @@
             '  vCol = colX.x>=0.0 ? colX : mix(cA,cB,mixT);',
             '  vSoft = softX>=0.0 ? softX : mix(step(0.0,rA), step(0.0,rB), mixT);',
             // 01：見出しとキャッチコピーの後ろでは暗く（球と輪が大きくなったため）
-            '  if(iA==0) b*=mix(1.0, 0.12, (1.0-mixT)*inText(p));',
+            // §135.15：見出し（WCAG の大きな文字、3:1）の後ろは 80%、キャッチコピー（PC 23px・スマホ 17px で大きな文字に届かない、4.5:1）は 50%、
+            // 小さな番号ラベル（uQ）は 12%。球をできるだけ透かす
+            '  if(iA==0){ float w0=1.0-mixT;',
+            '    vec2 lo=uHeroBig.xy-p, hi=p-uHeroBig.zw; float o=max(max(lo.x,hi.x),max(lo.y,hi.y)); b*=mix(1.0, 0.8, w0*(1.0-smoothstep(0.0,40.0,o)));',
+            '    lo=uHeroCatch.xy-p; hi=p-uHeroCatch.zw; o=max(max(lo.x,hi.x),max(lo.y,hi.y)); b*=mix(1.0, 0.5, w0*(1.0-smoothstep(0.0,40.0,o)));',
+            '    b*=mix(1.0, 0.12, w0*inText(p)); }',
             '  vB=b;',
             '  gl_Position=vec4(p.x/uW*2.0-1.0, 1.0-(p.y-uScroll)/uH*2.0, 0.0, 1.0);',
             // 03→04 の手前の粒子は大きく。虹の帯の粒子は大きく柔らかい点にして、隣と溶け合わせる
@@ -587,7 +610,7 @@
             uPiv: { value: [0, 1, 2, 3, 4, 5].map(function () { return new THREE.Vector2(); }) },
             uRootSeed: { value: new THREE.Vector2() }, uR: { value: 150 },
             uPointer: { value: new THREE.Vector3(-9999, -9999, 0) },
-            uHot: { value: -1 }, uBH: { value: new THREE.Vector4(0, 0, 300, 0.5) }, uBHout: { value: 520 }, uThemeC: { value: new THREE.Vector2() },
+            uHot: { value: -1 }, uBH: { value: new THREE.Vector4(0, 0, 300, 0.5) }, uBHout: { value: 520 }, uThemeC: { value: new THREE.Vector2() }, uHeroBig: { value: new THREE.Vector4(-1e5, -1e5, -1e5, -1e5) }, uHeroCatch: { value: new THREE.Vector4(-1e5, -1e5, -1e5, -1e5) }, uJ: { value: new THREE.Vector3(0, 0, -1) },
             uCard: { value: [0, 1, 2, 3].map(function () { return new THREE.Vector2(); }) },
             uQ: { value: Array.apply(null, Array(16)).map(function () { return new THREE.Vector4(-1e5, -1e5, -1e5, -1e5); }) },
             uFilB: { value: (isMobile ? 0.5 : 0.42) * Math.sqrt(kN) },   // 束の1粒の明るさ（束に重なるので、ひと粒は控えめでも線は明るい）
@@ -628,7 +651,9 @@
         var themeCard = vizBox.querySelector('.rs-tier--theme .rs-card') || vizBox;
         var fruitCards = [].slice.call(fruitsBox.querySelectorAll('[data-fruit]')).slice(0, 4);
         // 束や飛んでいる粒子が後ろを通るとき暗くする文字の箱（最大 16）。研究の階層の層ラベルと凡例も
-        var textEls = [].slice.call(document.querySelectorAll('.home-seed__inner, .home-block__head, .tree-note, .home-step__inner, .home-branch__more, .roots__tip, [data-branch-viz] .rs-tier__label')).slice(0, 16);
+        // 01 は小さな番号ラベルだけ（見出しとキャッチコピーは uHeroBig で弱く。§135.15）
+        var heroBig = [document.querySelector('.home-title'), document.querySelector('.home-catch')];
+        var textEls = [].slice.call(document.querySelectorAll('.home-seed .eyebrow, .home-block__head, .tree-note, .home-step__inner, .home-branch__more, .roots__tip, [data-branch-viz] .rs-tier__label')).slice(0, 16);
         function readBoxes() {
             var sy = window.scrollY, sx = window.scrollX, o = uniforms.uOff.value, H = window.innerHeight;
             var g = seedEl.getBoundingClientRect();
@@ -640,6 +665,9 @@
                 centers[k + 1] = r.top + sy + r.height / 2;
             });
             fruitCards.forEach(function (c, k) { var q = c.getBoundingClientRect(); uniforms.uCard.value[+c.dataset.fruit || k].set(q.left + q.width / 2 + sx, q.top + q.height / 2 + sy); });
+            var hb0 = heroBig[0].getBoundingClientRect(), hb1 = heroBig[1].getBoundingClientRect();
+            uniforms.uHeroBig.value.set(hb0.left + sx, hb0.top + sy, hb0.right + sx, hb0.bottom + sy);
+            uniforms.uHeroCatch.value.set(hb1.left + sx, hb1.top + sy, hb1.right + sx, hb1.bottom + sy);
             var thc = themeCard.getBoundingClientRect();
             uniforms.uThemeC.value.set(thc.left + thc.width / 2 + sx, thc.top + thc.height / 2 + sy);
             textEls.forEach(function (e, k) { var q = e.getBoundingClientRect(); uniforms.uQ.value[k].set(q.left + sx, q.top + sy, q.right + sx, q.bottom + sy); });
@@ -673,7 +701,7 @@
         document.documentElement.addEventListener('pointerleave', function () { ptr.on = 0; });
 
         /* ---- 描く ------------------------------------------------------------ */
-        var fEased = 0, clock = 0, lastT = null, running = false, raf = null, fpsN = 0, fpsT = 0, fps = 0;
+        var jump = null, fEased = 0, clock = 0, lastT = null, running = false, raf = null, fpsN = 0, fpsT = 0, fps = 0;
         function frame(now) {
             raf = null; if (!running) return;
             if (lastT == null) lastT = now;
@@ -681,11 +709,22 @@
             fpsN++; fpsT += dt; if (fpsT > 1) { fps = fpsN / fpsT; fpsN = 0; fpsT = 0; }
             readBoxes();
             var target = sceneFor(window.scrollY + window.innerHeight / 2);
-            // 追いつく速さに上限（1秒に 0.8 場面）：素早くスクロールしても、移り目の束が一瞬で終わらず
-            // 0.5 秒ほど見えてから次の形へ。ふつうの速さのスクロールは上限より遅いので、そのまま追従する
-            // 03→04 は「ばらける」と「集まる」の2段なので、ここだけ上限を 0.45 場面/秒に（それぞれが約 0.5 秒見える。§135.11）
-            var gap = target - fEased, stepF = gap * Math.min(1, dt * 2.6), cap = dt * ((fEased > 2.05 && fEased < 2.95) || (fEased > 4.05 && fEased < 4.95) ? 0.45 : 0.8);
-            fEased += Math.max(-cap, Math.min(cap, stepF));
+            // §135.15：目的の場面が 1.15 場面より遠いとき（一気に送った・ナビやページ内リンクで飛んだ）は、途中の場面を順に再生せず、
+            // いまの形から目的の形へ 0.8 秒で直接移る（uJ）。目的はスクロールに合わせて動く（逆向きに戻しても滑らか）
+            if (jump) {
+                jump.to += (target - jump.to) * Math.min(1, dt * 5);
+                jump.t = Math.min(1, jump.t + dt / 0.8);
+                if (jump.t >= 1 && Math.abs(jump.to - target) < 0.02) { fEased = target; jump = null; }
+            } else if (Math.abs(target - fEased) > 1.15) {
+                jump = { from: fEased, to: target, t: 0 };
+            } else {
+                // 追いつく速さに上限（1秒に 0.8 場面）：素早くスクロールしても、移り目の束が一瞬で終わらず
+                // 0.5 秒ほど見えてから次の形へ。ふつうの速さのスクロールは上限より遅いので、そのまま追従する
+                // 03→04 は「ばらける」と「集まる」の2段なので、ここだけ上限を 0.45 場面/秒に（それぞれが約 0.5 秒見える。§135.11）
+                var gap = target - fEased, stepF = gap * Math.min(1, dt * 2.6), cap = dt * ((fEased > 2.05 && fEased < 2.95) || (fEased > 4.05 && fEased < 4.95) ? 0.45 : 0.8);
+                fEased += Math.max(-cap, Math.min(cap, stepF));
+            }
+            uniforms.uJ.value.set(jump ? jump.from : 0, jump ? jump.to : 0, jump ? jump.t : -1);
             ptr.s += ((ptr.on ? 1 : 0) - ptr.s) * Math.min(1, dt * 4);
             uniforms.uF.value = fEased; uniforms.uTime.value = clock; uniforms.uScroll.value = window.scrollY;
             uniforms.uPointer.value.set(ptr.x, ptr.y, ptr.s);
@@ -720,7 +759,7 @@
         window.__field = {
             count: N,
             fps: function () { return fps; },
-            sceneF: function () { return fEased; },
+            sceneF: function () { return jump ? (jump.t >= 1 ? jump.to : -1) : fEased; },   // 直接の移動の途中は -1
             scrollFor: function (f) { readBoxes(); var k = Math.min(K - 2, Math.floor(f)), u = f - k; return centers[k] + (centers[k + 1] - centers[k]) * u - window.innerHeight / 2; },
             pause: stop, resume: start,
             builds: function () { return builds; }, builtW: function () { return builtW; },
