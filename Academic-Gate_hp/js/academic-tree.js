@@ -394,9 +394,9 @@
             bsvg.setAttribute('width', f1(w)); bsvg.setAttribute('height', f1(h)); bsvg.setAttribute('viewBox', '0 0 ' + f1(w) + ' ' + f1(h));
             bsvg.style.left = f1(cx - w / 2) + 'px'; bsvg.style.top = f1(cy - h / 2) + 'px';
             var defs = el('defs', {});
-            // 輪：内縁で白く、外へ青、外縁で淡い赤（内側ほど高温。研究の階層の 450→650nm と同じ向き）
             var k = rin / rout;
             var gr = el('radialGradient', { id: 'bh-ring' });
+            // 輪：内縁で白く、外へ青、外縁で淡い赤（内側ほど高温。§135.15 で青基調に戻した）
             [[0, 'transparent', 0], [k * 0.995, 'transparent', 0], [k, '#e8f6ff', 0.85], [k + 0.06, '#5fd0ff', 0.55], [k + (1 - k) * 0.45, '#3d8bff', 0.32], [0.86, 'var(--nm-650)', 0.14], [1, 'var(--nm-650)', 0]].forEach(function (st) {
                 var e = el('stop', { offset: f1(Math.min(1, st[0]) * 1000) / 1000 }); e.style.stopColor = st[1]; e.style.stopOpacity = st[2]; gr.appendChild(e);
             });
