@@ -8,11 +8,11 @@
      3. 精神の圏域（ROOTS）の根の線を、カードの位置から SVG で描く
      4. フェードイン（self-intro.js と同じ条件・閾値）
 
-   学問の3つの状態（disciplines.js）。どの大分類も、すべての学問を同じ大きさのタイルで並べる（§136.3）
+   学問の2つの状態（disciplines.js）。どの大分類も、すべての学問を同じ大きさのタイルで並べる（§136.3・§136.7）
      独自のページあり → 大分類の色の実線のタイル。PC はカーソル・フォーカスで、スマホはタップで
                         詳しい内容（英語名・説明・「ここから読む」・学問のページへ）が浮き出る。開くのは1つだけ
-     テーマの中で扱う → 実線のタイル。押すとテーマの中の該当する部へ
      準備中           → 破線の控えめなタイル。押しても何も起きない（カーソルで「準備中」）
+   複合分野（テーマ）はタイトルと一言だけ。学問とは結び付けない（§136.7）
    量（記事数・章数・公開数）は出さない。
    ============================================================================ */
 (function () {
@@ -26,10 +26,6 @@
     function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;'); }
     var AR = '<span aria-hidden="true">→</span>';
 
-    var themeOf = {};
-    DISCIPLINE_THEMES.forEach(function (t) { themeOf[t.key] = t; });
-    var catOf = {};
-    DISCIPLINES.forEach(function (c) { c.subjects.forEach(function (s) { catOf[s.key] = { cat: c, subject: s }; }); });
 
     /* ---- 1. セクション ---------------------------------------------------- */
     function head(id, en, ja, lead) {
@@ -48,7 +44,7 @@
         return h + '</div>';
     }
 
-    // 学問のタイル。2行目の小さな字が状態（独自ページ＝英語名、テーマ＝テーマの名前、準備中＝カーソルで「準備中」）
+    // 学問のタイル。2行目の小さな字が状態（独自ページ＝英語名、準備中＝カーソルで「準備中」）
     function tile(s) {
         var name = '<span class="sd-tile__name" lang="ja">' + esc(s.ja) + '</span>';
         if (s.page) {
@@ -61,12 +57,6 @@
                 '<p class="sd-card__intro" lang="ja">' + esc(s.intro || '') + '</p>' +
                 go(s.start, s.page, s.ja + 'のページへ') + '</div></li>';
         }
-        if (s.theme && s.href) {
-            var t = themeOf[s.theme];
-            return '<li class="sd-tilebox"><a class="sd-tile is-theme" href="' + s.href + '">' + name +
-                '<span class="sd-tile__meta" lang="ja">' + esc(t ? t.ja : '') + '</span>' +
-                '<span class="sd-tile__mark" aria-hidden="true">→</span></a></li>';
-        }
         return '<li class="sd-tilebox"><span class="sd-tile is-soon">' + name +
             '<span class="sd-tile__meta" lang="ja">準備中</span></span></li>';
     }
@@ -77,22 +67,20 @@
             '<div class="sd-cat__body"><ul class="sd-tiles">' + c.subjects.map(tile).join('') + '</ul></div></section>';
     }
 
-    // 複合分野のカード：縁は、関係する学問の大分類の色を順に混ぜたグラデーション
+    // 複合分野のカード：タイトルと一言だけ。縁は、テーマであることを示す複数の大分類の色のグラデーション（§136.7）。
+    // ページができたら（disciplines.js に page を足すと）カード全体がそのページへのリンクになる
     function themeCard(t) {
-        var cats = [];
-        t.subjects.forEach(function (k) { var c = catOf[k] && catOf[k].cat.cat; if (c && cats.indexOf(c) < 0) cats.push(c); });
+        var cats = t.edge || [];
         var edge = cats.length > 1
             ? 'linear-gradient(120deg, ' + cats.map(function (c) { return 'var(--tint-' + c + ')'; }).join(', ') + ')'
-            : 'var(--tint-' + (cats[0] || 'formal') + ')';
-        return '<li><article class="sd-theme" style="--edge: ' + edge + '">' +
-            '<p class="sd-card__en">' + esc(t.en) + '</p>' +
+            : cats.length ? 'var(--tint-' + cats[0] + ')' : 'var(--hairline-strong)';
+        var inner = '<p class="sd-card__en">' + esc(t.en) + '</p>' +
             '<h3 lang="ja">' + esc(t.ja) + '</h3>' +
             '<p class="sd-card__intro" lang="ja">' + esc(t.intro) + '</p>' +
-            '<ul class="sd-chips sd-theme__subjects" aria-label="関係する学問">' + t.subjects.map(function (k) {
-                var x = catOf[k]; if (!x) return '';
-                return '<li data-cat="' + x.cat.cat + '"><a class="sd-chip is-tinted" href="' + (x.subject.href || t.page) + '" lang="ja">' + esc(x.subject.ja) + '</a></li>';
-            }).join('') + '</ul>' +
-            go(t.start, t.page, 'テーマのページへ') + '</article></li>';
+            (t.page ? '' : '<p class="sd-theme__soon" lang="ja">準備中</p>');
+        return '<li>' + (t.page
+            ? '<a class="sd-theme is-linked" href="' + t.page + '" style="--edge: ' + edge + '">' + inner + '</a>'
+            : '<article class="sd-theme is-soon" style="--edge: ' + edge + '">' + inner + '</article>') + '</li>';
     }
 
     function themesSection() {
@@ -245,7 +233,7 @@
             return h.getBoundingClientRect().top - ty + window.scrollY - (stuck + 16);
         }
 
-        // スクロールスパイ：バーの下から画面の 3 割の位置を越えた最後のセクション
+        // スクロールスパイ：バーの下の線（120px か、画面の 3 割の近い方）を越えた最後のセクション
         var current = '', lock = 0;
         function setActive(id, fromClick) {
             if (fromClick) lock = Date.now() + 900;      // 送っている途中で強調が途中のチップを渡り歩かないように
@@ -264,7 +252,10 @@
         }
         function spy() {
             if (Date.now() < lock) return;
-            var line = bar.getBoundingClientRect().bottom + (window.innerHeight - bar.getBoundingClientRect().bottom) * 0.3;
+            // ★ 線はバーの下 120px まで（画面の 3 割だと、タイルにして短くなった PC のセクションでは
+            //   次のセクションの頭まで越えてしまい、ひとつ先のチップが光った。§136.7）
+            var bb = bar.getBoundingClientRect().bottom;
+            var line = bb + Math.min(120, (window.innerHeight - bb) * 0.3);
             var id = '';
             sections.forEach(function (s) { if (s.getBoundingClientRect().top <= line) id = s.id; });
             if (window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 4 && sections.length) {
@@ -283,14 +274,20 @@
         if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { measure(); spy(); });
         document.addEventListener('DOMContentLoaded', function () { measure(); spy(); });
         window.addEventListener('load', function () { measure(); spy(); });
-        // ハッシュ付きで開いたとき：バーの下へ合わせ直す
-        if (location.hash && document.getElementById(location.hash.slice(1))) {
-            var s0 = document.getElementById(location.hash.slice(1));
-            if (s0.classList.contains('sd-cat')) {
-                requestAnimationFrame(function () {
-                    window.scrollTo(0, Math.max(0, target(s0)));
-                });
-            }
+        // ハッシュ付きで開いたとき：バーの下へ合わせ直す。
+        // ★ 初めて開くとき（字・ヘッダーがまだ）は、すぐ合わせても後から上の高さが変わってずれる
+        //   （実際の画面で #themes が形式科学の位置に止まった）。読み込みの終わりと字の読み込みの後にも合わせ直す。
+        //   読む人が自分で動かしたら、それ以降は合わせない
+        var s0 = location.hash && document.getElementById(location.hash.slice(1));
+        if (s0 && s0.classList.contains('sd-cat')) {
+            var moved = false;
+            ['wheel', 'touchstart', 'keydown', 'mousedown'].forEach(function (ev) {
+                window.addEventListener(ev, function () { moved = true; }, { once: true, passive: true });
+            });
+            var align = function () { if (!moved) window.scrollTo(0, Math.max(0, target(s0))); };
+            requestAnimationFrame(align);
+            window.addEventListener('load', function () { measure(); align(); });
+            if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { requestAnimationFrame(align); });
         }
     }
 

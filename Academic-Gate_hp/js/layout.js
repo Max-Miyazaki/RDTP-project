@@ -96,9 +96,9 @@
                              title: '10-2　条件付きの変分と場の変分' },
         // 複合分野：学問分野と精神の圏域のあいだの枠（DESIGN.md §103）。いまは「地球と人類」だけ。
         'composite':       { label: '複合分野',     href: 'study_composite.html',  parent: 'study' },
-        // ★ title は付けない：ツリーは title を label より優先するので、付けるとツリーが「地球の構造から人類を読み解く」になる。
-        //   シリーズの長い名前は earthhuman.html の h1 が持つ（§103.1）。
-        'earthhuman':      { label: '地球と人類',   href: 'earthhuman.html',       parent: 'composite', unit: '章' },
+        // 地球と人類は構成を検討中なので、リンクなしの準備中（§136.7）。earthhuman.html は古いリンクのために残してある
+        //  （タイトルと「準備中」だけ）。ページを書いたら soon を消して href: 'earthhuman.html' を戻す。
+        'earthhuman':      { label: '地球と人類',   soon: true,                    parent: 'composite' },
         'skills':          { label: '精神の圏域',   href: 'study_skills.html',     parent: 'study' },
         'mnemonics':       { label: '記憶術',       href: 'skills_mnemonics.html', parent: 'skills' },
         'memoryverse':     { label: 'メモリーバース', href: 'memoryverse.html',    parent: 'mnemonics', unit: '回' },
@@ -137,14 +137,12 @@
        データは js/disciplines.js（ホームの学問の樹・勉強の軌跡と共有）。全ページで layout.js より先に読む。
        - 大分類は href を持たない層（章と同じ）→ ツリーでは開閉する見出し。「一つ上へ」・前後リンクは飛ばす
        - 独自ページのある学問は、CRUMBS の既存の行（例：physics）をその大分類の下へ付け替える
-       - テーマの中で扱う学問はテーマの該当パートへのリンク、準備中は soon（リンクなし・控えめな色）
+       - ページの無い学問は soon（リンクなし・控えめな色）。学問を複合分野（テーマ）に結び付けない（§136.7）
        - 並びは 7大分類 → 複合分野 → 精神の圏域（勉強の軌跡のページと同じ順） */
     (function addDisciplines() {
         if (typeof DISCIPLINES === 'undefined' || !CRUMBS.study) return;
         var byHref = {};
         Object.keys(CRUMBS).forEach(function (k) { if (CRUMBS[k].href) byHref[CRUMBS[k].href] = k; });
-        var themeName = {};
-        (typeof DISCIPLINE_THEMES === 'undefined' ? [] : DISCIPLINE_THEMES).forEach(function (t) { themeName[t.key] = t.ja; });
         var out = { study: CRUMBS.study };
         DISCIPLINES.forEach(function (c) {
             var ck = 'cat:' + c.cat;
@@ -153,9 +151,7 @@
                 var own = sj.page && byHref[sj.page];
                 if (own) { CRUMBS[own].parent = ck; out[own] = CRUMBS[own]; return; }
                 var row = { label: sj.ja, parent: ck };
-                if (sj.page) row.href = sj.page;
-                else if (sj.href) { row.href = sj.href; if (themeName[sj.theme]) row.title = sj.ja + '（' + themeName[sj.theme] + '）'; }
-                else row.soon = true;
+                if (sj.page) row.href = sj.page; else row.soon = true;
                 out['subject:' + sj.key] = row;
             });
         });

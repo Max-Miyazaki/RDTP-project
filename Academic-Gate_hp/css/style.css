@@ -3101,8 +3101,8 @@ a.tree-node {
 }
 
 /* --- 学問のタイル（§136.3）。どの大分類も、すべての学問を同じ大きさで並べる ------
-   独自ページあり＝大分類の色の実線と淡い地／テーマの中で扱う＝実線／準備中＝破線で控えめ。
-   2行目の小さな字が状態（英語名／テーマの名前／準備中）。準備中の2行目はカーソルを合わせたときだけ */
+   独自ページあり＝大分類の色の実線と淡い地／準備中＝破線で控えめ（§136.7 で「テーマの中で扱う」はやめた）。
+   2行目の小さな字が状態（英語名／準備中）。準備中の2行目はカーソルを合わせたときだけ */
 .sd-tiles {
     position: relative;          /* 浮き出る中身（.sd-pop）の基準 */
     list-style: none;
@@ -3181,11 +3181,6 @@ a.tree-node {
     transform: translateY(-50%) rotate(45deg);
 }
 
-/* テーマの中で扱う：実線（色は控えめ） */
-.sd-tile.is-theme {
-    border-color: var(--hairline-strong);
-}
-
 /* 準備中：破線・控えめ。2行目の「準備中」はカーソルを合わせたときだけ（読み上げには常に渡す） */
 .sd-tile.is-soon {
     color: var(--text-secondary);
@@ -3202,8 +3197,7 @@ a.tree-node {
 }
 
 @media (hover: hover) {
-    .sd-tile.is-page:hover,
-    .sd-tile.is-theme:hover {
+    .sd-tile.is-page:hover {
         border-color: var(--tint);
         background: color-mix(in srgb, var(--tint) 20%, #000);
     }
@@ -3391,39 +3385,13 @@ a.tree-node {
     gap: var(--space-3);
 }
 
-/* --- 複合分野のカードの中のチップ（関係する学問。それぞれの大分類の色） --------- */
-.sd-chips {
-    list-style: none;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-}
-
-.sd-chip {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.35rem;
-    min-height: 36px;
-    padding: 0.3rem 0.85rem;
-    font-size: 0.85rem;
-    line-height: 1.4;
-    white-space: nowrap;
-    color: var(--text-primary);
-    border: 1px solid color-mix(in srgb, var(--tint) 75%, transparent);
-    background: color-mix(in srgb, var(--tint) 12%, rgba(0, 0, 0, 0.72));
-    border-radius: var(--radius-pill);
-    transition: background var(--dur) var(--ease), border-color var(--dur) var(--ease);
-}
-
-@media (hover: hover) {
-    a.sd-chip:hover {
-        background: color-mix(in srgb, var(--tint) 20%, #000);
-        border-color: var(--tint);
-    }
-}
-
-/* --- 複合分野（THEMES）：関係する大分類の色を混ぜた縁 ---------------------- */
+/* --- 複合分野（THEMES）：複数の大分類の色を混ぜた縁（テーマの印） --------------- */
+/* ★ 箱の形（余白・角丸）。§136.3 で学問のカードの CSS を外したとき、カードと共有していたこの規則も一緒に消えていた（§136.7 で戻した） */
 .sd-theme {
+    position: relative;
+    padding: 1.5rem 1.4rem 1.4rem;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
     border: 1.5px solid transparent;
     background:
         linear-gradient(rgba(8, 10, 16, 0.92), rgba(8, 10, 16, 0.92)) padding-box,
@@ -3434,8 +3402,31 @@ a.tree-node {
     color: var(--text-secondary);
 }
 
-.sd-theme__subjects {
-    margin-bottom: var(--space-3);
+.sd-theme h3 {
+    font-size: 1.45rem;
+    font-weight: 400;
+    margin: 0.3rem 0 0.6rem;
+}
+
+/* 準備中のテーマ：タイトルと一言の下に小さく「準備中」（§136.7）。縁のグラデーションはテーマの印として残す */
+.sd-theme .sd-card__intro {
+    margin-bottom: var(--space-2);
+}
+
+.sd-theme__soon {
+    display: inline-block;
+    padding: 0.15rem 0.7rem;
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    color: var(--text-secondary);
+    border: 1px dashed var(--hairline-strong);
+    border-radius: var(--radius-pill);
+}
+
+/* ページができたテーマ：カード全体がリンク */
+a.sd-theme {
+    display: block;
+    color: inherit;
 }
 
 /* --- 精神の圏域（ROOTS）：種から下へ伸びる根の先に技能 --------------------- */
