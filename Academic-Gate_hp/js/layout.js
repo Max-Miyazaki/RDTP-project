@@ -96,9 +96,9 @@
                              title: '10-2　条件付きの変分と場の変分' },
         // 複合分野：学問分野と精神の圏域のあいだの枠（DESIGN.md §103）。いまは「地球と人類」だけ。
         'composite':       { label: '複合分野',     href: 'study_composite.html',  parent: 'study' },
-        // ★ title は付けない：ツリーは title を label より優先するので、付けるとツリーが「地球の構造から人類を読み解く」になる。
-        //   シリーズの長い名前は earthhuman.html の h1 が持つ（§103.1）。
-        'earthhuman':      { label: '地球と人類',   href: 'earthhuman.html',       parent: 'composite', unit: '章' },
+        // 地球と人類は構成を検討中なので、リンクなしの準備中（§136.7）。earthhuman.html は古いリンクのために残してある
+        //  （タイトルと「準備中」だけ）。ページを書いたら soon を消して href: 'earthhuman.html' を戻す。
+        'earthhuman':      { label: '地球と人類',   soon: true,                    parent: 'composite' },
         'skills':          { label: '精神の圏域',   href: 'study_skills.html',     parent: 'study' },
         'mnemonics':       { label: '記憶術',       href: 'skills_mnemonics.html', parent: 'skills' },
         'memoryverse':     { label: 'メモリーバース', href: 'memoryverse.html',    parent: 'mnemonics', unit: '回' },
@@ -132,6 +132,32 @@
         'memoryverse_3-4': { label: '3-4',          href: 'memoryverse_3-4.html',  parent: 'memoryverse:ch3',
                              title: '3-4　東ヨーロッパ' },
     };
+
+    /* --- 学問の7大分類と34の学問を、勉強の軌跡の下に差し込む（DESIGN.md §136.4）----
+       データは js/disciplines.js（ホームの学問の樹・勉強の軌跡と共有）。全ページで layout.js より先に読む。
+       - 大分類は href を持たない層（章と同じ）→ ツリーでは開閉する見出し。「一つ上へ」・前後リンクは飛ばす
+       - 独自ページのある学問は、CRUMBS の既存の行（例：physics）をその大分類の下へ付け替える
+       - ページの無い学問は soon（リンクなし・控えめな色）。学問を複合分野（テーマ）に結び付けない（§136.7）
+       - 並びは 7大分類 → 複合分野 → 精神の圏域（勉強の軌跡のページと同じ順） */
+    (function addDisciplines() {
+        if (typeof DISCIPLINES === 'undefined' || !CRUMBS.study) return;
+        var byHref = {};
+        Object.keys(CRUMBS).forEach(function (k) { if (CRUMBS[k].href) byHref[CRUMBS[k].href] = k; });
+        var out = { study: CRUMBS.study };
+        DISCIPLINES.forEach(function (c) {
+            var ck = 'cat:' + c.cat;
+            out[ck] = { label: c.ja, parent: 'study' };
+            c.subjects.forEach(function (sj) {
+                var own = sj.page && byHref[sj.page];
+                if (own) { CRUMBS[own].parent = ck; out[own] = CRUMBS[own]; return; }
+                var row = { label: sj.ja, parent: ck };
+                if (sj.page) row.href = sj.page; else row.soon = true;
+                out['subject:' + sj.key] = row;
+            });
+        });
+        Object.keys(CRUMBS).forEach(function (k) { if (!out[k]) out[k] = CRUMBS[k]; });
+        CRUMBS = out;
+    })();
 
     // node から根までの並び（根が先頭）。
     function chain(node) {
@@ -198,15 +224,27 @@
     function mountSiteNav(cur) {
         document.body.insertAdjacentHTML('beforeend', siteNavHtml(cur));
         var tab = document.getElementById('sitenavTab'),
+            hdBtn = document.getElementById('sitenavHdBtn'),   // 幅 768px 以下ではこちら（ヘッダーの中）
             box = document.getElementById('sitenav'),
             scrim = document.getElementById('sitenavScrim'),
-            x = box.querySelector('.sitenav__x');
+            x = box.querySelector('.sitenav__x'),
+            opener = tab;
         function set(on) {
             document.body.classList.toggle('sitenav-open', on);
-            tab.setAttribute('aria-expanded', on ? 'true' : 'false');
-            if (on) { var f = box.querySelector('.cur') || x; if (f) f.focus(); } else { tab.focus(); }
+            [tab, hdBtn].forEach(function (b) { if (b) b.setAttribute('aria-expanded', on ? 'true' : 'false'); });
+            if (on) { var f = box.querySelector('.cur') || x; if (f) f.focus(); } else if (opener) { opener.focus(); }
         }
-        tab.addEventListener('click', function () { set(!document.body.classList.contains('sitenav-open')); });
+        function toggleFrom(btn) {
+            return function () {
+                opener = btn;
+                // モバイルのメニューが開いていたら閉じる（パネルと重ねない）
+                var mt = document.querySelector('.menu-toggle'), nm = document.querySelector('.nav-menu');
+                if (mt && nm) { mt.setAttribute('aria-expanded', 'false'); nm.classList.remove('active'); }
+                set(!document.body.classList.contains('sitenav-open'));
+            };
+        }
+        tab.addEventListener('click', toggleFrom(tab));
+        if (hdBtn) hdBtn.addEventListener('click', toggleFrom(hdBtn));
         scrim.addEventListener('click', function () { set(false); });
         x.addEventListener('click', function () { set(false); });
         document.addEventListener('keydown', function (e) {
@@ -312,6 +350,12 @@
         ['videos.html', '動画'], ['blog.html', 'ブログ'], ['sns.html', '各種SNS']
     ];
 
+    // サイト構成のパネルを持つページか（body[data-node] が CRUMBS にある）
+    function hasSiteNav() {
+        var node = (document.body && document.body.dataset && document.body.dataset.node) || '';
+        return !!(node && CRUMBS[node]);
+    }
+
     function navHtml(activeHref) {
         var lis = NAV_ITEMS.map(function (it) {
             var cls = it[0] === activeHref ? ' class="active"' : '';
@@ -325,6 +369,7 @@
                 '</button>' +
                 '<ul class="nav-menu" id="nav-menu">' + lis + '</ul>' +
             '</nav>' +
+            (hasSiteNav() ? '<button class="sitenav-hdbtn" id="sitenavHdBtn" type="button" aria-expanded="false" aria-controls="sitenav">サイト構成</button>' : '') +
             '<a href="sns.html" class="btn btn-nav-cta">Connect <span class="btn-disc" aria-hidden="true">→</span></a>' +
         '</header>';
     }

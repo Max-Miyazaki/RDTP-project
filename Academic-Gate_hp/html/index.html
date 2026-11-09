@@ -14,7 +14,7 @@
         href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;500&family=Noto+Sans+JP:wght@300;400&display=swap"
         rel="stylesheet">
 
-    <link rel="stylesheet" href="../css/style.css?v=r172">
+    <link rel="stylesheet" href="../css/style.css?v=r177">
     <link rel="icon" href="../../favicon.ico" sizes="32x32">
     <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="../../apple-touch-icon.png">
@@ -52,9 +52,9 @@
         </section>
 
         <!-- 03 — TREE：学問の樹。
-             ★ この入れ子のリストが木のデータそのもの（分類 → 学問の2段）。js/academic-tree.js が
-             ここから木の形を作る。学問を足すと枝が増える。ホームには代表的な学問だけを置く（§135.8）
-             - リンク：ページがあれば <a href>、無ければ <span>（破線＝準備中）。URL を入れるだけで有効になる
+             ★ 木のデータ（分類 → 学問の2段）は js/disciplines.js にある（勉強の軌跡 study.html と共有。§136）。
+             disciplines.js が下の <ol> に入れ子のリストを書き出し、js/academic-tree.js がそこから木の形を作る。
+             学問を足すと枝が増える。リンク：ページがあれば実線、無ければ破線（準備中）
              - data-key：学問の名前（04 で物理学の枝を見つけるのに使う）
              - 分類の差し色は CSS の data-cat で決める -->
         <section class="home-block home-tree" id="tree" aria-labelledby="tree-h">
@@ -64,77 +64,10 @@
                 <p lang="ja">一本の幹から、無数の枝へ。<br>世界のすべてを、ひとつの視点で描き尽くすことはできません。だから学問は、素粒子から宇宙、心から社会まで、さまざまなスケールと角度から世界に迫ります。どの枝も、世界を見るためのひとつの窓です。</p>
             </div>
             <div class="tree reveal" data-tree>
-                <ol class="tree__data" aria-label="学問の分類">
-                    <li class="tree-cat" data-cat="formal">
-                        <h3 class="tree-cat__name">形式科学</h3>
-                        <ul>
-                            <li data-key="math"><span class="tree-node">数学</span></li>
-                            <li data-key="statistics"><span class="tree-node">統計学</span></li>
-                            <li data-key="logic"><span class="tree-node">論理学</span></li>
-                            <li data-key="cs"><span class="tree-node">情報科学</span></li>
-                        </ul>
-                    </li>
-                    <li class="tree-cat" data-cat="natural">
-                        <h3 class="tree-cat__name">自然科学</h3>
-                        <ul>
-                            <li data-key="physics"><a class="tree-node" href="study_physics.html">物理学</a></li>
-                            <li data-key="chemistry"><span class="tree-node">化学</span></li>
-                            <li data-key="biology"><span class="tree-node">生物学</span></li>
-                            <li data-key="earth-science"><span class="tree-node">地球科学</span></li>
-                            <li data-key="astronomy"><span class="tree-node">天文学</span></li>
-                        </ul>
-                    </li>
-                    <li class="tree-cat" data-cat="life">
-                        <h3 class="tree-cat__name">生命・医療</h3>
-                        <ul>
-                            <li data-key="medicine"><span class="tree-node">医学</span></li>
-                            <li data-key="pharmacy"><span class="tree-node">薬学</span></li>
-                            <li data-key="agriculture"><span class="tree-node">農学</span></li>
-                        </ul>
-                    </li>
-                    <li class="tree-cat" data-cat="engineering">
-                        <h3 class="tree-cat__name">工学</h3>
-                        <ul>
-                            <li data-key="mechanical"><span class="tree-node">機械工学</span></li>
-                            <li data-key="electrical"><span class="tree-node">電気電子工学</span></li>
-                            <li data-key="civil"><span class="tree-node">土木工学</span></li>
-                            <li data-key="aerospace"><span class="tree-node">航空宇宙工学</span></li>
-                            <li data-key="architecture"><span class="tree-node">建築学</span></li>
-                        </ul>
-                    </li>
-                    <li class="tree-cat" data-cat="humanities">
-                        <h3 class="tree-cat__name">人文学</h3>
-                        <ul>
-                            <li data-key="philosophy"><a class="tree-node" href="earthhuman.html#eh-philosophy">哲学</a></li>
-                            <li data-key="history"><a class="tree-node" href="earthhuman.html#eh-history">歴史学</a></li>
-                            <li data-key="geography"><a class="tree-node" href="earthhuman.html#eh-geography">地理学</a></li>
-                            <li data-key="religious-studies"><a class="tree-node" href="earthhuman.html#eh-religion">宗教学</a></li>
-                            <li data-key="literature"><span class="tree-node">文学</span></li>
-                            <li data-key="linguistics"><span class="tree-node">言語学</span></li>
-                            <li data-key="languages"><span class="tree-node">外国語</span></li>
-                        </ul>
-                    </li>
-                    <li class="tree-cat" data-cat="social">
-                        <h3 class="tree-cat__name">社会科学</h3>
-                        <ul>
-                            <li data-key="economics"><span class="tree-node">経済学</span></li>
-                            <li data-key="law"><span class="tree-node">法学</span></li>
-                            <li data-key="politics"><a class="tree-node" href="earthhuman.html#eh-geopolitics">政治学</a></li>
-                            <li data-key="sociology"><span class="tree-node">社会学</span></li>
-                            <li data-key="psychology"><span class="tree-node">心理学</span></li>
-                            <li data-key="education"><span class="tree-node">教育学</span></li>
-                        </ul>
-                    </li>
-                    <li class="tree-cat" data-cat="arts">
-                        <h3 class="tree-cat__name">芸術・創作</h3>
-                        <ul>
-                            <li data-key="fine-art"><a class="tree-node" href="earthhuman.html#eh-art">美術</a></li>
-                            <li data-key="music"><span class="tree-node">音楽</span></li>
-                            <li data-key="design"><span class="tree-node">デザイン</span></li>
-                            <li data-key="film"><span class="tree-node">映像</span></li>
-                        </ul>
-                    </li>
-                </ol>
+                <ol class="tree__data" aria-label="学問の分類" data-disciplines="tree"></ol>
+                <noscript>
+                    <p class="tree-noscript" lang="ja">ページのある学問：<a href="study_physics.html">物理学</a>。すべての学問は<a href="study.html">勉強の軌跡</a>へ。</p>
+                </noscript>
             </div>
             <p class="tree-note reveal" lang="ja">実線の学問は、サイト内のノートや教材へ。破線はまだ準備中です。</p>
         </section>
@@ -208,12 +141,13 @@
 
     <div id="site-footer"><noscript><nav class="noscript-nav" aria-label="フッターナビゲーション"><a href="index.html">ホーム</a><a href="self-intro.html">自己紹介</a><a href="study.html">勉強の軌跡</a><a href="videos.html">動画</a><a href="blog.html">ブログ</a><a href="sns.html">各種SNS</a></nav></noscript></div>
 
-    <script src="../js/layout.js?v=r172"></script>
-    <script src="../js/main.js?v=r172"></script>
-    <script src="../js/starfield.js?v=r172"></script>
-    <script src="../js/research.js?v=r172"></script>
-    <script src="../js/academic-tree.js?v=r172"></script>
-    <script src="../js/tree-scenes.js?v=r172"></script>
+    <script src="../js/disciplines.js?v=r177"></script>
+    <script src="../js/layout.js?v=r177"></script>
+    <script src="../js/main.js?v=r177"></script>
+    <script src="../js/starfield.js?v=r177"></script>
+    <script src="../js/research.js?v=r177"></script>
+    <script src="../js/academic-tree.js?v=r177"></script>
+    <script src="../js/tree-scenes.js?v=r177"></script>
 </body>
 
 </html>
