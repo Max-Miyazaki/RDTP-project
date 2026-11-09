@@ -94,6 +94,10 @@
                              title: '10-1　変分法' },
         'phys-math_10-2':  { label: 'SECTION 10-2', href: 'phys-math_10-2.html',   parent: 'phys-math:ch10',
                              title: '10-2　条件付きの変分と場の変分' },
+        // 情報科学（DESIGN.md §137）。親は addDisciplines() が形式科学の下へ付け替える。
+        // サイバーセキュリティ基礎の節は、書き上げたものから cyber:chN の下に足す（いまは目次だけ）。
+        'informatics':     { label: '情報科学',     href: 'study_informatics.html', parent: 'study' },
+        'cyber':           { label: 'サイバーセキュリティ基礎', href: 'cyber.html', parent: 'informatics', unit: '節' },
         // 複合分野：学問分野と精神の圏域のあいだの枠（DESIGN.md §103）。いまは「地球と人類」だけ。
         'composite':       { label: '複合分野',     href: 'study_composite.html',  parent: 'study' },
         // 地球と人類は構成を検討中なので、リンクなしの準備中（§136.7）。earthhuman.html は古いリンクのために残してある
