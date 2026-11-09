@@ -895,12 +895,14 @@ footer a:hover {
 /* ★ 見出しの色は §75 で逆にした。以前は「行き先がある＝最初から青、触ると白」
    だったが、青から白へ**落ちる**のが不自然だった。いまはどのカードも
    平常は白で、触れると枠の光と同じ蛍光の青になる（光り方と文字が同じ動きをする）。 */
-.study-card h3 {
+.study-card h3,
+.study-card h4 {
     color: var(--text-primary);
 }
 
 @media (hover: hover) {
-    a.study-card:hover h3 {
+    a.study-card:hover h3,
+    a.study-card:hover h4 {
         color: var(--spec-glow);
     }
 }
@@ -918,7 +920,8 @@ footer a:hover {
     cursor: default;
 }
 
-.study-card.is-soon h3 {
+.study-card.is-soon h3,
+.study-card.is-soon h4 {
     color: var(--text-secondary);
 }
 
@@ -936,7 +939,8 @@ footer a:hover {
 /* 節の見出しはグリッドの中に全幅のアイテムとして置く。グリッド自身の箱
    （max-width と gutter）に載るので、カードと左端が必ず揃う。 */
 .study-grid > .eyebrow,
-.study-grid > h2 {
+.study-grid > h2,
+.study-grid > h3 {
     grid-column: 1 / -1;
 }
 
@@ -3587,4 +3591,162 @@ a.sd-theme {
     .sd-go__to {
         margin-left: auto;
     }
+}
+
+/* ===========================================================================
+   部のある教材の目次（cyber.html。DESIGN.md §137）
+   物理数学の目次（章 h2 → 節カード h3）に「部」を1段足したもの：部 h2 → 章 h3 → 節カード h4。
+   カード・グリッド・「準備中」の札は既存の .study-grid / .study-card のまま
+   =========================================================================== */
+.toc-sub {
+    font-size: 1.05rem;
+    color: var(--text-primary);
+    margin-bottom: var(--space-2);
+}
+
+/* 攻撃側・防御側の環境のチップ（量のチップは置かない。§136） */
+.toc-chips {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: var(--space-3);
+}
+
+.toc-chip {
+    padding: 0.25rem 0.8rem;
+    font-size: 0.75rem;
+    border-radius: var(--radius-pill);
+    border: 1px solid var(--hairline);
+    background: var(--surface);
+}
+
+.toc-chip--attack {
+    color: #ff6fa5;
+    border-color: rgba(255, 61, 139, 0.32);
+    background: rgba(255, 61, 139, 0.08);
+}
+
+.toc-chip--defense {
+    color: #6aa6ff;
+    border-color: rgba(77, 148, 255, 0.32);
+    background: rgba(77, 148, 255, 0.1);
+}
+
+/* 「このシリーズの読み方」の囲み。最後の段落は法律上の注意（琥珀＝注意。教材ページの .box.warn と同じ色） */
+.toc-note {
+    /* 左右の端を、ヘッダーとカードのグリッド（最大 1200px、左右に --gutter）と揃える */
+    width: calc(min(1200px, 100%) - 2 * var(--gutter));
+    margin: 0 auto var(--space-12);
+    padding: var(--space-3) var(--space-4);
+    border: 1px solid rgba(123, 77, 255, 0.38);
+    border-radius: var(--radius-md);
+    background: rgba(123, 77, 255, 0.11);
+}
+
+.toc-note__lab {
+    font-size: 0.72rem;
+    letter-spacing: 0.14em;
+    font-weight: 500;
+    color: #b9a6ff;
+    margin-bottom: 0.4rem;
+}
+
+.toc-note p {
+    max-width: 46em;
+    line-height: 1.9;
+    color: var(--text-secondary);
+}
+
+.toc-note p + p {
+    margin-top: var(--space-2);
+}
+
+.toc-note strong {
+    color: var(--text-primary);
+    font-weight: 500;
+}
+
+.toc-note .toc-note__warn {
+    padding: 0.75rem 1rem;
+    border-radius: var(--radius-sm);
+    border: 1px solid rgba(255, 160, 70, 0.4);
+    background: rgba(255, 160, 70, 0.08);
+}
+
+.toc-note .toc-note__warn strong {
+    color: #ffc58f;
+}
+
+/* 部の見出し：番号の小さなラベルと名前。下の罫線はカードの左右の端に揃える（グリッドと同じ箱） */
+.toc-part__head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.4rem 0.9rem;
+    max-width: 1200px;
+    margin: 0 auto var(--space-4);
+    padding: 0 var(--gutter);
+}
+
+.toc-part__head h2 {
+    flex: 1 1 16em;
+    font-size: clamp(1.2rem, 2vw, 1.5rem);
+    font-weight: 400;
+    line-height: 1.4;
+}
+
+.toc-part__head::after {
+    content: '';
+    flex: 0 0 100%;
+    height: 1px;
+    margin-top: var(--space-1);
+    background: var(--hairline);
+}
+
+.toc-part__no {
+    font-size: 0.75rem;
+    letter-spacing: 0.06em;   /* 0.2em だと「II」が「I I」に見えた */
+    color: var(--spec-glow);
+    white-space: nowrap;
+}
+
+/* 章：部の中の小見出し。章どうしの間は物理数学の目次（128px）より詰める（部の区切りを強く見せるため） */
+.toc-part .study-grid {
+    padding-bottom: var(--space-8);
+}
+
+.toc-part .study-grid > h3 {
+    font-size: 1.1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    color: var(--text-primary);
+}
+
+.toc-part:not(:last-of-type) {
+    margin-bottom: var(--space-8);
+}
+
+/* 節カード：数が多い（52）ので、物理数学のカードより詰める（スマホで約 10 画面 → 縮めた） */
+.toc-part .study-card {
+    gap: 0.35rem;
+    padding: var(--space-3);
+    border-radius: var(--radius-md);
+}
+
+.toc-part .card-soon {
+    padding-top: 0.35rem;
+}
+
+/* 節カード：題が長いので、物理数学の h3 より小さく */
+.toc-part .study-card h4 {
+    font-size: 1.02rem;
+    font-weight: 400;
+    line-height: 1.5;
+}
+
+.toc-part .study-card p {
+    font-size: 0.88rem;
+    line-height: 1.75;
+    color: var(--text-secondary);
 }

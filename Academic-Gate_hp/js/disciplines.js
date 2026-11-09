@@ -21,7 +21,10 @@ var DISCIPLINES = [
         { key: 'math', ja: '数学' },
         { key: 'statistics', ja: '統計学' },
         { key: 'logic', ja: '論理学' },
-        { key: 'cs', ja: '情報科学' }] },
+        { key: 'cs', ja: '情報科学', en: 'Informatics', page: 'study_informatics.html',
+          intro: '情報をどう表し、どう計算し、どう運び、どう守るか。手を動かしながら、仕組みから理解する。',
+          // 最初の節を書き上げたら、ここをその節（例：cyber_1-1.html）に変える。いまは目次へ
+          start: { href: 'cyber.html', label: 'サイバーセキュリティ基礎' } }] },
     { cat: 'natural', ja: '自然科学', en: 'Natural Sciences',
       lead: '物質、生命、地球、宇宙。自然の仕組みを、観測と理論で確かめる。',
       subjects: [
