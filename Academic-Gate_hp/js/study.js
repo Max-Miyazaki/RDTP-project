@@ -8,10 +8,11 @@
      3. 精神の圏域（ROOTS）の根の線を、カードの位置から SVG で描く
      4. フェードイン（self-intro.js と同じ条件・閾値）
 
-   学問の3つの状態（disciplines.js）
-     独自のページあり → 大きなカード（「ここから読む」＋ 学問のページへ）
-     テーマの中で扱う → 実線のチップ（テーマの中の該当する部へ）
-     準備中           → 破線のチップ
+   学問の3つの状態（disciplines.js）。どの大分類も、すべての学問を同じ大きさのタイルで並べる（§136.3）
+     独自のページあり → 大分類の色の実線のタイル。PC はカーソル・フォーカスで、スマホはタップで
+                        詳しい内容（英語名・説明・「ここから読む」・学問のページへ）が浮き出る。開くのは1つだけ
+     テーマの中で扱う → 実線のタイル。押すとテーマの中の該当する部へ
+     準備中           → 破線の控えめなタイル。押しても何も起きない（カーソルで「準備中」）
    量（記事数・章数・公開数）は出さない。
    ============================================================================ */
 (function () {
@@ -47,38 +48,33 @@
         return h + '</div>';
     }
 
-    function card(s) {
-        return '<li><article class="sd-card">' +
-            '<p class="sd-card__en">' + esc(s.en || '') + '</p>' +
-            '<h3 lang="ja">' + esc(s.ja) + '</h3>' +
-            '<p class="sd-card__intro" lang="ja">' + esc(s.intro || '') + '</p>' +
-            go(s.start, s.page, s.ja + 'のページへ') + '</article></li>';
+    // 学問のタイル。2行目の小さな字が状態（独自ページ＝英語名、テーマ＝テーマの名前、準備中＝カーソルで「準備中」）
+    function tile(s) {
+        var name = '<span class="sd-tile__name" lang="ja">' + esc(s.ja) + '</span>';
+        if (s.page) {
+            var id = 'sd-pop-' + s.key;
+            return '<li class="sd-tilebox">' +
+                '<button class="sd-tile is-page" type="button" aria-expanded="false" aria-controls="' + id + '">' + name +
+                '<span class="sd-tile__meta">' + esc(s.en || '') + '</span><span class="sd-tile__mark" aria-hidden="true"></span></button>' +
+                '<div class="sd-pop" id="' + id + '" role="group" aria-label="' + esc(s.ja) + '">' +
+                '<p class="sd-card__en">' + esc(s.en || '') + '</p>' +
+                '<p class="sd-card__intro" lang="ja">' + esc(s.intro || '') + '</p>' +
+                go(s.start, s.page, s.ja + 'のページへ') + '</div></li>';
+        }
+        if (s.theme && s.href) {
+            var t = themeOf[s.theme];
+            return '<li class="sd-tilebox"><a class="sd-tile is-theme" href="' + s.href + '">' + name +
+                '<span class="sd-tile__meta" lang="ja">' + esc(t ? t.ja : '') + '</span>' +
+                '<span class="sd-tile__mark" aria-hidden="true">→</span></a></li>';
+        }
+        return '<li class="sd-tilebox"><span class="sd-tile is-soon">' + name +
+            '<span class="sd-tile__meta" lang="ja">準備中</span></span></li>';
     }
 
     function catSection(c) {
-        var pages = c.subjects.filter(function (s) { return s.page; });
-        var inTheme = c.subjects.filter(function (s) { return !s.page && s.theme; });
-        var soon = c.subjects.filter(function (s) { return !s.page && !s.theme; });
-        var body = '';
-        if (pages.length) body += '<ul class="sd-cards">' + pages.map(card).join('') + '</ul>';
-        // テーマごとにまとめる（いまは「地球と人類」だけ）
-        var byTheme = {};
-        inTheme.forEach(function (s) { (byTheme[s.theme] = byTheme[s.theme] || []).push(s); });
-        Object.keys(byTheme).forEach(function (k) {
-            var t = themeOf[k];
-            body += '<div class="sd-group"><p class="sd-group__label" lang="ja">テーマ「' + esc(t.ja) + '」の中で扱う</p>' +
-                '<ul class="sd-chips">' + byTheme[k].map(function (s) {
-                    return '<li><a class="sd-chip is-theme" href="' + s.href + '" lang="ja">' + esc(s.ja) + ' ' + AR + '</a></li>';
-                }).join('') + '</ul></div>';
-        });
-        if (soon.length) {
-            body += '<div class="sd-group"><p class="sd-group__label" lang="ja">準備中</p>' +
-                '<ul class="sd-chips">' + soon.map(function (s) {
-                    return '<li><span class="sd-chip is-soon" lang="ja">' + esc(s.ja) + '</span></li>';
-                }).join('') + '</ul></div>';
-        }
         return '<section class="sd-cat reveal" id="' + c.cat + '" data-cat="' + c.cat + '" aria-labelledby="' + c.cat + '-h">' +
-            head(c.cat, c.en, c.ja, c.lead) + '<div class="sd-cat__body">' + body + '</div></section>';
+            head(c.cat, c.en, c.ja, c.lead) +
+            '<div class="sd-cat__body"><ul class="sd-tiles">' + c.subjects.map(tile).join('') + '</ul></div></section>';
     }
 
     // 複合分野のカード：縁は、関係する学問の大分類の色を順に混ぜたグラデーション
@@ -109,6 +105,86 @@
     var box = document.querySelector('[data-study]');
     if (!box) return;
     box.outerHTML = DISCIPLINES.map(catSection).join('') + themesSection();
+
+    /* ---- 1b. 独自ページのある学問のタイルを開く ------------------------------
+       開くのはページ全体で1つだけ。中身（.sd-pop）は、ふだんはタイルの li の中にある。
+       PC（カーソルのある端末）：カーソル・フォーカスで、タイルのすぐ下に「重ねて」出す（.sd-tiles が基準。
+         周りは動かさない。カーソルで開くので、動くと指の下のタイルがずれてしまう）。中身へカーソルを移す
+         途中で閉じないように、タイルと中身の間の隙間は中身の ::before で埋め、閉じるのは 220ms 遅らせる
+       スマホ：タップで、そのタイルの行のすぐ下に「差し込んで」なめらかに開く（.sd-popslot。高さを
+         0fr → 1fr で動かす）。重ねると下のタイルが隠れて、ほかの学問を押せなくなるため。
+         もう一度タップ・ほかのタイル・外側のタップ・Esc で閉じる */
+    var canHover = window.matchMedia('(hover: hover) and (pointer: fine)');
+    var openBox = null, closeTimer = 0, quiet = false;   // quiet：Esc で閉じてタイルへ戻したフォーカスで、また開かないように
+    function place(li) {
+        var btn = li.querySelector('.sd-tile'), pop = li.querySelector('.sd-pop'), list = li.parentNode;
+        var top = btn.offsetTop + btn.offsetHeight + 8;
+        var left = Math.max(0, Math.min(btn.offsetLeft, list.clientWidth - pop.offsetWidth));
+        pop.style.top = top + 'px';
+        pop.style.left = left + 'px';
+    }
+    // スマホ：タイルの行の終わり（いちばん右のタイル）の後ろに、行いっぱいの差し込み口を作って中身を移す
+    function slotFor(li) {
+        var list = li.parentNode;
+        var boxes = [].filter.call(list.children, function (c) { return c.classList.contains('sd-tilebox'); });
+        var cols = getComputedStyle(list).gridTemplateColumns.split(' ').length || 1;
+        var i = boxes.indexOf(li), end = boxes[Math.min(boxes.length - 1, Math.floor(i / cols) * cols + cols - 1)];
+        var slot = document.createElement('li');
+        slot.className = 'sd-popslot';
+        slot.innerHTML = '<div class="sd-popslot__in"></div>';
+        end.parentNode.insertBefore(slot, end.nextSibling);
+        slot.firstChild.appendChild(li.querySelector('.sd-pop'));
+        li._slot = slot;
+        void slot.offsetHeight;                       // 0fr の状態を一度描いてから開く（なめらかに）
+        slot.classList.add('is-open');
+    }
+    function unslot(li) {
+        var slot = li._slot; if (!slot) return;
+        li._slot = null;
+        slot.classList.remove('is-open');
+        function back() { li.appendChild(slot.querySelector('.sd-pop')); slot.remove(); }
+        if (reduceMotion.matches) back(); else setTimeout(back, 300);
+    }
+    function openTile(li) {
+        clearTimeout(closeTimer);
+        if (openBox && openBox !== li) closeTile(openBox);
+        li.classList.add('is-open');
+        li.querySelector('.sd-tile').setAttribute('aria-expanded', 'true');
+        if (canHover.matches) { place(li); li.closest('.sd-cat').classList.add('has-open'); }   // 次のセクションより手前に出す
+        else slotFor(li);
+        openBox = li;
+    }
+    function closeTile(li) {
+        li.classList.remove('is-open');
+        li.querySelector('.sd-tile').setAttribute('aria-expanded', 'false');
+        li.closest('.sd-cat').classList.remove('has-open');
+        unslot(li);
+        if (openBox === li) openBox = null;
+    }
+    function closeLater(li) {
+        clearTimeout(closeTimer);
+        closeTimer = setTimeout(function () { if (!li.matches(':hover') && !li.contains(document.activeElement)) closeTile(li); }, 220);
+    }
+    [].forEach.call(document.querySelectorAll('.sd-tile.is-page'), function (btn) {
+        var li = btn.parentNode;
+        li.addEventListener('mouseenter', function () { if (canHover.matches) openTile(li); });
+        li.addEventListener('mouseleave', function () { if (canHover.matches && openBox === li) closeLater(li); });
+        li.addEventListener('focusin', function () { if (canHover.matches && !quiet) openTile(li); });
+        li.addEventListener('focusout', function (e) { if (openBox === li && !li.contains(e.relatedTarget)) closeLater(li); });
+        btn.addEventListener('click', function (e) {
+            // カーソルのある端末でのマウスのクリックは、開いたままにするだけ（カーソルで開いた直後に閉じないように）。
+            // キーボード（Enter・Space：detail が 0）とタップは開閉を切り替える
+            if (canHover.matches && e.detail > 0) { openTile(li); return; }
+            if (openBox === li) closeTile(li); else openTile(li);
+        });
+    });
+    document.addEventListener('click', function (e) {
+        if (openBox && !openBox.contains(e.target) && !(openBox._slot && openBox._slot.contains(e.target))) closeTile(openBox);
+    });
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && openBox) { var b = openBox.querySelector('.sd-tile'); closeTile(openBox); quiet = true; b.focus(); quiet = false; }
+    });
+    window.addEventListener('resize', function () { if (openBox && canHover.matches) place(openBox); });
 
     /* ---- 2. 追従する分野バー ------------------------------------------------ */
     var bar = document.querySelector('[data-study-bar]');
