@@ -1,0 +1,109 @@
+/* ============================================================================
+   disciplines.js — 学問のデータ（DESIGN.md §136）
+
+   ★ 大分類と学問のリストはこのファイルだけに書く。ホームの学問の樹（index.html の
+   03）と、勉強の軌跡（study.html）が同じデータを使う。学問を足すと両方に出る。
+   ホーム用の置き場所：<ol class="tree__data" data-disciplines="tree"></ol>
+     → 前の形と同じ入れ子のリスト（li.tree-cat > h3 + ul > li[data-key] > .tree-node）を
+       書き出す。js/academic-tree.js はそれを読む（このファイルを先に読み込むこと）。
+
+   学問の状態は3つ（§136）
+     - 独自のページがある  ：page に行き先。start に「ここから読む」の最初の記事
+     - テーマの中で扱う    ：theme にテーマの key、href にテーマの中の該当する部
+     - 準備中              ：どちらも無い（破線）
+   ホームの木では、page または href があれば実線のリンク、無ければ破線になる。
+   ============================================================================ */
+var DISCIPLINES = [
+    { cat: 'formal', ja: '形式科学', en: 'Formal Sciences',
+      lead: '記号と論理だけで組み立てる、ほかの学問の言葉になる学問。',
+      subjects: [
+        { key: 'math', ja: '数学' },
+        { key: 'statistics', ja: '統計学' },
+        { key: 'logic', ja: '論理学' },
+        { key: 'cs', ja: '情報科学' }] },
+    { cat: 'natural', ja: '自然科学', en: 'Natural Sciences',
+      lead: '素粒子から宇宙まで、自然の仕組みを観測と理論で確かめる。',
+      subjects: [
+        { key: 'physics', ja: '物理学', en: 'Physics', page: 'study_physics.html',
+          intro: '素粒子から宇宙まで、自然の仕組みを数式で読み解く。公式を覚えるのではなく、原理から積み上げる。',
+          start: { href: 'phys-math_1-1.html', label: '1-1 微分の基礎' } },
+        { key: 'chemistry', ja: '化学' },
+        { key: 'biology', ja: '生物学' },
+        { key: 'earth-science', ja: '地球科学' },
+        { key: 'astronomy', ja: '天文学' }] },
+    { cat: 'life', ja: '生命・医療', en: 'Life & Medicine',
+      lead: '生きものの体と暮らしを、守り、治し、育てるための学問。',
+      subjects: [
+        { key: 'medicine', ja: '医学' },
+        { key: 'pharmacy', ja: '薬学' },
+        { key: 'agriculture', ja: '農学' }] },
+    { cat: 'engineering', ja: '工学', en: 'Engineering',
+      lead: 'わかったことを、形のあるものに変える学問。',
+      subjects: [
+        { key: 'mechanical', ja: '機械工学' },
+        { key: 'electrical', ja: '電気電子工学' },
+        { key: 'civil', ja: '土木工学' },
+        { key: 'aerospace', ja: '航空宇宙工学' },
+        { key: 'architecture', ja: '建築学' }] },
+    { cat: 'humanities', ja: '人文学', en: 'Humanities',
+      lead: '人が考え、語り、残してきたものから、人間を知る。',
+      subjects: [
+        { key: 'philosophy', ja: '哲学', theme: 'earthhuman', href: 'earthhuman.html#eh-philosophy' },
+        { key: 'history', ja: '歴史学', theme: 'earthhuman', href: 'earthhuman.html#eh-history' },
+        { key: 'geography', ja: '地理学', theme: 'earthhuman', href: 'earthhuman.html#eh-geography' },
+        { key: 'religious-studies', ja: '宗教学', theme: 'earthhuman', href: 'earthhuman.html#eh-religion' },
+        { key: 'literature', ja: '文学' },
+        { key: 'linguistics', ja: '言語学' },
+        { key: 'languages', ja: '外国語' }] },
+    { cat: 'social', ja: '社会科学', en: 'Social Sciences',
+      lead: '人の集まりが生むしくみ——市場・法・国家・心——を調べる。',
+      subjects: [
+        { key: 'economics', ja: '経済学' },
+        { key: 'law', ja: '法学' },
+        // 地政学（第IV部）は政治学・国際関係の一分野として扱う（§135.2）
+        { key: 'politics', ja: '政治学', theme: 'earthhuman', href: 'earthhuman.html#eh-geopolitics' },
+        { key: 'sociology', ja: '社会学' },
+        { key: 'psychology', ja: '心理学' },
+        { key: 'education', ja: '教育学' }] },
+    { cat: 'arts', ja: '芸術・創作', en: 'Arts & Creation',
+      lead: '見る・聴く・作ることで、世界を表し直す。',
+      subjects: [
+        { key: 'fine-art', ja: '美術', theme: 'earthhuman', href: 'earthhuman.html#eh-art' },
+        { key: 'music', ja: '音楽' },
+        { key: 'design', ja: 'デザイン' },
+        { key: 'film', ja: '映像' }] }
+];
+
+// 複合分野（THEMES）。subjects は関係する学問の key（並びはテーマの中の順）
+var DISCIPLINE_THEMES = [
+    { key: 'earthhuman', ja: '地球と人類', en: 'Earth & Humankind', page: 'earthhuman.html',
+      intro: '地球の構造から人類を読み解く。動かない地形の上に、歴史・宗教・政治・思想・芸術が重なっていく。',
+      subjects: ['geography', 'history', 'religious-studies', 'politics', 'philosophy', 'fine-art'],
+      start: { href: 'earthhuman.html#eh-why', label: 'なぜこの6分野か' } }
+];
+
+(function () {
+    'use strict';
+
+    function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;'); }
+
+    // ホームの木の名前のチップ：行き先があれば実線の <a>、無ければ破線の <span>
+    function treeNode(s) {
+        var href = s.page || s.href;
+        return href
+            ? '<a class="tree-node" href="' + href + '">' + esc(s.ja) + '</a>'
+            : '<span class="tree-node">' + esc(s.ja) + '</span>';
+    }
+
+    function renderTree(ol) {
+        ol.innerHTML = DISCIPLINES.map(function (c) {
+            return '<li class="tree-cat" data-cat="' + c.cat + '">' +
+                '<h3 class="tree-cat__name">' + esc(c.ja) + '</h3>' +
+                '<ul>' + c.subjects.map(function (s) {
+                    return '<li data-key="' + s.key + '">' + treeNode(s) + '</li>';
+                }).join('') + '</ul></li>';
+        }).join('');
+    }
+
+    [].forEach.call(document.querySelectorAll('[data-disciplines="tree"]'), renderTree);
+})();

@@ -27,6 +27,16 @@
        サイト共通の小さなラベルの色。--text-secondary（.62、7.8:1）とは段の差を残す。 */
     --text-tertiary: rgba(255, 255, 255, 0.48);
 
+    /* 学問の大分類ごとの控えめな差し色（ホームの学問の樹と勉強の軌跡で共有。§135・§136）。
+       名前の文字と枝の線に使う。どれも黒の上で 12px でも読める明るさ（AA）に寄せてある。 */
+    --tint-formal: #8fb3ff;
+    --tint-natural: #5fd9e6;
+    --tint-life: #63e0bd;
+    --tint-engineering: #a9c6ea;
+    --tint-humanities: #b8a4ff;
+    --tint-social: #d7a8ff;
+    --tint-arts: #ff9ec4;
+
     /* The spectrum (particles + accents) — teal-dominant, warm at cores only */
     --spec-blue-deep: #0b3be0;
     --spec-teal: #2bd9c4;
@@ -2188,17 +2198,7 @@ a.study-card::before,
    ★ 旧ホームの .hero / .scene / .index-block は使わない（.hero は教材ページも使う
    ので、そのルールには触れていない）。木の配置は js/academic-tree.js。
    =========================================================================== */
-.home {
-    /* 分類ごとの控えめな差し色。名前の文字と枝の線に使う。
-       どれも黒の上で 12px でも読める明るさ（AA）に寄せてある。 */
-    --tint-formal: #8fb3ff;
-    --tint-natural: #5fd9e6;
-    --tint-life: #63e0bd;
-    --tint-engineering: #a9c6ea;
-    --tint-humanities: #b8a4ff;
-    --tint-social: #d7a8ff;
-    --tint-arts: #ff9ec4;
-}
+/* 分類ごとの差し色 --tint-* は :root にある（勉強の軌跡と共有。§136） */
 
 /* --- 01 種 ---------------------------------------------------------------- */
 .home-seed {
@@ -2486,6 +2486,19 @@ a.tree-node {
 
 .tree-seed__halo {
     fill: rgba(95, 208, 255, 0.18);
+}
+
+/* JS が無いとき：木のデータ（js/disciplines.js）が書き出されないので、短いリンクの1行だけ */
+.tree-noscript {
+    max-width: 40em;
+    color: var(--text-secondary);
+    line-height: 1.9;
+}
+
+.tree-noscript a {
+    color: var(--text-primary);
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
 }
 
 .tree-note {

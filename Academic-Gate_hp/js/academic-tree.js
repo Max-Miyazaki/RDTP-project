@@ -1,8 +1,8 @@
 /* ============================================================================
    academic-tree.js — index.html の「学問の樹」（DESIGN.md §135）
 
-   ★ データは index.html の入れ子のリスト（.tree__data）だけ。ここはそれを読んで
-   形を決める。分類・学問・細分野を足すと、枝の数も配置も自動で変わる。
+   ★ データは js/disciplines.js（勉強の軌跡と共有。§136）。それが index.html に書き出した
+   入れ子のリスト（.tree__data）を、ここで読んで形を決める。学問を足すと、枝の数も配置も自動で変わる。
      分類   li.tree-cat[data-cat]  > h3.tree-cat__name
      学問   li[data-key]           > .tree-node（<a> ならリンク、<span> なら準備中）
 
