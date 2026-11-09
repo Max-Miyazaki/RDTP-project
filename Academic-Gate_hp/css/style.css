@@ -2831,3 +2831,545 @@ a.tree-node {
         padding: 0.18rem 0.6rem;
     }
 }
+
+/* ===========================================================================
+   勉強の軌跡（study.html。DESIGN.md §136）
+   ホームの学問の樹と同じ7大分類を縦に並べる。スマホ基準。
+   データは js/disciplines.js、書き出しと動きは js/study.js。
+   量（記事数・公開数・進捗率）は出さない。
+   =========================================================================== */
+:root {
+    /* 分野バーの位置。js/study.js がヘッダーの下端を測って :root に上書きする（無いときの目安） */
+    --sd-bar-top: 84px;
+    --sd-bar-bottom: 136px;
+}
+
+.sd-wrap {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 var(--gutter);
+}
+
+[data-cat="formal"] { --tint: var(--tint-formal); }
+[data-cat="natural"] { --tint: var(--tint-natural); }
+[data-cat="life"] { --tint: var(--tint-life); }
+[data-cat="engineering"] { --tint: var(--tint-engineering); }
+[data-cat="humanities"] { --tint: var(--tint-humanities); }
+[data-cat="social"] { --tint: var(--tint-social); }
+[data-cat="arts"] { --tint: var(--tint-arts); }
+/* 複合分野は白、精神の圏域はホームの 02 根と同じ水色 */
+[data-cat="themes"] { --tint: #ffffff; }
+[data-cat="roots"] { --tint: var(--spec-glow); }
+
+/* --- ヒーロー：タイトルとリード文だけ ------------------------------------ */
+.sd-hero {
+    padding-top: calc(var(--nav-clearance) + var(--space-8));
+    padding-bottom: var(--space-8);
+}
+
+.sd-hero h1 {
+    margin: var(--space-1) 0 var(--space-2);
+}
+
+.sd-hero__lead {
+    max-width: 36em;
+    color: var(--text-secondary);
+    line-height: 1.9;
+}
+
+/* --- 追従する分野バー ------------------------------------------------------ */
+.sd-bar {
+    position: sticky;
+    top: var(--sd-bar-top);
+    z-index: 50;
+    background: rgba(0, 0, 0, 0.78);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-top: 1px solid var(--hairline);
+    border-bottom: 1px solid var(--hairline);
+}
+
+.sd-bar__list {
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0.55rem var(--gutter);
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
+    scroll-snap-type: x proximity;
+    scroll-padding: 0 var(--gutter);
+}
+
+.sd-bar__list::-webkit-scrollbar {
+    display: none;
+}
+
+/* 続きがある側の端だけ薄くする（横に送れる合図） */
+.sd-bar.fade-r .sd-bar__list {
+    -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 40px), transparent);
+    mask-image: linear-gradient(90deg, #000 calc(100% - 40px), transparent);
+}
+
+.sd-bar.fade-l .sd-bar__list {
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 40px);
+    mask-image: linear-gradient(90deg, transparent, #000 40px);
+}
+
+.sd-bar.fade-l.fade-r .sd-bar__list {
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 40px, #000 calc(100% - 40px), transparent);
+    mask-image: linear-gradient(90deg, transparent, #000 40px, #000 calc(100% - 40px), transparent);
+}
+
+.sd-bar__list > li {
+    flex: none;
+    scroll-snap-align: start;
+}
+
+.sd-bar__sep {
+    width: 1px;
+    height: 1.2rem;
+    background: var(--hairline-strong);
+    margin: 0 0.2rem;
+}
+
+.sd-bar__chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.34rem 0.85rem;
+    font-size: 0.8rem;
+    line-height: 1.4;
+    white-space: nowrap;
+    color: var(--text-secondary);
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius-pill);
+    transition: color var(--dur) var(--ease), background var(--dur) var(--ease), border-color var(--dur) var(--ease);
+}
+
+.sd-bar__chip::before {
+    content: '';
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--tint);
+}
+
+.sd-bar__chip.is-on {
+    color: var(--text-primary);
+    border-color: var(--tint);
+    background: color-mix(in srgb, var(--tint) 16%, #000);
+}
+
+@media (hover: hover) {
+    .sd-bar__chip:hover {
+        color: var(--text-primary);
+        border-color: color-mix(in srgb, var(--tint) 70%, transparent);
+    }
+}
+
+.sd-bar__chip:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: -2px;
+}
+
+/* --- 大分類のセクション ---------------------------------------------------- */
+.sd-body {
+    padding-bottom: var(--space-16);
+}
+
+.sd-cat {
+    padding: var(--space-8) 0;
+    border-top: 1px solid var(--hairline);
+}
+
+.sd-body > .sd-cat:first-child {
+    border-top: 0;
+}
+
+/* 見出し：大分類の色の縦線・英名・名前・一文 */
+.sd-cat__head {
+    position: relative;
+    padding-left: 1rem;
+    margin-bottom: var(--space-4);
+}
+
+.sd-cat__head::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.2rem;
+    bottom: 0.2rem;
+    width: 3px;
+    border-radius: 2px;
+    background: linear-gradient(var(--tint), color-mix(in srgb, var(--tint) 12%, transparent));
+}
+
+.sd-cat__en {
+    font-size: 0.7rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--tint);
+}
+
+.sd-cat__head h2 {
+    font-size: 1.5rem;
+    margin: 0.2rem 0 0.4rem;
+}
+
+.sd-cat__lead {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    line-height: 1.85;
+}
+
+.sd-cat__more {
+    margin-top: var(--space-2);
+}
+
+/* 小さなテキストリンク（学問・テーマ・圏域のページへ） */
+.sd-link {
+    font-size: 0.85rem;
+    color: var(--text-primary);
+    border-bottom: 1px solid var(--hairline-strong);
+    transition: border-color var(--dur) var(--ease);
+}
+
+@media (hover: hover) {
+    .sd-link:hover {
+        border-color: var(--text-primary);
+    }
+}
+
+/* --- 学問のカード（独自のページがある学問） --------------------------------- */
+.sd-cards {
+    list-style: none;
+    display: grid;
+    gap: var(--space-3);
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 380px), 1fr));
+    margin-bottom: var(--space-4);
+}
+
+.sd-card,
+.sd-theme {
+    position: relative;
+    height: 100%;
+    padding: 1.5rem 1.4rem 1.4rem;
+    border-radius: var(--radius-lg);
+    background: rgba(8, 10, 16, 0.86);
+    border: 1px solid color-mix(in srgb, var(--tint) 45%, transparent);
+    overflow: hidden;
+}
+
+/* 右上に大分類の色の淡い光 */
+.sd-card::after {
+    content: '';
+    position: absolute;
+    top: -40%;
+    right: -20%;
+    width: 70%;
+    height: 120%;
+    pointer-events: none;
+    background: radial-gradient(closest-side, color-mix(in srgb, var(--tint) 16%, transparent), transparent);
+}
+
+.sd-card__en {
+    font-size: 0.7rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--tint);
+}
+
+.sd-card h3,
+.sd-theme h3 {
+    font-size: 1.45rem;
+    font-weight: 400;
+    margin: 0.3rem 0 0.6rem;
+}
+
+.sd-card__intro {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    line-height: 1.85;
+    margin-bottom: var(--space-3);
+}
+
+/* 入口：「ここから読む」（白い大きなボタン）と、学問のページへ */
+.sd-go {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+}
+
+.sd-go a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    min-height: 44px;
+    padding: 0.55rem 1.1rem;
+    border-radius: var(--radius-pill);
+    font-size: 0.85rem;
+    transition: background var(--dur) var(--ease), border-color var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+}
+
+.sd-go__start {
+    background: #fff;
+    color: #000;
+}
+
+.sd-go__to {
+    font-size: 0.75rem;
+    color: rgba(0, 0, 0, 0.62);
+}
+
+.sd-go__page {
+    color: var(--text-primary);
+    border: 1px solid var(--hairline-strong);
+}
+
+@media (hover: hover) {
+    .sd-go__start:hover {
+        box-shadow: 0 0 22px color-mix(in srgb, var(--tint) 45%, transparent);
+    }
+
+    .sd-go__page:hover {
+        background: var(--surface-hot);
+        border-color: color-mix(in srgb, var(--tint) 70%, transparent);
+    }
+}
+
+/* --- チップ（テーマの中で扱う＝実線／準備中＝破線） ------------------------- */
+.sd-group + .sd-group {
+    margin-top: var(--space-3);
+}
+
+/* いちばん小さい字なので、ホームの分類名と同じ黒い下地を敷く（後ろの星の上でも 4.5:1 を保つ） */
+.sd-group__label {
+    display: table;
+    padding: 0.1rem 0.55rem;
+    margin: 0 0 0.55rem -0.55rem;
+    font-size: 0.72rem;
+    letter-spacing: 0.06em;
+    color: var(--text-secondary);
+    background: rgba(0, 0, 0, 0.72);
+    border-radius: var(--radius-pill);
+}
+
+.sd-chips {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.sd-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    min-height: 36px;
+    padding: 0.3rem 0.85rem;
+    font-size: 0.85rem;
+    line-height: 1.4;
+    white-space: nowrap;
+    color: var(--text-secondary);
+    background: rgba(0, 0, 0, 0.72);
+    border: 1px dashed var(--hairline-strong);
+    border-radius: var(--radius-pill);
+}
+
+a.sd-chip {
+    color: var(--text-primary);
+    border-style: solid;
+    border-color: color-mix(in srgb, var(--tint) 60%, transparent);
+    transition: background var(--dur) var(--ease), border-color var(--dur) var(--ease);
+}
+
+/* 複合分野のカードの中：学問それぞれの大分類の色 */
+.sd-chip.is-tinted {
+    border-color: color-mix(in srgb, var(--tint) 75%, transparent);
+    background: color-mix(in srgb, var(--tint) 12%, rgba(0, 0, 0, 0.72));
+}
+
+@media (hover: hover) {
+    a.sd-chip:hover {
+        background: color-mix(in srgb, var(--tint) 20%, #000);
+        border-color: var(--tint);
+    }
+}
+
+/* --- 複合分野（THEMES）：関係する大分類の色を混ぜた縁 ---------------------- */
+.sd-theme {
+    border: 1.5px solid transparent;
+    background:
+        linear-gradient(rgba(8, 10, 16, 0.92), rgba(8, 10, 16, 0.92)) padding-box,
+        var(--edge, var(--hairline-strong)) border-box;
+}
+
+.sd-theme .sd-card__en {
+    color: var(--text-secondary);
+}
+
+.sd-theme__subjects {
+    margin-bottom: var(--space-3);
+}
+
+/* --- 精神の圏域（ROOTS）：種から下へ伸びる根の先に技能 --------------------- */
+.sd-roots {
+    position: relative;
+}
+
+.sd-roots__svg {
+    position: absolute;
+    inset: 0;
+    overflow: visible;
+    pointer-events: none;
+}
+
+.sd-roots__list {
+    list-style: none;
+    display: grid;
+    gap: var(--space-2);
+}
+
+.sd-roots.is-laid .sd-roots__list {
+    position: relative;
+    padding-left: 34px;          /* スマホ：左の種から下へ伸びる根の分 */
+    padding-top: 26px;
+}
+
+.sd-root {
+    padding: 1rem 1.15rem;
+    border-radius: var(--radius-md);
+    background: rgba(8, 10, 16, 0.86);
+    border: 1px solid color-mix(in srgb, var(--tint) 55%, transparent);
+}
+
+.sd-root h3 {
+    font-size: 1.05rem;
+    font-weight: 400;
+    margin-bottom: 0.25rem;
+}
+
+.sd-root p {
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    line-height: 1.7;
+}
+
+.sd-root .sd-root__sub {
+    margin-top: 0.5rem;
+}
+
+.sd-root.is-soon {
+    border-style: dashed;
+    border-color: var(--hairline-strong);
+}
+
+.sd-root.is-soon h3 {
+    color: var(--text-secondary);
+}
+
+@media (hover: hover) {
+    .sd-root h3 a:hover {
+        color: var(--tint);
+    }
+}
+
+.sd-rootline {
+    fill: none;
+    stroke: rgba(95, 208, 255, 0.32);
+    stroke-linecap: round;
+}
+
+.sd-rootline--path {
+    stroke: rgba(95, 208, 255, 0.6);
+    stroke-width: 1.4;
+    stroke-dasharray: 2 5;
+}
+
+.sd-rootline--path.is-soon {
+    stroke: rgba(95, 208, 255, 0.24);
+}
+
+/* --- JS が無いとき ------------------------------------------------------- */
+.sd-noscript {
+    padding: var(--space-4) 0 var(--space-8);
+}
+
+.sd-noscript h2 {
+    font-size: 1.2rem;
+    margin-bottom: var(--space-2);
+}
+
+.sd-noscript ul {
+    list-style: none;
+    display: grid;
+    gap: 0.5rem;
+    color: var(--text-secondary);
+}
+
+.sd-noscript a {
+    color: var(--text-primary);
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+}
+
+/* --- PC：左に追従するセクション見出し、右にカードとチップ ------------------- */
+@media (min-width: 900px) {
+    .sd-cat {
+        display: grid;
+        grid-template-columns: minmax(220px, 300px) minmax(0, 1fr);
+        gap: var(--space-6);
+        padding: var(--space-8) 0;
+    }
+
+    .sd-cat__head {
+        position: sticky;
+        top: calc(var(--sd-bar-bottom) + 24px);
+        align-self: start;
+        margin-bottom: 0;
+    }
+
+    .sd-cards {
+        margin-bottom: var(--space-4);
+    }
+
+    /* 技能が横に並ぶので、根は上の中央の種から扇形に */
+    .sd-roots__list {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .sd-roots.is-laid .sd-roots__list {
+        padding-left: 0;
+        padding-top: 110px;
+    }
+}
+
+@media (max-width: 600px) {
+    .sd-cat__head h2 {
+        font-size: 1.35rem;
+    }
+
+    .sd-card h3,
+    .sd-theme h3 {
+        font-size: 1.3rem;
+    }
+
+    /* スマホ：入口のボタンは横いっぱい。行き先の名前は右に寄せる */
+    .sd-go a {
+        flex: 1 1 100%;
+    }
+
+    .sd-go__start {
+        justify-content: space-between;
+    }
+
+    .sd-go__to {
+        margin-left: auto;
+    }
+}

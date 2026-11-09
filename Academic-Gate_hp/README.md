@@ -117,6 +117,7 @@ but no error and no broken link. Same if you forget `data-node`.
 | `js/research.js` | The research hierarchy (theme → topics → fields → foundations) shared by self-intro.html's 02 — RESEARCH and the home page's 04 (DESIGN.md §135.8). Its data, markup, `RESEARCH_LINKS` and link handling live only here; pages render it into `<div class="rs-stack" data-research>` (`="compact"` on the home page). |
 | `js/tree-scenes.js` | The home page's particle engine (DESIGN.md §135.4) — Three.js points that form the seed, the roots and the 学問の樹 from the SVG paths `academic-tree.js` draws, with a swirl between scenes. index.html only; does nothing under reduced motion or without WebGL (the static SVG stays). Replaced `scroll-scenes.js`. |
 | `js/disciplines.js` | The single list of the 7 categories and 34 subjects (DESIGN.md §136), shared by the home page's 学問の樹 and study.html. Each subject is in one of three states: its own page (`page`, plus `start` for 「ここから読む」), covered inside a theme (`theme` + `href`), or 準備中. Also holds the themes (`DISCIPLINE_THEMES`). On index.html it writes the nested list into `<ol class="tree__data" data-disciplines="tree">`; load it before `academic-tree.js`. |
+| `js/study.js` | study.html only (DESIGN.md §136.2). Writes the 7 category sections and the THEMES section from `disciplines.js` into `[data-study]`, builds the sticky category bar in `[data-study-bar]` (scroll-spy highlight, chip tap scrolls the heading to just under the bar, the active chip slides into view on phones), draws the ROOTS lines from the card positions, and runs the fade-ins. Shows no counts (articles, chapters, progress). |
 | `js/academic-tree.js` | The home page's 学問の樹 (DESIGN.md §135). Reads the nested list that `disciplines.js` writes into index.html, places the names as HTML on the branch tips and draws the static SVG tree, roots and cross-field lines. |
 | `js/main.js` | Hamburger menu + smooth anchor scroll (runs after `layout.js`). |
 | `js/starfield.js` | Paints the static star field to `#starfield` once; repaints on debounced resize. On `body.is-article` it also thins the stars behind the reading columns (`main > section, .rail`). |
@@ -133,7 +134,7 @@ but no error and no broken link. Same if you forget `data-node`.
 ## Conventions
 
 - **Assets are cache-busted** with `?v=rNN` query strings in the HTML. Bump the number when
-  editing `css`/`js` so browsers refetch. (Current: **`r173`**.) **Do not do this by hand:**
+  editing `css`/`js` so browsers refetch. (Current: **`r174`**.) **Do not do this by hand:**
 
       sh Academic-Gate_hp/tools/bump.sh        # r53 → r54, every page + this README
       sh Academic-Gate_hp/tools/bump.sh 60     # or jump to a specific number

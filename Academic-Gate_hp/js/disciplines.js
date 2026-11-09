@@ -22,7 +22,7 @@ var DISCIPLINES = [
         { key: 'logic', ja: '論理学' },
         { key: 'cs', ja: '情報科学' }] },
     { cat: 'natural', ja: '自然科学', en: 'Natural Sciences',
-      lead: '素粒子から宇宙まで、自然の仕組みを観測と理論で確かめる。',
+      lead: '物質、生命、地球、宇宙。自然の仕組みを、観測と理論で確かめる。',
       subjects: [
         { key: 'physics', ja: '物理学', en: 'Physics', page: 'study_physics.html',
           intro: '素粒子から宇宙まで、自然の仕組みを数式で読み解く。公式を覚えるのではなく、原理から積み上げる。',
@@ -56,7 +56,7 @@ var DISCIPLINES = [
         { key: 'linguistics', ja: '言語学' },
         { key: 'languages', ja: '外国語' }] },
     { cat: 'social', ja: '社会科学', en: 'Social Sciences',
-      lead: '人の集まりが生むしくみ——市場・法・国家・心——を調べる。',
+      lead: '人の心と、人が集まって生まれるしくみ（市場・法・国家）を調べる。',
       subjects: [
         { key: 'economics', ja: '経済学' },
         { key: 'law', ja: '法学' },

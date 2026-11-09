@@ -4,7 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Academic Gates - 勉強の軌跡</title>
-    <link rel="stylesheet" href="../css/style.css?v=r173">
+    <meta name="description" content="勉強の軌跡。ホームの学問の樹と同じ7つの大分類から、気になった学問を選んで読み始められます。">
+
+    <!-- ホームと同じ書体（Inter Tight + Noto Sans JP）を読み込む -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;500&family=Noto+Sans+JP:wght@300;400&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet" href="../css/style.css?v=r174">
     <link rel="icon" href="../../favicon.ico" sizes="32x32">
     <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="../../apple-touch-icon.png">
@@ -12,80 +21,69 @@
 <body data-page="study" data-node="study">
     <canvas id="starfield" aria-hidden="true"></canvas>
 <div id="site-nav"><noscript><nav class="noscript-nav" aria-label="メインナビゲーション"><a href="index.html">ホーム</a><a href="self-intro.html">自己紹介</a><a href="study.html">勉強の軌跡</a><a href="videos.html">動画</a><a href="blog.html">ブログ</a><a href="sns.html">各種SNS</a></nav></noscript></div>
-    <main>
-        <div class="page-header">
-                <h1>勉強の軌跡</h1>
-            <p>分野ごとの学習記録と教材。公式を覚えることではなく、原理から積み上げることを目的にしています。</p>
+    <!-- 勉強の軌跡（DESIGN.md §136）。ホームの学問の樹と同じ7大分類・同じ学問を、縦に並べる。
+         ★ 大分類・学問・複合分野のデータは js/disciplines.js（ホームと共有）。js/study.js が
+           [data-study-bar] に分野バーを、[data-study] に7つの大分類と複合分野を書き出す。
+         ★ 公開数・記事数・進捗率など、量や達成度の数字は出さない（どこからでも入れる、を優先）。
+         精神の圏域（ROOTS）だけはここに直接書く（学問の樹の外。ホームの 02 根と同じ位置づけ）。 -->
+    <main class="sd">
+        <section class="sd-hero sd-wrap" aria-labelledby="study-h">
+            <p class="eyebrow reveal">Study</p>
+            <h1 id="study-h" class="reveal" lang="ja">勉強の軌跡</h1>
+            <p class="sd-hero__lead reveal" lang="ja">学問の樹の、どの枝からでも。気になった学問から読み始められるように、学んだことを教材として残しています。</p>
+        </section>
+
+        <!-- 追従する分野バー（js/study.js が中身を書く。JS が無いときは出ない） -->
+        <nav class="sd-bar" data-study-bar aria-label="分野へ移動" hidden></nav>
+
+        <div class="sd-body sd-wrap">
+            <div data-study></div>
+
+            <!-- JS が無いとき：大分類のセクションは書き出されないので、ページのある学問への短い一覧だけ -->
+            <noscript>
+                <section class="sd-noscript" lang="ja">
+                    <h2>ページのある学問</h2>
+                    <ul>
+                        <li><a href="study_physics.html">物理学</a>（自然科学）</li>
+                        <li><a href="earthhuman.html">地球と人類</a>（複合分野：地理学・歴史学・宗教学・政治学・哲学・美術）</li>
+                    </ul>
+                </section>
+            </noscript>
+
+            <!-- ROOTS：精神の圏域。ホームの 02「根」と同じモチーフ（種から下へ伸びる根の先に技能）。
+                 根の線は js/study.js が、カードの位置から描く。リンクは study_skills.html と同じ（記憶術 → メモリーバース）。 -->
+            <section class="sd-cat sd-cat--roots reveal" id="roots" data-cat="roots" aria-labelledby="roots-h">
+                <div class="sd-cat__head">
+                    <p class="sd-cat__en">Roots</p>
+                    <h2 id="roots-h" lang="ja">精神の圏域</h2>
+                    <p class="sd-cat__lead" lang="ja">どの学問にも効く、学ぶための技術。頭の中に空間を作り、そこで覚え、考え、計算する。</p>
+                    <p class="sd-cat__more"><a class="sd-link" href="study_skills.html">精神の圏域のページへ <span aria-hidden="true">→</span></a></p>
+                </div>
+                <div class="sd-roots" data-study-roots>
+                    <ul class="sd-roots__list">
+                        <li class="sd-root">
+                            <h3 lang="ja"><a href="skills_mnemonics.html">記憶術 <span aria-hidden="true">→</span></a></h3>
+                            <p lang="ja">覚えたいものを、思い出せる場所に置く</p>
+                            <p class="sd-root__sub"><a class="sd-link" href="memoryverse.html">メモリーバース <span aria-hidden="true">→</span></a></p>
+                        </li>
+                        <li class="sd-root is-soon">
+                            <h3 lang="ja">推理・推論</h3>
+                            <p lang="ja">前提から結論へ、筋道を立てて運ぶ</p>
+                        </li>
+                        <li class="sd-root is-soon">
+                            <h3 lang="ja">暗算法</h3>
+                            <p lang="ja">紙を使わずに計算を組み立てる</p>
+                        </li>
+                    </ul>
+                </div>
+            </section>
         </div>
-
-        <!-- 分野カード。グリッドとカードは blog / videos / sns と同じ共有ルールを
-             そのまま使っている（セレクタ名を足しただけで、値は変えていない）。
-             中身がある分野だけ <a>、無い分野は <div> にしてある。押せない5枚は
-             role を持たないので、支援技術から link / button として読まれない。
-             見た目は「見出しの色（アクセント青 / 白）」と「ホバーの有無」で分かれる。
-             枠線は揃えたまま — 薄くすると disabled に見えるが、記事が無い分野は
-             無効なのではなく中身がないだけなので（§38.3）。 -->
-        <section class="study-grid">
-            <h2>学問分野</h2>
-
-            <a class="study-card" href="study_physics.html">
-                <h3>物理学</h3>
-                <p>素粒子から宇宙まで、自然の仕組みを数式で読み解く</p>
-            </a>
-            <div class="study-card">
-                <h3>数学</h3>
-                <p>公理・定義を土台に、論理的な推論で真理を追求する</p>
-            </div>
-            <div class="study-card">
-                <h3>化学</h3>
-                <p>物質の構造や性質、反応や変化の仕組みを知る</p>
-            </div>
-            <div class="study-card">
-                <h3>生物学</h3>
-                <p>分子から生態系まで、生命の神秘を探る</p>
-            </div>
-            <div class="study-card">
-                <h3>歴史学</h3>
-                <p>過去の選択の積み重ねから、人類の軌跡を辿る</p>
-            </div>
-        </section>
-
-        <!-- 複合分野：学問分野と精神の圏域のあいだに置く枠（DESIGN.md §103）。1つの学問に収まらず、複数の分野を
-             層として重ねて読むシリーズを入れる。いまは「地球と人類」だけ。節の名前（複合分野）とカードの名前
-             （地球と人類）が違うので、学問分野と同じく h2 を置く。カードはシリーズの一覧へ直接降りる
-             （複合分野の一覧 study_composite.html へは、サイト構成ナビとシリーズの一覧の「← 一つ上」から）。 -->
-        <section class="study-grid">
-            <h2>複合分野</h2>
-
-            <a class="study-card" href="earthhuman.html">
-                <h3>地球と人類</h3>
-                <p>地球の構造から人類を読み解く。地理・世界史・宗教学・地政学・哲学史・美術史の6分野35章</p>
-            </a>
-        </section>
-
-        <!-- 精神の圏域は学問分野と性質が違う（基礎／専門の区分を持たない）ので節を分ける。
-             この節のグループ名はカード名そのものなので h2 は置かない — 置くと
-             「精神の圏域」が2行続けて並ぶだけになる。blog.html と同じく、見出しブロックの
-             直後にグリッドが来る形（§38.4）。
-             ★ この節にあった eyebrow（「03 — Orbis Mentis」）は §69.2 で削った。
-             番号付きの小見出しはこのページには不要だという判断。ラテン語名は
-             分野ページの h1「精神の圈域（Orbis Mentis）」で一度紹介しているので、
-             ここで出さなくても名前は失われない。カードとパンくずは短い
-             「精神の圈域」を繰り返す。
-             中身ができたのでカードは <a>（§37.4「中身があるものだけリンク」）。
-             行き先は分野ページ study_skills.html。その下は 技能 → シリーズ → 記事 と
-             続く 5 階層（§49）。 -->
-        <section class="study-grid">
-
-            <a class="study-card" href="study_skills.html">
-                <h3>精神の圏域</h3>
-                <p>頭の中に空間を作り、そこで覚え、考え、計算する</p>
-            </a>
-        </section>
     </main>
     <div id="site-footer"><noscript><nav class="noscript-nav" aria-label="フッターナビゲーション"><a href="index.html">ホーム</a><a href="self-intro.html">自己紹介</a><a href="study.html">勉強の軌跡</a><a href="videos.html">動画</a><a href="blog.html">ブログ</a><a href="sns.html">各種SNS</a></nav></noscript></div>
-    <script src="../js/layout.js?v=r173"></script>
-    <script src="../js/main.js?v=r173"></script>
-    <script src="../js/starfield.js?v=r173"></script>
+    <script src="../js/layout.js?v=r174"></script>
+    <script src="../js/main.js?v=r174"></script>
+    <script src="../js/starfield.js?v=r174"></script>
+    <script src="../js/disciplines.js?v=r174"></script>
+    <script src="../js/study.js?v=r174"></script>
 </body>
 </html>
