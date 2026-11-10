@@ -15,7 +15,7 @@
      記事の &lt;style&gt; より後ろに置くこと。css/lesson-theme.css 冒頭の注記どおり）。
      ★ 注釈に生のスタイルタグを書かない：機械的に切り出すと、そこが本物のタグとして残り、
        後ろの :root が丸ごと捨てられる（DESIGN.md §137.2） -->
-<link rel="stylesheet" href="../css/style.css?v=r181">
+<link rel="stylesheet" href="../css/style.css?v=r182">
 <style>
 /* 1-1 パケットとIP — 記事固有のスタイルのみ。
    共通部分は css/style.css と lesson-theme.css が持つ（DESIGN.md §35, §36）。
@@ -181,7 +181,7 @@ body.is-article main .foot p{color:var(--ink-faint)}
   .copy{display:none!important}
 }
 </style>
-<link rel="stylesheet" href="../css/lesson-theme.css?v=r181">
+<link rel="stylesheet" href="../css/lesson-theme.css?v=r182">
 </head>
 <body data-page="study" class="is-article" data-node="cyber_1-1">
 <canvas id="starfield" aria-hidden="true"></canvas>
@@ -303,12 +303,12 @@ body.is-article main .foot p{color:var(--ink-faint)}
       </table></div>
 
       <figure class="fig">
-        <img src="../image/cyber/1-1/step1_kali_ip.png?v=r181" width="854" height="362" loading="lazy" alt="Kali の ip -br -4 a の結果。eth1 が 192.168.128.2/24">
+        <img src="../image/cyber/1-1/step1_kali_ip.png?v=r182" width="854" height="362" loading="lazy" alt="Kali の ip -br -4 a の結果。eth1 が 192.168.128.2/24">
         <figcaption><strong>Kali（攻撃側）</strong>：<strong>赤枠①</strong>の行が、内部インターフェース <code>eth1</code> の住所 <code>192.168.128.2/24</code>。</figcaption>
       </figure>
 
       <figure class="fig">
-        <img src="../image/cyber/1-1/step1_parrot_ip.png?v=r181" width="580" height="254" loading="lazy" alt="Parrot の ip -br -4 a の結果。enp0s1 が 192.168.64.2/24、enp0s2 が 192.168.128.3/24">
+        <img src="../image/cyber/1-1/step1_parrot_ip.png?v=r182" width="580" height="254" loading="lazy" alt="Parrot の ip -br -4 a の結果。enp0s1 が 192.168.64.2/24、enp0s2 が 192.168.128.3/24">
         <figcaption><strong>Parrot（防御側）</strong>：<strong>赤枠①</strong>の2行が、1台で持っている2つの住所。<code>enp0s1</code>（外部用・NAT 経由）が <code>192.168.64.2/24</code>、<code>enp0s2</code>（内部用）が <code>192.168.128.3/24</code>。</figcaption>
       </figure>
 
@@ -416,7 +416,7 @@ body.is-article main .foot p{color:var(--ink-faint)}
       </table></div>
 
       <figure class="fig">
-        <img src="../image/cyber/1-1/step2_tcpdump_ping.jpg?v=r181" width="1300" height="798" loading="lazy" alt="Kali のデスクトップ上で、上の端末に tcpdump のパケット、下の端末に ping の結果">
+        <img src="../image/cyber/1-1/step2_tcpdump_ping.jpg?v=r182" width="1300" height="798" loading="lazy" alt="Kali のデスクトップ上で、上の端末に tcpdump のパケット、下の端末に ping の結果">
         <figcaption><strong>下の端末（B）で ping した瞬間、上の端末（A）にパケットが流れます。</strong><br>
           <strong>赤枠①</strong>：最初の行きのパケット。<code>192.168.128.2 &gt; 192.168.128.3</code> が封筒の「送信元 → 宛先」で、種類は <code>echo request</code>（いますか？）。<br>
           <strong>赤枠②</strong>：その返事。向きが逆の <code>192.168.128.3 &gt; 192.168.128.2</code> で、種類は <code>echo reply</code>（いますよ）。この①②の組が、そのあと4回目まで同じようにくり返されます。<br>
@@ -463,7 +463,7 @@ rtt min/avg/max/mdev = 0.346/0.840/1.811/0.591 ms</div>
       <p>キャプチャを止める（端末Aで <code>Ctrl+C</code>：Ctrl キーを押しながら C）と、最後に集計が出ます。</p>
 
       <figure class="fig zoom">
-        <img src="../image/cyber/1-1/step2_summary.png?v=r181" width="803" height="650" loading="lazy" alt="tcpdump の集計。8 packets captured">
+        <img src="../image/cyber/1-1/step2_summary.png?v=r182" width="803" height="650" loading="lazy" alt="tcpdump の集計。8 packets captured">
         <figcaption><strong>赤枠①</strong>：<code>Ctrl+C</code> を押してキャプチャを止めた印。<strong>赤枠②</strong>：止めたときに出る集計。<strong>8個</strong>捕まえた＝ping 4回に対して、行き4＋帰り4で合計8個の ICMP パケット。</figcaption>
       </figure>
 
@@ -514,7 +514,7 @@ rtt min/avg/max/mdev = 0.346/0.840/1.811/0.591 ms</div>
         <li>送信元IPをそのまま信じてはいけない理由を2つ言えるか（§04）</li>
       </ul></div>
 
-      <div class="transfer"><span class="lab">次へ：1-2 TCPとポート</span>
+      <div class="transfer"><span class="lab"><a href="cyber_1-2.html">次へ：1-2 TCPとポート</a></span>
       <p>IP は「届けるだけ」で、到達も順番も保証しませんでした。その足りない部分を補い、通信を確実にするのが <strong>TCP</strong> です。次の <strong>1-2</strong> では、TCP と「ポート（どのサービス宛てか）」、そして通信を始める前の約束＝<strong>3-wayハンドシェイク</strong>を学びます。これがわかると、4章のポートスキャンが一気に見通せるようになります。</p></div>
 
       <div class="foot"><p>Academic Gates ／ サイバーセキュリティ基礎 1章 ネットワークの仕組み ／ 1-1「パケットとIP」。演習は Kali Linux × Parrot OS の仮想ラボで行い、パケットの送受信は Host-Only の内部ネットワーク（<code>192.168.128.0/24</code>。外部の LAN からは切り離されている）の中だけで実施しています。自分が管理していないネットワークや機器には、この講座の操作を行わないでください。</p></div>
@@ -567,9 +567,9 @@ mb.addEventListener('click',function(){var o=body.classList.toggle('nav-open');m
 scrim.addEventListener('click',function(){body.classList.remove('nav-open')});
 document.getElementById('toc').addEventListener('click',function(e){if(e.target.closest('a'))body.classList.remove('nav-open')});
 </script>
-<script src="../js/disciplines.js?v=r181"></script>
-<script src="../js/layout.js?v=r181"></script>
-<script src="../js/main.js?v=r181"></script>
-<script src="../js/starfield.js?v=r181"></script>
+<script src="../js/disciplines.js?v=r182"></script>
+<script src="../js/layout.js?v=r182"></script>
+<script src="../js/main.js?v=r182"></script>
+<script src="../js/starfield.js?v=r182"></script>
 </body>
 </html>
