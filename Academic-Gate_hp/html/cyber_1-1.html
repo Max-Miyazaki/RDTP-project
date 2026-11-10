@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>1-1 パケットとIP｜サイバーセキュリティ基礎 1章 | Academic Gates</title>
+<meta name="description" content="通信で実際に起きていること。データを分割した荷物＝パケットと、その宛先＝IPアドレス。Kali/Parrot の演習で ip コマンドと tcpdump を使い、パケットの送信元→宛先を自分の目で確認する。サイバーセキュリティ基礎 1章／1-1。">
+<link rel="icon" href="../../favicon.ico" sizes="32x32">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;500&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/style.css?v=r180">
+<style> より後ろに置くこと。css/lesson-theme.css 冒頭の注記どおり） -->
+<link rel="stylesheet" href="../css/style.css?v=r180">
+<!-- MathJax: 設定ブロックはローダーより「前」に置く（DESIGN.md §11b）。
+     フォールバックは this.src= ではなく createElement 方式（同§）。 -->
+<script>
+window.MathJax={tex:{inlineMath:[['\\(','\\)']],displayMath:[['\\[','\\]']],tags:'none'},svg:{fontCache:'global'},options:{skipHtmlTags:['script','noscript','style','textarea','pre','code']}};
+</script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"
+        onerror="this.onerror=null;var s=document.createElement('script');s.async=true;s.src='https://unpkg.com/mathjax@3/es5/tex-svg.js';document.head.appendChild(s);"></script>
+<style>
+/* 1-1 パケットとIP — 記事固有のスタイルのみ。
+   共通部分は css/style.css と lesson-theme.css が持つ（DESIGN.md §35, §36）。
+   構造（レール・ボックス・図・表）は物理数学の教材と同じルールを使い、
+   この記事にだけあるもの（コマンドのコピー枠・出力例・分解表・スクショ）を末尾に足す。 */
+:root{
+  /* 教材固有のトークン。本体と同値のもの（--bg --surface --nav-bg --ink --line
+     --line-strong --glow-cool --font --nav-clear --ease --radius-lg/md）は
+     css/style.css 側に定義があるので、ここでは持たない。
+     --ink-soft / --ink-faint は本体より明るい値を「意図的に」維持している。
+     本体値に寄せると 13.5px の解説文が 4.56:1 → 3.66:1 と AA を割るため（§36）。 */
+  --surface-2:rgba(255,255,255,.045);
+  --ink-soft:rgba(255,255,255,.68);
+  --ink-faint:rgba(255,255,255,.46);
+  --line-soft:rgba(255,255,255,.05);
+  --accent-deep:#a8c9ff;
+  --accent-tint:rgba(77,148,255,.12);
+  --amber:#ffb46b;--amber-tint:rgba(255,160,70,.08);--amber-line:rgba(255,160,70,.32);
+  --good:#72e3ad;--good-tint:rgba(114,227,173,.08);--good-line:rgba(114,227,173,.28);
+  --key:#ff6fa5;--key-tint:rgba(255,61,139,.08);--key-line:rgba(255,61,139,.28);
+  --teach:#a48bff;--teach-tint:rgba(123,77,255,.11);--teach-line:rgba(123,77,255,.38);
+  --mono:ui-monospace,'SFMono-Regular',Menlo,Consolas,monospace;
+  --rail-w:250px;
+}
+body{font-size:15.5px;line-height:1.9;line-break:strict;overflow-x:hidden}
+
+/* --- レイアウト（左に目次レール／右に本文の2カラム） ------------------------
+   本文列 760px は日本語の長文＋数式に合わせた measure。style.css の共通記事
+   ルールは `body.is-article main > section:not(.rail)`（詳細度 0,2,3）と
+   `… ~ section:not(.rail)`（0,3,4）で 900px と 160px パディングをかけてくる。
+   こちらは `.main` を噛ませて 0,3,2 / 0,4,3 とし、確実に上回る（§36）。 */
+/* 全幅。左寄せのレイアウトで、余った幅は右に流す（§43）。
+   §40 で一度 max-width を外して差し戻しているが、あれは「中央寄せのまま左右を
+   対称にする」変更で、本文の位置も幅も変わらなかったため戻した。今回は本文を
+   860px に広げて左揃えにするので、目的も結果も違う。
+   レールの左余白は 1280px → 1440px にかけて 0 → 32px。狭い画面ではまず余白を
+   削って本文幅に回す（レール幅 250px は目次の文字量で決まるので触らない）。 */
+.wrap{display:flex;padding-top:var(--nav-clearance);
+      padding-left:clamp(0px, calc((100vw - 1280px) * .2), 32px)}
+.rail{width:var(--rail-w);flex:0 0 var(--rail-w);position:sticky;top:var(--nav-clearance);height:calc(100vh - var(--nav-clearance));overflow-y:auto;padding:18px 14px 60px 22px;border-right:1px solid var(--line)}
+/* 左パディング＝レールと本文の間隔。1024px → 1280px にかけて 24 → 56px。
+   これも狭い画面では縮めて本文幅に回す。 */
+.main{flex:1 1 auto;min-width:0;
+      padding:0 clamp(24px, calc(24px + (100vw - 1024px) * .125), 56px) 110px}
+/* 本文列 860px。760px では display 数式が 6 本はみ出していた（解答の入れ子
+   パディングで、.sol の中は本文列より 132px 狭い箱になる）。全 82 本が収まる
+   最小幅は実測 853px（§43.2）。中央寄せをやめて左揃えにし、余りは右へ。 */
+body.is-article .main > .lesson-hero,
+body.is-article .main > section:not(.rail),
+body.is-article .main > .foot{max-width:860px;margin-left:0;margin-right:auto;padding-left:0;padding-right:0}
+.rail .brand{font-weight:400;font-size:15px;line-height:1.45;margin:2px 0 4px}
+.rail .brand small{display:block;font-size:10px;font-weight:500;color:var(--ink-faint);letter-spacing:.2em;margin-top:6px}
+.progress-wrap{height:2px;background:var(--line);border-radius:99px;margin:16px 0 18px;overflow:hidden}
+.progress-bar{height:100%;width:0;background:linear-gradient(90deg,var(--accent),#a8c9ff);transition:width .15s linear}
+.toc{list-style:none;margin:0;padding:0;font-size:12.5px}
+.toc .part{font-size:10px;letter-spacing:.2em;color:var(--ink-faint);margin:16px 0 5px;padding-left:2px}
+.toc a{display:block;text-decoration:none;color:var(--ink-soft);padding:4px 10px;border-radius:999px;transition:color var(--dur) var(--ease),background var(--dur) var(--ease)}
+.toc a:hover{color:var(--ink);background:var(--surface-2)}
+.toc a.active{color:var(--ink);background:var(--accent-tint)}
+.toc a .n{font-size:10.5px;color:var(--ink-faint);margin-right:8px;font-variant-numeric:tabular-nums}
+.toc a.active .n{color:var(--accent)}
+
+/* --- 記事の導入部。`.hero` は index.html 専用で、style.css が
+   `.hero h1/.hero p/.hero .eyebrow` に黒い text-shadow をかけるため使えない（§36）。 --- */
+.lesson-hero{padding:64px 0 34px;border-bottom:1px solid var(--line)}
+.lesson-hero h1{font-weight:300;font-size:clamp(28px,4vw,48px);line-height:1.25;letter-spacing:-.02em;margin:0 0 22px}
+.lesson-hero h1 .sub{display:block;font-size:.52em;font-weight:300;color:var(--ink-soft);letter-spacing:0;margin-top:12px}
+.lesson-hero p{color:var(--ink-soft);margin:0 0 12px}
+.lesson-hero .lead{font-size:16.5px;color:var(--ink-soft)}
+/* .eyebrow 本体は style.css の共通コンポーネント。色と余白だけ上書きする
+   （共通の --text-tertiary は 11px の小さな文字で 3.66:1 と AA を割るため） */
+.eyebrow{color:var(--ink-faint);margin-bottom:18px}
+
+section{border-bottom:1px solid var(--line-soft);scroll-margin-top:var(--nav-clearance)}
+/* 縦の余白も共通ルールに勝つ必要がある（先頭セクションも2つ目以降も同じ 56px） */
+body.is-article .main > section:not(.rail),
+body.is-article .main > section:not(.rail) ~ section:not(.rail){padding-top:56px;padding-bottom:12px}
+.sec-head{display:flex;align-items:baseline;gap:14px;margin-bottom:10px}
+.sec-head .idx{font-size:.72rem;font-weight:500;letter-spacing:.2em;color:var(--ink-faint);padding-top:4px;flex:0 0 auto;font-variant-numeric:tabular-nums}
+.sec-head .idx::after{content:' —'}
+body.is-article main h2{font-weight:400;font-size:clamp(21px,2.6vw,28px);line-height:1.3;letter-spacing:-.01em;margin:0}
+body.is-article main h3{font-weight:400;font-size:17px;margin:30px 0 6px;color:var(--ink)}
+body.is-article main h4{font-weight:500;font-size:14.5px;margin:18px 0 4px;color:var(--ink)}
+body.is-article main p{margin:10px 0;color:var(--ink-soft)}
+body.is-article main ul,body.is-article main ol{margin:10px 0;padding-left:1.3em;color:var(--ink-soft)}
+li{margin:4px 0}
+strong{font-weight:500;color:var(--ink)}
+code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);border-radius:6px;padding:1px 6px;color:var(--accent-deep)}
+
+.box{border-radius:var(--radius-md);padding:16px 20px;margin:18px 0;border:1px solid var(--line);background:var(--surface)}
+.box .lab{font-size:.7rem;letter-spacing:.14em;font-weight:500;display:block;margin-bottom:6px}
+.box p{max-width:none}
+.box p:first-of-type{margin-top:2px}.box p:last-child{margin-bottom:0}
+/* 枠線は必ずトークン経由にすること。ここに直書きすると lesson-theme.css の
+   ライト上書きが効かず、暗い背景用の明るい色がライトでパステルになる（§41）。 */
+.box.principle{background:var(--key-tint);border-color:var(--key-line)}.box.principle .lab{color:var(--key)}
+.box.target{background:var(--good-tint);border-color:var(--good-line)}.box.target .lab{color:var(--good)}
+.box.warn{background:var(--amber-tint);border-color:var(--amber-line)}.box.warn .lab{color:var(--amber)}
+.box.teach{background:var(--teach-tint);border-color:var(--teach-line)}.box.teach .lab{color:var(--teach)}
+.box.teach .lab::before{content:"◎ "}
+
+.table-scroll{overflow-x:auto;margin:14px 0}
+.mini-table{width:100%;border-collapse:collapse;font-size:14px;margin:0;color:var(--ink-soft)}
+.mini-table th,.mini-table td{border:1px solid var(--line);padding:9px 11px;text-align:left;vertical-align:top}
+.mini-table th{background:var(--surface-2);font-weight:500;color:var(--ink)}
+
+.fig{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-lg);padding:18px 18px 12px;margin:20px 0}
+.fig > svg{width:100%;height:auto;display:block}
+.fig svg text{font-family:var(--font-body)}
+.fig figcaption{font-size:13px;color:var(--ink-soft);margin-top:10px;line-height:1.8;max-width:none}
+
+.step{margin:18px 0}
+.step .sh{display:flex;gap:10px;align-items:baseline;font-weight:500;color:var(--ink);margin-bottom:2px}
+.step .sn{font-size:11px;font-weight:500;color:#06142e;background:var(--accent);border-radius:999px;padding:1px 10px;flex:0 0 auto}
+.transfer{background:var(--surface-2);border:1px solid var(--line);border-radius:var(--radius-md);padding:14px 18px;margin:18px 0}
+.transfer .lab{font-size:.7rem;letter-spacing:.14em;color:var(--accent);font-weight:500;display:block;margin-bottom:5px}
+.transfer p{max-width:none}
+.foot{padding:34px 0 0;color:var(--ink-faint);font-size:12.5px}
+.foot p{color:var(--ink-faint);max-width:none}
+
+/* --- この記事だけの部品（コマンドのコピー枠・出力例・分解表・スクショ） --- */
+.mini-table code{white-space:nowrap}
+.anat td:first-child{white-space:nowrap;width:1%}
+.anat caption{caption-side:top;text-align:left;font-size:.7rem;letter-spacing:.14em;color:var(--accent);font-weight:500;padding:0 0 6px}
+.fig > img{width:100%;height:auto;display:block;border-radius:10px;border:1px solid var(--line)}
+.fig.zoom{max-width:560px}
+/* コピーできるコマンド。コピーされるのは data-copy の文字列だけ（先頭の $ は付けない） */
+.cmdbox{display:flex;align-items:center;gap:10px;margin:12px 0;background:rgba(255,255,255,.055);border:1px solid var(--line);border-radius:14px;padding:5px 8px 5px 18px}
+.cmdbox code.cmd{flex:1 1 auto;min-width:0;display:block;font-family:var(--mono);font-size:14px;color:#ececec;background:none;border:0;border-radius:0;padding:12px 0;overflow-x:auto;white-space:pre}
+.copy{flex:0 0 auto;display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:9px;border:0;background:transparent;color:var(--ink-faint);cursor:pointer;transition:color .2s,background .2s}
+.copy:hover{color:var(--ink);background:var(--surface-2)}
+.copy svg{display:block}
+.copy .ic-check{display:none}
+.copy.done{color:var(--good)}
+.copy.done .ic-copy{display:none}.copy.done .ic-check{display:block}
+/* 出力例（コピー対象外） */
+.out{display:block;font-family:var(--mono);font-size:12.5px;background:#06080d;border:1px dashed var(--line-strong);border-radius:var(--radius-sm);padding:10px 14px;margin:10px 0;color:#9ff0cf;white-space:pre-wrap;overflow-wrap:anywhere}
+.out .lab{display:block;font-family:var(--font-body);font-size:.68rem;letter-spacing:.14em;color:var(--ink-faint);margin-bottom:4px}
+
+/* モバイル：レールを引き出しに。`.menu-btn` は位置だけを持ち、見た目は
+   共通コンポーネントの `.btn` を併用する。 */
+.menu-btn{display:none}
+.scrim{display:none}
+@media (max-width:900px){
+  .rail{position:fixed;left:0;top:0;height:100vh;z-index:1100;transform:translateX(-100%);transition:transform .25s var(--ease);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);padding-top:28px}
+  body.nav-open .rail{transform:translateX(0)}
+  .main{padding:0 20px 90px}
+  .menu-btn{display:inline-flex;position:fixed;bottom:18px;right:18px;z-index:1050;background:var(--nav-bg);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);color:var(--ink)}
+  .scrim{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:1090}
+  body.nav-open .scrim{display:block}
+  .lesson-hero{padding-top:40px}
+}
+@media print{
+  body{background:#fff;color:#000}
+  header,.rail,.menu-btn,.scrim,#starfield,footer{display:none!important}
+  .wrap{display:block;padding-top:0}
+  .copy{display:none!important}
+}
+</style>
+<link rel="stylesheet" href="../css/lesson-theme.css?v=r180">
+</head>
+<body data-page="study" class="is-article" data-node="cyber_1-1">
+<canvas id="starfield" aria-hidden="true"></canvas>
+<div id="site-nav"><noscript><nav class="noscript-nav" aria-label="メインナビゲーション"><a href="index.html">ホーム</a><a href="self-intro.html">自己紹介</a><a href="study.html">勉強の軌跡</a><a href="videos.html">動画</a><a href="blog.html">ブログ</a><a href="sns.html">各種SNS</a></nav></noscript></div>
+<button class="menu-btn btn" id="menuBtn" aria-controls="rail" aria-expanded="false">この記事の目次 <span class="btn-disc" aria-hidden="true">≡</span></button>
+<div class="scrim" id="scrim"></div>
+<div class="wrap">
+  <!-- 戻る導線はレール上部の「← サイバーセキュリティ基礎」（layout.js の CRUMBS が描く）と、
+       末尾の「目次へ」。どちらも cyber.html を指す。 -->
+  <nav class="rail" id="rail">
+    <div class="brand">1-1　パケットとIP<small>サイバーセキュリティ基礎 ／ 1章 ネットワークの仕組み</small></div>
+    <div class="progress-wrap"><div class="progress-bar" id="pbar"></div></div>
+    <ul class="toc" id="toc">
+      <li class="part">基礎概念</li>
+      <li><a href="#s1"><span class="n">01</span>パケット — 通信は荷物に分かれる</a></li>
+      <li><a href="#s2"><span class="n">02</span>IPアドレス — 荷物の宛先</a></li>
+      <li class="part">手を動かす</li>
+      <li><a href="#s3"><span class="n">03</span>自分の住所を確認する</a></li>
+      <li><a href="#s4"><span class="n">04</span>パケットを観察する</a></li>
+      <li class="part">仕上げ</li>
+      <li><a href="#s5"><span class="n">05</span>まとめとチェック</a></li>
+    </ul>
+  </nav>
+
+  <main class="main">
+    <div class="lesson-hero">
+      <div class="eyebrow">サイバーセキュリティ基礎 ／ 1章 ネットワークの仕組み ／ SECTION 1-1</div>
+      <h1>1-1　パケットとIP<span class="sub">通信で実際に起きていること</span></h1>
+      <p class="lead">PC同士の通信は、小さな「荷物」に分けて送られています。この荷物＝<strong>パケット</strong>と、その宛先＝<strong>IPアドレス</strong>。この2つを押さえると、以降で学ぶスキャン・パケット解析・攻防のすべての土台ができます。</p>
+      <p>この節ではまず概念を押さえ、そのあと Kali と Parrot で実際にコマンドを打って、パケットの「送信元→宛先」を自分の目で確認します。攻撃も防御も、まずは「通信の中で何が起きているか」を見えるようにするところから始まります。</p>
+      <p>読み方：コマンドは、右端の<strong>コピーボタン</strong>（重なった四角のアイコン）でコピーできます。各コマンドの下に、<strong>全パーツの意味</strong>と<strong>出力の読み方</strong>を載せています。</p>
+    </div>
+
+    <!-- §01 -->
+    <section id="s1">
+      <div class="sec-head"><span class="idx">§01</span><h2>パケット — 通信は荷物に分かれる</h2></div>
+
+      <div class="box target"><span class="lab">この節で押さえること</span>
+      <ul style="margin:6px 0 0">
+        <li>データは一度に丸ごとではなく、小さな<strong>パケット</strong>（荷物）に分割して送られる。</li>
+        <li>分ける理由は、回線の共有・失敗への強さ・扱いやすさ。</li>
+        <li>パケットは <strong>ヘッダ（宛先などの情報）＋ペイロード（中身）</strong> でできている。</li>
+      </ul></div>
+
+      <p>PC同士がデータをやり取りするとき、データは一度に丸ごと送られるのではなく、小さな荷物に分割して送られます。この荷物1つ1つを <strong>パケット</strong> と呼びます。</p>
+
+      <p>分厚い本を郵送する場面を想像してください。本をそのまま1個の塊で送るのではなく、ページを束ねて複数の封筒に分け、それぞれに宛先を書いて送り、相手側で組み立て直す——ネットワークもこれと同じことをしています。</p>
+
+      <p>なぜ分けるのか。理由は3つあります。</p>
+      <ul>
+        <li><strong>回線をみんなで共有できる</strong>：1つの大きな通信が回線を独占しない。</li>
+        <li><strong>失敗に強い</strong>：途中で1個失くしても、その1個だけ送り直せばいい。</li>
+        <li><strong>扱いやすい</strong>：小さい単位のほうが中継機器も処理しやすい。</li>
+      </ul>
+
+      <div class="box teach"><span class="lab">誰が送り直し・並べ直しをするのか</span>
+      <p>「失くした1個を送り直す」「届いた順を正しく並べ直す」のは、実はこのあと §02 で学ぶ IP の仕事では<strong>ありません</strong>。それを引き受けるのは、IP の上で動く <strong>TCP</strong>（Transmission Control Protocol：伝送制御プロトコル）です（1-2 で扱います）。<strong>プロトコル</strong>とは、「通信をこういう手順・形式でやりましょう」という<strong>約束ごと（規格）</strong>のことです。ここでは「分けておくと、そういう対処ができるようになる」と押さえておけば十分です。</p></div>
+
+      <p>各パケットは、ざっくり <strong>ヘッダ＋ペイロード</strong> の構造です。ヘッダには「どこから・どこへ」といった配送情報が、ペイロードには運びたい中身が入っています。実際には、封筒の中にさらに封筒が入ったような<strong>入れ子</strong>になっていて（Ethernet → IP → ICMP や TCP …）、それぞれの層が自分のヘッダを持ちます。ここに並んだ名前は、どれもプロトコルの名前です（Ethernet は有線LANの規格で §03、IP は §02、ICMP は §04、TCP は 1-2 で扱います）。この全体像は 1-4 の階層モデルで整理します。この節で扱うのは、そのうち「どこから・どこへ」を担う <strong>IP</strong> の層です。</p>
+    </section>
+
+    <!-- §02 -->
+    <section id="s2">
+      <div class="sec-head"><span class="idx">§02</span><h2>IPアドレス — 荷物の宛先</h2></div>
+
+      <p>どの封筒にも宛先の住所が書いてありますよね。パケットの世界で、この住所にあたるのが <strong>IPアドレス</strong> です。そして、住所を見てパケットを宛先まで届ける仕組みが <strong>IP（Internet Protocol）</strong> です。</p>
+
+      <div class="box teach"><span class="lab">IPアドレスには2種類ある：IPv4 と IPv6</span>
+      <p><strong>IPv4</strong>（アイピー・ブイフォー）は、<code>192.168.128.2</code> のように <strong>0〜255 の数字を4つ、ドットで区切って</strong>書く住所です。全部で32ビット（0か1が32個並んだもの）で表され、作れる住所は約43億通り。インターネットの初期から使われてきた、いちばん目にする形です。</p>
+      <p>ところが、インターネットにつながる機器が増えて<strong>約43億通りでは足りなくなりました</strong>。そこで作られたのが <strong>IPv6</strong>（ブイシックス）です。128ビットで表され、事実上使い切れないほどの数があります。書き方も違い、<code>fd89:34fc:700e:a388:…</code> のように、0〜9 と a〜f を使った数（16進数）をコロン <code>:</code> で区切って書きます。</p>
+      <p>いまは<strong>両方が同時に使われていて</strong>、1つのインターフェースが IPv4 と IPv6 の住所を両方持っていることもよくあります（Kali も Parrot もそうなっています）。この講座では、読みやすく、演習の通信でも使う <strong>IPv4 を中心</strong>に扱います。</p>
+      <p>ちなみに <code>192.168.○.○</code> は、家庭や社内などの<strong>内部ネットワーク用に取っておかれた範囲（プライベートアドレス）</strong>です。インターネット上の住所とはぶつからないので、どの家庭でも同じ番号を使えます。</p>
+      <p>ただし、プライベートアドレスのままではインターネットに出られません。そこで、内部ネットワークの出入口にある<strong>ルーター</strong>（ネットワークどうしをつなぎ、パケットを中継する機器）が、送信元の住所をインターネット用の住所に<strong>書き換えて</strong>送り出します。この仕組みを <strong>NAT（Network Address Translation：ネットワークアドレス変換）</strong>といいます。家庭のルーターが毎日やっていることで、IPv4 不足を補う工夫の1つでもあります。この演習では、Parrot の外部用インターフェースが UTM の NAT を通ってインターネットにつながっています。</p></div>
+
+      <p>ここで1つ大事な点があります。IPアドレスは「マシン（PC）」ではなく、マシンについている<strong>ネットワークの出入口＝インターフェース（interface）ごと</strong>に付きます。インターフェースの実体は、<strong>NIC（Network Interface Card：ネットワーク・インターフェース・カード）</strong>と呼ばれる通信用の部品で、LANケーブルや Wi-Fi につながる「口」です。仮想マシンの場合は、UTM が作った<strong>仮想の NIC</strong> が付いています。NIC は1台に何枚でも付けられるので、<strong>1台が複数の住所を持てます</strong>。この演習環境では次のようになっています。</p>
+
+      <div class="table-scroll"><table class="mini-table">
+        <thead><tr><th>マシン</th><th>インターフェース</th><th>IPアドレス</th><th>用途</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Kali Linux</strong>（攻撃・探索）</td><td><code>eth1</code></td><td><code>192.168.128.2/24</code></td><td>内部の演習用ネットワーク（Host-Only）</td></tr>
+          <tr><td><strong>Parrot OS</strong>（標的・防御）</td><td><code>enp0s2</code></td><td><code>192.168.128.3/24</code></td><td>内部の演習用ネットワーク（Host-Only）</td></tr>
+          <tr><td><strong>Parrot OS</strong></td><td><code>enp0s1</code></td><td><code>192.168.64.2/24</code></td><td>外部インターネット用（NAT 経由。上のボックス参照）</td></tr>
+        </tbody>
+      </table></div>
+
+      <p>Parrot は2つのインターフェースを持ち、それぞれ別の住所を持っています。§03 で実際に確認します。</p>
+
+      <div class="box teach"><span class="lab">末尾の「/24」とは</span>
+      <p>アドレスの後ろの <code>/24</code> は、<strong>どこまでが「同じネットワーク」か</strong>を表す書き方です。<code>/24</code> なら、<code>192.168.128.○</code> の <strong>○ だけが違うアドレスどうしが同じネットワーク</strong>になります。Kali（.2）と Parrot（.3）は同じ <code>192.168.128.○</code> なので、ルーターを通さずに直接やり取りできます。</p>
+      <p><strong>なぜ「24」なのか</strong>：IPv4 アドレスは全部で <strong>32ビット</strong>（0 と 1 が32個並んだもの）で、ドットで区切った4つの数字が、それぞれ <strong>8ビットずつ</strong>を表しています。<code>/24</code> は「<strong>先頭の24ビット＝最初の3つの数字（192.168.128）がネットワークの名前</strong>」という意味です。8×3＝24 なので、ドットの区切りとぴったり合って読みやすくなります。</p>
+      <p><strong>決まった値なのか</strong>：決まってはいません。<strong>ネットワークを作る人が、用途に合わせて決めます</strong>。<code>/24</code> は家庭や小さなオフィスで最もよく使われる値です。○ の部分は 0〜255 の256通りで、0 と 255 は特別な用途に使うため、機械に割り当てられるのは 1〜254 の<strong>254台</strong>。たいていの小さなネットワークには十分な数です。台数が多いなら <code>/16</code>（<code>192.168.○.○</code>、約6万5千台）のように広げ、逆に <code>/25</code> や <code>/30</code> のように細かく区切ることもあります。今回の <code>/24</code> は、UTM が作った仮想ネットワークの設定によるものです。</p>
+      <p style="font-size:13.5px;color:var(--ink-faint);margin-top:8px">ちなみに §03 で出てくる <code>lo</code> の <code>127.0.0.1/8</code> は「最初の1つの数字（127）だけがネットワーク」という意味で、<code>127.○.○.○</code> はすべて自分自身を指します。範囲の計算方法（サブネット）は後の章で詳しく扱います。</p></div>
+
+      <div class="box warn"><span class="lab">IP は「ベストエフォート」</span>
+      <p>IP には大事な性質があります。<strong>届けられるなら届けるが、確実に届いたか・順番通りかは保証しない</strong>——郵便でいう「投函はするが、到達も順序も保証しない」状態です。</p>
+      <p>この足りない部分は、<strong>TCP を使う通信なら TCP が補います</strong>（1-2）。ただし、すべての通信が TCP を使うわけではありません。§04 で使う ping（ICMP）は TCP を使わないので、届かなければそのまま「パケットロス」として失われます。</p></div>
+    </section>
+
+    <!-- §03 -->
+    <section id="s3">
+      <div class="sec-head"><span class="idx">§03</span><h2>自分の住所を確認する</h2></div>
+
+      <p>まずは Kali と Parrot が、それぞれどの住所を持っているかを実際に見てみます。両方のマシンの端末で、次のコマンドを実行します。</p>
+
+      <div class="step">
+        <span class="sh"><span class="sn">COMMAND</span>自分のIPアドレスを一覧表示する（Kali・Parrot 共通）</span>
+        <div class="cmdbox" data-copy="ip -br -4 a"><code class="cmd">ip -br -4 a</code></div>
+      </div>
+
+      <div class="table-scroll"><table class="mini-table anat">
+        <caption>コマンドの分解</caption>
+        <thead><tr><th>部分</th><th>意味</th></tr></thead>
+        <tbody>
+          <tr><td><code>ip</code></td><td>Linux でネットワークの設定を<strong>表示・変更</strong>するコマンド（iproute2 という道具の一部）。</td></tr>
+          <tr><td><code>-br</code></td><td><strong>brief</strong>（簡潔）。1つのインターフェースを1行にまとめて表示する。</td></tr>
+          <tr><td><code>-4</code></td><td><strong>IPv4</strong>（<code>192.168.128.2</code> のような4つの数字の住所。§02 参照）のアドレスだけに絞る。付けないと、<code>fd89:34fc:…</code> のような長い <strong>IPv6</strong> の住所も並んで、1行に収まらなくなる。</td></tr>
+          <tr><td><code>a</code></td><td>何を表示するかの対象。<strong><code>address</code>（アドレス）の省略形</strong>。<code>ip address show</code> と同じ意味。ほかに <code>ip link</code>（インターフェース自体）、<code>ip route</code>（経路）などがある。</td></tr>
+        </tbody>
+      </table></div>
+
+      <figure class="fig">
+        <img src="../image/cyber/1-1/step1_kali_ip.png?v=r180" width="854" height="362" loading="lazy" alt="Kali の ip -br -4 a の結果。eth1 が 192.168.128.2/24">
+        <figcaption><strong>Kali（攻撃側）</strong>：<strong>赤枠①</strong>の行が、内部インターフェース <code>eth1</code> の住所 <code>192.168.128.2/24</code>。</figcaption>
+      </figure>
+
+      <figure class="fig">
+        <img src="../image/cyber/1-1/step1_parrot_ip.png?v=r180" width="580" height="254" loading="lazy" alt="Parrot の ip -br -4 a の結果。enp0s1 が 192.168.64.2/24、enp0s2 が 192.168.128.3/24">
+        <figcaption><strong>Parrot（防御側）</strong>：<strong>赤枠①</strong>の2行が、1台で持っている2つの住所。<code>enp0s1</code>（外部用・NAT 経由）が <code>192.168.64.2/24</code>、<code>enp0s2</code>（内部用）が <code>192.168.128.3/24</code>。</figcaption>
+      </figure>
+
+      <div class="table-scroll"><table class="mini-table anat">
+        <caption>出力の読み方（左の列から順に）</caption>
+        <thead><tr><th>列</th><th>例</th><th>意味</th></tr></thead>
+        <tbody>
+          <tr><td>1列目</td><td><code>eth1</code> / <code>enp0s2</code></td><td><strong>インターフェース名</strong>（ネットワークの出入口の名前）。</td></tr>
+          <tr><td>2列目</td><td><code>UP</code> / <code>UNKNOWN</code></td><td><strong>状態</strong>。<code>UP</code> は有効。<code>lo</code> の <code>UNKNOWN</code> は異常ではなく、ループバックには「ケーブルがつながっているか」という物理的な状態がないための表示。</td></tr>
+          <tr><td>3列目</td><td><code>192.168.128.2/24</code></td><td><strong>IPアドレス／同じネットワークの範囲</strong>（§02 の /24）。</td></tr>
+          <tr><td>行</td><td><code>lo</code>　<code>127.0.0.1/8</code></td><td><strong>ループバック</strong>。「自分自身」を指す特別な住所で、どのマシンにもある。外部との通信には使わない。</td></tr>
+        </tbody>
+      </table></div>
+
+      <p style="font-size:13.5px;color:var(--ink-faint)">補足：<code>-4</code> は IPv4 アドレスを持つインターフェースだけを表示します。Kali の <code>eth0</code>（外部用）が出てこないのは、今回の環境ではそこに IPv4 アドレスが割り当てられていないためです。</p>
+
+      <div class="box teach"><span class="lab">小さな学びポイント：eth1 と enp0s2、名前が違う理由</span>
+      <p>同じ内部ネットワークなのに、Kali は <code>eth1</code>、Parrot は <code>enp0s2</code> と名前が違います。どちらも <strong>Debian 系</strong>（Debian という Linux をもとに作られた仲間）で、名前を付ける仕組みも同じ <strong>systemd / udev</strong>（Linux で、起動の流れや、つながっている部品の認識を受け持つ仕組み）です。違うのは<strong>設定</strong>で、Kali 側は<strong>昔ながらの <code>ethX</code> 方式</strong>、Parrot 側は<strong>「予測可能な名前」方式</strong>を使っています。</p>
+      <p>この切り替えは、<strong>カーネルパラメータ</strong> <code>net.ifnames=0</code> などで行われます。<strong>カーネル</strong>は OS のいちばん中心にあって、ハードウェア（部品）とソフトウェアの橋渡しをする部分です。<strong>カーネルパラメータ</strong>は、そのカーネルに<strong>起動するときに渡す設定スイッチ</strong>のことで、<code>net.ifnames=0</code> は「予測可能な名前を使わない（＝ethX にする）」という意味のスイッチです。</p>
+      <p>2つの名前は、末尾の数字の意味も違います。</p>
+      <ul style="margin:6px 0 0">
+        <li><code>eth1</code> ＝ <strong>eth</strong>（Ethernet の略）＋「1」＝<strong>見つかった順番</strong>（0番目、1番目…）</li>
+        <li><code>enp0s2</code> ＝ <strong>en</strong>（Ethernet）＋ <strong>p0</strong>（PCI バス0番）＋ <strong>s2</strong>（スロット2番）。<strong>差さっている位置</strong>から付く名前</li>
+      </ul>
+      <p>ここで出てきた言葉の意味です。</p>
+      <ul style="margin:6px 0 0">
+        <li><strong>Ethernet（イーサネット）</strong>：LANケーブルなどでつなぐ、<strong>有線LANの通信規格</strong>。いちばん普及している LAN の方式です。</li>
+        <li><strong>PCI バス</strong>：PC の中で、<strong>マザーボード</strong>（中心の基板）と NIC などの部品をつなぐ<strong>データの通り道の規格</strong>。</li>
+        <li><strong>スロット</strong>：その通り道に部品を差し込む<strong>差込口</strong>。何番の差込口に差さっているかが、名前の数字になります。</li>
+      </ul>
+      <p>仮想マシンの場合は、本物の基板ではなく、UTM が用意した<strong>仮想の PCI スロット</strong>に<strong>仮想 NIC</strong> が差さっている、という扱いになります。</p>
+      <p>なので <code>eth1</code> の「1」と <code>enp0s2</code> の「2」は対応していません。予測可能な名前が作られたのは、<code>ethX</code> の順番が起動のたびに入れ替わることがあり、「eth0 だと思っていたら別のNICだった」という事故が起きたからです。</p>
+      <p style="margin-top:10px">確かめたい人は、Kali で次を実行し、表示の中に <code>net.ifnames=0</code> が含まれているか見てみてください。</p>
+      <div class="cmdbox" data-copy="cat /proc/cmdline"><code class="cmd">cat /proc/cmdline</code></div>
+      <p style="font-size:13.5px;color:var(--ink-faint)"><code>cat</code> はファイルの中身を表示するコマンド。<code>/proc/cmdline</code> は、カーネルが起動するときに受け取ったカーネルパラメータが書かれた特別なファイルです。</p></div>
+    </section>
+
+    <!-- §04 -->
+    <section id="s4">
+      <div class="sec-head"><span class="idx">§04</span><h2>パケットを観察する</h2></div>
+
+      <p>次に、パケットに「送信元→宛先」の住所が実際に書かれていることを、自分の目で確認します。ここでは <strong>ping</strong> を使います。ping は相手に「いますか？」と小さなパケットを送り、相手が「いますよ」と返すことで、<strong>通信が届くか</strong>を確かめる道具です。</p>
+      <p>このとき使われるのが <strong>ICMP（Internet Control Message Protocol：インターネット制御メッセージプロトコル）</strong>です。データを運ぶためではなく、「届かなかった」「いますか？／いますよ」といった<strong>通信の状態を知らせ合うための連絡用プロトコル</strong>で、IP とセットで使われます。ping の「いますか？」は ICMP の <strong>echo request</strong>、「いますよ」は <strong>echo reply</strong> という種類のメッセージです。</p>
+
+      <div class="box warn"><span class="lab">ping に返事がない ≠ 相手がいない</span>
+      <p>ICMP は<strong>ファイアウォール</strong>（決めたルールに従って、通信を通すか止めるかを判断する門番の仕組み）で<strong>止められていることがよくあります</strong>（たとえば Windows は、既定では ping に応答しない設定のことが多い）。そのため「返事がない」は「相手がいない」とは限りません。この性質は、4章の「ホスト発見」で大きく効いてきます。今回の Parrot は ICMP を止めていないので、返事が返ってきます。</p></div>
+
+      <figure class="fig">
+        <svg viewBox="0 0 700 210" role="img" aria-label="Kali と Parrot の間を ICMP echo request と reply が往復する図">
+          <rect x="24" y="66" width="168" height="78" rx="14" fill="rgba(77,148,255,.10)" stroke="#4d94ff" stroke-width="1.4"/>
+          <text x="108" y="100" text-anchor="middle" fill="#fff" font-size="16" font-weight="500">Kali（攻撃側）</text>
+          <text x="108" y="123" text-anchor="middle" fill="#a8c9ff" font-size="13" font-family="monospace">192.168.128.2</text>
+          <rect x="508" y="66" width="168" height="78" rx="14" fill="rgba(114,227,173,.10)" stroke="#72e3ad" stroke-width="1.4"/>
+          <text x="592" y="100" text-anchor="middle" fill="#fff" font-size="16" font-weight="500">Parrot（防御側）</text>
+          <text x="592" y="123" text-anchor="middle" fill="#9ff0cf" font-size="13" font-family="monospace">192.168.128.3</text>
+          <defs>
+            <marker id="ar" markerWidth="9" markerHeight="9" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#ffb46b"/></marker>
+            <marker id="al" markerWidth="9" markerHeight="9" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#72e3ad"/></marker>
+          </defs>
+          <line x1="196" y1="88" x2="500" y2="88" stroke="#ffb46b" stroke-width="1.6" marker-end="url(#ar)"/>
+          <text x="348" y="78" text-anchor="middle" fill="#ffb46b" font-size="12.5">ICMP echo request　.2 &#8594; .3</text>
+          <line x1="504" y1="122" x2="200" y2="122" stroke="#72e3ad" stroke-width="1.6" marker-end="url(#al)"/>
+          <text x="352" y="142" text-anchor="middle" fill="#72e3ad" font-size="12.5">ICMP echo reply　.3 &#8594; .2</text>
+          <text x="350" y="182" text-anchor="middle" fill="rgba(255,255,255,.46)" font-size="12">行き（request）と帰り（reply）で 1 往復 ＝ ping 1 回</text>
+        </svg>
+        <figcaption>ping を1回打つと、行きの <strong>echo request</strong> と帰りの <strong>echo reply</strong> の2つの ICMP パケットが飛びます。それぞれの IP ヘッダに「送信元→宛先」の住所が書かれています。</figcaption>
+      </figure>
+
+      <p>これを Kali で観察します。<strong>Kali の端末を2つ</strong>開いて並べ、片方でパケットを見張りながら、もう片方で ping を送ります。Parrot 側では何も打ちません（返事は自動で返ります）。</p>
+
+      <div class="step">
+        <span class="sh"><span class="sn">端末A</span>パケットを見張る（キャプチャ）</span>
+        <div class="cmdbox" data-copy="sudo tcpdump -i eth1 -n icmp"><code class="cmd">sudo tcpdump -i eth1 -n icmp</code></div>
+      </div>
+
+      <div class="table-scroll"><table class="mini-table anat">
+        <caption>コマンドの分解</caption>
+        <thead><tr><th>部分</th><th>意味</th></tr></thead>
+        <tbody>
+          <tr><td><code>sudo</code></td><td>このあとのコマンドを<strong>管理者権限</strong>で実行する（superuser do の略。superuser＝管理者）。NIC を流れるパケットを直接読むには特別な権限が必要なため。実行時に自分のパスワードを聞かれる。</td></tr>
+          <tr><td><code>tcpdump</code></td><td>NIC を流れるパケットを捕まえて表示する<strong>キャプチャ（盗聴・観測）ツール</strong>。防御側の基本道具。名前は TCP＋dump（中身を吐き出す）から来ているが、TCP 以外のパケットも見られる。</td></tr>
+          <tr><td><code>-i</code></td><td><strong>interface（インターフェース）</strong>の頭文字。「このあとに書くインターフェースを見張る」という指定。</td></tr>
+          <tr><td><code>eth1</code></td><td><code>-i</code> に渡す値で、<strong>見張るインターフェースの名前</strong>。ここでは Kali の内部ネットワーク側（§03）。Parrot で見張るなら <code>enp0s2</code> に変える。</td></tr>
+          <tr><td><code>-n</code></td><td>住所を<strong>名前に変換せず数字のまま</strong>表示する（名前解決をしない。n は numeric＝数字、と覚えるとよい）。表示が速く、何が起きているか正確に見える。</td></tr>
+          <tr><td><code>icmp</code></td><td><strong>フィルタ</strong>（表示する条件）。ICMP（ping など）のパケットだけを表示する。何も書かなければ全種類を表示する。</td></tr>
+        </tbody>
+      </table></div>
+
+      <p>実行すると <code>listening on eth1 ...</code> と表示され、パケットが来るのを待つ状態になります。</p>
+
+      <div class="step">
+        <span class="sh"><span class="sn">端末B</span>Parrot へ ping を送る</span>
+        <div class="cmdbox" data-copy="ping -c 4 192.168.128.3"><code class="cmd">ping -c 4 192.168.128.3</code></div>
+      </div>
+
+      <div class="table-scroll"><table class="mini-table anat">
+        <caption>コマンドの分解</caption>
+        <thead><tr><th>部分</th><th>意味</th></tr></thead>
+        <tbody>
+          <tr><td><code>ping</code></td><td>相手に ICMP の <strong>echo request</strong> を送り、<strong>echo reply</strong> が返ってくるかを確かめる。名前は、潜水艦のソナー（音で相手を探る装置）の「ピーン」という音に由来すると言われる。</td></tr>
+          <tr><td><code>-c</code></td><td><strong>count（回数）</strong>の頭文字。「送る回数を指定する」という意味。指定しないと、Linux の ping は <code>Ctrl+C</code> で止めるまで送り続ける。</td></tr>
+          <tr><td><code>4</code></td><td><code>-c</code> に渡す値で、<strong>送る回数</strong>。<strong>4 に特別な意味はなく、何回でもよい</strong>（1 なら1回、10 なら10回）。ping は1秒に1回ずつ送るので、4回ならおよそ3〜4秒で終わる。ここでは「往復の様子が何度か見えて、すぐ終わる」回数として4回にしている。ちなみに Windows の ping は何も指定しないと4回で止まるので、4回はよく使われる回数。</td></tr>
+          <tr><td><code>192.168.128.3</code></td><td><strong>宛先</strong>の住所（Parrot の内部側）。</td></tr>
+        </tbody>
+      </table></div>
+
+      <figure class="fig">
+        <img src="../image/cyber/1-1/step2_tcpdump_ping.jpg?v=r180" width="1300" height="798" loading="lazy" alt="Kali のデスクトップ上で、上の端末に tcpdump のパケット、下の端末に ping の結果">
+        <figcaption><strong>下の端末（B）で ping した瞬間、上の端末（A）にパケットが流れます。</strong><br>
+          <strong>赤枠①</strong>：最初の行きのパケット。<code>192.168.128.2 &gt; 192.168.128.3</code> が封筒の「送信元 → 宛先」で、種類は <code>echo request</code>（いますか？）。<br>
+          <strong>赤枠②</strong>：その返事。向きが逆の <code>192.168.128.3 &gt; 192.168.128.2</code> で、種類は <code>echo reply</code>（いますよ）。この①②の組が、そのあと4回目まで同じようにくり返されます。<br>
+          <strong>赤枠③</strong>：下の ping の結果。4回送って4回とも返ってきた（packet loss＝失われた割合が 0%）。</figcaption>
+      </figure>
+
+      <h3>端末A（tcpdump）の1行の読み方</h3>
+      <div class="out"><span class="lab">出力例（1行目）</span>14:29:13.987531 IP 192.168.128.2 &gt; 192.168.128.3: ICMP echo request, id 36677, seq 1, length 64</div>
+      <div class="table-scroll"><table class="mini-table anat">
+        <thead><tr><th>部分</th><th>意味</th></tr></thead>
+        <tbody>
+          <tr><td><code>14:29:13.987531</code></td><td>パケットを捕まえた<strong>時刻</strong>。<strong>14時29分13.987531秒</strong>と読む（13秒と、さらに 0.987531 秒。小数点以下は100万分の1秒の単位まで）。Kali の時計での時刻。次の行の reply（<code>14:29:13.988614</code>）との差は約 0.00108秒（約1.08ミリ秒）で、これが往復にかかった時間の目安。端末Bの ping の表示（<code>time=1.81 ms</code>）より短いのは、ping は<strong>プログラムの中で</strong>「送ってから受け取るまで」を測るので、NIC を通った瞬間どうしの差より少し長めに出るため。</td></tr>
+          <tr><td><code>IP</code></td><td><strong>IP のパケット</strong>であること。</td></tr>
+          <tr><td><code>192.168.128.2 &gt; 192.168.128.3</code></td><td><strong>送信元 ＞ 宛先</strong>。<code>&gt;</code> は矢印の代わりで、<strong>「左の住所（送信元）から、右の住所（宛先）へ」送られたパケット</strong>という意味。つまり Kali（.2）から Parrot（.3）へ。reply では向きが逆の <code>.3 &gt; .2</code>（Parrot から Kali へ）になる。宛先の後ろの <code>:</code> は区切りで、そこから後ろが中身の説明。</td></tr>
+          <tr><td><code>ICMP</code></td><td>中身の<strong>プロトコル</strong>が ICMP であること（§04 冒頭）。</td></tr>
+          <tr><td><code>echo request</code></td><td>ICMP の中の<strong>メッセージの種類</strong>。行きは <code>echo request</code>（いますか？）、帰りは <code>echo reply</code>（いますよ）。</td></tr>
+          <tr><td><code>id 36677</code></td><td><code>id</code> は identifier（識別子）の略で、<strong>どの ping の通信かを区別する番号</strong>。<code>36677</code> がその値。同じ ping の request と reply は同じ id になり、ping を実行し直すと別の番号になる。</td></tr>
+          <tr><td><code>seq 1</code></td><td><code>seq</code> は sequence（順番）の略。<code>1</code> は<strong>1回目</strong>という意味で、1〜4 と増えていく。</td></tr>
+          <tr><td><code>length 64</code></td><td><code>length</code> は長さ。<code>64</code> は ICMP 部分の長さで、単位はバイト（1バイト＝8ビット）。データ56＋ICMPヘッダ8＝64。</td></tr>
+        </tbody>
+      </table></div>
+
+      <h3>端末B（ping）の読み方</h3>
+      <div class="out"><span class="lab">出力例</span>PING 192.168.128.3 (192.168.128.3) 56(84) bytes of data.
+64 bytes from 192.168.128.3: icmp_seq=1 ttl=64 time=1.81 ms
+...
+4 packets transmitted, 4 received, 0% packet loss, time 3042ms
+rtt min/avg/max/mdev = 0.346/0.840/1.811/0.591 ms</div>
+      <div class="table-scroll"><table class="mini-table anat">
+        <thead><tr><th>部分</th><th>意味</th></tr></thead>
+        <tbody>
+          <tr><td><code>PING 192.168.128.3 (192.168.128.3)</code></td><td>これから ping を送る<strong>宛先</strong>。カッコ内は実際に使う IP アドレス。宛先を名前（例：<code>example.com</code>）で指定したときは、ここに変換後の IP アドレスが出る。</td></tr>
+          <tr><td><code>56(84) bytes of data</code></td><td>1回に送るデータは<strong>56バイト</strong>。カッコ内の84は、IPヘッダ20＋ICMPヘッダ8を足した、パケット全体の大きさ。</td></tr>
+          <tr><td><code>64 bytes from 192.168.128.3</code></td><td>返ってきた reply の大きさ（データ56＋ICMPヘッダ8）と、<strong>返事をくれた相手</strong>。</td></tr>
+          <tr><td><code>icmp_seq=1</code></td><td>ここから3つは「<strong>名前=値</strong>」の形。<code>icmp_seq</code>（ICMP の sequence＝順番）が <code>1</code>、つまり<strong>1回目</strong>の往復。tcpdump の <code>seq</code> と対応する。</td></tr>
+          <tr><td><code>ttl=64</code></td><td><code>ttl</code> は Time To Live（生存時間）の略で、パケットの<strong>寿命</strong>を表す数。ルーターを1つ通るたびに1ずつ減り、0 になると捨てられる（迷子のパケットが永遠に回り続けないため）。Linux は64から始めることが多く、今回は同じネットワーク内で直接届いたので減らずに64。</td></tr>
+          <tr><td><code>time=1.81 ms</code></td><td><strong>往復にかかった時間</strong>。<code>ms</code> はミリ秒（1000分の1秒）。1回目だけ少し遅いのは、相手の機械の番号を調べるやり取り（下の ARP）などが最初に入ることがあるため。</td></tr>
+          <tr><td><code>4 packets transmitted, 4 received, 0% packet loss</code></td><td>送った数（transmitted）・返ってきた数（received）・<strong>失われた割合</strong>（packet loss）。4回送って4回とも返ってきた。</td></tr>
+          <tr><td><code>time 3042ms</code></td><td>全体でかかった時間（約3秒）。1秒おきに4回送るので、1回目から4回目までの間隔は3つ分＝約3秒になる。</td></tr>
+          <tr><td><code>rtt min/avg/max/mdev</code></td><td>往復時間（rtt：round-trip time）の<strong>最小（min）／平均（avg）／最大（max）／ばらつきの大きさ（mdev）</strong>。mdev は mean deviation の略という名前だが、Linux の ping が実際に計算しているのは<strong>標準偏差</strong>（値が平均からどれくらい散らばっているかを表す数）。後ろの <code>0.346/0.840/1.811/0.591 ms</code> が、同じ順番での値。</td></tr>
+        </tbody>
+      </table></div>
+
+      <p>キャプチャを止める（端末Aで <code>Ctrl+C</code>：Ctrl キーを押しながら C）と、最後に集計が出ます。</p>
+
+      <figure class="fig zoom">
+        <img src="../image/cyber/1-1/step2_summary.png?v=r180" width="803" height="650" loading="lazy" alt="tcpdump の集計。8 packets captured">
+        <figcaption><strong>赤枠①</strong>：<code>Ctrl+C</code> を押してキャプチャを止めた印。<strong>赤枠②</strong>：止めたときに出る集計。<strong>8個</strong>捕まえた＝ping 4回に対して、行き4＋帰り4で合計8個の ICMP パケット。</figcaption>
+      </figure>
+
+      <div class="table-scroll"><table class="mini-table anat">
+        <caption>集計の読み方</caption>
+        <thead><tr><th>部分</th><th>意味</th></tr></thead>
+        <tbody>
+          <tr><td><code>^C</code></td><td><code>Ctrl+C</code> を押したことを表す記号（①）。<code>^</code> は Ctrl キーのこと。端末では「止める」の合図として使われる。</td></tr>
+          <tr><td><code>8 packets captured</code></td><td><strong>捕まえて表示したパケットの数</strong>（captured＝捕まえた）。今回は8個。</td></tr>
+          <tr><td><code>8 packets received by filter</code></td><td><strong>フィルタ（今回は <code>icmp</code>）の条件に合ったパケットの数</strong>（received by filter＝フィルタが受け取った）。表示した数と同じ8個。※これは Linux の場合の数え方で、OS によって数え方が少し違う。</td></tr>
+          <tr><td><code>0 packets dropped by kernel</code></td><td>処理が追いつかずに<strong>取りこぼしたパケットの数</strong>（dropped＝落とした、kernel＝カーネル。§03 参照）。0 なので取りこぼしなし。大量の通信を見張るときは、ここが増えることがある。</td></tr>
+        </tbody>
+      </table></div>
+
+      <div class="box teach"><span class="lab">「ping 1回＝2パケット」は ICMP だけを数えた話</span>
+      <p>今回は <code>icmp</code> フィルタで ICMP だけを表示しているので、きれいに「往復＝2個」に見えます。実は、最初の ping の前には、相手の機械の番号（<strong>MACアドレス</strong>：NIC ごとに付いている、機器そのものの番号）を調べる <strong>ARP（Address Resolution Protocol：アドレス解決プロトコル）</strong>というやり取りが起きることがあります（まだ相手を知らないとき）。フィルタを外して <code>sudo tcpdump -i eth1 -n</code> で試すと見えることがあります。ARP は 8-1 で詳しく扱います。</p></div>
+
+      <div class="box principle"><span class="lab">この節の核心</span>
+      <p>IP パケットのヘッダには、<strong>送信元IPと宛先IP</strong>が書かれています。だから受け取った側は「どこから来た（と名乗っている）か、どこ宛てか」を読み取れます。</p>
+      <p>ただし、<strong>送信元IPは送り手の自己申告</strong>です。送り手が偽の送信元を書くこと（<strong>IPスプーフィング</strong>）も、途中のルーターなどが書き換えること（<strong>NAT</strong>：Network Address Translation。§02 参照。家庭のルーターを通ると、送信元はルーターの住所に置き換わる）もありえます。「送信元IP＝本当の送り主」とは限らない——この前提は、攻撃を理解するうえでも、ログを見て防御するうえでも、ずっと大事になります。</p></div>
+    </section>
+
+    <!-- §05 -->
+    <section id="s5">
+      <div class="sec-head"><span class="idx">§05</span><h2>まとめとチェック</h2></div>
+
+      <p>この節で押さえた土台を整理します。</p>
+      <ul>
+        <li><strong>パケット</strong>＝通信を分割した“荷物”。ヘッダ＋ペイロードの入れ子でできている。</li>
+        <li><strong>IPアドレス</strong>＝荷物の宛先“住所”。マシンではなく<strong>インターフェースごと</strong>に付き、1台が複数持てる。</li>
+        <li><strong>IP</strong> は住所を見て配送するが、到達も順序も保証しない（ベストエフォート）。</li>
+        <li>IPパケットには<strong>送信元IPと宛先IP</strong>が書かれていて、tcpdump で「<code>.2 &gt; .3</code>」と見える。ただし送信元は自己申告。</li>
+      </ul>
+
+      <div class="box principle"><span class="lab">最終チェック</span>
+      <ul style="margin:8px 0 0">
+        <li>データがパケットに分けて送られる理由を、3つ言えるか（§01）</li>
+        <li>送り直し・並べ直しをするのは IP ではなく誰か、言えるか（§01）</li>
+        <li>IPv4 と IPv6 の違い（書き方・IPv6 ができた理由）を言えるか（§02）</li>
+        <li>IPアドレスがインターフェースごとに付くことを、Parrot の例で説明できるか（§02・§03）</li>
+        <li>「IP はベストエフォート」が何を意味するか言えるか（§02）</li>
+        <li><code>ip -br -4 a</code> の <code>-br</code>・<code>-4</code>・<code>a</code> の意味を言えるか（§03）</li>
+        <li><code>eth1</code> と <code>enp0s2</code> の名前の付き方の違いを説明できるか（§03）</li>
+        <li>NIC・NAT・ICMP が何の略で、それぞれ何をするものか言えるか（§02・§04）</li>
+        <li><code>tcpdump -i eth1 -n icmp</code> の各部分の意味を言えるか（§04）</li>
+        <li>ping に返事がないとき、「相手がいない」と言い切れない理由を言えるか（§04）</li>
+        <li>tcpdump の1行から、送信元・宛先・種類・何回目かを読み取れるか（§04）</li>
+        <li>送信元IPをそのまま信じてはいけない理由を2つ言えるか（§04）</li>
+      </ul></div>
+
+      <div class="transfer"><span class="lab">次へ：1-2 TCPとポート</span>
+      <p>IP は「届けるだけ」で、到達も順番も保証しませんでした。その足りない部分を補い、通信を確実にするのが <strong>TCP</strong> です。次の <strong>1-2</strong> では、TCP と「ポート（どのサービス宛てか）」、そして通信を始める前の約束＝<strong>3-wayハンドシェイク</strong>を学びます。これがわかると、4章のポートスキャンが一気に見通せるようになります。</p></div>
+
+      <div class="foot"><p>Academic Gates ／ サイバーセキュリティ基礎 1章 ネットワークの仕組み ／ 1-1「パケットとIP」。演習は Kali Linux × Parrot OS の仮想ラボで行い、パケットの送受信は Host-Only の内部ネットワーク（<code>192.168.128.0/24</code>。外部の LAN からは切り離されている）の中だけで実施しています。自分が管理していないネットワークや機器には、この講座の操作を行わないでください。</p></div>
+    </section>
+
+  </main>
+</div>
+<div id="site-footer"><noscript><nav class="noscript-nav" aria-label="フッターナビゲーション"><a href="index.html">ホーム</a><a href="self-intro.html">自己紹介</a><a href="study.html">勉強の軌跡</a><a href="videos.html">動画</a><a href="blog.html">ブログ</a><a href="sns.html">各種SNS</a></nav></noscript></div>
+<script>
+/* コマンドのコピー（アイコンボタンを付ける） */
+var COPY_ICONS='<svg class="ic-copy" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M15 9V6.5A2.5 2.5 0 0 0 12.5 4h-6A2.5 2.5 0 0 0 4 6.5v6A2.5 2.5 0 0 0 6.5 15H9"/></svg>'
+  +'<svg class="ic-check" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+document.querySelectorAll('.cmdbox').forEach(function(box){
+  var text=box.getAttribute('data-copy');
+  var btn=document.createElement('button');
+  btn.type='button';btn.className='copy';btn.title='コピー';btn.setAttribute('aria-label','コマンドをコピー');
+  btn.innerHTML=COPY_ICONS;box.appendChild(btn);
+  function ok(){btn.classList.add('done');btn.title='コピーしました';setTimeout(function(){btn.classList.remove('done');btn.title='コピー'},1600)}
+  function fallback(){
+    var t=document.createElement('textarea');t.value=text;t.setAttribute('readonly','');
+    t.style.position='fixed';t.style.opacity='0';document.body.appendChild(t);t.select();
+    try{document.execCommand('copy');ok()}catch(e){}
+    document.body.removeChild(t);
+  }
+  btn.addEventListener('click',function(){
+    if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(text).then(ok,fallback)}else{fallback()}
+  });
+});
+
+/* 目次の追従 */
+var links=[].slice.call(document.querySelectorAll('.toc a[href^="#"]'));
+var secs=links.map(function(a){return document.querySelector(a.getAttribute('href'))});
+var pbar=document.getElementById('pbar');
+function onScroll(){
+  // getBoundingClientRect を使う（offsetTop ではない）。style.css の
+  // `main{position:relative}` で <main> が offsetParent になるため（§36）。
+  var idx=0;
+  secs.forEach(function(s,i){ if(s&&s.getBoundingClientRect().top<=140) idx=i; });
+  // 最後の節は短く、見出しが 140px まで上がる前にページの底に着く。底に着いたら最後を光らせる
+  if(window.innerHeight+window.scrollY>=document.documentElement.scrollHeight-2) idx=secs.length-1;
+  links.forEach(function(a){a.classList.remove('active')});
+  if(links[idx]) links[idx].classList.add('active');
+  var h=document.documentElement.scrollHeight-window.innerHeight;
+  pbar.style.width=(h>0?(window.scrollY/h*100):0)+'%';
+}
+window.addEventListener('scroll',onScroll,{passive:true});
+window.addEventListener('resize',onScroll); onScroll();
+var body=document.body,mb=document.getElementById('menuBtn'),scrim=document.getElementById('scrim');
+mb.addEventListener('click',function(){var o=body.classList.toggle('nav-open');mb.setAttribute('aria-expanded',o)});
+scrim.addEventListener('click',function(){body.classList.remove('nav-open')});
+document.getElementById('toc').addEventListener('click',function(e){if(e.target.closest('a'))body.classList.remove('nav-open')});
+</script>
+<script src="../js/disciplines.js?v=r180"></script>
+<script src="../js/layout.js?v=r180"></script>
+<script src="../js/main.js?v=r180"></script>
+<script src="../js/starfield.js?v=r180"></script>
+</body>
+</html>
