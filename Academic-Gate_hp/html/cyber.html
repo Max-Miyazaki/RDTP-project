@@ -4,11 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>サイバーセキュリティ基礎｜情報科学 - Academic Gates</title>
-    <meta name="description" content="Kali Linux と Parrot OS を使い、実務でよく使われる攻防の手法を手を動かしながら学ぶ実践演習シリーズ。偵察・スキャン・パケット解析・L2攻防・サービス攻防・検知と防御の設計まで、全7部19章。">
+    <meta name="description" content="Kali Linux と Parrot OS を使い、実務でよく使われる攻防の手法を手を動かしながら学ぶ実践演習シリーズ。偵察・スキャン・パケット解析・L2攻防・サービス攻防・検知と防御の設計まで、全7部20章・66節。">
     <link rel="stylesheet" href="../css/style.css?v=r184">
     <link rel="icon" href="../../favicon.ico" sizes="32x32">
     <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+    <style>
+        /* 章の説明（いまは 0章だけ）。グリッドの中で全幅にし、章の見出しのすぐ下に置く */
+        .toc-part .study-grid > .toc-ch-lead { grid-column: 1 / -1; margin: -0.25rem 0 0.25rem; font-size: 0.9rem; color: var(--text-secondary); }
+    </style>
 </head>
 <body data-page="study" data-node="cyber">
     <canvas id="starfield" aria-hidden="true"></canvas>
@@ -17,7 +21,7 @@
          部（.toc-part）→ 章（.study-grid の h3）→ 節（.study-card の h4）の3段。部が増えたぶんだけ見出しを1段下げた。
          ★ 節のページがあれば <a class="study-card" href="cyber_N-M.html">、無ければ <div>（layout.js が「準備中」の札を付ける）。
            節を書き上げたら、その節の div を a に変えるだけ。制作用の札（「次はここ」「台本あり」など）は置かない。
-         ★ 量（部・章・節の数）はページに出さない（§136 の方針）。meta description には残してある。 -->
+         ★ 量（部・章・節の数）はページに出さない（§136 の方針）。meta description には残してある（2026-11-12 の改訂で 7部20章・66節。0章は準備編）。 -->
     <main>
         <div class="page-header">
             <h1>サイバーセキュリティ基礎</h1>
@@ -37,6 +41,22 @@
 
         <section class="toc-part" aria-labelledby="part-1">
             <div class="toc-part__head"><span class="toc-part__no">部 I</span><h2 id="part-1">基礎 — ネットワークとセキュリティの土台</h2></div>
+            <section class="study-grid">
+                <h3>0章 準備編：コンピューターの基礎</h3>
+                <p class="toc-ch-lead">1章より前に読む土台。16進数やバイトの計算、Linux の操作、メモリの基礎をここで固めます</p>
+                <div class="study-card">
+                    <h4>0-1 ビット・バイトと2進数・16進数</h4>
+                </div>
+                <div class="study-card">
+                    <h4>0-2 文字とデータの表し方（文字コード・16進ダンプ）</h4>
+                </div>
+                <div class="study-card">
+                    <h4>0-3 Linux の基本操作</h4>
+                </div>
+                <div class="study-card">
+                    <h4>0-4 プロセスとメモリ</h4>
+                </div>
+            </section>
             <section class="study-grid">
                 <h3>1章 ネットワークの仕組み</h3>
                 <a class="study-card" href="cyber_1-1.html">
@@ -63,7 +83,7 @@
                     <p>Kali/Parrot、ホストオンリーの L2 セグメント、デュアルNIC</p>
                 </div>
                 <div class="study-card">
-                    <h4>2-2 Linux CLI とネットワーク設定の基礎</h4>
+                    <h4>2-2 ネットワーク設定とサービス管理の基礎</h4>
                     <p>ip / ss / systemctl など、攻防に必須のコマンド</p>
                 </div>
                 <div class="study-card">
@@ -84,6 +104,9 @@
                 <div class="study-card">
                     <h4>3-2 アクティブ偵察の基礎</h4>
                     <p>能動的に探る手法と、相手に残る痕跡</p>
+                </div>
+                <div class="study-card">
+                    <h4>3-3 ソーシャルエンジニアリングとフィッシング</h4>
                 </div>
             </section>
             <section class="study-grid">
@@ -145,6 +168,9 @@
                     <h4>7-2 平文プロトコルの盗聴と暗号化の重要性</h4>
                     <p>HTTP / FTP / telnet がなぜ危険か、暗号化の意味</p>
                 </div>
+                <div class="study-card">
+                    <h4>7-3 暗号と TLS（HTTPS と証明書）</h4>
+                </div>
             </section>
         </section>
 
@@ -170,6 +196,9 @@
                 <div class="study-card">
                     <h4>9-2 ネットワーク分離（VLAN / セグメンテーション）</h4>
                     <p>被害を封じ込める設計の考え方</p>
+                </div>
+                <div class="study-card">
+                    <h4>9-3 DoS / DDoS の原理と緩和</h4>
                 </div>
             </section>
         </section>
@@ -202,7 +231,13 @@
                     <p>ブラウザを狙う攻撃の原理と防御</p>
                 </div>
                 <div class="study-card">
-                    <h4>11-3 入力検証・WAF による防御</h4>
+                    <h4>11-3 アクセス制御とセッション管理の不備</h4>
+                </div>
+                <div class="study-card">
+                    <h4>11-4 コマンドインジェクション・パストラバーサル・SSRF</h4>
+                </div>
+                <div class="study-card">
+                    <h4>11-5 入力検証・WAF による防御</h4>
                     <p>不正な入力を弾く防御層</p>
                 </div>
             </section>
@@ -213,11 +248,17 @@
                     <p>脆弱性とは何か、どう管理するか</p>
                 </div>
                 <div class="study-card">
-                    <h4>12-2 エクスプロイトの仕組み（原理理解）</h4>
+                    <h4>12-2 C 言語と機械語の読み方</h4>
+                </div>
+                <div class="study-card">
+                    <h4>12-3 メモリ破壊：バッファオーバーフローの原理と防御</h4>
+                </div>
+                <div class="study-card">
+                    <h4>12-4 エクスプロイトの仕組み（原理理解）</h4>
                     <p>原理を理解し、検知・防御につなげる</p>
                 </div>
                 <div class="study-card">
-                    <h4>12-3 Metasploit の構造理解と、検知側の痕跡</h4>
+                    <h4>12-5 Metasploit の構造理解と、検知側の痕跡</h4>
                     <p>検知側から見た攻撃の痕跡を読む</p>
                 </div>
             </section>
@@ -237,13 +278,22 @@
                 </div>
             </section>
             <section class="study-grid">
-                <h3>14章 永続化と痕跡</h3>
+                <h3>14章 マルウェアと永続化・痕跡</h3>
                 <div class="study-card">
-                    <h4>14-1 永続化手法の理解と検知</h4>
+                    <h4>14-1 マルウェアの種類と仕組み</h4>
+                </div>
+                <div class="study-card">
+                    <h4>14-2 マルウェアの静的解析</h4>
+                </div>
+                <div class="study-card">
+                    <h4>14-3 マルウェアの動的解析</h4>
+                </div>
+                <div class="study-card">
+                    <h4>14-4 永続化手法の理解と検知</h4>
                     <p>居座りの手口を理解し、検知する</p>
                 </div>
                 <div class="study-card">
-                    <h4>14-2 ログ改ざん・痕跡消去と、改ざん検知</h4>
+                    <h4>14-5 ログ改ざん・痕跡消去と、改ざん検知</h4>
                     <p>改ざんをどう見抜くか（ファイル整合性監視）</p>
                 </div>
             </section>
