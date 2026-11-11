@@ -103,6 +103,8 @@
                              title: '1-1　パケットとIP' },
         'cyber_1-2':       { label: 'SECTION 1-2',  href: 'cyber_1-2.html',        parent: 'cyber:ch1',
                              title: '1-2　TCPとポート、3-wayハンドシェイク' },
+        'cyber_1-3':       { label: 'SECTION 1-3',  href: 'cyber_1-3.html',        parent: 'cyber:ch1',
+                             title: '1-3　UDP・ICMP と主要プロトコル' },
         // 複合分野：学問分野と精神の圏域のあいだの枠（DESIGN.md §103）。いまは「地球と人類」だけ。
         'composite':       { label: '複合分野',     href: 'study_composite.html',  parent: 'study' },
         // 地球と人類は構成を検討中なので、リンクなしの準備中（§136.7）。earthhuman.html は古いリンクのために残してある
