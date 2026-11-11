@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>1-4 階層モデル（OSI / TCP-IP）で全体を捉える｜サイバーセキュリティ基礎 1章 | Academic Gates</title>
+<meta name="description" content="1-1〜1-3 で見た Ethernet・IP・ICMP・TCP・UDP・DNS・HTTP を、TCP/IP モデルと OSI 参照モデルの層で整理する。Kali から Parrot の Web サーバーに接続したパケットを tcpdump で記録し、tshark で Ethernet・IP・TCP・HTTP の層ごとに分解して読む。MAC アドレスと ip neigh、層ごとの攻撃と守りも扱う。サイバーセキュリティ基礎 1章／1-4。">
+<link rel="icon" href="../../favicon.ico" sizes="32x32">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;500&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+<!-- サイト共通 → 記事固有 → テーマ上書き の順で読む（lesson-theme.css は
+     記事の &lt;style&gt; より後ろに置くこと。css/lesson-theme.css 冒頭の注記どおり）。
+     ★ 注釈に生のスタイルタグを書かない：機械的に切り出すと、そこが本物のタグとして残り、
+       後ろの :root が丸ごと捨てられる（DESIGN.md §137.2） -->
+<link rel="stylesheet" href="../css/style.css?v=r184">
+<style>
+/* 1-4 階層モデル（OSI / TCP-IP）で全体を捉える — 記事固有のスタイルのみ（土台は cyber_1-1.html。DESIGN.md §137）。
+   共通部分は css/style.css と lesson-theme.css が持つ（DESIGN.md §35, §36）。
+   構造（レール・ボックス・図・表）は物理数学の教材と同じルールを使い、
+   この記事にだけあるもの（コマンドのコピー枠・出力例・分解表・スクショ）を末尾に足す。 */
+:root{
+  /* 教材固有のトークン。本体と同値のもの（--bg --surface --nav-bg --ink --line
+     --line-strong --glow-cool --font --nav-clear --ease --radius-lg/md）は
+     css/style.css 側に定義があるので、ここでは持たない。
+     --ink-soft / --ink-faint は本体より明るい値を「意図的に」維持している。
+     本体値に寄せると 13.5px の解説文が 4.56:1 → 3.66:1 と AA を割るため（§36）。 */
+  --surface-2:rgba(255,255,255,.045);
+  --ink-soft:rgba(255,255,255,.68);
+  --ink-faint:rgba(255,255,255,.46);
+  --line-soft:rgba(255,255,255,.05);
+  --accent-deep:#a8c9ff;
+  --accent-tint:rgba(77,148,255,.12);
+  --amber:#ffb46b;--amber-tint:rgba(255,160,70,.08);--amber-line:rgba(255,160,70,.32);
+  --good:#72e3ad;--good-tint:rgba(114,227,173,.08);--good-line:rgba(114,227,173,.28);
+  --key:#ff6fa5;--key-tint:rgba(255,61,139,.08);--key-line:rgba(255,61,139,.28);
+  --teach:#a48bff;--teach-tint:rgba(123,77,255,.11);--teach-line:rgba(123,77,255,.38);
+  --mono:ui-monospace,'SFMono-Regular',Menlo,Consolas,monospace;
+  --rail-w:250px;
+}
+body{font-size:15.5px;line-height:1.9;line-break:strict;overflow-x:hidden}
+
+/* --- レイアウト（左に目次レール／右に本文の2カラム） ------------------------
+   本文列 760px は日本語の長文＋数式に合わせた measure。style.css の共通記事
+   ルールは `body.is-article main > section:not(.rail)`（詳細度 0,2,3）と
+   `… ~ section:not(.rail)`（0,3,4）で 900px と 160px パディングをかけてくる。
+   こちらは `.main` を噛ませて 0,3,2 / 0,4,3 とし、確実に上回る（§36）。 */
+/* 全幅。左寄せのレイアウトで、余った幅は右に流す（§43）。
+   §40 で一度 max-width を外して差し戻しているが、あれは「中央寄せのまま左右を
+   対称にする」変更で、本文の位置も幅も変わらなかったため戻した。今回は本文を
+   860px に広げて左揃えにするので、目的も結果も違う。
+   レールの左余白は 1280px → 1440px にかけて 0 → 32px。狭い画面ではまず余白を
+   削って本文幅に回す（レール幅 250px は目次の文字量で決まるので触らない）。 */
+.wrap{display:flex;padding-top:var(--nav-clearance);
+      padding-left:clamp(0px, calc((100vw - 1280px) * .2), 32px)}
+.rail{width:var(--rail-w);flex:0 0 var(--rail-w);position:sticky;top:var(--nav-clearance);height:calc(100vh - var(--nav-clearance));overflow-y:auto;padding:18px 14px 60px 22px;border-right:1px solid var(--line)}
+/* 左パディング＝レールと本文の間隔。1024px → 1280px にかけて 24 → 56px。
+   これも狭い画面では縮めて本文幅に回す。 */
+.main{flex:1 1 auto;min-width:0;
+      padding:0 clamp(24px, calc(24px + (100vw - 1024px) * .125), 56px) 110px}
+/* 本文列 860px。760px では display 数式が 6 本はみ出していた（解答の入れ子
+   パディングで、.sol の中は本文列より 132px 狭い箱になる）。全 82 本が収まる
+   最小幅は実測 853px（§43.2）。中央寄せをやめて左揃えにし、余りは右へ。 */
+body.is-article .main > .lesson-hero,
+body.is-article .main > section:not(.rail),
+body.is-article .main > .foot{max-width:860px;margin-left:0;margin-right:auto;padding-left:0;padding-right:0}
+.rail .brand{font-weight:400;font-size:15px;line-height:1.45;margin:2px 0 4px}
+.rail .brand small{display:block;font-size:10px;font-weight:500;color:var(--ink-faint);letter-spacing:.2em;margin-top:6px}
+.progress-wrap{height:2px;background:var(--line);border-radius:99px;margin:16px 0 18px;overflow:hidden}
+.progress-bar{height:100%;width:0;background:linear-gradient(90deg,var(--accent),#a8c9ff);transition:width .15s linear}
+.toc{list-style:none;margin:0;padding:0;font-size:12.5px;color:var(--ink-soft)}
+.toc .part{font-size:10px;letter-spacing:.2em;color:var(--ink-faint);margin:16px 0 5px;padding-left:2px}
+.toc a{display:block;text-decoration:none;color:var(--ink-soft);padding:4px 10px;border-radius:999px;transition:color var(--dur) var(--ease),background var(--dur) var(--ease)}
+.toc a:hover{color:var(--ink);background:var(--surface-2)}
+.toc a.active{color:var(--ink);background:var(--accent-tint)}
+.toc a .n{font-size:10.5px;color:var(--ink-faint);margin-right:8px;font-variant-numeric:tabular-nums}
+.toc a.active .n{color:var(--accent)}
+
+/* --- 記事の導入部。`.hero` は index.html 専用で、style.css が
+   `.hero h1/.hero p/.hero .eyebrow` に黒い text-shadow をかけるため使えない（§36）。 --- */
+.lesson-hero{padding:64px 0 34px;border-bottom:1px solid var(--line)}
+.lesson-hero h1{font-weight:300;font-size:clamp(28px,4vw,48px);line-height:1.25;letter-spacing:-.02em;margin:0 0 22px}
+.lesson-hero h1 .sub{display:block;font-size:.52em;font-weight:300;color:var(--ink-soft);letter-spacing:0;margin-top:12px}
+.lesson-hero p{color:var(--ink-soft);margin:0 0 12px}
+.lesson-hero .lead{font-size:16.5px;color:var(--ink-soft)}
+/* .eyebrow 本体は style.css の共通コンポーネント。色と余白だけ上書きする
+   （共通の --text-tertiary は 11px の小さな文字で 3.66:1 と AA を割るため） */
+.eyebrow{color:var(--ink-faint);margin-bottom:18px}
+
+section{border-bottom:1px solid var(--line-soft);scroll-margin-top:var(--nav-clearance)}
+/* 縦の余白も共通ルールに勝つ必要がある（先頭セクションも2つ目以降も同じ 56px） */
+body.is-article .main > section:not(.rail),
+body.is-article .main > section:not(.rail) ~ section:not(.rail){padding-top:56px;padding-bottom:12px}
+.sec-head{display:flex;align-items:baseline;gap:14px;margin-bottom:10px}
+.sec-head .idx{font-size:.72rem;font-weight:500;letter-spacing:.2em;color:var(--ink-faint);padding-top:4px;flex:0 0 auto;font-variant-numeric:tabular-nums}
+.sec-head .idx::after{content:' —'}
+body.is-article main h2{font-weight:400;font-size:clamp(21px,2.6vw,28px);line-height:1.3;letter-spacing:-.01em;margin:0}
+body.is-article main h3{font-weight:400;font-size:17px;margin:30px 0 6px;color:var(--ink)}
+body.is-article main h4{font-weight:500;font-size:14.5px;margin:18px 0 4px;color:var(--ink)}
+body.is-article main p{margin:10px 0;color:var(--ink-soft)}
+body.is-article main ul,body.is-article main ol{margin:10px 0;padding-left:1.3em;color:var(--ink-soft)}
+li{margin:4px 0}
+strong{font-weight:500;color:var(--ink)}
+code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);border-radius:6px;padding:1px 6px;color:var(--accent-deep)}
+
+.box{border-radius:var(--radius-md);padding:16px 20px;margin:18px 0;border:1px solid var(--line);background:var(--surface)}
+.box .lab{font-size:.7rem;letter-spacing:.14em;font-weight:500;display:block;margin-bottom:6px}
+.box p{max-width:none}
+.box p:first-of-type{margin-top:2px}.box p:last-child{margin-bottom:0}
+/* 枠線は必ずトークン経由にすること。ここに直書きすると lesson-theme.css の
+   ライト上書きが効かず、暗い背景用の明るい色がライトでパステルになる（§41）。 */
+.box.principle{background:var(--key-tint);border-color:var(--key-line)}.box.principle .lab{color:var(--key)}
+.box.target{background:var(--good-tint);border-color:var(--good-line)}.box.target .lab{color:var(--good)}
+.box.warn{background:var(--amber-tint);border-color:var(--amber-line)}.box.warn .lab{color:var(--amber)}
+.box.teach{background:var(--teach-tint);border-color:var(--teach-line)}.box.teach .lab{color:var(--teach)}
+.box.teach .lab::before{content:"◎ "}
+
+.table-scroll{overflow-x:auto;margin:14px 0}
+.mini-table{width:100%;border-collapse:collapse;font-size:14px;margin:0;color:var(--ink-soft)}
+.mini-table th,.mini-table td{border:1px solid var(--line);padding:9px 11px;text-align:left;vertical-align:top}
+.mini-table th{background:var(--surface-2);font-weight:500;color:var(--ink)}
+
+.fig{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-lg);padding:18px 18px 12px;margin:20px 0}
+.fig > svg{width:100%;height:auto;display:block}
+.fig svg text{font-family:var(--font-body)}
+.fig figcaption{font-size:13px;color:var(--ink-soft);margin-top:10px;line-height:1.8;max-width:none}
+
+.step{margin:18px 0}
+.step .sh{display:flex;gap:10px;align-items:baseline;font-weight:500;color:var(--ink);margin-bottom:2px}
+.step .sn{font-size:11px;font-weight:500;color:#06142e;background:var(--accent);border-radius:999px;padding:1px 10px;flex:0 0 auto}
+.transfer{background:var(--surface-2);border:1px solid var(--line);border-radius:var(--radius-md);padding:14px 18px;margin:18px 0}
+.transfer .lab{font-size:.7rem;letter-spacing:.14em;color:var(--accent);font-weight:500;display:block;margin-bottom:5px}
+.transfer p{max-width:none}
+.foot{padding:34px 0 0;color:var(--ink-faint);font-size:12.5px}
+.foot p{color:var(--ink-faint);max-width:none}
+
+/* --- この記事だけの部品（コマンドのコピー枠・出力例・分解表・スクショ） --- */
+.mini-table code{white-space:nowrap}
+.anat td:first-child{white-space:nowrap;width:1%}
+.anat caption{caption-side:top;text-align:left;font-size:.7rem;letter-spacing:.14em;color:var(--accent);font-weight:500;padding:0 0 6px}
+.fig > img{width:100%;height:auto;display:block;border-radius:10px;border:1px solid var(--line)}
+.fig.zoom{max-width:560px}
+/* コピーできるコマンド。コピーされるのは data-copy の文字列だけ（先頭の $ は付けない） */
+.cmdbox{display:flex;align-items:center;gap:10px;margin:12px 0;background:rgba(255,255,255,.055);border:1px solid var(--line);border-radius:14px;padding:5px 8px 5px 18px}
+.cmdbox code.cmd{flex:1 1 auto;min-width:0;display:block;font-family:var(--mono);font-size:14px;color:#ececec;background:none;border:0;border-radius:0;padding:12px 0;overflow-x:auto;white-space:pre}
+.copy{flex:0 0 auto;display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:9px;border:0;background:transparent;color:var(--ink-faint);cursor:pointer;transition:color .2s,background .2s}
+.copy:hover{color:var(--ink);background:var(--surface-2)}
+.copy svg{display:block}
+.copy .ic-check{display:none}
+.copy.done{color:var(--good)}
+.copy.done .ic-copy{display:none}.copy.done .ic-check{display:block}
+/* 出力例（コピー対象外） */
+.out{display:block;font-family:var(--mono);font-size:12.5px;background:#06080d;border:1px dashed var(--line-strong);border-radius:var(--radius-sm);padding:10px 14px;margin:10px 0;color:#9ff0cf;white-space:pre-wrap;overflow-wrap:anywhere}
+.out .lab{display:block;font-family:var(--font-body);font-size:.68rem;letter-spacing:.14em;color:var(--ink-faint);margin-bottom:4px}
+/* 1-2 の完成版から変わった部品（1-3 も同じ）：ステップ見出しは flex をやめ、ラベルを行内に置く（長い見出しの折り返しを本文と同じ流れに） */
+.step .sh{display:block}
+.step .sh .sn{display:inline-block;margin-right:10px}
+/* 共通の記事ルール（style.css と上の `body.is-article main …`）のほうが詳細度が高く、元の教材の値が
+   負けていたところを、詳細度を上げて元の値に戻す（DESIGN.md §137.2）。 */
+body.is-article main .lesson-hero h1{margin-bottom:22px}
+body.is-article main .lesson-hero p{margin:0 0 12px}
+body.is-article main h3{line-height:1.9;letter-spacing:normal}
+body.is-article main .foot p{color:var(--ink-faint)}
+
+/* モバイル：レールを引き出しに。`.menu-btn` は位置だけを持ち、見た目は
+   共通コンポーネントの `.btn` を併用する。 */
+.menu-btn{display:none}
+.scrim{display:none}
+@media (max-width:900px){
+  .rail{position:fixed;left:0;top:0;height:100vh;z-index:1100;transform:translateX(-100%);transition:transform .25s var(--ease);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);padding-top:28px}
+  body.nav-open .rail{transform:translateX(0)}
+  .main{padding:0 20px 90px}
+  .menu-btn{display:inline-flex;position:fixed;bottom:18px;right:18px;z-index:1050;background:var(--nav-bg);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);color:var(--ink)}
+  .scrim{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:1090}
+  body.nav-open .scrim{display:block}
+  .lesson-hero{padding-top:40px}
+}
+@media print{
+  body{background:#fff;color:#000}
+  header,.rail,.menu-btn,.scrim,#starfield,footer{display:none!important}
+  .wrap{display:block;padding-top:0}
+  .copy{display:none!important}
+}
+</style>
+<style>/* 図解（1-3 から）：スマホでは図だけ横にスクロール */
+.fig.dg{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.fig.dg>svg{min-width:620px}
+.fig.dg figcaption{min-width:0}
+.box .fig.dg{background:rgba(0,0,0,.18)}
+@media (max-width:700px){.fig.dg::before{content:'← 図は横にスクロールできます →';display:block;font-size:11px;color:var(--ink-faint);text-align:center;margin:-4px 0 6px;position:sticky;left:0}}
+</style>
+<link rel="stylesheet" href="../css/lesson-theme.css?v=r184">
+</head>
+<body data-page="study" class="is-article" data-node="cyber_1-4">
+<canvas id="starfield" aria-hidden="true"></canvas>
+<div id="site-nav"><noscript><nav class="noscript-nav" aria-label="メインナビゲーション"><a href="index.html">ホーム</a><a href="self-intro.html">自己紹介</a><a href="study.html">勉強の軌跡</a><a href="videos.html">動画</a><a href="blog.html">ブログ</a><a href="sns.html">各種SNS</a></nav></noscript></div>
+<button class="menu-btn btn" id="menuBtn" aria-controls="rail" aria-expanded="false">この記事の目次 <span class="btn-disc" aria-hidden="true">≡</span></button>
+<div class="scrim" id="scrim"></div>
+<div class="wrap">
+  <!-- 戻る導線はレール上部の「← サイバーセキュリティ基礎」（layout.js の CRUMBS が描く）と、
+       末尾の「目次へ」。どちらも cyber.html を指す。 -->
+  <nav class="rail" id="rail">
+    <div class="brand">1-4　階層モデル（OSI / TCP-IP）で全体を捉える<small>サイバーセキュリティ基礎 ／ 1章 ネットワークの仕組み</small></div>
+    <div class="progress-wrap"><div class="progress-bar" id="pbar"></div></div>
+    <ul class="toc" id="toc">
+      <li class="part">基礎概念</li>
+      <li><a href="#s1"><span class="n">01</span>階層モデル — 通信を役割で分ける</a></li>
+      <li><a href="#s2"><span class="n">02</span>TCP/IP モデルと OSI 参照モデル</a></li>
+      <li><a href="#s3"><span class="n">03</span>カプセル化 — 包んで、はがす</a></li>
+      <li class="part">手を動かす</li>
+      <li><a href="#s4"><span class="n">04</span>層ごとの住所：MAC アドレス</a></li>
+      <li><a href="#s5"><span class="n">05</span>1つのパケットを層ごとに見る</a></li>
+      <li><a href="#s6"><span class="n">06</span>IP と MAC の対応表を見る</a></li>
+      <li class="part">防御の視点</li>
+      <li><a href="#s7"><span class="n">07</span>層ごとの攻撃と守り</a></li>
+      <li class="part">仕上げ</li>
+      <li><a href="#s8"><span class="n">08</span>まとめとチェック</a></li>
+    </ul>
+  </nav>
+
+  <main class="main">
+    <svg class="dg-sprite" width="0" height="0" style="position:absolute;width:0;height:0;overflow:hidden" aria-hidden="true" focusable="false"><defs>
+<symbol id="i-pc" viewBox="0 0 64 64"><rect x="11" y="9" width="42" height="30" rx="3.5" fill="currentColor" fill-opacity=".14" stroke="currentColor" stroke-width="2.4"/><rect x="16" y="14" width="32" height="20" rx="1.5" fill="currentColor" fill-opacity=".10"/><path d="M5 45h54l-4 7H9z" fill="currentColor" fill-opacity=".22" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/><path d="M27 48.5h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+<symbol id="i-router" viewBox="0 0 64 64"><path d="M18 30L13 10M46 30l5-20" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><rect x="6" y="30" width="52" height="20" rx="5" fill="currentColor" fill-opacity=".16" stroke="currentColor" stroke-width="2.4"/><circle cx="17" cy="40" r="2.4" fill="currentColor"/><circle cx="26" cy="40" r="2.4" fill="currentColor"/><circle cx="35" cy="40" r="2.4" fill="currentColor"/><circle cx="47" cy="40" r="2.4" fill="currentColor" fill-opacity=".5"/></symbol>
+<symbol id="i-globe" viewBox="0 0 64 64"><circle cx="32" cy="32" r="23" fill="currentColor" fill-opacity=".12" stroke="currentColor" stroke-width="2.4"/><ellipse cx="32" cy="32" rx="10" ry="23" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9 32h46M13 20h38M13 44h38" stroke="currentColor" stroke-width="2" fill="none"/></symbol>
+<symbol id="i-server" viewBox="0 0 64 64"><rect x="12" y="7" width="40" height="14" rx="3" fill="currentColor" fill-opacity=".16" stroke="currentColor" stroke-width="2.4"/><rect x="12" y="25" width="40" height="14" rx="3" fill="currentColor" fill-opacity=".16" stroke="currentColor" stroke-width="2.4"/><rect x="12" y="43" width="40" height="14" rx="3" fill="currentColor" fill-opacity=".16" stroke="currentColor" stroke-width="2.4"/><circle cx="19" cy="14" r="2" fill="currentColor"/><circle cx="19" cy="32" r="2" fill="currentColor"/><circle cx="19" cy="50" r="2" fill="currentColor"/><path d="M30 14h16M30 32h16M30 50h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+<symbol id="i-person" viewBox="0 0 64 64"><circle cx="32" cy="20" r="10" fill="currentColor" fill-opacity=".16" stroke="currentColor" stroke-width="2.4"/><path d="M12 56c2-12 10-18 20-18s18 6 20 18z" fill="currentColor" fill-opacity=".16" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/></symbol>
+<symbol id="i-term" viewBox="0 0 64 64"><rect x="6" y="10" width="52" height="44" rx="5" fill="currentColor" fill-opacity=".12" stroke="currentColor" stroke-width="2.4"/><path d="M6 20h52" stroke="currentColor" stroke-width="2"/><path d="M15 30l7 6-7 6M27 43h12" stroke="currentColor" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<marker id="m-blue" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L10,5 L0,10 z" fill="#4d94ff"/></marker><marker id="m-green" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L10,5 L0,10 z" fill="#72e3ad"/></marker><marker id="m-amber" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L10,5 L0,10 z" fill="#ffb46b"/></marker><marker id="m-purple" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L10,5 L0,10 z" fill="#a48bff"/></marker><marker id="m-pink" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L10,5 L0,10 z" fill="#ff6fa5"/></marker><marker id="m-gray" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L10,5 L0,10 z" fill="rgba(255,255,255,.55)"/></marker></defs></svg>
+    <div class="lesson-hero">
+      <div class="eyebrow">サイバーセキュリティ基礎 ／ 1章 ネットワークの仕組み ／ SECTION 1-4</div>
+      <h1>1-4　階層モデル（OSI / TCP-IP）で全体を捉える<span class="sub">ばらばらに見えたプロトコルを、1枚の絵にまとめる</span></h1>
+      <p class="lead">1-1〜1-3 で、Ethernet・IP・ICMP・TCP・UDP・DNS・HTTP と、たくさんのプロトコル（通信の約束ごと）が出てきました。これらはばらばらに動いているのではなく、<strong>役割ごとに重なって（層になって）</strong>動いています。この重なり方を整理したものが<strong>階層モデル</strong>です。</p>
+      <p>この節では、TCP/IP モデルと OSI 参照モデルという2つの階層モデルを学び、Kali から Parrot の Web サーバーに接続したときのパケットを1つ取り出して、<strong>層ごとに分解</strong>して見ます。層の目で見られるようになると、「この攻撃はどの層の仕組みを悪用しているか」「この守りはどの層で効くか」を整理できるようになります。1章のまとめの節です。</p>
+      <p>読み方：コマンドは、右端の<strong>コピーボタン</strong>（重なった四角のアイコン）でコピーできます。各コマンドの下に、<strong>全パーツの意味</strong>と<strong>出力の読み方</strong>を載せています。</p>
+    </div>
+
+    <!-- §01 -->
+    <section id="s1">
+      <div class="sec-head"><span class="idx">§01</span><h2>階層モデル — 通信を役割で分ける</h2></div>
+
+      <div class="box target"><span class="lab">この節で押さえること</span>
+      <ul style="margin:6px 0 0">
+        <li>通信は、<strong>役割ごとの層</strong>に分けて作られている。TCP/IP モデルでは4つの層。</li>
+        <li>層ごとに使う<strong>住所・番号</strong>がちがう：MAC アドレス → IP アドレス → ポート番号 → 中身。</li>
+        <li>層に分けると、1つの層を取り替えても、ほかの層はそのまま使える。</li>
+      </ul></div>
+
+      <p>荷物を海外に送る場面を考えてみます。手紙を書く人は、中身のことだけを考えます。宛名を書く人は住所だけ、運送会社はトラックか飛行機かだけを考えます。<strong>それぞれが自分の役割だけを受け持ち、ほかの役割の中身は気にしない</strong>——こうしておくと、運び方がトラックから飛行機に変わっても、手紙の書き方は変えなくて済みます。</p>
+      <p>ネットワークも同じ考え方で作られています。たとえば、有線の LAN（Local Area Network：構内ネットワーク）でも Wi-Fi でも、Web ページの見方（HTTP：HyperText Transfer Protocol＝ハイパーテキスト転送プロトコル）は同じです。下の層（線か電波か）が変わっても、上の層はそのまま使えるからです。</p>
+
+      <figure class="fig dg">
+        <svg viewBox="0 0 760 342" role="img" aria-label="TCP/IP モデルの4つの層と、それぞれのプロトコル・住所"><text x="130" y="24" text-anchor="middle" fill="rgba(255,255,255,.55)" font-size="13" font-weight="500">層</text><text x="395" y="24" text-anchor="middle" fill="rgba(255,255,255,.55)" font-size="13" font-weight="500">この講座で見たプロトコル</text><text x="640" y="24" text-anchor="middle" fill="rgba(255,255,255,.55)" font-size="13" font-weight="500">使う住所・番号</text><rect x="10" y="36" width="740" height="62" rx="12" fill="#72e3ad" fill-opacity=".08" stroke="#72e3ad" stroke-opacity=".7" stroke-width="1.4"/><text x="130" y="62" text-anchor="middle" fill="#9ff0cf" font-size="14.5" font-weight="700">アプリケーション層</text><text x="130" y="82" text-anchor="middle" fill="rgba(255,255,255,.72)" font-size="11" font-weight="500">何をやり取りするか</text><rect x="290" y="50" width="98" height="34" rx="9" fill="#72e3ad" fill-opacity="0.13" stroke="#72e3ad" stroke-width="1.5"/><text x="339.0" y="72.04" text-anchor="middle" fill="#9ff0cf" font-size="14" font-weight="600">HTTP</text><rect x="398" y="50" width="98" height="34" rx="9" fill="#72e3ad" fill-opacity="0.13" stroke="#72e3ad" stroke-width="1.5"/><text x="447.0" y="72.04" text-anchor="middle" fill="#9ff0cf" font-size="14" font-weight="600">DNS</text><text x="640" y="73" text-anchor="middle" fill="#fff" font-size="14" font-weight="600">中身（データ）</text><rect x="10" y="106" width="740" height="62" rx="12" fill="#4d94ff" fill-opacity=".08" stroke="#4d94ff" stroke-opacity=".7" stroke-width="1.4"/><text x="130" y="132" text-anchor="middle" fill="#a8c9ff" font-size="14.5" font-weight="700">トランスポート層</text><text x="130" y="152" text-anchor="middle" fill="rgba(255,255,255,.72)" font-size="11" font-weight="500">どのプログラム宛てか・確実に届けるか</text><rect x="290" y="120" width="98" height="34" rx="9" fill="#4d94ff" fill-opacity="0.13" stroke="#4d94ff" stroke-width="1.5"/><text x="339.0" y="142.04" text-anchor="middle" fill="#a8c9ff" font-size="14" font-weight="600">TCP</text><rect x="398" y="120" width="98" height="34" rx="9" fill="#4d94ff" fill-opacity="0.13" stroke="#4d94ff" stroke-width="1.5"/><text x="447.0" y="142.04" text-anchor="middle" fill="#a8c9ff" font-size="14" font-weight="600">UDP</text><text x="640" y="143" text-anchor="middle" fill="#fff" font-size="14" font-weight="600">ポート番号</text><rect x="10" y="176" width="740" height="62" rx="12" fill="#ffb46b" fill-opacity=".08" stroke="#ffb46b" stroke-opacity=".7" stroke-width="1.4"/><text x="130" y="202" text-anchor="middle" fill="#ffd3a3" font-size="14.5" font-weight="700">インターネット層</text><text x="130" y="222" text-anchor="middle" fill="rgba(255,255,255,.72)" font-size="11" font-weight="500">どのマシン宛てか・どう中継するか</text><rect x="290" y="190" width="98" height="34" rx="9" fill="#ffb46b" fill-opacity="0.13" stroke="#ffb46b" stroke-width="1.5"/><text x="339.0" y="212.04" text-anchor="middle" fill="#ffd3a3" font-size="14" font-weight="600">IP</text><rect x="398" y="190" width="98" height="34" rx="9" fill="#ffb46b" fill-opacity="0.13" stroke="#ffb46b" stroke-width="1.5"/><text x="447.0" y="212.04" text-anchor="middle" fill="#ffd3a3" font-size="14" font-weight="600">ICMP</text><text x="640" y="213" text-anchor="middle" fill="#fff" font-size="14" font-weight="600">IP アドレス</text><rect x="10" y="246" width="740" height="62" rx="12" fill="#a48bff" fill-opacity=".08" stroke="#a48bff" stroke-opacity=".7" stroke-width="1.4"/><text x="130" y="272" text-anchor="middle" fill="#cbbcff" font-size="14.5" font-weight="700">ネットワークインターフェース層</text><text x="130" y="292" text-anchor="middle" fill="rgba(255,255,255,.72)" font-size="11" font-weight="500">同じネットワークの中で、隣の機器へ渡す</text><rect x="290" y="260" width="98" height="34" rx="9" fill="#a48bff" fill-opacity="0.13" stroke="#a48bff" stroke-width="1.5"/><text x="339.0" y="282.04" text-anchor="middle" fill="#cbbcff" font-size="14" font-weight="600">Ethernet</text><rect x="398" y="260" width="98" height="34" rx="9" fill="#a48bff" fill-opacity="0.13" stroke="#a48bff" stroke-width="1.5"/><text x="447.0" y="282.04" text-anchor="middle" fill="#cbbcff" font-size="14" font-weight="600">ARP</text><text x="640" y="283" text-anchor="middle" fill="#fff" font-size="14" font-weight="600">MAC アドレス</text><text x="380" y="330" text-anchor="middle" fill="rgba(255,255,255,.72)" font-size="12.5" font-weight="500">上の層ほど「使う人」に近く、下の層ほど「線（ケーブル・電波）」に近い</text></svg>
+        <figcaption>TCP/IP モデルの4つの層。1-1〜1-3 で見たプロトコルは、どれもこのどこかの層に入ります。層ごとに、使う<strong>住所・番号</strong>がちがうのがポイントです（MAC アドレス → IP アドレス → ポート番号 → 中身）。</figcaption>
+      </figure>
+
+      <p>この講座でこれまでに見たプロトコルを、層に当てはめると次のようになります。</p>
+      <div class="table-scroll"><table class="mini-table">
+        <thead><tr><th>層（TCP/IP モデル）</th><th>プロトコル</th><th>出てきた節</th></tr></thead>
+        <tbody>
+          <tr><td>アプリケーション層</td><td>HTTP、DNS（Domain Name System：ドメインネームシステム）</td><td>1-2、1-3</td></tr>
+          <tr><td>トランスポート層</td><td>TCP（Transmission Control Protocol：伝送制御プロトコル）、UDP（User Datagram Protocol：ユーザー・データグラム・プロトコル）</td><td>1-2、1-3</td></tr>
+          <tr><td>インターネット層</td><td>IP（Internet Protocol：インターネット・プロトコル）、ICMP（Internet Control Message Protocol：インターネット制御メッセージプロトコル）</td><td>1-1、1-3</td></tr>
+          <tr><td>ネットワークインターフェース層</td><td>Ethernet（イーサネット：有線 LAN の規格）、ARP（Address Resolution Protocol：アドレス解決プロトコル）</td><td>1-1</td></tr>
+        </tbody>
+      </table></div>
+
+      <div class="box teach"><span class="lab">ICMP と ARP は「どっちの層？」</span>
+      <p><strong>ICMP</strong> は IP パケットの中に入って運ばれますが、TCP や UDP の仲間ではなく、<strong>IP の付属品</strong>としてインターネット層に置かれます（1-3 §02）。ポート番号を持たないのも、そのためです。</p>
+      <p><strong>ARP</strong> は「IP アドレス（インターネット層の住所）から MAC アドレス（インターフェース層の住所）を調べる」役目なので、2つの層の<strong>つなぎ役</strong>です。TCP/IP モデルでは、ネットワークインターフェース層の側に置くことが多いです（§06）。</p></div>
+    </section>
+
+    <!-- §02 -->
+    <section id="s2">
+      <div class="sec-head"><span class="idx">§02</span><h2>TCP/IP モデルと OSI 参照モデル</h2></div>
+
+      <p>階層モデルには、よく使われるものが2つあります。</p>
+      <ul>
+        <li><strong>TCP/IP モデル</strong>（4層）：実際のインターネットの作りに合わせたモデル。この講座で見てきたプロトコルは、このモデルに沿って作られています。</li>
+        <li><strong>OSI 参照モデル</strong>（7層）：<strong>OSI</strong>（Open Systems Interconnection：開放型システム間相互接続）は、<strong>ISO</strong>（International Organization for Standardization：国際標準化機構）が決めた、通信を7つの層に分けて考えるための<strong>考え方の枠組み</strong>です（ISO は英語の頭文字なら「IOS」になりそうですが、頭文字ではありません。ギリシャ語の <em>isos</em>（等しい）から取った名前で、どの言語でも同じ「ISO」になるように決められています）。実際のインターネットは OSI のとおりには作られていませんが、「どの層の話か」を言うときの<strong>共通の番号</strong>として広く使われています。</li>
+      </ul>
+
+      <figure class="fig dg">
+        <svg viewBox="0 0 760 370" role="img" aria-label="OSI 参照モデルの7層と TCP/IP モデルの4層の対応"><text x="170" y="24" text-anchor="middle" fill="#fff" font-size="14" font-weight="600">OSI 参照モデル（7層）</text><text x="590" y="24" text-anchor="middle" fill="#fff" font-size="14" font-weight="600">TCP/IP モデル（4層）</text><rect x="40" y="38" width="260" height="36" rx="9" fill="rgba(255,255,255,.55)" fill-opacity="0.13" stroke="rgba(255,255,255,.55)" stroke-width="1.5"/><text x="170.0" y="60.68" text-anchor="middle" fill="rgba(255,255,255,.72)" font-size="13" font-weight="500">第7層　アプリケーション層</text><rect x="40" y="82" width="260" height="36" rx="9" fill="rgba(255,255,255,.55)" fill-opacity="0.13" stroke="rgba(255,255,255,.55)" stroke-width="1.5"/><text x="170.0" y="104.68" text-anchor="middle" fill="rgba(255,255,255,.72)" font-size="13" font-weight="500">第6層　プレゼンテーション層</text><rect x="40" y="126" width="260" height="36" rx="9" fill="rgba(255,255,255,.55)" fill-opacity="0.13" stroke="rgba(255,255,255,.55)" stroke-width="1.5"/><text x="170.0" y="148.68" text-anchor="middle" fill="rgba(255,255,255,.72)" font-size="13" font-weight="500">第5層　セッション層</text><rect x="40" y="170" width="260" height="36" rx="9" fill="rgba(255,255,255,.55)" fill-opacity="0.13" stroke="rgba(255,255,255,.55)" stroke-width="1.5"/><text x="170.0" y="192.68" text-anchor="middle" fill="rgba(255,255,255,.72)" font-size="13" font-weight="500">第4層　トランスポート層</text><rect x="40" y="214" width="260" height="36" rx="9" fill="rgba(255,255,255,.55)" fill-opacity="0.13" stroke="rgba(255,255,255,.55)" stroke-width="1.5"/><text x="170.0" y="236.68" text-anchor="middle" fill="rgba(255,255,255,.72)" font-size="13" font-weight="500">第3層　ネットワーク層</text><rect x="40" y="258" width="260" height="36" rx="9" fill="rgba(255,255,255,.55)" fill-opacity="0.13" stroke="rgba(255,255,255,.55)" stroke-width="1.5"/><text x="170.0" y="280.68" text-anchor="middle" fill="rgba(255,255,255,.72)" font-size="13" font-weight="500">第2層　データリンク層</text><rect x="40" y="302" width="260" height="36" rx="9" fill="rgba(255,255,255,.55)" fill-opacity="0.13" stroke="rgba(255,255,255,.55)" stroke-width="1.5"/><text x="170.0" y="324.68" text-anchor="middle" fill="rgba(255,255,255,.72)" font-size="13" font-weight="500">第1層　物理層</text><rect x="460" y="38" width="260" height="124" rx="9" fill="#72e3ad" fill-opacity="0.13" stroke="#72e3ad" stroke-width="1.5"/><text x="590.0" y="105.04" text-anchor="middle" fill="#9ff0cf" font-size="14" font-weight="600">アプリケーション層</text><path d="M302,42 L456,42 M302,158 L456,158" stroke="#72e3ad" stroke-opacity=".5" stroke-width="1.2" stroke-dasharray="4 4"/><rect x="460" y="170" width="260" height="36" rx="9" fill="#4d94ff" fill-opacity="0.13" stroke="#4d94ff" stroke-width="1.5"/><text x="590.0" y="193.04" text-anchor="middle" fill="#a8c9ff" font-size="14" font-weight="600">トランスポート層</text><path d="M302,174 L456,174 M302,202 L456,202" stroke="#4d94ff" stroke-opacity=".5" stroke-width="1.2" stroke-dasharray="4 4"/><rect x="460" y="214" width="260" height="36" rx="9" fill="#ffb46b" fill-opacity="0.13" stroke="#ffb46b" stroke-width="1.5"/><text x="590.0" y="237.04" text-anchor="middle" fill="#ffd3a3" font-size="14" font-weight="600">インターネット層</text><path d="M302,218 L456,218 M302,246 L456,246" stroke="#ffb46b" stroke-opacity=".5" stroke-width="1.2" stroke-dasharray="4 4"/><rect x="460" y="258" width="260" height="80" rx="9" fill="#a48bff" fill-opacity="0.13" stroke="#a48bff" stroke-width="1.5"/><text x="590.0" y="303.04" text-anchor="middle" fill="#cbbcff" font-size="14" font-weight="600">ネットワークインターフェース層</text><path d="M302,262 L456,262 M302,334 L456,334" stroke="#a48bff" stroke-opacity=".5" stroke-width="1.2" stroke-dasharray="4 4"/><text x="380" y="358" text-anchor="middle" fill="rgba(255,255,255,.72)" font-size="12.5" font-weight="500">OSI は考え方の整理に、TCP/IP は実際のインターネットの作りに使われる</text></svg>
+        <figcaption>OSI 参照モデルの第5〜7層は、TCP/IP モデルではまとめて「アプリケーション層」、第1〜2層はまとめて「ネットワークインターフェース層」です。</figcaption>
+      </figure>
+
+      <p>セキュリティの話では、OSI の番号で「<strong>L2</strong>（レイヤー2：Layer 2＝第2層）の攻撃」「<strong>L7</strong> のファイアウォール」のように呼ぶことがよくあります。L2 はデータリンク層（MAC アドレスの層）、L3 はネットワーク層（IP の層）、L4 はトランスポート層（ポートの層）、L7 はアプリケーション層です。</p>
+
+      <h3>層ごとの「荷物の呼び方」</h3>
+      <p>同じデータでも、どの層の目で見ているかによって呼び方が変わります。この呼び方をまとめて <strong>PDU</strong>（Protocol Data Unit：プロトコル・データ・ユニット＝その層が扱う1つ分のかたまり）と言います。</p>
+      <div class="table-scroll"><table class="mini-table">
+        <thead><tr><th>層</th><th>呼び方</th><th>例</th></tr></thead>
+        <tbody>
+          <tr><td>アプリケーション層</td><td>データ、メッセージ</td><td>HTTP の依頼「GET /」</td></tr>
+          <tr><td>トランスポート層</td><td>セグメント（TCP）、データグラム（UDP）</td><td>TCP のヘッダが付いたもの</td></tr>
+          <tr><td>インターネット層</td><td><strong>パケット</strong></td><td>IP のヘッダが付いたもの（1-1 で「パケット」と呼んできたもの）</td></tr>
+          <tr><td>ネットワークインターフェース層</td><td><strong>フレーム</strong>（frame）</td><td>Ethernet のヘッダが付いたもの。実際に線を流れるのはこれ（前後に、記録には残らない合図なども付く：§05）</td></tr>
+        </tbody>
+      </table></div>
+      <p style="font-size:13.5px;color:var(--ink-faint)">日常会話では、どの層でもまとめて「パケット」と呼ぶことが多く、この講座でもそうしてきました。§05 の tshark は、Ethernet まで含めた1つ分を「Frame」と表示します。</p>
+    </section>
+
+    <!-- §03 -->
+    <section id="s3">
+      <div class="sec-head"><span class="idx">§03</span><h2>カプセル化 — 包んで、はがす</h2></div>
+
+      <p>送る側では、上の層から順に、それぞれの層が<strong>自分のヘッダ（送り状）を付けて包みます</strong>。これを<strong>カプセル化</strong>（encapsulation：カプセルに包むこと）と言います。受け取る側では、逆に下の層から順にヘッダを読んで<strong>はがし</strong>、中身を上の層に渡します。1-1 §01 の「封筒の中に封筒」の正体が、これです。</p>
+
+      <figure class="fig dg">
+        <svg viewBox="0 0 760 304" role="img" aria-label="HTTP のデータに TCP、IP、Ethernet のヘッダが順に付いて148バイトのフレームになる"><text x="32" y="56" text-anchor="start" fill="#9ff0cf" font-size="12.5" font-weight="600">アプリケーション層</text><text x="160" y="48" text-anchor="start" fill="rgba(255,255,255,.72)" font-size="12" font-weight="500">HTTP のデータ</text><text x="160" y="66" text-anchor="start" fill="#fff" font-size="12" font-weight="600">（82バイト）</text><rect x="491.4" y="30" width="237.79999999999998" height="40" rx="9" fill="#72e3ad" fill-opacity="0.13" stroke="#72e3ad" stroke-width="1.5"/><text x="610.3" y="54.14" text-anchor="middle" fill="#9ff0cf" font-size="11.5" font-weight="500">HTTP 82</text><text x="32" y="116" text-anchor="start" fill="#a8c9ff" font-size="12.5" font-weight="600">トランスポート層</text><text x="160" y="108" text-anchor="start" fill="rgba(255,255,255,.72)" font-size="12" font-weight="500">＋ TCP ヘッダ</text><text x="160" y="126" text-anchor="start" fill="#fff" font-size="12" font-weight="600">（114バイト）</text><rect x="398.6" y="90" width="92.8" height="40" rx="9" fill="#4d94ff" fill-opacity="0.13" stroke="#4d94ff" stroke-width="1.5"/><text x="445.0" y="114.14" text-anchor="middle" fill="#a8c9ff" font-size="11.5" font-weight="500">TCP</text><rect x="491.40000000000003" y="90" width="237.79999999999998" height="40" rx="9" fill="#72e3ad" fill-opacity="0.13" stroke="#72e3ad" stroke-width="1.5"/><text x="610.3000000000001" y="114.14" text-anchor="middle" fill="#9ff0cf" font-size="11.5" font-weight="500">HTTP 82</text><text x="32" y="176" text-anchor="start" fill="#ffd3a3" font-size="12.5" font-weight="600">インターネット層</text><text x="160" y="168" text-anchor="start" fill="rgba(255,255,255,.72)" font-size="12" font-weight="500">＋ IP ヘッダ</text><text x="160" y="186" text-anchor="start" fill="#fff" font-size="12" font-weight="600">（134バイト）</text><rect x="340.6" y="150" width="58.0" height="40" rx="9" fill="#ffb46b" fill-opacity="0.13" stroke="#ffb46b" stroke-width="1.5"/><text x="369.6" y="174.14" text-anchor="middle" fill="#ffd3a3" font-size="11.5" font-weight="500">IP</text><rect x="398.6" y="150" width="92.8" height="40" rx="9" fill="#4d94ff" fill-opacity="0.13" stroke="#4d94ff" stroke-width="1.5"/><text x="445.0" y="174.14" text-anchor="middle" fill="#a8c9ff" font-size="11.5" font-weight="500">TCP</text><rect x="491.40000000000003" y="150" width="237.79999999999998" height="40" rx="9" fill="#72e3ad" fill-opacity="0.13" stroke="#72e3ad" stroke-width="1.5"/><text x="610.3000000000001" y="174.14" text-anchor="middle" fill="#9ff0cf" font-size="11.5" font-weight="500">HTTP 82</text><text x="32" y="236" text-anchor="start" fill="#cbbcff" font-size="12.5" font-weight="600">インターフェース層</text><text x="160" y="228" text-anchor="start" fill="rgba(255,255,255,.72)" font-size="12" font-weight="500">＋ Ethernet ヘッダ</text><text x="160" y="246" text-anchor="start" fill="#fff" font-size="12" font-weight="600">（148バイト）</text><rect x="300.0" y="210" width="40.6" height="40" rx="9" fill="#a48bff" fill-opacity="0.13" stroke="#a48bff" stroke-width="1.5"/><text x="320.3" y="234.14" text-anchor="middle" fill="#cbbcff" font-size="11.5" font-weight="500">Eth</text><rect x="340.6" y="210" width="58.0" height="40" rx="9" fill="#ffb46b" fill-opacity="0.13" stroke="#ffb46b" stroke-width="1.5"/><text x="369.6" y="234.14" text-anchor="middle" fill="#ffd3a3" font-size="11.5" font-weight="500">IP</text><rect x="398.6" y="210" width="92.8" height="40" rx="9" fill="#4d94ff" fill-opacity="0.13" stroke="#4d94ff" stroke-width="1.5"/><text x="445.0" y="234.14" text-anchor="middle" fill="#a8c9ff" font-size="11.5" font-weight="500">TCP</text><rect x="491.40000000000003" y="210" width="237.79999999999998" height="40" rx="9" fill="#72e3ad" fill-opacity="0.13" stroke="#72e3ad" stroke-width="1.5"/><text x="610.3000000000001" y="234.14" text-anchor="middle" fill="#9ff0cf" font-size="11.5" font-weight="500">HTTP 82</text><line x1="16" y1="52" x2="16" y2="236" stroke="rgba(255,255,255,.55)" stroke-width="1.8" marker-end="url(#m-gray)"/><text x="380" y="292" text-anchor="middle" fill="rgba(255,255,255,.72)" font-size="12.5" font-weight="500">送る側は上から順に包み（カプセル化）、受ける側は下から順にはがす。#4 のパケット（148バイト）の場合</text></svg>
+        <figcaption>§05 で観察する #4 のパケットができるまで。HTTP の82バイトに、TCP のヘッダ（32）、IP のヘッダ（20）、Ethernet のヘッダ（14）が順に付いて、148バイトになります。これを<strong>カプセル化</strong>（capsule：包む）と呼びます。受け取った Parrot は、下の層から順にヘッダをはがして、最後に HTTP のデータを Web サーバーに渡します。</figcaption>
+      </figure>
+
+      <p>それぞれの層は、<strong>相手のマシンの同じ層</strong>とだけ話しているように振る舞います。Kali の TCP は Parrot の TCP と通し番号（1-2）をやり取りし、Kali の HTTP は Parrot の HTTP と「ください」「どうぞ」をやり取りします。そのとき、下の層がどうやって運んでいるかは気にしません。</p>
+
+      <figure class="fig dg">
+        <svg viewBox="0 0 760 304" role="img" aria-label="Kali と Parrot の同じ層どうしが対応し、実際のデータは下の層を通って運ばれる"><text x="130" y="24" text-anchor="middle" fill="#a8c9ff" font-size="15" font-weight="700">Kali（curl）</text><rect x="20" y="38" width="220" height="46" rx="9" fill="#72e3ad" fill-opacity="0.13" stroke="#72e3ad" stroke-width="1.5"/><text x="130.0" y="57.14" text-anchor="middle" fill="#9ff0cf" font-size="11.5" font-weight="500">アプリケーション層</text><text x="130.0" y="73.14" text-anchor="middle" fill="#9ff0cf" font-size="11.5" font-weight="500">GET /</text><rect x="20" y="96" width="220" height="46" rx="9" fill="#4d94ff" fill-opacity="0.13" stroke="#4d94ff" stroke-width="1.5"/><text x="130.0" y="115.14" text-anchor="middle" fill="#a8c9ff" font-size="11.5" font-weight="500">トランスポート層</text><text x="130.0" y="131.14" text-anchor="middle" fill="#a8c9ff" font-size="11.5" font-weight="500">送信元ポート 48448</text><rect x="20" y="154" width="220" height="46" rx="9" fill="#ffb46b" fill-opacity="0.13" stroke="#ffb46b" stroke-width="1.5"/><text x="130.0" y="173.14" text-anchor="middle" fill="#ffd3a3" font-size="11.5" font-weight="500">インターネット層</text><text x="130.0" y="189.14" text-anchor="middle" fill="#ffd3a3" font-size="11.5" font-weight="500">192.168.128.2</text><rect x="20" y="212" width="220" height="46" rx="9" fill="#a48bff" fill-opacity="0.13" stroke="#a48bff" stroke-width="1.5"/><text x="130.0" y="231.14" text-anchor="middle" fill="#cbbcff" font-size="11.5" font-weight="500">ネットワークインターフェース層</text><text x="130.0" y="247.14" text-anchor="middle" fill="#cbbcff" font-size="11.5" font-weight="500">12:ae:d8:64:04:33</text><text x="630" y="24" text-anchor="middle" fill="#9ff0cf" font-size="15" font-weight="700">Parrot（Web サーバー）</text><rect x="520" y="38" width="220" height="46" rx="9" fill="#72e3ad" fill-opacity="0.13" stroke="#72e3ad" stroke-width="1.5"/><text x="630.0" y="57.14" text-anchor="middle" fill="#9ff0cf" font-size="11.5" font-weight="500">アプリケーション層</text><text x="630.0" y="73.14" text-anchor="middle" fill="#9ff0cf" font-size="11.5" font-weight="500">200 OK</text><rect x="520" y="96" width="220" height="46" rx="9" fill="#4d94ff" fill-opacity="0.13" stroke="#4d94ff" stroke-width="1.5"/><text x="630.0" y="115.14" text-anchor="middle" fill="#a8c9ff" font-size="11.5" font-weight="500">トランスポート層</text><text x="630.0" y="131.14" text-anchor="middle" fill="#a8c9ff" font-size="11.5" font-weight="500">待ち受けポート 8080</text><rect x="520" y="154" width="220" height="46" rx="9" fill="#ffb46b" fill-opacity="0.13" stroke="#ffb46b" stroke-width="1.5"/><text x="630.0" y="173.14" text-anchor="middle" fill="#ffd3a3" font-size="11.5" font-weight="500">インターネット層</text><text x="630.0" y="189.14" text-anchor="middle" fill="#ffd3a3" font-size="11.5" font-weight="500">192.168.128.3</text><rect x="520" y="212" width="220" height="46" rx="9" fill="#a48bff" fill-opacity="0.13" stroke="#a48bff" stroke-width="1.5"/><text x="630.0" y="231.14" text-anchor="middle" fill="#cbbcff" font-size="11.5" font-weight="500">ネットワークインターフェース層</text><text x="630.0" y="247.14" text-anchor="middle" fill="#cbbcff" font-size="11.5" font-weight="500">5e:f1:1e:25:27:db</text><line x1="244" y1="61" x2="516" y2="61" stroke="#72e3ad" stroke-width="1.4" stroke-dasharray="5 5"/><line x1="244" y1="119" x2="516" y2="119" stroke="#4d94ff" stroke-width="1.4" stroke-dasharray="5 5"/><line x1="244" y1="177" x2="516" y2="177" stroke="#ffb46b" stroke-width="1.4" stroke-dasharray="5 5"/><line x1="244" y1="235" x2="516" y2="235" stroke="#a48bff" stroke-width="1.4" stroke-dasharray="5 5"/><text x="380" y="52" text-anchor="middle" fill="rgba(255,255,255,.72)" font-size="12" font-weight="500">同じ層どうしで「話している」</text><line x1="14" y1="46" x2="14" y2="262" stroke="rgba(255,255,255,.55)" stroke-width="1.8" marker-end="url(#m-gray)"/><line x1="746" y1="262" x2="746" y2="46" stroke="rgba(255,255,255,.55)" stroke-width="1.8" marker-end="url(#m-gray)"/><path d="M14,272 H746" stroke="rgba(255,255,255,.72)" stroke-width="2.4"/><text x="380" y="292" text-anchor="middle" fill="rgba(255,255,255,.72)" font-size="12.5" font-weight="500">実際に線を流れるのはいちばん下（Ethernet のフレーム）だけ</text></svg>
+        <figcaption>Kali の HTTP は Parrot の HTTP と、Kali の TCP は Parrot の TCP と、というように、<strong>同じ層どうし</strong>がやり取りしている（点線）と考えます。実際には、データは Kali の層を上から下へ降り、線を通って、Parrot の層を下から上へ昇ります（実線の矢印）。</figcaption>
+      </figure>
+
+      <div class="box principle"><span class="lab">層ごとに「住所」がちがう</span>
+      <p>層ごとに、使う住所・番号がちがいます。とくに大事なのが、<strong>MAC アドレスと IP アドレスの役割のちがい</strong>です。</p>
+      <ul style="margin:6px 0 0">
+        <li><strong>MAC アドレス</strong>（インターフェース層）：同じネットワークの中で、<strong>すぐ隣の機器</strong>に渡すための住所。ルーターを越えるたびに付け替わる。</li>
+        <li><strong>IP アドレス</strong>（インターネット層）：<strong>最後の宛先</strong>のマシンの住所。途中で<strong>原則として</strong>変わらない（NAT では送信元が書き換わる。外から内側の機器へ通すポート転送のように、宛先が書き換わる仕組みもある）。</li>
+        <li><strong>ポート番号</strong>（トランスポート層）：そのマシンの中の<strong>どのプログラム</strong>宛てか。</li>
+      </ul></div>
+
+      <figure class="fig dg">
+        <svg viewBox="0 0 760 318" role="img" aria-label="MAC アドレスは区間ごとに付け替わり、宛先 IP アドレスは原則として最後まで同じ"><use href="#i-pc" x="46.0" y="66.0" width="48" height="48" style="color:#72e3ad"/><text x="70" y="132.0" text-anchor="middle" fill="#fff" font-size="15" font-weight="600">Parrot</text><text x="70" y="151.0" text-anchor="middle" fill="#9ff0cf" font-size="12.5" font-weight="500" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">192.168.64.2</text><use href="#i-router" x="356.0" y="66.0" width="48" height="48" style="color:#a48bff"/><text x="380" y="132.0" text-anchor="middle" fill="#fff" font-size="15" font-weight="600">Mac（出口）</text><text x="380" y="151.0" text-anchor="middle" fill="#cbbcff" font-size="12.5" font-weight="500" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">192.168.64.1</text><use href="#i-globe" x="666.0" y="66.0" width="48" height="48" style="color:rgba(255,255,255,.55)"/><text x="690" y="132.0" text-anchor="middle" fill="#fff" font-size="15" font-weight="600">example.com</text><text x="690" y="151.0" text-anchor="middle" fill="rgba(255,255,255,.72)" font-size="12.5" font-weight="500" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">172.66.147.243</text><line x1="100" y1="80" x2="346" y2="80" stroke="#a48bff" stroke-width="2" marker-end="url(#m-purple)"/><line x1="414" y1="80" x2="656" y2="80" stroke="#a48bff" stroke-width="2" marker-end="url(#m-purple)"/><rect x="80" y="186" width="226" height="30" rx="9" fill="#a48bff" fill-opacity="0.13" stroke="#a48bff" stroke-width="1.5"/><text x="193.0" y="205.32" text-anchor="middle" fill="#cbbcff" font-size="12" font-weight="500">宛先 MAC：Mac の MAC</text><rect x="80" y="222" width="226" height="30" rx="9" fill="#ffb46b" fill-opacity="0.13" stroke="#ffb46b" stroke-width="1.5"/><text x="193.0" y="241.32" text-anchor="middle" fill="#ffd3a3" font-size="12" font-weight="500">宛先 IP：example.com</text><rect x="426" y="186" width="226" height="30" rx="9" fill="#a48bff" fill-opacity="0.13" stroke="#a48bff" stroke-width="1.5"/><text x="539.0" y="205.32" text-anchor="middle" fill="#cbbcff" font-size="12" font-weight="500">宛先 MAC：次のルーターの MAC</text><rect x="426" y="222" width="226" height="30" rx="9" fill="#ffb46b" fill-opacity="0.13" stroke="#ffb46b" stroke-width="1.5"/><text x="539.0" y="241.32" text-anchor="middle" fill="#ffd3a3" font-size="12" font-weight="500">宛先 IP：example.com</text><text x="193" y="272" text-anchor="middle" fill="rgba(255,255,255,.55)" font-size="12" font-weight="500">1区間目</text><text x="539" y="272" text-anchor="middle" fill="rgba(255,255,255,.55)" font-size="12" font-weight="500">2区間目（Mac が付け替える）</text><text x="380" y="302" text-anchor="middle" fill="rgba(255,255,255,.72)" font-size="12.5" font-weight="500">MAC アドレスは「すぐ隣まで」で、区間ごとに付け替わる。IP アドレスの宛先は原則として最後まで変わらない</text></svg>
+        <figcaption>1-3 §07 の ping（TTL を制限しない場合）を例にした図。Parrot は <code>192.168.64.2 &gt; 172.66.147.243</code> と、example.com 宛てに送っていました。Ethernet の宛先 MAC アドレスは、<strong>同じネットワークの中の、すぐ隣の機器</strong>（ここでは出口の Mac）です。Mac は受け取ると、次の区間用に MAC アドレスを付け替えて送り出します。一方、IP の宛先は example.com のまま変わりません（送信元 IP は Mac の NAT で書き換わります：1-1 §02）。なお、1-3 §06 の DNS の問い合わせは、宛先 IP が <strong>Mac 自身</strong>（<code>192.168.64.1</code>）でした。Mac が中継役として、外の DNS サーバーに改めて聞き直しているためで、IP の宛先もそこで終わっています。</figcaption>
+      </figure>
+    </section>
+
+    <!-- §04 -->
+    <section id="s4">
+      <div class="sec-head"><span class="idx">§04</span><h2>層ごとの住所：MAC アドレス（Kali・Parrot）</h2></div>
+
+      <figure class="fig dg">
+        <svg viewBox="0 0 760 203" role="img" aria-label="§04 ではネットワークインターフェース層の MAC アドレスを見る"><rect x="14" y="8" width="66" height="22" rx="11" fill="#ff6fa5" fill-opacity=".16" stroke="#ff6fa5" stroke-width="1.2"/><text x="47" y="23" text-anchor="middle" fill="#ffb3cf" font-size="11.5" font-weight="700">いまここ</text><text x="92" y="24" text-anchor="start" fill="rgba(255,255,255,.72)" font-size="12.5" font-weight="500">§04 で見る層（§01 の図）</text><rect x="20" y="40" width="440" height="32" rx="9" fill="rgba(255,255,255,.55)" fill-opacity="0.03" stroke="rgba(255,255,255,.55)" stroke-opacity="0.35" stroke-width="1"/><text x="36" y="61" text-anchor="start" fill="rgba(255,255,255,.55)" font-size="13" font-weight="500" opacity="0.55">アプリケーション層</text><text x="444" y="61" text-anchor="end" fill="rgba(255,255,255,.55)" font-size="12.5" font-weight="500" opacity="0.55">中身（データ）</text><rect x="20" y="79" width="440" height="32" rx="9" fill="rgba(255,255,255,.55)" fill-opacity="0.03" stroke="rgba(255,255,255,.55)" stroke-opacity="0.35" stroke-width="1"/><text x="36" y="100" text-anchor="start" fill="rgba(255,255,255,.55)" font-size="13" font-weight="500" opacity="0.55">トランスポート層</text><text x="444" y="100" text-anchor="end" fill="rgba(255,255,255,.55)" font-size="12.5" font-weight="500" opacity="0.55">ポート番号</text><rect x="20" y="118" width="440" height="32" rx="9" fill="rgba(255,255,255,.55)" fill-opacity="0.03" stroke="rgba(255,255,255,.55)" stroke-opacity="0.35" stroke-width="1"/><text x="36" y="139" text-anchor="start" fill="rgba(255,255,255,.55)" font-size="13" font-weight="500" opacity="0.55">インターネット層</text><text x="444" y="139" text-anchor="end" fill="rgba(255,255,255,.55)" font-size="12.5" font-weight="500" opacity="0.55">IP アドレス</text><rect x="20" y="157" width="440" height="32" rx="9" fill="#a48bff" fill-opacity="0.16" stroke="#a48bff" stroke-opacity="1" stroke-width="1.8"/><text x="36" y="178" text-anchor="start" fill="#cbbcff" font-size="13" font-weight="700">ネットワークインターフェース層</text><text x="444" y="178" text-anchor="end" fill="#fff" font-size="12.5" font-weight="600">MAC アドレス</text><path d="M464,159 h8 V187 h-8" fill="none" stroke="#a48bff" stroke-width="1.6"/><line x1="472" y1="173.0" x2="500" y2="173.0" stroke="#a48bff" stroke-width="1.6"/><rect x="500" y="113" width="240" height="76" rx="12" fill="#a48bff" fill-opacity=".10" stroke="#a48bff" stroke-width="1.4"/><text x="516" y="137" text-anchor="start" fill="#cbbcff" font-size="13.5" font-weight="700">MAC アドレス</text><text x="516" y="159" text-anchor="start" fill="rgba(255,255,255,.72)" font-size="12" font-weight="500">NIC 1枚ごとの番号</text><text x="516" y="181" text-anchor="start" fill="rgba(255,255,255,.72)" font-size="12" font-weight="500">ip -br link で確かめる</text></svg>
+        <figcaption>§01 の4つの層のうち、§04 では<strong>いちばん下のネットワークインターフェース層</strong>の住所、MAC アドレスを確かめます。</figcaption>
+      </figure>
+
+      <p>IP アドレスは 1-1 §03 で確かめました。ここでは、そのひとつ下の層の住所、<strong>MAC アドレス</strong>（MAC：Media Access Control＝媒体アクセス制御）を見ます。MAC アドレスは、NIC（Network Interface Card：ネットワーク・インターフェース・カード。1-1 §02）1枚ごとに付いている番号です。演習を始める前に、Kali と Parrot の端末をすべて <code>clear</code> しておきます。</p>
+
+      <div class="step">
+        <span class="sh"><span class="sn">COMMAND</span>インターフェースと MAC アドレスを一覧表示する（Kali・Parrot 共通）</span>
+        <div class="cmdbox" data-copy="ip -br link"><code class="cmd">ip -br link</code></div>
+      </div>
+      <div class="table-scroll"><table class="mini-table anat">
+        <caption>コマンドの分解（1-1 §03 の <code>ip -br -4 a</code> の仲間）</caption>
+        <thead><tr><th>部分</th><th>意味</th></tr></thead>
+        <tbody>
+          <tr><td><code>ip</code></td><td>Linux でネットワークの設定を表示・変更するコマンド（1-1 §03）。</td></tr>
+          <tr><td><code>-br</code></td><td><strong>brief</strong>（簡潔）。1つのインターフェースを1行にまとめて表示する。</td></tr>
+          <tr><td><code>link</code></td><td>何を表示するかの対象。<strong>link</strong>（リンク：つながり）＝<strong>インターフェースそのもの</strong>（インターフェース層の情報）。1-1 の <code>a</code>（address：IP アドレス）がインターネット層の情報だったのに対して、こちらはひとつ下の層を見る。</td></tr>
+        </tbody>
+      </table></div>
+
+      <div class="out"><span class="lab">出力例（Kali）</span>lo               UNKNOWN        00:00:00:00:00:00 &lt;LOOPBACK,UP,LOWER_UP&gt;
+eth0             UP             7e:46:06:13:81:e8 &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt;
+eth1             UP             12:ae:d8:64:04:33 &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt;</div>
+      <div class="out"><span class="lab">出力例（Parrot）</span>lo               UNKNOWN        00:00:00:00:00:00 &lt;LOOPBACK,UP,LOWER_UP&gt;
+enp0s1           UP             52:54:00:7e:78:3c &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt;
+enp0s2           UP             5e:f1:1e:25:27:db &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt;</div>
+      <div class="table-scroll"><table class="mini-table anat">
+        <caption>出力の読み方（左の列から順に）</caption>
+        <colgroup><col style="width:22%"><col style="width:26%"><col></colgroup>
+        <thead><tr><th>列・値</th><th>例</th><th>意味</th></tr></thead>
+        <tbody>
+          <tr><td>1列目</td><td><code>eth1</code> / <code>enp0s2</code></td><td><strong>インターフェース名</strong>（1-1 §03）。演習の内部ネットワーク側は、Kali が <code>eth1</code>、Parrot が <code>enp0s2</code>。</td></tr>
+          <tr><td>2列目</td><td><code>UP</code> / <code>UNKNOWN</code></td><td><strong>状態</strong>。<code>UP</code>＝使える状態。<code>lo</code> の <code>UNKNOWN</code> は、ループバック（自分自身。1-1 §03）には「線がつながっているか」がないための表示。</td></tr>
+          <tr><td>3列目</td><td><code>12:ae:d8:64:04:33</code></td><td><strong>MAC アドレス</strong>。Kali の <code>eth1</code> は <code>12:ae:d8:64:04:33</code>、Parrot の <code>enp0s2</code> は <code>5e:f1:1e:25:27:db</code>。§05 で、この2つが Ethernet のヘッダに書かれているのを確かめる。</td></tr>
+          <tr><td>3列目（<code>lo</code>）</td><td><code>00:00:00:00:00:00</code></td><td>ループバックは本物の NIC ではないので、MAC アドレスは全部 0。</td></tr>
+          <tr><td rowspan="5">4列目（<code>&lt; &gt;</code> の中）</td><td><code>BROADCAST</code></td><td><strong>ブロードキャスト</strong>（broadcast：一斉送信）ができる。同じネットワークの全員に一度に送れる（ARP の「だれ？」はこれを使う。1-1 §04）。</td></tr>
+          <tr><td><code>MULTICAST</code></td><td><strong>マルチキャスト</strong>（multicast：グループ宛て送信）ができる。決まったグループの相手に一度に送れる（1-3 の mDNS など）。</td></tr>
+          <tr><td><code>UP</code></td><td>使う設定になっている（管理者が「有効」にしている）。</td></tr>
+          <tr><td><code>LOWER_UP</code></td><td><strong>下の層（線）もつながっている</strong>。本物なら LAN ケーブルがささって通信できる状態（仮想マシンでは、仮想の線がつながっている状態）。</td></tr>
+          <tr><td><code>LOOPBACK</code></td><td>ループバックであること（<code>lo</code> だけ）。</td></tr>
+        </tbody>
+      </table></div>
+
+      <figure class="fig dg">
+        <svg viewBox="0 0 760 196" role="img" aria-label="MAC アドレスは6バイトで、前半はメーカーの番号"><text x="20" y="26" text-anchor="start" fill="#cbbcff" font-size="14" font-weight="600">MAC アドレス：16進数2桁 × 6つ ＝ 48ビット（6バイト）</text><rect x="20" y="40" width="68" height="40" rx="9" fill="#a48bff" fill-opacity="0.13" stroke="#a48bff" stroke-width="1.5"/><text x="54.0" y="66.12" text-anchor="middle" fill="#cbbcff" font-size="17" font-weight="500" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">12</text><text x="97" y="66" text-anchor="middle" fill="#fff" font-size="18" font-weight="700">:</text><rect x="106" y="40" width="68" height="40" rx="9" fill="#a48bff" fill-opacity="0.13" stroke="#a48bff" stroke-width="1.5"/><text x="140.0" y="66.12" text-anchor="middle" fill="#cbbcff" font-size="17" font-weight="500" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">ae</text><text x="183" y="66" text-anchor="middle" fill="#fff" font-size="18" font-weight="700">:</text><rect x="192" y="40" width="68" height="40" rx="9" fill="#a48bff" fill-opacity="0.13" stroke="#a48bff" stroke-width="1.5"/><text x="226.0" y="66.12" text-anchor="middle" fill="#cbbcff" font-size="17" font-weight="500" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">d8</text><text x="269" y="66" text-anchor="middle" fill="#fff" font-size="18" font-weight="700">:</text><rect x="278" y="40" width="68" height="40" rx="9" fill="#a48bff" fill-opacity="0.13" stroke="#a48bff" stroke-width="1.5"/><text x="312.0" y="66.12" text-anchor="middle" fill="#cbbcff" font-size="17" font-weight="500" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">64</text><text x="355" y="66" text-anchor="middle" fill="#fff" font-size="18" font-weight="700">:</text><rect x="364" y="40" width="68" height="40" rx="9" fill="#a48bff" fill-opacity="0.13" stroke="#a48bff" stroke-width="1.5"/><text x="398.0" y="66.12" text-anchor="middle" fill="#cbbcff" font-size="17" font-weight="500" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">04</text><text x="441" y="66" text-anchor="middle" fill="#fff" font-size="18" font-weight="700">:</text><rect x="450" y="40" width="68" height="40" rx="9" fill="#a48bff" fill-opacity="0.13" stroke="#a48bff" stroke-width="1.5"/><text x="484.0" y="66.12" text-anchor="middle" fill="#cbbcff" font-size="17" font-weight="500" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">33</text><path d="M20,92 v8 H276 v-8" fill="none" stroke="#a48bff" stroke-width="1.6"/><text x="148.0" y="114.4" text-anchor="middle" fill="#cbbcff" font-size="12" font-weight="600">前半3つ：本物の NIC ならメーカーの番号（OUI）</text><path d="M278,92 v8 H536 v-8" fill="none" stroke="#a48bff" stroke-width="1.6"/><text x="407.0" y="114.4" text-anchor="middle" fill="#cbbcff" font-size="12" font-weight="600">後半3つ：メーカーが1台ずつ付ける番号</text><text x="20" y="158" text-anchor="start" fill="rgba(255,255,255,.72)" font-size="12.5" font-weight="500">仮想マシンの NIC は、UTM が「ローカル管理」の印を付けた番号を自分で作っている</text><text x="20" y="180" text-anchor="start" fill="rgba(255,255,255,.55)" font-size="12" font-weight="500">（例：Parrot の enp0s1 の 52:54:00 は、仮想化ソフト QEMU がよく使う番号）</text></svg>
+        <figcaption>MAC アドレスは6バイト（48ビット）の番号で、本物の NIC なら前半3バイトがメーカーの番号、後半3バイトがメーカーが付ける番号です。仮想マシンの NIC には、仮想化ソフトが作った番号が付いています。メーカーの番号は OUI（Organizationally Unique Identifier：組織固有識別子）と呼ばれ、メーカーごとに割り当てられています。</figcaption>
+      </figure>
+
+      <figure class="fig">
+        <img src="../image/cyber/1-4/fig1_parrot.jpg?v=r184" width="1400" height="680" loading="lazy" alt="Parrot のデスクトップ。上の端末に ip -br link の結果、下の端末に Web サーバーと Kali からのアクセスの記録">
+        <figcaption>操作した順に番号を付けています。<br>
+          <strong>赤枠①</strong>：Parrot の <code>ip -br link</code>。内部ネットワーク側の <code>enp0s2</code> の MAC アドレスは <code>5e:f1:1e:25:27:db</code>。<br>
+          <strong>赤枠②</strong>：§05 で Kali から接続したときの、Web サーバーの記録（1-2 §07）。時刻は Parrot の時計（UTC：Coordinated Universal Time＝協定世界時。英語の頭文字なら CUT、フランス語なら TUC になるところを、どちらにも偏らないように間を取って UTC と決められた）で 08:30:58、日本時間では 17:30:58。</figcaption>
+      </figure>
+    </section>
+
+    <!-- §05 -->
+    <section id="s5">
+      <div class="sec-head"><span class="idx">§05</span><h2>1つのパケットを層ごとに見る（Kali）</h2></div>
+
+      <figure class="fig dg">
+        <svg viewBox="0 0 760 203" role="img" aria-label="§05 では1つのパケットの4つの層すべてを見る"><rect x="14" y="8" width="66" height="22" rx="11" fill="#ff6fa5" fill-opacity=".16" stroke="#ff6fa5" stroke-width="1.2"/><text x="47" y="23" text-anchor="middle" fill="#ffb3cf" font-size="11.5" font-weight="700">いまここ</text><text x="92" y="24" text-anchor="start" fill="rgba(255,255,255,.72)" font-size="12.5" font-weight="500">§05 で見る層（§01 の図）</text><rect x="20" y="40" width="440" height="32" rx="9" fill="#72e3ad" fill-opacity="0.16" stroke="#72e3ad" stroke-opacity="1" stroke-width="1.8"/><text x="36" y="61" text-anchor="start" fill="#9ff0cf" font-size="13" font-weight="700">アプリケーション層</text><text x="444" y="61" text-anchor="end" fill="#fff" font-size="12.5" font-weight="600">中身（データ）</text><rect x="20" y="79" width="440" height="32" rx="9" fill="#4d94ff" fill-opacity="0.16" stroke="#4d94ff" stroke-opacity="1" stroke-width="1.8"/><text x="36" y="100" text-anchor="start" fill="#a8c9ff" font-size="13" font-weight="700">トランスポート層</text><text x="444" y="100" text-anchor="end" fill="#fff" font-size="12.5" font-weight="600">ポート番号</text><rect x="20" y="118" width="440" height="32" rx="9" fill="#ffb46b" fill-opacity="0.16" stroke="#ffb46b" stroke-opacity="1" stroke-width="1.8"/><text x="36" y="139" text-anchor="start" fill="#ffd3a3" font-size="13" font-weight="700">インターネット層</text><text x="444" y="139" text-anchor="end" fill="#fff" font-size="12.5" font-weight="600">IP アドレス</text><rect x="20" y="157" width="440" height="32" rx="9" fill="#a48bff" fill-opacity="0.16" stroke="#a48bff" stroke-opacity="1" stroke-width="1.8"/><text x="36" y="178" text-anchor="start" fill="#cbbcff" font-size="13" font-weight="700">ネットワークインターフェース層</text><text x="444" y="178" text-anchor="end" fill="#fff" font-size="12.5" font-weight="600">MAC アドレス</text><path d="M464,42 h8 V187 h-8" fill="none" stroke="#ff6fa5" stroke-width="1.6"/><line x1="472" y1="114.5" x2="500" y2="114.5" stroke="#ff6fa5" stroke-width="1.6"/><rect x="500" y="65.5" width="240" height="98" rx="12" fill="#ff6fa5" fill-opacity=".10" stroke="#ff6fa5" stroke-width="1.4"/><text x="516" y="89.5" text-anchor="start" fill="#ffb3cf" font-size="13.5" font-weight="700">4つの層すべて</text><text x="516" y="111.5" text-anchor="start" fill="rgba(255,255,255,.72)" font-size="12" font-weight="500">1つのパケットを記録して</text><text x="516" y="133.5" text-anchor="start" fill="rgba(255,255,255,.72)" font-size="12" font-weight="500">下の層から順に分解する</text><text x="516" y="155.5" text-anchor="start" fill="rgba(255,255,255,.72)" font-size="12" font-weight="500">（Ethernet → IP → TCP → HTTP）</text></svg>
+        <figcaption>§05 では、1つのパケットの中に<strong>4つの層がすべて入っている</strong>ことを確かめます。tshark は、いちばん外側（下の層）の Ethernet から順に表示します。</figcaption>
+      </figure>
+
+      <p>Kali から Parrot の Web サーバーに接続して、そのときのパケットを<strong>ファイルに記録</strong>し、あとから<strong>層ごとに分解</strong>して読みます。1-2 と同じく、Parrot で Web サーバーを動かしておきます。</p>
+
+      <div class="step">
+        <span class="sh"><span class="sn">準備</span>Parrot の端末B で Web サーバーを起動する（動かしたままにする）</span>
+        <div class="cmdbox" data-copy="python3 -m http.server 8080 --directory ~/www"><code class="cmd">python3 -m http.server 8080 --directory ~/www</code></div>
+      </div>
+      <p style="font-size:13.5px;color:var(--ink-faint)">1-2 §04 と同じコマンドです。公開するフォルダ <code>~/www</code> は、1-2 で作ったものがそのまま使えます。</p>
+
+      <div class="step">
+        <span class="sh"><span class="sn">端末A</span>1回の接続（10個のパケット）をファイルに記録する（Kali）</span>
+        <div class="cmdbox" data-copy="sudo tcpdump -i eth1 -n -c 10 -w /tmp/l4.pcap 'tcp port 8080'"><code class="cmd">sudo tcpdump -i eth1 -n -c 10 -w /tmp/l4.pcap 'tcp port 8080'</code></div>
+      </div>
+      <div class="table-scroll"><table class="mini-table anat">
+        <caption>コマンドの分解（1-2 §05 と同じ部分は短く）</caption>
+        <thead><tr><th>部分</th><th>意味</th></tr></thead>
+        <tbody>
+          <tr><td><code>sudo</code></td><td>管理者権限で実行する（1-1 §04）。</td></tr>
+          <tr><td><code>tcpdump</code></td><td>パケットを捕まえる道具（1-1 §04）。</td></tr>
+          <tr><td><code>-i</code></td><td>interface の頭文字。見張るインターフェースを指定する。</td></tr>
+          <tr><td><code>eth1</code></td><td><code>-i</code> に渡す値。Kali の内部ネットワーク側のインターフェース。</td></tr>
+          <tr><td><code>-n</code></td><td>住所とポートを、名前に変換せず数字のまま扱う。</td></tr>
+          <tr><td><code>-c</code></td><td><strong>count</strong>（数）の頭文字。捕まえるパケットの数を決め、その数になったら自動で止まる。</td></tr>
+          <tr><td><code>10</code></td><td><code>-c</code> に渡す値。1-2 で見たとおり、Web ページを1回取ってくる接続は、ちょうど<strong>10個</strong>のパケットでできているので 10 にした。多めにした場合は、10個のあとに新しいパケットが来ない限り止まらないので、終わったら <code>Ctrl+C</code> で止める。</td></tr>
+          <tr><td><code>-w</code></td><td><strong>write</strong>（書く）の頭文字。パケットを画面に表示せず、<strong>ファイルに記録</strong>する。</td></tr>
+          <tr><td><code>/tmp/l4.pcap</code></td><td>記録するファイル。<code>/tmp</code> は一時的なファイルを置く場所（再起動すると消える）。<code>l4</code> は「1-4」の意味で付けた名前で、自由に変えてよい。<code>.pcap</code> は <strong>packet capture</strong>（パケット・キャプチャ）の略で、tcpdump・tshark・Wireshark（6章）が共通で使うファイルの形式。</td></tr>
+          <tr><td><code>'tcp port 8080'</code></td><td>フィルタ。TCP で、送信元か宛先が 8080番のものだけ（1-2 §05）。</td></tr>
+        </tbody>
+      </table></div>
+      <p><code>listening on eth1</code> と表示されたら、そのまま待ちます。</p>
+
+      <div class="step">
+        <span class="sh"><span class="sn">端末B</span>Parrot の Web サーバーに接続する（Kali）</span>
+        <div class="cmdbox" data-copy="curl http://192.168.128.3:8080/"><code class="cmd">curl http://192.168.128.3:8080/</code></div>
+      </div>
+      <p style="font-size:13.5px;color:var(--ink-faint)">1-2 §05 と同じコマンドです。<code>&lt;h1&gt;Parrot test page&lt;/h1&gt;</code> と返ってきます。</p>
+
+      <div class="out"><span class="lab">出力例（端末A）</span>tcpdump: listening on eth1, link-type EN10MB (Ethernet), snapshot length 262144 bytes
+10 packets captured
+10 packets received by filter
+0 packets dropped by kernel</div>
+      <div class="table-scroll"><table class="mini-table anat">
+        <caption>出力の読み方</caption>
+        <thead><tr><th>部分</th><th>意味</th></tr></thead>
+        <tbody>
+          <tr><td><code>listening on eth1</code></td><td><code>eth1</code> で見張りを始めた。ファイルに記録するときは、1つ1つのパケットは画面に出ない。</td></tr>
+          <tr><td><code>link-type EN10MB (Ethernet)</code></td><td><strong>インターフェース層の種類</strong>（link-type）は Ethernet。<code>EN10MB</code> は「10メガビットの Ethernet」という昔の名前のまま残っている呼び方で、今の速い Ethernet もすべてこの名前で表す。</td></tr>
+          <tr><td><code>snapshot length 262144 bytes</code></td><td>1つのパケットにつき、最大で何バイトまで記録するか（snapshot：一部分の写し）。262144バイト（256キロバイト）あれば、ふつうのパケットは丸ごと記録できる。</td></tr>
+          <tr><td><code>10 packets captured</code></td><td>10個捕まえて記録した。<code>-c 10</code> の数に達したので、自動で止まった。</td></tr>
+          <tr><td><code>received by filter</code>・<code>dropped by kernel</code></td><td>フィルタに合った数と、取りこぼした数（1-1 §04）。取りこぼしは 0。</td></tr>
+        </tbody>
+      </table></div>
+
+      <div class="box warn"><span class="lab">もう一度記録すると Permission denied になるとき</span>
+      <p>同じコマンドで2回目の記録をすると、<code>tcpdump: /tmp/l4.pcap: Permission denied</code>（許可がない）と出て、記録できないことがあります。Kali の tcpdump は、安全のために、作ったファイルの持ち主を <strong>tcpdump という専用の利用者</strong>に変えます。<code>/tmp</code> は、だれでもファイルを置ける共有の場所なので、Linux は「<strong>ほかの利用者のファイルを上書きさせない</strong>」保護をかけていて、管理者として開き直そうとしても断られるのです。もう一度記録するときは、先に古いファイルを消します。</p>
+      <div class="cmdbox" data-copy="sudo rm /tmp/l4.pcap"><code class="cmd">sudo rm /tmp/l4.pcap</code></div>
+      <p style="font-size:13.5px;color:var(--ink-faint)"><code>rm</code> は remove（取り除く）の略で、ファイルを消すコマンドです。持ち主を確かめたいときは、消す前に次のコマンドを実行すると、持ち主の欄に <code>tcpdump</code> と表示されます（Kali の初期設定の場合）。</p>
+      <div class="cmdbox" data-copy="ls -l /tmp/l4.pcap"><code class="cmd">ls -l /tmp/l4.pcap</code></div>
+      <p style="font-size:13.5px;color:var(--ink-faint)"><code>ls</code> は list（一覧）の略でファイルの一覧を出すコマンド、<code>-l</code> は long（長い形式）の頭文字で、持ち主や大きさまで表示する指定です。</p></div>
+
+      <h3>記録したファイルを読む</h3>
+      <p>記録したファイルは、<strong>tshark</strong>（ティーシャーク）で読みます。tshark は、パケットを画面で見る道具 Wireshark（6章）を、端末で使えるようにしたものです。tcpdump より、層ごとの中身をくわしく読み解いてくれます。</p>
+
+      <figure class="fig dg">
+        <svg viewBox="0 0 760 214" role="img" aria-label="tcpdump でファイルに記録し、tshark などであとから何度でも読む"><rect x="20" y="70" width="230" height="56" rx="9" fill="#4d94ff" fill-opacity="0.13" stroke="#4d94ff" stroke-width="1.5"/><text x="135.0" y="93.68" text-anchor="middle" fill="#a8c9ff" font-size="13" font-weight="500" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">sudo tcpdump … -w</text><text x="135.0" y="111.68" text-anchor="middle" fill="#a8c9ff" font-size="13" font-weight="500" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">/tmp/l4.pcap</text><line x1="252" y1="98" x2="320" y2="98" stroke="#4d94ff" stroke-width="2" marker-end="url(#m-blue)"/><path d="M330,62 h70 l20,20 v52 h-90 z" fill="#ffb46b" fill-opacity=".14" stroke="#ffb46b" stroke-width="1.6"/><text x="375" y="108" text-anchor="middle" fill="#ffd3a3" font-size="13" font-weight="600" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">l4.pcap</text><text x="375" y="152" text-anchor="middle" fill="#ffd3a3" font-size="12" font-weight="500">記録ファイル</text><line x1="424" y1="98" x2="500" y2="52" stroke="#ffb46b" stroke-width="1.6" marker-end="url(#m-amber)"/><rect x="504" y="30" width="236" height="44" rx="9" fill="#72e3ad" fill-opacity="0.13" stroke="#72e3ad" stroke-width="1.5"/><text x="622.0" y="48.14" text-anchor="middle" fill="#9ff0cf" font-size="11.5" font-weight="500">tshark -r …</text><text x="622.0" y="64.14" text-anchor="middle" fill="#9ff0cf" font-size="11.5" font-weight="500">10個の一覧（§05 の前半）</text><line x1="424" y1="98" x2="500" y2="110" stroke="#ffb46b" stroke-width="1.6" marker-end="url(#m-amber)"/><rect x="504" y="88" width="236" height="44" rx="9" fill="#72e3ad" fill-opacity="0.13" stroke="#72e3ad" stroke-width="1.5"/><text x="622.0" y="106.14" text-anchor="middle" fill="#9ff0cf" font-size="11.5" font-weight="500">tshark -r … -Y … -O http</text><text x="622.0" y="122.14" text-anchor="middle" fill="#9ff0cf" font-size="11.5" font-weight="500">1個を層ごとに（§05 の後半）</text><line x1="424" y1="98" x2="500" y2="168" stroke="#ffb46b" stroke-width="1.6" marker-end="url(#m-amber)"/><rect x="504" y="146" width="236" height="44" rx="9" fill="#72e3ad" fill-opacity="0.13" stroke="#72e3ad" stroke-width="1.5"/><text x="622.0" y="164.14" text-anchor="middle" fill="#9ff0cf" font-size="11.5" font-weight="500">Wireshark</text><text x="622.0" y="180.14" text-anchor="middle" fill="#9ff0cf" font-size="11.5" font-weight="500">画面で見る（6章）</text></svg>
+        <figcaption><code>-w</code> でパケットを<strong>ファイルに記録</strong>しておけば、あとから何度でも、いろいろな見方で読み直せます。<code>.pcap</code> の形式は、tshark や Wireshark（6章）でもそのまま読めます。</figcaption>
+      </figure>
+
+      <div class="step">
+        <span class="sh"><span class="sn">端末B</span>記録した10個を一覧で見る（Kali）</span>
+        <div class="cmdbox" data-copy="tshark -r /tmp/l4.pcap"><code class="cmd">tshark -r /tmp/l4.pcap</code></div>
+      </div>
+      <div class="table-scroll"><table class="mini-table anat">
+        <caption>コマンドの分解</caption>
+        <thead><tr><th>部分</th><th>意味</th></tr></thead>
+        <tbody>
+          <tr><td><code>tshark</code></td><td>terminal（端末）＋ Wireshark を縮めた名前。パケットを読み解いて表示する。読むだけなら管理者権限はいらない。</td></tr>
+          <tr><td><code>-r</code></td><td><strong>read</strong>（読む）の頭文字。インターフェースではなく、<strong>ファイルから</strong>パケットを読む。</td></tr>
+          <tr><td><code>/tmp/l4.pcap</code></td><td><code>-r</code> に渡す値。さっき記録したファイル。</td></tr>
+        </tbody>
+      </table></div>
+
+      <figure class="fig">
+        <img src="../image/cyber/1-4/fig2_kali_list.jpg?v=r184" width="1400" height="862" loading="lazy" alt="Kali のデスクトップ。左の端末に tcpdump の記録の結果、右の端末に ip -br link、curl、tshark の一覧">
+        <figcaption>操作した順に番号を付けています。<br>
+          <strong>赤枠①</strong>：Kali の <code>ip -br link</code>（§04）。<code>eth1</code> の MAC アドレスは <code>12:ae:d8:64:04:33</code>。<br>
+          <strong>赤枠②</strong>：tcpdump で、1回の接続の10個をファイルに記録した。<br>
+          <strong>赤枠③</strong>：curl で Parrot の Web サーバーに接続した。<br>
+          <strong>赤枠④</strong>：tshark で、記録した10個を一覧にした。#4 と #8 だけ、Protocol の列が <code>HTTP</code> になっている。</figcaption>
+      </figure>
+
+      <div class="out"><span class="lab">出力例（端末B・1行目と4行目）</span>    1   0.000000 192.168.128.2 → 192.168.128.3 TCP 74 48448 → 8080 [SYN] Seq=0 Win=64240 Len=0 MSS=1460 SACK_PERM TSval=3791506824 TSecr=0 WS=1024
+    4   0.001060 192.168.128.2 → 192.168.128.3 HTTP 148 GET / HTTP/1.1</div>
+      <div class="table-scroll"><table class="mini-table anat">
+        <caption>出力の読み方（左の列から順に）</caption>
+        <colgroup><col style="width:22%"><col style="width:26%"><col></colgroup>
+        <thead><tr><th>列・部分</th><th>例</th><th>意味</th></tr></thead>
+        <tbody>
+          <tr><td>No.（番号）</td><td><code>1</code>〜<code>10</code></td><td>記録した順の番号。流れは 1-2 §05 の #1〜#10 と同じ。ただし今回は、Kali の受け取り確認（#7、<code>Ack=186</code>）が、ページ本体（#8）より<strong>先に</strong>記録されている（1-2 では #7 がページ本体、#8 が受け取り確認だった）。パケットが届くタイミングによって、順番が入れ替わることがある。</td></tr>
+          <tr><td>Time（時刻）</td><td><code>0.000000</code> / <code>0.001060</code></td><td><strong>1つ目からの経過時間</strong>（秒）。#4 は 0.001060秒＝約1.06ミリ秒後。#10 は 0.015239秒＝約15ミリ秒後で、1回の接続全体が約15ミリ秒で終わっている。</td></tr>
+          <tr><td>Source →<br>Destination</td><td><code>192.168.128.2 →</code><br><code>192.168.128.3</code></td><td>送信元 → 宛先の IP アドレス（インターネット層）。</td></tr>
+          <tr><td>Protocol（プロトコル）</td><td><code>TCP</code> / <code>HTTP</code></td><td>tshark が読み解けた<strong>いちばん上の層</strong>のプロトコル。中身を運んでいない #1〜#3 などは TCP、HTTP の中身が入っている #4・#8 は HTTP と表示される（#6 は下の図）。</td></tr>
+          <tr><td>Length（長さ）</td><td><code>74</code> / <code>148</code></td><td><strong>フレーム全体の大きさ</strong>（バイト）。Ethernet のヘッダまで含む（下の図）。</td></tr>
+          <tr><td rowspan="9">Info（情報）</td><td><code>48448 → 8080</code></td><td>送信元ポート → 宛先ポート（トランスポート層）。48448 は Kali の OS が選んだ一時的なポート（1-2 §02）。</td></tr>
+          <tr><td><code>[SYN]</code></td><td>TCP のフラグ（1-2 §05）。tcpdump の <code>[S]</code> と同じ。</td></tr>
+          <tr><td><code>Seq=0</code></td><td>シーケンス番号（1-2 §05）。tshark は<strong>最初から相対番号</strong>（SYN を 0 として数えた差）で表示する。tcpdump は SYN と SYN-ACK だけ実際の大きな番号を表示していた。</td></tr>
+          <tr><td><code>Win=64240</code></td><td>受信ウィンドウ（1-2 §05 の <code>win</code>）。</td></tr>
+          <tr><td><code>Len=0</code></td><td>TCP で運んでいるデータの長さ（1-2 の <code>length</code>）。</td></tr>
+          <tr><td><code>MSS=1460</code></td><td>1回に送るデータの最大量（Maximum Segment Size：最大セグメントサイズ。1-2 §05）。</td></tr>
+          <tr><td><code>SACK_PERM</code></td><td>SACK permitted（SACK を使ってよい）。tcpdump の <code>sackOK</code> と同じ。</td></tr>
+          <tr><td><code>TSval=…</code><br><code>TSecr=0</code></td><td>タイムスタンプ（timestamp）の自分の値と、相手の値を返す欄（1-2 §05 の <code>TS val</code>・<code>ecr</code>）。</td></tr>
+          <tr><td><code>WS=1024</code></td><td>ウィンドウの倍率（window scale）。tcpdump の <code>wscale 10</code>（2の10乗）を、tshark は<strong>かけ算した結果の 1024 倍</strong>として表示する。</td></tr>
+          <tr><td>Info（#4）</td><td><code>GET / HTTP/1.1</code></td><td>HTTP の層まで読み解いて、依頼の中身を表示している。</td></tr>
+        </tbody>
+      </table></div>
+
+      <figure class="fig dg">
+        <svg viewBox="0 0 760 220" role="img" aria-label="フレームの大きさの内訳"><text x="20" y="46" text-anchor="start" fill="#fff" font-size="13.5" font-weight="600" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">#1 SYN　74</text><rect x="150" y="20" width="47.6" height="40" rx="9" fill="#a48bff" fill-opacity="0.13" stroke="#a48bff" stroke-width="1.5"/><text x="173.8" y="44.14" text-anchor="middle" fill="#cbbcff" font-size="11.5" font-weight="500">Eth 14</text><rect x="197.6" y="20" width="68.0" height="40" rx="9" fill="#ffb46b" fill-opacity="0.13" stroke="#ffb46b" stroke-width="1.5"/><text x="231.6" y="44.14" text-anchor="middle" fill="#ffd3a3" font-size="11.5" font-weight="500">IP 20</text><rect x="265.6" y="20" width="136.0" height="40" rx="9" fill="#4d94ff" fill-opacity="0.13" stroke="#4d94ff" stroke-width="1.5"/><text x="333.6" y="44.14" text-anchor="middle" fill="#a8c9ff" font-size="11.5" font-weight="500">TCP 40</text><text x="20" y="106" text-anchor="start" fill="#fff" font-size="13.5" font-weight="600" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">#3 ACK　66</text><rect x="150" y="80" width="47.6" height="40" rx="9" fill="#a48bff" fill-opacity="0.13" stroke="#a48bff" stroke-width="1.5"/><text x="173.8" y="104.14" text-anchor="middle" fill="#cbbcff" font-size="11.5" font-weight="500">Eth 14</text><rect x="197.6" y="80" width="68.0" height="40" rx="9" fill="#ffb46b" fill-opacity="0.13" stroke="#ffb46b" stroke-width="1.5"/><text x="231.6" y="104.14" text-anchor="middle" fill="#ffd3a3" font-size="11.5" font-weight="500">IP 20</text><rect x="265.6" y="80" width="108.8" height="40" rx="9" fill="#4d94ff" fill-opacity="0.13" stroke="#4d94ff" stroke-width="1.5"/><text x="320.0" y="104.14" text-anchor="middle" fill="#a8c9ff" font-size="11.5" font-weight="500">TCP 32</text><text x="20" y="166" text-anchor="start" fill="#fff" font-size="13.5" font-weight="600" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">#4 GET　148</text><rect x="150" y="140" width="47.6" height="40" rx="9" fill="#a48bff" fill-opacity="0.13" stroke="#a48bff" stroke-width="1.5"/><text x="173.8" y="164.14" text-anchor="middle" fill="#cbbcff" font-size="11.5" font-weight="500">Eth 14</text><rect x="197.6" y="140" width="68.0" height="40" rx="9" fill="#ffb46b" fill-opacity="0.13" stroke="#ffb46b" stroke-width="1.5"/><text x="231.6" y="164.14" text-anchor="middle" fill="#ffd3a3" font-size="11.5" font-weight="500">IP 20</text><rect x="265.6" y="140" width="108.8" height="40" rx="9" fill="#4d94ff" fill-opacity="0.13" stroke="#4d94ff" stroke-width="1.5"/><text x="320.0" y="164.14" text-anchor="middle" fill="#a8c9ff" font-size="11.5" font-weight="500">TCP 32</text><rect x="374.40000000000003" y="140" width="278.8" height="40" rx="9" fill="#72e3ad" fill-opacity="0.13" stroke="#72e3ad" stroke-width="1.5"/><text x="513.8000000000001" y="164.14" text-anchor="middle" fill="#9ff0cf" font-size="11.5" font-weight="500">HTTP 82</text><text x="380" y="206" text-anchor="middle" fill="rgba(255,255,255,.72)" font-size="12.5" font-weight="500">tshark の「Length」は、Ethernet のヘッダまで含めたフレーム全体の大きさ</text></svg>
+        <figcaption>tshark の一覧の Length（74・66・148）を、層ごとに分けた図。データを運ばない #1・#3 は、ヘッダだけでできています。TCP のヘッダは、オプション（1-2 §05）の量によって 32〜40バイトと変わります。</figcaption>
+      </figure>
+      <figure class="fig dg">
+        <svg viewBox="0 0 760 200" role="img" aria-label="HTTP の返事は2つのパケットに分かれ、tshark は最後の1つに HTTP と表示する"><rect x="20" y="40" width="250" height="46" rx="9" fill="#72e3ad" fill-opacity="0.13" stroke="#72e3ad" stroke-width="1.5"/><text x="145.0" y="59.32" text-anchor="middle" fill="#9ff0cf" font-size="12" font-weight="500">#6　HTTP の返事の前半</text><text x="145.0" y="75.32" text-anchor="middle" fill="#9ff0cf" font-size="12" font-weight="500">（見出し 185バイト）</text><rect x="20" y="110" width="250" height="46" rx="9" fill="#72e3ad" fill-opacity="0.13" stroke="#72e3ad" stroke-width="1.5"/><text x="145.0" y="129.32" text-anchor="middle" fill="#9ff0cf" font-size="12" font-weight="500">#8　HTTP の返事の後半</text><text x="145.0" y="145.32" text-anchor="middle" fill="#9ff0cf" font-size="12" font-weight="500">（ページ本体 26バイト）＋ FIN</text><line x1="272" y1="63" x2="380" y2="92" stroke="#72e3ad" stroke-width="1.8" marker-end="url(#m-green)"/><line x1="272" y1="133" x2="380" y2="104" stroke="#72e3ad" stroke-width="1.8" marker-end="url(#m-green)"/><rect x="384" y="68" width="356" height="56" rx="9" fill="#72e3ad" fill-opacity="0.2" stroke="#72e3ad" stroke-width="1.5"/><text x="562.0" y="92.0" text-anchor="middle" fill="#9ff0cf" font-size="12.5" font-weight="500">tshark がつなぎ合わせて、</text><text x="562.0" y="109.0" text-anchor="middle" fill="#9ff0cf" font-size="12.5" font-weight="500">#8 に「HTTP/1.0 200 OK (text/html)」と表示</text><text x="380" y="186" text-anchor="middle" fill="rgba(255,255,255,.72)" font-size="12.5" font-weight="500">#6 は Protocol が TCP、#8 は HTTP と表示される理由</text></svg>
+        <figcaption>Parrot の返事は、見出しの部分（#6）とページの本体（#8）の2つのパケットに分かれて届きました。tshark は2つをつなぎ合わせて1つの HTTP の返事として読み、最後の #8 に HTTP と表示します。</figcaption>
+      </figure>
+
+      <h3>「ページをください」のパケットを、層ごとに分解する</h3>
+      <p>次に、10個の中から HTTP の依頼（#4）だけを取り出して、層ごとに表示します。出力が長いので、端末B を <code>clear</code> してから実行します。</p>
+
+      <div class="step">
+        <span class="sh"><span class="sn">端末B</span>HTTP の依頼のパケットを、層ごとに表示する（Kali）</span>
+        <div class="cmdbox" data-copy="tshark -r /tmp/l4.pcap -Y http.request -O http"><code class="cmd">tshark -r /tmp/l4.pcap -Y http.request -O http</code></div>
+      </div>
+      <div class="table-scroll"><table class="mini-table anat">
+        <caption>コマンドの分解</caption>
+        <thead><tr><th>部分</th><th>意味</th></tr></thead>
+        <tbody>
+          <tr><td><code>tshark -r /tmp/l4.pcap</code></td><td>記録したファイルを読む（上と同じ）。</td></tr>
+          <tr><td><code>-Y</code></td><td><strong>表示フィルタ</strong>（display filter）を指定する。読んだパケットのうち、条件に合うものだけを表示する。tcpdump のフィルタとは書き方がちがい、Wireshark（6章）と同じ書き方をする。</td></tr>
+          <tr><td><code>http.request</code></td><td><code>-Y</code> に渡す条件。「<strong>HTTP の依頼（request）</strong>であるパケット」。10個の中では #4 だけが当てはまる。</td></tr>
+          <tr><td><code>-O</code></td><td>「<strong>この層だけくわしく表示し、ほかの層は1行にまとめる</strong>」という指定（O は only の頭文字と覚えるとよい）。</td></tr>
+          <tr><td><code>http</code></td><td><code>-O</code> に渡す値。HTTP の層だけをくわしく表示する。ほかの層（Ethernet・IP・TCP）は1行ずつになるので、<strong>層の重なりが見やすくなる</strong>。</td></tr>
+        </tbody>
+      </table></div>
+
+      <figure class="fig">
+        <img src="../image/cyber/1-4/fig3_kali_layers.jpg?v=r184" width="1400" height="796" loading="lazy" alt="Kali のデスクトップ。右の端末に、1つのパケットを Frame、Ethernet II、IPv4、TCP、HTTP の層ごとに表示した結果と、ip neigh の結果">
+        <figcaption>操作した順に番号を付けています。<br>
+          <strong>赤枠①</strong>：1つのパケット（#4）を、層ごとに表示した。<br>
+          <strong>赤枠②</strong>：§06 の <code>ip neigh</code>。Parrot（192.168.128.3）の MAC アドレスが、§04 の Parrot の <code>enp0s2</code> と同じ <code>5e:f1:1e:25:27:db</code>。</figcaption>
+      </figure>
+
+      <p>層ごとの行を拡大して、どの層かを書き込んだのが次の図です。<strong>上から下へ、外側の封筒から内側の封筒へ</strong>と並んでいます。</p>
+
+      <figure class="fig">
+        <img src="../image/cyber/1-4/fig4_layers_zoom.png?v=r184" width="1800" height="529" loading="lazy" alt="tshark の出力の拡大。Frame、Ethernet II、Internet Protocol Version 4、Transmission Control Protocol、Hypertext Transfer Protocol の5つを赤枠で囲み、層の名前を書き込んである">
+        <figcaption><strong>赤枠①</strong>：tshark が付ける、記録についての情報（どの層でもない）。<br>
+          <strong>赤枠②</strong>：Ethernet II＝ネットワークインターフェース層。MAC アドレス。<br>
+          <strong>赤枠③</strong>：IPv4（Internet Protocol version 4：IP の第4版）＝インターネット層。IP アドレス。<br>
+          <strong>赤枠④</strong>：TCP＝トランスポート層。ポート番号と通し番号。<br>
+          <strong>赤枠⑤</strong>：HTTP＝アプリケーション層。Web サーバーへの依頼の中身。</figcaption>
+      </figure>
+
+      <div class="out"><span class="lab">出力例（端末B）</span>Frame 4: Packet, 148 bytes on wire (1184 bits), 148 bytes captured (1184 bits)
+Ethernet II, Src: 12:ae:d8:64:04:33 (12:ae:d8:64:04:33), Dst: 5e:f1:1e:25:27:db (5e:f1:1e:25:27:db)
+Internet Protocol Version 4, Src: 192.168.128.2, Dst: 192.168.128.3
+Transmission Control Protocol, Src Port: 48448, Dst Port: 8080, Seq: 1, Ack: 1, Len: 82
+Hypertext Transfer Protocol
+    GET / HTTP/1.1\r\n
+        Request Method: GET
+        Request URI: /
+        Request Version: HTTP/1.1
+    Host: 192.168.128.3:8080\r\n
+    User-Agent: curl/8.22.0\r\n
+    Accept: */*\r\n
+    \r\n
+    [Full request URI: http://192.168.128.3:8080/]</div>
+      <div class="table-scroll"><table class="mini-table anat">
+        <caption>出力の読み方（層ごと）</caption>
+        <colgroup><col style="width:20%"><col style="width:25%"><col></colgroup>
+        <thead><tr><th>行</th><th>部分</th><th>意味</th></tr></thead>
+        <tbody>
+          <tr><td rowspan="3"><code>Frame 4</code><br>（記録の情報）</td><td><code>Frame 4</code></td><td>記録した中の<strong>4番目のフレーム</strong>（§02 の「フレーム」）。</td></tr>
+          <tr><td><code>148 bytes on wire</code><br><code>(1184 bits)</code></td><td>フレームの本来の大きさ（on wire：線の上）は148バイト。1バイト＝8ビットなので、148×8＝1184ビット。厳密には、実際の線にはフレームの前の合図（プリアンブル：8バイト）と、末尾の誤り確認用の <strong>FCS</strong>（Frame Check Sequence：フレーム検査列、4バイト）も流れるが、これらは<strong>記録には含まれない</strong>（6章の Wireshark でも同じ）。</td></tr>
+          <tr><td><code>148 bytes</code><br><code>captured</code></td><td>記録した（captured）大きさも148バイト。snapshot length（上）より小さいので、丸ごと記録できている。</td></tr>
+          <tr><td rowspan="3" style="box-shadow:inset 3px 0 0 #a48bff"><code>Ethernet II</code><br><span style="color:#cdbfff;font-weight:600">（ネットワーク<br>インターフェース層）</span></td><td><code>Ethernet II</code></td><td>Ethernet の<strong>フレームの形式の名前</strong>。II（2）は「第2版の形式」という意味で、今の Ethernet のほとんどがこの形式。</td></tr>
+          <tr><td><code>Src:</code><br><code>12:ae:d8:64:04:33</code></td><td><strong>送信元の MAC アドレス</strong>（Src：source＝送り元）。§04 の Kali の <code>eth1</code> と同じ。</td></tr>
+          <tr><td><code>Dst:</code><br><code>5e:f1:1e:25:27:db</code></td><td><strong>宛先の MAC アドレス</strong>（Dst：destination＝宛先）。§04 の Parrot の <code>enp0s2</code> と同じ。かっこの中は、メーカーの名前が分かればそれを表示する欄（仮想の番号なので、同じ番号がそのまま出ている）。</td></tr>
+          <tr><td style="box-shadow:inset 3px 0 0 #ffb46b"><code>Internet Protocol</code><br><code>Version 4</code><br><span style="color:#ffd3a3;font-weight:600">（インターネット層）</span></td><td><code>Src: 192.168.128.2,</code><br><code>Dst: 192.168.128.3</code></td><td>送信元と宛先の <strong>IP アドレス</strong>。Kali から Parrot へ。</td></tr>
+          <tr><td rowspan="3" style="box-shadow:inset 3px 0 0 #4d94ff"><code>Transmission</code><br><code>Control Protocol</code><br><span style="color:#a8c9ff;font-weight:600">（トランスポート層）</span></td><td><code>Src Port: 48448,</code><br><code>Dst Port: 8080</code></td><td>送信元と宛先の<strong>ポート番号</strong>。Kali の一時的なポートから、Parrot の Web サーバーの 8080番へ。</td></tr>
+          <tr><td><code>Seq: 1, Ack: 1</code></td><td>通し番号と受け取り確認の番号（相対番号。1-2 §05 の #4 と同じ）。</td></tr>
+          <tr><td><code>Len: 82</code></td><td>TCP が運んでいるデータの長さ。<strong>82バイト</strong>＝この下の HTTP の中身の大きさ。</td></tr>
+          <tr><td rowspan="8" style="box-shadow:inset 3px 0 0 #72e3ad"><code>Hypertext</code><br><code>Transfer Protocol</code><br><span style="color:#9ff0cf;font-weight:600">（アプリケーション層）</span></td><td><code>GET / HTTP/1.1\r\n</code></td><td>依頼の1行目（1-2 §07 のログに残った部分）。<code>\r\n</code> は「<strong>行の終わり</strong>」を表す2文字（CR：Carriage Return＝行の先頭に戻る、LF：Line Feed＝次の行へ進む）。</td></tr>
+          <tr><td><code>Request Method:</code><br><code>GET</code></td><td>依頼の種類（method：方法）。<code>GET</code>＝「ください」。tshark が1行目を分けて説明している行。</td></tr>
+          <tr><td><code>Request URI:</code><br><code>/</code></td><td>どのページか。<strong>URI</strong>（Uniform Resource Identifier：資源を示す識別子）＝サーバーの中の場所。<code>/</code> はトップ。</td></tr>
+          <tr><td><code>Request Version:</code><br><code>HTTP/1.1</code></td><td>curl が使った HTTP の版。</td></tr>
+          <tr><td><code>Host:</code><br><code>192.168.128.3:8080</code></td><td><strong>どのサーバー（名前）宛てか</strong>。1台のサーバーで複数のサイトを動かしているとき、どのサイトへの依頼かを区別するのに使う。</td></tr>
+          <tr><td><code>User-Agent:</code><br><code>curl/8.22.0</code></td><td><strong>依頼してきたソフトの名前と版</strong>（user agent：利用者の代わりに動くソフト）。ブラウザならブラウザの名前が入る。サーバー側から見える情報だが、<strong>送る側が自由に書き換えられる</strong>（自己申告。1-1 の送信元 IP と同じ）。</td></tr>
+          <tr><td><code>Accept: */*</code></td><td>受け取れる中身の種類。<code>*/*</code>＝何でもよい。</td></tr>
+          <tr><td><code>\r\n</code>（最後）</td><td><strong>空の行</strong>。「依頼の見出しはここまで」という合図。</td></tr>
+          <tr><td><code>[Full request</code><br><code>URI: …]</code></td><td>—</td><td><code>[ ]</code> の行は、パケットの中身ではなく、tshark が<strong>計算して付け足した</strong>説明。Host と URI をつなげた、依頼先の全体。</td></tr>
+        </tbody>
+      </table></div>
+
+      <figure class="fig dg">
+        <svg viewBox="0 0 760 270" role="img" aria-label="#4 のパケットを、Ethernet、IP、TCP、HTTP の入れ子として見る"><rect x="10" y="10" width="740" height="250" rx="12" fill="#a48bff" fill-opacity=".06" stroke="#a48bff" stroke-width="1.6"/><text x="26" y="34" text-anchor="start" fill="#cbbcff" font-size="13" font-weight="700">Ethernet II（インターフェース層）</text><text x="26" y="54" text-anchor="start" fill="rgba(255,255,255,.72)" font-size="12" font-weight="500">送信元 MAC 12:ae:d8:64:04:33（Kali） → 宛先 MAC 5e:f1:1e:25:27:db（Parrot）</text><rect x="40" y="72" width="680" height="180" rx="12" fill="#ffb46b" fill-opacity=".06" stroke="#ffb46b" stroke-width="1.6"/><text x="56" y="96" text-anchor="start" fill="#ffd3a3" font-size="13" font-weight="700">IPv4（インターネット層）</text><text x="56" y="116" text-anchor="start" fill="rgba(255,255,255,.72)" font-size="12" font-weight="500">送信元 192.168.128.2 → 宛先 192.168.128.3</text><rect x="70" y="134" width="620" height="110" rx="12" fill="#4d94ff" fill-opacity=".06" stroke="#4d94ff" stroke-width="1.6"/><text x="86" y="158" text-anchor="start" fill="#a8c9ff" font-size="13" font-weight="700">TCP（トランスポート層）</text><text x="86" y="178" text-anchor="start" fill="rgba(255,255,255,.72)" font-size="12" font-weight="500">送信元ポート 48448 → 宛先ポート 8080、Seq 1、Len 82</text><rect x="100" y="196" width="560" height="44" rx="12" fill="#72e3ad" fill-opacity=".06" stroke="#72e3ad" stroke-width="1.6"/><text x="116" y="223" text-anchor="start" fill="#9ff0cf" font-size="13" font-weight="700">HTTP（アプリケーション層）</text><text x="350" y="223" text-anchor="start" fill="rgba(255,255,255,.72)" font-size="12" font-weight="500">GET / HTTP/1.1 …（82バイト）</text></svg>
+        <figcaption>§05 で層ごとに表示した #4 のパケットを、入れ子の封筒として描いた図。外側から順に、MAC アドレス（隣の機器まで）、IP アドレス（どのマシンか）、ポート番号（どのプログラムか）、中身（何を頼むか）が書かれています。</figcaption>
+      </figure>
+      <figure class="fig dg">
+        <svg viewBox="0 0 760 222" role="img" aria-label="HTTP の依頼の82バイトの内訳"><rect x="20" y="16" width="360" height="32" rx="9" fill="#72e3ad" fill-opacity="0.13" stroke="#72e3ad" stroke-width="1.5"/><text x="200.0" y="36.68" text-anchor="middle" fill="#9ff0cf" font-size="13" font-weight="500" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">GET / HTTP/1.1  ↵</text><text x="400" y="38" text-anchor="start" fill="#fff" font-size="13" font-weight="600">16バイト</text><rect x="20" y="56" width="360" height="32" rx="9" fill="#72e3ad" fill-opacity="0.13" stroke="#72e3ad" stroke-width="1.5"/><text x="200.0" y="76.68" text-anchor="middle" fill="#9ff0cf" font-size="13" font-weight="500" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">Host: 192.168.128.3:8080  ↵</text><text x="400" y="78" text-anchor="start" fill="#fff" font-size="13" font-weight="600">26バイト</text><rect x="20" y="96" width="360" height="32" rx="9" fill="#72e3ad" fill-opacity="0.13" stroke="#72e3ad" stroke-width="1.5"/><text x="200.0" y="116.68" text-anchor="middle" fill="#9ff0cf" font-size="13" font-weight="500" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">User-Agent: curl/8.22.0  ↵</text><text x="400" y="118" text-anchor="start" fill="#fff" font-size="13" font-weight="600">25バイト</text><rect x="20" y="136" width="360" height="32" rx="9" fill="#72e3ad" fill-opacity="0.13" stroke="#72e3ad" stroke-width="1.5"/><text x="200.0" y="156.68" text-anchor="middle" fill="#9ff0cf" font-size="13" font-weight="500" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">Accept: */*  ↵</text><text x="400" y="158" text-anchor="start" fill="#fff" font-size="13" font-weight="600">13バイト</text><rect x="20" y="176" width="360" height="32" rx="9" fill="#72e3ad" fill-opacity="0.13" stroke="#72e3ad" stroke-width="1.5"/><text x="200.0" y="196.68" text-anchor="middle" fill="#9ff0cf" font-size="13" font-weight="500">（空の行）  ↵</text><text x="400" y="198" text-anchor="start" fill="#fff" font-size="13" font-weight="600">2バイト</text><text x="500" y="96" text-anchor="start" fill="#9ff0cf" font-size="16" font-weight="700">合計 82バイト</text><text x="500" y="120" text-anchor="start" fill="#a8c9ff" font-size="13" font-weight="600">＝ TCP の Len: 82</text><text x="500" y="150" text-anchor="start" fill="rgba(255,255,255,.72)" font-size="12" font-weight="500">↵ ＝ 行の終わり（\r\n の2バイト）</text></svg>
+        <figcaption>curl が送った HTTP の依頼は、5行で82バイト。どの行も最後に「行の終わり」の印（<code>\r\n</code>：2バイト）が付き、最後の空の行が「依頼はここまで」の合図です。この82が、TCP の <code>Len: 82</code> とぴったり一致します。</figcaption>
+      </figure>
+    </section>
+
+    <!-- §06 -->
+    <section id="s6">
+      <div class="sec-head"><span class="idx">§06</span><h2>IP と MAC の対応表を見る（Kali）</h2></div>
+
+      <figure class="fig dg">
+        <svg viewBox="0 0 760 203" role="img" aria-label="§06 ではインターネット層とネットワークインターフェース層のつなぎ目を見る"><rect x="14" y="8" width="66" height="22" rx="11" fill="#ff6fa5" fill-opacity=".16" stroke="#ff6fa5" stroke-width="1.2"/><text x="47" y="23" text-anchor="middle" fill="#ffb3cf" font-size="11.5" font-weight="700">いまここ</text><text x="92" y="24" text-anchor="start" fill="rgba(255,255,255,.72)" font-size="12.5" font-weight="500">§06 で見る層（§01 の図）</text><rect x="20" y="40" width="440" height="32" rx="9" fill="rgba(255,255,255,.55)" fill-opacity="0.03" stroke="rgba(255,255,255,.55)" stroke-opacity="0.35" stroke-width="1"/><text x="36" y="61" text-anchor="start" fill="rgba(255,255,255,.55)" font-size="13" font-weight="500" opacity="0.55">アプリケーション層</text><text x="444" y="61" text-anchor="end" fill="rgba(255,255,255,.55)" font-size="12.5" font-weight="500" opacity="0.55">中身（データ）</text><rect x="20" y="79" width="440" height="32" rx="9" fill="rgba(255,255,255,.55)" fill-opacity="0.03" stroke="rgba(255,255,255,.55)" stroke-opacity="0.35" stroke-width="1"/><text x="36" y="100" text-anchor="start" fill="rgba(255,255,255,.55)" font-size="13" font-weight="500" opacity="0.55">トランスポート層</text><text x="444" y="100" text-anchor="end" fill="rgba(255,255,255,.55)" font-size="12.5" font-weight="500" opacity="0.55">ポート番号</text><rect x="20" y="118" width="440" height="32" rx="9" fill="#ffb46b" fill-opacity="0.16" stroke="#ffb46b" stroke-opacity="1" stroke-width="1.8"/><text x="36" y="139" text-anchor="start" fill="#ffd3a3" font-size="13" font-weight="700">インターネット層</text><text x="444" y="139" text-anchor="end" fill="#fff" font-size="12.5" font-weight="600">IP アドレス</text><rect x="20" y="157" width="440" height="32" rx="9" fill="#a48bff" fill-opacity="0.16" stroke="#a48bff" stroke-opacity="1" stroke-width="1.8"/><text x="36" y="178" text-anchor="start" fill="#cbbcff" font-size="13" font-weight="700">ネットワークインターフェース層</text><text x="444" y="178" text-anchor="end" fill="#fff" font-size="12.5" font-weight="600">MAC アドレス</text><path d="M464,120 h8 V187 h-8" fill="none" stroke="#ff6fa5" stroke-width="1.6"/><line x1="472" y1="153.5" x2="500" y2="153.5" stroke="#ff6fa5" stroke-width="1.6"/><rect x="500" y="91" width="240" height="98" rx="12" fill="#ff6fa5" fill-opacity=".10" stroke="#ff6fa5" stroke-width="1.4"/><text x="516" y="115" text-anchor="start" fill="#ffb3cf" font-size="13.5" font-weight="700">IP → MAC の対応表</text><text x="516" y="137" text-anchor="start" fill="rgba(255,255,255,.72)" font-size="12" font-weight="500">IP アドレスから</text><text x="516" y="159" text-anchor="start" fill="rgba(255,255,255,.72)" font-size="12" font-weight="500">MAC アドレスを引く名簿</text><text x="516" y="181" text-anchor="start" fill="rgba(255,255,255,.72)" font-size="12" font-weight="500">ip neigh で確かめる</text></svg>
+        <figcaption>§06 では、<strong>インターネット層の住所（IP アドレス）</strong>と<strong>ネットワークインターフェース層の住所（MAC アドレス）</strong>を結びつける名簿を見ます。</figcaption>
+      </figure>
+
+      <p>§05 で、Kali は Parrot の IP アドレスしか指定していないのに、Ethernet の宛先には Parrot の MAC アドレスが正しく書かれていました。Kali はどうやって Parrot の MAC アドレスを知ったのでしょうか。その答えが、OS が持っている「<strong>近所の名簿</strong>」です。</p>
+
+      <div class="step">
+        <span class="sh"><span class="sn">端末B</span>IP アドレスと MAC アドレスの対応表を見る（Kali）</span>
+        <div class="cmdbox" data-copy="ip neigh"><code class="cmd">ip neigh</code></div>
+      </div>
+      <div class="table-scroll"><table class="mini-table anat">
+        <caption>コマンドの分解</caption>
+        <thead><tr><th>部分</th><th>意味</th></tr></thead>
+        <tbody>
+          <tr><td><code>ip</code></td><td>ネットワークの設定を表示・変更するコマンド（§04）。</td></tr>
+          <tr><td><code>neigh</code></td><td><strong>neighbour</strong>（ネイバー：近所の人）の略。同じネットワークにいる相手の、IP アドレスと MAC アドレスの<strong>対応表</strong>を表示する。ARP で調べた結果が、ここにしばらく覚えておかれる。</td></tr>
+        </tbody>
+      </table></div>
+
+      <div class="out"><span class="lab">出力例</span>192.168.128.1 dev eth1 lladdr c2:c7:db:de:05:65 STALE
+192.168.128.3 dev eth1 lladdr 5e:f1:1e:25:27:db STALE
+fe80::c0c7:dbff:fede:565 dev eth1 lladdr c2:c7:db:de:05:65 router STALE
+fe80::c0c7:dbff:fede:564 dev eth0 lladdr c2:c7:db:de:05:64 router STALE</div>
+      <div class="table-scroll"><table class="mini-table anat">
+        <caption>出力の読み方（2行目を例に）</caption>
+        <colgroup><col style="width:22%"><col style="width:26%"><col></colgroup>
+        <thead><tr><th>部分</th><th>例</th><th>意味</th></tr></thead>
+        <tbody>
+          <tr><td>1つ目</td><td><code>192.168.128.3</code></td><td>相手の <strong>IP アドレス</strong>。Parrot。</td></tr>
+          <tr><td><code>dev</code></td><td><code>eth1</code></td><td>device（装置）の略。<strong>どのインターフェースの先にいる相手か</strong>。</td></tr>
+          <tr><td><code>lladdr</code></td><td><code>5e:f1:1e:25:27:db</code></td><td><strong>link-layer address</strong>（リンク層のアドレス＝インターフェース層の住所）、つまり <strong>MAC アドレス</strong>。§04 の Parrot の <code>enp0s2</code>、§05 の Ethernet の宛先と同じ。</td></tr>
+          <tr><td>状態</td><td><code>STALE</code></td><td>stale（古くなった）。<strong>覚えてはいるが、しばらく確かめていない</strong>という状態。次にこの相手に送るときに、まだ正しいかを確かめ直す。少し前に確かめたばかりなら <code>REACHABLE</code>（reachable：届く）と表示される。</td></tr>
+          <tr><td>1行目</td><td><code>192.168.128.1</code></td><td>Mac（UTM を動かしているホスト）。Mac と Kali のあいだで ARP のやり取りがあった（どちらかが相手に直接送ろうとして「だれ？」と聞いた）ため、名簿に載っている。グループ宛ての送信（1-3 §05 の mDNS など）を受け取っただけでは、ふつう名簿には載らない。</td></tr>
+          <tr><td>3・4行目</td><td><code>fe80::…</code> … <code>router</code></td><td>IPv6 の住所（1-3 §04 のリンクローカルアドレス）と MAC アドレスの対応。<code>router</code> は、その相手が「わたしはルーターです」と名乗っている印（ここでは Mac）。IPv6 では ARP の代わりに <strong>NDP</strong>（Neighbor Discovery Protocol：近隣探索プロトコル）がこの名簿を作る。</td></tr>
+        </tbody>
+      </table></div>
+
+      <figure class="fig dg">
+        <svg viewBox="0 0 760 220" role="img" aria-label="IP アドレスから MAC アドレスを引く近所の名簿"><rect x="10" y="10" width="400" height="150" rx="12" fill="#a48bff" fill-opacity=".06" stroke="#a48bff" stroke-width="1.4"/><text x="30" y="36" text-anchor="start" fill="#cbbcff" font-size="13.5" font-weight="700">Kali の「近所の名簿」（ip neigh）</text><text x="30" y="62" text-anchor="start" fill="rgba(255,255,255,.55)" font-size="11.5" font-weight="500">IP アドレス</text><text x="210" y="62" text-anchor="start" fill="rgba(255,255,255,.55)" font-size="11.5" font-weight="500">MAC アドレス</text><rect x="24" y="72" width="172" height="30" rx="9" fill="rgba(255,255,255,.55)" fill-opacity="0.08" stroke="rgba(255,255,255,.55)" stroke-width="1.5"/><text x="110.0" y="91.5" text-anchor="middle" fill="rgba(255,255,255,.72)" font-size="12.5" font-weight="500" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">192.168.128.1</text><rect x="204" y="72" width="190" height="30" rx="9" fill="rgba(255,255,255,.55)" fill-opacity="0.08" stroke="rgba(255,255,255,.55)" stroke-width="1.5"/><text x="299.0" y="91.5" text-anchor="middle" fill="rgba(255,255,255,.72)" font-size="12.5" font-weight="500" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">c2:c7:db:de:05:65</text><rect x="24" y="110" width="172" height="30" rx="9" fill="#ffb46b" fill-opacity="0.2" stroke="#ffb46b" stroke-width="1.5"/><text x="110.0" y="129.5" text-anchor="middle" fill="#ffd3a3" font-size="12.5" font-weight="500" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">192.168.128.3</text><rect x="204" y="110" width="190" height="30" rx="9" fill="#a48bff" fill-opacity="0.2" stroke="#a48bff" stroke-width="1.5"/><text x="299.0" y="129.5" text-anchor="middle" fill="#cbbcff" font-size="12.5" font-weight="500" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">5e:f1:1e:25:27:db</text><rect x="470" y="30" width="270" height="40" rx="9" fill="#ffb46b" fill-opacity="0.13" stroke="#ffb46b" stroke-width="1.5"/><text x="605.0" y="54.68" text-anchor="middle" fill="#ffd3a3" font-size="13" font-weight="500">送りたい：192.168.128.3 へ</text><line x1="468" y1="50" x2="400" y2="92" stroke="#ffb46b" stroke-width="1.6" marker-end="url(#m-amber)"/><text x="436" y="58" text-anchor="middle" fill="#ffd3a3" font-size="11.5" font-weight="500">引く</text><line x1="396" y1="126" x2="466" y2="150" stroke="#a48bff" stroke-width="1.8" marker-end="url(#m-purple)"/><rect x="470" y="130" width="270" height="40" rx="9" fill="#a48bff" fill-opacity="0.13" stroke="#a48bff" stroke-width="1.5"/><text x="605.0" y="154.32" text-anchor="middle" fill="#cbbcff" font-size="12" font-weight="500">Ethernet の宛先 MAC：5e:f1:1e:25:27:db</text><text x="380" y="206" text-anchor="middle" fill="rgba(255,255,255,.72)" font-size="12.5" font-weight="500">名簿にないときは、ARP で「この IP アドレスはだれ？」と聞いて書き込む（1-1 §04）</text></svg>
+        <figcaption>Kali は、Parrot（192.168.128.3）に送るとき、この名簿で MAC アドレスを引いて、Ethernet の宛先に書きます。<strong>インターネット層の住所（IP）</strong>と<strong>インターフェース層の住所（MAC）</strong>をつなぐのが、この名簿と ARP です。</figcaption>
+      </figure>
+
+      <div class="box teach"><span class="lab">この名簿が書き換えられたら？</span>
+      <p>Kali は、この名簿を信じて Ethernet の宛先を決めています。もし、だれかがうその ARP の返事を送って「192.168.128.3 の MAC アドレスは、わたしの番号です」と名簿を書き換えさせたら、Kali が Parrot に送ったつもりのフレームは、<strong>その人のところに届いてしまいます</strong>。これが 8章で原理と見つけ方・守り方を学ぶ <strong>ARP スプーフィング</strong>（spoofing：なりすまし）で、インターフェース層（L2）の仕組みを悪用した攻撃です。<code>ip neigh</code> で名簿を確かめることは、その見つけ方の第一歩になります。</p></div>
+    </section>
+
+    <!-- §07 -->
+    <section id="s7">
+      <div class="sec-head"><span class="idx">§07</span><h2>層ごとの攻撃と守り</h2></div>
+
+      <figure class="fig dg">
+        <svg viewBox="0 0 760 203" role="img" aria-label="§07 では4つの層それぞれの攻撃と守りを見る"><rect x="14" y="8" width="66" height="22" rx="11" fill="#ff6fa5" fill-opacity=".16" stroke="#ff6fa5" stroke-width="1.2"/><text x="47" y="23" text-anchor="middle" fill="#ffb3cf" font-size="11.5" font-weight="700">いまここ</text><text x="92" y="24" text-anchor="start" fill="rgba(255,255,255,.72)" font-size="12.5" font-weight="500">§07 で見る層（§01 の図）</text><rect x="20" y="40" width="440" height="32" rx="9" fill="#72e3ad" fill-opacity="0.16" stroke="#72e3ad" stroke-opacity="1" stroke-width="1.8"/><text x="36" y="61" text-anchor="start" fill="#9ff0cf" font-size="13" font-weight="700">アプリケーション層（L7）</text><text x="444" y="61" text-anchor="end" fill="#fff" font-size="12.5" font-weight="600">中身（データ）</text><rect x="20" y="79" width="440" height="32" rx="9" fill="#4d94ff" fill-opacity="0.16" stroke="#4d94ff" stroke-opacity="1" stroke-width="1.8"/><text x="36" y="100" text-anchor="start" fill="#a8c9ff" font-size="13" font-weight="700">トランスポート層（L4）</text><text x="444" y="100" text-anchor="end" fill="#fff" font-size="12.5" font-weight="600">ポート番号</text><rect x="20" y="118" width="440" height="32" rx="9" fill="#ffb46b" fill-opacity="0.16" stroke="#ffb46b" stroke-opacity="1" stroke-width="1.8"/><text x="36" y="139" text-anchor="start" fill="#ffd3a3" font-size="13" font-weight="700">インターネット層（L3）</text><text x="444" y="139" text-anchor="end" fill="#fff" font-size="12.5" font-weight="600">IP アドレス</text><rect x="20" y="157" width="440" height="32" rx="9" fill="#a48bff" fill-opacity="0.16" stroke="#a48bff" stroke-opacity="1" stroke-width="1.8"/><text x="36" y="178" text-anchor="start" fill="#cbbcff" font-size="13" font-weight="700">ネットワークインターフェース層（L2）</text><text x="444" y="178" text-anchor="end" fill="#fff" font-size="12.5" font-weight="600">MAC アドレス</text><path d="M464,42 h8 V187 h-8" fill="none" stroke="#ff6fa5" stroke-width="1.6"/><line x1="472" y1="114.5" x2="500" y2="114.5" stroke="#ff6fa5" stroke-width="1.6"/><rect x="500" y="65.5" width="240" height="98" rx="12" fill="#ff6fa5" fill-opacity=".10" stroke="#ff6fa5" stroke-width="1.4"/><text x="516" y="89.5" text-anchor="start" fill="#ffb3cf" font-size="13.5" font-weight="700">層ごとの攻撃と守り</text><text x="516" y="111.5" text-anchor="start" fill="rgba(255,255,255,.72)" font-size="12" font-weight="500">どの層の仕組みを悪用するか</text><text x="516" y="133.5" text-anchor="start" fill="rgba(255,255,255,.72)" font-size="12" font-weight="500">どの層で見張り・止めるか</text><text x="516" y="155.5" text-anchor="start" fill="rgba(255,255,255,.72)" font-size="12" font-weight="500">（L2〜L7 は OSI の番号）</text></svg>
+        <figcaption>§07 では、4つの層それぞれについて、攻撃と守りを整理します。かっこの L2〜L7 は、§02 の OSI 参照モデルの層の番号です。</figcaption>
+      </figure>
+
+      <p>層の目で見ると、これから学ぶ攻撃と守りを「<strong>どの層の話か</strong>」で整理できます。攻撃は「どの層の仕組みを悪用しているか」、守りは「どの層で見張り・止めるか」です。</p>
+
+      <figure class="fig dg">
+        <svg viewBox="0 0 760 300" role="img" aria-label="層ごとの攻撃と守りの例"><text x="110" y="22" text-anchor="middle" fill="rgba(255,255,255,.55)" font-size="12.5" font-weight="500">層</text><text x="380" y="22" text-anchor="middle" fill="#ffb3cf" font-size="12.5" font-weight="500">攻める側（原理を学ぶ）</text><text x="645" y="22" text-anchor="middle" fill="#9ff0cf" font-size="12.5" font-weight="500">守る側</text><rect x="10" y="32" width="200" height="58" rx="10" fill="#72e3ad" fill-opacity=".1" stroke="#72e3ad" stroke-width="1.4"/><text x="110" y="66" text-anchor="middle" fill="#9ff0cf" font-size="12.5" font-weight="700">アプリケーション層（L7）</text><rect x="220" y="32" width="320" height="58" rx="9" fill="#ff6fa5" fill-opacity="0.08" stroke="#ff6fa5" stroke-width="1.5"/><text x="380.0" y="57.32" text-anchor="middle" fill="#ffb3cf" font-size="12" font-weight="500">SQL インジェクション・XSS（11章）</text><text x="380.0" y="73.32" text-anchor="middle" fill="#ffb3cf" font-size="12" font-weight="500">パスワードの総当たり（10章）</text><rect x="550" y="32" width="200" height="58" rx="9" fill="#72e3ad" fill-opacity="0.08" stroke="#72e3ad" stroke-width="1.5"/><text x="650.0" y="57.32" text-anchor="middle" fill="#9ff0cf" font-size="12" font-weight="500">入力の確認・WAF（11章）</text><text x="650.0" y="73.32" text-anchor="middle" fill="#9ff0cf" font-size="12" font-weight="500">fail2ban（10章）</text><rect x="10" y="98" width="200" height="58" rx="10" fill="#4d94ff" fill-opacity=".1" stroke="#4d94ff" stroke-width="1.4"/><text x="110" y="132" text-anchor="middle" fill="#a8c9ff" font-size="12.5" font-weight="700">トランスポート層（L4）</text><rect x="220" y="98" width="320" height="58" rx="9" fill="#ff6fa5" fill-opacity="0.08" stroke="#ff6fa5" stroke-width="1.5"/><text x="380.0" y="131.32" text-anchor="middle" fill="#ffb3cf" font-size="12" font-weight="500">ポートスキャン（4章）</text><rect x="550" y="98" width="200" height="58" rx="9" fill="#72e3ad" fill-opacity="0.08" stroke="#72e3ad" stroke-width="1.5"/><text x="650.0" y="123.32" text-anchor="middle" fill="#9ff0cf" font-size="12" font-weight="500">使わないポートを閉じる（17章）</text><text x="650.0" y="139.32" text-anchor="middle" fill="#9ff0cf" font-size="12" font-weight="500">ファイアウォール（5・18章）</text><rect x="10" y="164" width="200" height="58" rx="10" fill="#ffb46b" fill-opacity=".1" stroke="#ffb46b" stroke-width="1.4"/><text x="110" y="198" text-anchor="middle" fill="#ffd3a3" font-size="12.5" font-weight="700">インターネット層（L3）</text><rect x="220" y="164" width="320" height="58" rx="9" fill="#ff6fa5" fill-opacity="0.08" stroke="#ff6fa5" stroke-width="1.5"/><text x="380.0" y="189.32" text-anchor="middle" fill="#ffb3cf" font-size="12" font-weight="500">送信元のなりすまし（1-1）</text><text x="380.0" y="205.32" text-anchor="middle" fill="#ffb3cf" font-size="12" font-weight="500">ping でのホスト発見（4章）</text><rect x="550" y="164" width="200" height="58" rx="9" fill="#72e3ad" fill-opacity="0.08" stroke="#72e3ad" stroke-width="1.5"/><text x="650.0" y="189.32" text-anchor="middle" fill="#9ff0cf" font-size="12" font-weight="500">ファイアウォール（5・18章）</text><text x="650.0" y="205.32" text-anchor="middle" fill="#9ff0cf" font-size="12" font-weight="500">IDS（15章）</text><rect x="10" y="230" width="200" height="58" rx="10" fill="#a48bff" fill-opacity=".1" stroke="#a48bff" stroke-width="1.4"/><text x="110" y="264" text-anchor="middle" fill="#cbbcff" font-size="12.5" font-weight="700">インターフェース層（L2）</text><rect x="220" y="230" width="320" height="58" rx="9" fill="#ff6fa5" fill-opacity="0.08" stroke="#ff6fa5" stroke-width="1.5"/><text x="380.0" y="263.32" text-anchor="middle" fill="#ffb3cf" font-size="12" font-weight="500">ARP スプーフィング（8章）</text><rect x="550" y="230" width="200" height="58" rx="9" fill="#72e3ad" fill-opacity="0.08" stroke="#72e3ad" stroke-width="1.5"/><text x="650.0" y="255.32" text-anchor="middle" fill="#9ff0cf" font-size="12" font-weight="500">arpwatch（8章）</text><text x="650.0" y="271.32" text-anchor="middle" fill="#9ff0cf" font-size="12" font-weight="500">ネットワークの分離（9章）</text></svg>
+        <figcaption>この講座で学ぶ攻撃と守りを、層ごとに並べた図。攻撃は「どの層の仕組みを悪用しているか」、守りは「どの層で見張り・止めるか」で整理できます。攻撃は、原理と、見つけ方・守り方を中心に学びます。図の略語：SQL（Structured Query Language：データベースへの問い合わせ言語）、XSS（Cross-Site Scripting：クロスサイトスクリプティング）、WAF（Web Application Firewall：Web アプリケーション・ファイアウォール）、IDS（Intrusion Detection System：侵入検知システム）。</figcaption>
+      </figure>
+
+      <h3>守りの道具は、見える層が決まっている</h3>
+      <p>守りの道具は、それぞれ<strong>見える層</strong>が決まっています。たとえば、ふつうのファイアウォール（5章・18章の nftables）は、IP アドレスとポート番号で「通す・止める」を決めます。そのため、80番（HTTP）を通すと決めたら、<strong>その中身が普通の依頼なのか、攻撃なのかは見ていません</strong>。HTTP の中身まで見て判断するのが WAF（Web Application Firewall：Web アプリケーション・ファイアウォール。11章）です。</p>
+
+      <figure class="fig dg">
+        <svg viewBox="0 0 760 266" role="img" aria-label="ファイアウォールは IP とポートまで、WAF は HTTP の中身まで見る"><rect x="10" y="8" width="365" height="250" rx="14" fill="rgba(255,255,255,.02)" stroke="rgba(255,255,255,.14)"/><text x="192.5" y="34" text-anchor="middle" fill="#ffd3a3" font-size="14.5" font-weight="600">ファイアウォール（nftables）</text><rect x="40" y="48" width="305" height="36" rx="9" fill="rgba(255,255,255,.55)" fill-opacity="0.04" stroke="rgba(255,255,255,.55)" stroke-width="1.5" stroke-dasharray="5 5"/><text x="192.5" y="70.5" text-anchor="middle" fill="rgba(255,255,255,.72)" font-size="12.5" font-weight="500">アプリケーション層</text><rect x="40" y="92" width="305" height="36" rx="9" fill="#4d94ff" fill-opacity="0.16" stroke="#4d94ff" stroke-width="1.5"/><text x="192.5" y="114.5" text-anchor="middle" fill="#a8c9ff" font-size="12.5" font-weight="500">トランスポート層</text><rect x="40" y="136" width="305" height="36" rx="9" fill="#ffb46b" fill-opacity="0.16" stroke="#ffb46b" stroke-width="1.5"/><text x="192.5" y="158.5" text-anchor="middle" fill="#ffd3a3" font-size="12.5" font-weight="500">インターネット層</text><rect x="40" y="180" width="305" height="36" rx="9" fill="#a48bff" fill-opacity="0.16" stroke="#a48bff" stroke-width="1.5"/><text x="192.5" y="202.5" text-anchor="middle" fill="#cbbcff" font-size="12.5" font-weight="500">ネットワークインターフェース層</text><text x="192" y="238" text-anchor="middle" fill="rgba(255,255,255,.72)" font-size="12.5" font-weight="500">IP アドレスとポート番号で判断</text><rect x="385" y="8" width="365" height="250" rx="14" fill="rgba(255,255,255,.02)" stroke="rgba(255,255,255,.14)"/><text x="567.5" y="34" text-anchor="middle" fill="#9ff0cf" font-size="14.5" font-weight="600">WAF（11章）</text><rect x="415" y="48" width="305" height="36" rx="9" fill="#72e3ad" fill-opacity="0.16" stroke="#72e3ad" stroke-width="1.5"/><text x="567.5" y="70.5" text-anchor="middle" fill="#9ff0cf" font-size="12.5" font-weight="500">アプリケーション層</text><rect x="415" y="92" width="305" height="36" rx="9" fill="#4d94ff" fill-opacity="0.16" stroke="#4d94ff" stroke-width="1.5"/><text x="567.5" y="114.5" text-anchor="middle" fill="#a8c9ff" font-size="12.5" font-weight="500">トランスポート層</text><rect x="415" y="136" width="305" height="36" rx="9" fill="#ffb46b" fill-opacity="0.16" stroke="#ffb46b" stroke-width="1.5"/><text x="567.5" y="158.5" text-anchor="middle" fill="#ffd3a3" font-size="12.5" font-weight="500">インターネット層</text><rect x="415" y="180" width="305" height="36" rx="9" fill="#a48bff" fill-opacity="0.16" stroke="#a48bff" stroke-width="1.5"/><text x="567.5" y="202.5" text-anchor="middle" fill="#cbbcff" font-size="12.5" font-weight="500">ネットワークインターフェース層</text><text x="567" y="238" text-anchor="middle" fill="rgba(255,255,255,.72)" font-size="12.5" font-weight="500">HTTP の中身まで見て判断</text></svg>
+        <figcaption>守りの道具ごとに「見えている層」がちがいます。ふつうのファイアウォールは IP アドレスとポート番号までで判断するので、許可したポート（たとえば 80番）の中身が攻撃かどうかは分かりません。HTTP の中身まで見るのが WAF（Web Application Firewall：Web アプリケーション・ファイアウォール）です。</figcaption>
+      </figure>
+
+      <div class="box principle"><span class="lab">この節の核心：1つの層だけでは守れない</span>
+      <p>攻撃は、どの層からでも来ます。L2 の名簿の書き換えは、L3・L4 のファイアウォールでは止められず、L7 の中身の攻撃は、ポートで止めるファイアウォールを素通りします。だから守りは、<strong>層ごとに別の道具を重ねる</strong>のが基本です（多層防御：18章）。また、§05 の <code>User-Agent</code> や 1-1 の送信元 IP のように、<strong>上の層にも下の層にも「自己申告」の情報がある</strong>ことを忘れないようにしましょう。</p></div>
+    </section>
+
+    <!-- §08 -->
+    <section id="s8">
+      <div class="sec-head"><span class="idx">§08</span><h2>まとめとチェック</h2></div>
+
+      <ul>
+        <li>通信は<strong>層</strong>に分けて作られている。TCP/IP モデルは、アプリケーション層・トランスポート層・インターネット層・ネットワークインターフェース層の4つ。OSI 参照モデルは7つで、セキュリティでは「L2」「L7」のように OSI の番号で呼ぶことが多い。</li>
+        <li>送る側は上の層から順にヘッダを付けて包み（<strong>カプセル化</strong>）、受ける側は下から順にはがす。同じ層どうしがやり取りしているように振る舞う。</li>
+        <li>層ごとに住所がちがう。<strong>MAC アドレス</strong>はすぐ隣まで（区間ごとに付け替わる）、<strong>IP アドレス</strong>は最後の宛先まで、<strong>ポート番号</strong>はマシンの中のどのプログラムか。</li>
+        <li>1つのパケット（#4・148バイト）は、Ethernet 14＋IP 20＋TCP 32＋HTTP 82 でできていた。tshark の <code>-O</code> で層ごとに見られる。</li>
+        <li>IP アドレスから MAC アドレスを引く名簿は <code>ip neigh</code> で見られる。この名簿を書き換える攻撃が ARP スプーフィング（8章）。</li>
+        <li>守りの道具は見える層が決まっているので、層ごとに守りを重ねる。</li>
+      </ul>
+
+      <div class="box warn"><span class="lab">後片付け</span>
+      <p>Parrot の Web サーバーの端末で <code>Ctrl+C</code> を押して止めてください。記録したファイル <code>/tmp/l4.pcap</code> は、6章で Wireshark の練習に使えるので、残しておいてもかまいません（Kali を再起動すると消えます）。</p></div>
+
+      <div class="box principle"><span class="lab">最終チェック</span>
+      <ul style="margin:8px 0 0">
+        <li>TCP/IP モデルの4つの層の名前と、それぞれの層のプロトコルを2つずつ言えるか（§01）</li>
+        <li>ICMP と ARP が、どの層に置かれるか、その理由と合わせて言えるか（§01）</li>
+        <li>OSI 参照モデルの7つの層と、TCP/IP モデルとの対応を言えるか。「L2」「L7」が何を指すか言えるか（§02）</li>
+        <li>フレーム・パケット・セグメントが、それぞれどの層の呼び方か言えるか（§02）</li>
+        <li>カプセル化とは何か、送る側と受ける側で何が起きるか言えるか（§03）</li>
+        <li>MAC アドレスと IP アドレスの役割のちがい（どこまで使うか、途中で変わるか）を言えるか（§03）</li>
+        <li><code>ip -br link</code> の <code>link</code> の意味と、<code>LOWER_UP</code>・<code>BROADCAST</code> の読み方を言えるか（§04）</li>
+        <li><code>tcpdump -c 10 -w</code> と <code>tshark -r</code> の各部分の意味と、ファイルに記録する良さを言えるか（§05）</li>
+        <li>#4 のパケットの148バイトの内訳と、HTTP の82バイトの内訳を言えるか（§05）</li>
+        <li>tshark の <code>-Y http.request -O http</code> の出力で、どの行がどの層か言えるか（§05）</li>
+        <li><code>ip neigh</code> の <code>lladdr</code>・<code>STALE</code> の意味と、この名簿が書き換えられると何が起きるか言えるか（§06）</li>
+        <li>ファイアウォールと WAF で、見える層がどうちがうか言えるか（§07）</li>
+      </ul></div>
+
+      <div class="transfer"><span class="lab">前へ：1-3 UDP・ICMP と主要プロトコル</span>
+      <p><a href="cyber_1-3.html">1-3「UDP・ICMP と主要プロトコル」</a>：確認をしない UDP、通信のお知らせ係 ICMP、DNS と TTL。</p></div>
+      <div class="transfer"><span class="lab">次へ：2-1 演習ラボの全体像</span>
+      <p>これで1章「ネットワークの仕組み」は終わりです。次の2章では、この講座で使っている <strong>演習環境そのもの</strong>（Kali と Parrot、内部ネットワークと NAT、2つの NIC）を、層の目で見直しながら整理し、Linux の基本的なコマンドを身につけます。</p></div>
+
+      <div class="foot"><p>Academic Gates ／ サイバーセキュリティ基礎 1章 ネットワークの仕組み ／ 1-4「階層モデル（OSI / TCP-IP）で全体を捉える」。演習は Kali Linux × Parrot OS の仮想ラボで行い、パケットの送受信は Host-Only の内部ネットワーク（<code>192.168.128.0/24</code>。外部の LAN からは切り離されている）の中だけで実施しています。画面に写っている MAC アドレスは、仮想マシンの仮想の NIC の番号です。自分が管理していないネットワークや機器には、この講座の操作を行わないでください。</p></div>
+    </section>
+
+  </main>
+</div>
+<div id="site-footer"><noscript><nav class="noscript-nav" aria-label="フッターナビゲーション"><a href="index.html">ホーム</a><a href="self-intro.html">自己紹介</a><a href="study.html">勉強の軌跡</a><a href="videos.html">動画</a><a href="blog.html">ブログ</a><a href="sns.html">各種SNS</a></nav></noscript></div>
+<script>
+/* コマンドのコピー（アイコンボタンを付ける） */
+var COPY_ICONS='<svg class="ic-copy" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M15 9V6.5A2.5 2.5 0 0 0 12.5 4h-6A2.5 2.5 0 0 0 4 6.5v6A2.5 2.5 0 0 0 6.5 15H9"/></svg>'
+  +'<svg class="ic-check" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+document.querySelectorAll('.cmdbox').forEach(function(box){
+  var text=box.getAttribute('data-copy');
+  var btn=document.createElement('button');
+  btn.type='button';btn.className='copy';btn.title='コピー';btn.setAttribute('aria-label','コマンドをコピー');
+  btn.innerHTML=COPY_ICONS;box.appendChild(btn);
+  function ok(){btn.classList.add('done');btn.title='コピーしました';setTimeout(function(){btn.classList.remove('done');btn.title='コピー'},1600)}
+  function fallback(){
+    var t=document.createElement('textarea');t.value=text;t.setAttribute('readonly','');
+    t.style.position='fixed';t.style.opacity='0';document.body.appendChild(t);t.select();
+    try{document.execCommand('copy');ok()}catch(e){}
+    document.body.removeChild(t);
+  }
+  btn.addEventListener('click',function(){
+    if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(text).then(ok,fallback)}else{fallback()}
+  });
+});
+
+/* 目次の追従 */
+var links=[].slice.call(document.querySelectorAll('.toc a[href^="#"]'));
+var secs=links.map(function(a){return document.querySelector(a.getAttribute('href'))});
+var pbar=document.getElementById('pbar');
+function onScroll(){
+  // getBoundingClientRect を使う（offsetTop ではない）。style.css の
+  // `main{position:relative}` で <main> が offsetParent になるため（§36）。
+  var idx=0;
+  secs.forEach(function(s,i){ if(s&&s.getBoundingClientRect().top<=140) idx=i; });
+  // 最後の節は短く、見出しが 140px まで上がる前にページの底に着く。底に着いたら最後を光らせる
+  if(window.innerHeight+window.scrollY>=document.documentElement.scrollHeight-2) idx=secs.length-1;
+  links.forEach(function(a){a.classList.remove('active')});
+  if(links[idx]) links[idx].classList.add('active');
+  var h=document.documentElement.scrollHeight-window.innerHeight;
+  pbar.style.width=(h>0?(window.scrollY/h*100):0)+'%';
+}
+window.addEventListener('scroll',onScroll,{passive:true});
+window.addEventListener('resize',onScroll); onScroll();
+var body=document.body,mb=document.getElementById('menuBtn'),scrim=document.getElementById('scrim');
+mb.addEventListener('click',function(){var o=body.classList.toggle('nav-open');mb.setAttribute('aria-expanded',o)});
+scrim.addEventListener('click',function(){body.classList.remove('nav-open')});
+document.getElementById('toc').addEventListener('click',function(e){if(e.target.closest('a'))body.classList.remove('nav-open')});
+</script>
+<script src="../js/disciplines.js?v=r184"></script>
+<script src="../js/layout.js?v=r184"></script>
+<script src="../js/main.js?v=r184"></script>
+<script src="../js/starfield.js?v=r184"></script>
+</body>
+</html>
