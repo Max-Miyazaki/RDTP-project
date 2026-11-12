@@ -15,7 +15,7 @@
      記事の &lt;style&gt; より後ろに置くこと。css/lesson-theme.css 冒頭の注記どおり）。
      ★ 注釈に生のスタイルタグを書かない：機械的に切り出すと、そこが本物のタグとして残り、
        後ろの :root が丸ごと捨てられる（DESIGN.md §137.2） -->
-<link rel="stylesheet" href="../css/style.css?v=r187">
+<link rel="stylesheet" href="../css/style.css?v=r189">
 <style>
 /* 1-2 TCPとポート、3-wayハンドシェイク — 記事固有のスタイルのみ（土台は cyber_1-1.html。DESIGN.md §137）。
    共通部分は css/style.css と lesson-theme.css が持つ（DESIGN.md §35, §36）。
@@ -191,7 +191,7 @@ body.is-article main .foot p{color:var(--ink-faint)}
 .box .fig.dg{background:rgba(0,0,0,.18)}
 @media (max-width:700px){.fig.dg::before{content:'← 図は横にスクロールできます →';display:block;font-size:11px;color:var(--ink-faint);text-align:center;margin:-4px 0 6px;position:sticky;left:0}}
 </style>
-<link rel="stylesheet" href="../css/lesson-theme.css?v=r187">
+<link rel="stylesheet" href="../css/lesson-theme.css?v=r189">
 </head>
 <body data-page="study" class="is-article" data-node="cyber_1-2">
 <canvas id="starfield" aria-hidden="true"></canvas>
@@ -409,7 +409,7 @@ body.is-article main .foot p{color:var(--ink-faint)}
         <figcaption>Web サーバーを起動する前は、待ち受けているポートはありません。起動すると、8080番で Web サーバーが待ち受けを始めます（ポートが開く）。</figcaption>
       </figure>
       <figure class="fig">
-        <img src="../image/cyber/1-2/fig1_ss_marked.jpg?v=r187" width="1400" height="860" loading="lazy" alt="Parrot のデスクトップ。上の端末に ss -tln の結果が2回分、下の端末に Web サーバーの起動">
+        <img src="../image/cyber/1-2/fig1_ss_marked.jpg?v=r189" width="1400" height="860" loading="lazy" alt="Parrot のデスクトップ。上の端末に ss -tln の結果が2回分、下の端末に Web サーバーの起動">
         <figcaption>操作した順に番号を付けています。<br>
           <strong>赤枠①</strong>：起動前の <code>ss -tln</code>（上の端末）。見出しの1行だけで、待ち受け中のポートがない。<br>
           <strong>赤枠②</strong>：下の端末で Web サーバーを起動。<br>
@@ -489,14 +489,14 @@ LISTEN     0          5                     0.0.0.0:8080               0.0.0.0:*
       </figure>
 
       <figure class="fig">
-        <img src="../image/cyber/1-2/fig2_handshake_full.jpg?v=r187" width="1400" height="916" loading="lazy" alt="Kali のデスクトップ。左の端末に tcpdump が捕まえた10個のパケット、右の端末に curl の結果">
+        <img src="../image/cyber/1-2/fig2_handshake_full.jpg?v=r189" width="1400" height="916" loading="lazy" alt="Kali のデスクトップ。左の端末に tcpdump が捕まえた10個のパケット、右の端末に curl の結果">
         <figcaption><strong>赤枠①</strong>：端末A の tcpdump が捕まえた、1回の接続のすべてのパケット（10個）。<strong>赤枠②</strong>：端末B の curl に、ページの中身が届いた。curl を打った瞬間に、左にパケットが流れます。</figcaption>
       </figure>
 
       <p>パケットの行を拡大して、3つのまとまりに分けたのが次の図です。§03 の図の ①②③ と、そのまま対応しています。</p>
 
       <figure class="fig">
-        <img src="../image/cyber/1-2/fig3_handshake_zoom.png?v=r187" width="1696" height="916" loading="lazy" alt="tcpdump の10個のパケットの拡大。3-wayハンドシェイク、データのやり取り、接続を閉じる、の3つに分けて赤枠で囲んである">
+        <img src="../image/cyber/1-2/fig3_handshake_zoom.png?v=r189" width="1696" height="916" loading="lazy" alt="tcpdump の10個のパケットの拡大。3-wayハンドシェイク、データのやり取り、接続を閉じる、の3つに分けて赤枠で囲んである">
         <figcaption><strong>赤枠① 3-wayハンドシェイク</strong>（#1〜#3）：Flags が <code>[S]</code> → <code>[S.]</code> → <code>[.]</code> の3つ。<br>
           <strong>赤枠② データのやり取り</strong>（#4〜#6）：Kali の「ページをください」（<code>GET / HTTP/1.1</code>）、Parrot の受け取り確認、Parrot の「どうぞ」（<code>HTTP/1.0 200 OK</code>）。<br>
           <strong>赤枠③ 接続を閉じる</strong>（#7〜#10）：<code>[FP.]</code>・<code>[.]</code>・<code>[F.]</code>・<code>[.]</code> の4つ。</figcaption>
@@ -590,12 +590,12 @@ LISTEN     0          5                     0.0.0.0:8080               0.0.0.0:*
       </figure>
 
       <figure class="fig">
-        <img src="../image/cyber/1-2/fig4_rst_full.jpg?v=r187" width="1400" height="908" loading="lazy" alt="Kali のデスクトップ。左の端末の下に SYN と RST の2行、右の端末に curl の接続失敗のメッセージ">
+        <img src="../image/cyber/1-2/fig4_rst_full.jpg?v=r189" width="1400" height="908" loading="lazy" alt="Kali のデスクトップ。左の端末の下に SYN と RST の2行、右の端末に curl の接続失敗のメッセージ">
         <figcaption><strong>赤枠①</strong>：8081番への SYN と、返ってきた RST の2行だけ。<strong>赤枠②</strong>：curl が「接続できなかった」と表示。左の端末の上のほうには、§05 の記録と、止めたときの集計（10 packets captured＝10個捕まえた）も残っています。</figcaption>
       </figure>
 
       <figure class="fig">
-        <img src="../image/cyber/1-2/fig5_rst_zoom.png?v=r187" width="1616" height="190" loading="lazy" alt="SYN と RST の2つのパケットの拡大">
+        <img src="../image/cyber/1-2/fig5_rst_zoom.png?v=r189" width="1616" height="190" loading="lazy" alt="SYN と RST の2つのパケットの拡大">
         <figcaption><strong>赤枠①</strong>：Kali からの SYN（<code>Flags [S]</code>）。§05 の1つ目と同じ「つなぎたい」。<strong>赤枠②</strong>：Parrot からの返事は SYN-ACK ではなく <strong>RST</strong>（<code>Flags [R.]</code>）。接続はここで終わります。</figcaption>
       </figure>
 
@@ -648,7 +648,7 @@ LISTEN     0          5                     0.0.0.0:8080               0.0.0.0:*
       <p>最後に、接続された側の Parrot で、Web サーバーの端末を見てみます。§05 の curl のアクセスが、<strong>1行の記録（ログ）</strong>として残っています。</p>
 
       <figure class="fig">
-        <img src="../image/cyber/1-2/fig6_log_marked.jpg?v=r187" width="1400" height="899" loading="lazy" alt="Parrot のデスクトップ。下の端末の Web サーバーに、Kali からのアクセスの記録が1行">
+        <img src="../image/cyber/1-2/fig6_log_marked.jpg?v=r189" width="1400" height="899" loading="lazy" alt="Parrot のデスクトップ。下の端末の Web サーバーに、Kali からのアクセスの記録が1行">
         <figcaption><strong>赤枠①</strong>：Web サーバーが残した、Kali（192.168.128.2）からのアクセスの記録。</figcaption>
       </figure>
 
@@ -772,10 +772,10 @@ mb.addEventListener('click',function(){var o=body.classList.toggle('nav-open');m
 scrim.addEventListener('click',function(){body.classList.remove('nav-open')});
 document.getElementById('toc').addEventListener('click',function(e){if(e.target.closest('a'))body.classList.remove('nav-open')});
 </script>
-<script src="../js/i18n.js?v=r187"></script>
-<script src="../js/disciplines.js?v=r187"></script>
-<script src="../js/layout.js?v=r187"></script>
-<script src="../js/main.js?v=r187"></script>
-<script src="../js/starfield.js?v=r187"></script>
+<script src="../js/i18n.js?v=r189"></script>
+<script src="../js/disciplines.js?v=r189"></script>
+<script src="../js/layout.js?v=r189"></script>
+<script src="../js/main.js?v=r189"></script>
+<script src="../js/starfield.js?v=r189"></script>
 </body>
 </html>

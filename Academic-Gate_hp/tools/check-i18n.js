@@ -12,12 +12,36 @@
 //   ④ hreflang：両方の版があるページだけ、両方の head に ja・en・x-default（日本語版）の3行がある。片方だけのページには無い
 //   ⑤ 英語の文言がそろっている：UI 文言表（ja と en のキーが同じ）、CRUMBS（英語の一覧に出る行の en・titleEn・unitEn）、
 //      disciplines.js（en・leadEn・introEn・start.labelEn）、research.js（チップの英語名・labelEn・compactEn）
-const fs = require('fs'), path = require('path'), vm = require('vm');
+//   ⑥ 英語版の元にした日本語版が、後から変わっていないか（DESIGN.md §139.10）
+//      共通ページの英語版は、head に <meta name="ag-ja-hash" content="…"> を持つ。元にした日本語版のハッシュ。
+//      いまの日本語版のハッシュと違えば「英語版が古い可能性」を知らせる（注意。終了コードには入れない）。meta が無いのは食い違い
+//      ハッシュは ?v=rNN と hreflang の行を除いて取る（番号の上げ下げ・hreflang の追加では変わらない）
+//
+//   英語版を日本語版に追いつかせたら：node Academic-Gate_hp/tools/check-i18n.js --stamp <ファイル名>（meta を今の日本語版のハッシュに書き換える）
+//   make-en.sh は写したときにこれを呼ぶ
+const fs = require('fs'), path = require('path'), vm = require('vm'), crypto = require('crypto');
 const SITE = path.join(__dirname, '..');
 const HTML = path.join(SITE, 'html');
 const BASE_URL = 'https://max-phy.jp/Academic-Gate_hp/html/';
 const bad = [];
 const read = f => fs.readFileSync(f, 'utf8');
+const jaHash = f => crypto.createHash('sha256').update(
+    read(f).replace(/\?v=r\d+/g, '').split('\n').filter(l => !/<link[^>]*rel="alternate"[^>]*hreflang=/.test(l)).join('\n')
+).digest('hex').slice(0, 16);
+const HASH_RE = /<meta name="ag-ja-hash" content="([0-9a-f]*)">/;
+
+// --stamp <ファイル名>：英語版の meta を、いまの日本語版のハッシュにする
+if (process.argv[2] === '--stamp') {
+    const f = process.argv[3], en = path.join(SITE, 'html', 'en', f), ja = path.join(SITE, 'html', f);
+    if (!f || !fs.existsSync(en) || !fs.existsSync(ja)) { console.log('使い方：--stamp <html/ と html/en/ の両方にあるファイル名>'); process.exit(1); }
+    const h = jaHash(ja), meta = `<meta name="ag-ja-hash" content="${h}">`;
+    let s = read(en);
+    s = HASH_RE.test(s) ? s.replace(HASH_RE, meta) : s.replace(/(<meta charset="[^"]*">)/i, `$1\n${meta}`);
+    if (!HASH_RE.test(s)) { console.log(`${f}：<meta charset> が見つからず、書き込めなかった`); process.exit(1); }
+    fs.writeFileSync(en, s);
+    console.log(`en/${f}：元にした日本語版のハッシュを ${h} にした`);
+    process.exit(0);
+}
 
 // ---- js を読み込む（document は最小限の偽物。書き出しは何もしない） ----
 function load(files, lang) {
@@ -143,6 +167,16 @@ else {
   });
 }
 
-console.log(`check-i18n  ja ${jaPages.length}・en ${enPages.length} ページ（対応表の en ${T.en.length}・enOnly ${T.enOnly.length}）  食い違い：${bad.length}件`);
+// ⑥ 英語版の元にした日本語版が変わっていないか
+const stale = [];
+enPages.filter(f => I.kind(f) === 'both' && fs.existsSync(jaFile(f))).forEach(f => {
+    const m = read(enFile(f)).match(HASH_RE);
+    if (!m) { bad.push(`⑥ en/${f}：元にした日本語版のハッシュ（<meta name="ag-ja-hash">）が無い。--stamp ${f} で入れる`); return; }
+    const h = jaHash(jaFile(f));
+    if (m[1] !== h) stale.push(`⑥ en/${f}：英語版が古い可能性。日本語版が英語版を作ったあとに変わっている（元 ${m[1]} → いま ${h}）。追いつかせたら --stamp ${f}`);
+});
+
+console.log(`check-i18n  ja ${jaPages.length}・en ${enPages.length} ページ（対応表の en ${T.en.length}・enOnly ${T.enOnly.length}）  食い違い：${bad.length}件  注意：${stale.length}件`);
 bad.forEach(b => console.log('  ✗ ' + b));
+stale.forEach(b => console.log('  △ ' + b));
 process.exit(bad.length ? 1 : 0);

@@ -8200,6 +8200,26 @@ study.html を、ホームの学問の樹と同じ7大分類・同じ34の学問
   §137 冒頭の「7部19章52節」と style.css の注釈「数が多い（52）」は当時の記録なのでそのまま
 - 確かめたこと：章 0〜19 が連番、各章の節が 1 から連番で計 66。1-1〜1-4 のリンクは 200。1440・390 でコンソールエラー 0・横スクロールなし
 
+## 137.8 0-1「ビット・バイトと2進数・16進数」を組み込み、英語版も作る（ブランチ feature/cyber-0-1、r189 で公開）
+
+- 元ファイル：~/Downloads/cyber_0-1.html（sha256 be70600d…343c。ダウンロードフォルダのものは触らず、scratchpad に写して作業した）
+- `html/cyber_0-1.html`：§137.6 と同じく**公開中の cyber_1-4.html を土台に**、title・meta description・`data-node`・レールの中身・`<main>` の中身を差し替えた。
+  本体の `<style>` と図解用の `<style>`・`dg-sprite`・コピーと目次の追従のスクリプトは 1-4 のもの（元ファイルとの差は、ページ独自のヘッダー・フッター・星空と
+  サイト共通の設定だけ）。元ファイルにあって 1-4 に無いものを、図解用の `<style>` の後ろ・lesson-theme.css の前に足した：
+  - 問題の部品（`.drill`・`.attempt`・`.sol`・`.ctl-btn`。物理数学と同じ形）と、「解答を見る」の開閉のスクリプト
+  - 原理・導出・言えることの枠（`.road.p/.d/.c`。青・緑・橙）。0-1 で初めて出てきた部品。`:root` に新しい変数は無い
+  - 元ファイルのヘッダーの「講座一覧」2つとページ独自のフッターは外し、レール上部の「← サイバーセキュリティ基礎」（CRUMBS）と末尾の前後リンクに
+- 画像：埋め込みの2枚を `image/cyber/0-1/` に（`fig1_parrot_convert.jpg` 1400×728・`fig2_parrot_addresses.jpg` 1400×680、計約 0.5MB）。alt はそのまま
+- 本文の「次へ：0-2」はリンクなし、「1章へ：1-1」は本文のとおり cyber_1-1.html へのリンク
+- つながり：cyber.html の 0-1 のカードを `<a>` に。layout.js の CRUMBS に `cyber:ch0`（0章）と `cyber_0-1`（③）。1-1 の「前の節」が 0-1 になる。
+  disciplines.js の情報科学の「ここから読む」を cyber_0-1.html に（1章の前に0章を読む流れ）。1-1 の本文は変えていない
+- 目次の0章：§137.7 の改訂で、すでに部 I の先頭（1章の前）に「0章 準備編：コンピューターの基礎」と 0-1〜0-4 の題・説明があった。
+  部の外や新しい部にはせず、そのまま部 I の中に置いた（部 I の題「基礎 — ネットワークとセキュリティの土台」に準備編も含まれるため）。変えたのは 0-1 のカードを `<a>` にしただけ
+- コマンドのコピーは 11 個（元ファイルの `.cmdbox` も 11）。依頼文では 12 個だった
+- 確かめたこと（1440・390）：元ファイルとの計算済みスタイルの比較で、`:root` の変数（--teach など12個）はすべて同じ値。
+  残った差は 1-1〜1-4 と同じ「共通の設定」（本文列 860px・`--accent`・`--radius-sm`・コピーボタンの余白・本文のリンク色）だけ。問題の枠・原理の枠の色も同じ
+- 英語版：§139.10・§139.11
+
 ---
 
 <a id="publish"></a>
@@ -8327,6 +8347,32 @@ study.html を、ホームの学問の樹と同じ7大分類・同じ34の学問
 
 物理数学の章・節、サイバーセキュリティ基礎 1章の節の英語名は、layout.js の CRUMBS（`en`・`titleEn`）に下書きとして入れてある。
 
+**サイバーセキュリティ基礎の用語**（0-1 の英訳で決めた。2026-11-13 確定）
+
+| 日本語 | 英語 | メモ |
+|---|---|---|
+| ビット／バイト | bit / byte | 単位の書き方は b / B |
+| 2進数／10進数／16進数／8進数 | binary / decimal / hexadecimal（hex）/ octal | 「16進数2桁」は 2 hex digits |
+| 桁の重み | place value | |
+| 基数 | base | |
+| 位取り記数法 | positional notation | |
+| オクテット | octet | |
+| 〜通り | values（「256 通り」→ 256 values） | 表の見出しは Values |
+| 算術展開 | arithmetic expansion | |
+| 原理 ― 覚える／導出 ― 自分で導ける／言えること ― 説明できる | Principle — memorize / Derivation — derive it yourself / Conclusion — explain it | P・D・C の札はそのまま |
+| 使う原理／使う／根拠 | Principle used / Uses / Basis | |
+| 問N／再現／応用 | QN / Reproduce / Apply | |
+| 解答を見る／閉じる／自分の答えを出してから | Show answer / Close / Work out your own answer first | |
+| 計算ドリル／応用問題 | Calculation drill / Applied problems | |
+| コマンドの分解／出力の読み方／出力例 | Command breakdown / Reading the output / Example output | |
+| 手順N／赤枠① | Step N / Red box ① | |
+| この節で押さえること／最終チェック／うまくいかないとき | Key points of this section / Final check / If it does not work | |
+| 次へ／〇章へ | Next / On to Chapter N | |
+| 部 I・章 | Part I・Ch. N | 0章 準備編：コンピューターの基礎 → Ch. 0 Prerequisites: Computer Basics（確認で Preparation から変更） |
+| サイバーセキュリティ基礎 | Cybersecurity Fundamentals | |
+| 内部ネットワーク | internal network | |
+| 末尾の注意「自分が管理していない…行わないでください」 | Only practice the techniques in this course on networks and devices that you own or have explicit permission to test. | |
+
 ## 139.4 英語版を作る手順（段階3以降。§138 の⑤）
 
 1. `sh Academic-Gate_hp/tools/make-en.sh <ファイル名>` で写す（本文は日本語のまま）
@@ -8412,3 +8458,37 @@ cyber_1-2・3-1・5-1 は、何度か撮り直した中で main とブランチ�
 768px 以下でハンバーガーから開くメニュー（`.nav-menu`）は、ヘッダーの中にあるので、ヘッダー自身の backdrop-filter に阻まれて
 自分のぼかしが効かず、後ろの本文が透けて読みにくかった（段階2の前からの不具合。日本語・英語とも）。
 切り替えの案内（`.lang-note`）と同じく、`background: linear-gradient(var(--nav-bg), var(--nav-bg)), var(--bg)` で地の色を敷いた
+
+## 139.10 英語版の元にした日本語版のハッシュ（2026-11-13）
+
+日本語版を直したのに英語版が古いまま、を見落とさないための仕組み。以降の記事もすべてこれを使う。
+
+- 英語版を `make-en.sh` で作ると、英語版の head に `<meta name="ag-ja-hash" content="…">` が入る。元にした日本語版の sha256 の先頭16桁
+  - ハッシュは `?v=rNN` と hreflang の `<link rel="alternate">` の行を除いて取る。番号の上げ下げや hreflang の追加では変わらない
+- `check-i18n.js` の⑥：日本語版のいまのハッシュと違えば「△ 英語版が古い可能性」と出す（注意。終了コードは 0 のまま）。meta が無いのは食い違い（✗）
+- 英語版を日本語版に追いつかせたら `node Academic-Gate_hp/tools/check-i18n.js --stamp <ファイル名>` で meta を書き換える
+- 段階2で作った6ページにも、このとき今の日本語版のハッシュを入れた（6ページとも日本語版と同じ中身）
+
+## 139.11 0-1 と目次・情報科学の英語版（ブランチ feature/cyber-0-1、2026-11-13 確認を受けて r189 で公開）
+
+- `en/cyber_0-1.html`：make-en.sh で写し、日本語を含むブロック 396（段落・表のセル・見出し・図の説明など）と、短い札 49・画像の alt と図の aria-label 18 を英訳した
+  - 変えていないもの：コマンド、出力例、図（SVG）の中の文字、コピーボタンの中身（`data-copy`）、画像（日本語版と同じファイル）
+  - 図の中の文字・画像の赤枠の札は §139.12 の決まりで扱った（確認を受けて、図の中の文字 136 か所を英訳。画像2枚の札はキャプションに英語で添えた）
+  - 本文の構文の説明の中の「進数#数」は base#number に訳した（コピーするコマンドではない）
+  - 「1章へ：1-1」は英語版の 1-1 がまだ無いのでリンクを外して (coming soon)。末尾の前後リンクの「次の節」も Coming soon になる
+  - 図解用の CSS の「← 図は横にスクロールできます →」は英語版のページの `<style>` で英訳した
+- `en/cyber.html`：目次の全文（7部・20章・66節の題と説明）を英訳。英語版のある 0-1 だけ `<a>`、ほかは `<div>`（1-1〜1-4 も、英語版がまだ無いので div）
+- `en/study_informatics.html`：英訳。英語の勉強の軌跡 → 情報科学（Go to Informatics / Start here）→ 目次 → 0-1 とたどれる
+- 対応表の en に 3ページを足し、両方の head に hreflang
+
+## 139.12 英語版の図の扱い（2026-11-13 決定。以降の記事の英語版でも同じ）
+
+- **コードで描いた図**（ページの中の SVG や HTML で描いた図）：英語版では図の中の文字も英訳する。日本語版の図は変えない
+  - 英訳したら、図の中の文字が長くなってはみ出したり重なったりしていないかを 1440・390 で確かめる。
+    確かめ方：日本語版と英語版で同じ順の `<text>` の `getBBox()` を比べ、①図（viewBox）の外に出ていない、②日本語で収まっていた最小の枠（rect）に英語も収まる、
+    ③日本語で重なっていなかった文字どうしが英語で重ならない、の3つ。入らないときは訳を短くする（0-1 の図8：「例1：255」→ Ex. 1: 255）
+  - 図の aria-label も英訳する
+- **スクリーンショット**（画像に描き込まれた赤枠の札など）：画像はそのまま両方の言語で使い、作り直さない。
+  英語版では図の下のキャプションの末尾に、各札の意味を英語で添える：`<strong>Labels in the image</strong> (in Japanese): ① “…”, ② “…”.`
+  画像の alt は英訳する
+

@@ -26,7 +26,7 @@ var DISCIPLINES = [
           intro: '情報をどう表し、どう計算し、どう運び、どう守るか。手を動かしながら、仕組みから理解する。',
           introEn: 'How information is represented, computed, carried and protected. Understanding the mechanisms by working with your own hands.',
           // 「ここから読む」はシリーズ最初の節へ（物理学の phys-math_1-1 と同じ扱い）
-          start: { href: 'cyber_1-1.html', label: '1-1 パケットとIP', labelEn: '1-1 Packets and IP' } }] },
+          start: { href: 'cyber_0-1.html', label: '0-1 ビット・バイトと2進数・16進数', labelEn: '0-1 Bits, Bytes, Binary and Hexadecimal' } }] },
     { cat: 'natural', ja: '自然科学', en: 'Natural Sciences',
       lead: '物質、生命、地球、宇宙。自然の仕組みを、観測と理論で確かめる。',
       leadEn: 'Matter, life, the Earth and the universe. Testing how nature works through observation and theory.',

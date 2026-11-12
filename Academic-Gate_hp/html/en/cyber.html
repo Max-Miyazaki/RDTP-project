@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+<meta name="ag-ja-hash" content="0012f53d43fdb78a">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="alternate" hreflang="ja" href="https://max-phy.jp/Academic-Gate_hp/html/cyber.html">
+    <link rel="alternate" hreflang="en" href="https://max-phy.jp/Academic-Gate_hp/html/en/cyber.html">
+    <link rel="alternate" hreflang="x-default" href="https://max-phy.jp/Academic-Gate_hp/html/cyber.html">
+    <title>Cybersecurity Fundamentals | Informatics - Academic Gates</title>
+    <meta name="description" content="A hands-on series that teaches the attack and defense techniques used in practice, with Kali Linux and Parrot OS: reconnaissance, scanning, packet analysis, L2 attacks and defenses, attacks on services, and designing detection and defense. 7 parts, 20 chapters, 66 sections.">
+    <link rel="stylesheet" href="../../css/style.css?v=r189">
+    <link rel="icon" href="../../../favicon.ico" sizes="32x32">
+    <link rel="icon" href="../../../favicon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="../../../apple-touch-icon.png">
+    <style>
+        /* 章の説明（いまは 0章だけ）。グリッドの中で全幅にし、章の見出しのすぐ下に置く */
+        .toc-part .study-grid > .toc-ch-lead { grid-column: 1 / -1; margin: -0.25rem 0 0.25rem; font-size: 0.9rem; color: var(--text-secondary); }
+    </style>
+</head>
+<body data-page="study" data-node="cyber">
+    <canvas id="starfield" aria-hidden="true"></canvas>
+<div id="site-nav"><noscript><nav class="noscript-nav" aria-label="Main navigation"><a href="index.html">Home</a><a href="self-intro.html">About</a><a href="study.html">Learning Journey</a><a href="videos.html">Videos</a><a href="blog.html">Blog</a><a href="sns.html">Social</a></nav></noscript></div>
+    <!-- サイバーセキュリティ基礎の目次（DESIGN.md §137）。物理数学の目次（phys-math.html）と同じ作り。
+         部（.toc-part）→ 章（.study-grid の h3）→ 節（.study-card の h4）の3段。部が増えたぶんだけ見出しを1段下げた。
+         ★ 節のページがあれば <a class="study-card" href="cyber_N-M.html">、無ければ <div>（layout.js が「準備中」の札を付ける）。
+           節を書き上げたら、その節の div を a に変えるだけ。制作用の札（「次はここ」「台本あり」など）は置かない。
+         ★ 量（部・章・節の数）はページに出さない（§136 の方針）。meta description には残してある（2026-11-12 の改訂で 7部20章・66節。0章は準備編）。 -->
+    <main>
+        <div class="page-header">
+            <h1>Cybersecurity Fundamentals</h1>
+            <p class="toc-sub">Hands-on network defense, learned through attack and defense</p>
+            <p>A series that teaches the attack and defense techniques used in practice, hands-on, with Kali Linux (the attacking side) and Parrot OS (the defending and target side). You will understand how attacks work at the packet level, and work all the way through to designing defenses that protect a small business.</p>
+            <ul class="toc-chips" aria-label="Environments used">
+                <li class="toc-chip toc-chip--attack">Attack — Kali Linux</li>
+                <li class="toc-chip toc-chip--defense">Defense — Parrot OS</li>
+            </ul>
+        </div>
+
+        <div class="toc-note">
+            <p class="toc-note__lab">How to read this series</p>
+            <p>Each topic is learned as a <strong>pair</strong>: “what the attacker does” and “how the defender detects and stops it”. Real traffic is visualized with Wireshark / tshark so that you get a feel for why an attack works and what it looks like. For techniques that could be used directly to break in, such as brute force and exploits, the hands-on work is done from the side of <strong>understanding the principle, detecting it in logs and packets, and defending against it</strong> (because the defender’s point of view is the most useful one, both in practice and for learning).</p>
+            <p class="toc-note__warn"><strong>Only do the exercises in an environment you control (your own virtual machines or lab).</strong> Scanning or breaking into other people’s systems or networks without permission is against the law in most countries (in Japan, for example, the Unauthorized Computer Access Act).</p>
+        </div>
+
+        <section class="toc-part" aria-labelledby="part-1">
+            <div class="toc-part__head"><span class="toc-part__no">Part I</span><h2 id="part-1">Foundations — the groundwork of networks and security</h2></div>
+            <section class="study-grid">
+                <h3>Ch. 0 Prerequisites: Computer Basics</h3>
+                <p class="toc-ch-lead">The groundwork to read before Chapter 1. Build a solid base in hexadecimal and byte arithmetic, Linux operations and memory basics</p>
+                <a class="study-card" href="cyber_0-1.html">
+                    <h4>0-1 Bits, Bytes, Binary and Hexadecimal</h4>
+                    <p>Learn to read MAC addresses and port numbers in bytes and hexadecimal</p>
+                </a>
+                <div class="study-card">
+                    <h4>0-2 Representing Characters and Data (Character Encodings and Hex Dumps)</h4>
+                    <p>Use character encodings and xxd to look at the contents of files and packets in hexadecimal</p>
+                </div>
+                <div class="study-card">
+                    <h4>0-3 Linux Basics</h4>
+                    <p>File operations, pipes, sudo, permissions and the other basics used in the exercises</p>
+                </div>
+                <div class="study-card">
+                    <h4>0-4 Processes and Memory</h4>
+                    <p>Check where in memory a program runs, with ps and /proc</p>
+                </div>
+            </section>
+            <section class="study-grid">
+                <h3>Ch. 1 How Networks Work</h3>
+                <div class="study-card">
+                    <h4>1-1 Packets and IP: What Actually Happens in Network Communication</h4>
+                    <p>How data is split up and delivered, and the role of IP addresses</p>
+                </div>
+                <div class="study-card">
+                    <h4>1-2 TCP, Ports, and the 3-Way Handshake</h4>
+                    <p>How reliable communication works, and the three greetings that set up a connection</p>
+                </div>
+                <div class="study-card">
+                    <h4>1-3 UDP, ICMP, and Key Protocols</h4>
+                    <p>Communication other than TCP, and what ping really is</p>
+                </div>
+                <div class="study-card">
+                    <h4>1-4 Seeing the Whole Picture with Layer Models (OSI / TCP-IP)</h4>
+                    <p>Organize communication into layers and see where each tool looks</p>
+                </div>
+            </section>
+            <section class="study-grid">
+                <h3>Ch. 2 The Lab Environment and Basic Tools</h3>
+                <div class="study-card">
+                    <h4>2-1 Overview of the Practice Lab</h4>
+                    <p>Kali/Parrot, a host-only L2 segment and dual NICs</p>
+                </div>
+                <div class="study-card">
+                    <h4>2-2 Basics of Network Configuration and Service Management</h4>
+                    <p>ip / ss / systemctl and other commands essential for attack and defense</p>
+                </div>
+                <div class="study-card">
+                    <h4>2-3 Red, Blue and Purple Teams</h4>
+                    <p>The attacker’s view, the defender’s view, and the view that connects them</p>
+                </div>
+            </section>
+        </section>
+
+        <section class="toc-part" aria-labelledby="part-2">
+            <div class="toc-part__head"><span class="toc-part__no">Part II</span><h2 id="part-2">Reconnaissance — how attacks begin, and how to detect them</h2></div>
+            <section class="study-grid">
+                <h3>Ch. 3 Information Gathering (Footprinting)</h3>
+                <div class="study-card">
+                    <h4>3-1 Passive Reconnaissance</h4>
+                    <p>Public information you can gather without sending any traffic</p>
+                </div>
+                <div class="study-card">
+                    <h4>3-2 Basics of Active Reconnaissance</h4>
+                    <p>Techniques for actively probing a target, and the traces they leave behind</p>
+                </div>
+                <div class="study-card">
+                    <h4>3-3 Social Engineering and Phishing</h4>
+                    <p>How to spot attacks that deceive people, and how SPF / DKIM / DMARC work</p>
+                </div>
+            </section>
+            <section class="study-grid">
+                <h3>Ch. 4 Host Discovery and Port Scanning</h3>
+                <div class="study-card">
+                    <h4>4-1 Host Discovery (Ping Sweeps / ARP Scans)</h4>
+                    <p>Find the live hosts on a network</p>
+                </div>
+                <div class="study-card">
+                    <h4>4-2 Attacking and Defending with SYN Scans (Textbook Level)</h4>
+                    <p>Visualize how half-open scans work, then detect and block them</p>
+                </div>
+                <div class="study-card">
+                    <h4>4-3 Comparing Scan Techniques</h4>
+                    <p>How -sT / -sU / -sF / -sN each behave, and when to use which</p>
+                </div>
+                <div class="study-card">
+                    <h4>4-4 Service and OS Detection, and Banner Grabbing</h4>
+                    <p>Find out what the target really is with -sV / -A / -O</p>
+                </div>
+            </section>
+            <section class="study-grid">
+                <h3>Ch. 5 Detecting and Defending Against Scans</h3>
+                <div class="study-card">
+                    <h4>5-1 Observing Scans with tcpdump / tshark</h4>
+                    <p>See what being scanned really looks like, at the packet level</p>
+                </div>
+                <div class="study-card">
+                    <h4>5-2 Designing Thresholds for Scan Detection</h4>
+                    <p>Where to draw the line between normal traffic and an attack</p>
+                </div>
+                <div class="study-card">
+                    <h4>5-3 Rate Limiting and Dropping with nftables</h4>
+                    <p>A defense that thins out knocks that come too fast</p>
+                </div>
+            </section>
+        </section>
+
+        <section class="toc-part" aria-labelledby="part-3">
+            <div class="toc-part__head"><span class="toc-part__no">Part III</span><h2 id="part-3">Packet Analysis — “seeing” network traffic</h2></div>
+            <section class="study-grid">
+                <h3>Ch. 6 Packet Capture</h3>
+                <div class="study-card">
+                    <h4>6-1 tcpdump / tshark Basics</h4>
+                    <p>The basics of capturing, filtering and saving</p>
+                </div>
+                <div class="study-card">
+                    <h4>6-2 Reading Wireshark and Using Display Filters</h4>
+                    <p>Display filters, and visualizing the handshake</p>
+                </div>
+            </section>
+            <section class="study-grid">
+                <h3>Ch. 7 Observing Protocols</h3>
+                <div class="study-card">
+                    <h4>7-1 Following TCP / UDP / ICMP Behavior in Packets</h4>
+                    <p>Check how each protocol behaves in real packets</p>
+                </div>
+                <div class="study-card">
+                    <h4>7-2 Sniffing Plaintext Protocols, and Why Encryption Matters</h4>
+                    <p>Why HTTP / FTP / telnet are dangerous, and what encryption achieves</p>
+                </div>
+                <div class="study-card">
+                    <h4>7-3 Cryptography and TLS (HTTPS and Certificates)</h4>
+                    <p>Observe, in packets, how HTTPS prevents eavesdropping and impersonation</p>
+                </div>
+            </section>
+        </section>
+
+        <section class="toc-part" aria-labelledby="part-4">
+            <div class="toc-part__head"><span class="toc-part__no">Part IV</span><h2 id="part-4">Attack and Defense at L2 and on the Network</h2></div>
+            <section class="study-grid">
+                <h3>Ch. 8 ARP and Man-in-the-Middle Attacks (MITM)</h3>
+                <div class="study-card">
+                    <h4>8-1 How ARP Works, and ARP Spoofing</h4>
+                    <p>The principle of impersonation within the same segment, and how to observe it</p>
+                </div>
+                <div class="study-card">
+                    <h4>8-2 Detecting and Preventing MITM</h4>
+                    <p>Stop a man in the middle with static ARP and arpwatch</p>
+                </div>
+            </section>
+            <section class="study-grid">
+                <h3>Ch. 9 Other Network Threats</h3>
+                <div class="study-card">
+                    <h4>9-1 DHCP / DNS Spoofing</h4>
+                    <p>Attacks that abuse name resolution and address assignment, and how to counter them</p>
+                </div>
+                <div class="study-card">
+                    <h4>9-2 Network Isolation (VLANs / Segmentation)</h4>
+                    <p>How to design networks that contain the damage</p>
+                </div>
+                <div class="study-card">
+                    <h4>9-3 How DoS / DDoS Works, and Mitigation</h4>
+                    <p>How SYN floods and reflection/amplification attacks work, and mitigations such as rate limiting</p>
+                </div>
+            </section>
+        </section>
+
+        <section class="toc-part" aria-labelledby="part-5">
+            <div class="toc-part__head"><span class="toc-part__no">Part V</span><h2 id="part-5">Attacks on Services and How to Defend Them (Principles, Detection, Countermeasures)</h2></div>
+            <section class="study-grid">
+                <h3>Ch. 10 Attacks on Authentication</h3>
+                <div class="study-card">
+                    <h4>10-1 How Brute Force Works</h4>
+                    <p>What is going on in a brute-force attack</p>
+                </div>
+                <div class="study-card">
+                    <h4>10-2 Reading Authentication Logs, and fail2ban</h4>
+                    <p>How to read failure logs, and blocking automatically</p>
+                </div>
+                <div class="study-card">
+                    <h4>10-3 Handling Passwords and Hashes Safely</h4>
+                    <p>Why leaks are dangerous, and how to protect them</p>
+                </div>
+            </section>
+            <section class="study-grid">
+                <h3>Ch. 11 Web Application Vulnerabilities</h3>
+                <div class="study-card">
+                    <h4>11-1 How SQL Injection Works, and Writing Safe Code</h4>
+                    <p>Why it works, and fixing it with prepared statements</p>
+                </div>
+                <div class="study-card">
+                    <h4>11-2 How XSS / CSRF Work, and Countermeasures</h4>
+                    <p>How attacks that target the browser work, and how to defend against them</p>
+                </div>
+                <div class="study-card">
+                    <h4>11-3 Broken Access Control and Session Management</h4>
+                    <p>How changing a number exposes other people’s data and sessions get hijacked, and how to prevent it</p>
+                </div>
+                <div class="study-card">
+                    <h4>11-4 Command Injection, Path Traversal and SSRF</h4>
+                    <p>The danger of input being interpreted as a command or a file location, and how to write code safely</p>
+                </div>
+                <div class="study-card">
+                    <h4>11-5 Defending with Input Validation and a WAF</h4>
+                    <p>A layer of defense that rejects malicious input</p>
+                </div>
+            </section>
+            <section class="study-grid">
+                <h3>Ch. 12 Known Vulnerabilities and Exploits</h3>
+                <div class="study-card">
+                    <h4>12-1 Basics of Vulnerabilities, CVEs and Patch Management</h4>
+                    <p>What a vulnerability is, and how to manage vulnerabilities</p>
+                </div>
+                <div class="study-card">
+                    <h4>12-2 Reading C and Machine Code</h4>
+                    <p>The C needed for Chapters 12 and 14, and how to read disassembly with objdump</p>
+                </div>
+                <div class="study-card">
+                    <h4>12-3 Memory Corruption: How Buffer Overflows Work and How to Defend Against Them</h4>
+                    <p>How long input corrupts memory, and defenses with canaries, NX and ASLR</p>
+                </div>
+                <div class="study-card">
+                    <h4>12-4 How Exploits Work (Understanding the Principle)</h4>
+                    <p>Understand the principle and connect it to detection and defense</p>
+                </div>
+                <div class="study-card">
+                    <h4>12-5 Understanding Metasploit’s Structure, and the Traces It Leaves for Defenders</h4>
+                    <p>Read the traces of an attack from the defender’s side</p>
+                </div>
+            </section>
+        </section>
+
+        <section class="toc-part" aria-labelledby="part-6">
+            <div class="toc-part__head"><span class="toc-part__no">Part VI</span><h2 id="part-6">After the Breach — Post-Exploitation, and Defending Against It</h2></div>
+            <section class="study-grid">
+                <h3>Ch. 13 Understanding and Defending Against Privilege Escalation and Lateral Movement</h3>
+                <div class="study-card">
+                    <h4>13-1 How Privilege Escalation Works, and Countermeasures</h4>
+                    <p>The principle, and countermeasures based on the principle of least privilege</p>
+                </div>
+                <div class="study-card">
+                    <h4>13-2 Understanding and Defending Against Lateral Movement</h4>
+                    <p>Containment through segmentation and monitoring</p>
+                </div>
+            </section>
+            <section class="study-grid">
+                <h3>Ch. 14 Malware, Persistence and Traces</h3>
+                <div class="study-card">
+                    <h4>14-1 Types of Malware and How They Work</h4>
+                    <p>How malware operates, from infection and persistence to communication with its command server</p>
+                </div>
+                <div class="study-card">
+                    <h4>14-2 Static Malware Analysis</h4>
+                    <p>Investigate without running it: identify features with strings, objdump and YARA</p>
+                </div>
+                <div class="study-card">
+                    <h4>14-3 Dynamic Malware Analysis</h4>
+                    <p>Run it in an isolated environment and collect traces from system calls and network traffic</p>
+                </div>
+                <div class="study-card">
+                    <h4>14-4 Understanding and Detecting Persistence Techniques</h4>
+                    <p>Understand how malware stays put, and detect it</p>
+                </div>
+                <div class="study-card">
+                    <h4>14-5 Log Tampering, Covering Tracks, and Detecting Tampering</h4>
+                    <p>How to spot tampering (file integrity monitoring)</p>
+                </div>
+            </section>
+        </section>
+
+        <section class="toc-part" aria-labelledby="part-7">
+            <div class="toc-part__head"><span class="toc-part__no">Part VII</span><h2 id="part-7">Designing Detection and Defense (Blue Team)</h2></div>
+            <section class="study-grid">
+                <h3>Ch. 15 Intrusion Detection Systems (IDS / IPS)</h3>
+                <div class="study-card">
+                    <h4>15-1 How IDS/IPS Work (Introduction to Suricata)</h4>
+                    <p>The basics of intrusion detection systems</p>
+                </div>
+                <div class="study-card">
+                    <h4>15-2 Writing Detection Rules and Setting Thresholds</h4>
+                    <p>What to detect, and on what criteria</p>
+                </div>
+                <div class="study-card">
+                    <h4>15-3 Understanding Evasion Techniques, and Strengthening Detection</h4>
+                    <p>Understand how attacks slip through, and harden your defenses</p>
+                </div>
+            </section>
+            <section class="study-grid">
+                <h3>Ch. 16 Logging and Monitoring</h3>
+                <div class="study-card">
+                    <h4>16-1 Centralizing Logs (SIEM-Style Thinking)</h4>
+                    <p>Gather scattered logs in one place and correlate them</p>
+                </div>
+                <div class="study-card">
+                    <h4>16-2 Tracing an Intrusion Through Logs</h4>
+                    <p>Connect the traces to draw the whole picture</p>
+                </div>
+                <div class="study-card">
+                    <h4>16-3 Designing and Running Alerts</h4>
+                    <p>Without alerting too much, and without missing anything</p>
+                </div>
+            </section>
+            <section class="study-grid">
+                <h3>Ch. 17 Hardening Servers and Services</h3>
+                <div class="study-card">
+                    <h4>17-1 Securing an SSH Server</h4>
+                    <p>Key-based authentication and a minimal configuration</p>
+                </div>
+                <div class="study-card">
+                    <h4>17-2 Securing Web Servers and Services</h4>
+                    <p>Stopping unneeded services, and hardening</p>
+                </div>
+                <div class="study-card">
+                    <h4>17-3 Basics of Least Privilege, Patch Management and Configuration Management</h4>
+                    <p>Operations that form the foundation of defense</p>
+                </div>
+            </section>
+            <section class="study-grid">
+                <h3>Ch. 18 Designing Defenses, and Wrap-Up</h3>
+                <div class="study-card">
+                    <h4>18-1 Firewall Design (Multi-Layer Filtering with nftables)</h4>
+                    <p>Building rules that defend in layers</p>
+                </div>
+                <div class="study-card">
+                    <h4>18-2 Defense in Depth and the Cyber Kill Chain</h4>
+                    <p>An overview of the entire flow of an attack</p>
+                </div>
+                <div class="study-card">
+                    <h4>18-3 A Practical Security Checklist for Small Businesses</h4>
+                    <p>A practical list you can use on the job</p>
+                </div>
+            </section>
+            <section class="study-grid">
+                <h3>Ch. 19 Capstone Exercises</h3>
+                <div class="study-card">
+                    <h4>19-1 An End-to-End Attack Scenario</h4>
+                    <p>From reconnaissance to the traces of an intrusion (the attacker’s view)</p>
+                </div>
+                <div class="study-card">
+                    <h4>19-2 An End-to-End Defense Scenario</h4>
+                    <p>Detection, blocking and tracing (the defender’s view)</p>
+                </div>
+                <div class="study-card">
+                    <h4>19-3 Matching Attack Against Defense</h4>
+                    <p>A purple team exercise</p>
+                </div>
+            </section>
+        </section>
+
+    </main>
+    <div id="site-footer"><noscript><nav class="noscript-nav" aria-label="Footer navigation"><a href="index.html">Home</a><a href="self-intro.html">About</a><a href="study.html">Learning Journey</a><a href="videos.html">Videos</a><a href="blog.html">Blog</a><a href="sns.html">Social</a></nav></noscript></div>
+    <script src="../../js/i18n.js?v=r189"></script>
+    <script src="../../js/disciplines.js?v=r189"></script>
+    <script src="../../js/layout.js?v=r189"></script>
+    <script src="../../js/main.js?v=r189"></script>
+    <script src="../../js/starfield.js?v=r189"></script>
+</body>
+</html>

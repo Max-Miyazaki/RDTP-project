@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="alternate" hreflang="ja" href="https://max-phy.jp/Academic-Gate_hp/html/cyber_0-1.html">
+    <link rel="alternate" hreflang="en" href="https://max-phy.jp/Academic-Gate_hp/html/en/cyber_0-1.html">
+    <link rel="alternate" hreflang="x-default" href="https://max-phy.jp/Academic-Gate_hp/html/cyber_0-1.html">
+<title>0-1 ビット・バイトと2進数・16進数｜サイバーセキュリティ基礎 0章 | Academic Gates</title>
+<meta name="description" content="コンピューターの数の数え方。ビット、2進数の桁の重み、8ビット＝1バイトで 0〜255、4ビット＝1桁の16進数を学び、Parrot の端末で echo・printf・python3 を使って変換を確かめる。MAC アドレス（6バイト）・IPv4 アドレス（4バイト）・ポート番号（2バイト）をバイトとビットで読み直す。サイバーセキュリティ基礎 0章（準備編）／0-1。">
+<link rel="icon" href="../../favicon.ico" sizes="32x32">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;500&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+<!-- サイト共通 → 記事固有 → テーマ上書き の順で読む（lesson-theme.css は
+     記事の &lt;style&gt; より後ろに置くこと。css/lesson-theme.css 冒頭の注記どおり）。
+     ★ 注釈に生のスタイルタグを書かない：機械的に切り出すと、そこが本物のタグとして残り、
+       後ろの :root が丸ごと捨てられる（DESIGN.md §137.2） -->
+<link rel="stylesheet" href="../css/style.css?v=r189">
+<style>
+/* 0-1 ビット・バイトと2進数・16進数 — 記事固有のスタイルのみ（土台は公開中の cyber_1-4.html。DESIGN.md §137）。
+   共通部分は css/style.css と lesson-theme.css が持つ（DESIGN.md §35, §36）。
+   構造（レール・ボックス・図・表）は物理数学の教材と同じルールを使い、
+   この記事にだけあるもの（コマンドのコピー枠・出力例・分解表・スクショ）を末尾に足す。 */
+:root{
+  /* 教材固有のトークン。本体と同値のもの（--bg --surface --nav-bg --ink --line
+     --line-strong --glow-cool --font --nav-clear --ease --radius-lg/md）は
+     css/style.css 側に定義があるので、ここでは持たない。
+     --ink-soft / --ink-faint は本体より明るい値を「意図的に」維持している。
+     本体値に寄せると 13.5px の解説文が 4.56:1 → 3.66:1 と AA を割るため（§36）。 */
+  --surface-2:rgba(255,255,255,.045);
+  --ink-soft:rgba(255,255,255,.68);
+  --ink-faint:rgba(255,255,255,.46);
+  --line-soft:rgba(255,255,255,.05);
+  --accent-deep:#a8c9ff;
+  --accent-tint:rgba(77,148,255,.12);
+  --amber:#ffb46b;--amber-tint:rgba(255,160,70,.08);--amber-line:rgba(255,160,70,.32);
+  --good:#72e3ad;--good-tint:rgba(114,227,173,.08);--good-line:rgba(114,227,173,.28);
+  --key:#ff6fa5;--key-tint:rgba(255,61,139,.08);--key-line:rgba(255,61,139,.28);
+  --teach:#a48bff;--teach-tint:rgba(123,77,255,.11);--teach-line:rgba(123,77,255,.38);
+  --mono:ui-monospace,'SFMono-Regular',Menlo,Consolas,monospace;
+  --rail-w:250px;
+}
+body{font-size:15.5px;line-height:1.9;line-break:strict;overflow-x:hidden}
+
+/* --- レイアウト（左に目次レール／右に本文の2カラム） ------------------------
+   本文列 760px は日本語の長文＋数式に合わせた measure。style.css の共通記事
+   ルールは `body.is-article main > section:not(.rail)`（詳細度 0,2,3）と
+   `… ~ section:not(.rail)`（0,3,4）で 900px と 160px パディングをかけてくる。
+   こちらは `.main` を噛ませて 0,3,2 / 0,4,3 とし、確実に上回る（§36）。 */
+/* 全幅。左寄せのレイアウトで、余った幅は右に流す（§43）。
+   §40 で一度 max-width を外して差し戻しているが、あれは「中央寄せのまま左右を
+   対称にする」変更で、本文の位置も幅も変わらなかったため戻した。今回は本文を
+   860px に広げて左揃えにするので、目的も結果も違う。
+   レールの左余白は 1280px → 1440px にかけて 0 → 32px。狭い画面ではまず余白を
+   削って本文幅に回す（レール幅 250px は目次の文字量で決まるので触らない）。 */
+.wrap{display:flex;padding-top:var(--nav-clearance);
+      padding-left:clamp(0px, calc((100vw - 1280px) * .2), 32px)}
+.rail{width:var(--rail-w);flex:0 0 var(--rail-w);position:sticky;top:var(--nav-clearance);height:calc(100vh - var(--nav-clearance));overflow-y:auto;padding:18px 14px 60px 22px;border-right:1px solid var(--line)}
+/* 左パディング＝レールと本文の間隔。1024px → 1280px にかけて 24 → 56px。
+   これも狭い画面では縮めて本文幅に回す。 */
+.main{flex:1 1 auto;min-width:0;
+      padding:0 clamp(24px, calc(24px + (100vw - 1024px) * .125), 56px) 110px}
+/* 本文列 860px。760px では display 数式が 6 本はみ出していた（解答の入れ子
+   パディングで、.sol の中は本文列より 132px 狭い箱になる）。全 82 本が収まる
+   最小幅は実測 853px（§43.2）。中央寄せをやめて左揃えにし、余りは右へ。 */
+body.is-article .main > .lesson-hero,
+body.is-article .main > section:not(.rail),
+body.is-article .main > .foot{max-width:860px;margin-left:0;margin-right:auto;padding-left:0;padding-right:0}
+.rail .brand{font-weight:400;font-size:15px;line-height:1.45;margin:2px 0 4px}
+.rail .brand small{display:block;font-size:10px;font-weight:500;color:var(--ink-faint);letter-spacing:.2em;margin-top:6px}
+.progress-wrap{height:2px;background:var(--line);border-radius:99px;margin:16px 0 18px;overflow:hidden}
+.progress-bar{height:100%;width:0;background:linear-gradient(90deg,var(--accent),#a8c9ff);transition:width .15s linear}
+.toc{list-style:none;margin:0;padding:0;font-size:12.5px;color:var(--ink-soft)}
+.toc .part{font-size:10px;letter-spacing:.2em;color:var(--ink-faint);margin:16px 0 5px;padding-left:2px}
+.toc a{display:block;text-decoration:none;color:var(--ink-soft);padding:4px 10px;border-radius:999px;transition:color var(--dur) var(--ease),background var(--dur) var(--ease)}
+.toc a:hover{color:var(--ink);background:var(--surface-2)}
+.toc a.active{color:var(--ink);background:var(--accent-tint)}
+.toc a .n{font-size:10.5px;color:var(--ink-faint);margin-right:8px;font-variant-numeric:tabular-nums}
+.toc a.active .n{color:var(--accent)}
+
+/* --- 記事の導入部。`.hero` は index.html 専用で、style.css が
+   `.hero h1/.hero p/.hero .eyebrow` に黒い text-shadow をかけるため使えない（§36）。 --- */
+.lesson-hero{padding:64px 0 34px;border-bottom:1px solid var(--line)}
+.lesson-hero h1{font-weight:300;font-size:clamp(28px,4vw,48px);line-height:1.25;letter-spacing:-.02em;margin:0 0 22px}
+.lesson-hero h1 .sub{display:block;font-size:.52em;font-weight:300;color:var(--ink-soft);letter-spacing:0;margin-top:12px}
+.lesson-hero p{color:var(--ink-soft);margin:0 0 12px}
+.lesson-hero .lead{font-size:16.5px;color:var(--ink-soft)}
+/* .eyebrow 本体は style.css の共通コンポーネント。色と余白だけ上書きする
+   （共通の --text-tertiary は 11px の小さな文字で 3.66:1 と AA を割るため） */
+.eyebrow{color:var(--ink-faint);margin-bottom:18px}
+
+section{border-bottom:1px solid var(--line-soft);scroll-margin-top:var(--nav-clearance)}
+/* 縦の余白も共通ルールに勝つ必要がある（先頭セクションも2つ目以降も同じ 56px） */
+body.is-article .main > section:not(.rail),
+body.is-article .main > section:not(.rail) ~ section:not(.rail){padding-top:56px;padding-bottom:12px}
+.sec-head{display:flex;align-items:baseline;gap:14px;margin-bottom:10px}
+.sec-head .idx{font-size:.72rem;font-weight:500;letter-spacing:.2em;color:var(--ink-faint);padding-top:4px;flex:0 0 auto;font-variant-numeric:tabular-nums}
+.sec-head .idx::after{content:' —'}
+body.is-article main h2{font-weight:400;font-size:clamp(21px,2.6vw,28px);line-height:1.3;letter-spacing:-.01em;margin:0}
+body.is-article main h3{font-weight:400;font-size:17px;margin:30px 0 6px;color:var(--ink)}
+body.is-article main h4{font-weight:500;font-size:14.5px;margin:18px 0 4px;color:var(--ink)}
+body.is-article main p{margin:10px 0;color:var(--ink-soft)}
+body.is-article main ul,body.is-article main ol{margin:10px 0;padding-left:1.3em;color:var(--ink-soft)}
+li{margin:4px 0}
+strong{font-weight:500;color:var(--ink)}
+code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);border-radius:6px;padding:1px 6px;color:var(--accent-deep)}
+
+.box{border-radius:var(--radius-md);padding:16px 20px;margin:18px 0;border:1px solid var(--line);background:var(--surface)}
+.box .lab{font-size:.7rem;letter-spacing:.14em;font-weight:500;display:block;margin-bottom:6px}
+.box p{max-width:none}
+.box p:first-of-type{margin-top:2px}.box p:last-child{margin-bottom:0}
+/* 枠線は必ずトークン経由にすること。ここに直書きすると lesson-theme.css の
+   ライト上書きが効かず、暗い背景用の明るい色がライトでパステルになる（§41）。 */
+.box.principle{background:var(--key-tint);border-color:var(--key-line)}.box.principle .lab{color:var(--key)}
+.box.target{background:var(--good-tint);border-color:var(--good-line)}.box.target .lab{color:var(--good)}
+.box.warn{background:var(--amber-tint);border-color:var(--amber-line)}.box.warn .lab{color:var(--amber)}
+.box.teach{background:var(--teach-tint);border-color:var(--teach-line)}.box.teach .lab{color:var(--teach)}
+.box.teach .lab::before{content:"◎ "}
+
+.table-scroll{overflow-x:auto;margin:14px 0}
+.mini-table{width:100%;border-collapse:collapse;font-size:14px;margin:0;color:var(--ink-soft)}
+.mini-table th,.mini-table td{border:1px solid var(--line);padding:9px 11px;text-align:left;vertical-align:top}
+.mini-table th{background:var(--surface-2);font-weight:500;color:var(--ink)}
+
+.fig{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-lg);padding:18px 18px 12px;margin:20px 0}
+.fig > svg{width:100%;height:auto;display:block}
+.fig svg text{font-family:var(--font-body)}
+.fig figcaption{font-size:13px;color:var(--ink-soft);margin-top:10px;line-height:1.8;max-width:none}
+
+.step{margin:18px 0}
+.step .sh{display:flex;gap:10px;align-items:baseline;font-weight:500;color:var(--ink);margin-bottom:2px}
+.step .sn{font-size:11px;font-weight:500;color:#06142e;background:var(--accent);border-radius:999px;padding:1px 10px;flex:0 0 auto}
+.transfer{background:var(--surface-2);border:1px solid var(--line);border-radius:var(--radius-md);padding:14px 18px;margin:18px 0}
+.transfer .lab{font-size:.7rem;letter-spacing:.14em;color:var(--accent);font-weight:500;display:block;margin-bottom:5px}
+.transfer p{max-width:none}
+.foot{padding:34px 0 0;color:var(--ink-faint);font-size:12.5px}
+.foot p{color:var(--ink-faint);max-width:none}
+
+/* --- この記事だけの部品（コマンドのコピー枠・出力例・分解表・スクショ） --- */
+.mini-table code{white-space:nowrap}
+.anat td:first-child{white-space:nowrap;width:1%}
+.anat caption{caption-side:top;text-align:left;font-size:.7rem;letter-spacing:.14em;color:var(--accent);font-weight:500;padding:0 0 6px}
+.fig > img{width:100%;height:auto;display:block;border-radius:10px;border:1px solid var(--line)}
+.fig.zoom{max-width:560px}
+/* コピーできるコマンド。コピーされるのは data-copy の文字列だけ（先頭の $ は付けない） */
+.cmdbox{display:flex;align-items:center;gap:10px;margin:12px 0;background:rgba(255,255,255,.055);border:1px solid var(--line);border-radius:14px;padding:5px 8px 5px 18px}
+.cmdbox code.cmd{flex:1 1 auto;min-width:0;display:block;font-family:var(--mono);font-size:14px;color:#ececec;background:none;border:0;border-radius:0;padding:12px 0;overflow-x:auto;white-space:pre}
+.copy{flex:0 0 auto;display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:9px;border:0;background:transparent;color:var(--ink-faint);cursor:pointer;transition:color .2s,background .2s}
+.copy:hover{color:var(--ink);background:var(--surface-2)}
+.copy svg{display:block}
+.copy .ic-check{display:none}
+.copy.done{color:var(--good)}
+.copy.done .ic-copy{display:none}.copy.done .ic-check{display:block}
+/* 出力例（コピー対象外） */
+.out{display:block;font-family:var(--mono);font-size:12.5px;background:#06080d;border:1px dashed var(--line-strong);border-radius:var(--radius-sm);padding:10px 14px;margin:10px 0;color:#9ff0cf;white-space:pre-wrap;overflow-wrap:anywhere}
+.out .lab{display:block;font-family:var(--font-body);font-size:.68rem;letter-spacing:.14em;color:var(--ink-faint);margin-bottom:4px}
+/* 1-2 の完成版から変わった部品（1-3 も同じ）：ステップ見出しは flex をやめ、ラベルを行内に置く（長い見出しの折り返しを本文と同じ流れに） */
+.step .sh{display:block}
+.step .sh .sn{display:inline-block;margin-right:10px}
+/* 共通の記事ルール（style.css と上の `body.is-article main …`）のほうが詳細度が高く、元の教材の値が
+   負けていたところを、詳細度を上げて元の値に戻す（DESIGN.md §137.2）。 */
+body.is-article main .lesson-hero h1{margin-bottom:22px}
+body.is-article main .lesson-hero p{margin:0 0 12px}
+body.is-article main h3{line-height:1.9;letter-spacing:normal}
+body.is-article main .foot p{color:var(--ink-faint)}
+
+/* モバイル：レールを引き出しに。`.menu-btn` は位置だけを持ち、見た目は
+   共通コンポーネントの `.btn` を併用する。 */
+.menu-btn{display:none}
+.scrim{display:none}
+@media (max-width:900px){
+  .rail{position:fixed;left:0;top:0;height:100vh;z-index:1100;transform:translateX(-100%);transition:transform .25s var(--ease);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);padding-top:28px}
+  body.nav-open .rail{transform:translateX(0)}
+  .main{padding:0 20px 90px}
+  .menu-btn{display:inline-flex;position:fixed;bottom:18px;right:18px;z-index:1050;background:var(--nav-bg);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);color:var(--ink)}
+  .scrim{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:1090}
+  body.nav-open .scrim{display:block}
+  .lesson-hero{padding-top:40px}
+}
+@media print{
+  body{background:#fff;color:#000}
+  header,.rail,.menu-btn,.scrim,#starfield,footer{display:none!important}
+  .wrap{display:block;padding-top:0}
+  .copy{display:none!important}
+}
+</style>
+<style>/* 図解（1-3 から）：スマホでは図だけ横にスクロール */
+.fig.dg{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.fig.dg>svg{min-width:620px}
+.fig.dg figcaption{min-width:0}
+.box .fig.dg{background:rgba(0,0,0,.18)}
+@media (max-width:700px){.fig.dg::before{content:'← 図は横にスクロールできます →';display:block;font-size:11px;color:var(--ink-faint);text-align:center;margin:-4px 0 6px;position:sticky;left:0}}
+</style>
+<style>/* 問題（物理数学のページと同じ部品）：drill＝問題、attempt＝自分の答えを出してから、sol＝解答 */
+.attempt{background:var(--surface);border:1px solid var(--amber-line);border-radius:var(--radius-lg);padding:18px 22px;margin:20px 0}
+.attempt .lab{font-size:.7rem;letter-spacing:.14em;color:var(--amber);font-weight:500;display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.attempt .lab::before{content:"✎"}
+.controls{display:flex;flex-wrap:wrap;gap:10px;margin:14px 0 4px}
+.ctl-btn{font-family:var(--font-body,inherit);font-size:12.5px;font-weight:500;border:1px solid var(--line);background:transparent;color:var(--ink-soft);padding:7px 16px;border-radius:var(--radius-pill,999px);cursor:pointer;transition:color var(--dur,.2s) var(--ease),border-color var(--dur,.2s) var(--ease),background var(--dur,.2s) var(--ease)}
+.ctl-btn:hover{color:var(--ink);border-color:var(--line-strong);background:var(--surface-2)}
+.sol{display:none;border:1px solid var(--line);border-left:2px solid var(--accent);border-radius:0 var(--radius-md) var(--radius-md) 0;background:var(--surface-2);padding:8px 20px 16px;margin:12px 0}
+.sol p{max-width:none}
+.drill{background:var(--surface);border:1px solid var(--line);border-left:2px solid var(--accent);border-radius:0 var(--radius-md) var(--radius-md) 0;padding:14px 20px;margin:16px 0}
+.drill .qn{font-size:11px;font-weight:500;color:#06142e;background:var(--accent);border-radius:999px;padding:2px 11px;margin-right:8px}
+.drill p{max-width:none}
+.drill p:first-child{margin-top:2px}
+.drill .attempt{background:transparent;border-style:dashed}
+@media (max-width:700px){.drill{padding:12px 14px}.attempt{padding:14px 14px}.sol{padding:8px 12px 14px}}
+@media print{.sol{display:block!important}}
+</style>
+<script>document.addEventListener('DOMContentLoaded',function(){document.querySelectorAll('[data-sol]').forEach(function(btn){btn.addEventListener('click',function(){var sol=btn.closest('.attempt').querySelector('.sol');var open=sol.style.display==='block';sol.style.display=open?'none':'block';if(!btn.dataset.show)btn.dataset.show=btn.textContent;btn.textContent=open?btn.dataset.show:'閉じる';});});});</script>
+<style>/* 原理・導出・言えること の枠（本文の中に1つずつ置く）：原理＝青・導出＝緑・言えること＝橙 */
+.road{margin:18px 0;border:1px solid;border-radius:var(--radius-md);overflow:hidden}
+.road .rh{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:4px 12px;padding:9px 16px;font-weight:700;font-size:14.5px;line-height:1.6}
+.road .rh .tag{font-size:11px;font-weight:600;letter-spacing:.08em;white-space:nowrap}
+.road .rb{padding:8px 16px 12px}
+.road .rb p{max-width:none;margin:5px 0}
+.road .rk{display:inline-block;font-family:var(--mono);font-size:12px;font-weight:700;border-radius:6px;padding:1px 7px;margin-right:9px}
+.road .st{font-size:14px;color:var(--ink-soft)}
+.road .use{font-size:12.5px;font-weight:600}
+.road .chg{font-size:13px;color:var(--ink-faint);border-left:2px solid var(--line);padding-left:10px}
+.road.p{border-color:rgba(77,148,255,.55);background:rgba(77,148,255,.05)}.road.p .rh{background:rgba(77,148,255,.20);color:#cfe0ff}.road.p .rk{background:rgba(77,148,255,.30);color:#e4eeff}
+.road.d{border-color:rgba(114,227,173,.55);background:rgba(114,227,173,.05)}.road.d .rh{background:rgba(114,227,173,.18);color:#c9f7e2}.road.d .rk{background:rgba(114,227,173,.28);color:#e2fbef}.road.d .use{color:#9ff0cf}
+.road.c{border-color:rgba(255,180,107,.55);background:rgba(255,180,107,.05)}.road.c .rh{background:rgba(255,180,107,.20);color:#ffe0c2}.road.c .rk{background:rgba(255,180,107,.30);color:#fff0e0}.road.c .use{color:#ffd3a3}
+.drill .qt{font-size:11px;font-weight:600;border-radius:999px;padding:2px 10px;margin-right:8px;border:1px solid}
+.drill .qt.re{color:#9ff0cf;border-color:rgba(114,227,173,.55);background:rgba(114,227,173,.10)}
+.drill .qt.ap{color:#ffd3a3;border-color:rgba(255,180,107,.55);background:rgba(255,180,107,.10)}
+.sol .qu{font-size:12.5px;font-weight:600;color:var(--ink-faint)}
+</style>
+<link rel="stylesheet" href="../css/lesson-theme.css?v=r189">
+</head>
+<body data-page="study" class="is-article" data-node="cyber_0-1">
+<canvas id="starfield" aria-hidden="true"></canvas>
+<div id="site-nav"><noscript><nav class="noscript-nav" aria-label="メインナビゲーション"><a href="index.html">ホーム</a><a href="self-intro.html">自己紹介</a><a href="study.html">勉強の軌跡</a><a href="videos.html">動画</a><a href="blog.html">ブログ</a><a href="sns.html">各種SNS</a></nav></noscript></div>
+<button class="menu-btn btn" id="menuBtn" aria-controls="rail" aria-expanded="false">この記事の目次 <span class="btn-disc" aria-hidden="true">≡</span></button>
+<div class="scrim" id="scrim"></div>
+<div class="wrap">
+  <!-- 戻る導線はレール上部の「← サイバーセキュリティ基礎」（layout.js の CRUMBS が描く）と、
+       末尾の「目次へ」。どちらも cyber.html を指す。 -->
+  <nav class="rail" id="rail">
+    <div class="brand">0-1　ビット・バイトと2進数・16進数<small>サイバーセキュリティ基礎 ／ 0章 準備編：コンピューターの基礎</small></div>
+    <div class="progress-wrap"><div class="progress-bar" id="pbar"></div></div>
+    <ul class="toc" id="toc">
+      <li class="part">基礎概念</li>
+      <li><a href="#s1"><span class="n">01</span>ビット — 0 と 1 だけで表す</a></li>
+      <li><a href="#s2"><span class="n">02</span>2進数 — 桁の重みで読む</a></li>
+      <li><a href="#s3"><span class="n">03</span>バイト — 8ビットのまとまり</a></li>
+      <li><a href="#s4"><span class="n">04</span>16進数 — 4ビットを1文字で</a></li>
+      <li class="part">手を動かす</li>
+      <li><a href="#s5"><span class="n">05</span>端末で計算して確かめる</a></li>
+      <li><a href="#s6"><span class="n">06</span>実物のアドレスをバイトで読む</a></li>
+      <li class="part">この先へ</li>
+      <li><a href="#s7"><span class="n">07</span>バイトと16進数が出てくる場面</a></li>
+      <li class="part">仕上げ</li>
+      <li><a href="#s8"><span class="n">08</span>まとめとチェック</a></li>
+    </ul>
+  </nav>
+
+  <main class="main">
+    <svg class="dg-sprite" width="0" height="0" style="position:absolute;width:0;height:0;overflow:hidden" aria-hidden="true" focusable="false"><defs>
+<symbol id="i-pc" viewBox="0 0 64 64"><rect x="11" y="9" width="42" height="30" rx="3.5" fill="currentColor" fill-opacity=".14" stroke="currentColor" stroke-width="2.4"/><rect x="16" y="14" width="32" height="20" rx="1.5" fill="currentColor" fill-opacity=".10"/><path d="M5 45h54l-4 7H9z" fill="currentColor" fill-opacity=".22" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/><path d="M27 48.5h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+<symbol id="i-router" viewBox="0 0 64 64"><path d="M18 30L13 10M46 30l5-20" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><rect x="6" y="30" width="52" height="20" rx="5" fill="currentColor" fill-opacity=".16" stroke="currentColor" stroke-width="2.4"/><circle cx="17" cy="40" r="2.4" fill="currentColor"/><circle cx="26" cy="40" r="2.4" fill="currentColor"/><circle cx="35" cy="40" r="2.4" fill="currentColor"/><circle cx="47" cy="40" r="2.4" fill="currentColor" fill-opacity=".5"/></symbol>
+<symbol id="i-globe" viewBox="0 0 64 64"><circle cx="32" cy="32" r="23" fill="currentColor" fill-opacity=".12" stroke="currentColor" stroke-width="2.4"/><ellipse cx="32" cy="32" rx="10" ry="23" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9 32h46M13 20h38M13 44h38" stroke="currentColor" stroke-width="2" fill="none"/></symbol>
+<symbol id="i-server" viewBox="0 0 64 64"><rect x="12" y="7" width="40" height="14" rx="3" fill="currentColor" fill-opacity=".16" stroke="currentColor" stroke-width="2.4"/><rect x="12" y="25" width="40" height="14" rx="3" fill="currentColor" fill-opacity=".16" stroke="currentColor" stroke-width="2.4"/><rect x="12" y="43" width="40" height="14" rx="3" fill="currentColor" fill-opacity=".16" stroke="currentColor" stroke-width="2.4"/><circle cx="19" cy="14" r="2" fill="currentColor"/><circle cx="19" cy="32" r="2" fill="currentColor"/><circle cx="19" cy="50" r="2" fill="currentColor"/><path d="M30 14h16M30 32h16M30 50h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+<symbol id="i-person" viewBox="0 0 64 64"><circle cx="32" cy="20" r="10" fill="currentColor" fill-opacity=".16" stroke="currentColor" stroke-width="2.4"/><path d="M12 56c2-12 10-18 20-18s18 6 20 18z" fill="currentColor" fill-opacity=".16" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/></symbol>
+<symbol id="i-term" viewBox="0 0 64 64"><rect x="6" y="10" width="52" height="44" rx="5" fill="currentColor" fill-opacity=".12" stroke="currentColor" stroke-width="2.4"/><path d="M6 20h52" stroke="currentColor" stroke-width="2"/><path d="M15 30l7 6-7 6M27 43h12" stroke="currentColor" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<marker id="m-blue" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L10,5 L0,10 z" fill="#4d94ff"/></marker><marker id="m-green" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L10,5 L0,10 z" fill="#72e3ad"/></marker><marker id="m-amber" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L10,5 L0,10 z" fill="#ffb46b"/></marker><marker id="m-purple" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L10,5 L0,10 z" fill="#a48bff"/></marker><marker id="m-pink" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L10,5 L0,10 z" fill="#ff6fa5"/></marker><marker id="m-gray" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L10,5 L0,10 z" fill="rgba(255,255,255,.55)"/></marker></defs></svg>
+    <div class="lesson-hero">
+      <div class="eyebrow">サイバーセキュリティ基礎 ／ 0章 準備編：コンピューターの基礎 ／ SECTION 0-1</div>
+      <h1>0-1　ビット・バイトと2進数・16進数<span class="sub">コンピューターの数の数え方を、手で計算して身につける</span></h1>
+      <p class="lead">通信やセキュリティの画面には、<code>5e:f1:1e:25:27:db</code>、<code>192.168.128.3</code>、「148 バイト」、ポート番号「65535」のような数字が次々に出てきます。これらはどれも、コンピューターの中の<strong>ビットとバイト</strong>を、人が読みやすい形に書き直したものです。</p>
+      <p>この節では、0 と 1 だけで数を表す<strong>2進数</strong>、8ビットをまとめた<strong>バイト</strong>、バイトを短く書くための<strong>16進数</strong>を学び、Parrot の端末で実際に計算して確かめます。最後に、Parrot の MAC アドレス（MAC：Media Access Control：媒体アクセス制御）や IP アドレス（IP：Internet Protocol：インターネット・プロトコル）を「何バイトか」「どのビットが何を表すか」の目で読み直します。</p>
+    </div>
+
+    <!-- §01 -->
+    <section id="s1">
+      <div class="sec-head"><span class="idx">§01</span><h2>ビット — 0 と 1 だけで表す</h2></div>
+
+      <div class="box target"><span class="lab">この節で押さえること</span>
+      <ul style="margin:6px 0 0">
+        <li>コンピューターの中の情報は、すべて 0 と 1 の並び。この1桁が<strong>ビット</strong>。</li>
+        <li>2進数は各桁を<strong>2の何乗か</strong>で読む。8ビット（＝1バイト）で 0〜255。</li>
+        <li>16進数は<strong>4ビットを1文字</strong>で書く。1バイト＝16進数2桁。</li>
+        <li>MAC アドレスは6バイト、IPv4（Internet Protocol version 4：インターネット・プロトコル第4版）アドレスは4バイト、ポート番号は2バイト。</li>
+      </ul></div>
+
+      <p>コンピューターの中では、電気が「流れている／流れていない」、電圧が「高い／低い」のように、<strong>2つの状態</strong>だけを区別して情報を扱っています。2つの状態は、数字の <strong>1</strong> と <strong>0</strong> で書き表します。</p>
+      <p>この「0 か 1 か」の1桁を<strong>ビット</strong>（bit：binary digit＝2進数の1桁）と言います。1ビットで表せるのは 0 と 1 の2通りだけですが、ビットを並べると、表せる通り数がどんどん増えます。</p>
+      <div class="road p"><div class="rh"><span><span class="rk">P1</span>コンピューターは 0 と 1 の2つの状態だけを区別する</span><span class="tag">原理 ― 覚える</span></div><div class="rb"><p class="st"><strong>どんな決まりか</strong>：設計上の約束。自然界の決まりではなく、そう作っている。</p><p class="st"><strong>由来</strong>：2つの状態だけなら、電圧が多少ぶれても読みまちがえにくい（雑音に強い）ため、今のコンピューターはこの方式。「bit」という言葉は、シャノン（C. E. Shannon）の1948年の論文「通信の数学的理論」で広まった（名付けたのは同僚のテューキー）。</p></div></div>
+
+
+      <figure class="fig dg">
+        <svg viewBox="0 0 760 312" role="img" aria-label="1ビットは2通り、ビットが1つ増えるごとに表せる通り数は2倍になる"><text x="75" y="26" text-anchor="middle" fill="#fff" font-size="14" font-weight="600">1 ビット</text><rect x="60" y="40" width="24" height="24" rx="6" fill="rgba(255,255,255,.04)" fill-opacity="1" stroke="rgba(255,255,255,.35)" stroke-width="1.4"/><text x="72.0" y="56.32" text-anchor="middle" fill="rgba(255,255,255,.55)" font-size="13.440000000000001" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">0</text><text x="102" y="57" text-anchor="start" fill="rgba(255,255,255,.72)" font-size="12" font-weight="500" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">= 0</text><rect x="60" y="70" width="24" height="24" rx="6" fill="#72e3ad" fill-opacity="0.3" stroke="#72e3ad" stroke-width="1.4"/><text x="72.0" y="86.32" text-anchor="middle" fill="#9ff0cf" font-size="13.440000000000001" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">1</text><text x="102" y="87" text-anchor="start" fill="rgba(255,255,255,.72)" font-size="12" font-weight="500" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">= 1</text><text x="75" y="116" text-anchor="middle" fill="#ffd3a3" font-size="13.5" font-weight="700">2 通り（2¹）</text><text x="245" y="26" text-anchor="middle" fill="#fff" font-size="14" font-weight="600">2 ビット</text><rect x="215" y="40" width="24" height="24" rx="6" fill="rgba(255,255,255,.04)" fill-opacity="1" stroke="rgba(255,255,255,.35)" stroke-width="1.4"/><text x="227.0" y="56.32" text-anchor="middle" fill="rgba(255,255,255,.55)" font-size="13.440000000000001" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">0</text><rect x="245" y="40" width="24" height="24" rx="6" fill="rgba(255,255,255,.04)" fill-opacity="1" stroke="rgba(255,255,255,.35)" stroke-width="1.4"/><text x="257.0" y="56.32" text-anchor="middle" fill="rgba(255,255,255,.55)" font-size="13.440000000000001" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">0</text><text x="287" y="57" text-anchor="start" fill="rgba(255,255,255,.72)" font-size="12" font-weight="500" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">= 0</text><rect x="215" y="70" width="24" height="24" rx="6" fill="rgba(255,255,255,.04)" fill-opacity="1" stroke="rgba(255,255,255,.35)" stroke-width="1.4"/><text x="227.0" y="86.32" text-anchor="middle" fill="rgba(255,255,255,.55)" font-size="13.440000000000001" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">0</text><rect x="245" y="70" width="24" height="24" rx="6" fill="#72e3ad" fill-opacity="0.3" stroke="#72e3ad" stroke-width="1.4"/><text x="257.0" y="86.32" text-anchor="middle" fill="#9ff0cf" font-size="13.440000000000001" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">1</text><text x="287" y="87" text-anchor="start" fill="rgba(255,255,255,.72)" font-size="12" font-weight="500" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">= 1</text><rect x="215" y="100" width="24" height="24" rx="6" fill="#72e3ad" fill-opacity="0.3" stroke="#72e3ad" stroke-width="1.4"/><text x="227.0" y="116.32" text-anchor="middle" fill="#9ff0cf" font-size="13.440000000000001" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">1</text><rect x="245" y="100" width="24" height="24" rx="6" fill="rgba(255,255,255,.04)" fill-opacity="1" stroke="rgba(255,255,255,.35)" stroke-width="1.4"/><text x="257.0" y="116.32" text-anchor="middle" fill="rgba(255,255,255,.55)" font-size="13.440000000000001" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">0</text><text x="287" y="117" text-anchor="start" fill="rgba(255,255,255,.72)" font-size="12" font-weight="500" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">= 2</text><rect x="215" y="130" width="24" height="24" rx="6" fill="#72e3ad" fill-opacity="0.3" stroke="#72e3ad" stroke-width="1.4"/><text x="227.0" y="146.32" text-anchor="middle" fill="#9ff0cf" font-size="13.440000000000001" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">1</text><rect x="245" y="130" width="24" height="24" rx="6" fill="#72e3ad" fill-opacity="0.3" stroke="#72e3ad" stroke-width="1.4"/><text x="257.0" y="146.32" text-anchor="middle" fill="#9ff0cf" font-size="13.440000000000001" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">1</text><text x="287" y="147" text-anchor="start" fill="rgba(255,255,255,.72)" font-size="12" font-weight="500" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">= 3</text><text x="245" y="176" text-anchor="middle" fill="#ffd3a3" font-size="13.5" font-weight="700">4 通り（2²）</text><text x="440" y="26" text-anchor="middle" fill="#fff" font-size="14" font-weight="600">3 ビット</text><rect x="395" y="40" width="24" height="24" rx="6" fill="rgba(255,255,255,.04)" fill-opacity="1" stroke="rgba(255,255,255,.35)" stroke-width="1.4"/><text x="407.0" y="56.32" text-anchor="middle" fill="rgba(255,255,255,.55)" font-size="13.440000000000001" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">0</text><rect x="425" y="40" width="24" height="24" rx="6" fill="rgba(255,255,255,.04)" fill-opacity="1" stroke="rgba(255,255,255,.35)" stroke-width="1.4"/><text x="437.0" y="56.32" text-anchor="middle" fill="rgba(255,255,255,.55)" font-size="13.440000000000001" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">0</text><rect x="455" y="40" width="24" height="24" rx="6" fill="rgba(255,255,255,.04)" fill-opacity="1" stroke="rgba(255,255,255,.35)" stroke-width="1.4"/><text x="467.0" y="56.32" text-anchor="middle" fill="rgba(255,255,255,.55)" font-size="13.440000000000001" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">0</text><text x="497" y="57" text-anchor="start" fill="rgba(255,255,255,.72)" font-size="12" font-weight="500" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">= 0</text><rect x="395" y="70" width="24" height="24" rx="6" fill="rgba(255,255,255,.04)" fill-opacity="1" stroke="rgba(255,255,255,.35)" stroke-width="1.4"/><text x="407.0" y="86.32" text-anchor="middle" fill="rgba(255,255,255,.55)" font-size="13.440000000000001" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">0</text><rect x="425" y="70" width="24" height="24" rx="6" fill="rgba(255,255,255,.04)" fill-opacity="1" stroke="rgba(255,255,255,.35)" stroke-width="1.4"/><text x="437.0" y="86.32" text-anchor="middle" fill="rgba(255,255,255,.55)" font-size="13.440000000000001" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">0</text><rect x="455" y="70" width="24" height="24" rx="6" fill="#72e3ad" fill-opacity="0.3" stroke="#72e3ad" stroke-width="1.4"/><text x="467.0" y="86.32" text-anchor="middle" fill="#9ff0cf" font-size="13.440000000000001" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">1</text><text x="497" y="87" text-anchor="start" fill="rgba(255,255,255,.72)" font-size="12" font-weight="500" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">= 1</text><rect x="395" y="100" width="24" height="24" rx="6" fill="rgba(255,255,255,.04)" fill-opacity="1" stroke="rgba(255,255,255,.35)" stroke-width="1.4"/><text x="407.0" y="116.32" text-anchor="middle" fill="rgba(255,255,255,.55)" font-size="13.440000000000001" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">0</text><rect x="425" y="100" width="24" height="24" rx="6" fill="#72e3ad" fill-opacity="0.3" stroke="#72e3ad" stroke-width="1.4"/><text x="437.0" y="116.32" text-anchor="middle" fill="#9ff0cf" font-size="13.440000000000001" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">1</text><rect x="455" y="100" width="24" height="24" rx="6" fill="rgba(255,255,255,.04)" fill-opacity="1" stroke="rgba(255,255,255,.35)" stroke-width="1.4"/><text x="467.0" y="116.32" text-anchor="middle" fill="rgba(255,255,255,.55)" font-size="13.440000000000001" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">0</text><text x="497" y="117" text-anchor="start" fill="rgba(255,255,255,.72)" font-size="12" font-weight="500" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">= 2</text><rect x="395" y="130" width="24" height="24" rx="6" fill="rgba(255,255,255,.04)" fill-opacity="1" stroke="rgba(255,255,255,.35)" stroke-width="1.4"/><text x="407.0" y="146.32" text-anchor="middle" fill="rgba(255,255,255,.55)" font-size="13.440000000000001" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">0</text><rect x="425" y="130" width="24" height="24" rx="6" fill="#72e3ad" fill-opacity="0.3" stroke="#72e3ad" stroke-width="1.4"/><text x="437.0" y="146.32" text-anchor="middle" fill="#9ff0cf" font-size="13.440000000000001" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">1</text><rect x="455" y="130" width="24" height="24" rx="6" fill="#72e3ad" fill-opacity="0.3" stroke="#72e3ad" stroke-width="1.4"/><text x="467.0" y="146.32" text-anchor="middle" fill="#9ff0cf" font-size="13.440000000000001" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">1</text><text x="497" y="147" text-anchor="start" fill="rgba(255,255,255,.72)" font-size="12" font-weight="500" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">= 3</text><rect x="395" y="160" width="24" height="24" rx="6" fill="#72e3ad" fill-opacity="0.3" stroke="#72e3ad" stroke-width="1.4"/><text x="407.0" y="176.32" text-anchor="middle" fill="#9ff0cf" font-size="13.440000000000001" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">1</text><rect x="425" y="160" width="24" height="24" rx="6" fill="rgba(255,255,255,.04)" fill-opacity="1" stroke="rgba(255,255,255,.35)" stroke-width="1.4"/><text x="437.0" y="176.32" text-anchor="middle" fill="rgba(255,255,255,.55)" font-size="13.440000000000001" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">0</text><rect x="455" y="160" width="24" height="24" rx="6" fill="rgba(255,255,255,.04)" fill-opacity="1" stroke="rgba(255,255,255,.35)" stroke-width="1.4"/><text x="467.0" y="176.32" text-anchor="middle" fill="rgba(255,255,255,.55)" font-size="13.440000000000001" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">0</text><text x="497" y="177" text-anchor="start" fill="rgba(255,255,255,.72)" font-size="12" font-weight="500" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">= 4</text><rect x="395" y="190" width="24" height="24" rx="6" fill="#72e3ad" fill-opacity="0.3" stroke="#72e3ad" stroke-width="1.4"/><text x="407.0" y="206.32" text-anchor="middle" fill="#9ff0cf" font-size="13.440000000000001" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">1</text><rect x="425" y="190" width="24" height="24" rx="6" fill="rgba(255,255,255,.04)" fill-opacity="1" stroke="rgba(255,255,255,.35)" stroke-width="1.4"/><text x="437.0" y="206.32" text-anchor="middle" fill="rgba(255,255,255,.55)" font-size="13.440000000000001" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">0</text><rect x="455" y="190" width="24" height="24" rx="6" fill="#72e3ad" fill-opacity="0.3" stroke="#72e3ad" stroke-width="1.4"/><text x="467.0" y="206.32" text-anchor="middle" fill="#9ff0cf" font-size="13.440000000000001" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">1</text><text x="497" y="207" text-anchor="start" fill="rgba(255,255,255,.72)" font-size="12" font-weight="500" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">= 5</text><rect x="395" y="220" width="24" height="24" rx="6" fill="#72e3ad" fill-opacity="0.3" stroke="#72e3ad" stroke-width="1.4"/><text x="407.0" y="236.32" text-anchor="middle" fill="#9ff0cf" font-size="13.440000000000001" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">1</text><rect x="425" y="220" width="24" height="24" rx="6" fill="#72e3ad" fill-opacity="0.3" stroke="#72e3ad" stroke-width="1.4"/><text x="437.0" y="236.32" text-anchor="middle" fill="#9ff0cf" font-size="13.440000000000001" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">1</text><rect x="455" y="220" width="24" height="24" rx="6" fill="rgba(255,255,255,.04)" fill-opacity="1" stroke="rgba(255,255,255,.35)" stroke-width="1.4"/><text x="467.0" y="236.32" text-anchor="middle" fill="rgba(255,255,255,.55)" font-size="13.440000000000001" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">0</text><text x="497" y="237" text-anchor="start" fill="rgba(255,255,255,.72)" font-size="12" font-weight="500" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">= 6</text><rect x="395" y="250" width="24" height="24" rx="6" fill="#72e3ad" fill-opacity="0.3" stroke="#72e3ad" stroke-width="1.4"/><text x="407.0" y="266.32" text-anchor="middle" fill="#9ff0cf" font-size="13.440000000000001" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">1</text><rect x="425" y="250" width="24" height="24" rx="6" fill="#72e3ad" fill-opacity="0.3" stroke="#72e3ad" stroke-width="1.4"/><text x="437.0" y="266.32" text-anchor="middle" fill="#9ff0cf" font-size="13.440000000000001" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">1</text><rect x="455" y="250" width="24" height="24" rx="6" fill="#72e3ad" fill-opacity="0.3" stroke="#72e3ad" stroke-width="1.4"/><text x="467.0" y="266.32" text-anchor="middle" fill="#9ff0cf" font-size="13.440000000000001" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">1</text><text x="497" y="267" text-anchor="start" fill="rgba(255,255,255,.72)" font-size="12" font-weight="500" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">= 7</text><text x="440" y="296" text-anchor="middle" fill="#ffd3a3" font-size="13.5" font-weight="700">8 通り（2³）</text><rect x="560" y="60" width="186" height="190" rx="14" fill="#ffb46b" fill-opacity=".08" stroke="#ffb46b" stroke-width="1.4"/><text x="653" y="92" text-anchor="middle" fill="rgba(255,255,255,.72)" font-size="13" font-weight="500">1ビット増えるごとに</text><text x="653" y="110" text-anchor="middle" fill="rgba(255,255,255,.72)" font-size="13" font-weight="500">表せる通り数は2倍</text><text x="653" y="148" text-anchor="middle" fill="#ffd3a3" font-size="16" font-weight="700">n ビット → 2ⁿ 通り</text><text x="653" y="186" text-anchor="middle" fill="#fff" font-size="13.5" font-weight="600">8 ビットなら</text><text x="653" y="205" text-anchor="middle" fill="#fff" font-size="13.5" font-weight="600">2⁸ ＝ 256 通り</text><text x="653" y="236" text-anchor="middle" fill="rgba(255,255,255,.55)" font-size="12" font-weight="500">（§03 の「1 バイト」）</text></svg>
+        <figcaption><strong>図1</strong>　緑に光っているマスが 1、暗いマスが 0 です。1ビットで表せるのは 0 と 1 の<strong>2通り</strong>。ビットを1つ足すと、それぞれの後ろに 0 と 1 を付けられるので、通り数は<strong>2倍</strong>になります。右の「= 0」「= 1」…は、その並びを10進数で読んだ値です（読み方は §02）。</figcaption>
+      </figure>
+
+      <p>ビットが1つ増えるごとに、通り数は2倍になります。2倍を n 回くり返すことを「2 の n 乗」と言い、<strong>2ⁿ</strong> と書きます（右上の小さな数が「何回掛けるか」）。たとえば 2³ は 2×2×2＝8 です。</p>
+      <div class="table-scroll"><table class="mini-table">
+        <thead><tr><th>ビットの数</th><th>計算</th><th>表せる通り数</th></tr></thead>
+        <tbody>
+          <tr><td>1 ビット</td><td>2¹ ＝ 2</td><td>2 通り</td></tr>
+          <tr><td>2 ビット</td><td>2² ＝ 2×2</td><td>4 通り</td></tr>
+          <tr><td>3 ビット</td><td>2³ ＝ 2×2×2</td><td>8 通り</td></tr>
+          <tr><td>8 ビット</td><td>2⁸ ＝ 2×2×2×2×2×2×2×2</td><td><strong>256 通り</strong></td></tr>
+          <tr><td>16 ビット</td><td>2¹⁶</td><td>65,536 通り</td></tr>
+        </tbody>
+      </table></div>
+      <div class="road d"><div class="rh"><span><span class="rk">D1</span>n ビットで 2ⁿ 通り。最大は 2ⁿ−1</span><span class="tag">導出 ― 自分で導ける</span></div><div class="rb"><p class="use">使う原理：P1</p><p class="st"><strong>導き方</strong>：ビットを1つ足すと、それまでのすべての並びの後ろに 0 と 1 を付けられるので、通り数は2倍。1ビットの 2 通りから n 回2倍して 2ⁿ。0 から数えるので最大は 2ⁿ−1。</p><p class="chg">原理がちがったら：1桁が3つの状態を持てるなら、n 桁で 3ⁿ 通りになる。</p></div></div>
+
+          </section>
+
+    <!-- §02 -->
+    <section id="s2">
+      <div class="sec-head"><span class="idx">§02</span><h2>2進数 — 桁の重みで読む</h2></div>
+
+      <p>ふだん使っている<strong>10進数</strong>は、0〜9 の10種類の数字を使い、桁が1つ左へ進むごとに <strong>10 倍</strong>になります。<code>305</code> は「3×100 ＋ 0×10 ＋ 5×1」です。この「その桁が表す大きさ」を<strong>桁の重み</strong>と言います。</p>
+      <p><strong>2進数</strong>は、0 と 1 の2種類だけを使い、桁が1つ左へ進むごとに <strong>2 倍</strong>になります。ビットの並びは、そのまま2進数として読めます。</p>
+      <div class="road p"><div class="rh"><span><span class="rk">P2</span>位取り記数法：桁の重みは「基数の何乗か」</span><span class="tag">原理 ― 覚える</span></div><div class="rb"><p class="st"><strong>どんな決まりか</strong>：数学の定義。10進数なら 10ⁿ、2進数なら 2ⁿ、16進数なら 16ⁿ（基数＝何進数かの数）。右端の桁は、どの基数でも 0 乗＝1。</p><p class="st"><strong>由来</strong>：0 を使う10進の位取りは古代インドで生まれ、アラビア世界を経て広まった。2進数の体系的な研究はライプニッツ（1703年）。</p></div></div>
+
+
+      <figure class="fig dg">
+        <svg viewBox="0 0 760 240" role="img" aria-label="10進数は桁ごとに10倍、2進数は桁ごとに2倍の重みを持つ"><text x="20" y="50" text-anchor="start" fill="#ffd3a3" font-size="14" font-weight="700">10進数の桁</text><rect x="170" y="20" width="120" height="50" rx="10" fill="#ffb46b" fill-opacity=".10" stroke="#ffb46b" stroke-width="1.4"/><text x="230" y="42" text-anchor="middle" fill="#fff" font-size="15" font-weight="700">10³</text><text x="230" y="61" text-anchor="middle" fill="#ffd3a3" font-size="13" font-weight="500" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">1000</text><text x="300" y="51" text-anchor="middle" fill="rgba(255,255,255,.55)" font-size="14" font-weight="500">←</text><rect x="310" y="20" width="120" height="50" rx="10" fill="#ffb46b" fill-opacity=".10" stroke="#ffb46b" stroke-width="1.4"/><text x="370" y="42" text-anchor="middle" fill="#fff" font-size="15" font-weight="700">10²</text><text x="370" y="61" text-anchor="middle" fill="#ffd3a3" font-size="13" font-weight="500" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">100</text><text x="440" y="51" text-anchor="middle" fill="rgba(255,255,255,.55)" font-size="14" font-weight="500">←</text><rect x="450" y="20" width="120" height="50" rx="10" fill="#ffb46b" fill-opacity=".10" stroke="#ffb46b" stroke-width="1.4"/><text x="510" y="42" text-anchor="middle" fill="#fff" font-size="15" font-weight="700">10¹</text><text x="510" y="61" text-anchor="middle" fill="#ffd3a3" font-size="13" font-weight="500" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">10</text><text x="580" y="51" text-anchor="middle" fill="rgba(255,255,255,.55)" font-size="14" font-weight="500">←</text><rect x="590" y="20" width="120" height="50" rx="10" fill="#ffb46b" fill-opacity=".10" stroke="#ffb46b" stroke-width="1.4"/><text x="650" y="42" text-anchor="middle" fill="#fff" font-size="15" font-weight="700">10⁰</text><text x="650" y="61" text-anchor="middle" fill="#ffd3a3" font-size="13" font-weight="500" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">1</text><text x="450" y="92" text-anchor="middle" fill="#ffd3a3" font-size="12.5" font-weight="500">左へ1桁進むごとに 10 倍</text><text x="20" y="148" text-anchor="start" fill="#a8c9ff" font-size="14" font-weight="700">2進数の桁</text><rect x="170" y="118" width="120" height="50" rx="10" fill="#4d94ff" fill-opacity=".10" stroke="#4d94ff" stroke-width="1.4"/><text x="230" y="140" text-anchor="middle" fill="#fff" font-size="15" font-weight="700">2³</text><text x="230" y="159" text-anchor="middle" fill="#a8c9ff" font-size="13" font-weight="500" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">8</text><text x="300" y="149" text-anchor="middle" fill="rgba(255,255,255,.55)" font-size="14" font-weight="500">←</text><rect x="310" y="118" width="120" height="50" rx="10" fill="#4d94ff" fill-opacity=".10" stroke="#4d94ff" stroke-width="1.4"/><text x="370" y="140" text-anchor="middle" fill="#fff" font-size="15" font-weight="700">2²</text><text x="370" y="159" text-anchor="middle" fill="#a8c9ff" font-size="13" font-weight="500" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">4</text><text x="440" y="149" text-anchor="middle" fill="rgba(255,255,255,.55)" font-size="14" font-weight="500">←</text><rect x="450" y="118" width="120" height="50" rx="10" fill="#4d94ff" fill-opacity=".10" stroke="#4d94ff" stroke-width="1.4"/><text x="510" y="140" text-anchor="middle" fill="#fff" font-size="15" font-weight="700">2¹</text><text x="510" y="159" text-anchor="middle" fill="#a8c9ff" font-size="13" font-weight="500" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">2</text><text x="580" y="149" text-anchor="middle" fill="rgba(255,255,255,.55)" font-size="14" font-weight="500">←</text><rect x="590" y="118" width="120" height="50" rx="10" fill="#4d94ff" fill-opacity=".10" stroke="#4d94ff" stroke-width="1.4"/><text x="650" y="140" text-anchor="middle" fill="#fff" font-size="15" font-weight="700">2⁰</text><text x="650" y="159" text-anchor="middle" fill="#a8c9ff" font-size="13" font-weight="500" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">1</text><text x="450" y="190" text-anchor="middle" fill="#a8c9ff" font-size="12.5" font-weight="500">左へ1桁進むごとに 2 倍</text><text x="380" y="226" text-anchor="middle" fill="rgba(255,255,255,.72)" font-size="12.5" font-weight="500">どちらも右端の桁は「×1」（どんな数も 0 乗すると 1）</text></svg>
+        <figcaption><strong>図2</strong>　上が10進数、下が2進数の「桁の重み」です。それぞれの四角の上段が「何の何乗か」、下段がその値。10進数の 305 が 3×10²＋0×10¹＋5×10⁰ と読めるのと同じしくみで、2進数は各桁を 2 の何乗かで読みます。</figcaption>
+      </figure>
+
+      <p>8桁の2進数の、各桁の重みです。右端がいちばん下の桁です。</p>
+      <div class="table-scroll"><table class="mini-table" style="white-space:nowrap">
+        <caption>2進数の桁の重み（8桁）</caption>
+        <thead><tr><th>桁（右から）</th><th>8桁目</th><th>7桁目</th><th>6桁目</th><th>5桁目</th><th>4桁目</th><th>3桁目</th><th>2桁目</th><th>1桁目</th></tr></thead>
+        <tbody>
+          <tr><td>2 の何乗か</td><td>2⁷</td><td>2⁶</td><td>2⁵</td><td>2⁴</td><td>2³</td><td>2²</td><td>2¹</td><td>2⁰</td></tr>
+          <tr><td>表す数</td><td>128</td><td>64</td><td>32</td><td>16</td><td>8</td><td>4</td><td>2</td><td>1</td></tr>
+        </tbody>
+      </table></div>
+      <p style="font-size:13.5px;color:var(--ink-faint)">2⁰＝1 は決まりです。どんな数も、0 乗すると 1 になります（10⁰ も 1）。だから、いちばん右の桁はどの進数でも「×1」です。</p>
+
+      <h3>2進数 → 10進数：1 の桁の重みを足す</h3>
+      <p>各桁の数字（0 か 1）に、その桁の重みを掛けて足します。</p>
+
+      <figure class="fig dg">
+        <svg viewBox="0 0 760 240" role="img" aria-label="2進数1010は、2の3乗と2の1乗を足して10になる"><text x="30" y="52" text-anchor="start" fill="#a8c9ff" font-size="13" font-weight="700">2進数</text><text x="30" y="112" text-anchor="start" fill="rgba(255,255,255,.55)" font-size="13" font-weight="500">桁の重み</text><text x="30" y="172" text-anchor="start" fill="rgba(255,255,255,.55)" font-size="13" font-weight="500">掛け算</text><rect x="200" y="26" width="40" height="40" rx="6" fill="#4d94ff" fill-opacity="0.3" stroke="#4d94ff" stroke-width="1.4"/><text x="220.0" y="53.2" text-anchor="middle" fill="#a8c9ff" font-size="22.400000000000002" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">1</text><text x="220" y="108" text-anchor="middle" fill="rgba(255,255,255,.72)" font-size="15" font-weight="600">2³ = 8</text><rect x="175" y="146" width="90" height="40" rx="9" fill="#4d94ff" fill-opacity="0.22" stroke="#4d94ff" stroke-width="1.5"/><text x="220.0" y="171.04" text-anchor="middle" fill="#fff" font-size="14" font-weight="500" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">1×8 = 8</text><text x="280" y="172" text-anchor="middle" fill="rgba(255,255,255,.55)" font-size="16" font-weight="500">＋</text><rect x="320" y="26" width="40" height="40" rx="6" fill="rgba(255,255,255,.04)" fill-opacity="1" stroke="rgba(255,255,255,.35)" stroke-width="1.4"/><text x="340.0" y="53.2" text-anchor="middle" fill="rgba(255,255,255,.55)" font-size="22.400000000000002" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">0</text><text x="340" y="108" text-anchor="middle" fill="rgba(255,255,255,.72)" font-size="15" font-weight="600">2² = 4</text><rect x="295" y="146" width="90" height="40" rx="9" fill="#4d94ff" fill-opacity="0.04" stroke="#4d94ff" stroke-width="1.5"/><text x="340.0" y="171.04" text-anchor="middle" fill="rgba(255,255,255,.55)" font-size="14" font-weight="500" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">0×4 = 0</text><text x="400" y="172" text-anchor="middle" fill="rgba(255,255,255,.55)" font-size="16" font-weight="500">＋</text><rect x="440" y="26" width="40" height="40" rx="6" fill="#4d94ff" fill-opacity="0.3" stroke="#4d94ff" stroke-width="1.4"/><text x="460.0" y="53.2" text-anchor="middle" fill="#a8c9ff" font-size="22.400000000000002" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">1</text><text x="460" y="108" text-anchor="middle" fill="rgba(255,255,255,.72)" font-size="15" font-weight="600">2¹ = 2</text><rect x="415" y="146" width="90" height="40" rx="9" fill="#4d94ff" fill-opacity="0.22" stroke="#4d94ff" stroke-width="1.5"/><text x="460.0" y="171.04" text-anchor="middle" fill="#fff" font-size="14" font-weight="500" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">1×2 = 2</text><text x="520" y="172" text-anchor="middle" fill="rgba(255,255,255,.55)" font-size="16" font-weight="500">＋</text><rect x="560" y="26" width="40" height="40" rx="6" fill="rgba(255,255,255,.04)" fill-opacity="1" stroke="rgba(255,255,255,.35)" stroke-width="1.4"/><text x="580.0" y="53.2" text-anchor="middle" fill="rgba(255,255,255,.55)" font-size="22.400000000000002" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">0</text><text x="580" y="108" text-anchor="middle" fill="rgba(255,255,255,.72)" font-size="15" font-weight="600">2⁰ = 1</text><rect x="535" y="146" width="90" height="40" rx="9" fill="#4d94ff" fill-opacity="0.04" stroke="#4d94ff" stroke-width="1.5"/><text x="580.0" y="171.04" text-anchor="middle" fill="rgba(255,255,255,.55)" font-size="14" font-weight="500" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">0×1 = 0</text><line x1="650" y1="166" x2="690" y2="166" stroke="#ffb46b" stroke-width="2" marker-end="url(#m-amber)"/><text x="718" y="173" text-anchor="middle" fill="#ffd3a3" font-size="24" font-weight="700">10</text><text x="380" y="222" text-anchor="middle" fill="#fff" font-size="13" font-weight="600">8 ＋ 0 ＋ 2 ＋ 0 ＝ 10　（1 の桁の重みだけを足せばよい）</text></svg>
+        <figcaption><strong>図3</strong>　2進数 <code>1010</code> の読み方。各桁の数字（0 か 1）に、その桁の重み（2³＝8、2²＝4、2¹＝2、2⁰＝1）を掛けて足します。0 の桁は 0 になるので、結局「1 が立っている桁の重み」を足すだけです。</figcaption>
+      </figure>
+
+      <div class="table-scroll"><table class="mini-table">
+        <caption>例1：<code>1010</code></caption>
+        <thead><tr><th>桁</th><th>4桁目</th><th>3桁目</th><th>2桁目</th><th>1桁目</th></tr></thead>
+        <tbody>
+          <tr><td>2進数の数字</td><td>1</td><td>0</td><td>1</td><td>0</td></tr>
+          <tr><td>掛け算</td><td>1×2³</td><td>0×2²</td><td>1×2¹</td><td>0×2⁰</td></tr>
+          <tr><td>値</td><td>1×8＝8</td><td>0×4＝0</td><td>1×2＝2</td><td>0×1＝0</td></tr>
+        </tbody>
+      </table></div>
+      <p>合計：8＋0＋2＋0＝<strong>10</strong>。</p>
+      <p><strong>例2：<code>11111111</code>（8桁すべて 1）</strong><br>
+      1×2⁷＋1×2⁶＋1×2⁵＋1×2⁴＋1×2³＋1×2²＋1×2¹＋1×2⁰<br>
+      ＝128＋64＋32＋16＋8＋4＋2＋1＝<strong>255</strong></p>
+
+      <figure class="fig dg">
+        <svg viewBox="0 0 760 246" role="img" aria-label="8桁すべて1の2進数は255で、2の8乗から1を引いた数"><text x="70" y="26" text-anchor="middle" fill="rgba(255,255,255,.72)" font-size="14" font-weight="600">2⁷</text><rect x="48" y="36" width="44" height="44" rx="6" fill="#4d94ff" fill-opacity="0.3" stroke="#4d94ff" stroke-width="1.4"/><text x="70.0" y="65.92" text-anchor="middle" fill="#a8c9ff" font-size="24.64" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">1</text><text x="70" y="106" text-anchor="middle" fill="#a8c9ff" font-size="15" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">128</text><text x="113" y="106" text-anchor="middle" fill="rgba(255,255,255,.55)" font-size="14" font-weight="500">＋</text><text x="156" y="26" text-anchor="middle" fill="rgba(255,255,255,.72)" font-size="14" font-weight="600">2⁶</text><rect x="134" y="36" width="44" height="44" rx="6" fill="#4d94ff" fill-opacity="0.3" stroke="#4d94ff" stroke-width="1.4"/><text x="156.0" y="65.92" text-anchor="middle" fill="#a8c9ff" font-size="24.64" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">1</text><text x="156" y="106" text-anchor="middle" fill="#a8c9ff" font-size="15" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">64</text><text x="199" y="106" text-anchor="middle" fill="rgba(255,255,255,.55)" font-size="14" font-weight="500">＋</text><text x="242" y="26" text-anchor="middle" fill="rgba(255,255,255,.72)" font-size="14" font-weight="600">2⁵</text><rect x="220" y="36" width="44" height="44" rx="6" fill="#4d94ff" fill-opacity="0.3" stroke="#4d94ff" stroke-width="1.4"/><text x="242.0" y="65.92" text-anchor="middle" fill="#a8c9ff" font-size="24.64" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">1</text><text x="242" y="106" text-anchor="middle" fill="#a8c9ff" font-size="15" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">32</text><text x="285" y="106" text-anchor="middle" fill="rgba(255,255,255,.55)" font-size="14" font-weight="500">＋</text><text x="328" y="26" text-anchor="middle" fill="rgba(255,255,255,.72)" font-size="14" font-weight="600">2⁴</text><rect x="306" y="36" width="44" height="44" rx="6" fill="#4d94ff" fill-opacity="0.3" stroke="#4d94ff" stroke-width="1.4"/><text x="328.0" y="65.92" text-anchor="middle" fill="#a8c9ff" font-size="24.64" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">1</text><text x="328" y="106" text-anchor="middle" fill="#a8c9ff" font-size="15" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">16</text><text x="371" y="106" text-anchor="middle" fill="rgba(255,255,255,.55)" font-size="14" font-weight="500">＋</text><text x="414" y="26" text-anchor="middle" fill="rgba(255,255,255,.72)" font-size="14" font-weight="600">2³</text><rect x="392" y="36" width="44" height="44" rx="6" fill="#4d94ff" fill-opacity="0.3" stroke="#4d94ff" stroke-width="1.4"/><text x="414.0" y="65.92" text-anchor="middle" fill="#a8c9ff" font-size="24.64" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">1</text><text x="414" y="106" text-anchor="middle" fill="#a8c9ff" font-size="15" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">8</text><text x="457" y="106" text-anchor="middle" fill="rgba(255,255,255,.55)" font-size="14" font-weight="500">＋</text><text x="500" y="26" text-anchor="middle" fill="rgba(255,255,255,.72)" font-size="14" font-weight="600">2²</text><rect x="478" y="36" width="44" height="44" rx="6" fill="#4d94ff" fill-opacity="0.3" stroke="#4d94ff" stroke-width="1.4"/><text x="500.0" y="65.92" text-anchor="middle" fill="#a8c9ff" font-size="24.64" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">1</text><text x="500" y="106" text-anchor="middle" fill="#a8c9ff" font-size="15" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">4</text><text x="543" y="106" text-anchor="middle" fill="rgba(255,255,255,.55)" font-size="14" font-weight="500">＋</text><text x="586" y="26" text-anchor="middle" fill="rgba(255,255,255,.72)" font-size="14" font-weight="600">2¹</text><rect x="564" y="36" width="44" height="44" rx="6" fill="#4d94ff" fill-opacity="0.3" stroke="#4d94ff" stroke-width="1.4"/><text x="586.0" y="65.92" text-anchor="middle" fill="#a8c9ff" font-size="24.64" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">1</text><text x="586" y="106" text-anchor="middle" fill="#a8c9ff" font-size="15" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">2</text><text x="629" y="106" text-anchor="middle" fill="rgba(255,255,255,.55)" font-size="14" font-weight="500">＋</text><text x="672" y="26" text-anchor="middle" fill="rgba(255,255,255,.72)" font-size="14" font-weight="600">2⁰</text><rect x="650" y="36" width="44" height="44" rx="6" fill="#4d94ff" fill-opacity="0.3" stroke="#4d94ff" stroke-width="1.4"/><text x="672.0" y="65.92" text-anchor="middle" fill="#a8c9ff" font-size="24.64" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">1</text><text x="672" y="106" text-anchor="middle" fill="#a8c9ff" font-size="15" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">1</text><text x="380" y="146" text-anchor="middle" fill="#fff" font-size="16" font-weight="700">128＋64＋32＋16＋8＋4＋2＋1 ＝ 255</text><rect x="120" y="170" width="520" height="62" rx="12" fill="#ffb46b" fill-opacity=".08" stroke="#ffb46b" stroke-width="1.3"/><text x="380" y="196" text-anchor="middle" fill="#ffd3a3" font-size="13.5" font-weight="600">あと 1 足すと 100000000（9桁）＝ 2⁸ ＝ 256</text><text x="380" y="220" text-anchor="middle" fill="#fff" font-size="13.5" font-weight="600">だから 8 桁の2進数の最大は 2⁸ − 1 ＝ 255</text></svg>
+        <figcaption><strong>図4</strong>　8 桁すべてが 1 の <code>11111111</code> は、8つの重みを全部足して <strong>255</strong>。10進数の 999 に 1 を足すと 1000（10³）になるのと同じで、<code>11111111</code> に 1 を足すと <code>100000000</code>（2⁸＝256）になります。0 から数えるので、256 通りの最大値は 255 です。</figcaption>
+      </figure>
+
+      <h3>10進数 → 2進数：大きい重みから引いていく</h3>
+      <p>逆向きは、大きい重みから順に「残りから引けるなら 1、引けないなら 0」と決めていきます。</p>
+
+      <figure class="fig dg">
+        <svg viewBox="0 0 760 256" role="img" aria-label="10進数192を、大きい重みから順に引いていって2進数11000000に直す"><text x="20" y="40" text-anchor="start" fill="rgba(255,255,255,.55)" font-size="12.5" font-weight="500">残り</text><text x="20" y="78" text-anchor="start" fill="rgba(255,255,255,.55)" font-size="12.5" font-weight="500">重み</text><text x="20" y="118" text-anchor="start" fill="rgba(255,255,255,.55)" font-size="12.5" font-weight="500">引ける？</text><text x="20" y="164" text-anchor="start" fill="#a8c9ff" font-size="12.5" font-weight="700">2進数</text><text x="138" y="40" text-anchor="middle" fill="#ffd3a3" font-size="14" font-weight="600" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">192</text><text x="138" y="78" text-anchor="middle" fill="#fff" font-size="14" font-weight="600" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">128</text><text x="138" y="118" text-anchor="middle" fill="#9ff0cf" font-size="13" font-weight="700">引く</text><rect x="118" y="140" width="40" height="40" rx="6" fill="#4d94ff" fill-opacity="0.3" stroke="#4d94ff" stroke-width="1.4"/><text x="138.0" y="167.2" text-anchor="middle" fill="#a8c9ff" font-size="22.400000000000002" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">1</text><text x="218" y="40" text-anchor="middle" fill="#ffd3a3" font-size="14" font-weight="600" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">64</text><text x="218" y="78" text-anchor="middle" fill="#fff" font-size="14" font-weight="600" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">64</text><text x="218" y="118" text-anchor="middle" fill="#9ff0cf" font-size="13" font-weight="700">引く</text><rect x="198" y="140" width="40" height="40" rx="6" fill="#4d94ff" fill-opacity="0.3" stroke="#4d94ff" stroke-width="1.4"/><text x="218.0" y="167.2" text-anchor="middle" fill="#a8c9ff" font-size="22.400000000000002" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">1</text><text x="298" y="40" text-anchor="middle" fill="#ffd3a3" font-size="14" font-weight="600" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">0</text><text x="298" y="78" text-anchor="middle" fill="#fff" font-size="14" font-weight="600" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">32</text><text x="298" y="118" text-anchor="middle" fill="rgba(255,255,255,.55)" font-size="13" font-weight="700">ー</text><rect x="278" y="140" width="40" height="40" rx="6" fill="rgba(255,255,255,.04)" fill-opacity="1" stroke="rgba(255,255,255,.35)" stroke-width="1.4"/><text x="298.0" y="167.2" text-anchor="middle" fill="rgba(255,255,255,.55)" font-size="22.400000000000002" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">0</text><text x="378" y="40" text-anchor="middle" fill="#ffd3a3" font-size="14" font-weight="600" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">0</text><text x="378" y="78" text-anchor="middle" fill="#fff" font-size="14" font-weight="600" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">16</text><text x="378" y="118" text-anchor="middle" fill="rgba(255,255,255,.55)" font-size="13" font-weight="700">ー</text><rect x="358" y="140" width="40" height="40" rx="6" fill="rgba(255,255,255,.04)" fill-opacity="1" stroke="rgba(255,255,255,.35)" stroke-width="1.4"/><text x="378.0" y="167.2" text-anchor="middle" fill="rgba(255,255,255,.55)" font-size="22.400000000000002" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">0</text><text x="458" y="40" text-anchor="middle" fill="#ffd3a3" font-size="14" font-weight="600" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">0</text><text x="458" y="78" text-anchor="middle" fill="#fff" font-size="14" font-weight="600" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">8</text><text x="458" y="118" text-anchor="middle" fill="rgba(255,255,255,.55)" font-size="13" font-weight="700">ー</text><rect x="438" y="140" width="40" height="40" rx="6" fill="rgba(255,255,255,.04)" fill-opacity="1" stroke="rgba(255,255,255,.35)" stroke-width="1.4"/><text x="458.0" y="167.2" text-anchor="middle" fill="rgba(255,255,255,.55)" font-size="22.400000000000002" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">0</text><text x="538" y="40" text-anchor="middle" fill="#ffd3a3" font-size="14" font-weight="600" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">0</text><text x="538" y="78" text-anchor="middle" fill="#fff" font-size="14" font-weight="600" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">4</text><text x="538" y="118" text-anchor="middle" fill="rgba(255,255,255,.55)" font-size="13" font-weight="700">ー</text><rect x="518" y="140" width="40" height="40" rx="6" fill="rgba(255,255,255,.04)" fill-opacity="1" stroke="rgba(255,255,255,.35)" stroke-width="1.4"/><text x="538.0" y="167.2" text-anchor="middle" fill="rgba(255,255,255,.55)" font-size="22.400000000000002" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">0</text><text x="618" y="40" text-anchor="middle" fill="#ffd3a3" font-size="14" font-weight="600" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">0</text><text x="618" y="78" text-anchor="middle" fill="#fff" font-size="14" font-weight="600" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">2</text><text x="618" y="118" text-anchor="middle" fill="rgba(255,255,255,.55)" font-size="13" font-weight="700">ー</text><rect x="598" y="140" width="40" height="40" rx="6" fill="rgba(255,255,255,.04)" fill-opacity="1" stroke="rgba(255,255,255,.35)" stroke-width="1.4"/><text x="618.0" y="167.2" text-anchor="middle" fill="rgba(255,255,255,.55)" font-size="22.400000000000002" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">0</text><text x="698" y="40" text-anchor="middle" fill="#ffd3a3" font-size="14" font-weight="600" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">0</text><text x="698" y="78" text-anchor="middle" fill="#fff" font-size="14" font-weight="600" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">1</text><text x="698" y="118" text-anchor="middle" fill="rgba(255,255,255,.55)" font-size="13" font-weight="700">ー</text><rect x="678" y="140" width="40" height="40" rx="6" fill="rgba(255,255,255,.04)" fill-opacity="1" stroke="rgba(255,255,255,.35)" stroke-width="1.4"/><text x="698.0" y="167.2" text-anchor="middle" fill="rgba(255,255,255,.55)" font-size="22.400000000000002" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">0</text><text x="380" y="214" text-anchor="middle" fill="#fff" font-size="13" font-weight="600">192 − 128 ＝ 64、64 − 64 ＝ 0 → 残りが 0 になったら、あとは全部 0</text><text x="380" y="240" text-anchor="middle" fill="#a8c9ff" font-size="14" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">192 ＝ 11000000（＝ 2⁷ ＋ 2⁶）</text></svg>
+        <figcaption><strong>図5</strong>　10進数を2進数に直す方法の1つ。いちばん大きい重み（128）から順に、「残りから引けるなら 1、引けないなら 0」と決めていきます。192 は 128 と 64 で使い切るので <code>11000000</code>。この 192 は、§06 で IPv4 アドレス <code>192.168.128.3</code> の先頭として出てきます。</figcaption>
+      </figure>
+
+      <div class="road d"><div class="rh"><span><span class="rk">D2</span>2進数 ⇄ 10進数の変換</span><span class="tag">導出 ― 自分で導ける</span></div><div class="rb"><p class="use">使う原理：P2</p><p class="st"><strong>導き方</strong>：2進数→10進数は、各桁の数字×その桁の重み（2 の何乗か）を足す。0 の桁は消えるので「1 の桁の重みを足す」だけ。10進数→2進数は、大きい重みから順に「残りから引けるなら 1」。</p><p class="chg">基数を変えると：16 にすれば、同じ手順で16進数の変換になる（§04 の D4）。</p></div></div>
+
+      <div class="box teach"><span class="lab">2進数を書くときの約束</span>
+      <p>2進数の <code>10</code> は「じゅう」ではなく「いちぜろ」と読み、値は 2 です。10進数と区別するために、プログラムなどでは前に <code>0b</code> を付けて <code>0b1010</code> のように書くことがあります（§04 の 16進数の <code>0x</code> と同じ考え方）。また、桁数をそろえるために左を 0 で埋めることがあります。<code>1010</code> も <code>00001010</code> も同じ 10 です。</p></div>
+    
+      <h3>計算ドリル（§02・全3問）</h3>
+
+      <div class="drill"><p><span class="qn">問1</span><span class="qt re">再現：D2</span>次の2進数を、桁の重みを使って10進数に直せ。<br>(a) <code>0110</code>　(b) <code>10000000</code>　(c) <code>10101000</code>　(d) <code>00000011</code></p>
+      <div class="attempt" style="margin:10px 0 4px"><span class="lab">自分の答えを出してから</span>
+      <div class="controls"><button class="ctl-btn" data-sol>解答を見る</button></div>
+      <div class="sol"><p class="qu">使う：P2（桁の重み）</p><p>1 が立っている桁の重みだけを足します。</p><p>(a) <code>0110</code> ＝ 2²＋2¹ ＝ 4＋2 ＝ <strong>6</strong></p><p>(b) <code>10000000</code> ＝ 2⁷ ＝ <strong>128</strong></p><p>(c) <code>10101000</code> ＝ 2⁷＋2⁵＋2³ ＝ 128＋32＋8 ＝ <strong>168</strong></p><p>(d) <code>00000011</code> ＝ 2¹＋2⁰ ＝ 2＋1 ＝ <strong>3</strong>（左の 0 は値に影響しない）</p><p style="font-size:13.5px;color:var(--ink-faint)">(b)〜(d) の 128・168・3 は、Parrot の IPv4 アドレス <code>192.168.128.3</code> に出てくる数です（§06）。</p></div></div></div>
+
+      <div class="drill"><p><span class="qn">問2</span><span class="qt re">再現：D2</span>次の10進数を、8桁の2進数に直せ（大きい重みから引く方法を使う）。<br>(a) 10　(b) 64　(c) 200　(d) 255</p>
+      <div class="attempt" style="margin:10px 0 4px"><span class="lab">自分の答えを出してから</span>
+      <div class="controls"><button class="ctl-btn" data-sol>解答を見る</button></div>
+      <div class="sol"><p class="qu">使う：P2・D2</p><p>(a) 10 ＝ 8＋2 ＝ 2³＋2¹ → <strong><code>00001010</code></strong></p><p>(b) 64 ＝ 2⁶ → <strong><code>01000000</code></strong></p><p>(c) 200：128 を引いて残り 72、64 を引いて残り 8、32・16 は引けない、8 を引いて残り 0 → 2⁷＋2⁶＋2³ → <strong><code>11001000</code></strong></p><p>(d) 255 ＝ 全部の重みの合計 → <strong><code>11111111</code></strong></p></div></div></div>
+
+      <div class="drill"><p><span class="qn">問3</span><span class="qt re">再現：D1</span>(a) 4ビットで表せるのは何通りか。そのうち最大の数は10進数でいくつか。(b) 12ビットではどうか。</p>
+      <div class="attempt" style="margin:10px 0 4px"><span class="lab">自分の答えを出してから</span>
+      <div class="controls"><button class="ctl-btn" data-sol>解答を見る</button></div>
+      <div class="sol"><p class="qu">使う：P1・D1</p><p>(a) 2⁴ ＝ <strong>16 通り</strong>。0 から数えるので、最大は 16−1 ＝ <strong>15</strong>（<code>1111</code>）。</p><p>(b) 2¹² ＝ <strong>4,096 通り</strong>。最大は <strong>4,095</strong>。</p><p style="font-size:13.5px;color:var(--ink-faint)">n ビットなら「2ⁿ 通り、最大は 2ⁿ−1」。8ビットの 256 通り・最大 255、16ビットの 65,536 通り・最大 65,535 も同じ形です。(a) の 16 通りが、§04 の16進数1桁（0〜f）の数です。</p></div></div></div>
+    </section>
+
+    <!-- §03 -->
+    <section id="s3">
+      <div class="sec-head"><span class="idx">§03</span><h2>バイト — 8ビットのまとまり</h2></div>
+
+      <p>ビット1つでは情報が小さすぎるので、コンピューターは<strong>8ビットを1つのまとまり</strong>として扱います。これを<strong>バイト</strong>（byte）と言います。データの大きさ、ファイルの大きさ、パケットの大きさは、ふつうバイトで数えます（たとえば 1-4 では、148 バイトのパケットが出てきます）。</p>
+      <div class="road p"><div class="rh"><span><span class="rk">P3</span>1バイト＝8ビット</span><span class="tag">原理 ― 覚える</span></div><div class="rb"><p class="st"><strong>どんな決まりか</strong>：慣習（今のほぼすべてのコンピューターの約束）。</p><p class="st"><strong>由来</strong>：1964年の IBM System/360 が8ビットのバイトを採用して広まった。それ以前は6ビットなどの機械もあったので、通信の規格書（RFC：Request for Comments：意見募集）では、まぎれのないように8ビットを「オクテット」と呼ぶ。</p></div></div>
+
+      <p>8ビットで表せるのは 2⁸＝256 通りなので、1バイトに入る数は <strong>0〜255</strong>（0 から数えて 256 個）です。IPv4（Internet Protocol version 4：インターネット・プロトコル第4版）のアドレスの数字が 255 までしかないのは、数字1つが1バイトだからです（§06）。</p>
+      <div class="road d"><div class="rh"><span><span class="rk">D3</span>1バイトに入るのは 0〜255 の 256 通り</span><span class="tag">導出 ― 自分で導ける</span></div><div class="rb"><p class="use">使う：D1・P3</p><p class="st"><strong>導き方</strong>：1バイト＝8ビット（P3）なので、D1 で n＝8 として 2⁸＝256 通り。0 から数えるので最大は 255。</p><p class="chg">原理がちがったら：1バイトが6ビットの機械なら 0〜63。</p></div></div>
+
+
+      <figure class="fig dg">
+        <svg viewBox="0 0 760 330" role="img" aria-label="1バイトは8ビットで0から255。2・4・6バイトで表せる範囲"><text x="20" y="36" text-anchor="start" fill="#9ff0cf" font-size="14" font-weight="700">1 バイト</text><rect x="120" y="16" width="26" height="26" rx="6" fill="rgba(255,255,255,.04)" fill-opacity="1" stroke="rgba(255,255,255,.35)" stroke-width="1.4"/><text x="133.0" y="33.68" text-anchor="middle" fill="rgba(255,255,255,.55)" font-size="14.560000000000002" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">0</text><rect x="150" y="16" width="26" height="26" rx="6" fill="rgba(255,255,255,.04)" fill-opacity="1" stroke="rgba(255,255,255,.35)" stroke-width="1.4"/><text x="163.0" y="33.68" text-anchor="middle" fill="rgba(255,255,255,.55)" font-size="14.560000000000002" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">0</text><rect x="180" y="16" width="26" height="26" rx="6" fill="rgba(255,255,255,.04)" fill-opacity="1" stroke="rgba(255,255,255,.35)" stroke-width="1.4"/><text x="193.0" y="33.68" text-anchor="middle" fill="rgba(255,255,255,.55)" font-size="14.560000000000002" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">0</text><rect x="210" y="16" width="26" height="26" rx="6" fill="rgba(255,255,255,.04)" fill-opacity="1" stroke="rgba(255,255,255,.35)" stroke-width="1.4"/><text x="223.0" y="33.68" text-anchor="middle" fill="rgba(255,255,255,.55)" font-size="14.560000000000002" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">0</text><rect x="240" y="16" width="26" height="26" rx="6" fill="rgba(255,255,255,.04)" fill-opacity="1" stroke="rgba(255,255,255,.35)" stroke-width="1.4"/><text x="253.0" y="33.68" text-anchor="middle" fill="rgba(255,255,255,.55)" font-size="14.560000000000002" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">0</text><rect x="270" y="16" width="26" height="26" rx="6" fill="rgba(255,255,255,.04)" fill-opacity="1" stroke="rgba(255,255,255,.35)" stroke-width="1.4"/><text x="283.0" y="33.68" text-anchor="middle" fill="rgba(255,255,255,.55)" font-size="14.560000000000002" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">0</text><rect x="300" y="16" width="26" height="26" rx="6" fill="rgba(255,255,255,.04)" fill-opacity="1" stroke="rgba(255,255,255,.35)" stroke-width="1.4"/><text x="313.0" y="33.68" text-anchor="middle" fill="rgba(255,255,255,.55)" font-size="14.560000000000002" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">0</text><rect x="330" y="16" width="26" height="26" rx="6" fill="rgba(255,255,255,.04)" fill-opacity="1" stroke="rgba(255,255,255,.35)" stroke-width="1.4"/><text x="343.0" y="33.68" text-anchor="middle" fill="rgba(255,255,255,.55)" font-size="14.560000000000002" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">0</text><text x="370" y="35" text-anchor="start" fill="rgba(255,255,255,.72)" font-size="13" font-weight="500">＝ 0（最小）</text><rect x="120" y="52" width="26" height="26" rx="6" fill="#4d94ff" fill-opacity="0.3" stroke="#4d94ff" stroke-width="1.4"/><text x="133.0" y="69.68" text-anchor="middle" fill="#a8c9ff" font-size="14.560000000000002" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">1</text><rect x="150" y="52" width="26" height="26" rx="6" fill="#4d94ff" fill-opacity="0.3" stroke="#4d94ff" stroke-width="1.4"/><text x="163.0" y="69.68" text-anchor="middle" fill="#a8c9ff" font-size="14.560000000000002" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">1</text><rect x="180" y="52" width="26" height="26" rx="6" fill="#4d94ff" fill-opacity="0.3" stroke="#4d94ff" stroke-width="1.4"/><text x="193.0" y="69.68" text-anchor="middle" fill="#a8c9ff" font-size="14.560000000000002" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">1</text><rect x="210" y="52" width="26" height="26" rx="6" fill="#4d94ff" fill-opacity="0.3" stroke="#4d94ff" stroke-width="1.4"/><text x="223.0" y="69.68" text-anchor="middle" fill="#a8c9ff" font-size="14.560000000000002" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">1</text><rect x="240" y="52" width="26" height="26" rx="6" fill="#4d94ff" fill-opacity="0.3" stroke="#4d94ff" stroke-width="1.4"/><text x="253.0" y="69.68" text-anchor="middle" fill="#a8c9ff" font-size="14.560000000000002" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">1</text><rect x="270" y="52" width="26" height="26" rx="6" fill="#4d94ff" fill-opacity="0.3" stroke="#4d94ff" stroke-width="1.4"/><text x="283.0" y="69.68" text-anchor="middle" fill="#a8c9ff" font-size="14.560000000000002" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">1</text><rect x="300" y="52" width="26" height="26" rx="6" fill="#4d94ff" fill-opacity="0.3" stroke="#4d94ff" stroke-width="1.4"/><text x="313.0" y="69.68" text-anchor="middle" fill="#a8c9ff" font-size="14.560000000000002" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">1</text><rect x="330" y="52" width="26" height="26" rx="6" fill="#4d94ff" fill-opacity="0.3" stroke="#4d94ff" stroke-width="1.4"/><text x="343.0" y="69.68" text-anchor="middle" fill="#a8c9ff" font-size="14.560000000000002" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">1</text><text x="370" y="71" text-anchor="start" fill="rgba(255,255,255,.72)" font-size="13" font-weight="500">＝ 255（最大）</text><path d="M120,84 v8 H356 v-8" fill="none" stroke="#4d94ff" stroke-width="1.6"/><path d="M238.0,92 v5.6" stroke="#4d94ff" stroke-width="1.6"/><text x="238.0" y="111.2" text-anchor="middle" fill="#a8c9ff" font-size="12.5" font-weight="600">8 ビット → 2⁸ ＝ 256 通り（0〜255）</text><text x="20" y="150" text-anchor="start" fill="rgba(255,255,255,.55)" font-size="12" font-weight="500">大きさ</text><text x="370" y="150" text-anchor="start" fill="rgba(255,255,255,.55)" font-size="12" font-weight="500">表せる範囲</text><text x="500" y="150" text-anchor="start" fill="rgba(255,255,255,.55)" font-size="12" font-weight="500">1章で出てくる例</text><text x="20" y="182" text-anchor="start" fill="#fff" font-size="13.5" font-weight="600">1 バイト</text><text x="92" y="182" text-anchor="start" fill="#a8c9ff" font-size="12" font-weight="500">8 ビット</text><rect x="170" y="168" width="30" height="20" rx="5" fill="#4d94ff" fill-opacity=".25" stroke="#4d94ff" stroke-width="1.2"/><text x="370" y="182" text-anchor="start" fill="#ffd3a3" font-size="13" font-weight="600">0〜255</text><text x="500" y="182" text-anchor="start" fill="rgba(255,255,255,.72)" font-size="12.5" font-weight="500">IPv4 の数字1つ・MAC の2桁1組</text><text x="20" y="222" text-anchor="start" fill="#fff" font-size="13.5" font-weight="600">2 バイト</text><text x="92" y="222" text-anchor="start" fill="#a8c9ff" font-size="12" font-weight="500">16 ビット</text><rect x="170" y="208" width="60" height="20" rx="5" fill="#4d94ff" fill-opacity=".25" stroke="#4d94ff" stroke-width="1.2"/><path d="M200,208 v20" stroke="#4d94ff" stroke-opacity=".6"/><text x="370" y="222" text-anchor="start" fill="#ffd3a3" font-size="13" font-weight="600">0〜65,535</text><text x="500" y="222" text-anchor="start" fill="rgba(255,255,255,.72)" font-size="12.5" font-weight="500">ポート番号</text><text x="20" y="262" text-anchor="start" fill="#fff" font-size="13.5" font-weight="600">4 バイト</text><text x="92" y="262" text-anchor="start" fill="#a8c9ff" font-size="12" font-weight="500">32 ビット</text><rect x="170" y="248" width="120" height="20" rx="5" fill="#4d94ff" fill-opacity=".25" stroke="#4d94ff" stroke-width="1.2"/><path d="M200,248 v20" stroke="#4d94ff" stroke-opacity=".6"/><path d="M230,248 v20" stroke="#4d94ff" stroke-opacity=".6"/><path d="M260,248 v20" stroke="#4d94ff" stroke-opacity=".6"/><text x="370" y="262" text-anchor="start" fill="#ffd3a3" font-size="13" font-weight="600">約 43 億通り</text><text x="500" y="262" text-anchor="start" fill="rgba(255,255,255,.72)" font-size="12.5" font-weight="500">IPv4 アドレス全体</text><text x="20" y="302" text-anchor="start" fill="#fff" font-size="13.5" font-weight="600">6 バイト</text><text x="92" y="302" text-anchor="start" fill="#a8c9ff" font-size="12" font-weight="500">48 ビット</text><rect x="170" y="288" width="180" height="20" rx="5" fill="#4d94ff" fill-opacity=".25" stroke="#4d94ff" stroke-width="1.2"/><path d="M200,288 v20" stroke="#4d94ff" stroke-opacity=".6"/><path d="M230,288 v20" stroke="#4d94ff" stroke-opacity=".6"/><path d="M260,288 v20" stroke="#4d94ff" stroke-opacity=".6"/><path d="M290,288 v20" stroke="#4d94ff" stroke-opacity=".6"/><path d="M320,288 v20" stroke="#4d94ff" stroke-opacity=".6"/><text x="370" y="302" text-anchor="start" fill="#ffd3a3" font-size="13" font-weight="600">約 281 兆通り</text><text x="500" y="302" text-anchor="start" fill="rgba(255,255,255,.72)" font-size="12.5" font-weight="500">MAC アドレス全体</text></svg>
+        <figcaption><strong>図6</strong>　上：1バイト（8ビット）の最小と最大。下：バイト数ごとの表せる範囲。青い帯の1マスが1バイトです。バイトが1つ増えるごとに、表せる通り数は 256 倍になります。</figcaption>
+      </figure>
+
+      <h3>ビットとバイトの単位</h3>
+      <p>単位の書き方は、小文字の <strong>b</strong> がビット、大文字の <strong>B</strong> がバイトです。通信の速さはビット、ファイルの大きさはバイトで表すことが多いので、混ぜないように注意します。</p>
+      <div class="table-scroll"><table class="mini-table">
+        <colgroup><col style="width:22%"><col style="width:26%"><col></colgroup>
+        <thead><tr><th>書き方</th><th>読み</th><th>意味</th></tr></thead>
+        <tbody>
+          <tr><td><code>b</code> ／ <code>B</code></td><td>ビット ／ バイト</td><td>1 B ＝ 8 b。</td></tr>
+          <tr><td><code>KB</code></td><td>キロバイト</td><td>1,000 バイト。k（キロ）は「1,000倍」。</td></tr>
+          <tr><td><code>KiB</code></td><td>キビバイト</td><td>1,024 バイト（2¹⁰）。コンピューターでは2の累乗がきりがよいので、1,024 倍で数えることもある。Linux の <code>ls -h</code> などは 1,024 倍で数えて「K」と表示する。</td></tr>
+          <tr><td><code>MB</code> ／ <code>GB</code></td><td>メガバイト ／ ギガバイト</td><td>100 万バイト ／ 10 億バイト（k・M・G はそれぞれ 1,000 倍ずつ）。ソフトによっては 1,024 倍ずつで数えて MB・GB と表示するものもあるので、表示が少しちがうことがある。</td></tr>
+          <tr><td><code>Mbps</code></td><td>メガビット毎秒</td><td>bps（bits per second：ビット毎秒）＝1秒に送れるビット数。100 Mbps なら、8 で割って 1秒に 12.5 MB（実際には、ヘッダなどの分だけ少し減る）。</td></tr>
+        </tbody>
+      </table></div>
+    
+            <div class="road c"><div class="rh"><span><span class="rk">C1</span>通信の速さ（b）とファイルの大きさ（B）は 8 倍ちがう</span><span class="tag">言えること ― 説明できる</span></div><div class="rb"><p class="use">根拠：P3</p><p class="st">100 Mbps は1秒に 12.5 MB。取りちがえると、時間や容量の見積もりが 8 倍ずれる（問5）。</p></div></div>
+
+      <h3>計算ドリル（§03・全2問）</h3>
+
+      <div class="drill"><p><span class="qn">問4</span><span class="qt re">再現：D3</span>(a) 3バイトは何ビットか。(b) 32ビットは何バイトか。(c) 148 バイトのパケット（1-4 で出てくる）は何ビットか。</p>
+      <div class="attempt" style="margin:10px 0 4px"><span class="lab">自分の答えを出してから</span>
+      <div class="controls"><button class="ctl-btn" data-sol>解答を見る</button></div>
+      <div class="sol"><p class="qu">使う：P3</p><p>1バイト＝8ビットなので、バイト→ビットは ×8、ビット→バイトは ÷8。</p><p>(a) 3×8 ＝ <strong>24 ビット</strong>　(b) 32÷8 ＝ <strong>4 バイト</strong>（IPv4 アドレス1つ分）　(c) 148×8 ＝ <strong>1,184 ビット</strong></p><p style="font-size:13.5px;color:var(--ink-faint)">(c) の 1,184 ビットは、1-4 §05 で tshark が <code>148 bytes on wire (1184 bits)</code> と表示する数です。</p></div></div></div>
+
+      <div class="drill"><p><span class="qn">問5</span><span class="qt ap">応用：P3 → C1</span>100 Mbps の回線で、50 MB のファイルを送る。ヘッダなどを考えないとき、最短で何秒かかるか（1 MB ＝ 1,000,000 バイトとする）。</p>
+      <div class="attempt" style="margin:10px 0 4px"><span class="lab">自分の答えを出してから</span>
+      <div class="controls"><button class="ctl-btn" data-sol>解答を見る</button></div>
+      <div class="sol"><p class="qu">使う：P3 → C1</p><p>単位をビットにそろえます。50 MB ＝ 50×8 ＝ 400 Mb（メガビット）。</p><p>400 Mb ÷ 100 Mbps ＝ <strong>4 秒</strong>。</p><p style="font-size:13.5px;color:var(--ink-faint)">b（ビット）と B（バイト）を取りちがえると、答えが 8 倍ずれます（0.5 秒や 32 秒になってしまう）。実際には、ヘッダや確認のやり取りの分だけ、もう少し時間がかかります。</p></div></div></div>
+    </section>
+
+    <!-- §04 -->
+    <section id="s4">
+      <div class="sec-head"><span class="idx">§04</span><h2>16進数 — 4ビットを1文字で</h2></div>
+
+      <p>2進数は 0 と 1 しか使わないので、すぐに桁が長くなります。1バイトでも8桁、MAC アドレス（6バイト）なら48桁です。そこで、ビットの並びを短く書くために<strong>16進数</strong>を使います。</p>
+      <p>16進数は 16 種類の文字を使います。0〜9 のあとの 10〜15 は1文字で書けないので、アルファベットの <strong>a〜f</strong> を使います。</p>
+
+      <figure class="fig dg">
+        <svg viewBox="0 0 760 218" role="img" aria-label="0から15を10進数・2進数・16進数で並べた表"><text x="16" y="48" text-anchor="start" fill="#ffd3a3" font-size="12.5" font-weight="700">10進数</text><text x="16" y="92" text-anchor="start" fill="#a8c9ff" font-size="12.5" font-weight="700">2進数</text><text x="16" y="136" text-anchor="start" fill="#cbbcff" font-size="12.5" font-weight="700">16進数</text><text x="99" y="52" text-anchor="middle" fill="#ffd3a3" font-size="14" font-weight="600" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">0</text><text x="99" y="90" text-anchor="middle" fill="#a8c9ff" font-size="11.5" font-weight="500" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">00</text><text x="99" y="104" text-anchor="middle" fill="#a8c9ff" font-size="11.5" font-weight="500" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">00</text><text x="99" y="140" text-anchor="middle" fill="#fff" font-size="17" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">0</text><text x="141" y="52" text-anchor="middle" fill="#ffd3a3" font-size="14" font-weight="600" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">1</text><text x="141" y="90" text-anchor="middle" fill="#a8c9ff" font-size="11.5" font-weight="500" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">00</text><text x="141" y="104" text-anchor="middle" fill="#a8c9ff" font-size="11.5" font-weight="500" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">01</text><text x="141" y="140" text-anchor="middle" fill="#fff" font-size="17" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">1</text><text x="183" y="52" text-anchor="middle" fill="#ffd3a3" font-size="14" font-weight="600" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">2</text><text x="183" y="90" text-anchor="middle" fill="#a8c9ff" font-size="11.5" font-weight="500" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">00</text><text x="183" y="104" text-anchor="middle" fill="#a8c9ff" font-size="11.5" font-weight="500" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">10</text><text x="183" y="140" text-anchor="middle" fill="#fff" font-size="17" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">2</text><text x="225" y="52" text-anchor="middle" fill="#ffd3a3" font-size="14" font-weight="600" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">3</text><text x="225" y="90" text-anchor="middle" fill="#a8c9ff" font-size="11.5" font-weight="500" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">00</text><text x="225" y="104" text-anchor="middle" fill="#a8c9ff" font-size="11.5" font-weight="500" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">11</text><text x="225" y="140" text-anchor="middle" fill="#fff" font-size="17" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">3</text><text x="267" y="52" text-anchor="middle" fill="#ffd3a3" font-size="14" font-weight="600" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">4</text><text x="267" y="90" text-anchor="middle" fill="#a8c9ff" font-size="11.5" font-weight="500" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">01</text><text x="267" y="104" text-anchor="middle" fill="#a8c9ff" font-size="11.5" font-weight="500" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">00</text><text x="267" y="140" text-anchor="middle" fill="#fff" font-size="17" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">4</text><text x="309" y="52" text-anchor="middle" fill="#ffd3a3" font-size="14" font-weight="600" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">5</text><text x="309" y="90" text-anchor="middle" fill="#a8c9ff" font-size="11.5" font-weight="500" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">01</text><text x="309" y="104" text-anchor="middle" fill="#a8c9ff" font-size="11.5" font-weight="500" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">01</text><text x="309" y="140" text-anchor="middle" fill="#fff" font-size="17" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">5</text><text x="351" y="52" text-anchor="middle" fill="#ffd3a3" font-size="14" font-weight="600" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">6</text><text x="351" y="90" text-anchor="middle" fill="#a8c9ff" font-size="11.5" font-weight="500" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">01</text><text x="351" y="104" text-anchor="middle" fill="#a8c9ff" font-size="11.5" font-weight="500" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">10</text><text x="351" y="140" text-anchor="middle" fill="#fff" font-size="17" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">6</text><text x="393" y="52" text-anchor="middle" fill="#ffd3a3" font-size="14" font-weight="600" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">7</text><text x="393" y="90" text-anchor="middle" fill="#a8c9ff" font-size="11.5" font-weight="500" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">01</text><text x="393" y="104" text-anchor="middle" fill="#a8c9ff" font-size="11.5" font-weight="500" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">11</text><text x="393" y="140" text-anchor="middle" fill="#fff" font-size="17" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">7</text><text x="435" y="52" text-anchor="middle" fill="#ffd3a3" font-size="14" font-weight="600" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">8</text><text x="435" y="90" text-anchor="middle" fill="#a8c9ff" font-size="11.5" font-weight="500" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">10</text><text x="435" y="104" text-anchor="middle" fill="#a8c9ff" font-size="11.5" font-weight="500" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">00</text><text x="435" y="140" text-anchor="middle" fill="#fff" font-size="17" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">8</text><text x="477" y="52" text-anchor="middle" fill="#ffd3a3" font-size="14" font-weight="600" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">9</text><text x="477" y="90" text-anchor="middle" fill="#a8c9ff" font-size="11.5" font-weight="500" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">10</text><text x="477" y="104" text-anchor="middle" fill="#a8c9ff" font-size="11.5" font-weight="500" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">01</text><text x="477" y="140" text-anchor="middle" fill="#fff" font-size="17" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">9</text><rect x="500" y="24" width="38" height="128" rx="8" fill="#a48bff" fill-opacity=".10" stroke="#a48bff" stroke-opacity=".6"/><text x="519" y="52" text-anchor="middle" fill="#ffd3a3" font-size="14" font-weight="600" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">10</text><text x="519" y="90" text-anchor="middle" fill="#a8c9ff" font-size="11.5" font-weight="500" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">10</text><text x="519" y="104" text-anchor="middle" fill="#a8c9ff" font-size="11.5" font-weight="500" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">10</text><text x="519" y="140" text-anchor="middle" fill="#cbbcff" font-size="17" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">a</text><rect x="542" y="24" width="38" height="128" rx="8" fill="#a48bff" fill-opacity=".10" stroke="#a48bff" stroke-opacity=".6"/><text x="561" y="52" text-anchor="middle" fill="#ffd3a3" font-size="14" font-weight="600" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">11</text><text x="561" y="90" text-anchor="middle" fill="#a8c9ff" font-size="11.5" font-weight="500" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">10</text><text x="561" y="104" text-anchor="middle" fill="#a8c9ff" font-size="11.5" font-weight="500" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">11</text><text x="561" y="140" text-anchor="middle" fill="#cbbcff" font-size="17" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">b</text><rect x="584" y="24" width="38" height="128" rx="8" fill="#a48bff" fill-opacity=".10" stroke="#a48bff" stroke-opacity=".6"/><text x="603" y="52" text-anchor="middle" fill="#ffd3a3" font-size="14" font-weight="600" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">12</text><text x="603" y="90" text-anchor="middle" fill="#a8c9ff" font-size="11.5" font-weight="500" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">11</text><text x="603" y="104" text-anchor="middle" fill="#a8c9ff" font-size="11.5" font-weight="500" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">00</text><text x="603" y="140" text-anchor="middle" fill="#cbbcff" font-size="17" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">c</text><rect x="626" y="24" width="38" height="128" rx="8" fill="#a48bff" fill-opacity=".10" stroke="#a48bff" stroke-opacity=".6"/><text x="645" y="52" text-anchor="middle" fill="#ffd3a3" font-size="14" font-weight="600" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">13</text><text x="645" y="90" text-anchor="middle" fill="#a8c9ff" font-size="11.5" font-weight="500" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">11</text><text x="645" y="104" text-anchor="middle" fill="#a8c9ff" font-size="11.5" font-weight="500" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">01</text><text x="645" y="140" text-anchor="middle" fill="#cbbcff" font-size="17" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">d</text><rect x="668" y="24" width="38" height="128" rx="8" fill="#a48bff" fill-opacity=".10" stroke="#a48bff" stroke-opacity=".6"/><text x="687" y="52" text-anchor="middle" fill="#ffd3a3" font-size="14" font-weight="600" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">14</text><text x="687" y="90" text-anchor="middle" fill="#a8c9ff" font-size="11.5" font-weight="500" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">11</text><text x="687" y="104" text-anchor="middle" fill="#a8c9ff" font-size="11.5" font-weight="500" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">10</text><text x="687" y="140" text-anchor="middle" fill="#cbbcff" font-size="17" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">e</text><rect x="710" y="24" width="38" height="128" rx="8" fill="#a48bff" fill-opacity=".10" stroke="#a48bff" stroke-opacity=".6"/><text x="729" y="52" text-anchor="middle" fill="#ffd3a3" font-size="14" font-weight="600" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">15</text><text x="729" y="90" text-anchor="middle" fill="#a8c9ff" font-size="11.5" font-weight="500" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">11</text><text x="729" y="104" text-anchor="middle" fill="#a8c9ff" font-size="11.5" font-weight="500" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">11</text><text x="729" y="140" text-anchor="middle" fill="#cbbcff" font-size="17" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">f</text><text x="456" y="180" text-anchor="middle" fill="rgba(255,255,255,.72)" font-size="12.5" font-weight="500">10〜15 は1文字で書けないので、a〜f を使う（大文字の A〜F でも同じ意味）</text><text x="456" y="204" text-anchor="middle" fill="#fff" font-size="12.5" font-weight="600">2進数4桁（0000〜1111）の16通りが、16進数のちょうど1桁（0〜f）に対応する</text></svg>
+        <figcaption><strong>図7</strong>　0〜15 の対応表。2進数は4桁を上下2段に分けて書いています（例：10 → <code>10</code>／<code>10</code> で <code>1010</code>）。紫の枠の 10〜15 が、16進数で a〜f になるところです。</figcaption>
+      </figure>
+
+      <p>2進数の4桁（4ビット）は 0000〜1111 の 16 通りなので、<strong>16進数のちょうど1桁</strong>に対応します。だから1バイト（8ビット）を4ビットずつに区切ると、<strong>16進数2桁</strong>で書けます。</p>
+
+      <figure class="fig dg">
+        <svg viewBox="0 0 760 276" role="img" aria-label="1バイトの8ビットを4ビットずつに区切ると、16進数2桁になる"><text x="20" y="40" text-anchor="start" fill="rgba(255,255,255,.72)" font-size="13" font-weight="600">例1：255</text><rect x="150" y="20" width="30" height="30" rx="6" fill="#4d94ff" fill-opacity="0.3" stroke="#4d94ff" stroke-width="1.4"/><text x="165.0" y="40.400000000000006" text-anchor="middle" fill="#a8c9ff" font-size="16.8" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">1</text><rect x="185" y="20" width="30" height="30" rx="6" fill="#4d94ff" fill-opacity="0.3" stroke="#4d94ff" stroke-width="1.4"/><text x="200.0" y="40.400000000000006" text-anchor="middle" fill="#a8c9ff" font-size="16.8" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">1</text><rect x="220" y="20" width="30" height="30" rx="6" fill="#4d94ff" fill-opacity="0.3" stroke="#4d94ff" stroke-width="1.4"/><text x="235.0" y="40.400000000000006" text-anchor="middle" fill="#a8c9ff" font-size="16.8" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">1</text><rect x="255" y="20" width="30" height="30" rx="6" fill="#4d94ff" fill-opacity="0.3" stroke="#4d94ff" stroke-width="1.4"/><text x="270.0" y="40.400000000000006" text-anchor="middle" fill="#a8c9ff" font-size="16.8" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">1</text><rect x="310" y="20" width="30" height="30" rx="6" fill="#4d94ff" fill-opacity="0.3" stroke="#4d94ff" stroke-width="1.4"/><text x="325.0" y="40.400000000000006" text-anchor="middle" fill="#a8c9ff" font-size="16.8" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">1</text><rect x="345" y="20" width="30" height="30" rx="6" fill="#4d94ff" fill-opacity="0.3" stroke="#4d94ff" stroke-width="1.4"/><text x="360.0" y="40.400000000000006" text-anchor="middle" fill="#a8c9ff" font-size="16.8" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">1</text><rect x="380" y="20" width="30" height="30" rx="6" fill="#4d94ff" fill-opacity="0.3" stroke="#4d94ff" stroke-width="1.4"/><text x="395.0" y="40.400000000000006" text-anchor="middle" fill="#a8c9ff" font-size="16.8" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">1</text><rect x="415" y="20" width="30" height="30" rx="6" fill="#4d94ff" fill-opacity="0.3" stroke="#4d94ff" stroke-width="1.4"/><text x="430.0" y="40.400000000000006" text-anchor="middle" fill="#a8c9ff" font-size="16.8" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">1</text><path d="M298,14 v44" stroke="rgba(255,255,255,.55)" stroke-dasharray="3 4"/><line x1="220" y1="58" x2="220" y2="80" stroke="#a48bff" stroke-width="1.6" marker-end="url(#m-purple)"/><line x1="380" y1="58" x2="380" y2="80" stroke="#a48bff" stroke-width="1.6" marker-end="url(#m-purple)"/><rect x="196" y="84" width="48" height="34" rx="9" fill="#a48bff" fill-opacity="0.13" stroke="#a48bff" stroke-width="1.5"/><text x="220.0" y="107.48" text-anchor="middle" fill="#cbbcff" font-size="18" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">f</text><rect x="356" y="84" width="48" height="34" rx="9" fill="#a48bff" fill-opacity="0.13" stroke="#a48bff" stroke-width="1.5"/><text x="380.0" y="107.48" text-anchor="middle" fill="#cbbcff" font-size="18" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">f</text><text x="520" y="106" text-anchor="start" fill="#fff" font-size="16" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">→ 0xff ＝ 255</text><text x="20" y="160" text-anchor="start" fill="rgba(255,255,255,.72)" font-size="13" font-weight="600">例2：MAC の先頭</text><rect x="150" y="140" width="30" height="30" rx="6" fill="rgba(255,255,255,.04)" fill-opacity="1" stroke="rgba(255,255,255,.35)" stroke-width="1.4"/><text x="165.0" y="160.4" text-anchor="middle" fill="rgba(255,255,255,.55)" font-size="16.8" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">0</text><rect x="185" y="140" width="30" height="30" rx="6" fill="#4d94ff" fill-opacity="0.3" stroke="#4d94ff" stroke-width="1.4"/><text x="200.0" y="160.4" text-anchor="middle" fill="#a8c9ff" font-size="16.8" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">1</text><rect x="220" y="140" width="30" height="30" rx="6" fill="rgba(255,255,255,.04)" fill-opacity="1" stroke="rgba(255,255,255,.35)" stroke-width="1.4"/><text x="235.0" y="160.4" text-anchor="middle" fill="rgba(255,255,255,.55)" font-size="16.8" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">0</text><rect x="255" y="140" width="30" height="30" rx="6" fill="#4d94ff" fill-opacity="0.3" stroke="#4d94ff" stroke-width="1.4"/><text x="270.0" y="160.4" text-anchor="middle" fill="#a8c9ff" font-size="16.8" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">1</text><rect x="310" y="140" width="30" height="30" rx="6" fill="#4d94ff" fill-opacity="0.3" stroke="#4d94ff" stroke-width="1.4"/><text x="325.0" y="160.4" text-anchor="middle" fill="#a8c9ff" font-size="16.8" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">1</text><rect x="345" y="140" width="30" height="30" rx="6" fill="#4d94ff" fill-opacity="0.3" stroke="#4d94ff" stroke-width="1.4"/><text x="360.0" y="160.4" text-anchor="middle" fill="#a8c9ff" font-size="16.8" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">1</text><rect x="380" y="140" width="30" height="30" rx="6" fill="#4d94ff" fill-opacity="0.3" stroke="#4d94ff" stroke-width="1.4"/><text x="395.0" y="160.4" text-anchor="middle" fill="#a8c9ff" font-size="16.8" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">1</text><rect x="415" y="140" width="30" height="30" rx="6" fill="rgba(255,255,255,.04)" fill-opacity="1" stroke="rgba(255,255,255,.35)" stroke-width="1.4"/><text x="430.0" y="160.4" text-anchor="middle" fill="rgba(255,255,255,.55)" font-size="16.8" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">0</text><path d="M298,134 v44" stroke="rgba(255,255,255,.55)" stroke-dasharray="3 4"/><line x1="220" y1="178" x2="220" y2="200" stroke="#a48bff" stroke-width="1.6" marker-end="url(#m-purple)"/><line x1="380" y1="178" x2="380" y2="200" stroke="#a48bff" stroke-width="1.6" marker-end="url(#m-purple)"/><rect x="196" y="204" width="48" height="34" rx="9" fill="#a48bff" fill-opacity="0.13" stroke="#a48bff" stroke-width="1.5"/><text x="220.0" y="227.48" text-anchor="middle" fill="#cbbcff" font-size="18" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">5</text><rect x="356" y="204" width="48" height="34" rx="9" fill="#a48bff" fill-opacity="0.13" stroke="#a48bff" stroke-width="1.5"/><text x="380.0" y="227.48" text-anchor="middle" fill="#cbbcff" font-size="18" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">e</text><text x="520" y="226" text-anchor="start" fill="#fff" font-size="16" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">→ 0x5e ＝ 94</text><text x="380" y="262" text-anchor="middle" fill="rgba(255,255,255,.72)" font-size="13" font-weight="500">左の4ビット・右の4ビットを、それぞれ16進数1桁にするだけ</text></svg>
+        <figcaption><strong>図8</strong>　1バイト（8ビット）を、真ん中の点線で4ビットずつに区切ります。4ビットは16進数のちょうど1桁なので、<strong>1バイト＝16進数2桁</strong>。例2の <code>01011110</code> は、§06 で Parrot の MAC アドレスの先頭 <code>5e</code> として出てきます。前に付いた <code>0x</code> は「この数は16進数」という印です。</figcaption>
+      </figure>
+
+      <div class="road d"><div class="rh"><span><span class="rk">D4</span>4ビット＝16進数1桁、1バイト＝16進数2桁</span><span class="tag">導出 ― 自分で導ける</span></div><div class="rb"><p class="use">使う：D1・P2・P3</p><p class="st"><strong>導き方</strong>：4ビットは D1 で 2⁴＝16 通り。16進数1桁も 0〜f の 16 通りなので、ちょうど対応する。1バイト（P3）は4ビット2つなので2桁。10進数への変換は、P2 で重みを 16 の何乗かにするだけ。</p><p class="chg">基数を変えると：8進数なら3ビットずつ（2³＝8）。0-3 のファイルの権限（<code>chmod 644</code>）で使う。</p></div></div>
+
+      <p>16進数を10進数に直すときも、桁の重みを使います。16進数の重みは、右端が 16⁰＝1、その左が 16¹＝16 です。</p>
+
+      <figure class="fig dg">
+        <svg viewBox="0 0 760 240" role="img" aria-label="16進数2桁を10進数に直す計算：ff、5e、c0"><text x="20" y="30" text-anchor="start" fill="rgba(255,255,255,.72)" font-size="13" font-weight="500">16進数も、桁ごとに 16 倍の重み：右端 16⁰＝1、その左 16¹＝16</text><rect x="20" y="50" width="70" height="44" rx="9" fill="#a48bff" fill-opacity="0.13" stroke="#a48bff" stroke-width="1.5"/><text x="55.0" y="77.76" text-anchor="middle" fill="#cbbcff" font-size="16" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">0xff</text><text x="110" y="78" text-anchor="middle" fill="rgba(255,255,255,.55)" font-size="16" font-weight="500">＝</text><text x="132" y="78" text-anchor="start" fill="#fff" font-size="15" font-weight="600" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">15×16¹ ＋ 15×16⁰</text><text x="372" y="78" text-anchor="start" fill="rgba(255,255,255,.72)" font-size="15" font-weight="500" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">＝ 240 ＋ 15</text><text x="540" y="78" text-anchor="start" fill="#ffd3a3" font-size="17" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">＝ 255</text><text x="650" y="78" text-anchor="start" fill="#cbbcff" font-size="12.5" font-weight="500">（f＝15）</text><rect x="20" y="112" width="70" height="44" rx="9" fill="#a48bff" fill-opacity="0.13" stroke="#a48bff" stroke-width="1.5"/><text x="55.0" y="139.76" text-anchor="middle" fill="#cbbcff" font-size="16" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">0x5e</text><text x="110" y="140" text-anchor="middle" fill="rgba(255,255,255,.55)" font-size="16" font-weight="500">＝</text><text x="132" y="140" text-anchor="start" fill="#fff" font-size="15" font-weight="600" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">5×16¹ ＋ 14×16⁰</text><text x="372" y="140" text-anchor="start" fill="rgba(255,255,255,.72)" font-size="15" font-weight="500" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">＝ 80 ＋ 14</text><text x="540" y="140" text-anchor="start" fill="#ffd3a3" font-size="17" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">＝ 94</text><text x="650" y="140" text-anchor="start" fill="#cbbcff" font-size="12.5" font-weight="500">（e＝14）</text><rect x="20" y="174" width="70" height="44" rx="9" fill="#a48bff" fill-opacity="0.13" stroke="#a48bff" stroke-width="1.5"/><text x="55.0" y="201.76" text-anchor="middle" fill="#cbbcff" font-size="16" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">0xc0</text><text x="110" y="202" text-anchor="middle" fill="rgba(255,255,255,.55)" font-size="16" font-weight="500">＝</text><text x="132" y="202" text-anchor="start" fill="#fff" font-size="15" font-weight="600" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">12×16¹ ＋ 0×16⁰</text><text x="372" y="202" text-anchor="start" fill="rgba(255,255,255,.72)" font-size="15" font-weight="500" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">＝ 192 ＋ 0</text><text x="540" y="202" text-anchor="start" fill="#ffd3a3" font-size="17" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">＝ 192</text><text x="650" y="202" text-anchor="start" fill="#cbbcff" font-size="12.5" font-weight="500">（c＝12）</text></svg>
+        <figcaption><strong>図9</strong>　16進数も2進数・10進数と同じしくみで、桁の重みは 16 の何乗か。2桁なら「左の桁×16＋右の桁」で10進数になります。a〜f は 10〜15 として計算します（左の表を参照）。<code>0xc0</code>＝192 は、図5 で2進数にした 192 と同じ数です。</figcaption>
+      </figure>
+
+      <div class="box teach"><span class="lab">16進数の書き方の約束</span>
+      <ul style="margin:6px 0 0">
+        <li>10進数と区別するために、前に <code>0x</code> を付けることがある（<code>0xff</code>＝255）。<code>0x</code> 自体は値ではなく「16進数だよ」という印。</li>
+        <li>a〜f は大文字（A〜F）でも同じ意味。<code>5E</code> と <code>5e</code> は同じ。</li>
+        <li>1バイトは必ず2桁で書く。10 は <code>a</code> ではなく <code>0a</code> と書く（MAC アドレスなどで桁がずれないように）。</li>
+      </ul></div>
+
+      <div class="table-scroll"><table class="mini-table">
+        <caption>同じ数の3つの書き方（よく出るもの）</caption>
+        <thead><tr><th>10進数</th><th>2進数</th><th>16進数</th><th>どこで出てくるか</th></tr></thead>
+        <tbody>
+          <tr><td>10</td><td><code>00001010</code></td><td><code>0a</code></td><td>§05 の手順2</td></tr>
+          <tr><td>94</td><td><code>01011110</code></td><td><code>5e</code></td><td>Parrot の MAC アドレスの先頭（§06）</td></tr>
+          <tr><td>192</td><td><code>11000000</code></td><td><code>c0</code></td><td>IPv4 アドレス <code>192.168.128.3</code> の先頭（§06）</td></tr>
+          <tr><td>255</td><td><code>11111111</code></td><td><code>ff</code></td><td>1バイトの最大</td></tr>
+          <tr><td>65535</td><td><code>11111111 11111111</code></td><td><code>ffff</code></td><td>2バイトの最大。ポート番号の最大（§06）</td></tr>
+        </tbody>
+      </table></div>
+    
+      <h3>計算ドリル（§04・全3問）</h3>
+
+      <div class="drill"><p><span class="qn">問6</span><span class="qt re">再現：D4</span>次の16進数を10進数に直せ。<br>(a) <code>0x1f</code>　(b) <code>0x80</code>　(c) <code>0xa8</code>　(d) <code>0x1f90</code>（4桁）</p>
+      <div class="attempt" style="margin:10px 0 4px"><span class="lab">自分の答えを出してから</span>
+      <div class="controls"><button class="ctl-btn" data-sol>解答を見る</button></div>
+      <div class="sol"><p class="qu">使う：P2・D4</p><p>2桁なら「左の桁×16¹＋右の桁×16⁰」。a＝10、b＝11、c＝12、d＝13、e＝14、f＝15。</p><p>(a) 1×16＋15 ＝ <strong>31</strong>　(b) 8×16＋0 ＝ <strong>128</strong>　(c) 10×16＋8 ＝ <strong>168</strong></p><p>(d) 4桁なので、重みは左から 16³＝4,096、16²＝256、16¹＝16、16⁰＝1。<br>1×4,096 ＋ 15×256 ＋ 9×16 ＋ 0×1 ＝ 4,096＋3,840＋144＋0 ＝ <strong>8,080</strong></p><p style="font-size:13.5px;color:var(--ink-faint)">(d) の 8080 は、1-2 で Web サーバーに使うポート番号です（§06 の図14）。</p></div></div></div>
+
+      <div class="drill"><p><span class="qn">問7</span><span class="qt re">再現：D4</span>次の10進数を、16進数2桁に直せ。<br>(a) 15　(b) 16　(c) 100　(d) 172</p>
+      <div class="attempt" style="margin:10px 0 4px"><span class="lab">自分の答えを出してから</span>
+      <div class="controls"><button class="ctl-btn" data-sol>解答を見る</button></div>
+      <div class="sol"><p class="qu">使う：P2・D4</p><p>「16 で割った商が左の桁、余りが右の桁」です。</p><p>(a) 15 ＝ 0×16＋15 → <strong><code>0f</code></strong>　(b) 16 ＝ 1×16＋0 → <strong><code>10</code></strong></p><p>(c) 100 ＝ 6×16＋4 → <strong><code>64</code></strong>　(d) 172 ＝ 10×16＋12 → <strong><code>ac</code></strong></p><p style="font-size:13.5px;color:var(--ink-faint)">(b) の16進数 <code>10</code> は「じゅう」ではなく 16、(c) の16進数 <code>64</code> は 100 です。同じ字面でも進数で値が変わるので、<code>0x</code> を付けて区別します。</p></div></div></div>
+
+      <div class="drill"><p><span class="qn">問8</span><span class="qt re">再現：D4</span>次の2進数を16進数に直せ（4ビットずつ区切る）。<br>(a) <code>1010 1100</code>　(b) <code>0001 0010</code>　(c) <code>1111 0000</code></p>
+      <div class="attempt" style="margin:10px 0 4px"><span class="lab">自分の答えを出してから</span>
+      <div class="controls"><button class="ctl-btn" data-sol>解答を見る</button></div>
+      <div class="sol"><p class="qu">使う：D4</p><p>(a) <code>1010</code>＝10＝a、<code>1100</code>＝12＝c → <strong><code>ac</code></strong>（問7 (d) の 172 と同じ数）</p><p>(b) <code>0001</code>＝1、<code>0010</code>＝2 → <strong><code>12</code></strong></p><p>(c) <code>1111</code>＝15＝f、<code>0000</code>＝0 → <strong><code>f0</code></strong></p><p style="font-size:13.5px;color:var(--ink-faint)">(b) の <code>12</code> は、Kali の内部ネットワーク側の MAC アドレス <code>12:ae:d8:64:04:33</code> の先頭バイトです（問9）。</p></div></div></div>
+    </section>
+
+    <!-- §05 -->
+    <section id="s5">
+      <div class="sec-head"><span class="idx">§05</span><h2>端末で計算して確かめる（Parrot）</h2></div>
+
+      <p>ここからは Parrot の端末で、§02〜§04 の計算をコンピューターにやってもらい、答えが合っているか確かめます。この節の演習は計算だけで、通信は行いません。端末を1つ開き、<code>clear</code> で画面を消してから始めます。</p>
+
+      <h3>手順1：2進数・16進数 → 10進数</h3>
+      <div class="step">
+        <span class="sh"><span class="sn">COMMAND</span>2進数 1010 を10進数で表示する</span>
+        <div class="cmdbox" data-copy="echo $((2#1010))"><code class="cmd">echo $((2#1010))</code></div>
+      </div>
+      <div class="table-scroll"><table class="mini-table anat">
+        <caption>コマンドの分解</caption>
+        <thead><tr><th>部分</th><th>意味</th></tr></thead>
+        <tbody>
+          <tr><td><code>echo</code></td><td>後ろに書いたものを、そのまま画面に表示するコマンド（echo＝こだま）。<code>echo</code> 自身は計算しない。</td></tr>
+          <tr><td><code>$(( ))</code></td><td><strong>算術展開</strong>（arithmetic expansion：計算して、結果に置きかえる）。シェル（コマンドを読み取って実行する係。Parrot の標準は bash（Bourne Again SHell：ボーン・アゲイン・シェル））が、<code>echo</code> を動かす前に中を計算する。決まった書き方。</td></tr>
+          <tr><td><code>2#</code></td><td>「この後ろの数は <strong>2進数</strong>」という指定。<code>進数#数</code> の形で、2〜64 進数まで書ける。</td></tr>
+          <tr><td><code>1010</code></td><td>10進数に直したい2進数。§02 の例1。ほかの2進数に変えてよい（0 と 1 だけを使う）。</td></tr>
+        </tbody>
+      </table></div>
+
+      <figure class="fig dg">
+        <svg viewBox="0 0 760 166" role="img" aria-label="echo $((16#ff)) では、シェルが先に計算して echo 255 に置きかえてから表示する"><use href="#i-term" x="34.0" y="44.0" width="52" height="52" style="color:#72e3ad"/><text x="60" y="114.0" text-anchor="middle" fill="#fff" font-size="15" font-weight="600">端末</text><text x="60" y="133.0" text-anchor="middle" fill="#9ff0cf" font-size="12.5" font-weight="500" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">Parrot</text><rect x="120" y="30" width="200" height="40" rx="9" fill="#72e3ad" fill-opacity="0.13" stroke="#72e3ad" stroke-width="1.5"/><text x="220.0" y="55.04" text-anchor="middle" fill="#9ff0cf" font-size="14" font-weight="600" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">echo $((16#ff))</text><line x1="322" y1="50" x2="380" y2="50" stroke="rgba(255,255,255,.55)" stroke-width="1.8" marker-end="url(#m-gray)"/><rect x="384" y="18" width="190" height="104" rx="12" fill="rgba(255,255,255,.03)" stroke="rgba(255,255,255,.3)" stroke-dasharray="5 5"/><text x="479" y="40" text-anchor="middle" fill="#fff" font-size="13.5" font-weight="700">シェル（bash）</text><text x="479" y="62" text-anchor="middle" fill="rgba(255,255,255,.72)" font-size="12" font-weight="500">$(( )) の中を先に計算</text><text x="479" y="79" text-anchor="middle" fill="rgba(255,255,255,.72)" font-size="12" font-weight="500">16#ff → 255 に置きかえ</text><rect x="410" y="96" width="138" height="22" rx="9" fill="#ffb46b" fill-opacity="0.13" stroke="#ffb46b" stroke-width="1.5"/><text x="479.0" y="111.5" text-anchor="middle" fill="#ffd3a3" font-size="12.5" font-weight="500" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">echo 255</text><line x1="576" y1="50" x2="630" y2="50" stroke="rgba(255,255,255,.55)" stroke-width="1.8" marker-end="url(#m-gray)"/><rect x="634" y="30" width="110" height="40" rx="9" fill="#ffb46b" fill-opacity="0.13" stroke="#ffb46b" stroke-width="1.5"/><text x="689.0" y="56.48" text-anchor="middle" fill="#ffd3a3" font-size="18" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">255</text><text x="689" y="92" text-anchor="middle" fill="rgba(255,255,255,.55)" font-size="12" font-weight="500">画面に表示</text><text x="380" y="150" text-anchor="middle" fill="rgba(255,255,255,.72)" font-size="12.5" font-weight="500">echo 自身は計算しない。「書かれたものを表示する」だけ</text></svg>
+        <figcaption><strong>図10</strong>　<code>echo $((16#ff))</code> の流れ。打ったコマンドは、まず<strong>シェル</strong>（コマンドを読み取って実行する係。bash は Parrot の標準のシェル）が読み、<code>$(( ))</code> の中を計算して <code>255</code> に置きかえます。そのあと <code>echo 255</code> が実行されて、255 が表示されます。</figcaption>
+      </figure>
+
+      <p>同じ形で、残りの3つも順に打ちます。<code>#</code> の前の数が「何進数か」、後ろが「その進数の数」です。</p>
+      <div class="step">
+        <span class="sh"><span class="sn">COMMAND</span>2進数 11111111 を10進数で表示する</span>
+        <div class="cmdbox" data-copy="echo $((2#11111111))"><code class="cmd">echo $((2#11111111))</code></div>
+      </div>
+      <div class="step">
+        <span class="sh"><span class="sn">COMMAND</span>16進数 ff を10進数で表示する</span>
+        <div class="cmdbox" data-copy="echo $((16#ff))"><code class="cmd">echo $((16#ff))</code></div>
+      </div>
+      <div class="step">
+        <span class="sh"><span class="sn">COMMAND</span>16進数 ffff を10進数で表示する</span>
+        <div class="cmdbox" data-copy="echo $((16#ffff))"><code class="cmd">echo $((16#ffff))</code></div>
+      </div>
+      <div class="out"><span class="lab">出力例（4つのコマンドの結果を順に）</span>10
+255
+255
+65535</div>
+      <div class="table-scroll"><table class="mini-table anat">
+        <caption>出力の読み方</caption>
+        <colgroup><col style="width:24%"><col style="width:14%"><col></colgroup>
+        <thead><tr><th>コマンド</th><th>出力</th><th>意味（計算）</th></tr></thead>
+        <tbody>
+          <tr><td><code>2#1010</code></td><td><code>10</code></td><td>1×2³＋0×2²＋1×2¹＋0×2⁰＝8＋0＋2＋0＝10（§02 の例1）。</td></tr>
+          <tr><td><code>2#11111111</code></td><td><code>255</code></td><td>128＋64＋32＋16＋8＋4＋2＋1＝255。1バイトの最大（§02 の例2）。</td></tr>
+          <tr><td><code>16#ff</code></td><td><code>255</code></td><td>15×16¹＋15×16⁰＝240＋15＝255。<code>11111111</code> と同じ数（§04 の図8・図9）。</td></tr>
+          <tr><td><code>16#ffff</code></td><td><code>65535</code></td><td>2バイトすべて 1 の最大。15×16³＋15×16²＋15×16¹＋15×16⁰＝61440＋3840＋240＋15＝65535。ポート番号の最大（§06）。</td></tr>
+        </tbody>
+      </table></div>
+
+      <h3>手順2：10進数 → 16進数・2進数</h3>
+      <div class="step">
+        <span class="sh"><span class="sn">COMMAND</span>10進数 255 を16進数で表示する</span>
+        <div class="cmdbox" data-copy="printf '%x\n' 255"><code class="cmd">printf '%x\n' 255</code></div>
+      </div>
+      <div class="table-scroll"><table class="mini-table anat">
+        <caption>コマンドの分解</caption>
+        <thead><tr><th>部分</th><th>意味</th></tr></thead>
+        <tbody>
+          <tr><td><code>printf</code></td><td><strong>print formatted</strong>（書式を指定して表示する）。<code>echo</code> とちがい、「どんな形で表示するか」を細かく決められる。</td></tr>
+          <tr><td><code>'%x\n'</code></td><td>書式（表示の形）。<code>%x</code>＝後ろの数を <strong>16進数</strong>（hexadecimal）で表示、<code>\n</code>＝改行（new line）。<code>printf</code> は自分では改行しないので付ける。<code>' '</code> で囲むのは、<code>\</code> などをシェルに解釈させず、そのまま <code>printf</code> に渡すため。</td></tr>
+          <tr><td><code>255</code></td><td>16進数に直したい10進数。ほかの数に変えてよい。</td></tr>
+        </tbody>
+      </table></div>
+
+      <div class="step">
+        <span class="sh"><span class="sn">COMMAND</span>10進数 10 を、2桁の16進数で表示する</span>
+        <div class="cmdbox" data-copy="printf '%02x\n' 10"><code class="cmd">printf '%02x\n' 10</code></div>
+      </div>
+      <div class="table-scroll"><table class="mini-table anat">
+        <caption>コマンドの分解（上と同じ部分は省略）</caption>
+        <thead><tr><th>部分</th><th>意味</th></tr></thead>
+        <tbody>
+          <tr><td><code>%02x</code></td><td><code>2</code>＝最低 <strong>2桁</strong>で表示、<code>0</code>＝足りない桁を <strong>0 で埋める</strong>、<code>x</code>＝16進数。10 は16進数で <code>a</code> の1桁なので、前に 0 を足して <code>0a</code> になる。1バイトを必ず2桁で書くための指定（§04）。</td></tr>
+          <tr><td><code>10</code></td><td>16進数で1桁になる数の例として選んだ。0〜15 のどれでも、0 埋めの効果が見える。</td></tr>
+        </tbody>
+      </table></div>
+
+      <div class="step">
+        <span class="sh"><span class="sn">COMMAND</span>10進数 255 を、8桁の2進数で表示する</span>
+        <div class="cmdbox" data-copy="python3 -c &quot;print(format(255, '08b'))&quot;"><code class="cmd">python3 -c "print(format(255, '08b'))"</code></div>
+      </div>
+      <div class="table-scroll"><table class="mini-table anat">
+        <caption>コマンドの分解</caption>
+        <thead><tr><th>部分</th><th>意味</th></tr></thead>
+        <tbody>
+          <tr><td><code>python3</code></td><td>プログラミング言語 Python（パイソン）の第3版を動かすコマンド。bash の <code>printf</code> には2進数の書式がないので、ここだけ Python を使う。Parrot・Kali には最初から入っている。</td></tr>
+          <tr><td><code>-c</code></td><td><strong>command</strong>。後ろの文字列を、Python のプログラムとしてその場で実行する。</td></tr>
+          <tr><td><code>"…"</code></td><td>プログラム全体を <code>" "</code> で囲んで1つにまとめる。囲まないと、<code>( )</code> をシェルが特別な記号として解釈してしまう。中で <code>' '</code> を使うので、外側は <code>" "</code> にしている。</td></tr>
+          <tr><td><code>print( )</code></td><td>かっこの中を画面に表示する（Python の命令）。</td></tr>
+          <tr><td><code>format(255, '08b')</code></td><td>255 を、書式 <code>'08b'</code> の文字に変える。<code>b</code>＝<strong>2進数</strong>（binary）、<code>8</code>＝8桁、<code>0</code>＝足りない桁を 0 で埋める。1バイト分の8桁で見たいので 8。</td></tr>
+        </tbody>
+      </table></div>
+
+      <div class="out"><span class="lab">出力例（3つのコマンドの結果を順に）</span>ff
+0a
+11111111</div>
+      <div class="table-scroll"><table class="mini-table anat">
+        <caption>出力の読み方</caption>
+        <colgroup><col style="width:24%"><col style="width:14%"><col></colgroup>
+        <thead><tr><th>コマンド</th><th>出力</th><th>意味（計算）</th></tr></thead>
+        <tbody>
+          <tr><td><code>%x</code> と 255</td><td><code>ff</code></td><td>255＝15×16＋15 なので、16進数で f と f（§04 の図9）。</td></tr>
+          <tr><td><code>%02x</code> と 10</td><td><code>0a</code></td><td>10 は16進数で <code>a</code>。2桁にそろえるため、前に 0 が付いた。</td></tr>
+          <tr><td><code>'08b'</code> と 255</td><td><code>11111111</code></td><td>255 は8ビットすべて 1（§02 の例2）。</td></tr>
+        </tbody>
+      </table></div>
+
+      <figure class="fig">
+        <img src="../image/cyber/0-1/fig1_parrot_convert.jpg?v=r189" width="1400" height="728" loading="lazy" alt="Parrot のデスクトップ。端末に、echo と printf と python3 で2進数・10進数・16進数を変換した結果が表示されている">
+        <figcaption>操作した順に番号を付けています。<br>
+          <strong>赤枠①</strong>：手順1。2進数・16進数を10進数に直した結果（10、255、255、65535）。<br>
+          <strong>赤枠②</strong>：手順2。10進数を16進数・2進数に直した結果（<code>ff</code>、<code>0a</code>、<code>11111111</code>）。</figcaption>
+      </figure>
+
+      <div class="box warn"><span class="lab">うまくいかないとき</span>
+      <ul style="margin:6px 0 0">
+        <li><code>value too great for base</code> と出たら、その進数で使えない文字が入っている（例：<code>2#102</code> の 2、<code>16#fg</code> の g）。</li>
+        <li><code>printf</code> の結果が次のプロンプトとくっついたら、<code>\n</code> が抜けている。</li>
+        <li>Kali の標準のシェル zsh（Z shell：ゼット・シェル）でも、手順1・2 のコマンドは同じように動く。</li>
+      </ul></div>
+    </section>
+
+    <!-- §06 -->
+    <section id="s6">
+      <div class="sec-head"><span class="idx">§06</span><h2>実物のアドレスをバイトで読む（Parrot）</h2></div>
+
+      <p>1章で何度も出てくる MAC アドレス・IPv4 アドレス・ポート番号を、先にバイトとビットの目で読んでおきます。端末は手順2のまま使い、<code>clear</code> してから始めます。</p>
+      <div class="road p"><div class="rh"><span><span class="rk">P4</span>アドレスの大きさは規格で決まっている：MAC 48ビット、IPv4 32ビット、ポート番号 16ビット</span><span class="tag">原理 ― 覚える</span></div><div class="rb"><p class="st"><strong>どんな決まりか</strong>：規格。変えるには新しい規格が必要。IPv4 の 32 ビットでは足りなくなり、128 ビットの別の規格 IPv6 が作られた（IPv4 の延長ではないので、そのままでは IPv4 と通信できない。だから今も両方が並んで使われている）。</p><p class="st"><strong>由来</strong>：MAC アドレスは IEEE（Institute of Electrical and Electronics Engineers：米国電気電子学会）の 802 規格で、先頭バイトのビット0・ビット1 の意味もこの規格。IPv4 は RFC 791（1981年）。ポート番号は UDP の RFC 768（1980年）と TCP の RFC 793（1981年。現在は RFC 9293）。</p></div></div>
+
+
+      <h3>手順3-1：MAC アドレスは6バイト</h3>
+      <div class="step">
+        <span class="sh"><span class="sn">COMMAND</span>内部ネットワーク側の MAC アドレスを表示する</span>
+        <div class="cmdbox" data-copy="ip -br link show enp0s2"><code class="cmd">ip -br link show enp0s2</code></div>
+      </div>
+      <div class="table-scroll"><table class="mini-table anat">
+        <caption>コマンドの分解</caption>
+        <thead><tr><th>部分</th><th>意味</th></tr></thead>
+        <tbody>
+          <tr><td><code>ip</code></td><td>Linux でネットワークの設定を表示・変更するコマンド（1-1 §03）。</td></tr>
+          <tr><td><code>-br</code></td><td><strong>brief</strong>（簡潔）。1つのインターフェースを1行にまとめて表示する。</td></tr>
+          <tr><td><code>link</code></td><td>インターフェース（interface：ネットワークの出入口）そのものの情報を表示する。MAC アドレスはここに出る（1-4 §04 でも使う）。</td></tr>
+          <tr><td><code>show</code></td><td>「表示する」という指定。後ろに名前を書くと、そのインターフェースだけを表示する。</td></tr>
+          <tr><td><code>enp0s2</code></td><td>Parrot の内部ネットワーク側のインターフェース名。Kali で試すなら <code>eth1</code> に変える。</td></tr>
+        </tbody>
+      </table></div>
+      <div class="out"><span class="lab">出力例</span>enp0s2           UP             5e:f1:1e:25:27:db &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt;</div>
+      <div class="table-scroll"><table class="mini-table anat">
+        <caption>出力の読み方（この節で見るところ）</caption>
+        <colgroup><col style="width:13%"><col style="width:25%"><col></colgroup>
+        <thead><tr><th>部分</th><th>例</th><th>意味</th></tr></thead>
+        <tbody>
+          <tr><td>3列目</td><td><code>5e:f1:1e:25:27:db</code></td><td><strong>MAC アドレス</strong>（MAC：Media Access Control：媒体アクセス制御）。NIC（Network Interface Card：ネットワーク・インターフェース・カード）1枚ごとの番号。<code>:</code> で区切られた16進数2桁が1バイトで、6つ並んでいるので <strong>6バイト＝48ビット</strong>。</td></tr>
+          <tr><td>ほかの列</td><td><code>enp0s2</code>・<code>UP</code>・<code>&lt; &gt;</code></td><td>インターフェース名・状態・できること。くわしい読み方は 1-4 §04 で扱う。</td></tr>
+        </tbody>
+      </table></div>
+
+      <figure class="fig dg">
+        <svg viewBox="0 0 760 206" role="img" aria-label="Parrot の MAC アドレス 5e:f1:1e:25:27:db は6バイト"><rect x="70" y="40" width="76" height="46" rx="9" fill="#72e3ad" fill-opacity="0.13" stroke="#72e3ad" stroke-width="1.5"/><text x="108.0" y="70.2" text-anchor="middle" fill="#9ff0cf" font-size="20" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">5e</text><text x="108" y="26" text-anchor="middle" fill="rgba(255,255,255,.55)" font-size="11.5" font-weight="500">1バイト目</text><text x="108" y="108" text-anchor="middle" fill="#a8c9ff" font-size="11.5" font-weight="500" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">01011110</text><text x="161" y="70" text-anchor="middle" fill="rgba(255,255,255,.55)" font-size="20" font-weight="700">:</text><rect x="176" y="40" width="76" height="46" rx="9" fill="#72e3ad" fill-opacity="0.13" stroke="#72e3ad" stroke-width="1.5"/><text x="214.0" y="70.2" text-anchor="middle" fill="#9ff0cf" font-size="20" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">f1</text><text x="214" y="26" text-anchor="middle" fill="rgba(255,255,255,.55)" font-size="11.5" font-weight="500">2バイト目</text><text x="214" y="108" text-anchor="middle" fill="#a8c9ff" font-size="11.5" font-weight="500" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">11110001</text><text x="267" y="70" text-anchor="middle" fill="rgba(255,255,255,.55)" font-size="20" font-weight="700">:</text><rect x="282" y="40" width="76" height="46" rx="9" fill="#72e3ad" fill-opacity="0.13" stroke="#72e3ad" stroke-width="1.5"/><text x="320.0" y="70.2" text-anchor="middle" fill="#9ff0cf" font-size="20" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">1e</text><text x="320" y="26" text-anchor="middle" fill="rgba(255,255,255,.55)" font-size="11.5" font-weight="500">3バイト目</text><text x="320" y="108" text-anchor="middle" fill="#a8c9ff" font-size="11.5" font-weight="500" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">00011110</text><text x="373" y="70" text-anchor="middle" fill="rgba(255,255,255,.55)" font-size="20" font-weight="700">:</text><rect x="388" y="40" width="76" height="46" rx="9" fill="#72e3ad" fill-opacity="0.13" stroke="#72e3ad" stroke-width="1.5"/><text x="426.0" y="70.2" text-anchor="middle" fill="#9ff0cf" font-size="20" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">25</text><text x="426" y="26" text-anchor="middle" fill="rgba(255,255,255,.55)" font-size="11.5" font-weight="500">4バイト目</text><text x="426" y="108" text-anchor="middle" fill="#a8c9ff" font-size="11.5" font-weight="500" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">00100101</text><text x="479" y="70" text-anchor="middle" fill="rgba(255,255,255,.55)" font-size="20" font-weight="700">:</text><rect x="494" y="40" width="76" height="46" rx="9" fill="#72e3ad" fill-opacity="0.13" stroke="#72e3ad" stroke-width="1.5"/><text x="532.0" y="70.2" text-anchor="middle" fill="#9ff0cf" font-size="20" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">27</text><text x="532" y="26" text-anchor="middle" fill="rgba(255,255,255,.55)" font-size="11.5" font-weight="500">5バイト目</text><text x="532" y="108" text-anchor="middle" fill="#a8c9ff" font-size="11.5" font-weight="500" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">00100111</text><text x="585" y="70" text-anchor="middle" fill="rgba(255,255,255,.55)" font-size="20" font-weight="700">:</text><rect x="600" y="40" width="76" height="46" rx="9" fill="#72e3ad" fill-opacity="0.13" stroke="#72e3ad" stroke-width="1.5"/><text x="638.0" y="70.2" text-anchor="middle" fill="#9ff0cf" font-size="20" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">db</text><text x="638" y="26" text-anchor="middle" fill="rgba(255,255,255,.55)" font-size="11.5" font-weight="500">6バイト目</text><text x="638" y="108" text-anchor="middle" fill="#a8c9ff" font-size="11.5" font-weight="500" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">11011011</text><path d="M70,120 v8 H676 v-8" fill="none" stroke="#72e3ad" stroke-width="1.6"/><path d="M373.0,128 v5.6" stroke="#72e3ad" stroke-width="1.6"/><text x="373.0" y="147.2" text-anchor="middle" fill="#9ff0cf" font-size="13" font-weight="600">6 バイト ＝ 48 ビット（16進数で 12 桁）</text><rect x="64" y="34" width="88" height="88" rx="12" fill="none" stroke="#ff6fa5" stroke-width="1.8" stroke-dasharray="5 4"/><text x="108" y="192" text-anchor="middle" fill="#ffb3cf" font-size="12" font-weight="500">先頭の1バイトを図12 で詳しく見る</text></svg>
+        <figcaption><strong>図11</strong>　Parrot の内部ネットワーク側（<code>enp0s2</code>）の MAC アドレス（MAC：Media Access Control：媒体アクセス制御）。<code>:</code> で区切られた2桁の16進数が1バイトで、それが6つ。下の青い数字は、各バイトを2進数8桁にしたものです。</figcaption>
+      </figure>
+
+      <h3>手順3-2：MAC アドレスの先頭1バイトを2進数にする</h3>
+      <div class="step">
+        <span class="sh"><span class="sn">COMMAND</span>先頭の 5e を、8桁の2進数で表示する</span>
+        <div class="cmdbox" data-copy="python3 -c &quot;print(format(0x5e, '08b'))&quot;"><code class="cmd">python3 -c "print(format(0x5e, '08b'))"</code></div>
+      </div>
+      <div class="table-scroll"><table class="mini-table anat">
+        <caption>コマンドの分解（手順2 と同じ部分は省略）</caption>
+        <thead><tr><th>部分</th><th>意味</th></tr></thead>
+        <tbody>
+          <tr><td><code>0x5e</code></td><td>16進数の <code>5e</code>。Python では、前に <code>0x</code> を付けると16進数として読む（§04）。手順3-1 の MAC アドレスの先頭2文字。自分の MAC アドレスの先頭がちがう場合は、その2文字に変える（例：<code>a2</code> なら <code>0xa2</code>）。</td></tr>
+        </tbody>
+      </table></div>
+      <div class="out"><span class="lab">出力例</span>01011110</div>
+      <div class="table-scroll"><table class="mini-table anat">
+        <caption>出力の読み方</caption>
+        <colgroup><col style="width:13%"><col style="width:25%"><col></colgroup>
+        <thead><tr><th>部分</th><th>例</th><th>意味</th></tr></thead>
+        <tbody>
+          <tr><td>全体</td><td><code>01011110</code></td><td><code>0x5e</code> の2進数。<code>0101</code>＝5、<code>1110</code>＝14（e）で、4ビットずつが16進数1桁（§04 の図8）。10進数では 64＋16＋8＋4＋2＝94。</td></tr>
+          <tr><td>右端</td><td><code>0</code></td><td><strong>ビット0</strong>（I/G：Individual/Group＝個別／グループ）。0 なので<strong>1台宛て</strong>の番号（ユニキャスト）。1 ならグループ宛て（マルチキャスト）。</td></tr>
+          <tr><td>右から2つ目</td><td><code>1</code></td><td><strong>ビット1</strong>（U/L：Universal/Local＝世界共通／ローカル）。1 なので<strong>ローカルで決めた番号</strong>。仮想化ソフトが作った番号だと分かる。0 なら、メーカーが割り当てた世界で1つの番号。</td></tr>
+        </tbody>
+      </table></div>
+
+      <figure class="fig dg">
+        <svg viewBox="0 0 760 276" role="img" aria-label="MAC アドレスの先頭バイト 0x5e の、ビット0とビット1の意味"><text x="172" y="24" text-anchor="middle" fill="rgba(255,255,255,.55)" font-size="11.5" font-weight="500">ビット7</text><rect x="150" y="34" width="44" height="44" rx="6" fill="rgba(255,255,255,.04)" fill-opacity="1" stroke="rgba(255,255,255,.35)" stroke-width="1.4"/><text x="172.0" y="63.92" text-anchor="middle" fill="rgba(255,255,255,.55)" font-size="24.64" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">0</text><text x="232" y="24" text-anchor="middle" fill="rgba(255,255,255,.55)" font-size="11.5" font-weight="500">ビット6</text><rect x="210" y="34" width="44" height="44" rx="6" fill="#4d94ff" fill-opacity="0.3" stroke="#4d94ff" stroke-width="1.4"/><text x="232.0" y="63.92" text-anchor="middle" fill="#a8c9ff" font-size="24.64" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">1</text><text x="292" y="24" text-anchor="middle" fill="rgba(255,255,255,.55)" font-size="11.5" font-weight="500">ビット5</text><rect x="270" y="34" width="44" height="44" rx="6" fill="rgba(255,255,255,.04)" fill-opacity="1" stroke="rgba(255,255,255,.35)" stroke-width="1.4"/><text x="292.0" y="63.92" text-anchor="middle" fill="rgba(255,255,255,.55)" font-size="24.64" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">0</text><text x="352" y="24" text-anchor="middle" fill="rgba(255,255,255,.55)" font-size="11.5" font-weight="500">ビット4</text><rect x="330" y="34" width="44" height="44" rx="6" fill="#4d94ff" fill-opacity="0.3" stroke="#4d94ff" stroke-width="1.4"/><text x="352.0" y="63.92" text-anchor="middle" fill="#a8c9ff" font-size="24.64" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">1</text><text x="412" y="24" text-anchor="middle" fill="rgba(255,255,255,.55)" font-size="11.5" font-weight="500">ビット3</text><rect x="390" y="34" width="44" height="44" rx="6" fill="#4d94ff" fill-opacity="0.3" stroke="#4d94ff" stroke-width="1.4"/><text x="412.0" y="63.92" text-anchor="middle" fill="#a8c9ff" font-size="24.64" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">1</text><text x="472" y="24" text-anchor="middle" fill="rgba(255,255,255,.55)" font-size="11.5" font-weight="500">ビット2</text><rect x="450" y="34" width="44" height="44" rx="6" fill="#4d94ff" fill-opacity="0.3" stroke="#4d94ff" stroke-width="1.4"/><text x="472.0" y="63.92" text-anchor="middle" fill="#a8c9ff" font-size="24.64" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">1</text><text x="532" y="24" text-anchor="middle" fill="#ffb3cf" font-size="11.5" font-weight="700">ビット1</text><rect x="510" y="34" width="44" height="44" rx="6" fill="#4d94ff" fill-opacity="0.3" stroke="#4d94ff" stroke-width="1.4"/><text x="532.0" y="63.92" text-anchor="middle" fill="#a8c9ff" font-size="24.64" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">1</text><rect x="505" y="29" width="54" height="54" rx="10" fill="none" stroke="#ff6fa5" stroke-width="2"/><text x="592" y="24" text-anchor="middle" fill="#ffb3cf" font-size="11.5" font-weight="700">ビット0</text><rect x="570" y="34" width="44" height="44" rx="6" fill="rgba(255,255,255,.04)" fill-opacity="1" stroke="rgba(255,255,255,.35)" stroke-width="1.4"/><text x="592.0" y="63.92" text-anchor="middle" fill="rgba(255,255,255,.55)" font-size="24.64" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">0</text><rect x="565" y="29" width="54" height="54" rx="10" fill="none" stroke="#ff6fa5" stroke-width="2"/><text x="20" y="62" text-anchor="start" fill="#9ff0cf" font-size="18" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">0x5e</text><line x1="592" y1="83" x2="592" y2="98" stroke="#ff6fa5" stroke-width="1.6"/><line x1="532" y1="83" x2="532" y2="150" stroke="#ff6fa5" stroke-width="1.6"/><rect x="586" y="98" width="170" height="44" rx="9" fill="#ff6fa5" fill-opacity="0.13" stroke="#ff6fa5" stroke-width="1.5"/><text x="671.0" y="116.32" text-anchor="middle" fill="#ffb3cf" font-size="12" font-weight="500">ビット0＝0</text><text x="671.0" y="132.32" text-anchor="middle" fill="#ffb3cf" font-size="12" font-weight="500">1台宛て（ユニキャスト）</text><rect x="300" y="150" width="456" height="58" rx="9" fill="#ff6fa5" fill-opacity="0.13" stroke="#ff6fa5" stroke-width="1.5"/><text x="528.0" y="175.0" text-anchor="middle" fill="#ffb3cf" font-size="12.5" font-weight="500">ビット1＝1：ローカルで管理された番号</text><text x="528.0" y="192.0" text-anchor="middle" fill="#ffb3cf" font-size="12.5" font-weight="500">（メーカーではなく、仮想化ソフトなどが作った番号）</text><text x="20" y="240" text-anchor="start" fill="rgba(255,255,255,.72)" font-size="12.5" font-weight="500">ビットの番号は右端（いちばん小さい桁 2⁰）を 0 として数える</text><text x="20" y="262" text-anchor="start" fill="rgba(255,255,255,.72)" font-size="12.5" font-weight="500">Kali の eth1（0x12＝00010010）、Parrot の enp0s1（0x52＝01010010）も、ビット1 が 1</text></svg>
+        <figcaption><strong>図12</strong>　MAC アドレスの先頭1バイトの下の2ビットには、決まった意味があります。<strong>ビット0</strong>（I/G：Individual/Group＝個別／グループ）は 0 なら1台宛て、1 ならグループ宛て。<strong>ビット1</strong>（U/L：Universal/Local＝世界共通／ローカル）は 0 ならメーカーが割り当てた世界で1つの番号、1 なら<strong>ローカルで決めた番号</strong>です。この講座の仮想マシンの NIC は、どれもビット1 が 1 で、仮想化ソフトが作った番号だと分かります（1-4 §04 で MAC アドレスの形を見るときの答え合わせ）。</figcaption>
+      </figure>
+
+      <div class="road c"><div class="rh"><span><span class="rk">C2</span>MAC アドレスはソフトで作れて、書き換えられる。だから本人確認には使えない</span><span class="tag">言えること ― 説明できる</span></div><div class="rb"><p class="use">根拠：D4・P4（先頭バイトのビット1）</p><p class="st">本物の NIC の MAC アドレスは、前半3バイトが <strong>OUI</strong>（Organizationally Unique Identifier：組織固有識別子＝メーカーごとに割り当てられた番号）、後半3バイトがメーカーの中での通し番号で、ビット1 は 0 です。仮想マシンの NIC や、スマートフォンの「プライベートアドレス」機能（Wi-Fi ごとに MAC アドレスを変えて、追跡されにくくする）では、ソフトが番号を作るので、ビット1 が 1 になります。MAC アドレスはソフトで書き換えられるので、<strong>MAC アドレスだけで機器を本人確認することはできません</strong>。この弱点は 8章（ARP スプーフィング）で関わってきます。</p></div></div>
+
+      <h3>手順3-3：IPv4 アドレスは4バイト</h3>
+      <div class="step">
+        <span class="sh"><span class="sn">COMMAND</span>192.168.128.3 の4つの数を、16進数2桁ずつで並べる</span>
+        <div class="cmdbox" data-copy="printf '%02x' 192 168 128 3; echo"><code class="cmd">printf '%02x' 192 168 128 3; echo</code></div>
+      </div>
+      <div class="table-scroll"><table class="mini-table anat">
+        <caption>コマンドの分解</caption>
+        <thead><tr><th>部分</th><th>意味</th></tr></thead>
+        <tbody>
+          <tr><td><code>printf '%02x'</code></td><td>16進数2桁（0 埋め）で表示する（手順2）。ここでは <code>\n</code> を付けないので、改行せずに続けて表示する。</td></tr>
+          <tr><td><code>192 168 128 3</code></td><td>Parrot の IPv4 アドレス <code>192.168.128.3</code> の4つの数を、<code>.</code> の代わりに空白で区切って並べたもの。<code>printf</code> は、書式を<strong>数の数だけくり返して</strong>使うので、4つが続けて表示される。</td></tr>
+          <tr><td><code>;</code></td><td>区切り。左のコマンドが終わったら、続けて右のコマンドを実行する。</td></tr>
+          <tr><td><code>echo</code></td><td>何も書かない <code>echo</code> は、改行だけを表示する。結果が次のプロンプトとくっつかないようにするため。</td></tr>
+        </tbody>
+      </table></div>
+      <div class="out"><span class="lab">出力例</span>c0a88003</div>
+      <div class="table-scroll"><table class="mini-table anat">
+        <caption>出力の読み方（2桁ずつ）</caption>
+        <colgroup><col style="width:14%"><col style="width:14%"><col></colgroup>
+        <thead><tr><th>16進数</th><th>10進数</th><th>計算</th></tr></thead>
+        <tbody>
+          <tr><td><code>c0</code></td><td>192</td><td>12×16＋0＝192（c＝12）。2進数では <code>11000000</code>（§02 の図5）。</td></tr>
+          <tr><td><code>a8</code></td><td>168</td><td>10×16＋8＝168（a＝10）。</td></tr>
+          <tr><td><code>80</code></td><td>128</td><td>8×16＋0＝128。2進数では <code>10000000</code>（いちばん左のビットだけが 1）。</td></tr>
+          <tr><td><code>03</code></td><td>3</td><td>0×16＋3＝3。2桁にそろえるために 0 が付いている。</td></tr>
+        </tbody>
+      </table></div>
+      <p>全部で16進数8桁＝<strong>4バイト＝32ビット</strong>です。パケットの IP ヘッダ（1-4 §05 で出てくる 20 バイトの部分）の中には、送信元と宛先の IP アドレスが、この4バイトの形で入っています。</p>
+
+      <figure class="fig dg">
+        <svg viewBox="0 0 760 236" role="img" aria-label="IPv4 アドレス 192.168.128.3 は4バイトで、16進数では c0a88003"><text x="20" y="46" text-anchor="start" fill="#ffd3a3" font-size="12.5" font-weight="700">10進数</text><text x="20" y="96" text-anchor="start" fill="#cbbcff" font-size="12.5" font-weight="700">16進数</text><text x="20" y="146" text-anchor="start" fill="#a8c9ff" font-size="12.5" font-weight="700">2進数</text><rect x="110" y="22" width="120" height="36" rx="9" fill="#ffb46b" fill-opacity="0.13" stroke="#ffb46b" stroke-width="1.5"/><text x="170.0" y="46.12" text-anchor="middle" fill="#ffd3a3" font-size="17" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">192</text><text x="250" y="47" text-anchor="middle" fill="rgba(255,255,255,.55)" font-size="22" font-weight="700">.</text><rect x="130" y="74" width="80" height="34" rx="9" fill="#a48bff" fill-opacity="0.13" stroke="#a48bff" stroke-width="1.5"/><text x="170.0" y="97.12" text-anchor="middle" fill="#cbbcff" font-size="17" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">c0</text><text x="170" y="146" text-anchor="middle" fill="#a8c9ff" font-size="14" font-weight="600" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">11000000</text><line x1="170" y1="60" x2="170" y2="72" stroke="rgba(255,255,255,.55)" stroke-width="1.2" marker-end="url(#m-gray)"/><rect x="270" y="22" width="120" height="36" rx="9" fill="#ffb46b" fill-opacity="0.13" stroke="#ffb46b" stroke-width="1.5"/><text x="330.0" y="46.12" text-anchor="middle" fill="#ffd3a3" font-size="17" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">168</text><text x="410" y="47" text-anchor="middle" fill="rgba(255,255,255,.55)" font-size="22" font-weight="700">.</text><rect x="290" y="74" width="80" height="34" rx="9" fill="#a48bff" fill-opacity="0.13" stroke="#a48bff" stroke-width="1.5"/><text x="330.0" y="97.12" text-anchor="middle" fill="#cbbcff" font-size="17" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">a8</text><text x="330" y="146" text-anchor="middle" fill="#a8c9ff" font-size="14" font-weight="600" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">10101000</text><line x1="330" y1="60" x2="330" y2="72" stroke="rgba(255,255,255,.55)" stroke-width="1.2" marker-end="url(#m-gray)"/><rect x="430" y="22" width="120" height="36" rx="9" fill="#ffb46b" fill-opacity="0.13" stroke="#ffb46b" stroke-width="1.5"/><text x="490.0" y="46.12" text-anchor="middle" fill="#ffd3a3" font-size="17" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">128</text><text x="570" y="47" text-anchor="middle" fill="rgba(255,255,255,.55)" font-size="22" font-weight="700">.</text><rect x="450" y="74" width="80" height="34" rx="9" fill="#a48bff" fill-opacity="0.13" stroke="#a48bff" stroke-width="1.5"/><text x="490.0" y="97.12" text-anchor="middle" fill="#cbbcff" font-size="17" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">80</text><text x="490" y="146" text-anchor="middle" fill="#a8c9ff" font-size="14" font-weight="600" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">10000000</text><line x1="490" y1="60" x2="490" y2="72" stroke="rgba(255,255,255,.55)" stroke-width="1.2" marker-end="url(#m-gray)"/><rect x="590" y="22" width="120" height="36" rx="9" fill="#ffb46b" fill-opacity="0.13" stroke="#ffb46b" stroke-width="1.5"/><text x="650.0" y="46.12" text-anchor="middle" fill="#ffd3a3" font-size="17" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">3</text><rect x="610" y="74" width="80" height="34" rx="9" fill="#a48bff" fill-opacity="0.13" stroke="#a48bff" stroke-width="1.5"/><text x="650.0" y="97.12" text-anchor="middle" fill="#cbbcff" font-size="17" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">03</text><text x="650" y="146" text-anchor="middle" fill="#a8c9ff" font-size="14" font-weight="600" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">00000011</text><line x1="650" y1="60" x2="650" y2="72" stroke="rgba(255,255,255,.55)" stroke-width="1.2" marker-end="url(#m-gray)"/><path d="M110,160 v8 H710 v-8" fill="none" stroke="#ffb46b" stroke-width="1.6"/><path d="M410.0,168 v5.6" stroke="#ffb46b" stroke-width="1.6"/><text x="410.0" y="187.2" text-anchor="middle" fill="#ffd3a3" font-size="13" font-weight="600">4 バイト ＝ 32 ビット ＝ 16進数 8 桁（c0a88003）</text><text x="380" y="222" text-anchor="middle" fill="#fff" font-size="13" font-weight="600">IPv4 の数字が 0〜255 なのは、1つが 1 バイトだから</text></svg>
+        <figcaption><strong>図13</strong>　Parrot の IPv4 アドレス（IPv4：Internet Protocol version 4：インターネット・プロトコル第4版）<code>192.168.128.3</code>。<code>.</code> で区切られた数字の1つ1つが1バイトです。<code>printf '%02x'</code> で4つを16進数2桁ずつにして並べると <code>c0a88003</code>（8桁＝4バイト）。パケットの中には、この4バイトがそのまま入っています（1-4 §05 で出てくる IP ヘッダ 20 バイトの一部）。</figcaption>
+      </figure>
+
+      <div class="road c"><div class="rh"><span><span class="rk">C3</span>IPv4 アドレスは、世界中で約43億個しかない</span><span class="tag">言えること ― 説明できる</span></div><div class="rb"><p class="use">根拠：D1・P4</p><p class="st">IPv4 は 32 ビットなので、D1 から 2³²＝4,294,967,296 通り。世界中の機器には足りないので、家庭や会社の中ではプライベートアドレスを使い、出口で NAT（Network Address Translation：ネットワークアドレス変換）が書き換える（1-1 で出てくる）。根本の解決として作られたのが、128 ビットの別の規格 IPv6。</p></div></div>
+
+      <h3>手順3-4：ポート番号は2バイト</h3>
+      <div class="step">
+        <span class="sh"><span class="sn">COMMAND</span>2 の 16 乗を計算する</span>
+        <div class="cmdbox" data-copy="echo $((2**16))"><code class="cmd">echo $((2**16))</code></div>
+      </div>
+      <div class="table-scroll"><table class="mini-table anat">
+        <caption>コマンドの分解（手順1 と同じ部分は省略）</caption>
+        <thead><tr><th>部分</th><th>意味</th></tr></thead>
+        <tbody>
+          <tr><td><code>2**16</code></td><td><code>**</code> は<strong>累乗</strong>（何回掛けるか）。2 を 16 回掛ける＝2¹⁶。ポート番号が 16 ビット（2バイト）なので 16。</td></tr>
+        </tbody>
+      </table></div>
+      <div class="out"><span class="lab">出力例</span>65536</div>
+      <div class="table-scroll"><table class="mini-table anat">
+        <caption>出力の読み方</caption>
+        <colgroup><col style="width:13%"><col style="width:25%"><col></colgroup>
+        <thead><tr><th>部分</th><th>例</th><th>意味</th></tr></thead>
+        <tbody>
+          <tr><td>全体</td><td><code>65536</code></td><td>16 ビットで表せる通り数。0 から数えるので、ポート番号は <strong>0〜65535</strong>。手順1 の <code>16#ffff</code>＝65535 が最大値。</td></tr>
+        </tbody>
+      </table></div>
+
+      <figure class="fig dg">
+        <svg viewBox="0 0 760 220" role="img" aria-label="ポート番号0から65535の範囲と、区分・実例の位置"><text x="20" y="30" text-anchor="start" fill="#fff" font-size="13.5" font-weight="600">ポート番号は 2 バイト（16 ビット）：2¹⁶ ＝ 65,536 通り → 0〜65,535</text><rect x="40.0" y="56" width="10.614785992217897" height="26" fill="#72e3ad" fill-opacity=".28" stroke="#72e3ad" stroke-width="1.2"/><rect x="50.62516212710765" y="56" width="499.3722438391698" height="26" fill="#4d94ff" fill-opacity=".28" stroke="#4d94ff" stroke-width="1.2"/><rect x="550.0077821011673" y="56" width="169.99221789883268" height="26" fill="#a48bff" fill-opacity=".28" stroke="#a48bff" stroke-width="1.2"/><text x="42.0" y="108" text-anchor="start" fill="#9ff0cf" font-size="11.5" font-weight="600">0〜1023</text><text x="42.0" y="124" text-anchor="start" fill="rgba(255,255,255,.55)" font-size="11" font-weight="500">よく知られた</text><text x="300.31128404669255" y="108" text-anchor="middle" fill="#a8c9ff" font-size="11.5" font-weight="600">1024〜49151　登録済み</text><text x="635.0038910505837" y="108" text-anchor="middle" fill="#cbbcff" font-size="11.5" font-weight="600">49152〜65535</text><text x="635.0038910505837" y="124" text-anchor="middle" fill="rgba(255,255,255,.55)" font-size="11" font-weight="500">動的・私用</text><path d="M40.22827496757458,50 v38" stroke="#fff" stroke-width="1.4"/><path d="M123.83916990920882,50 v38" stroke="#fff" stroke-width="1.4"/><path d="M542.7029831387808,50 v38" stroke="#fff" stroke-width="1.4"/><path d="M720.0,50 v38" stroke="#fff" stroke-width="1.4"/><line x1="40.22827496757458" y1="88" x2="40.22827496757458" y2="138" stroke="rgba(255,255,255,.55)" stroke-width="1"/><text x="38.22827496757458" y="150" text-anchor="start" fill="rgba(255,255,255,.72)" font-size="11.5" font-weight="500">22（SSH）・80（HTTP）</text><line x1="123.83916990920882" y1="88" x2="123.83916990920882" y2="160" stroke="rgba(255,255,255,.55)" stroke-width="1"/><text x="121.83916990920882" y="172" text-anchor="start" fill="rgba(255,255,255,.72)" font-size="11.5" font-weight="500">8080＝0x1f90（1-2 の Web サーバー）</text><line x1="542.7029831387808" y1="88" x2="542.7029831387808" y2="138" stroke="rgba(255,255,255,.55)" stroke-width="1"/><text x="542.7029831387808" y="150" text-anchor="middle" fill="rgba(255,255,255,.72)" font-size="11.5" font-weight="500">48448（1-4 の Kali 側）</text><line x1="720.0" y1="88" x2="720.0" y2="160" stroke="rgba(255,255,255,.55)" stroke-width="1"/><text x="720.0" y="172" text-anchor="end" fill="rgba(255,255,255,.72)" font-size="11.5" font-weight="500">65535＝0xffff</text><text x="380" y="206" text-anchor="middle" fill="rgba(255,255,255,.55)" font-size="12" font-weight="500">Linux が自分側に自動で選ぶ番号（一時ポート）は、既定で 32768〜60999</text></svg>
+        <figcaption><strong>図14</strong>　ポート番号の範囲を横一列に並べた図。区分は IANA（Internet Assigned Numbers Authority：インターネット番号割当機関）の決まりです。22 は SSH（Secure Shell：セキュア・シェル。遠隔操作の通信）、80 は HTTP（Hypertext Transfer Protocol：ハイパーテキスト転送プロトコル。Web の通信）の番号。1-2 で使う 8080 は16進数で <code>0x1f90</code>、最大の 65535 は <code>0xffff</code>（2バイトすべて 1）。1-4 で Kali 側に選ばれる 48448 も、Linux が自動で選ぶ範囲の中にあります。</figcaption>
+      </figure>
+
+      <div class="road d"><div class="rh"><span><span class="rk">D5</span>MAC は6バイト（16進数12桁）、IPv4 は4バイト（各数字 0〜255）、ポート番号は 0〜65535</span><span class="tag">導出 ― 自分で導ける</span></div><div class="rb"><p class="use">使う：P4・D1・D3・D4</p><p class="st"><strong>導き方</strong>：MAC は 48÷8＝6バイトで、D4 から16進数12桁。IPv4 は 32÷8＝4バイトで、数字1つが1バイトなので D3 から 0〜255。ポート番号は 16 ビットで、D1 から 2¹⁶＝65,536 通り、0〜65535。</p><p class="chg">別の規格では：IPv6 は 128 ビット＝16バイト（問12）。</p></div></div>
+
+      <div class="road c"><div class="rh"><span><span class="rk">C4</span>IPv4 アドレスの数字は 255 まで、ポート番号は 65535 まで</span><span class="tag">言えること ― 説明できる</span></div><div class="rb"><p class="use">根拠：D5</p><p class="st">入れ物の大きさが規格で決まっているから。<code>192.168.300.1</code> のような 255 を超える数字や、65535 を超えるポート番号は存在しない。見かけたら、設定のまちがいか、わざと作られたおかしな値。</p></div></div>
+
+      <figure class="fig">
+        <img src="../image/cyber/0-1/fig2_parrot_addresses.jpg?v=r189" width="1400" height="680" loading="lazy" alt="Parrot のデスクトップ。端末に ip -br link show enp0s2 の結果と、MAC アドレスの先頭1バイトの2進数、IPv4 アドレスの16進数、2の16乗の計算結果が表示されている">
+        <figcaption>操作した順に番号を付けています。<br>
+          <strong>赤枠①</strong>：手順3-1。<code>enp0s2</code> の MAC アドレス <code>5e:f1:1e:25:27:db</code>（6バイト）。<br>
+          <strong>赤枠②</strong>：手順3-2。先頭1バイト <code>5e</code> の2進数 <code>01011110</code>。右から2つ目（ビット1）が 1。<br>
+          <strong>赤枠③</strong>：手順3-3。<code>192.168.128.3</code> の16進数 <code>c0a88003</code>（4バイト）。<br>
+          <strong>赤枠④</strong>：手順3-4。2¹⁶＝65536（ポート番号は 0〜65535）。</figcaption>
+      </figure>
+    
+      <h3>応用問題（§06・全4問）</h3>
+
+      <div class="drill"><p><span class="qn">問9</span><span class="qt ap">応用：P4 → D4 → C2</span>Kali の内部ネットワーク側の MAC アドレスは <code>12:ae:d8:64:04:33</code> である（1-4 §04 で出てくる）。<br>(a) 先頭バイト <code>12</code> を8桁の2進数にし、ビット0・ビット1 がそれぞれ何を表すか答えよ。<br>(b) ARP（Address Resolution Protocol：アドレス解決プロトコル）の「だれ？」の問い合わせは、宛先 MAC アドレス <code>ff:ff:ff:ff:ff:ff</code> で送られる（1-1 §04 で出てくる）。先頭バイトのビット0 は何か。それは何を意味するか。</p>
+      <div class="attempt" style="margin:10px 0 4px"><span class="lab">自分の答えを出してから</span>
+      <div class="controls"><button class="ctl-btn" data-sol>解答を見る</button></div>
+      <div class="sol"><p class="qu">使う：P4（ビット0・ビット1 の意味）・D4</p><p>(a) <code>0x12</code> ＝ 1×16＋2 ＝ 18 ＝ 16＋2 ＝ 2⁴＋2¹ → <strong><code>00010010</code></strong>。<br>ビット0（右端）＝ <strong>0</strong>：1台宛て（ユニキャスト）。ビット1（右から2つ目）＝ <strong>1</strong>：ローカルで決めた番号。Parrot と同じく、仮想化ソフトが作った番号です。</p><p>(b) <code>ff</code> ＝ <code>11111111</code> なので、ビット0 は <strong>1</strong>＝<strong>グループ宛て</strong>。<code>ff:ff:ff:ff:ff:ff</code>（48ビットすべて 1）は、グループ宛ての中でも「同じネットワークの全員宛て」を表す特別な番号（ブロードキャストアドレス）です。だから ARP の「だれ？」は全員に届きます。</p></div></div></div>
+
+      <div class="drill"><p><span class="qn">問10</span><span class="qt ap">応用：D5</span>Parrot の NAT 側（インターネット側）の出口は Mac の <code>192.168.64.1</code> である（1-3 で出てくる）。このアドレスを16進数8桁で書け。また、何バイトか答えよ。</p>
+      <div class="attempt" style="margin:10px 0 4px"><span class="lab">自分の答えを出してから</span>
+      <div class="controls"><button class="ctl-btn" data-sol>解答を見る</button></div>
+      <div class="sol"><p class="qu">使う：D3・D4</p><p>4つの数を、それぞれ16進数2桁にします。</p><p>192 ＝ 12×16＋0 → <code>c0</code>、168 ＝ 10×16＋8 → <code>a8</code>、64 ＝ 4×16＋0 → <code>40</code>、1 → <code>01</code></p><p>答え：<strong><code>c0a84001</code></strong>（16進数8桁＝<strong>4バイト</strong>）。</p><p style="font-size:13.5px;color:var(--ink-faint)">先頭の <code>c0a8</code>（192.168）は、§06 の <code>192.168.128.3</code> と同じです。3番目の数（64 と 128）だけがちがうことが、16進数でも <code>40</code> と <code>80</code> のちがいとして見えます。</p></div></div></div>
+
+      <div class="drill"><p><span class="qn">問11</span><span class="qt ap">応用：P4 → D1 → C4・C5</span>(a) ポート番号 70000 が使えないのはなぜか、ビットの数を使って説明せよ。(b) 70000 を表すには最低何ビット必要か。</p>
+      <div class="attempt" style="margin:10px 0 4px"><span class="lab">自分の答えを出してから</span>
+      <div class="controls"><button class="ctl-btn" data-sol>解答を見る</button></div>
+      <div class="sol"><p class="qu">使う：P4・D1</p><p>(a) ポート番号は 2バイト＝16ビットの入れ物で、入る数は 0〜65,535（2¹⁶−1）まで。70,000 はそれより大きいので、<strong>入れ物に入りきらない</strong>から使えません。</p><p>(b) 2¹⁶ ＝ 65,536 では足りず、2¹⁷ ＝ 131,072 なら足りるので、<strong>17 ビット</strong>。</p><p style="font-size:13.5px;color:var(--ink-faint)">「決まった大きさの入れ物に、入りきらない数やデータを入れようとする」とどうなるかは、セキュリティでとても大事なテーマです。12章のバッファオーバーフローで、メモリの入れ物について同じ問題を扱います。</p></div></div></div>
+
+      <div class="drill"><p><span class="qn">問12</span><span class="qt ap">応用：P4 → D5（初めて見る規格）</span>IPv6 アドレスは 128 ビットである。(a) 何バイトか。(b) 16進数で何桁か。(c) IPv6 アドレスは、全部で 2 の何乗通りあるか。IPv4 の何倍か、2 の何乗で答えよ。</p>
+      <div class="attempt" style="margin:10px 0 4px"><span class="lab">自分の答えを出してから</span>
+      <div class="controls"><button class="ctl-btn" data-sol>解答を見る</button></div>
+      <div class="sol"><p class="qu">使う：P3・P4・D1・D4</p><p>この節では IPv6 を扱っていませんが、原理と導出がわかっていれば解けます。</p><p>(a) 1バイト＝8ビット（P3）なので、128÷8 ＝ <strong>16 バイト</strong>。</p><p>(b) 1バイト＝16進数2桁（D4）なので、16×2 ＝ <strong>32 桁</strong>（4ビット＝1桁と考えても 128÷4＝32）。</p><p>(c) D1 から <strong>2¹²⁸ 通り</strong>。IPv4 は 2³² 通りなので、2¹²⁸÷2³² ＝ <strong>2⁹⁶ 倍</strong>（同じ数を掛けた回数の引き算：128−32＝96）。</p><p style="font-size:13.5px;color:var(--ink-faint)">実際の IPv6 アドレスは、16進数32桁を4桁ずつ <code>:</code> で区切って書きます（例：<code>2001:0db8:0000:0000:0000:0000:0000:0001</code>。この <code>2001:db8::</code> で始まる範囲は、説明用に決められた番号）。1-3 で出てくる <code>fe80::</code> で始まるアドレスも IPv6 アドレスです。</p></div></div></div>
+    </section>
+
+    <!-- §07 -->
+    <section id="s7">
+      <div class="sec-head"><span class="idx">§07</span><h2>バイトと16進数が出てくる場面</h2></div>
+
+      <p>この先の講座では、バイトと16進数が何度も出てきます。どれも「何バイトか」「16進数で何桁か」が読めれば、表示の意味がつかめます。</p>
+
+      <figure class="fig dg">
+        <svg viewBox="0 0 760 204" role="img" aria-label="この講座でバイトと16進数が出てくる場面"><rect x="12" y="12" width="362" height="84" rx="12" fill="#4d94ff" fill-opacity=".08" stroke="#4d94ff" stroke-width="1.4"/><rect x="24" y="24" width="84" height="24" rx="9" fill="#4d94ff" fill-opacity="0.13" stroke="#4d94ff" stroke-width="1.5"/><text x="66.0" y="40.14" text-anchor="middle" fill="#a8c9ff" font-size="11.5" font-weight="700">1-4 §05</text><text x="120" y="42" text-anchor="start" fill="#fff" font-size="14" font-weight="700">パケットの大きさ</text><text x="28" y="76" text-anchor="start" fill="#a8c9ff" font-size="12.5" font-weight="500">148 バイト ＝ 14＋20＋32＋82</text><rect x="386" y="12" width="362" height="84" rx="12" fill="#a48bff" fill-opacity=".08" stroke="#a48bff" stroke-width="1.4"/><rect x="398" y="24" width="84" height="24" rx="9" fill="#a48bff" fill-opacity="0.13" stroke="#a48bff" stroke-width="1.5"/><text x="440.0" y="40.14" text-anchor="middle" fill="#cbbcff" font-size="11.5" font-weight="700">0-2・6章</text><text x="494" y="42" text-anchor="start" fill="#fff" font-size="14" font-weight="700">パケットやファイルの中身</text><text x="402" y="76" text-anchor="start" fill="#cbbcff" font-size="12.5" font-weight="500">16進数2桁ずつ並べて表示する</text><rect x="12" y="108" width="362" height="84" rx="12" fill="#72e3ad" fill-opacity=".08" stroke="#72e3ad" stroke-width="1.4"/><rect x="24" y="120" width="84" height="24" rx="9" fill="#72e3ad" fill-opacity="0.13" stroke="#72e3ad" stroke-width="1.5"/><text x="66.0" y="136.14" text-anchor="middle" fill="#9ff0cf" font-size="11.5" font-weight="700">14章</text><text x="120" y="138" text-anchor="start" fill="#fff" font-size="14" font-weight="700">ファイルの指紋（ハッシュ値）</text><text x="28" y="172" text-anchor="start" fill="#9ff0cf" font-size="12.5" font-weight="500">SHA-256 は 32 バイト ＝ 16進数 64 桁</text><rect x="386" y="108" width="362" height="84" rx="12" fill="#ff6fa5" fill-opacity=".08" stroke="#ff6fa5" stroke-width="1.4"/><rect x="398" y="120" width="84" height="24" rx="9" fill="#ff6fa5" fill-opacity="0.13" stroke="#ff6fa5" stroke-width="1.5"/><text x="440.0" y="136.14" text-anchor="middle" fill="#ffb3cf" font-size="11.5" font-weight="700">12章</text><text x="494" y="138" text-anchor="start" fill="#fff" font-size="14" font-weight="700">メモリの番地・入れ物の大きさ</text><text x="402" y="172" text-anchor="start" fill="#ffb3cf" font-size="12.5" font-weight="500">0x7ffd… のような16進数で表す</text></svg>
+        <figcaption><strong>図15</strong>　この先の講座で、バイトと16進数が出てくる場面の例。どれも「何バイトか」「16進数で何桁か」が読めれば、表示の意味がつかめます。SHA-256（Secure Hash Algorithm 256-bit：セキュア・ハッシュ・アルゴリズム 256 ビット）の 256 ビットは 32 バイト（256÷8）です。</figcaption>
+      </figure>
+
+      <ul>
+        <li><strong>パケットの大きさと中身</strong>：1-4 では、148 バイトのパケットが Ethernet 14＋IP 20＋TCP 32＋HTTP 82 バイトに分かれていることを確かめます。次の 0-2 では、ファイルやパケットの中身を16進数2桁ずつ並べて表示する方法（16進ダンプ）を学びます。</li>
+        <li><strong>ハッシュ値</strong>：ファイルの「指紋」にあたる値。SHA-256 は 256 ビット＝32 バイトで、16進数 64 桁で表示されます。14章のマルウェア解析で、ファイルが既知のマルウェアかを調べるのに使います。</li>
+        <li><strong>メモリの番地</strong>：プログラムがメモリのどこを使っているかは、<code>0x7ffd…</code> のような16進数で表されます（0-4、12章）。</li>
+        <li><strong>大きさの限界</strong>：「1バイトには 255 までしか入らない」「決まった大きさの入れ物に、それより大きいデータを書くと何が起きるか」という感覚は、12章のバッファオーバーフローの土台になります。</li>
+      </ul>
+      <div class="road c"><div class="rh"><span><span class="rk">C5</span>決まった大きさに入りきらない数やデータは、セキュリティの弱点になりうる</span><span class="tag">言えること ― 説明できる</span></div><div class="rb"><p class="use">根拠：D3・D5</p><p class="st">入れ物の大きさを確かめずに書きこむと、となりの領域をこわす。12章のバッファオーバーフローは、この問題がメモリで起きたもの（問11）。</p></div></div>
+
+    </section>
+
+    <!-- §08 -->
+    <section id="s8">
+      <div class="sec-head"><span class="idx">§08</span><h2>まとめとチェック</h2></div>
+
+      <h3>この記事の道筋（ふり返り）</h3>
+      <p>本文で出てきた青・緑・橙の枠を、1枚の図にまとめました。左の原理だけを覚えておけば、真ん中の導出を自分で組み立て直せて、右の言えることを説明できます。</p>
+
+      <figure class="fig dg">
+        <svg viewBox="0 0 760 386" role="img" aria-label="この記事の道筋：原理P1〜P4から導出D1〜D5を作り、言えることC1〜C5を説明する"><text x="110.0" y="24" text-anchor="middle" fill="#a8c9ff" font-size="14" font-weight="700">原理（覚える）</text><text x="380.0" y="24" text-anchor="middle" fill="#9ff0cf" font-size="14" font-weight="700">導出（再現できる）</text><text x="650.0" y="24" text-anchor="middle" fill="#ffd3a3" font-size="14" font-weight="700">言えること（説明できる）</text><path d="M206,85.5 L278,78.0" stroke="rgba(255,255,255,.38)" stroke-width="1.2" fill="none" marker-end="url(#m-gray)"/><path d="M206,160.5 L278,138.0" stroke="rgba(255,255,255,.38)" stroke-width="1.2" fill="none" marker-end="url(#m-gray)"/><path d="M206,160.5 L278,258.0" stroke="rgba(255,255,255,.38)" stroke-width="1.2" fill="none" marker-end="url(#m-gray)"/><path d="M206,235.5 L278,198.0" stroke="rgba(255,255,255,.38)" stroke-width="1.2" fill="none" marker-end="url(#m-gray)"/><path d="M206,235.5 L278,258.0" stroke="rgba(255,255,255,.38)" stroke-width="1.2" fill="none" marker-end="url(#m-gray)"/><path d="M206,310.5 L278,318.0" stroke="rgba(255,255,255,.38)" stroke-width="1.2" fill="none" marker-end="url(#m-gray)"/><path d="M206,310.5 L548,138.0" stroke="rgba(255,255,255,.38)" stroke-width="1.2" fill="none" marker-end="url(#m-gray)"/><path d="M206,310.5 L548,198.0" stroke="rgba(255,255,255,.38)" stroke-width="1.2" fill="none" marker-end="url(#m-gray)"/><path d="M206,235.5 L548,78.0" stroke="rgba(255,255,255,.38)" stroke-width="1.2" fill="none" marker-end="url(#m-gray)"/><path d="M476,318.0 L548,258.0" stroke="rgba(255,255,255,.38)" stroke-width="1.2" fill="none" marker-end="url(#m-gray)"/><path d="M476,258.0 L548,138.0" stroke="rgba(255,255,255,.38)" stroke-width="1.2" fill="none" marker-end="url(#m-gray)"/><path d="M476,78.0 L548,198.0" stroke="rgba(255,255,255,.38)" stroke-width="1.2" fill="none" marker-end="url(#m-gray)"/><path d="M476,198.0 L548,318.0" stroke="rgba(255,255,255,.38)" stroke-width="1.2" fill="none" marker-end="url(#m-gray)"/><path d="M476,318.0 L548,318.0" stroke="rgba(255,255,255,.38)" stroke-width="1.2" fill="none" marker-end="url(#m-gray)"/><path d="M284,86.0 C250,92.0 250,184.0 280,192.0" stroke="#72e3ad" stroke-opacity=".75" stroke-width="1.3" stroke-dasharray="4 3" fill="none" marker-end="url(#m-green)"/><path d="M284,86.0 C250,92.0 250,244.0 280,252.0" stroke="#72e3ad" stroke-opacity=".75" stroke-width="1.3" stroke-dasharray="4 3" fill="none" marker-end="url(#m-green)"/><path d="M284,206.0 C250,212.0 250,304.0 280,312.0" stroke="#72e3ad" stroke-opacity=".75" stroke-width="1.3" stroke-dasharray="4 3" fill="none" marker-end="url(#m-green)"/><path d="M284,266.0 C250,272.0 250,304.0 280,312.0" stroke="#72e3ad" stroke-opacity=".75" stroke-width="1.3" stroke-dasharray="4 3" fill="none" marker-end="url(#m-green)"/><rect x="14" y="65.5" width="192" height="40" rx="9" fill="#0c1222"/><rect x="14" y="65.5" width="192" height="40" rx="9" fill="#4d94ff" fill-opacity=".12" stroke="#4d94ff" stroke-width="1.4"/><text x="26" y="90.5" text-anchor="start" fill="#a8c9ff" font-size="13" font-weight="700">P1</text><text x="58" y="90.5" text-anchor="start" fill="#fff" font-size="12.5" font-weight="500">2つの状態（ビット）</text><rect x="14" y="140.5" width="192" height="40" rx="9" fill="#0c1222"/><rect x="14" y="140.5" width="192" height="40" rx="9" fill="#4d94ff" fill-opacity=".12" stroke="#4d94ff" stroke-width="1.4"/><text x="26" y="165.5" text-anchor="start" fill="#a8c9ff" font-size="13" font-weight="700">P2</text><text x="58" y="165.5" text-anchor="start" fill="#fff" font-size="12.5" font-weight="500">位取り記数法</text><rect x="14" y="215.5" width="192" height="40" rx="9" fill="#0c1222"/><rect x="14" y="215.5" width="192" height="40" rx="9" fill="#4d94ff" fill-opacity=".12" stroke="#4d94ff" stroke-width="1.4"/><text x="26" y="240.5" text-anchor="start" fill="#a8c9ff" font-size="13" font-weight="700">P3</text><text x="58" y="240.5" text-anchor="start" fill="#fff" font-size="12.5" font-weight="500">1バイト＝8ビット</text><rect x="14" y="290.5" width="192" height="40" rx="9" fill="#0c1222"/><rect x="14" y="290.5" width="192" height="40" rx="9" fill="#4d94ff" fill-opacity=".12" stroke="#4d94ff" stroke-width="1.4"/><text x="26" y="315.5" text-anchor="start" fill="#a8c9ff" font-size="13" font-weight="700">P4</text><text x="58" y="315.5" text-anchor="start" fill="#fff" font-size="12.5" font-weight="500">アドレスの大きさは規格</text><rect x="284" y="58.0" width="192" height="40" rx="9" fill="#0c1222"/><rect x="284" y="58.0" width="192" height="40" rx="9" fill="#72e3ad" fill-opacity=".12" stroke="#72e3ad" stroke-width="1.4"/><text x="296" y="83.0" text-anchor="start" fill="#9ff0cf" font-size="13" font-weight="700">D1</text><text x="328" y="83.0" text-anchor="start" fill="#fff" font-size="12.5" font-weight="500">n ビット → 2ⁿ 通り</text><rect x="284" y="118.0" width="192" height="40" rx="9" fill="#0c1222"/><rect x="284" y="118.0" width="192" height="40" rx="9" fill="#72e3ad" fill-opacity=".12" stroke="#72e3ad" stroke-width="1.4"/><text x="296" y="143.0" text-anchor="start" fill="#9ff0cf" font-size="13" font-weight="700">D2</text><text x="328" y="143.0" text-anchor="start" fill="#fff" font-size="12.5" font-weight="500">2進数 ⇄ 10進数</text><rect x="284" y="178.0" width="192" height="40" rx="9" fill="#0c1222"/><rect x="284" y="178.0" width="192" height="40" rx="9" fill="#72e3ad" fill-opacity=".12" stroke="#72e3ad" stroke-width="1.4"/><text x="296" y="203.0" text-anchor="start" fill="#9ff0cf" font-size="13" font-weight="700">D3</text><text x="328" y="203.0" text-anchor="start" fill="#fff" font-size="12.5" font-weight="500">1バイト＝0〜255</text><rect x="284" y="238.0" width="192" height="40" rx="9" fill="#0c1222"/><rect x="284" y="238.0" width="192" height="40" rx="9" fill="#72e3ad" fill-opacity=".12" stroke="#72e3ad" stroke-width="1.4"/><text x="296" y="263.0" text-anchor="start" fill="#9ff0cf" font-size="13" font-weight="700">D4</text><text x="328" y="263.0" text-anchor="start" fill="#fff" font-size="12.5" font-weight="500">1バイト＝16進数2桁</text><rect x="284" y="298.0" width="192" height="40" rx="9" fill="#0c1222"/><rect x="284" y="298.0" width="192" height="40" rx="9" fill="#72e3ad" fill-opacity=".12" stroke="#72e3ad" stroke-width="1.4"/><text x="296" y="323.0" text-anchor="start" fill="#9ff0cf" font-size="13" font-weight="700">D5</text><text x="328" y="323.0" text-anchor="start" fill="#fff" font-size="12.5" font-weight="500">アドレスの範囲</text><rect x="554" y="58.0" width="192" height="40" rx="9" fill="#0c1222"/><rect x="554" y="58.0" width="192" height="40" rx="9" fill="#ffb46b" fill-opacity=".12" stroke="#ffb46b" stroke-width="1.4"/><text x="566" y="83.0" text-anchor="start" fill="#ffd3a3" font-size="13" font-weight="700">C1</text><text x="598" y="83.0" text-anchor="start" fill="#fff" font-size="12.5" font-weight="500">b と B は8倍ちがう</text><rect x="554" y="118.0" width="192" height="40" rx="9" fill="#0c1222"/><rect x="554" y="118.0" width="192" height="40" rx="9" fill="#ffb46b" fill-opacity=".12" stroke="#ffb46b" stroke-width="1.4"/><text x="566" y="143.0" text-anchor="start" fill="#ffd3a3" font-size="13" font-weight="700">C2</text><text x="598" y="143.0" text-anchor="start" fill="#fff" font-size="12.5" font-weight="500">MAC は書き換えられる</text><rect x="554" y="178.0" width="192" height="40" rx="9" fill="#0c1222"/><rect x="554" y="178.0" width="192" height="40" rx="9" fill="#ffb46b" fill-opacity=".12" stroke="#ffb46b" stroke-width="1.4"/><text x="566" y="203.0" text-anchor="start" fill="#ffd3a3" font-size="13" font-weight="700">C3</text><text x="598" y="203.0" text-anchor="start" fill="#fff" font-size="12.5" font-weight="500">IPv4 は約43億個だけ</text><rect x="554" y="238.0" width="192" height="40" rx="9" fill="#0c1222"/><rect x="554" y="238.0" width="192" height="40" rx="9" fill="#ffb46b" fill-opacity=".12" stroke="#ffb46b" stroke-width="1.4"/><text x="566" y="263.0" text-anchor="start" fill="#ffd3a3" font-size="13" font-weight="700">C4</text><text x="598" y="263.0" text-anchor="start" fill="#fff" font-size="12.5" font-weight="500">255・65535 が上限</text><rect x="554" y="298.0" width="192" height="40" rx="9" fill="#0c1222"/><rect x="554" y="298.0" width="192" height="40" rx="9" fill="#ffb46b" fill-opacity=".12" stroke="#ffb46b" stroke-width="1.4"/><text x="566" y="323.0" text-anchor="start" fill="#ffd3a3" font-size="13" font-weight="700">C5</text><text x="598" y="323.0" text-anchor="start" fill="#fff" font-size="12.5" font-weight="500">入りきらないと弱点に</text><text x="380" y="372" text-anchor="middle" fill="rgba(255,255,255,.55)" font-size="12" font-weight="500">灰色の矢印：右の項目が左の項目を使う　緑の点線：導出の中で、前の導出を使う</text></svg>
+        <figcaption><strong>図16</strong>　本文の青・緑・橙の枠を1枚にした図。P1〜P4 は §01〜§03・§06、D1〜D5 は §01〜§04・§06、C1〜C5 は §03・§06・§07 に出てきました。図を見ずに、P から順にたどれるかを試してください。</figcaption>
+      </figure>
+
+      <ul>
+        <li>コンピューターの中の情報は 0 と 1 の並び。1桁が<strong>ビット</strong>で、n ビットで 2ⁿ 通りを表せる。</li>
+        <li><strong>2進数</strong>は各桁を 2 の何乗か（…、2³＝8、2²＝4、2¹＝2、2⁰＝1）で読み、1 の桁の重みを足すと10進数になる。</li>
+        <li>8ビット＝<strong>1バイト</strong>で、0〜255 の 256 通り。単位は b がビット、B がバイト。</li>
+        <li><strong>16進数</strong>は 0〜9 と a〜f の16文字。4ビット＝1桁なので、1バイト＝16進数2桁。<code>0x</code> は16進数の印。</li>
+        <li>MAC アドレスは6バイト、IPv4 アドレスは4バイト、ポート番号は2バイト。MAC アドレスの先頭バイトのビット1 が 1 なら、ソフトが作ったローカルの番号。</li>
+        <li>端末では <code>echo $((進数#数))</code>、<code>printf '%02x'</code>、<code>python3 -c "print(format(数, '08b'))"</code> で変換を確かめられる。</li>
+      </ul>
+
+      <div class="box principle"><span class="lab">最終チェック</span>
+      <ul style="margin:8px 0 0">
+        <li><strong>何も見ずに</strong>、原理 P1〜P4 を（どんな決まりか・由来も含めて）書き出し、そこから D1〜D5 を順に導き、C1〜C5 を説明できるか（上の道筋の図）</li>
+        <li>3ビットで何通り表せるか、その理由と合わせて言えるか（§01）</li>
+        <li>2進数 <code>1010</code> と <code>11000000</code> を、桁の重みを使って10進数に直せるか（§02）</li>
+        <li>10進数 10 と 192 を、大きい重みから引く方法で2進数に直せるか（§02）</li>
+        <li>1バイトに入る数が 0〜255 になる理由を言えるか。Mbps と MB のちがいを言えるか（§03）</li>
+        <li>16進数 <code>ff</code>・<code>5e</code>・<code>c0</code> を10進数に直せるか。1バイトが16進数2桁になる理由を言えるか（§04）</li>
+        <li><code>echo $((16#ff))</code> で、計算しているのが <code>echo</code> ではなくシェルであることを説明できるか（§05）</li>
+        <li><code>printf '%02x\n' 10</code> の <code>0</code>・<code>2</code>・<code>x</code>・<code>\n</code> の意味を言えるか（§05）</li>
+        <li>MAC アドレス・IPv4 アドレス・ポート番号が、それぞれ何バイトか言えるか（§06）</li>
+        <li>MAC アドレスの先頭バイトのビット0・ビット1 が何を表すか、Parrot の <code>5e</code> で説明できるか（§06）</li>
+      </ul></div>
+
+      <div class="transfer"><span class="lab">次へ：0-2 文字とデータの表し方</span>
+      <p>次の 0-2 では、文字がバイトとしてどう表されるか（文字コード）を学び、<code>xxd</code> でファイルやデータの中身を16進数で直接のぞきます。1-4 で出てくる HTTP の <code>GET / HTTP/1.1</code> が、実際にはどんなバイトの並びなのかも確かめます。</p></div>
+      <div class="transfer"><span class="lab">1章へ：1-1 パケットとIP</span>
+      <p><a href="cyber_1-1.html">1-1「パケットとIP」</a>：通信で実際に起きていること。0章を読み終えたら、ここから1章が始まります。</p></div>
+
+      <div class="foot"><p>Academic Gates ／ サイバーセキュリティ基礎 0章 準備編：コンピューターの基礎 ／ 0-1「ビット・バイトと2進数・16進数」。演習は Parrot OS の仮想マシンの端末で計算を行ったもので、通信は行っていません。画面に写っている MAC アドレスは、仮想マシンの仮想の NIC の番号です。自分が管理していないネットワークや機器には、この講座の操作を行わないでください。</p></div>
+    </section>
+
+  </main>
+</div>
+<div id="site-footer"><noscript><nav class="noscript-nav" aria-label="フッターナビゲーション"><a href="index.html">ホーム</a><a href="self-intro.html">自己紹介</a><a href="study.html">勉強の軌跡</a><a href="videos.html">動画</a><a href="blog.html">ブログ</a><a href="sns.html">各種SNS</a></nav></noscript></div>
+<script>
+/* コマンドのコピー（アイコンボタンを付ける） */
+var COPY_ICONS='<svg class="ic-copy" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M15 9V6.5A2.5 2.5 0 0 0 12.5 4h-6A2.5 2.5 0 0 0 4 6.5v6A2.5 2.5 0 0 0 6.5 15H9"/></svg>'
+  +'<svg class="ic-check" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+document.querySelectorAll('.cmdbox').forEach(function(box){
+  var text=box.getAttribute('data-copy');
+  var btn=document.createElement('button');
+  btn.type='button';btn.className='copy';btn.title='コピー';btn.setAttribute('aria-label','コマンドをコピー');
+  btn.innerHTML=COPY_ICONS;box.appendChild(btn);
+  function ok(){btn.classList.add('done');btn.title='コピーしました';setTimeout(function(){btn.classList.remove('done');btn.title='コピー'},1600)}
+  function fallback(){
+    var t=document.createElement('textarea');t.value=text;t.setAttribute('readonly','');
+    t.style.position='fixed';t.style.opacity='0';document.body.appendChild(t);t.select();
+    try{document.execCommand('copy');ok()}catch(e){}
+    document.body.removeChild(t);
+  }
+  btn.addEventListener('click',function(){
+    if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(text).then(ok,fallback)}else{fallback()}
+  });
+});
+
+/* 目次の追従 */
+var links=[].slice.call(document.querySelectorAll('.toc a[href^="#"]'));
+var secs=links.map(function(a){return document.querySelector(a.getAttribute('href'))});
+var pbar=document.getElementById('pbar');
+function onScroll(){
+  // getBoundingClientRect を使う（offsetTop ではない）。style.css の
+  // `main{position:relative}` で <main> が offsetParent になるため（§36）。
+  var idx=0;
+  secs.forEach(function(s,i){ if(s&&s.getBoundingClientRect().top<=140) idx=i; });
+  // 最後の節は短く、見出しが 140px まで上がる前にページの底に着く。底に着いたら最後を光らせる
+  if(window.innerHeight+window.scrollY>=document.documentElement.scrollHeight-2) idx=secs.length-1;
+  links.forEach(function(a){a.classList.remove('active')});
+  if(links[idx]) links[idx].classList.add('active');
+  var h=document.documentElement.scrollHeight-window.innerHeight;
+  pbar.style.width=(h>0?(window.scrollY/h*100):0)+'%';
+}
+window.addEventListener('scroll',onScroll,{passive:true});
+window.addEventListener('resize',onScroll); onScroll();
+var body=document.body,mb=document.getElementById('menuBtn'),scrim=document.getElementById('scrim');
+mb.addEventListener('click',function(){var o=body.classList.toggle('nav-open');mb.setAttribute('aria-expanded',o)});
+scrim.addEventListener('click',function(){body.classList.remove('nav-open')});
+document.getElementById('toc').addEventListener('click',function(e){if(e.target.closest('a'))body.classList.remove('nav-open')});
+</script>
+<script src="../js/i18n.js?v=r189"></script>
+<script src="../js/disciplines.js?v=r189"></script>
+<script src="../js/layout.js?v=r189"></script>
+<script src="../js/main.js?v=r189"></script>
+<script src="../js/starfield.js?v=r189"></script>
+</body>
+</html>
