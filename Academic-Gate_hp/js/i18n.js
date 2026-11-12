@@ -14,7 +14,8 @@
 var AG_PAGE_LANG = {
     jaOnly: ['memoryverse.html', 'memoryverse_*.html', 'country/*.html', 'skills_mnemonics.html', 'earthhuman.html'],
     enOnly: [],
-    en: ['index.html', 'self-intro.html', 'study.html', 'videos.html', 'blog.html', 'sns.html']
+    en: ['index.html', 'self-intro.html', 'study.html', 'videos.html', 'blog.html', 'sns.html',
+         'study_informatics.html', 'cyber.html', 'cyber_0-1.html']
 };
 
 /* 共通部品の文言。キーは ja・en で同じものを持つ（足りないと check-i18n が落とす）。

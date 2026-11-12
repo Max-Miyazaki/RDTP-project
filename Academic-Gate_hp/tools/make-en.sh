@@ -7,6 +7,7 @@
 #     同じフォルダのページへのリンク（cyber.html など）はそのまま＝英語版どうしのリンクになる）
 # 写さないもの：日本語限定のページ（js/i18n.js の jaOnly）・すでに英語版があるページ・国のページ
 # 写したあとは、翻訳 → 対応表の en に1行 → hreflang を両方の head に → node Academic-Gate_hp/tools/check-i18n.js（§138 の⑤）
+# 写したときに、元にした日本語版のハッシュを英語版の head（<meta name="ag-ja-hash">）に書く（§139.10）
 set -eu
 cd "$(dirname "$0")/../.."          # リポジトリ直下へ
 SITE=Academic-Gate_hp
@@ -32,5 +33,7 @@ grep -q '<base href=' "$src" && { echo "$name は <base> を使っています�
 mkdir -p "$SITE/html/en"
 perl -0pe 's/<html lang="ja"/<html lang="en"/; s/(\s(?:href|src)=")\.\.\//$1..\/..\//g' "$src" > "$dst"
 grep -q '<html lang="en"' "$dst" || { rm -f "$dst"; echo "<html lang=\"ja\"> が見つからず、写すのをやめました。"; exit 1; }
+# 元にした日本語版のハッシュを英語版の head に記録する（日本語版が後から変わったら check-i18n が知らせる。§139.10）
+node "$SITE/tools/check-i18n.js" --stamp "$name"
 echo "$src → $dst"
 echo "次：本文を翻訳し、js/i18n.js の AG_PAGE_LANG.en に '$name' を足し、両方の head に hreflang を入れて、check-i18n を通す"
