@@ -14,11 +14,12 @@
 var AG_PAGE_LANG = {
     jaOnly: ['memoryverse.html', 'memoryverse_*.html', 'country/*.html', 'skills_mnemonics.html', 'earthhuman.html'],
     enOnly: [],
-    en: []
+    en: ['index.html', 'self-intro.html', 'study.html', 'videos.html', 'blog.html', 'sns.html']
 };
 
 /* 共通部品の文言。キーは ja・en で同じものを持つ（足りないと check-i18n が落とす）。
-   英語は用語集（DESIGN.md §139.3）の下書き。確定は用語集の確認のあと */
+   英語は用語集（DESIGN.md §139.3）に合わせる。
+   lang.* は切り替えボタン（layout.js）。lang.missing・lang.goto は「相手の言語」の側の文言を使う（読むのはその言語の人なので） */
 var AG_UI = {
     ja: {
         'nav.index': 'ホーム', 'nav.self-intro': '自己紹介', 'nav.study': '勉強の軌跡',
@@ -34,14 +35,17 @@ var AG_UI = {
         'theme.toDark': 'ダークモードに切り替え', 'theme.toLight': 'ライトモードに切り替え',
         'study.start': 'ここから読む', 'study.toPage': '{name}のページへ',
         'study.themes': '複合分野', 'study.themesLead': 'ひとつの学問に収まらない問いを、いくつもの分野を重ねて読む。',
-        'study.roots': '精神の圏域'
+        'study.roots': '精神の圏域',
+        'lang.group': '言語', 'lang.ja': '日本語', 'lang.en': 'English',
+        'lang.missing': 'このページの日本語版はまだありません。', 'lang.goto': '{name}へ',
+        'lang.close': '閉じる'
     },
     en: {
-        'nav.index': 'Home', 'nav.self-intro': 'About', 'nav.study': 'Study Journey',
+        'nav.index': 'Home', 'nav.self-intro': 'About', 'nav.study': 'Learning Journey',
         'nav.videos': 'Videos', 'nav.blog': 'Blog', 'nav.sns': 'Social',
         'nav.menu': 'Open menu',
         'footer.label': 'Footer navigation',
-        'footer.tagline': 'A platform that opens the gates to the world of academic disciplines.',
+        'footer.tagline': 'Opening the gates to the world of learning.',
         'sitenav.tab': 'Site Map', 'sitenav.title': 'Site structure', 'sitenav.close': 'Close',
         'sitenav.expand': 'Expand {name}',
         'soon': 'Coming soon', 'soon.paren': ' (coming soon)',
@@ -50,7 +54,10 @@ var AG_UI = {
         'theme.toDark': 'Switch to dark mode', 'theme.toLight': 'Switch to light mode',
         'study.start': 'Start here', 'study.toPage': 'Go to {name}',
         'study.themes': 'Themes', 'study.themesLead': 'Questions that do not fit in a single discipline, read by layering several fields.',
-        'study.roots': 'Orbis Mentis'
+        'study.roots': 'Orbis Mentis',
+        'lang.group': 'Language', 'lang.ja': '日本語', 'lang.en': 'English',
+        'lang.missing': 'This page is not available in English yet.', 'lang.goto': 'Go to {name}',
+        'lang.close': 'Close'
     }
 };
 
@@ -80,9 +87,9 @@ var AG_I18N = (function () {
     // いまの言語のページから、そのページへのリンク。版が無ければ null。
     // 日本語のページでは、日本語版のあるページの href をそのまま返す（いまの出力を変えない）
     function href(h) { return has(h, lang) ? h : null; }
-    // 文言。{name} などを vars で埋める
-    function t(key, vars) {
-        var s = AG_UI[lang][key];
+    // 文言。{name} などを vars で埋める。in_ を渡すとその言語の文言（切り替えボタンの案内で使う）
+    function t(key, vars, in_) {
+        var L = in_ || lang, s = AG_UI[L][key];
         if (s == null) s = AG_UI.ja[key];
         if (vars) s = s.replace(/\{(\w+)\}/g, function (m, k) { return vars[k] != null ? vars[k] : m; });
         return s;

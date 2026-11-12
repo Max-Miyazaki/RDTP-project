@@ -33,7 +33,7 @@ var RESEARCH_TIERS = [
                   ['quantum-mechanics', '量子力学', 'Quantum Mechanics'], ['special-relativity', '特殊相対性理論', 'Special Relativity']],
           // ホーム（compact）では科目のチップの代わりに、この1行
           compact: '物理数学・古典力学・電磁気学ほか8科目',
-          compactEn: 'Mathematics for physics, classical mechanics, electromagnetism and more: 8 subjects' }] }
+          compactEn: '8 subjects, including mathematics for physics, classical mechanics and electromagnetism' }] }
 ];
 
 var RESEARCH_LINKS = {

@@ -8237,6 +8237,7 @@ study.html を、ホームの学問の樹と同じ7大分類・同じ34の学問
 
 海外の人にもサイトと記事を読んでもらうため、日本語と英語を切り替えられるようにする。段階1（2026-11-12、r185）は仕組みだけで、
 英語のページは1枚も無く、切り替えボタンも出さない。日本語のページの見た目・動作は変えない（§139.5 で確かめた）。
+段階2（r186）で切り替えボタンと、ナビの6ページの英語版（下書き）を足した（§139.7・§139.8）。
 
 ## 139.1 決めたこと
 
@@ -8279,29 +8280,29 @@ study.html を、ホームの学問の樹と同じ7大分類・同じ34の学問
   - 国のページのテンプレート（`tools/memoryverse-cards/page_tpl.html`）にも i18n.js を足した。
     あわせて、書き出したページにはあるのにテンプレートに無かった disciplines.js の行も足した（テンプレートとページの食い違いを直した）
 
-## 139.3 用語集（下書き。確認待ち）
+## 139.3 用語集（2026-11-12 確定）
 
-英語の文言はこの表に合わせる。確定したら「下書き」を外す。
+英語の文言はこの表に合わせる。下書きから変えたのは、勉強の軌跡・フッターの一文・05 と 06 の見出しの4つ（残りは下書きのまま確定）。
 
 | 日本語 | 英語 | 使う場所 |
 |---|---|---|
-| ホーム／自己紹介／勉強の軌跡／動画／ブログ／各種SNS | Home / About / Study Journey / Videos / Blog / Social | ナビ・フッター |
+| ホーム／自己紹介／勉強の軌跡／動画／ブログ／各種SNS | Home / About / Learning Journey / Videos / Blog / Social | ナビ・フッター（勉強の軌跡はパネル・ページの title・パンくずも Learning Journey） |
 | サイト構成（ボタン）／サイトの階層（パネルの見出し） | Site Map / Site structure | パネル |
 | 準備中 | Coming soon | カード・タイル・パネル（「（準備中）」は「 (coming soon)」） |
 | ここから読む／〇〇のページへ | Start here / Go to 〇〇 | 勉強の軌跡 |
 | シリーズ／前の節・次の節／〇〇の目次へ | Series / Previous section・Next section / Contents of 〇〇 | 記事の末尾 |
 | 前の記事・次の記事（物理数学の単位） | Previous article・Next article | 記事の末尾 |
 | N章 〇〇 | Ch. N 〇〇 | パネル |
-| フッターの一言「学術領域の世界への入口を開くプラットフォーム。」 | A platform that opens the gates to the world of academic disciplines. | フッター |
+| フッターの一言「学術領域の世界への入口を開くプラットフォーム。」 | Opening the gates to the world of learning. | フッター |
 | ダーク／ライトモードに切り替え | Switch to dark mode / Switch to light mode | 教材ページのテーマ切替 |
 | 01 種／02 根／03 学問の樹／04 私の枝／05 実り／06 一歩（ホームの小見出しはすでに英語） | Seed / Roots / Tree / My Branch / Fruits / Step | ホーム |
-| 学びは、根を張る。 | Learning puts down roots. | ホーム 02 の見出し（段階2で訳す） |
-| 学問の樹 | The Tree of Disciplines | ホーム 03 の見出し（段階2） |
-| 私の枝 | My Branch | ホーム 04 の見出し（段階2） |
-| 学びを、社会へ。 | Bringing learning to society. | ホーム 05 の見出し（段階2） |
-| 学問の世界へ、あなたも一歩を踏み出してみませんか。 | Why not take your first step into the world of the disciplines? | ホーム 06 の見出し（段階2） |
+| 学びは、根を張る。 | Learning puts down roots. | ホーム 02 の見出し |
+| 学問の樹 | The Tree of Disciplines | ホーム 03 の見出し |
+| 私の枝 | My Branch | ホーム 04 の見出し |
+| 学びを、社会へ。 | From learning to society. | ホーム 05 の見出し |
+| 学問の世界へ、あなたも一歩を踏み出してみませんか。 | Why not take your first step into the world of learning? | ホーム 06 の見出し |
 | 複合分野 | Themes | 勉強の軌跡・パネル（勉強の軌跡の英語の小見出しはすでに Themes） |
-| 精神の圏域 | Orbis Mentis | 勉強の軌跡・パネル（ページの題にすでにラテン語名がある） |
+| 精神の圏域 | Orbis Mentis | 勉強の軌跡・パネル（ラテン語のまま。英語のページでは説明の一文の頭で「Latin for “the sphere of the mind”」と意味を伝える） |
 | 地球と人類 | Earth & Humankind | 複合分野 |
 | 研究テーマ／研究トピック／専門分野／基礎分野 | Theme / Topics / Fields / Foundations | 研究の階層（すでに英語の小見出し） |
 | 基礎領域（学部レベル）の科目一覧 | Core subjects (undergraduate level) | 研究の階層 |
@@ -8318,7 +8319,7 @@ study.html を、ホームの学問の樹と同じ7大分類・同じ34の学問
 |---|---|
 | 形式科学 | 数学 Mathematics／統計学 Statistics／論理学 Logic／情報科学 Informatics |
 | 自然科学 | 物理学 Physics／化学 Chemistry／生物学 Biology／地球科学 Earth Science／天文学 Astronomy |
-| 生命・医療 | 医学 Medicine／薬学 Pharmacy／農学 Agriculture |
+| 生命・医療 | 医学 Medicine／薬学 Pharmacy（Pharmaceutical Sciences は木で隣と重なるため。確定）／農学 Agriculture |
 | 工学 | 機械工学 Mechanical Engineering（Mechanical Eng.）／電気電子工学 Electrical and Electronic Engineering（Electrical Eng.）／土木工学 Civil Engineering（Civil Eng.）／航空宇宙工学 Aerospace Engineering（Aerospace Eng.）／建築学 Architecture |
 | 人文学 | 哲学 Philosophy／歴史学 History／地理学 Geography／宗教学 Religious Studies／文学 Literature／言語学 Linguistics／外国語 Foreign Languages（Languages） |
 | 社会科学 | 経済学 Economics／法学 Law／政治学 Political Science／社会学 Sociology／心理学 Psychology／教育学 Education |
@@ -8356,7 +8357,44 @@ study.html を、ホームの学問の樹と同じ7大分類・同じ34の学問
 
 cyber_1-2・3-1・5-1 は、何度か撮り直した中で main とブランチが画素まで同じ回もあった。
 
-## 139.6 段階2へのメモ
+## 139.6 段階2へのメモ（段階2で片づけた）
 
-- 769〜790px で Connect ボタンが右へ 8px はみ出して切れている（今からある不具合）。直してから切り替えボタンを置く
-- 英語のページのナビで、英語版の無いページを日本語版へ飛ばす扱い（139.2）は仮。英語のホームと一緒に見直す
+- 769〜790px で Connect ボタンが切れていた件 → 139.7 で直した
+- 英語のページのナビで、英語版の無いページを日本語版へ飛ばす扱い → ナビの6ページの英語版をそろえたので、英語のナビから日本語のページへ飛ぶことは無くなった。
+  layout.js の仕組み（`navLink`）は、ナビのページを増やしたときの保険として残す
+
+## 139.7 切り替えボタン（段階2、2026-11-12、r186）
+
+英語のホーム（`en/index.html`）が対応表にあるときだけ、全ページのヘッダーに出す。中身は layout.js（`langTarget`・`langHtml`・`mountLang`）、見た目は style.css の「日本語・英語の切り替え」。
+
+- **形**
+  - PC：ナビと Connect の間に `JA / EN`。並びはどちらの言語でも JA / EN。いまの言語は明るい字（`aria-current`）、相手の言語がリンク
+  - 768px 以下：ハンバーガーの右に、相手の言語だけの小さな札（日本語のページは EN、英語のページは JA）
+  - 375px 未満でサイト構成のボタンもあるページ（記事など）だけは、札を置く幅が無いので、メニューの最後の行に「English／日本語」として出す
+- **押したとき**（行き先は対応表と CRUMBS から決める）
+
+| いるページ | 押したとき |
+|---|---|
+| 相手の言語版がある | 対のページへ（`en/X` ↔ `../X`） |
+| 共通ページで相手の言語版がまだ無い | 移動しない。ボタンの下に「This page is not available in English yet.」と、相手の言語版がある一番近い上の階層へのリンク（無ければホーム）。Esc・外を押す・✕で閉じる |
+| 今の言語の限定ページ（メモリーバース・国のページなど） | 相手の言語版がある一番近い上の階層へそのまま移動（国のページは CRUMBS に無いのでホーム） |
+
+  - 案内の文言は相手の言語で書く（読むのはその言語の人なので）。`AG_I18N.t(key, vars, lang)` の3つ目で言語を指定する
+  - 選んだ言語は localStorage（`ag-lang`）に覚える。勝手に転送はしない。覚えた言語を使う案内は、まだ作っていない
+- **Connect が切れていた件**：769〜1023px だけ、ヘッダーの gap・ナビの字の大きさと余白・Connect の左の余白を詰めた。
+  769px でナビの左右に約 35px の空きがある（ボタンを足したうえで）
+- **英語で増えた直し**：勉強の軌跡の学問のタイルは、英語のときだけ名前を折り返す（Electrical and Electronic Engineering が 390px で1行に入らず、ページが横に送れた）
+
+## 139.8 段階2の英語のページ（下書き。確認をいただいてから公開）
+
+ナビの行き先6ページ（index・self-intro・study・videos・blog・sns）を `make-en.sh` で写して英訳の下書きを入れ、対応表の en に足した。
+両方の head に hreflang の3行。いずれもブランチの中だけで、main には入れていない。
+
+- **訳し方で決めたこと**
+  - 本文は一人称（I / my）。日本語の「運営者は」は、英語の個人サイトとして自然な形にした
+  - ホーム 05 のカードは、上の英語の小見出し（Videos など。実の色の点を持つので消せない）と同じ語にならないよう、見出しを言い換えた
+  - 精神の圏域：記憶術（日本語限定）は出さず、推理・推論と暗算法の準備中2枚だけ。「精神の圏域のページへ」の行は、英語版が無いので外した
+  - ホーム 02 の「学び方」の札は、英語の勉強の軌跡の Orbis Mentis（`study.html#roots`）へ
+  - 研究の説明は、論文（JHEP 05 (2026) 119 / arXiv:2509.13292）の abstract の用語に合わせた
+- **選んでもらうもの**：ホームのキャッチコピー（案 A を仮に入れてある）、自己紹介の最初の一文（案 A を仮に）
+- **要確認の印**：英語のページの HTML に注釈（`<!-- 要確認 … -->`）。一覧は確認用ページ（scratchpad。リポジトリには入れていない）

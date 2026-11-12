@@ -442,6 +442,26 @@ header nav {
     flex: none;
 }
 
+/* 769〜1023px：ロゴ・ナビ6項目・言語の切り替え・Connect を1行に収めるため、間と余白を詰める。
+   詰めないと 769〜800px で Connect がヘッダーの右からはみ出して切れていた（§139.7） */
+@media (min-width: 769px) and (max-width: 1023px) {
+    header {
+        gap: 0.6rem;
+        padding-left: 1rem;
+    }
+    .nav-menu {
+        gap: 0;
+    }
+    .nav-menu a {
+        padding: 0.4rem 0.42rem;
+        font-size: 0.76rem;
+    }
+    .btn-nav-cta {
+        gap: 0.4rem;
+        padding-left: 0.85rem;
+    }
+}
+
 /* Hamburger */
 .menu-toggle {
     display: none;
@@ -2005,6 +2025,144 @@ input[type="range"] {
     }
 }
 
+/* ---------------------------------------------------------------------------
+   日本語・英語の切り替え（DESIGN.md §139.7）。中身は layout.js が書く（英語のホームがあるときだけ）
+   PC：ナビと Connect の間に「JA / EN」。いまの言語を明るく、相手の言語をリンクに。
+   768px 以下：ハンバーガーの右に、相手の言語だけの小さな札。
+   375px 未満でサイト構成のボタンもあるページは、札を出す幅が無いので、メニューの最後の行（.nav-lang）に出す。
+   --------------------------------------------------------------------------- */
+.lang-switch {
+    display: inline-flex;
+    align-items: center;
+    flex: none;
+    gap: 0.15rem;
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    white-space: nowrap;
+}
+.lang-switch__cur {
+    color: var(--ink, var(--text-primary));
+    padding: 0.35rem 0.1rem;
+}
+.lang-switch__sep {
+    color: var(--ink-faint, var(--text-tertiary));
+}
+.lang-switch__alt {
+    padding: 0.35rem 0.3rem;
+    font: inherit;
+    letter-spacing: inherit;
+    color: var(--ink-soft, var(--text-secondary));
+    background: transparent;
+    border: 0;
+    border-radius: var(--radius-pill);
+    cursor: pointer;
+    transition: color var(--dur) var(--ease);
+}
+@media (hover: hover) {
+    .lang-switch__alt:hover { color: var(--ink, var(--text-primary)); }
+}
+.lang-switch__alt:focus-visible,
+.lang-note a:focus-visible,
+.lang-note__x:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+.nav-lang {
+    display: none;
+}
+.nav-lang button {
+    font: inherit;
+    background: transparent;
+    border: 0;
+    cursor: pointer;
+}
+
+/* 相手の言語版がまだ無いときの案内（ヘッダーの下、右寄せ。モバイルはメニューと同じ幅） */
+.lang-note {
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 0;
+    width: min(340px, 100%);
+    padding: 0.95rem 2.6rem 1rem 1.15rem;
+    /* ヘッダー自身が backdrop-filter を持つので、その中の箱のぼかしは効かない（後ろの本文が透けて読みにくい）。
+       ナビの色の下に、ページの地の色を敷いて透けないようにする */
+    background: linear-gradient(var(--nav-bg), var(--nav-bg)), var(--bg);
+    border: 1px solid var(--line, var(--hairline));
+    border-radius: var(--radius-md);
+    font-size: 0.85rem;
+    line-height: 1.6;
+}
+.lang-note[hidden] {
+    display: none;
+}
+.lang-note p {
+    margin: 0 0 0.45rem;
+    color: var(--ink, var(--text-primary));
+}
+.lang-note a {
+    color: var(--accent);
+}
+.lang-note__x {
+    position: absolute;
+    top: 0.55rem;
+    right: 0.55rem;
+    width: 28px;
+    height: 28px;
+    font: inherit;
+    font-size: 0.8rem;
+    color: var(--ink-soft, var(--text-secondary));
+    background: transparent;
+    border: 0;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+@media (max-width: 768px) {
+    .lang-switch__cur,
+    .lang-switch__sep {
+        display: none;
+    }
+    .lang-switch {
+        margin-left: -0.75rem;     /* ハンバーガーとの間をヘッダーの gap（24px）より詰める */
+    }
+    header:has(.sitenav-hdbtn) .lang-switch {
+        margin-left: -0.25rem;     /* このヘッダーは gap が 0.5rem。ハンバーガーの内側の余白があるので、見た目の間は 12px */
+    }
+    .lang-switch__alt {
+        display: inline-flex;
+        align-items: center;
+        height: 26px;
+        padding: 0 0.55rem;
+        font-size: 11px;
+        letter-spacing: 0.08em;
+        border: 1px solid var(--line, var(--hairline));
+    }
+    .lang-note {
+        left: 0;
+        width: auto;
+    }
+}
+
+@media (max-width: 374px) {
+    header:has(.sitenav-hdbtn) .lang-switch {
+        display: none;
+    }
+    header:has(.sitenav-hdbtn) .nav-lang {
+        display: block;
+    }
+    .nav-lang a,
+    .nav-lang button {
+        display: block;
+        width: 100%;
+        text-align: left;
+        padding: 0.7rem 0.9rem;
+        font-size: 0.8rem;
+        color: var(--text-secondary);
+        border-top: 1px solid var(--hairline);
+    }
+}
+
 .sitenav-scrim {
     position: fixed;
     inset: 0;
@@ -3141,6 +3299,11 @@ a.tree-node {
     font-size: 0.92rem;
     line-height: 1.45;
     white-space: nowrap;
+}
+
+/* 英語の学問名は長いもの（Electrical and Electronic Engineering など）があり、1行では 390px のタイルに入らない。英語のときだけ折り返す（§139.7） */
+html[lang="en"] .sd-tile__name {
+    white-space: normal;
 }
 
 .sd-tile__meta {

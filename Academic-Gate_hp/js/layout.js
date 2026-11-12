@@ -32,7 +32,7 @@
        title は前後リンクで使う長い名前。 */
     var CRUMBS = {
         'study':           { label: '勉強の軌跡',   href: 'study.html',
-                             en: 'Study Journey' },
+                             en: 'Learning Journey' },
         'physics':         { label: '物理学',       href: 'study_physics.html',    parent: 'study',
                              en: 'Physics' },
         'phys-math':       { label: '物理数学',     href: 'phys-math.html',        parent: 'physics', unit: '記事', unitEn: 'article',
@@ -226,6 +226,12 @@
     var I18N = AG_I18N;
     (function localize() {
         var gone = {};
+        // 切り替えボタンが上の階層をたどるときのために、置き換える前の行き先と日本語名を残す
+        Object.keys(CRUMBS).forEach(function (k) {
+            var c = CRUMBS[k];
+            c.page = c.href || c.file;
+            c.ja = c.label;
+        });
         Object.keys(CRUMBS).forEach(function (k) {
             var f = CRUMBS[k].href || CRUMBS[k].file;
             if (f && !I18N.listed(f)) gone[k] = 1;
@@ -448,7 +454,91 @@
         return !!(node && CRUMBS[node]);
     }
 
-    function navHtml(activeHref) {
+    /* --- 日本語・英語の切り替え（DESIGN.md §139.7）------------------------------
+       英語のホーム（en/index.html）があるときだけ出す。押したときの行き先は3通り：
+         pair ：このページに相手の言語版がある → そのページへ
+         note ：共通ページだが相手の言語版がまだ無い → 移動せず、ボタンの下に案内と、
+                相手の言語版がある一番近い上の階層（無ければホーム）へのリンク
+         jump ：このページは今の言語の限定ページ → 相手の言語版がある一番近い上の階層へそのまま移動
+       選んだ言語は localStorage（ag-lang）に覚える。勝手に転送はしない */
+    var LANG_KEY = 'ag-lang';
+    function langTarget() {
+        var other = I18N.lang === 'ja' ? 'en' : 'ja';
+        if (!I18N.has('index.html', 'en')) return null;
+        var m = location.pathname.match(/\/html\/(?:en\/)?(.*)$/);
+        var f = (m && m[1]) || 'index.html';
+        if (/\/$/.test(f) || !f) f += 'index.html';
+        // 相手の言語のページへの href（ページの基準は html/ か html/en/。国のページは <base> で html/）
+        var pre = other === 'en' ? 'en/' : '../';
+        var name = function (k, page) {
+            var nav = /^(index|self-intro|study|videos|blog|sns)\.html$/.exec(page);
+            if (nav) return I18N.t('nav.' + nav[1], null, other);
+            var c = k && CRUMBS[k];
+            return c ? (other === 'en' ? (c.en || c.ja) : c.ja) : I18N.t('nav.index', null, other);
+        };
+        if (I18N.has(f, other)) return { mode: 'pair', other: other, href: pre + f };
+        var node = (document.body && document.body.dataset && document.body.dataset.node) || '', page = 'index.html', key = null;
+        for (var k = CRUMBS[node] && CRUMBS[node].parent; k && CRUMBS[k]; k = CRUMBS[k].parent) {
+            if (CRUMBS[k].page && I18N.has(CRUMBS[k].page, other)) { page = CRUMBS[k].page; key = k; break; }
+        }
+        return { mode: I18N.kind(f) === 'both' ? 'note' : 'jump', other: other, href: pre + page, name: name(key, page) };
+    }
+    function langHtml(tg) {
+        if (!tg) return '';
+        var cur = I18N.lang, o = tg.other, up = function (l) { return l.toUpperCase(); };
+        var full = I18N.t('lang.' + o, null, o);
+        var alt = tg.mode === 'note'
+            ? '<button class="lang-switch__alt js-lang" type="button" lang="' + o + '" aria-label="' + full + '" aria-expanded="false" aria-controls="lang-note">' + up(o) + '</button>'
+            : '<a class="lang-switch__alt js-lang" href="' + tg.href + '" hreflang="' + o + '" lang="' + o + '" aria-label="' + full +
+              (tg.mode === 'jump' ? ' — ' + tg.name : '') + '">' + up(o) + '</a>';
+        var note = tg.mode !== 'note' ? '' :
+            '<div class="lang-note" id="lang-note" lang="' + o + '" hidden>' +
+                '<p>' + I18N.t('lang.missing', null, o) + '</p>' +
+                '<a class="js-lang-go" href="' + tg.href + '" hreflang="' + o + '">' + I18N.t('lang.goto', { name: tg.name }, o) + ' <span aria-hidden="true">→</span></a>' +
+                '<button class="lang-note__x" type="button" aria-label="' + I18N.t('lang.close', null, o) + '">✕</button>' +
+            '</div>';
+        // 並びはどちらの言語でも JA / EN（いまの言語は明るい字、相手の言語がリンク）
+        var curHtml = '<span class="lang-switch__cur" lang="' + cur + '" aria-current="true">' + up(cur) + '</span>';
+        var sep = '<span class="lang-switch__sep" aria-hidden="true">/</span>';
+        return '<div class="lang-switch" role="group" aria-label="' + I18N.t('lang.group') + '">' +
+                (cur === 'ja' ? curHtml + sep + alt : alt + sep + curHtml) +
+            '</div>' + note;
+    }
+    // モバイルで幅が足りないとき（375px 未満でサイト構成のボタンもあるページ）は、メニューの最後の行に同じものを出す（CSS で切り替え）
+    function langMenuHtml(tg) {
+        if (!tg) return '';
+        var o = tg.other, full = I18N.t('lang.' + o, null, o);
+        return '<li class="nav-lang">' + (tg.mode === 'note'
+            ? '<button class="js-lang" type="button" lang="' + o + '" aria-expanded="false" aria-controls="lang-note">' + full + '</button>'
+            : '<a class="js-lang" href="' + tg.href + '" hreflang="' + o + '" lang="' + o + '">' + full + '</a>') + '</li>';
+    }
+    function mountLang(tg) {
+        if (!tg) return;
+        var note = document.getElementById('lang-note');
+        var remember = function () { try { localStorage.setItem(LANG_KEY, tg.other); } catch (e) { } };
+        [].forEach.call(document.querySelectorAll('.js-lang, .js-lang-go'), function (el) {
+            if (el.tagName === 'A') { el.addEventListener('click', remember); return; }
+            el.addEventListener('click', function (e) {
+                e.stopPropagation();
+                var on = note.hidden;
+                // モバイルのメニューが開いていたら閉じる（案内と重ねない）
+                var mt = document.querySelector('.menu-toggle'), nm = document.querySelector('.nav-menu');
+                if (mt && nm) { mt.setAttribute('aria-expanded', 'false'); nm.classList.remove('active'); }
+                setNote(on);
+            });
+        });
+        if (!note) return;
+        function setNote(on) {
+            note.hidden = !on;
+            [].forEach.call(document.querySelectorAll('button.js-lang'), function (b) { b.setAttribute('aria-expanded', on ? 'true' : 'false'); });
+            if (on) note.querySelector('a').focus();
+        }
+        note.querySelector('.lang-note__x').addEventListener('click', function () { setNote(false); document.querySelector('.lang-switch button.js-lang').focus(); });
+        document.addEventListener('click', function (e) { if (!note.hidden && !note.contains(e.target)) setNote(false); });
+        document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !note.hidden) setNote(false); });
+    }
+
+    function navHtml(activeHref, tg) {
         var lis = NAV_ITEMS.map(function (it) {
             var cls = it[0] === activeHref ? ' class="active"' : '';
             return '<li><a ' + navLink(it[0]) + cls + '>' + it[1] + '</a></li>';
@@ -459,8 +549,9 @@
                 '<button class="menu-toggle" aria-label="' + I18N.t('nav.menu') + '" aria-expanded="false" aria-controls="nav-menu">' +
                     '<span></span><span></span><span></span>' +
                 '</button>' +
-                '<ul class="nav-menu" id="nav-menu">' + lis + '</ul>' +
+                '<ul class="nav-menu" id="nav-menu">' + lis + langMenuHtml(tg) + '</ul>' +
             '</nav>' +
+            langHtml(tg) +
             (hasSiteNav() ? '<button class="sitenav-hdbtn" id="sitenavHdBtn" type="button" aria-expanded="false" aria-controls="sitenav">' + I18N.t('sitenav.tab') + '</button>' : '') +
             '<a ' + navLink('sns.html') + ' class="btn btn-nav-cta">Connect <span class="btn-disc" aria-hidden="true">→</span></a>' +
         '</header>';
@@ -495,7 +586,8 @@
         var activeHref = ACTIVE[page] || '';
         var navSlot = document.getElementById('site-nav');
         var footSlot = document.getElementById('site-footer');
-        if (navSlot) navSlot.innerHTML = navHtml(activeHref);
+        var tg = langTarget();
+        if (navSlot) navSlot.innerHTML = navHtml(activeHref, tg);
         if (footSlot) footSlot.innerHTML = footerHtml();
 
         // 教材ページのテーマ切替ボタンを、いま書き出したヘッダーの中へ移設する。
@@ -506,6 +598,7 @@
 
         mountCrumbs();
         markSoonCards();
+        mountLang(tg);
     }
 
     if (document.readyState === 'loading') {
