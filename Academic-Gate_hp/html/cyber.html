@@ -46,15 +46,19 @@
                 <p class="toc-ch-lead">1章より前に読む土台。16進数やバイトの計算、Linux の操作、メモリの基礎をここで固めます</p>
                 <div class="study-card">
                     <h4>0-1 ビット・バイトと2進数・16進数</h4>
+                    <p>MAC アドレスやポート番号を、バイトと16進数で読めるようにする</p>
                 </div>
                 <div class="study-card">
                     <h4>0-2 文字とデータの表し方（文字コード・16進ダンプ）</h4>
+                    <p>文字コードと xxd で、ファイルやパケットの中身を16進数で見る</p>
                 </div>
                 <div class="study-card">
                     <h4>0-3 Linux の基本操作</h4>
+                    <p>ファイル操作・パイプ・sudo・権限など、演習で使う操作の土台</p>
                 </div>
                 <div class="study-card">
                     <h4>0-4 プロセスとメモリ</h4>
+                    <p>プログラムがメモリのどこで動くかを、ps と /proc で確かめる</p>
                 </div>
             </section>
             <section class="study-grid">
@@ -107,6 +111,7 @@
                 </div>
                 <div class="study-card">
                     <h4>3-3 ソーシャルエンジニアリングとフィッシング</h4>
+                    <p>人をだます攻撃の見分け方と、SPF / DKIM / DMARC の仕組み</p>
                 </div>
             </section>
             <section class="study-grid">
@@ -170,6 +175,7 @@
                 </div>
                 <div class="study-card">
                     <h4>7-3 暗号と TLS（HTTPS と証明書）</h4>
+                    <p>HTTPS が盗聴となりすましを防ぐ仕組みを、パケットで観察する</p>
                 </div>
             </section>
         </section>
@@ -199,6 +205,7 @@
                 </div>
                 <div class="study-card">
                     <h4>9-3 DoS / DDoS の原理と緩和</h4>
+                    <p>SYN フラッドや反射・増幅攻撃の原理と、レート制限などの緩和策</p>
                 </div>
             </section>
         </section>
@@ -232,9 +239,11 @@
                 </div>
                 <div class="study-card">
                     <h4>11-3 アクセス制御とセッション管理の不備</h4>
+                    <p>番号の書き換えで他人のデータが見える・セッションが乗っ取られる仕組みと対策</p>
                 </div>
                 <div class="study-card">
                     <h4>11-4 コマンドインジェクション・パストラバーサル・SSRF</h4>
+                    <p>入力がコマンドやファイルの場所として解釈される危険と、安全な書き方</p>
                 </div>
                 <div class="study-card">
                     <h4>11-5 入力検証・WAF による防御</h4>
@@ -249,9 +258,11 @@
                 </div>
                 <div class="study-card">
                     <h4>12-2 C 言語と機械語の読み方</h4>
+                    <p>12・14章に必要な C 言語と、objdump での逆アセンブルの読み方</p>
                 </div>
                 <div class="study-card">
                     <h4>12-3 メモリ破壊：バッファオーバーフローの原理と防御</h4>
+                    <p>長い入力でメモリが壊れる仕組みと、カナリア・NX・ASLR による防御</p>
                 </div>
                 <div class="study-card">
                     <h4>12-4 エクスプロイトの仕組み（原理理解）</h4>
@@ -281,12 +292,15 @@
                 <h3>14章 マルウェアと永続化・痕跡</h3>
                 <div class="study-card">
                     <h4>14-1 マルウェアの種類と仕組み</h4>
+                    <p>感染・居座り・司令塔との通信まで、マルウェアの動きの流れ</p>
                 </div>
                 <div class="study-card">
                     <h4>14-2 マルウェアの静的解析</h4>
+                    <p>実行せずに調べる。strings・objdump・YARA で特徴をつかむ</p>
                 </div>
                 <div class="study-card">
                     <h4>14-3 マルウェアの動的解析</h4>
+                    <p>隔離した環境で動かし、システムコールと通信から痕跡を集める</p>
                 </div>
                 <div class="study-card">
                     <h4>14-4 永続化手法の理解と検知</h4>
