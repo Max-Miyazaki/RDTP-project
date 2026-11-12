@@ -8363,7 +8363,7 @@ cyber_1-2・3-1・5-1 は、何度か撮り直した中で main とブランチ�
 - 英語のページのナビで、英語版の無いページを日本語版へ飛ばす扱い → ナビの6ページの英語版をそろえたので、英語のナビから日本語のページへ飛ぶことは無くなった。
   layout.js の仕組み（`navLink`）は、ナビのページを増やしたときの保険として残す
 
-## 139.7 切り替えボタン（段階2、2026-11-12、r186）
+## 139.7 切り替えボタン（段階2、2026-11-12、r186。公開は r187）
 
 英語のホーム（`en/index.html`）が対応表にあるときだけ、全ページのヘッダーに出す。中身は layout.js（`langTarget`・`langHtml`・`mountLang`）、見た目は style.css の「日本語・英語の切り替え」。
 
@@ -8385,7 +8385,7 @@ cyber_1-2・3-1・5-1 は、何度か撮り直した中で main とブランチ�
   769px でナビの左右に約 35px の空きがある（ボタンを足したうえで）
 - **英語で増えた直し**：勉強の軌跡の学問のタイルは、英語のときだけ名前を折り返す（Electrical and Electronic Engineering が 390px で1行に入らず、ページが横に送れた）
 
-## 139.8 段階2の英語のページ（下書き。確認をいただいてから公開）
+## 139.8 段階2の英語のページ（2026-11-12 確認を受けて公開）
 
 ナビの行き先6ページ（index・self-intro・study・videos・blog・sns）を `make-en.sh` で写して英訳の下書きを入れ、対応表の en に足した。
 両方の head に hreflang の3行。いずれもブランチの中だけで、main には入れていない。
@@ -8396,5 +8396,19 @@ cyber_1-2・3-1・5-1 は、何度か撮り直した中で main とブランチ�
   - 精神の圏域：記憶術（日本語限定）は出さず、推理・推論と暗算法の準備中2枚だけ。「精神の圏域のページへ」の行は、英語版が無いので外した
   - ホーム 02 の「学び方」の札は、英語の勉強の軌跡の Orbis Mentis（`study.html#roots`）へ
   - 研究の説明は、論文（JHEP 05 (2026) 119 / arXiv:2509.13292）の abstract の用語に合わせた
-- **選んでもらうもの**：ホームのキャッチコピー（案 A を仮に入れてある）、自己紹介の最初の一文（案 A を仮に）
-- **要確認の印**：英語のページの HTML に注釈（`<!-- 要確認 … -->`）。一覧は確認用ページ（scratchpad。リポジトリには入れていない）
+- **確認で決まったこと**（要確認の注釈は外した）
+  - キャッチコピー：One question, and the world opens up.
+  - 自己紹介の最初の一文：A physics grad student who is still very much a work in progress.
+  - 初期宇宙理論 → early-universe cosmology（研究の階層のカード Early Universe Cosmology に統一。ホーム 04 も）
+  - 研究の説明：非線形遷移のあとは「the axion behaves as matter and can make up the dark matter」、残る量は「how much of it remains today」
+  - 研究室：素粒子理論研究室 → Particle Theory Group（研究室の公式サイトの表記）。1行で書くときは
+    「Particle Theory Group, Department of Physics, Tokyo Metropolitan University」。
+    学部の高エネルギー理論研究室は別の研究室で High-Energy Theory Group（経歴では当時の名前のまま）
+  - 高校：Tokyo Metropolitan Tama High School of Science and Technology（公式の表記）
+  - 実践心理学 → Applied Psychology、個人事業 → run a small business of my own
+
+## 139.9 モバイルのメニューが透ける件（2026-11-12）
+
+768px 以下でハンバーガーから開くメニュー（`.nav-menu`）は、ヘッダーの中にあるので、ヘッダー自身の backdrop-filter に阻まれて
+自分のぼかしが効かず、後ろの本文が透けて読みにくかった（段階2の前からの不具合。日本語・英語とも）。
+切り替えの案内（`.lang-note`）と同じく、`background: linear-gradient(var(--nav-bg), var(--nav-bg)), var(--bg)` で地の色を敷いた

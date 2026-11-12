@@ -1827,9 +1827,9 @@ input[type="range"] {
         align-items: stretch;
         gap: 0.25rem;
         padding: var(--space-2);
-        background: var(--nav-bg);
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
+        /* ヘッダー自身が backdrop-filter を持つので、その中のメニューのぼかしは効かず、後ろの本文が透けて読みにくかった。
+           ナビの色の下にページの地の色を敷く（切り替えの案内 .lang-note と同じ。§139.9） */
+        background: linear-gradient(var(--nav-bg), var(--nav-bg)), var(--bg);
         border: 1px solid var(--hairline);
         border-radius: var(--radius-md);
         opacity: 0;
