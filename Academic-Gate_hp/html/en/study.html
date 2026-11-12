@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="alternate" hreflang="ja" href="https://max-phy.jp/Academic-Gate_hp/html/study.html">
+    <link rel="alternate" hreflang="en" href="https://max-phy.jp/Academic-Gate_hp/html/en/study.html">
+    <link rel="alternate" hreflang="x-default" href="https://max-phy.jp/Academic-Gate_hp/html/study.html">
+    <title>Academic Gates - Learning Journey</title>
+    <meta name="description" content="Learning Journey. Pick a discipline from the same seven categories as the Tree of Disciplines on the home page, and start reading.">
+
+    <!-- ホームと同じ書体（Inter Tight + Noto Sans JP）を読み込む -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;500&family=Noto+Sans+JP:wght@300;400&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet" href="../../css/style.css?v=r187">
+    <link rel="icon" href="../../../favicon.ico" sizes="32x32">
+    <link rel="icon" href="../../../favicon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="../../../apple-touch-icon.png">
+</head>
+<body data-page="study" data-node="study">
+    <canvas id="starfield" aria-hidden="true"></canvas>
+<div id="site-nav"><noscript><nav class="noscript-nav" aria-label="Main navigation"><a href="index.html">Home</a><a href="self-intro.html">About</a><a href="study.html">Learning Journey</a><a href="videos.html">Videos</a><a href="blog.html">Blog</a><a href="sns.html">Social</a></nav></noscript></div>
+    <!-- 勉強の軌跡（DESIGN.md §136）。ホームの学問の樹と同じ7大分類・同じ学問を、縦に並べる。
+         ★ 大分類・学問・複合分野のデータは js/disciplines.js（ホームと共有）。js/study.js が
+           [data-study-bar] に分野バーを、[data-study] に7つの大分類と複合分野を書き出す。
+         ★ 公開数・記事数・進捗率など、量や達成度の数字は出さない（どこからでも入れる、を優先）。
+         精神の圏域（ROOTS）だけはここに直接書く（学問の樹の外。ホームの 02 根と同じ位置づけ）。 -->
+    <main class="sd">
+        <section class="sd-hero sd-wrap" aria-labelledby="study-h">
+            <p class="eyebrow reveal">Study</p>
+            <h1 id="study-h" class="reveal">Learning Journey</h1>
+            <p class="sd-hero__lead reveal">Start from any branch of the Tree of Disciplines. I keep what I have learned as course materials, so that you can begin with whichever discipline catches your interest.</p>
+        </section>
+
+        <!-- 追従する分野バー（js/study.js が中身を書く。JS が無いときは出ない） -->
+        <nav class="sd-bar" data-study-bar aria-label="Jump to a field" hidden></nav>
+
+        <div class="sd-body sd-wrap">
+            <div data-study></div>
+
+            <!-- JS が無いとき：大分類のセクションは書き出されないので、ページのある学問への短い一覧だけ -->
+            <noscript>
+                <section class="sd-noscript">
+                    <p>Pages for individual disciplines are coming soon.</p>
+                </section>
+            </noscript>
+
+            <!-- ROOTS：精神の圏域。ホームの 02「根」と同じモチーフ（種から下へ伸びる根の先に技能）。
+                 根の線は js/study.js が、カードの位置から描く。リンクは study_skills.html と同じ（記憶術 → メモリーバース）。 -->
+            <section class="sd-cat sd-cat--roots reveal" id="roots" data-cat="roots" aria-labelledby="roots-h">
+                <div class="sd-cat__head">
+                    <p class="sd-cat__en">Roots</p>
+                    <h2 id="roots-h">Orbis Mentis</h2>
+                    <p class="sd-cat__lead">Latin for “the sphere of the mind”: techniques for learning that work in every discipline. Build a space inside your head, and use it to remember, to think and to calculate.</p>
+                </div>
+                <div class="sd-roots" data-study-roots>
+                    <ul class="sd-roots__list">
+                        <li class="sd-root is-soon">
+                            <h3>Reasoning</h3>
+                            <p>Carrying an argument step by step from premises to a conclusion</p>
+                        </li>
+                        <li class="sd-root is-soon">
+                            <h3>Mental Calculation</h3>
+                            <p>Building up calculations without paper</p>
+                        </li>
+                    </ul>
+                </div>
+            </section>
+        </div>
+    </main>
+    <div id="site-footer"><noscript><nav class="noscript-nav" aria-label="Footer navigation"><a href="index.html">Home</a><a href="self-intro.html">About</a><a href="study.html">Learning Journey</a><a href="videos.html">Videos</a><a href="blog.html">Blog</a><a href="sns.html">Social</a></nav></noscript></div>
+    <script src="../../js/i18n.js?v=r187"></script>
+    <script src="../../js/disciplines.js?v=r187"></script>
+    <script src="../../js/layout.js?v=r187"></script>
+    <script src="../../js/main.js?v=r187"></script>
+    <script src="../../js/starfield.js?v=r187"></script>
+    <script src="../../js/study.js?v=r187"></script>
+</body>
+</html>

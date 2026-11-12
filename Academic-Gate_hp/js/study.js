@@ -26,44 +26,49 @@
     function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;'); }
     var AR = '<span aria-hidden="true">→</span>';
 
+    // ページの言語（i18n.js）。英語のページでは、英語の名前・説明を出し、英語版がまだ無いページへはリンクしない。
+    // 日本語のページは、英語の小見出し＋日本語の名前（いままでどおり）。英語のページは、同じ英語を2回並べない（DESIGN.md §139）
+    var I18N = AG_I18N, EN = I18N.lang === 'en', LJ = EN ? '' : ' lang="ja"';
+
 
     /* ---- 1. セクション ---------------------------------------------------- */
     function head(id, en, ja, lead) {
         return '<div class="sd-cat__head">' +
-            '<p class="sd-cat__en">' + esc(en) + '</p>' +
-            '<h2 id="' + id + '-h" lang="ja">' + esc(ja) + '</h2>' +
-            '<p class="sd-cat__lead" lang="ja">' + esc(lead) + '</p></div>';
+            (EN ? '' : '<p class="sd-cat__en">' + esc(en) + '</p>') +
+            '<h2 id="' + id + '-h"' + LJ + '>' + esc(I18N.pick(ja, en)) + '</h2>' +
+            '<p class="sd-cat__lead"' + LJ + '>' + esc(lead) + '</p></div>';
     }
 
     // 「ここから読む」（最初の記事）と、学問・テーマのページへ
     function go(start, page, pageLabel) {
         var h = '<div class="sd-go">';
-        if (start) h += '<a class="sd-go__start" href="' + start.href + '"><span class="sd-go__label">ここから読む</span>' +
-            '<span class="sd-go__to" lang="ja">' + esc(start.label) + '</span>' + AR + '</a>';
-        if (page) h += '<a class="sd-go__page" href="' + page + '" lang="ja">' + esc(pageLabel) + ' ' + AR + '</a>';
+        if (start && I18N.href(start.href)) h += '<a class="sd-go__start" href="' + start.href + '"><span class="sd-go__label">' + I18N.t('study.start') + '</span>' +
+            '<span class="sd-go__to"' + LJ + '>' + esc(I18N.pick(start.label, start.labelEn)) + '</span>' + AR + '</a>';
+        if (page) h += '<a class="sd-go__page" href="' + page + '"' + LJ + '>' + esc(pageLabel) + ' ' + AR + '</a>';
         return h + '</div>';
     }
 
     // 学問のタイル。2行目の小さな字が状態（独自ページ＝英語名、準備中＝カーソルで「準備中」）
     function tile(s) {
-        var name = '<span class="sd-tile__name" lang="ja">' + esc(s.ja) + '</span>';
-        if (s.page) {
+        var nm = I18N.pick(s.ja, s.en);
+        var name = '<span class="sd-tile__name"' + LJ + '>' + esc(nm) + '</span>';
+        if (s.page && I18N.href(s.page)) {
             var id = 'sd-pop-' + s.key;
             return '<li class="sd-tilebox">' +
                 '<button class="sd-tile is-page" type="button" aria-expanded="false" aria-controls="' + id + '">' + name +
                 '<span class="sd-tile__meta">' + esc(s.en || '') + '</span><span class="sd-tile__mark" aria-hidden="true"></span></button>' +
-                '<div class="sd-pop" id="' + id + '" role="group" aria-label="' + esc(s.ja) + '">' +
-                '<p class="sd-card__en">' + esc(s.en || '') + '</p>' +
-                '<p class="sd-card__intro" lang="ja">' + esc(s.intro || '') + '</p>' +
-                go(s.start, s.page, s.ja + 'のページへ') + '</div></li>';
+                '<div class="sd-pop" id="' + id + '" role="group" aria-label="' + esc(nm) + '">' +
+                (EN ? '' : '<p class="sd-card__en">' + esc(s.en || '') + '</p>') +
+                '<p class="sd-card__intro"' + LJ + '>' + esc(I18N.pick(s.intro || '', s.introEn)) + '</p>' +
+                go(s.start, s.page, I18N.t('study.toPage', { name: nm })) + '</div></li>';
         }
         return '<li class="sd-tilebox"><span class="sd-tile is-soon">' + name +
-            '<span class="sd-tile__meta" lang="ja">準備中</span></span></li>';
+            '<span class="sd-tile__meta"' + LJ + '>' + I18N.t('soon') + '</span></span></li>';
     }
 
     function catSection(c) {
         return '<section class="sd-cat reveal" id="' + c.cat + '" data-cat="' + c.cat + '" aria-labelledby="' + c.cat + '-h">' +
-            head(c.cat, c.en, c.ja, c.lead) +
+            head(c.cat, c.en, c.ja, I18N.pick(c.lead, c.leadEn)) +
             '<div class="sd-cat__body"><ul class="sd-tiles">' + c.subjects.map(tile).join('') + '</ul></div></section>';
     }
 
@@ -74,19 +79,20 @@
         var edge = cats.length > 1
             ? 'linear-gradient(120deg, ' + cats.map(function (c) { return 'var(--tint-' + c + ')'; }).join(', ') + ')'
             : cats.length ? 'var(--tint-' + cats[0] + ')' : 'var(--hairline-strong)';
-        var inner = '<p class="sd-card__en">' + esc(t.en) + '</p>' +
-            '<h3 lang="ja">' + esc(t.ja) + '</h3>' +
-            '<p class="sd-card__intro" lang="ja">' + esc(t.intro) + '</p>' +
-            (t.page ? '' : '<p class="sd-theme__soon" lang="ja">準備中</p>');
-        return '<li>' + (t.page
-            ? '<a class="sd-theme is-linked" href="' + t.page + '" style="--edge: ' + edge + '">' + inner + '</a>'
+        var page = t.page && I18N.href(t.page);
+        var inner = (EN ? '' : '<p class="sd-card__en">' + esc(t.en) + '</p>') +
+            '<h3' + LJ + '>' + esc(I18N.pick(t.ja, t.en)) + '</h3>' +
+            '<p class="sd-card__intro"' + LJ + '>' + esc(I18N.pick(t.intro, t.introEn)) + '</p>' +
+            (page ? '' : '<p class="sd-theme__soon"' + LJ + '>' + I18N.t('soon') + '</p>');
+        return '<li>' + (page
+            ? '<a class="sd-theme is-linked" href="' + page + '" style="--edge: ' + edge + '">' + inner + '</a>'
             : '<article class="sd-theme is-soon" style="--edge: ' + edge + '">' + inner + '</article>') + '</li>';
     }
 
     function themesSection() {
         if (!DISCIPLINE_THEMES.length) return '';
         return '<section class="sd-cat sd-cat--themes reveal" id="themes" data-cat="themes" aria-labelledby="themes-h">' +
-            head('themes', 'Themes', '複合分野', 'ひとつの学問に収まらない問いを、いくつもの分野を重ねて読む。') +
+            head('themes', 'Themes', I18N.t('study.themes'), I18N.t('study.themesLead')) +
             '<div class="sd-cat__body"><ul class="sd-cards sd-cards--themes">' + DISCIPLINE_THEMES.map(themeCard).join('') + '</ul></div></section>';
     }
 
@@ -179,11 +185,11 @@
     var sections = [].slice.call(document.querySelectorAll('.sd-cat[id]'));
     var chips = [];
     if (bar) {
-        var items = DISCIPLINES.map(function (c) { return [c.cat, c.ja]; });
+        var items = DISCIPLINES.map(function (c) { return [c.cat, I18N.pick(c.ja, c.en)]; });
         var extra = [];
-        if (DISCIPLINE_THEMES.length) extra.push(['themes', '複合分野']);
-        if (document.getElementById('roots')) extra.push(['roots', '精神の圏域']);
-        function li(it) { return '<li><a class="sd-bar__chip" href="#' + it[0] + '" data-cat="' + it[0] + '" lang="ja">' + esc(it[1]) + '</a></li>'; }
+        if (DISCIPLINE_THEMES.length) extra.push(['themes', I18N.t('study.themes')]);
+        if (document.getElementById('roots')) extra.push(['roots', I18N.t('study.roots')]);
+        function li(it) { return '<li><a class="sd-bar__chip" href="#' + it[0] + '" data-cat="' + it[0] + '"' + LJ + '>' + esc(it[1]) + '</a></li>'; }
         bar.innerHTML = '<ul class="sd-bar__list">' + items.map(li).join('') +
             (extra.length ? '<li class="sd-bar__sep" aria-hidden="true"></li>' + extra.map(li).join('') : '') + '</ul>';
         bar.hidden = false;

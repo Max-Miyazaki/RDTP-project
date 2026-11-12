@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="alternate" hreflang="ja" href="https://max-phy.jp/Academic-Gate_hp/html/self-intro.html">
+    <link rel="alternate" hreflang="en" href="https://max-phy.jp/Academic-Gate_hp/html/en/self-intro.html">
+    <link rel="alternate" hreflang="x-default" href="https://max-phy.jp/Academic-Gate_hp/html/self-intro.html">
+    <title>Academic Gates</title>
+
+    <!-- ホームと同じ書体（Inter Tight + Noto Sans JP）を読み込む -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;500&family=Noto+Sans+JP:wght@300;400&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet" href="../../css/style.css?v=r187">
+    <link rel="icon" href="../../../favicon.ico" sizes="32x32">
+    <link rel="icon" href="../../../favicon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="../../../apple-touch-icon.png">
+</head>
+
+<body data-page="self-intro">
+    <canvas id="starfield" aria-hidden="true"></canvas>
+<div id="site-nav"><noscript><nav class="noscript-nav" aria-label="Main navigation"><a href="index.html">Home</a><a href="self-intro.html">About</a><a href="study.html">Learning Journey</a><a href="videos.html">Videos</a><a href="blog.html">Blog</a><a href="sns.html">Social</a></nav></noscript></div>
+    <main class="self-intro">
+
+        <!-- 01 — PROFILE：写真・名前・所属・紹介文、その下に要点の小カード -->
+        <section class="si-block" aria-labelledby="profile-h">
+            <div class="profile-hero reveal">
+                <div class="profile-image">
+                    <img src="../../image/my-pic.jpg" alt="Profile photo of Max Miyazaki">
+                </div>
+                <div class="profile-content">
+                    <p class="eyebrow"><span class="eyebrow__num">01</span> — Profile</p>
+                    <h1 id="profile-h">Max Miyazaki</h1>
+                    <ul class="affiliation" aria-label="Affiliation">
+                        <li>Department of Physics, Graduate School of Science, Tokyo Metropolitan University</li>
+                        <li>Particle Theory Group</li>
+                        <li class="is-key">Second-year master's student</li>
+                    </ul>
+                    <p class="profile-lead">A physics grad student who is still very much a work in progress. My field is physics, but I am curious about every discipline and study widely on my own. My research is about the beginning of the universe — see Research below for details. I also share what I learn about academic topics, make creative work along the way, and run a small business of my own.</p>
+                </div>
+            </div>
+
+            <div class="si-grid si-grid--facts">
+                <div class="profile-card reveal">
+                    <span class="meta">Affiliation</span>
+                    <h3>Tokyo Metropolitan University</h3>
+                    <p>Particle Theory Group · 2nd-year master's</p>
+                </div>
+                <div class="profile-card reveal">
+                    <span class="meta">Field</span>
+                    <h3>Physics</h3>
+                    <p>Learning broadly across disciplines on my own</p>
+                </div>
+                <div class="profile-card reveal">
+                    <span class="meta">Research</span>
+                    <h3>The Beginning of the Universe</h3>
+                </div>
+            </div>
+        </section>
+
+        <!-- 02 — RESEARCH：上ほど専門的、下ほど基礎的な4層。データ・リンクは js/research.js
+             （RESEARCH_LINKS に data-topic をキーにして書き足すと有効になる）。 -->
+        <section class="si-block" id="research" aria-labelledby="research-h">
+            <div class="si-head reveal">
+                <p class="eyebrow"><span class="eyebrow__num">02</span> — Research</p>
+                <h2 id="research-h">Research</h2>
+                <!-- 物理の用語は論文 JHEP 05 (2026) 119 / arXiv:2509.13292 の abstract に合わせた（DESIGN.md §139.8） -->
+                <p class="rs-lead">My field is early-universe cosmology. I study theoretically how the axion — a leading candidate for dark matter — was produced at the beginning of the universe, and how much of it remains today. If the axion energy density in the early universe greatly exceeds the maximum potential energy, the axion behaves like radiation even when its momentum is much smaller than its mass. As its energy density drops to the scale of the potential, a nonlinear transition occurs, after which the axion behaves as matter and can make up the dark matter. Our paper revisits the abundance and spectrum of axion dark matter by incorporating the effects of this nonlinear transition, and also discusses related phenomena such as the formation of primordial black holes. It was published in the Journal of High Energy Physics.</p>
+                <p class="eyebrow rs-paper">
+                    <span class="rs-paper__title">Paper: Revisiting axion dark matter with nonlinear transitions</span>
+                    <span class="rs-paper__links"><a class="rs-paper__journal" href="https://doi.org/10.1007/JHEP05(2026)119" target="_blank" rel="noopener">JHEP 05 (2026) 119<span class="rs-paper__arrow" aria-hidden="true">↗</span></a><span class="rs-paper__sep" aria-hidden="true">·</span><a class="rs-paper__arxiv" href="https://arxiv.org/abs/2509.13292" target="_blank" rel="noopener">arXiv:2509.13292<span class="rs-paper__arrow" aria-hidden="true">↗</span></a></span>
+                </p>
+            </div>
+
+            <!-- 階層の中身は js/research.js（ホームの 04 と共通） -->
+            <div class="rs-stack" data-research></div>
+        </section>
+
+        <!-- 03 — INTERESTS：興味あること（項目は元の文の順のまま、3つに分けただけ） -->
+        <section class="si-block" aria-labelledby="interests-h">
+            <div class="si-head reveal">
+                <p class="eyebrow"><span class="eyebrow__num">03</span> — Interests</p>
+                <h2 id="interests-h">Interests</h2>
+            </div>
+            <div class="interest-groups reveal">
+                <div class="interest-group">
+                    <h3 class="interest-group__label">Academic</h3>
+                    <ul class="chips">
+                        <li>Organic Chemistry</li>
+                        <li>Biochemistry</li>
+                        <li>Pharmacology</li>
+                        <li>Emergency Medicine</li>
+                        <li>Aerospace</li>
+                        <li>Applied Psychology</li>
+                        <li>Foreign Languages</li>
+                        <li>Programming</li>
+                    </ul>
+                </div>
+                <div class="interest-group">
+                    <h3 class="interest-group__label">Creative</h3>
+                    <ul class="chips">
+                        <li>Illustration</li>
+                        <li>Video Production</li>
+                        <li>Animation</li>
+                    </ul>
+                </div>
+                <div class="interest-group">
+                    <h3 class="interest-group__label">Hobbies</h3>
+                    <ul class="chips">
+                        <li>Chess</li>
+                        <li>Piano</li>
+                        <li>Tennis</li>
+                        <li>Martial Arts</li>
+                        <li class="is-etc">etc...</li>
+                    </ul>
+                </div>
+            </div>
+            <p class="interest-note reveal">I am mostly self-taught in all of these, so if you know any of them well, I would love to learn from you.</p>
+        </section>
+
+        <!-- 04 — HISTORY：経歴（縦タイムライン。最後の項目が現在） -->
+        <section class="si-block" aria-labelledby="history-h">
+            <div class="si-head reveal">
+                <p class="eyebrow"><span class="eyebrow__num">04</span> — History</p>
+                <h2 id="history-h">Background</h2>
+            </div>
+            <ol class="timeline reveal">
+                <li><time datetime="2018-04">Apr 2018</time><span>Entered Tokyo Metropolitan Tama High School of Science and Technology</span></li>
+                <li><time datetime="2021-03">Mar 2021</time><span>Graduated from Tokyo Metropolitan Tama High School of Science and Technology</span></li>
+                <li><time datetime="2021-04">Apr 2021</time><span>Entered the Department of Physics, Faculty of Science, Tokyo Metropolitan University</span></li>
+                <li><time datetime="2024-04">Apr 2024</time><span>Joined the High-Energy Theory Group, Department of Physics, Tokyo Metropolitan University</span></li>
+                <li><time datetime="2025-03">Mar 2025</time><span>Graduated from the Department of Physics, Faculty of Science, Tokyo Metropolitan University</span></li>
+                <li class="is-current" aria-current="step"><time datetime="2025-04">Apr 2025–</time><span>Entered the Department of Physics, Graduate School of Science, Tokyo Metropolitan University, and joined the Particle Theory Group<em class="timeline__now">Now</em></span></li>
+            </ol>
+        </section>
+    </main>
+    <div id="site-footer"><noscript><nav class="noscript-nav" aria-label="Footer navigation"><a href="index.html">Home</a><a href="self-intro.html">About</a><a href="study.html">Learning Journey</a><a href="videos.html">Videos</a><a href="blog.html">Blog</a><a href="sns.html">Social</a></nav></noscript></div>
+    <script src="../../js/i18n.js?v=r187"></script>
+    <script src="../../js/disciplines.js?v=r187"></script>
+    <script src="../../js/layout.js?v=r187"></script>
+    <script src="../../js/main.js?v=r187"></script>
+    <script src="../../js/starfield.js?v=r187"></script>
+    <script src="../../js/research.js?v=r187"></script>
+    <script src="../../js/self-intro.js?v=r187"></script>
+</body>
+</html>

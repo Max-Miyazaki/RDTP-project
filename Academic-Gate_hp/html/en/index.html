@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="alternate" hreflang="ja" href="https://max-phy.jp/Academic-Gate_hp/html/index.html">
+    <link rel="alternate" hreflang="en" href="https://max-phy.jp/Academic-Gate_hp/html/en/index.html">
+    <link rel="alternate" hreflang="x-default" href="https://max-phy.jp/Academic-Gate_hp/html/index.html">
+    <title>Academic Gates</title>
+    <meta name="description" content="One question, and the world opens up. A site that shares the joy and breadth of academic disciplines through study notes, videos and creative work.">
+
+    <!-- Fonts: Inter Tight (Latin) + Noto Sans JP (Japanese), light display weights -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;500&family=Noto+Sans+JP:wght@300;400&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet" href="../../css/style.css?v=r187">
+    <link rel="icon" href="../../../favicon.ico" sizes="32x32">
+    <link rel="icon" href="../../../favicon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="../../../apple-touch-icon.png">
+</head>
+
+<body data-page="index">
+    <canvas id="starfield" aria-hidden="true"></canvas>
+
+    <div id="site-nav"><noscript><nav class="noscript-nav" aria-label="Main navigation"><a href="index.html">Home</a><a href="self-intro.html">About</a><a href="study.html">Learning Journey</a><a href="videos.html">Videos</a><a href="blog.html">Blog</a><a href="sns.html">Social</a></nav></noscript></div>
+
+    <!-- 「一本の木が枝分かれして、学問の樹形図になる」（DESIGN.md §135）。
+         01 種 → 02 根 → 03 学問の樹 → 04 私の枝 → 05 実り → 06 一歩。 -->
+    <main class="home">
+
+        <!-- 01 — SEED -->
+        <section class="home-seed" id="seed" aria-labelledby="seed-h">
+            <div class="home-seed__inner">
+                <p class="eyebrow"><span class="eyebrow__num">01</span> — Seed</p>
+                <h1 id="seed-h" class="home-title">Academic Gates</h1>
+                <p class="home-catch">One question, and the world opens up.</p>
+            </div>
+            <div class="home-seed__glyph" aria-hidden="true"></div>
+        </section>
+
+        <!-- 02 — ROOTS：このサイトについて。根の先に「学び方」（精神の圏域）。 -->
+        <section class="home-block home-roots" id="roots" aria-labelledby="roots-h">
+            <div class="home-block__head reveal">
+                <p class="eyebrow"><span class="eyebrow__num">02</span> — Roots</p>
+                <h2 id="roots-h">Learning puts down roots.</h2>
+                <p>Academic Gates is a site for sharing how fascinating and enjoyable academic disciplines can be, and for sparking an interest in them. My own field is physics, but this site is not limited to physics. Through study notes, videos and creative work, I share what has grown out of my learning and my exchanges with others.</p>
+            </div>
+            <div class="roots reveal" data-roots>
+                <a class="roots__tip" href="study.html#roots"><span class="roots__label">How to Learn</span><span class="roots__sub">Techniques for learning, such as mnemonics</span></a>
+            </div>
+        </section>
+
+        <!-- 03 — TREE：学問の樹。
+             ★ 木のデータ（分類 → 学問の2段）は js/disciplines.js にある（勉強の軌跡 study.html と共有。§136）。
+             disciplines.js が下の <ol> に入れ子のリストを書き出し、js/academic-tree.js がそこから木の形を作る。
+             学問を足すと枝が増える。リンク：ページがあれば実線、無ければ破線（準備中）
+             - data-key：学問の名前（04 で物理学の枝を見つけるのに使う）
+             - 分類の差し色は CSS の data-cat で決める -->
+        <section class="home-block home-tree" id="tree" aria-labelledby="tree-h">
+            <div class="home-block__head reveal">
+                <p class="eyebrow"><span class="eyebrow__num">03</span> — Tree</p>
+                <h2 id="tree-h">The Tree of Disciplines</h2>
+                <p>From a single trunk to countless branches.<br>No single point of view can capture everything in the world. That is why the disciplines approach it from many scales and angles — from elementary particles to the cosmos, from the mind to society. Every branch is a window onto the world.</p>
+            </div>
+            <div class="tree reveal" data-tree>
+                <ol class="tree__data" aria-label="Disciplines by category" data-disciplines="tree"></ol>
+                <noscript>
+                    <p class="tree-noscript">All disciplines are listed in the <a href="study.html">Learning Journey</a>.</p>
+                </noscript>
+            </div>
+            <p class="tree-note reveal">Solid lines lead to notes and course materials on this site. Dashed lines are coming soon.</p>
+        </section>
+
+        <!-- 04 — MY BRANCH：文章の下に研究の階層（js/research.js、自己紹介と共通）。
+             その下の小さな木から物理学の枝が伸びて、階層のいちばん下に流れ込む（js/academic-tree.js） -->
+        <section class="home-block home-branch" id="branch" aria-labelledby="branch-h">
+            <div class="home-block__head reveal">
+                <p class="eyebrow"><span class="eyebrow__num">04</span> — My Branch</p>
+                <h2 id="branch-h">My Branch</h2>
+                <p>My field is physics — in particular, early-universe cosmology. Building on the known laws of physics, I form hypotheses and construct theories to study physical phenomena in regimes that cannot yet be observed directly.</p>
+                <div class="home-actions">
+                    <a href="self-intro.html" class="btn btn-primary">About <span class="btn-disc" aria-hidden="true">→</span></a>
+                    <a href="study.html" class="btn btn-secondary">Learning Journey <span class="btn-disc" aria-hidden="true">→</span></a>
+                </div>
+            </div>
+            <div class="home-branch__viz" data-branch-viz>
+                <div class="rs-stack" data-research="compact"></div>
+                <div class="branch reveal" data-branch aria-hidden="true">
+                    <span class="branch__tag branch__tag--physics">Physics</span>
+                </div>
+                <p class="home-branch__more reveal"><a href="self-intro.html#research" class="btn btn-secondary">More about my research <span class="btn-disc" aria-hidden="true">→</span></a></p>
+            </div>
+        </section>
+
+        <!-- 05 — FRUITS：発信。行き先の無いカードは <div>（layout.js が「準備中」を付ける） -->
+        <section class="home-block home-fruits" id="fruits" aria-labelledby="fruits-h">
+            <div class="home-block__head reveal">
+                <p class="eyebrow"><span class="eyebrow__num">05</span> — Fruits</p>
+                <h2 id="fruits-h">From learning to society.</h2>
+                <p>Carrying what we have learned into the future of the next generation —<br>to help people learn to analyze things objectively and give that ability back to society.</p>
+            </div>
+            <!-- 各カードの上に、そのカードの実（色はカードの見出しの前の点と同じ） -->
+            <div class="home-fruits__grid" data-fruits>
+                <a class="study-card reveal" href="videos.html" data-fruit="0">
+                    <span class="meta">Videos</span>
+                    <h3>Explainers &amp; Simulations</h3>
+                    <p>Videos about research and academic topics, and simulation footage.</p>
+                </a>
+                <a class="study-card reveal" href="blog.html" data-fruit="1">
+                    <span class="meta">Blog</span>
+                    <h3>Articles &amp; Essays</h3>
+                    <p>Articles and reflections on research and academic topics.</p>
+                </a>
+                <div class="study-card reveal" data-fruit="2">
+                    <span class="meta">Creation</span>
+                    <h3>Creative Work</h3>
+                    <p>Illustrations, videos and animations — creations born from learning.</p>
+                </div>
+                <a class="study-card reveal" href="sns.html" data-fruit="3">
+                    <span class="meta">Connect</span>
+                    <h3>Community</h3>
+                    <p>Connecting with others through learning, on social media.</p>
+                </a>
+            </div>
+        </section>
+
+        <!-- 06 — STEP -->
+        <section class="home-block home-step" id="step" aria-labelledby="step-h">
+            <!-- ブラックホール（§135.10）：降着円盤と事象の地平面の影。締めの文は影の中に置く。形は js/academic-tree.js、粒子は tree-scenes.js -->
+            <div class="bh" data-bh aria-hidden="true"></div>
+            <div class="home-step__inner reveal">
+                <p class="eyebrow"><span class="eyebrow__num">06</span> — Step</p>
+                <h2 id="step-h">Why not take your first step into the world of learning?</h2>
+                <div class="home-actions">
+                    <a href="sns.html" class="btn btn-primary">Connect <span class="btn-disc" aria-hidden="true">→</span></a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div id="site-footer"><noscript><nav class="noscript-nav" aria-label="Footer navigation"><a href="index.html">Home</a><a href="self-intro.html">About</a><a href="study.html">Learning Journey</a><a href="videos.html">Videos</a><a href="blog.html">Blog</a><a href="sns.html">Social</a></nav></noscript></div>
+
+    <script src="../../js/i18n.js?v=r187"></script>
+    <script src="../../js/disciplines.js?v=r187"></script>
+    <script src="../../js/layout.js?v=r187"></script>
+    <script src="../../js/main.js?v=r187"></script>
+    <script src="../../js/starfield.js?v=r187"></script>
+    <script src="../../js/research.js?v=r187"></script>
+    <script src="../../js/academic-tree.js?v=r187"></script>
+    <script src="../../js/tree-scenes.js?v=r187"></script>
+</body>
+
+</html>

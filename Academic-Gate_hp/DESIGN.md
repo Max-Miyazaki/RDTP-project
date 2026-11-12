@@ -8206,7 +8206,7 @@ study.html を、ホームの学問の樹と同じ7大分類・同じ34の学問
 
 # 138. 公開手順（変更の種類ごと）
 
-公開の前に、変更を下の①〜④のどれかに分け、その行の手順だけを行う。報告の冒頭に1行で、どれにあたるかと、それに合わせて何を省いたかを書く
+公開の前に、変更を下の①〜⑤のどれかに分け、その行の手順だけを行う。報告の冒頭に1行で、どれにあたるかと、それに合わせて何を省いたかを書く
 （例：「今回は①（文章だけ）。キャッシュバスター・全ページのリンク確認・実際の Chrome は省いた」）。
 決めた経緯：国のページの公開が重い件の調査（2026-11）。時間の7〜8割は確認の手順（全ページのリンク確認 6〜7分、本番での検査のやり直し）で、
 `bump.sh` は毎回 104 ページを書き換えて、コミットの約 100 ファイルが番号だけの差分になっていた。
@@ -8217,6 +8217,7 @@ study.html を、ホームの学問の樹と同じ7大分類・同じ34の学問
 | ② 1ページの見た目・構成、または新しいページ | 上げない。画像を同じ名前で差し替えるときだけ上げるか、名前を変える | そのページと、そこへのリンクがあるページ。実際の Chrome は見た目が変わったときだけ | 切る |
 | ③ 共通部品（css/js、layout.js、disciplines.js） | **上げる** | 全ページのエラー・404・横スクロール（`check-pages.js`）。代表ページを実際の Chrome で | 切る |
 | ④ 国のページの書き出し直し（draw.py・テンプレート） | 部品を変えたときだけ | `check-pages.js` を国のページに絞って。国のページは1〜2枚を目で見る | 切る |
+| ⑤ 英語版の公開（`js/i18n.js` の対応表に1行足す。§139.4） | **上げる**（対応表は js のため） | ②と同じ：そのページ、対の日本語ページ、そこへのリンクがあるページ。それに `check-i18n.js`。全ページの `check-pages.js` はしない | 切る |
 
 - **番号を上げる判断**：`?v=rNN` を上げるのは、`css/`・`js/` のファイルか、画像を同じ名前のまま変えたときだけ。HTML（ページ内の `<style>`・`<script>` を含む）だけの変更では上げない
   （`css/`・`js/` の上げ忘れは `tools/check-cachebust.sh` とコミット前のフックが止める。§45）
@@ -8227,3 +8228,187 @@ study.html を、ホームの学問の樹と同じ7大分類・同じ34の学問
   - 反映待ちは、決まった間隔で本番を読み直すのではなく、`gh run list --limit 1`（リポジトリの中で）で「pages build and deployment」が終わったのを確かめてから見る（ふだん約30秒）
   - WebGL（ホームの学問の樹など）を触ったときは、種類にかかわらず実際の画面で一度見る（headless のスクリーンショットだけでは合成の違いが見えない。§135）
   - 2つの種類にまたがるときは、確認の多いほうの手順にする
+
+---
+
+<a id="i18n"></a>
+
+# 139. 日本語・英語の切り替え（ブランチ feature/i18n）
+
+海外の人にもサイトと記事を読んでもらうため、日本語と英語を切り替えられるようにする。段階1（2026-11-12、r185）は仕組みだけで、
+英語のページは1枚も無く、切り替えボタンも出さない。日本語のページの見た目・動作は変えない（§139.5 で確かめた）。
+段階2（r186）で切り替えボタンと、ナビの6ページの英語版（下書き）を足した（§139.7・§139.8）。
+
+## 139.1 決めたこと
+
+- **ページの3つの種類**：共通（ja + en）／日本語限定（ja のみ）／英語限定（en のみ）。限定ページは翻訳しない
+  - 日本語限定（当面）：メモリーバース（目次と各回）、国のページ、記憶術（skills_mnemonics）、earthhuman（構成が決まったら共通に変える）
+  - それ以外は共通。英語版を作るまでは「英語版準備中」
+- **置き場所**：日本語は今の `html/`、英語は `html/en/` に同じファイル名で（例：`html/cyber_1-1.html` ↔ `html/en/cyber_1-1.html`）。
+  英語限定のページは `html/en/` にだけ置く。画像・CSS・JS は両言語で共有する。英語版の URL は `https://max-phy.jp/Academic-Gate_hp/html/en/…`
+- **対応表は1か所**：`js/i18n.js` の `AG_PAGE_LANG`。ボタンの動作・一覧の出し分け・サイトの階層パネル・hreflang の検査は、すべてここから引く
+- **一覧の出し分け**：日本語の一覧は「共通＋日本語限定」、英語の一覧は「共通＋英語限定」。反対の言語の限定ページは出さない（準備中としても出さない）。
+  英語の一覧で、英語版がまだ無い共通ページは Coming soon（リンクなし）。日本語の「準備中」と同じ扱い
+- **切り替えボタン**：`en/index.html` を公開するまで出さない（段階2で英語のホームと一緒に出す）。選んだ言語は覚えるが、勝手に転送はしない
+- **ホームの学問の樹の英語ラベル**：長い名前は木の列で隣と重なるので、木だけ短い名前（`treeEn`）にし、正式名を title と aria-label に持たせる。
+  勉強の軌跡・パネルなど、ほかの場所は正式名
+- **公開手順**：英語版の公開は §138 の⑤（対応表は js なので番号を上げる。確認は②と同じ範囲＋`check-i18n.js`）
+
+## 139.2 仕組み（段階1）
+
+- **`js/i18n.js`**（全ページで、ほかの JS より先に読む。disciplines.js が読み込んだ時点で木を書き出すため）
+  - `AG_PAGE_LANG`：`jaOnly`・`enOnly`（ファイル名のパターン。`*` は / を含まない任意の文字列）と、`en`（英語版を公開した共通ページ）
+  - `AG_UI`：共通部品の文言（ナビ・フッター・パネル・前後リンク・「準備中」・テーマ切替・勉強の軌跡の決まり文句）。ja と en に同じキー
+  - `AG_I18N`：ページの言語（`<html lang>`）、`kind(f)`・`has(f, lang)`・`listed(f)`・`href(f)`（いまの言語の版が無ければ null）・`t(key)`・`pick(ja, en)`
+- **データの英語**は、今の置き場所のまま隣に並べる
+  - layout.js の CRUMBS：`en`（label の英語。label が英数字だけ（SECTION 1-1 など）なら不要）・`titleEn`・`unitEn`。
+    リンクの無い行が日本語限定のページを表すときは `file`（いまは earthhuman だけ）
+  - disciplines.js：大分類・学問・複合分野の `en`、`leadEn`・`introEn`・`start.labelEn`、木だけの短い名前 `treeEn`
+  - research.js：チップの3つ目に英語名、`labelEn`・`compactEn`
+- **英語のページでの出し方**（日本語のページは何も変わらない）
+  - サイトの階層パネル・前後リンク・「一つ上へ」：日本語限定の行はその下ごと消し、英語版の無いページは Coming soon
+  - 目次などのカード（`.study-card`）：行き先が日本語限定ならカードごと消し、英語版が無ければリンクを外して Coming soon
+  - ナビ・フッター：英語版が無いページは日本語版へ（`../ページ`、hreflang="ja"）。ナビは一覧ではないので Coming soon にしない（段階2で見直す）
+  - 勉強の軌跡・研究の階層：日本語のページは「英語の小見出し＋日本語の名前」。英語のページは同じ英語を2回並べないよう、小見出しを出さない
+  - 木の分類名は字間を 0.06em に詰める（`html[lang="en"] .tree-cat__name`。0.12em のままだと 1024px で 1px 重なる）
+- **道具**
+  - `tools/make-en.sh <ファイル名>`：日本語のページを `html/en/` に写す（lang を en に、`../` で始まる href・src に `../` を1つ足す）。共通ページだけ。上書きしない
+  - `tools/check-i18n.js`：対応表とファイル、読み込みの順と lang、英語のページのリンク先、hreflang、英語の文言のそろいを見る（ブラウザ不要）
+  - `tools/check-pages.js`：ページの一覧を、決め打ちからファイル（html/・html/country/・html/en/）に変えた。
+    前の一覧は 67枚で、物理数学・サイバー・自己紹介・勉強の軌跡などの 40枚が抜けていた
+  - `bump.sh`・`check-cachebust.sh` は html/ の下を全部見るので、html/en/ も何もしないで入る
+  - 国のページのテンプレート（`tools/memoryverse-cards/page_tpl.html`）にも i18n.js を足した。
+    あわせて、書き出したページにはあるのにテンプレートに無かった disciplines.js の行も足した（テンプレートとページの食い違いを直した）
+
+## 139.3 用語集（2026-11-12 確定）
+
+英語の文言はこの表に合わせる。下書きから変えたのは、勉強の軌跡・フッターの一文・05 と 06 の見出しの4つ（残りは下書きのまま確定）。
+
+| 日本語 | 英語 | 使う場所 |
+|---|---|---|
+| ホーム／自己紹介／勉強の軌跡／動画／ブログ／各種SNS | Home / About / Learning Journey / Videos / Blog / Social | ナビ・フッター（勉強の軌跡はパネル・ページの title・パンくずも Learning Journey） |
+| サイト構成（ボタン）／サイトの階層（パネルの見出し） | Site Map / Site structure | パネル |
+| 準備中 | Coming soon | カード・タイル・パネル（「（準備中）」は「 (coming soon)」） |
+| ここから読む／〇〇のページへ | Start here / Go to 〇〇 | 勉強の軌跡 |
+| シリーズ／前の節・次の節／〇〇の目次へ | Series / Previous section・Next section / Contents of 〇〇 | 記事の末尾 |
+| 前の記事・次の記事（物理数学の単位） | Previous article・Next article | 記事の末尾 |
+| N章 〇〇 | Ch. N 〇〇 | パネル |
+| フッターの一言「学術領域の世界への入口を開くプラットフォーム。」 | Opening the gates to the world of learning. | フッター |
+| ダーク／ライトモードに切り替え | Switch to dark mode / Switch to light mode | 教材ページのテーマ切替 |
+| 01 種／02 根／03 学問の樹／04 私の枝／05 実り／06 一歩（ホームの小見出しはすでに英語） | Seed / Roots / Tree / My Branch / Fruits / Step | ホーム |
+| 学びは、根を張る。 | Learning puts down roots. | ホーム 02 の見出し |
+| 学問の樹 | The Tree of Disciplines | ホーム 03 の見出し |
+| 私の枝 | My Branch | ホーム 04 の見出し |
+| 学びを、社会へ。 | From learning to society. | ホーム 05 の見出し |
+| 学問の世界へ、あなたも一歩を踏み出してみませんか。 | Why not take your first step into the world of learning? | ホーム 06 の見出し |
+| 複合分野 | Themes | 勉強の軌跡・パネル（勉強の軌跡の英語の小見出しはすでに Themes） |
+| 精神の圏域 | Orbis Mentis | 勉強の軌跡・パネル（ラテン語のまま。英語のページでは説明の一文の頭で「Latin for “the sphere of the mind”」と意味を伝える） |
+| 地球と人類 | Earth & Humankind | 複合分野 |
+| 研究テーマ／研究トピック／専門分野／基礎分野 | Theme / Topics / Fields / Foundations | 研究の階層（すでに英語の小見出し） |
+| 基礎領域（学部レベル）の科目一覧 | Core subjects (undergraduate level) | 研究の階層 |
+| 物理数学 | Mathematics for Physics | シリーズ名 |
+| サイバーセキュリティ基礎 | Cybersecurity Fundamentals | シリーズ名 |
+| 記憶術／メモリーバース | （日本語限定なので訳さない） | |
+
+**7つの大分類**（すでに `en` があり、日本語のページの小見出しに使っている）：形式科学 Formal Sciences／自然科学 Natural Sciences／生命・医療 Life & Medicine／
+工学 Engineering／人文学 Humanities／社会科学 Social Sciences／芸術・創作 Arts & Creation（木だけ Arts）
+
+**34の学問**（正式名。かっこは木だけの短い名前）
+
+| 大分類 | 学問 |
+|---|---|
+| 形式科学 | 数学 Mathematics／統計学 Statistics／論理学 Logic／情報科学 Informatics |
+| 自然科学 | 物理学 Physics／化学 Chemistry／生物学 Biology／地球科学 Earth Science／天文学 Astronomy |
+| 生命・医療 | 医学 Medicine／薬学 Pharmacy（Pharmaceutical Sciences は木で隣と重なるため。確定）／農学 Agriculture |
+| 工学 | 機械工学 Mechanical Engineering（Mechanical Eng.）／電気電子工学 Electrical and Electronic Engineering（Electrical Eng.）／土木工学 Civil Engineering（Civil Eng.）／航空宇宙工学 Aerospace Engineering（Aerospace Eng.）／建築学 Architecture |
+| 人文学 | 哲学 Philosophy／歴史学 History／地理学 Geography／宗教学 Religious Studies／文学 Literature／言語学 Linguistics／外国語 Foreign Languages（Languages） |
+| 社会科学 | 経済学 Economics／法学 Law／政治学 Political Science／社会学 Sociology／心理学 Psychology／教育学 Education |
+| 芸術・創作 | 美術 Fine Arts／音楽 Music／デザイン Design／映像 Film |
+
+物理数学の章・節、サイバーセキュリティ基礎 1章の節の英語名は、layout.js の CRUMBS（`en`・`titleEn`）に下書きとして入れてある。
+
+## 139.4 英語版を作る手順（段階3以降。§138 の⑤）
+
+1. `sh Academic-Gate_hp/tools/make-en.sh <ファイル名>` で写す（本文は日本語のまま）
+2. 本文・title・meta description を訳した下書きを作り、確認してもらう（ブランチの中だけ）
+3. `js/i18n.js` の `AG_PAGE_LANG.en` に1行足す。両方の head に hreflang の3行（ja・en・x-default＝日本語版。URL は https://max-phy.jp/… の絶対パス）
+4. 英語のページの中のリンクで、日本語限定のページへのものは外すか `../ページ` にする（`check-i18n.js` が見つける）
+5. 番号を上げ（`bump.sh`）、`node Academic-Gate_hp/tools/check-i18n.js`、そのページと対の日本語ページ・リンク元を 1440・390 で
+
+## 139.5 段階1の確認（日本語のページが変わらないこと）
+
+2026-11-12、ブランチ feature/i18n（r185）と main（r184）を、全107ページ（html/ 55・国 52）× 1440・390 ＝ 214 通りで比べた。
+動きを減らす設定。乱数を固定し、下まで送ってから上に戻し、地図の読み込みを待ってから撮る。
+比べ方は scratchpad の比較の道具（リポジトリには入れていない）。
+
+| 見たもの | 結果 |
+|---|---|
+| JS が書き出した HTML（`?v=rNN` と i18n.js の読み込み行だけ揃える） | 214 通りすべて同じ |
+| 全体のスクリーンショット（画素） | 210 通りは同じ。残り4通りは下の揺れ |
+| `/html/en/` への読み込み | 0 件 |
+| ページのエラー | 0 件 |
+| check-pages.js（全ページを見るように直したもの） | 214 通りでエラー・404・横に送れる：0 件 |
+| check-i18n.js | ja 107・en 0、食い違い 0 件 |
+
+画素が揃わなかった4通り（cyber_1-2 の 1440、phys-math_3-1・5-1・9-4 の 390）は、main どうしを比べても同じ種類の違いが出る。撮るたびに揺れるもので、段階1の変更によるものではない。
+- 背景のグラデーションの粒の並び
+- 右下の「目次」ボタンが、撮る瞬間に出ているか消えかけか（main とブランチで向きが入れ替わる）
+- 縦に長いページの 16384px ごとの継ぎ目で、1画素だけずれる（9-4）
+
+cyber_1-2・3-1・5-1 は、何度か撮り直した中で main とブランチが画素まで同じ回もあった。
+
+## 139.6 段階2へのメモ（段階2で片づけた）
+
+- 769〜790px で Connect ボタンが切れていた件 → 139.7 で直した
+- 英語のページのナビで、英語版の無いページを日本語版へ飛ばす扱い → ナビの6ページの英語版をそろえたので、英語のナビから日本語のページへ飛ぶことは無くなった。
+  layout.js の仕組み（`navLink`）は、ナビのページを増やしたときの保険として残す
+
+## 139.7 切り替えボタン（段階2、2026-11-12、r186。公開は r187）
+
+英語のホーム（`en/index.html`）が対応表にあるときだけ、全ページのヘッダーに出す。中身は layout.js（`langTarget`・`langHtml`・`mountLang`）、見た目は style.css の「日本語・英語の切り替え」。
+
+- **形**
+  - PC：ナビと Connect の間に `JA / EN`。並びはどちらの言語でも JA / EN。いまの言語は明るい字（`aria-current`）、相手の言語がリンク
+  - 768px 以下：ハンバーガーの右に、相手の言語だけの小さな札（日本語のページは EN、英語のページは JA）
+  - 375px 未満でサイト構成のボタンもあるページ（記事など）だけは、札を置く幅が無いので、メニューの最後の行に「English／日本語」として出す
+- **押したとき**（行き先は対応表と CRUMBS から決める）
+
+| いるページ | 押したとき |
+|---|---|
+| 相手の言語版がある | 対のページへ（`en/X` ↔ `../X`） |
+| 共通ページで相手の言語版がまだ無い | 移動しない。ボタンの下に「This page is not available in English yet.」と、相手の言語版がある一番近い上の階層へのリンク（無ければホーム）。Esc・外を押す・✕で閉じる |
+| 今の言語の限定ページ（メモリーバース・国のページなど） | 相手の言語版がある一番近い上の階層へそのまま移動（国のページは CRUMBS に無いのでホーム） |
+
+  - 案内の文言は相手の言語で書く（読むのはその言語の人なので）。`AG_I18N.t(key, vars, lang)` の3つ目で言語を指定する
+  - 選んだ言語は localStorage（`ag-lang`）に覚える。勝手に転送はしない。覚えた言語を使う案内は、まだ作っていない
+- **Connect が切れていた件**：769〜1023px だけ、ヘッダーの gap・ナビの字の大きさと余白・Connect の左の余白を詰めた。
+  769px でナビの左右に約 35px の空きがある（ボタンを足したうえで）
+- **英語で増えた直し**：勉強の軌跡の学問のタイルは、英語のときだけ名前を折り返す（Electrical and Electronic Engineering が 390px で1行に入らず、ページが横に送れた）
+
+## 139.8 段階2の英語のページ（2026-11-12 確認を受けて公開）
+
+ナビの行き先6ページ（index・self-intro・study・videos・blog・sns）を `make-en.sh` で写して英訳の下書きを入れ、対応表の en に足した。
+両方の head に hreflang の3行。いずれもブランチの中だけで、main には入れていない。
+
+- **訳し方で決めたこと**
+  - 本文は一人称（I / my）。日本語の「運営者は」は、英語の個人サイトとして自然な形にした
+  - ホーム 05 のカードは、上の英語の小見出し（Videos など。実の色の点を持つので消せない）と同じ語にならないよう、見出しを言い換えた
+  - 精神の圏域：記憶術（日本語限定）は出さず、推理・推論と暗算法の準備中2枚だけ。「精神の圏域のページへ」の行は、英語版が無いので外した
+  - ホーム 02 の「学び方」の札は、英語の勉強の軌跡の Orbis Mentis（`study.html#roots`）へ
+  - 研究の説明は、論文（JHEP 05 (2026) 119 / arXiv:2509.13292）の abstract の用語に合わせた
+- **確認で決まったこと**（要確認の注釈は外した）
+  - キャッチコピー：One question, and the world opens up.
+  - 自己紹介の最初の一文：A physics grad student who is still very much a work in progress.
+  - 初期宇宙理論 → early-universe cosmology（研究の階層のカード Early Universe Cosmology に統一。ホーム 04 も）
+  - 研究の説明：非線形遷移のあとは「the axion behaves as matter and can make up the dark matter」、残る量は「how much of it remains today」
+  - 研究室：素粒子理論研究室 → Particle Theory Group（研究室の公式サイトの表記）。1行で書くときは
+    「Particle Theory Group, Department of Physics, Tokyo Metropolitan University」。
+    学部の高エネルギー理論研究室は別の研究室で High-Energy Theory Group（経歴では当時の名前のまま）
+  - 高校：Tokyo Metropolitan Tama High School of Science and Technology（公式の表記）
+  - 実践心理学 → Applied Psychology、個人事業 → run a small business of my own
+
+## 139.9 モバイルのメニューが透ける件（2026-11-12）
+
+768px 以下でハンバーガーから開くメニュー（`.nav-menu`）は、ヘッダーの中にあるので、ヘッダー自身の backdrop-filter に阻まれて
+自分のぼかしが効かず、後ろの本文が透けて読みにくかった（段階2の前からの不具合。日本語・英語とも）。
+切り替えの案内（`.lang-note`）と同じく、`background: linear-gradient(var(--nav-bg), var(--nav-bg)), var(--bg)` で地の色を敷いた
