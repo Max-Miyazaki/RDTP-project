@@ -138,7 +138,7 @@
         'cyber':           { label: 'サイバーセキュリティ基礎', href: 'cyber.html', parent: 'informatics', unit: '節', unitEn: 'section',
                              en: 'Cybersecurity Fundamentals' },
         'cyber:ch0':       { label: '0章 準備編：コンピューターの基礎',             parent: 'cyber',
-                             en: 'Ch. 0 Preparation: Computer Basics' },
+                             en: 'Ch. 0 Prerequisites: Computer Basics' },
         'cyber_0-1':       { label: 'SECTION 0-1',  href: 'cyber_0-1.html',        parent: 'cyber:ch0',
                              title: '0-1　ビット・バイトと2進数・16進数',
                              titleEn: '0-1　Bits, Bytes, Binary and Hexadecimal' },
