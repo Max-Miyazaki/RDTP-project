@@ -31,88 +31,135 @@
        label は既存のパンくずの文言をそのまま使う（サイト側の呼び名を変えない）。
        title は前後リンクで使う長い名前。 */
     var CRUMBS = {
-        'study':           { label: '勉強の軌跡',   href: 'study.html' },
-        'physics':         { label: '物理学',       href: 'study_physics.html',    parent: 'study' },
-        'phys-math':       { label: '物理数学',     href: 'phys-math.html',        parent: 'physics', unit: '記事' },
-        'phys-math:ch1':   { label: '1章 微分',                                    parent: 'phys-math' },
+        'study':           { label: '勉強の軌跡',   href: 'study.html',
+                             en: 'Study Journey' },
+        'physics':         { label: '物理学',       href: 'study_physics.html',    parent: 'study',
+                             en: 'Physics' },
+        'phys-math':       { label: '物理数学',     href: 'phys-math.html',        parent: 'physics', unit: '記事', unitEn: 'article',
+                             en: 'Mathematics for Physics' },
+        'phys-math:ch1':   { label: '1章 微分',                                    parent: 'phys-math',
+                             en: 'Ch. 1 Differentiation' },
         'phys-math_1-1':   { label: 'SECTION 1-1',  href: 'phys-math_1-1.html',    parent: 'phys-math:ch1',
-                             title: '1-1　微分の基礎' },
+                             title: '1-1　微分の基礎',
+                             titleEn: '1-1　Basics of Differentiation' },
         'phys-math_1-2':   { label: 'SECTION 1-2',  href: 'phys-math_1-2.html',    parent: 'phys-math:ch1',
-                             title: '1-2　物理でよく使う関数の微分' },
+                             title: '1-2　物理でよく使う関数の微分',
+                             titleEn: '1-2　Derivatives of Functions Common in Physics' },
         // まだ書いていない記事。href の代わりに soon を立てると、ツリーと前後リンクに
         // 「（準備中）」として出る。書き上がったら soon を消して href を入れる。
-        'phys-math:ch2':   { label: '2章 積分',                                    parent: 'phys-math' },
+        'phys-math:ch2':   { label: '2章 積分',                                    parent: 'phys-math',
+                             en: 'Ch. 2 Integration' },
         'phys-math_2-1':   { label: 'SECTION 2-1',  href: 'phys-math_2-1.html',    parent: 'phys-math:ch2',
-                             title: '2-1　積分の基礎' },
+                             title: '2-1　積分の基礎',
+                             titleEn: '2-1　Basics of Integration' },
         'phys-math_2-2':   { label: 'SECTION 2-2',  href: 'phys-math_2-2.html',    parent: 'phys-math:ch2',
-                             title: '2-2　積分の技法' },
-        'phys-math:ch3':   { label: '3章 近似と展開',                              parent: 'phys-math' },
+                             title: '2-2　積分の技法',
+                             titleEn: '2-2　Integration Techniques' },
+        'phys-math:ch3':   { label: '3章 近似と展開',                              parent: 'phys-math',
+                             en: 'Ch. 3 Approximation and Expansion' },
         'phys-math_3-1':   { label: 'SECTION 3-1',  href: 'phys-math_3-1.html',    parent: 'phys-math:ch3',
-                             title: '3-1　近似と展開' },
-        'phys-math:ch4':   { label: '4章 複素数とオイラーの公式',                  parent: 'phys-math' },
+                             title: '3-1　近似と展開',
+                             titleEn: '3-1　Approximation and Expansion' },
+        'phys-math:ch4':   { label: '4章 複素数とオイラーの公式',                  parent: 'phys-math',
+                             en: 'Ch. 4 Complex Numbers and Euler\'s Formula' },
         'phys-math_4-1':   { label: 'SECTION 4-1',  href: 'phys-math_4-1.html',    parent: 'phys-math:ch4',
-                             title: '4-1　複素数とオイラーの公式' },
+                             title: '4-1　複素数とオイラーの公式',
+                             titleEn: '4-1　Complex Numbers and Euler\'s Formula' },
         'phys-math_4-2':   { label: 'SECTION 4-2',  href: 'phys-math_4-2.html',    parent: 'phys-math:ch4',
-                             title: '4-2　複素数で振動を扱う' },
-        'phys-math:ch5':   { label: '5章 常微分方程式',                            parent: 'phys-math' },
+                             title: '4-2　複素数で振動を扱う',
+                             titleEn: '4-2　Treating Oscillations with Complex Numbers' },
+        'phys-math:ch5':   { label: '5章 常微分方程式',                            parent: 'phys-math',
+                             en: 'Ch. 5 Ordinary Differential Equations' },
         'phys-math_5-1':   { label: 'SECTION 5-1',  href: 'phys-math_5-1.html',    parent: 'phys-math:ch5',
-                             title: '5-1　1階の微分方程式' },
+                             title: '5-1　1階の微分方程式',
+                             titleEn: '5-1　First-Order Differential Equations' },
         'phys-math_5-2':   { label: 'SECTION 5-2',  href: 'phys-math_5-2.html',    parent: 'phys-math:ch5',
-                             title: '5-2　2階線形微分方程式' },
+                             title: '5-2　2階線形微分方程式',
+                             titleEn: '5-2　Second-Order Linear Differential Equations' },
         'phys-math_5-3':   { label: 'SECTION 5-3',  href: 'phys-math_5-3.html',    parent: 'phys-math:ch5',
-                             title: '5-3　強制振動と共鳴' },
-        'phys-math:ch6':   { label: '6章 多変数関数の微分',                        parent: 'phys-math' },
+                             title: '5-3　強制振動と共鳴',
+                             titleEn: '5-3　Forced Oscillation and Resonance' },
+        'phys-math:ch6':   { label: '6章 多変数関数の微分',                        parent: 'phys-math',
+                             en: 'Ch. 6 Differentiation of Multivariable Functions' },
         'phys-math_6-1':   { label: 'SECTION 6-1',  href: 'phys-math_6-1.html',    parent: 'phys-math:ch6',
-                             title: '6-1　偏微分と全微分' },
+                             title: '6-1　偏微分と全微分',
+                             titleEn: '6-1　Partial and Total Derivatives' },
         'phys-math_6-2':   { label: 'SECTION 6-2',  href: 'phys-math_6-2.html',    parent: 'phys-math:ch6',
-                             title: '6-2　多変数微分の応用' },
-        'phys-math:ch7':   { label: '7章 多重積分と座標系',                        parent: 'phys-math' },
+                             title: '6-2　多変数微分の応用',
+                             titleEn: '6-2　Applications of Multivariable Differentiation' },
+        'phys-math:ch7':   { label: '7章 多重積分と座標系',                        parent: 'phys-math',
+                             en: 'Ch. 7 Multiple Integrals and Coordinate Systems' },
         'phys-math_7-1':   { label: 'SECTION 7-1',  href: 'phys-math_7-1.html',    parent: 'phys-math:ch7',
-                             title: '7-1　重積分' },
+                             title: '7-1　重積分',
+                             titleEn: '7-1　Multiple Integrals' },
         'phys-math_7-2':   { label: 'SECTION 7-2',  href: 'phys-math_7-2.html',    parent: 'phys-math:ch7',
-                             title: '7-2　座標系の取り替えとヤコビアン' },
-        'phys-math:ch8':   { label: '8章 ベクトル解析',                            parent: 'phys-math' },
+                             title: '7-2　座標系の取り替えとヤコビアン',
+                             titleEn: '7-2　Changing Coordinates and the Jacobian' },
+        'phys-math:ch8':   { label: '8章 ベクトル解析',                            parent: 'phys-math',
+                             en: 'Ch. 8 Vector Analysis' },
         'phys-math_8-1':   { label: 'SECTION 8-1',  href: 'phys-math_8-1.html',    parent: 'phys-math:ch8',
-                             title: '8-1　ベクトルと場' },
+                             title: '8-1　ベクトルと場',
+                             titleEn: '8-1　Vectors and Fields' },
         'phys-math_8-2':   { label: 'SECTION 8-2',  href: 'phys-math_8-2.html',    parent: 'phys-math:ch8',
-                             title: '8-2　grad' },
+                             title: '8-2　grad',
+                             titleEn: '8-2　grad' },
         'phys-math_8-3':   { label: 'SECTION 8-3',  href: 'phys-math_8-3.html',    parent: 'phys-math:ch8',
-                             title: '8-3　div と rot' },
+                             title: '8-3　div と rot',
+                             titleEn: '8-3　div and rot' },
         'phys-math_8-4':   { label: 'SECTION 8-4',  href: 'phys-math_8-4.html',    parent: 'phys-math:ch8',
-                             title: '8-4　ガウスの定理とストークスの定理' },
-        'phys-math:ch9':   { label: '9章 線形代数の物理的な使い方',                parent: 'phys-math' },
+                             title: '8-4　ガウスの定理とストークスの定理',
+                             titleEn: '8-4　Gauss\'s Theorem and Stokes\' Theorem' },
+        'phys-math:ch9':   { label: '9章 線形代数の物理的な使い方',                parent: 'phys-math',
+                             en: 'Ch. 9 Using Linear Algebra in Physics' },
         'phys-math_9-1':   { label: 'SECTION 9-1',  href: 'phys-math_9-1.html',    parent: 'phys-math:ch9',
-                             title: '9-1　行列は線形変換' },
+                             title: '9-1　行列は線形変換',
+                             titleEn: '9-1　Matrices Are Linear Transformations' },
         'phys-math_9-2':   { label: 'SECTION 9-2',  href: 'phys-math_9-2.html',    parent: 'phys-math:ch9',
-                             title: '9-2　固有値と対角化' },
+                             title: '9-2　固有値と対角化',
+                             titleEn: '9-2　Eigenvalues and Diagonalization' },
         'phys-math_9-3':   { label: 'SECTION 9-3',  href: 'phys-math_9-3.html',    parent: 'phys-math:ch9',
-                             title: '9-3　物理で出会う行列' },
+                             title: '9-3　物理で出会う行列',
+                             titleEn: '9-3　Matrices You Meet in Physics' },
         'phys-math_9-4':   { label: 'SECTION 9-4',  href: 'phys-math_9-4.html',    parent: 'phys-math:ch9',
-                             title: '9-4　添字で計算する行列の公式' },
-        'phys-math:ch10':  { label: '10章 変分法',                                 parent: 'phys-math' },
+                             title: '9-4　添字で計算する行列の公式',
+                             titleEn: '9-4　Matrix Identities in Index Notation' },
+        'phys-math:ch10':  { label: '10章 変分法',                                 parent: 'phys-math',
+                             en: 'Ch. 10 Calculus of Variations' },
         'phys-math_10-1':  { label: 'SECTION 10-1', href: 'phys-math_10-1.html',   parent: 'phys-math:ch10',
-                             title: '10-1　変分法' },
+                             title: '10-1　変分法',
+                             titleEn: '10-1　Calculus of Variations' },
         'phys-math_10-2':  { label: 'SECTION 10-2', href: 'phys-math_10-2.html',   parent: 'phys-math:ch10',
-                             title: '10-2　条件付きの変分と場の変分' },
+                             title: '10-2　条件付きの変分と場の変分',
+                             titleEn: '10-2　Constrained Variations and Variations of Fields' },
         // 情報科学（DESIGN.md §137）。親は addDisciplines() が形式科学の下へ付け替える。
         // サイバーセキュリティ基礎の節は、書き上げたものから cyber:chN の下に足す（まだ無い章は行ごと足さない）。
-        'informatics':     { label: '情報科学',     href: 'study_informatics.html', parent: 'study' },
-        'cyber':           { label: 'サイバーセキュリティ基礎', href: 'cyber.html', parent: 'informatics', unit: '節' },
-        'cyber:ch1':       { label: '1章 ネットワークの仕組み',                     parent: 'cyber' },
+        'informatics':     { label: '情報科学',     href: 'study_informatics.html', parent: 'study',
+                             en: 'Informatics' },
+        'cyber':           { label: 'サイバーセキュリティ基礎', href: 'cyber.html', parent: 'informatics', unit: '節', unitEn: 'section',
+                             en: 'Cybersecurity Fundamentals' },
+        'cyber:ch1':       { label: '1章 ネットワークの仕組み',                     parent: 'cyber',
+                             en: 'Ch. 1 How Networks Work' },
         'cyber_1-1':       { label: 'SECTION 1-1',  href: 'cyber_1-1.html',        parent: 'cyber:ch1',
-                             title: '1-1　パケットとIP' },
+                             title: '1-1　パケットとIP',
+                             titleEn: '1-1　Packets and IP' },
         'cyber_1-2':       { label: 'SECTION 1-2',  href: 'cyber_1-2.html',        parent: 'cyber:ch1',
-                             title: '1-2　TCPとポート、3-wayハンドシェイク' },
+                             title: '1-2　TCPとポート、3-wayハンドシェイク',
+                             titleEn: '1-2　TCP, Ports, and the 3-Way Handshake' },
         'cyber_1-3':       { label: 'SECTION 1-3',  href: 'cyber_1-3.html',        parent: 'cyber:ch1',
-                             title: '1-3　UDP・ICMP と主要プロトコル' },
+                             title: '1-3　UDP・ICMP と主要プロトコル',
+                             titleEn: '1-3　UDP, ICMP, and Key Protocols' },
         'cyber_1-4':       { label: 'SECTION 1-4',  href: 'cyber_1-4.html',        parent: 'cyber:ch1',
-                             title: '1-4　階層モデル（OSI / TCP-IP）で全体を捉える' },
+                             title: '1-4　階層モデル（OSI / TCP-IP）で全体を捉える',
+                             titleEn: '1-4　Seeing the Whole Picture with Layer Models (OSI / TCP-IP)' },
         // 複合分野：学問分野と精神の圏域のあいだの枠（DESIGN.md §103）。いまは「地球と人類」だけ。
-        'composite':       { label: '複合分野',     href: 'study_composite.html',  parent: 'study' },
+        'composite':       { label: '複合分野',     href: 'study_composite.html',  parent: 'study',
+                             en: 'Themes' },
         // 地球と人類は構成を検討中なので、リンクなしの準備中（§136.7）。earthhuman.html は古いリンクのために残してある
         //  （タイトルと「準備中」だけ）。ページを書いたら soon を消して href: 'earthhuman.html' を戻す。
-        'earthhuman':      { label: '地球と人類',   soon: true,                    parent: 'composite' },
-        'skills':          { label: '精神の圏域',   href: 'study_skills.html',     parent: 'study' },
+        'earthhuman':      { label: '地球と人類',   soon: true, file: 'earthhuman.html',                    parent: 'composite',
+                             en: 'Earth & Humankind' },
+        'skills':          { label: '精神の圏域',   href: 'study_skills.html',     parent: 'study',
+                             en: 'Orbis Mentis' },
         'mnemonics':       { label: '記憶術',       href: 'skills_mnemonics.html', parent: 'skills' },
         'memoryverse':     { label: 'メモリーバース', href: 'memoryverse.html',    parent: 'mnemonics', unit: '回' },
         'memoryverse:ch1': { label: '1章 太陽系',                                  parent: 'memoryverse' },
@@ -159,17 +206,41 @@
         var out = { study: CRUMBS.study };
         DISCIPLINES.forEach(function (c) {
             var ck = 'cat:' + c.cat;
-            out[ck] = { label: c.ja, parent: 'study' };
+            out[ck] = { label: c.ja, en: c.en, parent: 'study' };
             c.subjects.forEach(function (sj) {
                 var own = sj.page && byHref[sj.page];
                 if (own) { CRUMBS[own].parent = ck; out[own] = CRUMBS[own]; return; }
-                var row = { label: sj.ja, parent: ck };
+                var row = { label: sj.ja, en: sj.en, parent: ck };
                 if (sj.page) row.href = sj.page; else row.soon = true;
                 out['subject:' + sj.key] = row;
             });
         });
         Object.keys(CRUMBS).forEach(function (k) { if (!out[k]) out[k] = CRUMBS[k]; });
         CRUMBS = out;
+    })();
+
+    /* --- ページの言語に合わせる（DESIGN.md §139）--------------------------------
+       - 反対の言語の限定ページ（英語のページから見た日本語限定など）の行は、その下の行ごと消す
+       - 英語のページでは名前を en / titleEn に替え、英語版がまだ無いページは soon（Coming soon）にする
+       日本語のページでは、英語限定のページが無いあいだは何も変わらない */
+    var I18N = AG_I18N;
+    (function localize() {
+        var gone = {};
+        Object.keys(CRUMBS).forEach(function (k) {
+            var f = CRUMBS[k].href || CRUMBS[k].file;
+            if (f && !I18N.listed(f)) gone[k] = 1;
+        });
+        Object.keys(CRUMBS).forEach(function (k) {
+            for (var p = k; p; p = CRUMBS[p] && CRUMBS[p].parent) if (gone[p]) { delete CRUMBS[k]; return; }
+        });
+        if (I18N.lang === 'ja') return;
+        Object.keys(CRUMBS).forEach(function (k) {
+            var c = CRUMBS[k];
+            c.label = I18N.pick(c.label, c.en || (/[^\x00-\x7f]/.test(c.label) ? '' : c.label));
+            if (c.title) c.title = I18N.pick(c.title, c.titleEn);
+            if (c.unit) c.unit = I18N.pick(c.unit, c.unitEn);
+            if (c.href && !I18N.href(c.href)) { delete c.href; c.soon = true; }
+        });
     })();
 
     // node から根までの並び（根が先頭）。
@@ -207,12 +278,12 @@
             '<div class="rw">' +
             (kids.length
                 ? '<button class="tw" type="button" aria-expanded="' + (open[key] ? 'true' : 'false') +
-                  '" aria-label="' + name + 'の下を開く"></button>'
+                  '" aria-label="' + I18N.t('sitenav.expand', { name: name }) + '"></button>'
                 : '<span class="tw tw--leaf" aria-hidden="true"></span>') +
             (c.href
                 ? '<a href="' + c.href + '"' + (key === cur ? ' class="cur" aria-current="page"' : '') + '>' + name + '</a>'
                 : c.soon
-                    ? '<span class="soon">' + name + '（準備中）</span>'
+                    ? '<span class="soon">' + name + I18N.t('soon.paren') + '</span>'
                     : '<button class="hd" type="button">' + name + '</button>') +
             '</div>';
         if (kids.length) {
@@ -224,11 +295,11 @@
         var open = {}, keys = chain(cur);
         keys.forEach(function (k) { open[k] = true; });        // 現在地まで自動で展開
         var roots = Object.keys(CRUMBS).filter(function (k) { return !CRUMBS[k].parent; });
-        return '<button class="sitenav-tab" id="sitenavTab" type="button" aria-expanded="false" aria-controls="sitenav">サイト構成</button>' +
+        return '<button class="sitenav-tab" id="sitenavTab" type="button" aria-expanded="false" aria-controls="sitenav">' + I18N.t('sitenav.tab') + '</button>' +
             '<div class="sitenav-scrim" id="sitenavScrim"></div>' +
-            '<aside class="sitenav" id="sitenav" aria-label="サイトの階層">' +
-                '<div class="sitenav__hd"><span>サイトの階層</span>' +
-                    '<button class="sitenav__x" type="button" aria-label="閉じる">✕</button></div>' +
+            '<aside class="sitenav" id="sitenav" aria-label="' + I18N.t('sitenav.title') + '">' +
+                '<div class="sitenav__hd"><span>' + I18N.t('sitenav.title') + '</span>' +
+                    '<button class="sitenav__x" type="button" aria-label="' + I18N.t('sitenav.close') + '">✕</button></div>' +
                 '<nav class="sitenav__body"><ul class="tree">' +
                     roots.map(function (k) { return treeHtml(k, cur, open); }).join('') +
                 '</ul></nav>' +
@@ -284,7 +355,7 @@
     function navCell(cls, cap, text, href) {
         return href
             ? '<a class="' + cls + '" href="' + href + '"><b>' + cap + '</b>' + text + '</a>'
-            : '<span class="' + cls + ' soon"><b>' + cap + '</b>' + text + '（準備中）</span>';
+            : '<span class="' + cls + ' soon"><b>' + cap + '</b>' + text + I18N.t('soon.paren') + '</span>';
     }
     // シリーズの中の記事を、章をまたいで表の順に並べたもの（＝前後の順）。
     function leavesOf(key, out) {
@@ -294,17 +365,17 @@
         return out;
     }
     function lessonNavHtml(cur) {
-        var ser = seriesOf(cur), unit = (ser && CRUMBS[ser].unit) || '記事';
+        var ser = seriesOf(cur), unit = (ser && CRUMBS[ser].unit) || I18N.pick('記事', 'article');
         var sib = ser ? leavesOf(ser, []) : childrenOf(CRUMBS[cur].parent), i = sib.indexOf(cur);
         var prev = i > 0 ? sib[i - 1] : null, next = i < sib.length - 1 ? sib[i + 1] : null;
         var nm = function (k) { return CRUMBS[k].title || CRUMBS[k].label; };
         var cells = [];
         var AR = function (d) { return '<span class="ar" aria-hidden="true">' + d + '</span>'; };
-        if (prev) cells.push(navCell('prev', '前の' + unit, AR('←') + nm(prev), CRUMBS[prev].href));
-        if (ser) cells.push(navCell('mid', 'シリーズ', CRUMBS[ser].label + 'の目次へ', CRUMBS[ser].href));
-        if (next) cells.push(navCell('next', '次の' + unit, nm(next) + (CRUMBS[next].href ? AR('→') : ''), CRUMBS[next].href));
+        if (prev) cells.push(navCell('prev', I18N.t('lesson.prev', { unit: unit }), AR('←') + nm(prev), CRUMBS[prev].href));
+        if (ser) cells.push(navCell('mid', I18N.t('lesson.series'), I18N.t('lesson.toc', { name: CRUMBS[ser].label }), CRUMBS[ser].href));
+        if (next) cells.push(navCell('next', I18N.t('lesson.next', { unit: unit }), nm(next) + (CRUMBS[next].href ? AR('→') : ''), CRUMBS[next].href));
         if (!cells.length) return '';
-        return '<nav class="lesson-nav' + (cells.length === 2 ? ' two' : '') + '" aria-label="前後の' + unit + '">' +
+        return '<nav class="lesson-nav' + (cells.length === 2 ? ' two' : '') + '" aria-label="' + I18N.t('lesson.label', { unit: unit }) + '">' +
                cells.join('') + '</nav>';
     }
     function mountLessonNav(cur) {
@@ -331,12 +402,16 @@
             var href = c.getAttribute('href');
             var soon = !href;
             if (href) {
+                // ③ 行き先が反対の言語の限定ページなら、カードごと出さない。
+                //    いまの言語の版がまだ無い共通ページなら「準備中」にして、リンクを外す（§139）
+                if (!I18N.listed(href)) { c.remove(); return; }
+                if (!I18N.href(href)) { c.removeAttribute('href'); soon = true; }
                 var k = byHref[href.split('#')[0]];
-                soon = !!(k && CRUMBS[k].soon);
+                soon = soon || !!(k && CRUMBS[k].soon);
             }
             if (!soon || c.querySelector('.card-soon')) return;
             c.classList.add('is-soon');
-            c.insertAdjacentHTML('beforeend', '<span class="card-soon">準備中</span>');
+            c.insertAdjacentHTML('beforeend', '<span class="card-soon">' + I18N.t('soon') + '</span>');
         });
     }
 
@@ -358,10 +433,14 @@
         }
     }
 
-    var NAV_ITEMS = [
-        ['index.html', 'ホーム'], ['self-intro.html', '自己紹介'], ['study.html', '勉強の軌跡'],
-        ['videos.html', '動画'], ['blog.html', 'ブログ'], ['sns.html', '各種SNS']
-    ];
+    // ナビ・フッターの6ページ。名前は i18n.js の nav.*。
+    // 英語のページで、英語版がまだ無いページは日本語版へ（ナビは一覧ではないので「準備中」にしない。§139）
+    var NAV_ITEMS = ['index.html', 'self-intro.html', 'study.html', 'videos.html', 'blog.html', 'sns.html'].map(function (f) {
+        return [f, I18N.t('nav.' + f.replace('.html', ''))];
+    });
+    function navLink(f) {
+        return I18N.href(f) ? 'href="' + f + '"' : 'href="../' + f + '" hreflang="ja"';
+    }
 
     // サイト構成のパネルを持つページか（body[data-node] が CRUMBS にある）
     function hasSiteNav() {
@@ -372,18 +451,18 @@
     function navHtml(activeHref) {
         var lis = NAV_ITEMS.map(function (it) {
             var cls = it[0] === activeHref ? ' class="active"' : '';
-            return '<li><a href="' + it[0] + '"' + cls + '>' + it[1] + '</a></li>';
+            return '<li><a ' + navLink(it[0]) + cls + '>' + it[1] + '</a></li>';
         }).join('');
         return '<header>' +
-            '<a class="logo" href="index.html">Academic Gates</a>' +
+            '<a class="logo" ' + navLink('index.html') + '>Academic Gates</a>' +
             '<nav>' +
-                '<button class="menu-toggle" aria-label="メニューを開く" aria-expanded="false" aria-controls="nav-menu">' +
+                '<button class="menu-toggle" aria-label="' + I18N.t('nav.menu') + '" aria-expanded="false" aria-controls="nav-menu">' +
                     '<span></span><span></span><span></span>' +
                 '</button>' +
                 '<ul class="nav-menu" id="nav-menu">' + lis + '</ul>' +
             '</nav>' +
-            (hasSiteNav() ? '<button class="sitenav-hdbtn" id="sitenavHdBtn" type="button" aria-expanded="false" aria-controls="sitenav">サイト構成</button>' : '') +
-            '<a href="sns.html" class="btn btn-nav-cta">Connect <span class="btn-disc" aria-hidden="true">→</span></a>' +
+            (hasSiteNav() ? '<button class="sitenav-hdbtn" id="sitenavHdBtn" type="button" aria-expanded="false" aria-controls="sitenav">' + I18N.t('sitenav.tab') + '</button>' : '') +
+            '<a ' + navLink('sns.html') + ' class="btn btn-nav-cta">Connect <span class="btn-disc" aria-hidden="true">→</span></a>' +
         '</header>';
     }
 
@@ -392,16 +471,11 @@
             '<div class="footer-inner">' +
                 '<div class="footer-brand">' +
                     '<span class="logo">Academic Gates</span>' +
-                    '<p class="footer-tagline" lang="ja">学術領域の世界への入口を開くプラットフォーム。</p>' +
+                    '<p class="footer-tagline"' + (I18N.lang === 'ja' ? ' lang="ja"' : '') + '>' + I18N.t('footer.tagline') + '</p>' +
                 '</div>' +
-                '<nav class="footer-nav" aria-label="フッターナビゲーション">' +
+                '<nav class="footer-nav" aria-label="' + I18N.t('footer.label') + '">' +
                     '<span class="footer-col-label">Explore</span>' +
-                    '<a href="index.html">ホーム</a>' +
-                    '<a href="self-intro.html">自己紹介</a>' +
-                    '<a href="study.html">勉強の軌跡</a>' +
-                    '<a href="videos.html">動画</a>' +
-                    '<a href="blog.html">ブログ</a>' +
-                    '<a href="sns.html">各種SNS</a>' +
+                    NAV_ITEMS.map(function (it) { return '<a ' + navLink(it[0]) + '>' + it[1] + '</a>'; }).join('') +
                 '</nav>' +
                 '<div class="footer-social">' +
                     '<span class="footer-col-label">Connect</span>' +

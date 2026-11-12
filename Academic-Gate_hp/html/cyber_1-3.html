@@ -15,7 +15,7 @@
      記事の &lt;style&gt; より後ろに置くこと。css/lesson-theme.css 冒頭の注記どおり）。
      ★ 注釈に生のスタイルタグを書かない：機械的に切り出すと、そこが本物のタグとして残り、
        後ろの :root が丸ごと捨てられる（DESIGN.md §137.2） -->
-<link rel="stylesheet" href="../css/style.css?v=r184">
+<link rel="stylesheet" href="../css/style.css?v=r185">
 <style>
 /* 1-3 UDP・ICMP と主要プロトコル — 記事固有のスタイルのみ（土台は cyber_1-1.html。DESIGN.md §137）。
    共通部分は css/style.css と lesson-theme.css が持つ（DESIGN.md §35, §36）。
@@ -191,7 +191,7 @@ body.is-article main .foot p{color:var(--ink-faint)}
 .box .fig.dg{background:rgba(0,0,0,.18)}
 @media (max-width:700px){.fig.dg::before{content:'← 図は横にスクロールできます →';display:block;font-size:11px;color:var(--ink-faint);text-align:center;margin:-4px 0 6px;position:sticky;left:0}}
 </style>
-<link rel="stylesheet" href="../css/lesson-theme.css?v=r184">
+<link rel="stylesheet" href="../css/lesson-theme.css?v=r185">
 </head>
 <body data-page="study" class="is-article" data-node="cyber_1-3">
 <canvas id="starfield" aria-hidden="true"></canvas>
@@ -456,7 +456,7 @@ UNCONN     0          0   [fe80::abd0:64c7:129d:91a5]%enp0s1:546          [::]:*
       <p><code>0.0.0.0:9999</code> の行が増えました＝<strong>UDP の 9999番が開いた</strong>ということです。このあと §05 で Kali から送ると、端末B に <code>hello</code> と表示されます。</p>
 
       <figure class="fig">
-        <img src="../image/cyber/1-3/fig1_parrot_udp.jpg?v=r184" width="1400" height="1279" loading="lazy" alt="Parrot のデスクトップ。上の端末に ss -uln の結果が2回分、下の端末に nc の待ち受けと、届いた hello">
+        <img src="../image/cyber/1-3/fig1_parrot_udp.jpg?v=r185" width="1400" height="1279" loading="lazy" alt="Parrot のデスクトップ。上の端末に ss -uln の結果が2回分、下の端末に nc の待ち受けと、届いた hello">
         <figcaption>操作した順に番号を付けています。<br>
           <strong>赤枠①</strong>：起動前の <code>ss -uln</code>（上の端末）。何も起動していなくても、OS が 123番と546番を開けている。<br>
           <strong>赤枠②</strong>：下の端末で <code>nc</code> を起動し、9999番で待ち受け開始。<br>
@@ -529,14 +529,14 @@ UNCONN     0          0   [fe80::abd0:64c7:129d:91a5]%enp0s1:546          [::]:*
       <p>ポート番号だけを <code>9998</code> に変えています。<strong>9998 に特別な意味はなく</strong>、§04 の <code>ss -uln</code> に出てこなかった（＝閉じている）番号なら何でもかまいません。今度は Parrot には何も表示されません。最後に、端末A で <code>Ctrl+C</code> を押して tcpdump を止めます。</p>
 
       <figure class="fig">
-        <img src="../image/cyber/1-3/fig2_kali_full.jpg?v=r184" width="1400" height="859" loading="lazy" alt="Kali のデスクトップ。右の端末に送った2つのコマンド、左の端末に tcpdump が捕まえた3個のパケット">
+        <img src="../image/cyber/1-3/fig2_kali_full.jpg?v=r185" width="1400" height="859" loading="lazy" alt="Kali のデスクトップ。右の端末に送った2つのコマンド、左の端末に tcpdump が捕まえた3個のパケット">
         <figcaption><strong>赤枠①</strong>：端末B から、9999番と9998番に1回ずつ送った。<strong>赤枠②</strong>：端末A の tcpdump が捕まえたパケットは、<strong>全部で3個だけ</strong>。</figcaption>
       </figure>
 
       <p>パケットの行を拡大して、1個ずつ囲んだのが次の図です。§01 の図の #1〜#3 と、そのまま対応しています。</p>
 
       <figure class="fig">
-        <img src="../image/cyber/1-3/fig3_kali_zoom.png?v=r184" width="1746" height="206" loading="lazy" alt="tcpdump の3個のパケットの拡大。9999番への UDP、9998番への UDP、Parrot からの ICMP を赤枠で囲んである">
+        <img src="../image/cyber/1-3/fig3_kali_zoom.png?v=r185" width="1746" height="206" loading="lazy" alt="tcpdump の3個のパケットの拡大。9999番への UDP、9998番への UDP、Parrot からの ICMP を赤枠で囲んである">
         <figcaption><strong>赤枠①</strong>（#1）：開いている 9999番への UDP。<strong>これに対する返事はない</strong>。<br>
           <strong>赤枠②</strong>（#2）：閉じている 9998番への UDP。<br>
           <strong>赤枠③</strong>（#3）：Parrot から返ってきた ICMP の「<code>udp port 9998 unreachable</code>（UDP の 9998番には届けられません）」。</figcaption>
@@ -660,7 +660,7 @@ dhcpv6-client   546/udp</div>
       <p>結果が出たら、端末A で <code>Ctrl+C</code> を押して tcpdump を止めます。</p>
 
       <figure class="fig">
-        <img src="../image/cyber/1-3/fig4_parrot_dns.jpg?v=r184" width="1400" height="1115" loading="lazy" alt="Parrot のデスクトップ。上の端末にポート番号の名前と、DNS の問い合わせと返事の2個のパケット、下の端末に dig の結果">
+        <img src="../image/cyber/1-3/fig4_parrot_dns.jpg?v=r185" width="1400" height="1115" loading="lazy" alt="Parrot のデスクトップ。上の端末にポート番号の名前と、DNS の問い合わせと返事の2個のパケット、下の端末に dig の結果">
         <figcaption>操作した順に番号を付けています。<br>
           <strong>赤枠①</strong>：<code>/etc/services</code> で調べた、53番・123番・546番の名前。<br>
           <strong>赤枠②</strong>：<code>dig</code> を実行した瞬間に流れた、<strong>問い合わせ1個と返事1個</strong>。<br>
@@ -782,7 +782,7 @@ example.com.            280     IN      A       104.20.23.154
       <p>結果が出たら、端末A で <code>Ctrl+C</code> を押して tcpdump を止めます。</p>
 
       <figure class="fig">
-        <img src="../image/cyber/1-3/fig5_parrot_ttl.jpg?v=r184" width="1400" height="658" loading="lazy" alt="Parrot のデスクトップ。下の端末に TTL 1 の ping と Time to live exceeded、上の端末に echo request と time exceeded の2個のパケット">
+        <img src="../image/cyber/1-3/fig5_parrot_ttl.jpg?v=r185" width="1400" height="658" loading="lazy" alt="Parrot のデスクトップ。下の端末に TTL 1 の ping と Time to live exceeded、上の端末に echo request と time exceeded の2個のパケット">
         <figcaption>操作した順に番号を付けています。<br>
           <strong>赤枠①</strong>：寿命1で ping を送った。<code>192.168.64.1</code> から「<strong>Time to live exceeded</strong>（寿命が切れました）」が返ってきた。<br>
           <strong>赤枠②</strong>：そのとき見張りに映った2個。行きの echo request と、帰りの time exceeded。</figcaption>
@@ -956,9 +956,10 @@ mb.addEventListener('click',function(){var o=body.classList.toggle('nav-open');m
 scrim.addEventListener('click',function(){body.classList.remove('nav-open')});
 document.getElementById('toc').addEventListener('click',function(e){if(e.target.closest('a'))body.classList.remove('nav-open')});
 </script>
-<script src="../js/disciplines.js?v=r184"></script>
-<script src="../js/layout.js?v=r184"></script>
-<script src="../js/main.js?v=r184"></script>
-<script src="../js/starfield.js?v=r184"></script>
+<script src="../js/i18n.js?v=r185"></script>
+<script src="../js/disciplines.js?v=r185"></script>
+<script src="../js/layout.js?v=r185"></script>
+<script src="../js/main.js?v=r185"></script>
+<script src="../js/starfield.js?v=r185"></script>
 </body>
 </html>

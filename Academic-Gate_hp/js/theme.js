@@ -34,7 +34,9 @@
         if (!btn) return;
         var light = root.getAttribute('data-theme') === 'light';
         btn.textContent = light ? '☾' : '☀';
-        btn.setAttribute('aria-label', light ? 'ダークモードに切り替え' : 'ライトモードに切り替え');
+        // 文言は i18n.js（このファイルより後に読むが、sync は DOMContentLoaded 以降に呼ばれるので読み終わっている）
+        var t = window.AG_I18N ? AG_I18N.t : function (k) { return k === 'theme.toDark' ? 'ダークモードに切り替え' : 'ライトモードに切り替え'; };
+        btn.setAttribute('aria-label', light ? t('theme.toDark') : t('theme.toLight'));
         btn.title = btn.getAttribute('aria-label');
     }
 

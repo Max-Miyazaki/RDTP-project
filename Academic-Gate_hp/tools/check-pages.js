@@ -2,7 +2,7 @@
 //   使い方（リポジトリ直下で python3 -m http.server 8795 を立ててから）：
 //     NODE_PATH=<puppeteer-core のある node_modules> node Academic-Gate_hp/tools/check-pages.js [base]
 //   base の既定は http://localhost:8795/Academic-Gate_hp/html/（公開側を見るときは https://max-phy.jp/Academic-Gate_hp/html/）
-//   3つ目の引数に正規表現を渡すと、そのページだけを見る（例：'^memoryverse_3-'）。省略すると全ページ
+//   3つ目の引数に正規表現を渡すと、そのページだけを見る（例：'^memoryverse_3-'）。省略すると全ページ（ファイルから数える）
 //   結果：幅 1440・390 × ページで、エラー・404（400以上）・「実際に横へ送れる」ページを1行ずつ。最後に件数
 //
 // ★ 横スクロールは「実際に横へ送れるか」で判定する。scrollWidth（はみ出しの数値）では判定しない。
@@ -18,14 +18,13 @@
 const p = require('puppeteer-core');
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 const B = process.argv[2] || 'http://localhost:8795/Academic-Gate_hp/html/';
-const COUNTRIES = ['jpn', 'tcd', 'fra', 'bel', 'nld', 'lux', 'mco', 'che', 'lie', 'deu', 'aut',
-  'and', 'ita', 'smr', 'vat', 'mlt', 'svn', 'hrv', 'bih', 'mne', 'alb', 'srb', 'kos', 'mkd', 'grc', 'prt', 'gib', 'esp',
-  'dnk', 'nor', 'swe', 'ald', 'ltu', 'lva', 'est', 'fin', 'isl', 'irl', 'fro', 'imn', 'ggy', 'gbr', 'jey',
-  'cze', 'hun', 'pol', 'svk', 'rou', 'bgr', 'blr', 'mda', 'ukr'];
-const PAGES = ['index.html', 'study.html', 'memoryverse.html',
-  'memoryverse_1-1.html', 'memoryverse_1-2.html', 'memoryverse_1-3.html', 'memoryverse_1-4.html', 'memoryverse_1-5.html',
-  'memoryverse_2-1.html', 'memoryverse_2-2.html', 'memoryverse_2-3.html', 'memoryverse_3-1.html', 'memoryverse_3-2.html', 'memoryverse_3-3.html', 'memoryverse_3-4.html',
-  ...COUNTRIES.map(c => 'country/' + c + '.html')];
+// ページの一覧は、決め打ちにせずファイルから作る（html/・html/country/・html/en/。DESIGN.md §139）。
+// 以前は一覧を手で書いていて、物理数学・サイバー・自己紹介・勉強の軌跡の各ページ（107枚のうち40枚）が抜けていた
+const fs = require('fs'), path = require('path');
+const HTML = path.join(__dirname, '..', 'html');
+const ls = (d, pre) => fs.existsSync(path.join(HTML, d)) ? fs.readdirSync(path.join(HTML, d)).filter(f => f.endsWith('.html')).sort().map(f => pre + f) : [];
+const COUNTRIES = ls('country', '').map(f => f.replace('.html', ''));
+const PAGES = [...ls('', ''), ...ls('country', 'country/'), ...ls('en', 'en/'), ...ls('en/country', 'en/country/')];
 
 // 実際に横へ送れるか：本物の操作（狭い画面はタッチ、広い画面はマウス）で右へ送り、ずれた量を見る。
 // ★ scrollX だけを見てはいけない。スマホ（isMobile）では、はみ出しがあるとページの枠（layout viewport）が広がり、

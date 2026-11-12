@@ -15,7 +15,7 @@
      記事の &lt;style&gt; より後ろに置くこと。css/lesson-theme.css 冒頭の注記どおり）。
      ★ 注釈に生のスタイルタグを書かない：機械的に切り出すと、そこが本物のタグとして残り、
        後ろの :root が丸ごと捨てられる（DESIGN.md §137.2） -->
-<link rel="stylesheet" href="../css/style.css?v=r184">
+<link rel="stylesheet" href="../css/style.css?v=r185">
 <style>
 /* 1-4 階層モデル（OSI / TCP-IP）で全体を捉える — 記事固有のスタイルのみ（土台は cyber_1-1.html。DESIGN.md §137）。
    共通部分は css/style.css と lesson-theme.css が持つ（DESIGN.md §35, §36）。
@@ -191,7 +191,7 @@ body.is-article main .foot p{color:var(--ink-faint)}
 .box .fig.dg{background:rgba(0,0,0,.18)}
 @media (max-width:700px){.fig.dg::before{content:'← 図は横にスクロールできます →';display:block;font-size:11px;color:var(--ink-faint);text-align:center;margin:-4px 0 6px;position:sticky;left:0}}
 </style>
-<link rel="stylesheet" href="../css/lesson-theme.css?v=r184">
+<link rel="stylesheet" href="../css/lesson-theme.css?v=r185">
 </head>
 <body data-page="study" class="is-article" data-node="cyber_1-4">
 <canvas id="starfield" aria-hidden="true"></canvas>
@@ -389,7 +389,7 @@ enp0s2           UP             5e:f1:1e:25:27:db &lt;BROADCAST,MULTICAST,UP,LOW
       </figure>
 
       <figure class="fig">
-        <img src="../image/cyber/1-4/fig1_parrot.jpg?v=r184" width="1400" height="680" loading="lazy" alt="Parrot のデスクトップ。上の端末に ip -br link の結果、下の端末に Web サーバーと Kali からのアクセスの記録">
+        <img src="../image/cyber/1-4/fig1_parrot.jpg?v=r185" width="1400" height="680" loading="lazy" alt="Parrot のデスクトップ。上の端末に ip -br link の結果、下の端末に Web サーバーと Kali からのアクセスの記録">
         <figcaption>操作した順に番号を付けています。<br>
           <strong>赤枠①</strong>：Parrot の <code>ip -br link</code>。内部ネットワーク側の <code>enp0s2</code> の MAC アドレスは <code>5e:f1:1e:25:27:db</code>。<br>
           <strong>赤枠②</strong>：§05 で Kali から接続したときの、Web サーバーの記録（1-2 §07）。時刻は Parrot の時計（UTC：Coordinated Universal Time＝協定世界時。英語の頭文字なら CUT、フランス語なら TUC になるところを、どちらにも偏らないように間を取って UTC と決められた）で 08:30:58、日本時間では 17:30:58。</figcaption>
@@ -487,7 +487,7 @@ enp0s2           UP             5e:f1:1e:25:27:db &lt;BROADCAST,MULTICAST,UP,LOW
       </table></div>
 
       <figure class="fig">
-        <img src="../image/cyber/1-4/fig2_kali_list.jpg?v=r184" width="1400" height="862" loading="lazy" alt="Kali のデスクトップ。左の端末に tcpdump の記録の結果、右の端末に ip -br link、curl、tshark の一覧">
+        <img src="../image/cyber/1-4/fig2_kali_list.jpg?v=r185" width="1400" height="862" loading="lazy" alt="Kali のデスクトップ。左の端末に tcpdump の記録の結果、右の端末に ip -br link、curl、tshark の一覧">
         <figcaption>操作した順に番号を付けています。<br>
           <strong>赤枠①</strong>：Kali の <code>ip -br link</code>（§04）。<code>eth1</code> の MAC アドレスは <code>12:ae:d8:64:04:33</code>。<br>
           <strong>赤枠②</strong>：tcpdump で、1回の接続の10個をファイルに記録した。<br>
@@ -549,7 +549,7 @@ enp0s2           UP             5e:f1:1e:25:27:db &lt;BROADCAST,MULTICAST,UP,LOW
       </table></div>
 
       <figure class="fig">
-        <img src="../image/cyber/1-4/fig3_kali_layers.jpg?v=r184" width="1400" height="796" loading="lazy" alt="Kali のデスクトップ。右の端末に、1つのパケットを Frame、Ethernet II、IPv4、TCP、HTTP の層ごとに表示した結果と、ip neigh の結果">
+        <img src="../image/cyber/1-4/fig3_kali_layers.jpg?v=r185" width="1400" height="796" loading="lazy" alt="Kali のデスクトップ。右の端末に、1つのパケットを Frame、Ethernet II、IPv4、TCP、HTTP の層ごとに表示した結果と、ip neigh の結果">
         <figcaption>操作した順に番号を付けています。<br>
           <strong>赤枠①</strong>：1つのパケット（#4）を、層ごとに表示した。<br>
           <strong>赤枠②</strong>：§06 の <code>ip neigh</code>。Parrot（192.168.128.3）の MAC アドレスが、§04 の Parrot の <code>enp0s2</code> と同じ <code>5e:f1:1e:25:27:db</code>。</figcaption>
@@ -558,7 +558,7 @@ enp0s2           UP             5e:f1:1e:25:27:db &lt;BROADCAST,MULTICAST,UP,LOW
       <p>層ごとの行を拡大して、どの層かを書き込んだのが次の図です。<strong>上から下へ、外側の封筒から内側の封筒へ</strong>と並んでいます。</p>
 
       <figure class="fig">
-        <img src="../image/cyber/1-4/fig4_layers_zoom.png?v=r184" width="1800" height="529" loading="lazy" alt="tshark の出力の拡大。Frame、Ethernet II、Internet Protocol Version 4、Transmission Control Protocol、Hypertext Transfer Protocol の5つを赤枠で囲み、層の名前を書き込んである">
+        <img src="../image/cyber/1-4/fig4_layers_zoom.png?v=r185" width="1800" height="529" loading="lazy" alt="tshark の出力の拡大。Frame、Ethernet II、Internet Protocol Version 4、Transmission Control Protocol、Hypertext Transfer Protocol の5つを赤枠で囲み、層の名前を書き込んである">
         <figcaption><strong>赤枠①</strong>：tshark が付ける、記録についての情報（どの層でもない）。<br>
           <strong>赤枠②</strong>：Ethernet II＝ネットワークインターフェース層。MAC アドレス。<br>
           <strong>赤枠③</strong>：IPv4（Internet Protocol version 4：IP の第4版）＝インターネット層。IP アドレス。<br>
@@ -783,9 +783,10 @@ mb.addEventListener('click',function(){var o=body.classList.toggle('nav-open');m
 scrim.addEventListener('click',function(){body.classList.remove('nav-open')});
 document.getElementById('toc').addEventListener('click',function(e){if(e.target.closest('a'))body.classList.remove('nav-open')});
 </script>
-<script src="../js/disciplines.js?v=r184"></script>
-<script src="../js/layout.js?v=r184"></script>
-<script src="../js/main.js?v=r184"></script>
-<script src="../js/starfield.js?v=r184"></script>
+<script src="../js/i18n.js?v=r185"></script>
+<script src="../js/disciplines.js?v=r185"></script>
+<script src="../js/layout.js?v=r185"></script>
+<script src="../js/main.js?v=r185"></script>
+<script src="../js/starfield.js?v=r185"></script>
 </body>
 </html>

@@ -2481,6 +2481,11 @@ a.study-card::before,
     white-space: nowrap;
 }
 
+/* 英語のページ：分類名の字間を詰める。0.12em のままだと 1024px で Natural Sciences と Life & Medicine が 1px 重なる（§139） */
+html[lang="en"] .tree-cat__name {
+    letter-spacing: 0.06em;
+}
+
 /* 木に並べたときは、名前と同じ黒い下地を敷く（粒子の枝の上でも読めるように） */
 .tree.is-laid .tree-cat__name {
     padding: 0.15rem 0.5rem;
