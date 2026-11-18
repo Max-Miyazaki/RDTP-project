@@ -1,6 +1,6 @@
 # 教材記事の作成指示書（Academic Gates：サイトのすべての教材）
 
-- 版：2026-11-18（サイトの r190 の時点。目次の新しい形式〈節の行とプレビュー〉に合わせた）
+- 版：2026-11-18（サイトの r190 の時点。目次の新しい形式〈節の行とプレビュー〉に合わせた。サイバーセキュリティ基礎の説明の一行を短くした）
 - 正本：サイトのリポジトリの `docs/lesson-authoring/lesson-authoring-guide.md`。ダウンロードフォルダなどにあるものは写し
 - 一緒に渡すもの：ひな形 `lesson-template.html`（すべての分野で使う汎用のひな形）。参考：`lesson-toc-template.html`（シリーズの目次ページの見本。目次ページはサイトの担当が作る。付録D）
 
@@ -134,6 +134,7 @@
 | 日本語（全角1字で数える。半角の英数字は0.5字） | 15字前後、最大20字 | 15〜17字前後 | **32字以内** |
 | 英語（文字数。空白を含む） | 30字前後、最大45字 | 35字前後 | **65字以内** |
 
+- 目安は、PC で1行に収めるための基準。大事な語が落ちるくらいなら、少し超えてもよい（省略されても、プレビューで全文が見えるため）
 - 題だけで、日本語21字・英語45字を超えると、説明が見えなくなる
 - 説明の一行は、その節で何ができるようになるかを、名詞止めか短い文で（句点「。」は付けない）。題を言い換えるだけにしない
 - スマホ（768px 以下）では2段（1段目 番号と題、2段目 説明は2行まで）。上の目安の長さなら、どちらも省略されない
@@ -690,6 +691,7 @@
 - スクリーンショットは、英語の札を描いた `_en` の画像を使う（§9）。英語の札の画像が無いときだけ、日本語版の画像を使い、figcaption の末尾に札の意味を英語で添える：`<strong>Labels in the image</strong> (in Japanese): ① “…”, ② “…”.`
 - リンク：英語版のある節にだけ付ける（付録Bの「英語版」の列。いまは cyber 0-1 だけ）。英語版が無い節は、リンクを外して題の後ろに ` (coming soon)` を付ける
 - 訳語は §13 の用語集に従う。用語集に無い語は、記事の中で1つの訳に揃え、§1 の報告に載せる
+- **英訳するときは、英語のタイトルと説明の一行を、長さの目安（§3。タイトル約30字・最大45字、タイトル＋説明で65字以内）に合わせて見直す。** 英語のタイトルは、目次（`en/<接頭辞>.html`）・サイトの階層パネル（layout.js の英語の題）・記事の見出し（h1・`.brand`・title・eyebrow）の3か所に出るので、どれか1か所だけを変えず、同時に同じ文字列にする。新しい英語のタイトルと説明の一行は、§1 の報告に「目次・階層パネル・記事の見出しで使う英語」として書く（付録Bの英語の題は、英訳の前の下書き。長いものが多い）
 
 ## 13. 用語集（記事で使う語。サイトの用語集から）
 
@@ -797,101 +799,101 @@
 
 ### B-1 サイバーセキュリティ基礎（cyber.html。部 → 章 → 節）
 
-| 番号・題（日本語） | 英語 | 日本語版 | 英語版 |
-|---|---|---|---|
-| **部：基礎 — ネットワークとセキュリティの土台** | **Foundations — the groundwork of networks and security** | | |
-| **0章 準備編：コンピューターの基礎** | **Ch. 0 Prerequisites: Computer Basics** | | |
-| 0-1 ビット・バイトと2進数・16進数 | 0-1 Bits, Bytes, Binary and Hexadecimal | 公開（cyber_0-1.html） | 公開 |
-| 0-2 文字とデータの表し方（文字コード・16進ダンプ） | 0-2 Representing Characters and Data (Character Encodings and Hex Dumps) | 未公開 | 未公開 |
-| 0-3 Linux の基本操作 | 0-3 Linux Basics | 未公開 | 未公開 |
-| 0-4 プロセスとメモリ | 0-4 Processes and Memory | 未公開 | 未公開 |
-| **1章 ネットワークの仕組み** | **Ch. 1 How Networks Work** | | |
-| 1-1 パケットとIP：通信で実際に起きていること | 1-1 Packets and IP: What Actually Happens in Network Communication | 公開（cyber_1-1.html） | 未公開 |
-| 1-2 TCPとポート、3-wayハンドシェイク | 1-2 TCP, Ports, and the 3-Way Handshake | 公開（cyber_1-2.html） | 未公開 |
-| 1-3 UDP・ICMP と主要プロトコル | 1-3 UDP, ICMP, and Key Protocols | 公開（cyber_1-3.html） | 未公開 |
-| 1-4 階層モデル（OSI / TCP-IP）で全体を捉える | 1-4 Seeing the Whole Picture with Layer Models (OSI / TCP-IP) | 公開（cyber_1-4.html） | 未公開 |
-| **2章 演習環境とツールの基礎** | **Ch. 2 The Lab Environment and Basic Tools** | | |
-| 2-1 演習ラボの全体像 | 2-1 Overview of the Practice Lab | 未公開 | 未公開 |
-| 2-2 ネットワーク設定とサービス管理の基礎 | 2-2 Basics of Network Configuration and Service Management | 未公開 | 未公開 |
-| 2-3 レッド／ブルー／パープルチーム | 2-3 Red, Blue and Purple Teams | 未公開 | 未公開 |
-| **部：偵察 — 攻撃の入口と、その検知** | **Reconnaissance — how attacks begin, and how to detect them** | | |
-| **3章 情報収集（フットプリンティング）** | **Ch. 3 Information Gathering (Footprinting)** | | |
-| 3-1 パッシブ偵察 | 3-1 Passive Reconnaissance | 未公開 | 未公開 |
-| 3-2 アクティブ偵察の基礎 | 3-2 Basics of Active Reconnaissance | 未公開 | 未公開 |
-| 3-3 ソーシャルエンジニアリングとフィッシング | 3-3 Social Engineering and Phishing | 未公開 | 未公開 |
-| **4章 ホスト発見とポートスキャン** | **Ch. 4 Host Discovery and Port Scanning** | | |
-| 4-1 ホスト発見（ping sweep / ARP スキャン） | 4-1 Host Discovery (Ping Sweeps / ARP Scans) | 未公開 | 未公開 |
-| 4-2 SYNスキャンの攻防（教科書レベル） | 4-2 Attacking and Defending with SYN Scans (Textbook Level) | 未公開 | 未公開 |
-| 4-3 各種スキャン手法の比較 | 4-3 Comparing Scan Techniques | 未公開 | 未公開 |
-| 4-4 サービス・OS 特定とバナーグラビング | 4-4 Service and OS Detection, and Banner Grabbing | 未公開 | 未公開 |
-| **5章 スキャンの検知と防御** | **Ch. 5 Detecting and Defending Against Scans** | | |
-| 5-1 tcpdump / tshark でスキャンを観測する | 5-1 Observing Scans with tcpdump / tshark | 未公開 | 未公開 |
-| 5-2 スキャン検知のしきい値設計 | 5-2 Designing Thresholds for Scan Detection | 未公開 | 未公開 |
-| 5-3 nftables でレート制限・ドロップ | 5-3 Rate Limiting and Dropping with nftables | 未公開 | 未公開 |
-| **部：パケット解析 — 通信を「見る」** | **Packet Analysis — “seeing” network traffic** | | |
-| **6章 パケットキャプチャ** | **Ch. 6 Packet Capture** | | |
-| 6-1 tcpdump / tshark の基礎 | 6-1 tcpdump / tshark Basics | 未公開 | 未公開 |
-| 6-2 Wireshark の読み方と表示フィルタ | 6-2 Reading Wireshark and Using Display Filters | 未公開 | 未公開 |
-| **7章 プロトコルの観察** | **Ch. 7 Observing Protocols** | | |
-| 7-1 TCP / UDP / ICMP の挙動をパケットで追う | 7-1 Following TCP / UDP / ICMP Behavior in Packets | 未公開 | 未公開 |
-| 7-2 平文プロトコルの盗聴と暗号化の重要性 | 7-2 Sniffing Plaintext Protocols, and Why Encryption Matters | 未公開 | 未公開 |
-| 7-3 暗号と TLS（HTTPS と証明書） | 7-3 Cryptography and TLS (HTTPS and Certificates) | 未公開 | 未公開 |
-| **部：L2・ネットワークの攻防** | **Attack and Defense at L2 and on the Network** | | |
-| **8章 ARP と中間者攻撃（MITM）** | **Ch. 8 ARP and Man-in-the-Middle Attacks (MITM)** | | |
-| 8-1 ARP の仕組みと ARP スプーフィング | 8-1 How ARP Works, and ARP Spoofing | 未公開 | 未公開 |
-| 8-2 MITM の検知と防御 | 8-2 Detecting and Preventing MITM | 未公開 | 未公開 |
-| **9章 その他のネットワーク脅威** | **Ch. 9 Other Network Threats** | | |
-| 9-1 DHCP / DNS スプーフィング | 9-1 DHCP / DNS Spoofing | 未公開 | 未公開 |
-| 9-2 ネットワーク分離（VLAN / セグメンテーション） | 9-2 Network Isolation (VLANs / Segmentation) | 未公開 | 未公開 |
-| 9-3 DoS / DDoS の原理と緩和 | 9-3 How DoS / DDoS Works, and Mitigation | 未公開 | 未公開 |
-| **部：サービスへの攻撃と防御（原理・検知・対策）** | **Attacks on Services and How to Defend Them (Principles, Detection, Countermeasures)** | | |
-| **10章 認証への攻撃** | **Ch. 10 Attacks on Authentication** | | |
-| 10-1 ブルートフォースの原理 | 10-1 How Brute Force Works | 未公開 | 未公開 |
-| 10-2 認証ログの読み方と fail2ban | 10-2 Reading Authentication Logs, and fail2ban | 未公開 | 未公開 |
-| 10-3 パスワードとハッシュの安全な扱い | 10-3 Handling Passwords and Hashes Safely | 未公開 | 未公開 |
-| **11章 Web アプリケーションの脆弱性** | **Ch. 11 Web Application Vulnerabilities** | | |
-| 11-1 SQL インジェクションの原理と安全なコード | 11-1 How SQL Injection Works, and Writing Safe Code | 未公開 | 未公開 |
-| 11-2 XSS / CSRF の原理と対策 | 11-2 How XSS / CSRF Work, and Countermeasures | 未公開 | 未公開 |
-| 11-3 アクセス制御とセッション管理の不備 | 11-3 Broken Access Control and Session Management | 未公開 | 未公開 |
-| 11-4 コマンドインジェクション・パストラバーサル・SSRF | 11-4 Command Injection, Path Traversal and SSRF | 未公開 | 未公開 |
-| 11-5 入力検証・WAF による防御 | 11-5 Defending with Input Validation and a WAF | 未公開 | 未公開 |
-| **12章 既知脆弱性とエクスプロイト** | **Ch. 12 Known Vulnerabilities and Exploits** | | |
-| 12-1 脆弱性・CVE・パッチ管理の基礎 | 12-1 Basics of Vulnerabilities, CVEs and Patch Management | 未公開 | 未公開 |
-| 12-2 C 言語と機械語の読み方 | 12-2 Reading C and Machine Code | 未公開 | 未公開 |
-| 12-3 メモリ破壊：バッファオーバーフローの原理と防御 | 12-3 Memory Corruption: How Buffer Overflows Work and How to Defend Against Them | 未公開 | 未公開 |
-| 12-4 エクスプロイトの仕組み（原理理解） | 12-4 How Exploits Work (Understanding the Principle) | 未公開 | 未公開 |
-| 12-5 Metasploit の構造理解と、検知側の痕跡 | 12-5 Understanding Metasploit’s Structure, and the Traces It Leaves for Defenders | 未公開 | 未公開 |
-| **部：侵入後 — ポストエクスプロイトと、その防御** | **After the Breach — Post-Exploitation, and Defending Against It** | | |
-| **13章 権限昇格・横展開の理解と防御** | **Ch. 13 Understanding and Defending Against Privilege Escalation and Lateral Movement** | | |
-| 13-1 権限昇格の原理と対策 | 13-1 How Privilege Escalation Works, and Countermeasures | 未公開 | 未公開 |
-| 13-2 横展開（ラテラルムーブメント）の理解と防御 | 13-2 Understanding and Defending Against Lateral Movement | 未公開 | 未公開 |
-| **14章 マルウェアと永続化・痕跡** | **Ch. 14 Malware, Persistence and Traces** | | |
-| 14-1 マルウェアの種類と仕組み | 14-1 Types of Malware and How They Work | 未公開 | 未公開 |
-| 14-2 マルウェアの静的解析 | 14-2 Static Malware Analysis | 未公開 | 未公開 |
-| 14-3 マルウェアの動的解析 | 14-3 Dynamic Malware Analysis | 未公開 | 未公開 |
-| 14-4 永続化手法の理解と検知 | 14-4 Understanding and Detecting Persistence Techniques | 未公開 | 未公開 |
-| 14-5 ログ改ざん・痕跡消去と、改ざん検知 | 14-5 Log Tampering, Covering Tracks, and Detecting Tampering | 未公開 | 未公開 |
-| **部：検知と防御の設計（ブルーチーム）** | **Designing Detection and Defense (Blue Team)** | | |
-| **15章 侵入検知システム（IDS / IPS）** | **Ch. 15 Intrusion Detection Systems (IDS / IPS)** | | |
-| 15-1 IDS/IPS の仕組み（Suricata 入門） | 15-1 How IDS/IPS Work (Introduction to Suricata) | 未公開 | 未公開 |
-| 15-2 検知ルールの作成と閾値設定 | 15-2 Writing Detection Rules and Setting Thresholds | 未公開 | 未公開 |
-| 15-3 回避手法の理解と、検知の強化 | 15-3 Understanding Evasion Techniques, and Strengthening Detection | 未公開 | 未公開 |
-| **16章 ログと監視** | **Ch. 16 Logging and Monitoring** | | |
-| 16-1 ログの集約（SIEM 的な考え方） | 16-1 Centralizing Logs (SIEM-Style Thinking) | 未公開 | 未公開 |
-| 16-2 ログから侵入を追跡する | 16-2 Tracing an Intrusion Through Logs | 未公開 | 未公開 |
-| 16-3 アラート設計と運用 | 16-3 Designing and Running Alerts | 未公開 | 未公開 |
-| **17章 サーバー・サービスの要塞化（ハードニング）** | **Ch. 17 Hardening Servers and Services** | | |
-| 17-1 SSH サーバーの安全設定 | 17-1 Securing an SSH Server | 未公開 | 未公開 |
-| 17-2 Web サーバー／サービスの安全設定 | 17-2 Securing Web Servers and Services | 未公開 | 未公開 |
-| 17-3 最小権限・パッチ管理・構成管理の基本 | 17-3 Basics of Least Privilege, Patch Management and Configuration Management | 未公開 | 未公開 |
-| **18章 防御の設計とまとめ** | **Ch. 18 Designing Defenses, and Wrap-Up** | | |
-| 18-1 ファイアウォール設計（nftables 多層フィルタ） | 18-1 Firewall Design (Multi-Layer Filtering with nftables) | 未公開 | 未公開 |
-| 18-2 多層防御とサイバーキルチェーン | 18-2 Defense in Depth and the Cyber Kill Chain | 未公開 | 未公開 |
-| 18-3 中小企業のための実践セキュリティチェックリスト | 18-3 A Practical Security Checklist for Small Businesses | 未公開 | 未公開 |
-| **19章 総合演習（キャップストーン）** | **Ch. 19 Capstone Exercises** | | |
-| 19-1 攻撃シナリオ通し | 19-1 An End-to-End Attack Scenario | 未公開 | 未公開 |
-| 19-2 防御シナリオ通し | 19-2 An End-to-End Defense Scenario | 未公開 | 未公開 |
-| 19-3 攻防の突き合わせ | 19-3 Matching Attack Against Defense | 未公開 | 未公開 |
+| 番号・題（日本語） | 説明の一行（日本語。目次と同じ） | 英語 | 日本語版 | 英語版 |
+|---|---|---|---|---|
+| **部：基礎 — ネットワークとセキュリティの土台** | | **Foundations — the groundwork of networks and security** | | |
+| **0章 準備編：コンピューターの基礎** | | **Ch. 0 Prerequisites: Computer Basics** | | |
+| 0-1 ビット・バイトと2進数・16進数 | MAC・ポートをバイトと16進数で読む | 0-1 Bits, Bytes, Binary and Hexadecimal | 公開（cyber_0-1.html） | 公開 |
+| 0-2 文字とデータの表し方（文字コード・16進ダンプ） | xxd で中身を見る | 0-2 Representing Characters and Data (Character Encodings and Hex Dumps) | 未公開 | 未公開 |
+| 0-3 Linux の基本操作 | ファイル・パイプ・sudo・権限の基本 | 0-3 Linux Basics | 未公開 | 未公開 |
+| 0-4 プロセスとメモリ | ps と /proc でメモリの使われ方を見る | 0-4 Processes and Memory | 未公開 | 未公開 |
+| **1章 ネットワークの仕組み** | | **Ch. 1 How Networks Work** | | |
+| 1-1 パケットとIP：通信で実際に起きていること | 分割・配送とIPアドレス | 1-1 Packets and IP: What Actually Happens in Network Communication | 公開（cyber_1-1.html） | 未公開 |
+| 1-2 TCPとポート、3-wayハンドシェイク | 確実な通信と、接続のあいさつ | 1-2 TCP, Ports, and the 3-Way Handshake | 公開（cyber_1-2.html） | 未公開 |
+| 1-3 UDP・ICMP と主要プロトコル | TCP以外の通信と、ping の正体 | 1-3 UDP, ICMP, and Key Protocols | 公開（cyber_1-3.html） | 未公開 |
+| 1-4 階層モデル（OSI / TCP-IP）で全体を捉える | ツールが見る層を整理 | 1-4 Seeing the Whole Picture with Layer Models (OSI / TCP-IP) | 公開（cyber_1-4.html） | 未公開 |
+| **2章 演習環境とツールの基礎** | | **Ch. 2 The Lab Environment and Basic Tools** | | |
+| 2-1 演習ラボの全体像 | Kali/Parrot、ホストオンリー、デュアルNIC | 2-1 Overview of the Practice Lab | 未公開 | 未公開 |
+| 2-2 ネットワーク設定とサービス管理の基礎 | ip・ss・systemctl の基本 | 2-2 Basics of Network Configuration and Service Management | 未公開 | 未公開 |
+| 2-3 レッド／ブルー／パープルチーム | 攻撃者・防御者・両者をつなぐ視点 | 2-3 Red, Blue and Purple Teams | 未公開 | 未公開 |
+| **部：偵察 — 攻撃の入口と、その検知** | | **Reconnaissance — how attacks begin, and how to detect them** | | |
+| **3章 情報収集（フットプリンティング）** | | **Ch. 3 Information Gathering (Footprinting)** | | |
+| 3-1 パッシブ偵察 | 通信せずに集められる公開情報 | 3-1 Passive Reconnaissance | 未公開 | 未公開 |
+| 3-2 アクティブ偵察の基礎 | 能動的に探る手法と、相手に残る痕跡 | 3-2 Basics of Active Reconnaissance | 未公開 | 未公開 |
+| 3-3 ソーシャルエンジニアリングとフィッシング | 見抜き方と SPF・DKIM・DMARC | 3-3 Social Engineering and Phishing | 未公開 | 未公開 |
+| **4章 ホスト発見とポートスキャン** | | **Ch. 4 Host Discovery and Port Scanning** | | |
+| 4-1 ホスト発見（ping sweep / ARP スキャン） | 生きたホストを探す | 4-1 Host Discovery (Ping Sweeps / ARP Scans) | 未公開 | 未公開 |
+| 4-2 SYNスキャンの攻防（教科書レベル） | ハーフオープンの検知と遮断 | 4-2 Attacking and Defending with SYN Scans (Textbook Level) | 未公開 | 未公開 |
+| 4-3 各種スキャン手法の比較 | -sT / -sU / -sF / -sN の挙動と使い分け | 4-3 Comparing Scan Techniques | 未公開 | 未公開 |
+| 4-4 サービス・OS 特定とバナーグラビング | -sV / -A / -O で正体を知る | 4-4 Service and OS Detection, and Banner Grabbing | 未公開 | 未公開 |
+| **5章 スキャンの検知と防御** | | **Ch. 5 Detecting and Defending Against Scans** | | |
+| 5-1 tcpdump / tshark でスキャンを観測する | スキャンをパケットで見る | 5-1 Observing Scans with tcpdump / tshark | 未公開 | 未公開 |
+| 5-2 スキャン検知のしきい値設計 | 正常通信と攻撃をどう線引きするか | 5-2 Designing Thresholds for Scan Detection | 未公開 | 未公開 |
+| 5-3 nftables でレート制限・ドロップ | 速すぎるノックを間引く防御 | 5-3 Rate Limiting and Dropping with nftables | 未公開 | 未公開 |
+| **部：パケット解析 — 通信を「見る」** | | **Packet Analysis — “seeing” network traffic** | | |
+| **6章 パケットキャプチャ** | | **Ch. 6 Packet Capture** | | |
+| 6-1 tcpdump / tshark の基礎 | キャプチャ・フィルタ・保存の基本操作 | 6-1 tcpdump / tshark Basics | 未公開 | 未公開 |
+| 6-2 Wireshark の読み方と表示フィルタ | 表示フィルタとハンドシェイク | 6-2 Reading Wireshark and Using Display Filters | 未公開 | 未公開 |
+| **7章 プロトコルの観察** | | **Ch. 7 Observing Protocols** | | |
+| 7-1 TCP / UDP / ICMP の挙動をパケットで追う | 実パケットで確かめる | 7-1 Following TCP / UDP / ICMP Behavior in Packets | 未公開 | 未公開 |
+| 7-2 平文プロトコルの盗聴と暗号化の重要性 | 平文の危険と暗号化の意味 | 7-2 Sniffing Plaintext Protocols, and Why Encryption Matters | 未公開 | 未公開 |
+| 7-3 暗号と TLS（HTTPS と証明書） | 盗聴・なりすましを防ぐ仕組みを見る | 7-3 Cryptography and TLS (HTTPS and Certificates) | 未公開 | 未公開 |
+| **部：L2・ネットワークの攻防** | | **Attack and Defense at L2 and on the Network** | | |
+| **8章 ARP と中間者攻撃（MITM）** | | **Ch. 8 ARP and Man-in-the-Middle Attacks (MITM)** | | |
+| 8-1 ARP の仕組みと ARP スプーフィング | セグメント内のなりすましを観測 | 8-1 How ARP Works, and ARP Spoofing | 未公開 | 未公開 |
+| 8-2 MITM の検知と防御 | 静的ARP・arpwatch で中間者を防ぐ | 8-2 Detecting and Preventing MITM | 未公開 | 未公開 |
+| **9章 その他のネットワーク脅威** | | **Ch. 9 Other Network Threats** | | |
+| 9-1 DHCP / DNS スプーフィング | 名前解決・アドレス配布の悪用と対策 | 9-1 DHCP / DNS Spoofing | 未公開 | 未公開 |
+| 9-2 ネットワーク分離（VLAN / セグメンテーション） | 被害を封じ込める | 9-2 Network Isolation (VLANs / Segmentation) | 未公開 | 未公開 |
+| 9-3 DoS / DDoS の原理と緩和 | SYN フラッド・反射増幅と緩和策 | 9-3 How DoS / DDoS Works, and Mitigation | 未公開 | 未公開 |
+| **部：サービスへの攻撃と防御（原理・検知・対策）** | | **Attacks on Services and How to Defend Them (Principles, Detection, Countermeasures)** | | |
+| **10章 認証への攻撃** | | **Ch. 10 Attacks on Authentication** | | |
+| 10-1 ブルートフォースの原理 | 総当たりで何が起きているか | 10-1 How Brute Force Works | 未公開 | 未公開 |
+| 10-2 認証ログの読み方と fail2ban | 失敗ログの読み方と自動遮断 | 10-2 Reading Authentication Logs, and fail2ban | 未公開 | 未公開 |
+| 10-3 パスワードとハッシュの安全な扱い | 漏洩するとなぜ危険か、守り方 | 10-3 Handling Passwords and Hashes Safely | 未公開 | 未公開 |
+| **11章 Web アプリケーションの脆弱性** | | **Ch. 11 Web Application Vulnerabilities** | | |
+| 11-1 SQL インジェクションの原理と安全なコード | なぜ刺さり、どう直すか | 11-1 How SQL Injection Works, and Writing Safe Code | 未公開 | 未公開 |
+| 11-2 XSS / CSRF の原理と対策 | ブラウザを狙う攻撃の原理と防御 | 11-2 How XSS / CSRF Work, and Countermeasures | 未公開 | 未公開 |
+| 11-3 アクセス制御とセッション管理の不備 | IDの書き換え・乗っ取りと対策 | 11-3 Broken Access Control and Session Management | 未公開 | 未公開 |
+| 11-4 コマンドインジェクション・パストラバーサル・SSRF | 入力の危険と対策 | 11-4 Command Injection, Path Traversal and SSRF | 未公開 | 未公開 |
+| 11-5 入力検証・WAF による防御 | 不正な入力を弾く防御層 | 11-5 Defending with Input Validation and a WAF | 未公開 | 未公開 |
+| **12章 既知脆弱性とエクスプロイト** | | **Ch. 12 Known Vulnerabilities and Exploits** | | |
+| 12-1 脆弱性・CVE・パッチ管理の基礎 | 脆弱性とは何か、どう管理するか | 12-1 Basics of Vulnerabilities, CVEs and Patch Management | 未公開 | 未公開 |
+| 12-2 C 言語と機械語の読み方 | C 言語と objdump の逆アセンブル | 12-2 Reading C and Machine Code | 未公開 | 未公開 |
+| 12-3 メモリ破壊：バッファオーバーフローの原理と防御 | 壊れる仕組みと防御 | 12-3 Memory Corruption: How Buffer Overflows Work and How to Defend Against Them | 未公開 | 未公開 |
+| 12-4 エクスプロイトの仕組み（原理理解） | 原理から検知・防御へ | 12-4 How Exploits Work (Understanding the Principle) | 未公開 | 未公開 |
+| 12-5 Metasploit の構造理解と、検知側の痕跡 | 攻撃の痕跡を検知側で読む | 12-5 Understanding Metasploit’s Structure, and the Traces It Leaves for Defenders | 未公開 | 未公開 |
+| **部：侵入後 — ポストエクスプロイトと、その防御** | | **After the Breach — Post-Exploitation, and Defending Against It** | | |
+| **13章 権限昇格・横展開の理解と防御** | | **Ch. 13 Understanding and Defending Against Privilege Escalation and Lateral Movement** | | |
+| 13-1 権限昇格の原理と対策 | 原理と、最小権限の原則による対策 | 13-1 How Privilege Escalation Works, and Countermeasures | 未公開 | 未公開 |
+| 13-2 横展開（ラテラルムーブメント）の理解と防御 | 分離と監視で封じ込める | 13-2 Understanding and Defending Against Lateral Movement | 未公開 | 未公開 |
+| **14章 マルウェアと永続化・痕跡** | | **Ch. 14 Malware, Persistence and Traces** | | |
+| 14-1 マルウェアの種類と仕組み | 感染・居座り・司令塔との通信の流れ | 14-1 Types of Malware and How They Work | 未公開 | 未公開 |
+| 14-2 マルウェアの静的解析 | 実行せずに strings・objdump・YARA で調べる | 14-2 Static Malware Analysis | 未公開 | 未公開 |
+| 14-3 マルウェアの動的解析 | 隔離して動かし、システムコールと通信を見る | 14-3 Dynamic Malware Analysis | 未公開 | 未公開 |
+| 14-4 永続化手法の理解と検知 | 居座りの手口を理解し、検知する | 14-4 Understanding and Detecting Persistence Techniques | 未公開 | 未公開 |
+| 14-5 ログ改ざん・痕跡消去と、改ざん検知 | ファイル整合性監視で見抜く | 14-5 Log Tampering, Covering Tracks, and Detecting Tampering | 未公開 | 未公開 |
+| **部：検知と防御の設計（ブルーチーム）** | | **Designing Detection and Defense (Blue Team)** | | |
+| **15章 侵入検知システム（IDS / IPS）** | | **Ch. 15 Intrusion Detection Systems (IDS / IPS)** | | |
+| 15-1 IDS/IPS の仕組み（Suricata 入門） | 侵入検知システムの基本 | 15-1 How IDS/IPS Work (Introduction to Suricata) | 未公開 | 未公開 |
+| 15-2 検知ルールの作成と閾値設定 | 何を・どの基準で検知するか | 15-2 Writing Detection Rules and Setting Thresholds | 未公開 | 未公開 |
+| 15-3 回避手法の理解と、検知の強化 | すり抜けを理解し、守りを固める | 15-3 Understanding Evasion Techniques, and Strengthening Detection | 未公開 | 未公開 |
+| **16章 ログと監視** | | **Ch. 16 Logging and Monitoring** | | |
+| 16-1 ログの集約（SIEM 的な考え方） | 散らばったログを集めて相関 | 16-1 Centralizing Logs (SIEM-Style Thinking) | 未公開 | 未公開 |
+| 16-2 ログから侵入を追跡する | 痕跡をつないで全体像を描く | 16-2 Tracing an Intrusion Through Logs | 未公開 | 未公開 |
+| 16-3 アラート設計と運用 | 鳴らしすぎず、見逃さない | 16-3 Designing and Running Alerts | 未公開 | 未公開 |
+| **17章 サーバー・サービスの要塞化（ハードニング）** | | **Ch. 17 Hardening Servers and Services** | | |
+| 17-1 SSH サーバーの安全設定 | 鍵認証と設定の最小化 | 17-1 Securing an SSH Server | 未公開 | 未公開 |
+| 17-2 Web サーバー／サービスの安全設定 | 不要サービスの停止と堅牢化 | 17-2 Securing Web Servers and Services | 未公開 | 未公開 |
+| 17-3 最小権限・パッチ管理・構成管理の基本 | 守りの土台となる運用 | 17-3 Basics of Least Privilege, Patch Management and Configuration Management | 未公開 | 未公開 |
+| **18章 防御の設計とまとめ** | | **Ch. 18 Designing Defenses, and Wrap-Up** | | |
+| 18-1 ファイアウォール設計（nftables 多層フィルタ） | 層で守るルール | 18-1 Firewall Design (Multi-Layer Filtering with nftables) | 未公開 | 未公開 |
+| 18-2 多層防御とサイバーキルチェーン | 攻撃の流れ全体を俯瞰する | 18-2 Defense in Depth and the Cyber Kill Chain | 未公開 | 未公開 |
+| 18-3 中小企業のための実践セキュリティチェックリスト | 現場で使えるリスト | 18-3 A Practical Security Checklist for Small Businesses | 未公開 | 未公開 |
+| **19章 総合演習（キャップストーン）** | | **Ch. 19 Capstone Exercises** | | |
+| 19-1 攻撃シナリオ通し | 偵察から侵入痕跡まで（攻撃側視点） | 19-1 An End-to-End Attack Scenario | 未公開 | 未公開 |
+| 19-2 防御シナリオ通し | 検知・遮断・追跡（防御側視点） | 19-2 An End-to-End Defense Scenario | 未公開 | 未公開 |
+| 19-3 攻防の突き合わせ | パープルチーム演習 | 19-3 Matching Attack Against Defense | 未公開 | 未公開 |
 
 ### B-2 物理数学（phys-math.html。章 → 記事）
 
