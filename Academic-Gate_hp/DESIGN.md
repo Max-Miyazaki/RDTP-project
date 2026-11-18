@@ -8221,7 +8221,7 @@ study.html を、ホームの学問の樹と同じ7大分類・同じ34の学問
   残った差は 1-1〜1-4 と同じ「共通の設定」（本文列 860px・`--accent`・`--radius-sm`・コピーボタンの余白・本文のリンク色）だけ。問題の枠・原理の枠の色も同じ
 - 英語版：§139.10・§139.11
 
-## 137.9 0-2「文字とデータの表し方」を組み込み、英語版も作る（ブランチ feature/cyber-0-2、r191。確認待ち・未公開）
+## 137.9 0-2「文字とデータの表し方」を組み込み、英語版も作る（ブランチ feature/cyber-0-2、r192 で公開）
 
 - 元ファイル：~/Downloads/cyber_0-2.html（指示書 版 2026-11-18-8 のひな形の形式。sha256 3b25dc11…）。ダウンロードフォルダのものは触らず、scratchpad に写して作業した
 - **題**：受け取ったファイルの見出しは「文字とデータの表し方（文字コード・16進ダンプ）」だった。確認のうえ、短い「文字とデータの表し方」に揃えた
@@ -8232,7 +8232,7 @@ study.html を、ホームの学問の樹と同じ7大分類・同じ34の学問
   英語の札の画像3枚は `image/cyber/0-2/en/` に日本語版と同じ名前で。C2PA のメタデータは `jpegtran -copy none` で外した（復号した画素が元と同じことを確かめた。約 6KB ずつ小さくなった）
 - つながり：cyber.html の 0-2 をリンクに。0-1 の「次へ：0-2」の段落の先頭に cyber_0-2.html へのリンク。layout.js の CRUMBS に `cyber_0-2` と、**`cyber_0-3`（soon）**
   - 0-3 の soon の行は、0-2 の「次の節」を 0-3（準備中）にするため（これが無いと 1-1 へ飛ぶ）。そのため 1-1 の「前の節」も 0-3（準備中・リンクなし）になる
-- 原文の気になる点（直していない）：図12 の説明の「手順4 の Python の出力」は、Python を使うのは手順5
+- 原文の誤り：図12 の説明の「手順4 の Python の出力」は、Python を使うのは手順5 なので、確認を受けて日本語・英語とも「手順5」に直した
 - **目次レールの強調（ひな形を単体で開いたとき、飛んだ直後に強調が1つ前に残る）**：サイトの 0-1・0-2・英語の 0-2 では再現しなかった（9か所×2回、スクロールが止まってから見て一致）。
   原因はひな形の単体表示だけ：サイトでは js/main.js がアンカーのスクロールを受け持ち（ヘッダーの高さ＋40px で止める）、単体表示では main.js が無いので、
   ひな形の A（style.css の代わり）の `html{scroll-padding-top:92px}` と `section{scroll-margin-top:92px}` が足されて 184px で止まり、強調の判定（140px）に届かなかった。
@@ -8390,6 +8390,14 @@ study.html を、ホームの学問の樹と同じ7大分類・同じ34の学問
 | サイバーセキュリティ基礎 | Cybersecurity Fundamentals | |
 | 内部ネットワーク | internal network | |
 | 末尾の注意「自分が管理していない…行わないでください」 | Only practice the techniques in this course on networks and devices that you own or have explicit permission to test. | |
+| 文字コード／対応表 | character encoding / code table | 0-2 で決めた（2026-11-18 確定。以下同じ） |
+| 16進ダンプ／オフセット | hex dump / offset | |
+| 改行／制御文字 | line break / control character | |
+| 文字化け | mojibake (garbled text) | 初出は両方、以降は mojibake |
+| マジックナンバー／形式の印 | magic number / (format) signature | |
+| エンディアン（ビッグ／リトル）／ネットワークバイトオーダー | endianness (big-endian / little-endian) / network byte order | |
+| ホモグラフ（同形異字）／拡張子 | homograph / (file name) extension | |
+| 計算ドリル・応用問題（見出し） | Calculation drills and applied problems | 単独のときは Calculation drill／Applied problems |
 
 ## 139.4 英語版を作る手順（段階3以降。§138 の⑤）
 
@@ -8523,10 +8531,11 @@ cyber_1-2・3-1・5-1 は、何度か撮り直した中で main とブランチ�
   英語の目次がこの点で日本語の目次と揃っていないのは確認済みとして、`check-i18n.js --stamp cyber.html` で元にした日本語版のハッシュを更新した
 - 日本語の目次がこの後に変わったときは、通常どおり check-i18n の⑥が「英語版が古い可能性」を出す
 
-## 139.14 0-2 の英語版（ブランチ feature/cyber-0-2。確認待ち・未公開）
+## 139.14 0-2 の英語版（ブランチ feature/cyber-0-2、2026-11-18 確認を受けて r192 で公開）
 
 - `en/cyber_0-2.html`：make-en.sh で写し、本文のブロック 276・短い札 59・図の中の文字（14枚、511 か所のうち日本語 119）・aria-label 14・alt 3 を英訳。対応表の en に足し、hreflang
-  - 用語は指示書 §13 に従い、新しい訳語（character encoding・hex dump・mojibake・magic number・endianness など）は §13 に「確認待ち」で足した
+  - 用語は指示書 §13 に従い、新しい訳語（character encoding・hex dump・mojibake・magic number・endianness など）は §13 に「確認待ち」で足した → 確認を受けて確定し、§139.3 にも足した
+  - 確認で決まったこと：h1 の小見出し “are all sequences of bytes underneath”、「対応表」は code table（本文・図・用語集）、§07 の見出し “Calculation drills and applied problems”。残りの ⚑ は下書きのまま
   - 図の中の文字は §139.12 の方法で確かめた（日本語と英語の `getBBox()` を比べる）。図2 の注記と図14 の札の2つを短くした。図2 の最後の行が viewBox の下に 0.8px 出るのは、日本語版の図でも同じ
   - スクリーンショットは `image/cyber/0-2/en/` の英語の札の画像（キャプションの添え書きは要らない）
   - 例の文字「あ」「い」「あいう」と Shift_JIS・UTF-8 のバイトの話は、そのまま残した（この節の題材）。例のファイル名「請求書.pdf」は invoice.pdf に
@@ -8776,3 +8785,9 @@ claude.ai の別のチャットで教材の記事を書くとき、最初から�
 - 今日7回更新したのに、指示書の版の行が「2026-11-18」のままで、写しの新旧が見分けられなかった。版を「日付-通し番号」にし、今日の版を 2026-11-18-8 とした（1〜7 は今日のコミット 73b0e06・176460a・0f1903b・d714cf1・6afc421・f0b66c7・cfbdb12）
 - 指示書の末尾に「改訂の記録」の表、ひな形2つの冒頭の注釈に版の行を足した。決まりは §140.2
 
+## 141.5 前後の節のリンク：「前へ」は準備中を飛ばす（2026-11-18、r192）
+
+- 記事の末尾の前後リンク（layout.js の lessonNavHtml）で、**「前へ」は準備中（CRUMBS に href が無い）の節を飛ばし、いちばん近い公開済みの節へつなぐ**。
+  **「次へ」は準備中の節もそのまま「（準備中）」として出す**（この先に何があるかを見せるため）
+- きっかけ：0-2 の「次へ」を 0-3（準備中）にするため CRUMBS に `cyber_0-3`（soon）を足したら、1-1 の「前へ」も 0-3（準備中・リンクなし）になり、0-2 へ戻れなくなった
+- 変更は lessonNavHtml の prev を決める1行だけ。確かめたこと：記事のページ 44（日本語・英語、物理数学・メモリーバース・サイバー）の前後リンクを変更の前後で比べ、変わったのは cyber_1-1 の「前へ」（0-3（準備中）→ 0-2）だけ

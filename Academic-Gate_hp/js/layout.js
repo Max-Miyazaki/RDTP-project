@@ -385,7 +385,9 @@
     function lessonNavHtml(cur) {
         var ser = seriesOf(cur), unit = (ser && CRUMBS[ser].unit) || I18N.pick('記事', 'article');
         var sib = ser ? leavesOf(ser, []) : childrenOf(CRUMBS[cur].parent), i = sib.indexOf(cur);
-        var prev = i > 0 ? sib[i - 1] : null, next = i < sib.length - 1 ? sib[i + 1] : null;
+        // 「前へ」は準備中（href が無い）の節を飛ばし、いちばん近い公開済みの節へ（§141.5）。「次へ」は準備中もそのまま出す
+        var prev = null, next = i < sib.length - 1 ? sib[i + 1] : null;
+        for (var j = i - 1; j >= 0; j--) { if (CRUMBS[sib[j]].href) { prev = sib[j]; break; } }
         var nm = function (k) { return CRUMBS[k].title || CRUMBS[k].label; };
         var cells = [];
         var AR = function (d) { return '<span class="ar" aria-hidden="true">' + d + '</span>'; };

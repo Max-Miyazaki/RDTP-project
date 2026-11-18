@@ -27,7 +27,7 @@
      記事の &lt;style&gt; より後ろに置くこと。css/lesson-theme.css 冒頭の注記どおり）。
      ★ 注釈に生のスタイルタグを書かない：機械的に切り出すと、そこが本物のタグとして残り、
        後ろの :root が丸ごと捨てられる（DESIGN.md §137.2） -->
-<link rel="stylesheet" href="../css/style.css?v=r191">
+<link rel="stylesheet" href="../css/style.css?v=r192">
 <style>
 /* 0-1 ビット・バイトと2進数・16進数 — 記事固有のスタイルのみ（土台は公開中の cyber_1-4.html。DESIGN.md §137）。
    共通部分は css/style.css と lesson-theme.css が持つ（DESIGN.md §35, §36）。
@@ -254,7 +254,7 @@ body.is-article main .foot p{color:var(--ink-faint)}
 .mini-table .edge-purple{box-shadow:inset 3px 0 0 var(--teach)}
 .mini-table .edge-pink{box-shadow:inset 3px 0 0 var(--key)}
 </style>
-<link rel="stylesheet" href="../css/lesson-theme.css?v=r191">
+<link rel="stylesheet" href="../css/lesson-theme.css?v=r192">
 </head>
 <body data-page="study" class="is-article" data-node="cyber_0-2">
 <canvas id="starfield" aria-hidden="true"></canvas>
@@ -521,7 +521,7 @@ body.is-article main .foot p{color:var(--ink-faint)}
       </table></div>
 
       <figure class="fig">
-        <img src="../image/cyber/0-2/cyber_0-2_s06.jpg?v=r191" data-file="cyber_0-2_s06.jpg" width="1400" height="692" loading="lazy" alt="Parrot のデスクトップ。端末に printf と echo の出力を xxd で16進ダンプした結果が4つ表示されている">
+        <img src="../image/cyber/0-2/cyber_0-2_s06.jpg?v=r192" data-file="cyber_0-2_s06.jpg" width="1400" height="692" loading="lazy" alt="Parrot のデスクトップ。端末に printf と echo の出力を xxd で16進ダンプした結果が4つ表示されている">
         <figcaption>操作した順に番号を付けています。<br>
           <strong>赤枠①</strong>：<code>A</code> は <code>41</code>。右の列に文字の <code>A</code>。<br>
           <strong>赤枠②</strong>：<code>printf</code> は改行を足さないので、<code>Hi!</code> の3バイトだけ。<br>
@@ -627,7 +627,7 @@ unix.txt: ASCII text</div>
       </table></div>
 
       <figure class="fig">
-        <img src="../image/cyber/0-2/cyber_0-2_s06_2.jpg?v=r191" data-file="cyber_0-2_s06_2.jpg" width="1400" height="684" loading="lazy" alt="Parrot のデスクトップ。端末に、あ の UTF-8 と Shift_JIS のバイト、バイト数、win.txt と unix.txt の16進ダンプ、file の判定結果が表示されている">
+        <img src="../image/cyber/0-2/cyber_0-2_s06_2.jpg?v=r192" data-file="cyber_0-2_s06_2.jpg" width="1400" height="684" loading="lazy" alt="Parrot のデスクトップ。端末に、あ の UTF-8 と Shift_JIS のバイト、バイト数、win.txt と unix.txt の16進ダンプ、file の判定結果が表示されている">
         <figcaption>操作した順に番号を付けています。<br>
           <strong>赤枠①</strong>：UTF-8 の「あ」は <code>e381 82</code> の3バイト。<br>
           <strong>赤枠②</strong>：Shift_JIS の「あ」は <code>82a0</code> の2バイト。<br>
@@ -691,7 +691,7 @@ unix.txt: ASCII text</div>
 
       <figure class="fig dg">
         <svg viewBox="0 0 760 250" role="img" aria-label="0x1f90 をビッグエンディアンでは 1f 90、リトルエンディアンでは 90 1f と並べる"><text x="380" y="26" text-anchor="middle" fill="#fff" font-size="13.5" font-weight="700">8080 ＝ 0x1f90 を2バイトで並べる（左がメモリや通信で先に来る側）</text><text x="30" y="78" text-anchor="start" fill="#a8c9ff" font-size="14" font-weight="700">ビッグエンディアン</text><rect x="200" y="58" width="56" height="40" rx="9" fill="#a48bff" fill-opacity="0.13" stroke="#a48bff" stroke-width="1.5"/><text x="228.0" y="84.12" text-anchor="middle" fill="#cbbcff" font-size="17" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">1f</text><rect x="262" y="58" width="56" height="40" rx="9" fill="#a48bff" fill-opacity="0.13" stroke="#a48bff" stroke-width="1.5"/><text x="290.0" y="84.12" text-anchor="middle" fill="#cbbcff" font-size="17" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">90</text><text x="228" y="116" text-anchor="middle" fill="rgba(255,255,255,.55)" font-size="11.5" font-weight="500">1バイト目</text><text x="290" y="116" text-anchor="middle" fill="rgba(255,255,255,.55)" font-size="11.5" font-weight="500">2バイト目</text><text x="340" y="84" text-anchor="start" fill="rgba(255,255,255,.72)" font-size="12.5" font-weight="500">← 大きい桁（1f）が先</text><text x="520" y="84" text-anchor="start" fill="#fff" font-size="12" font-weight="600">ネットワークの通信（TCP/IP の決まり）</text><text x="30" y="164" text-anchor="start" fill="#9ff0cf" font-size="14" font-weight="700">リトルエンディアン</text><rect x="200" y="144" width="56" height="40" rx="9" fill="#a48bff" fill-opacity="0.13" stroke="#a48bff" stroke-width="1.5"/><text x="228.0" y="170.12" text-anchor="middle" fill="#cbbcff" font-size="17" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">90</text><rect x="262" y="144" width="56" height="40" rx="9" fill="#a48bff" fill-opacity="0.13" stroke="#a48bff" stroke-width="1.5"/><text x="290.0" y="170.12" text-anchor="middle" fill="#cbbcff" font-size="17" font-weight="700" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">1f</text><text x="228" y="202" text-anchor="middle" fill="rgba(255,255,255,.55)" font-size="11.5" font-weight="500">1バイト目</text><text x="290" y="202" text-anchor="middle" fill="rgba(255,255,255,.55)" font-size="11.5" font-weight="500">2バイト目</text><text x="340" y="170" text-anchor="start" fill="rgba(255,255,255,.72)" font-size="12.5" font-weight="500">← 小さい桁（90）が先</text><text x="520" y="170" text-anchor="start" fill="#fff" font-size="12" font-weight="600">多くの CPU（Parrot の ARM64 など）</text><line x1="200" y1="232" x2="330" y2="232" stroke="rgba(255,255,255,.55)" stroke-width="1.4" marker-end="url(#m-gray)"/><text x="340" y="236" text-anchor="start" fill="rgba(255,255,255,.55)" font-size="12" font-weight="500">先に来る側 → 後に来る側（アドレスが増える向き）</text></svg>
-        <figcaption><strong>図12</strong>　2バイト以上の数をどちら側から並べるか、が<strong>エンディアン</strong>です。大きい桁から並べるのがビッグエンディアン、小さい桁から並べるのがリトルエンディアン。手順4 の Python の出力 <code>1f90 901f</code> が、この2通りです。</figcaption>
+        <figcaption><strong>図12</strong>　2バイト以上の数をどちら側から並べるか、が<strong>エンディアン</strong>です。大きい桁から並べるのがビッグエンディアン、小さい桁から並べるのがリトルエンディアン。手順5 の Python の出力 <code>1f90 901f</code> が、この2通りです。</figcaption>
       </figure>
 
       <div class="step">
@@ -734,7 +734,7 @@ Byte Order:                              Little Endian</div>
       <div class="road c"><div class="rh"><span><span class="rk">C4</span>パケットの数はビッグエンディアンで読み、自分の CPU の中では逆に並んでいることがある</span><span class="tag">言えること ― 説明できる</span></div><div class="rb"><p class="use">根拠：P6・D7</p><p class="st">パケットの中のポート番号や IP アドレスは、ネットワークバイトオーダー（ビッグ）で入っている。1-4 で出てくるパケットの16進ダンプも、大きい桁から読めばよい。一方、リトルエンディアンの CPU のメモリの中では逆順なので、プログラムは送る前に並べ替えている。12章でメモリの中身を見るときは、数が逆順に見えることに注意する。</p></div></div>
 
       <figure class="fig">
-        <img src="../image/cyber/0-2/cyber_0-2_s07.jpg?v=r191" data-file="cyber_0-2_s07.jpg" width="1400" height="695" loading="lazy" alt="Parrot のデスクトップ。端末に /bin/ls の先頭16バイトの16進ダンプ、file の判定、8080 のビッグとリトルの並べ方、lscpu の Byte Order が表示されている">
+        <img src="../image/cyber/0-2/cyber_0-2_s07.jpg?v=r192" data-file="cyber_0-2_s07.jpg" width="1400" height="695" loading="lazy" alt="Parrot のデスクトップ。端末に /bin/ls の先頭16バイトの16進ダンプ、file の判定、8080 のビッグとリトルの並べ方、lscpu の Byte Order が表示されている">
         <figcaption>操作した順に番号を付けています。<br>
           <strong>赤枠①</strong>：<code>/bin/ls</code> の先頭16バイト。<code>7f45 4c46</code>（<code>.ELF</code>）で始まる。<br>
           <strong>赤枠②</strong>：<code>file</code> の判定。ELF・64-bit・LSB（リトルエンディアン）。<br>
@@ -877,10 +877,10 @@ mb.addEventListener('click',function(){var o=body.classList.toggle('nav-open');m
 scrim.addEventListener('click',function(){body.classList.remove('nav-open')});
 document.getElementById('toc').addEventListener('click',function(e){if(e.target.closest('a'))body.classList.remove('nav-open')});
 </script>
-<script src="../js/i18n.js?v=r191"></script>
-<script src="../js/disciplines.js?v=r191"></script>
-<script src="../js/layout.js?v=r191"></script>
-<script src="../js/main.js?v=r191"></script>
-<script src="../js/starfield.js?v=r191"></script>
+<script src="../js/i18n.js?v=r192"></script>
+<script src="../js/disciplines.js?v=r192"></script>
+<script src="../js/layout.js?v=r192"></script>
+<script src="../js/main.js?v=r192"></script>
+<script src="../js/starfield.js?v=r192"></script>
 </body>
 </html>
