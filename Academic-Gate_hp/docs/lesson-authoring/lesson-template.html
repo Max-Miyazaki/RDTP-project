@@ -8,7 +8,7 @@
      章：0章 準備編：コンピューターの基礎
      節：0-1
      題：ビット・バイトと2進数・16進数
-     説明：MAC アドレスやポート番号を、バイトと16進数で読む
+     説明：MAC・ポートをバイトと16進数で読む
      ↑ 見本の値。この記事の値に書き換える。部の無いシリーズは「部：なし」 -->
 <!-- 教材の記事の汎用ひな形（2026-11-18。元：html/cyber_0-1.html r189。正本は docs/lesson-authoring/lesson-template.html）。
      「▼ オプション」の印のある部分は分野によって使う部品。使わないときは「▲ … ここまで」の行まで消す。
@@ -362,6 +362,22 @@ mjx-container[display="true"]{margin:14px 0!important;overflow-x:auto;overflow-y
 document.addEventListener('DOMContentLoaded',function(){document.querySelectorAll('[data-sol]').forEach(function(btn){btn.addEventListener('click',function(){var sol=btn.closest('.attempt').querySelector('.sol');if(sol.style.display==='block'&&window.MathJax&&MathJax.typesetPromise)MathJax.typesetPromise([sol]);});});});
 </script>
 <!-- ▲ オプション：数学・物理系「数式」の CSS ここまで -->
+<!-- ▼ オプション：表の列の幅・行の色の線の CSS（どの分野でも使う。使わなければ消す） -->
+<style>/* --- 表の部品（2026-11-18 に作った。DESIGN.md §140.10）。インラインの style の代わり ---
+   列の幅：<col class="cw-20"> のように、<colgroup> の <col> に付ける（10〜50% を 5% きざみ）。
+           これまでの記事の <col style="width:22%"> の代わり
+   行の色の線：<td class="edge-blue"> のように、その行の最初のセルに付ける（左に 3px の色の線）。
+           これまでの記事の style="box-shadow:inset 3px 0 0 #4d94ff"（1-4 §05）の代わり。色は図の色（§8.1 の表）と同じ */
+.mini-table col.cw-10{width:10%}.mini-table col.cw-15{width:15%}.mini-table col.cw-20{width:20%}
+.mini-table col.cw-25{width:25%}.mini-table col.cw-30{width:30%}.mini-table col.cw-35{width:35%}
+.mini-table col.cw-40{width:40%}.mini-table col.cw-45{width:45%}.mini-table col.cw-50{width:50%}
+.mini-table .edge-blue{box-shadow:inset 3px 0 0 #4d94ff}
+.mini-table .edge-green{box-shadow:inset 3px 0 0 var(--good)}
+.mini-table .edge-amber{box-shadow:inset 3px 0 0 var(--amber)}
+.mini-table .edge-purple{box-shadow:inset 3px 0 0 var(--teach)}
+.mini-table .edge-pink{box-shadow:inset 3px 0 0 var(--key)}
+</style>
+<!-- ▲ オプション：表の列の幅・行の色の線の CSS ここまで -->
 <!-- ▼ オプション：人文・社会系の部品の CSS -->
 <style>/* --- 人文・社会系の部品（2026-11-18 に作った。DESIGN.md §140）。既存のトークンだけを使い、色・角丸・字の大きさは既存の部品に合わせる ---
    .cite  本文の注番号（上付きの [1]。参考文献の一覧の同じ番号へ飛ぶ）
@@ -498,6 +514,20 @@ mjx-container[display="true"]{display:block;overflow-x:auto;overflow-y:hidden;-w
           <tr><td>セル</td><td>セル</td><td><strong>強調したいセル</strong></td></tr>
         </tbody>
       </table></div>
+
+      <!-- ▼ オプション：表の列の幅・行の色の線（使わないときは「ここまで」の行まで消す） -->
+      <div class="table-scroll"><table class="mini-table">
+        <caption>列の幅と行の色の線の見本（層ごとの色は図と同じ）</caption>
+        <colgroup><col class="cw-20"><col class="cw-30"><col></colgroup>
+        <thead><tr><th>層</th><th>代表的なプロトコル</th><th>役目</th></tr></thead>
+        <tbody>
+          <tr><td class="edge-green">アプリケーション</td><td><code>HTTP</code>・<code>DNS</code></td><td>データの中身をやり取りする</td></tr>
+          <tr><td class="edge-blue">トランスポート</td><td><code>TCP</code>・<code>UDP</code></td><td>どのプログラムへ届けるか</td></tr>
+          <tr><td class="edge-amber">ネットワーク</td><td><code>IP</code>・<code>ICMP</code></td><td>どの機器へ届けるか</td></tr>
+          <tr><td class="edge-purple">リンク</td><td><code>Ethernet</code>・<code>ARP</code></td><td>隣の機器へ届ける</td></tr>
+        </tbody>
+      </table></div>
+      <!-- ▲ オプション：表の列の幅・行の色の線 ここまで -->
 
       <figure class="fig dg">
         <svg viewBox="0 0 760 150" role="img" aria-label="図の内容を1文で（読み上げ用）"><rect x="40" y="40" width="200" height="56" rx="12" fill="#4d94ff" fill-opacity=".10" stroke="#4d94ff" stroke-width="1.5"/><text x="140" y="74" text-anchor="middle" fill="#a8c9ff" font-size="15" font-weight="600">原因</text><line x1="244" y1="68" x2="510" y2="68" stroke="#72e3ad" stroke-width="1.8" marker-end="url(#m-green)"/><rect x="300" y="38" width="150" height="24" rx="9" fill="#72e3ad" fill-opacity=".13" stroke="#72e3ad" stroke-width="1.5"/><text x="375" y="55" text-anchor="middle" fill="#9ff0cf" font-size="12.5" font-weight="600">つながり</text><rect x="520" y="40" width="200" height="56" rx="12" fill="#ffb46b" fill-opacity=".10" stroke="#ffb46b" stroke-width="1.5"/><text x="620" y="74" text-anchor="middle" fill="#ffd3a3" font-size="15" font-weight="600">結果</text><text x="380" y="128" text-anchor="middle" fill="rgba(255,255,255,.72)" font-size="12.5">図の中の補足の文字（11.5 以上）</text></svg>
