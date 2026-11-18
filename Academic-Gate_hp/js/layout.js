@@ -142,6 +142,13 @@
         'cyber_0-1':       { label: 'SECTION 0-1',  href: 'cyber_0-1.html',        parent: 'cyber:ch0',
                              title: '0-1　ビット・バイトと2進数・16進数',
                              titleEn: '0-1　Bits, Bytes, Binary and Hexadecimal' },
+        'cyber_0-2':       { label: 'SECTION 0-2',  href: 'cyber_0-2.html',        parent: 'cyber:ch0',
+                             title: '0-2　文字とデータの表し方',
+                             titleEn: '0-2　Representing Characters and Data' },
+        // 0-3 はまだ書いていない。soon で前後リンクとパネルに「準備中」として出す（0-1 → 0-2 → 0-3〈準備中〉）。書いたら soon を href に変える
+        'cyber_0-3':       { label: 'SECTION 0-3',  soon: true,                    parent: 'cyber:ch0',
+                             title: '0-3　Linux の基本操作',
+                             titleEn: '0-3　Linux Basics' },
         'cyber:ch1':       { label: '1章 ネットワークの仕組み',                     parent: 'cyber',
                              en: 'Ch. 1 How Networks Work' },
         'cyber_1-1':       { label: 'SECTION 1-1',  href: 'cyber_1-1.html',        parent: 'cyber:ch1',
@@ -378,7 +385,9 @@
     function lessonNavHtml(cur) {
         var ser = seriesOf(cur), unit = (ser && CRUMBS[ser].unit) || I18N.pick('記事', 'article');
         var sib = ser ? leavesOf(ser, []) : childrenOf(CRUMBS[cur].parent), i = sib.indexOf(cur);
-        var prev = i > 0 ? sib[i - 1] : null, next = i < sib.length - 1 ? sib[i + 1] : null;
+        // 「前へ」は準備中（href が無い）の節を飛ばし、いちばん近い公開済みの節へ（§141.5）。「次へ」は準備中もそのまま出す
+        var prev = null, next = i < sib.length - 1 ? sib[i + 1] : null;
+        for (var j = i - 1; j >= 0; j--) { if (CRUMBS[sib[j]].href) { prev = sib[j]; break; } }
         var nm = function (k) { return CRUMBS[k].title || CRUMBS[k].label; };
         var cells = [];
         var AR = function (d) { return '<span class="ar" aria-hidden="true">' + d + '</span>'; };

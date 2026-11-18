@@ -1,6 +1,6 @@
 # 教材記事の作成指示書（Academic Gates：サイトのすべての教材）
 
-- 版：2026-11-18-8（サイトの r190 の時点。版は「日付-その日の通し番号」。同じ日に更新したら番号を上げる。ひな形2つも同じ版。変えた中身は末尾の「改訂の記録」）
+- 版：2026-11-18-10（サイトの r190 の時点。版は「日付-その日の通し番号」。同じ日に更新したら番号を上げる。ひな形2つも同じ版。変えた中身は末尾の「改訂の記録」）
 - 正本：サイトのリポジトリの `docs/lesson-authoring/lesson-authoring-guide.md`。ダウンロードフォルダなどにあるものは写し
 - 一緒に渡すもの：ひな形 `lesson-template.html`（すべての分野で使う汎用のひな形）。参考：`lesson-toc-template.html`（シリーズの目次ページの見本。目次ページはサイトの担当が作る。付録D）
 
@@ -777,6 +777,18 @@
 | 手順N／赤枠① | Step N / Red box ① | |
 | 0章 準備編：コンピューターの基礎 | Ch. 0 Prerequisites: Computer Basics | |
 | 内部ネットワーク | internal network | |
+| 文字コード | character encoding | 0-2（2026-11-18 確定） |
+| 対応表（文字コードの） | code table | 0-2（確定） |
+| 16進ダンプ | hex dump | 0-2（確定） |
+| 改行／制御文字 | line break / control character | 0-2（確定） |
+| 文字化け | mojibake (garbled text) | 0-2。初出は両方、以降は mojibake（確定） |
+| オフセット | offset | 0-2（確定） |
+| マジックナンバー／形式の印 | magic number / (format) signature | 0-2（確定） |
+| ビッグエンディアン／リトルエンディアン／エンディアン | big-endian / little-endian / endianness | 0-2（確定） |
+| ネットワークバイトオーダー | network byte order | 0-2（確定） |
+| ホモグラフ（同形異字） | homograph | 0-2（確定） |
+| 拡張子 | (file name) extension | 0-2（確定） |
+| 計算ドリル・応用問題 | Calculation drills and applied problems | 0-2 §07 の見出し（確定）。単独のときは Calculation drill／Applied problems（0-1 英語版と同じ） |
 
 ### まだ訳が決まっていない語
 
@@ -850,7 +862,7 @@
 | **部：基礎 — ネットワークとセキュリティの土台** | | **Foundations — the groundwork of networks and security** | | |
 | **0章 準備編：コンピューターの基礎** | | **Ch. 0 Prerequisites: Computer Basics** | | |
 | 0-1 ビット・バイトと2進数・16進数 | MAC・ポートをバイトと16進数で読む | 0-1 Bits, Bytes, Binary and Hexadecimal | 公開（cyber_0-1.html） | 公開 |
-| 0-2 文字とデータの表し方（文字コード・16進ダンプ） | xxd で中身を見る | 0-2 Representing Characters and Data (Character Encodings and Hex Dumps) | 未公開 | 未公開 |
+| 0-2 文字とデータの表し方 | 文字コード・16進ダンプを xxd で見る | 0-2 Representing Characters and Data | 公開（cyber_0-2.html） | 公開 |
 | 0-3 Linux の基本操作 | ファイル・パイプ・sudo・権限の基本 | 0-3 Linux Basics | 未公開 | 未公開 |
 | 0-4 プロセスとメモリ | ps と /proc でメモリの使われ方を見る | 0-4 Processes and Memory | 未公開 | 未公開 |
 | **1章 ネットワークの仕組み** | | **Ch. 1 How Networks Work** | | |
@@ -1039,4 +1051,6 @@
 | 2026-11-18-5 | 2026-11-18 | `6afc421` | 説明の長さ：目安は少し超えてよい（§3）、英訳のときにタイトルと説明を見直す（§12）、付録Bに説明の一行 |
 | 2026-11-18-6 | 2026-11-18 | `f0b66c7` | 長さの目安（日本語）を「1280px 以上で1行」に、付録Bの 1-1 のタイトルを「パケットとIP」に |
 | 2026-11-18-7 | 2026-11-18 | `cfbdb12` | 4点の修正：図の色の表と塗りの濃さ、問題は記事の中で通し番号、まとめは道筋の図から、表の列の幅・行の色の線の class |
-| 2026-11-18-8 | 2026-11-18 | （このコミット） | 版の行を「日付-通し番号」に、改訂の記録を足した。ひな形2つの冒頭にも版の行 |
+| 2026-11-18-8 | 2026-11-18 | `964c3aa` | 版の行を「日付-通し番号」に、改訂の記録を足した。ひな形2つの冒頭にも版の行 |
+| 2026-11-18-9 | 2026-11-18 | `b263961` | 0-2 を付録Bに（題「文字とデータの表し方」・説明の一行・公開）。用語集に 0-2 の訳語を「確認待ち」で追加。ひな形の単体表示で目次レールの強調が1つ前に残る不具合を直した（scroll-padding） |
+| 2026-11-18-10 | 2026-11-18 | （このコミット） | 0-2 の確認を受けて：用語集の 0-2 の訳語を確定（対応表 → code table、計算ドリル・応用問題 → Calculation drills and applied problems） |
