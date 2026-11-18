@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<!-- 記事の種類：共通（日本語・英語）
+     ↑ 「共通（日本語・英語）」「日本語限定」「英語限定」のどれか1つにする。サイバーセキュリティ基礎の記事はふつう「共通」 -->
+<!-- サイバーセキュリティ基礎 節のひな形（2026-11-18。元：html/cyber_0-1.html r189。正本は docs/lesson-authoring/）。
+     ★ 注釈の中に、生のスタイルタグやスクリプトタグを書かない（組み込みで本物のタグとして残り、CSS が丸ごと捨てられる。DESIGN.md §137.2） -->
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>X-Y 節の題｜サイバーセキュリティ基礎 X章 | Academic Gates</title>
+<meta name="description" content="この節の内容を2〜3文で。何を学び、どの端末で何を確かめるか。サイバーセキュリティ基礎 X章／X-Y。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;500&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+<!-- 読む順はサイトと同じ：A. サイト共通 → B. ページの style → C. 教材共通のテーマ -->
+<!-- ━━━ A. サイト共通（css/style.css）の代わり ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+     単体で開いたときにサイトと同じ見た目にするためだけのもの。組み込むと、このブロックは消え、
+     サイトの css/style.css に置き換わる。★ ここは書き換えない（変えてもサイトには反映されない）。 -->
+<style id="standin-site-common">
+:root{
+  --bg:#000000;
+  --surface:rgba(255,255,255,0.02);
+  --surface-hover:rgba(255,255,255,0.04);
+  --nav-bg:rgba(10,10,14,0.60);
+  --hairline:rgba(255,255,255,0.14);
+  --hairline-strong:rgba(255,255,255,0.24);
+  --text-primary:#ffffff;
+  --text-secondary:rgba(255,255,255,0.62);
+  --text-tertiary:rgba(255,255,255,0.48);
+  --accent:#3d8bff;
+  --glow-cool:rgba(61,139,255,.26);
+  --spill-blue:rgba(61,139,255,.13);
+  --spill-blue-deep:rgba(34,78,190,.13);
+  --spill-violet:rgba(120,90,255,.07);
+  --font-display:'Inter Tight','Noto Sans JP',system-ui,sans-serif;
+  --font-body:'Inter Tight','Noto Sans JP',system-ui,sans-serif;
+  --fs-page-title:clamp(2rem,4vw,3.25rem);
+  --space-1:.5rem;--space-2:1rem;--space-3:1.5rem;--space-4:2rem;--space-6:3rem;--space-8:4rem;--space-12:6rem;--space-16:8rem;
+  --gutter:clamp(1.25rem,5vw,6rem);
+  --nav-clearance:92px;
+  --radius-pill:999px;--radius-lg:24px;--radius-md:16px;--radius-sm:8px;
+  --ease:cubic-bezier(0.22,1,0.36,1);
+  --dur:.32s;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:var(--nav-clearance);-webkit-text-size-adjust:100%}
+section,h1,h2,h3,h4,.eyebrow{scroll-margin-top:var(--nav-clearance)}
+body{font-family:var(--font-body);font-weight:400;font-size:1rem;line-height:1.75;color:var(--text-primary);background:var(--bg);min-height:100vh;position:relative;overflow-x:hidden;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+/* 背景の光（サイトの body::before と同じ）。星空はサイトの starfield.js が描くので、ここでは描かない */
+body::before{content:'';position:fixed;inset:0;z-index:-3;pointer-events:none;
+  background:radial-gradient(70% 70% at 80% 22%,var(--spill-blue),transparent 66%),
+             radial-gradient(85% 75% at 10% 86%,var(--spill-blue-deep),transparent 70%),
+             radial-gradient(55% 50% at 55% 6%,var(--spill-violet),transparent 74%)}
+img{max-width:100%;display:block}
+a{color:inherit;text-decoration:none}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:4px}
+h1,h2,h3,h4{font-family:var(--font-display);font-weight:300;color:var(--text-primary)}
+h1{font-size:var(--fs-page-title);line-height:1.05;letter-spacing:-.02em}
+h2{font-size:clamp(1.4rem,2.4vw,1.9rem);line-height:1.1;letter-spacing:-.01em}
+h3{font-size:clamp(1.25rem,2.5vw,1.75rem);font-weight:400;line-height:1.15;letter-spacing:-.01em}
+h4{font-size:1.1rem;font-weight:500;line-height:1.2;letter-spacing:-.01em}
+p{max-width:62ch;color:var(--text-secondary);line-height:1.75}
+:lang(ja){line-break:strict;word-break:normal}
+h1:lang(ja),h2:lang(ja),h3:lang(ja){font-weight:400}
+p:lang(ja){line-height:1.9;word-break:normal;line-break:strict}
+.eyebrow{display:block;max-width:none;font-size:.7rem;font-weight:500;letter-spacing:.2em;text-transform:uppercase;color:var(--text-tertiary);margin-bottom:var(--space-3)}
+main{position:relative;z-index:1}
+/* ボタン（「この記事の目次」と、下の単体表示用のヘッダーが使う） */
+.btn{position:relative;display:inline-flex;align-items:center;gap:.6rem;font-family:var(--font-body);font-size:.85rem;font-weight:500;letter-spacing:.01em;color:var(--text-secondary);padding:.6rem .7rem .6rem 1.15rem;border:1px solid var(--hairline);border-radius:var(--radius-pill);background:transparent;cursor:pointer;transition:color var(--dur) var(--ease),border-color var(--dur) var(--ease);white-space:nowrap}
+.btn:hover{color:var(--text-primary);border-color:var(--hairline-strong)}
+.btn-disc{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;border:1px solid var(--hairline);font-size:.85rem;line-height:1;flex:none}
+/* 記事ページ（body.is-article）の共通の既定値。ページの style が詳細度で上書きする（DESIGN.md §36.5 B） */
+body.is-article #starfield{filter:blur(1.2px);opacity:.6}
+body.is-article main > section:not(.rail){max-width:900px;margin:0 auto;padding:calc(var(--space-16) + 40px) var(--gutter) var(--space-8)}
+body.is-article main > section:not(.rail) ~ section:not(.rail){padding-top:var(--space-8)}
+body.is-article main a:not(.btn){color:var(--accent)}
+body.is-article main a:not(.btn):hover{color:var(--text-primary)}
+body.is-article main h1{margin-bottom:var(--space-4)}
+body.is-article main h2{margin:var(--space-8) 0 var(--space-3)}
+body.is-article main h3{font-size:clamp(1.05rem,1.5vw,1.25rem);margin:var(--space-6) 0 var(--space-2)}
+body.is-article main p{margin-bottom:var(--space-4)}
+body.is-article main ul{color:var(--text-secondary);margin-left:var(--space-3);line-height:1.9}
+
+/* 単体表示用のヘッダーとフッター（サイトでは layout.js が本物を書き出す）。組み込むと消える */
+.standin-header{position:fixed;top:20px;left:50%;transform:translateX(-50%);z-index:1000;display:flex;align-items:center;gap:18px;
+  width:min(1180px,calc(100% - 32px));padding:8px 10px 8px 22px;border:1px solid var(--hairline);border-radius:var(--radius-pill);
+  background:var(--nav-bg);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
+.standin-header .standin-logo{font-size:15px;font-weight:500;letter-spacing:.02em;color:var(--text-primary);margin-right:auto}
+.standin-header .standin-note{font-size:11px;color:var(--text-tertiary)}
+.standin-footer{border-top:1px solid var(--hairline);padding:28px 16px 40px;text-align:center;font-size:12px;color:var(--text-tertiary)}
+@media (max-width:600px){.standin-header .standin-note{display:none}}
+</style>
+<!-- ━━━ B. ページの style（組み込んだ後もこのページに残る）━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+     公開中の cyber_0-1.html と同じ。★ 書き換えない。:root の変数もこのまま使う。 -->
+<style>
+/* サイバーセキュリティ基礎の節 — 記事固有のスタイル（公開中の cyber_0-1.html の style と同じ。DESIGN.md §137）。
+   共通部分は css/style.css と lesson-theme.css が持つ（DESIGN.md §35, §36）。
+   構造（レール・ボックス・図・表）は物理数学の教材と同じルールを使い、
+   この記事にだけあるもの（コマンドのコピー枠・出力例・分解表・スクショ）を末尾に足す。 */
+:root{
+  /* 教材固有のトークン。本体と同値のもの（--bg --surface --nav-bg --ink --line
+     --line-strong --glow-cool --font --nav-clear --ease --radius-lg/md）は
+     css/style.css 側に定義があるので、ここでは持たない。
+     --ink-soft / --ink-faint は本体より明るい値を「意図的に」維持している。
+     本体値に寄せると 13.5px の解説文が 4.56:1 → 3.66:1 と AA を割るため（§36）。 */
+  --surface-2:rgba(255,255,255,.045);
+  --ink-soft:rgba(255,255,255,.68);
+  --ink-faint:rgba(255,255,255,.46);
+  --line-soft:rgba(255,255,255,.05);
+  --accent-deep:#a8c9ff;
+  --accent-tint:rgba(77,148,255,.12);
+  --amber:#ffb46b;--amber-tint:rgba(255,160,70,.08);--amber-line:rgba(255,160,70,.32);
+  --good:#72e3ad;--good-tint:rgba(114,227,173,.08);--good-line:rgba(114,227,173,.28);
+  --key:#ff6fa5;--key-tint:rgba(255,61,139,.08);--key-line:rgba(255,61,139,.28);
+  --teach:#a48bff;--teach-tint:rgba(123,77,255,.11);--teach-line:rgba(123,77,255,.38);
+  --mono:ui-monospace,'SFMono-Regular',Menlo,Consolas,monospace;
+  --rail-w:250px;
+}
+body{font-size:15.5px;line-height:1.9;line-break:strict;overflow-x:hidden}
+
+/* --- レイアウト（左に目次レール／右に本文の2カラム） ------------------------
+   本文列 760px は日本語の長文＋数式に合わせた measure。style.css の共通記事
+   ルールは `body.is-article main > section:not(.rail)`（詳細度 0,2,3）と
+   `… ~ section:not(.rail)`（0,3,4）で 900px と 160px パディングをかけてくる。
+   こちらは `.main` を噛ませて 0,3,2 / 0,4,3 とし、確実に上回る（§36）。 */
+/* 全幅。左寄せのレイアウトで、余った幅は右に流す（§43）。
+   §40 で一度 max-width を外して差し戻しているが、あれは「中央寄せのまま左右を
+   対称にする」変更で、本文の位置も幅も変わらなかったため戻した。今回は本文を
+   860px に広げて左揃えにするので、目的も結果も違う。
+   レールの左余白は 1280px → 1440px にかけて 0 → 32px。狭い画面ではまず余白を
+   削って本文幅に回す（レール幅 250px は目次の文字量で決まるので触らない）。 */
+.wrap{display:flex;padding-top:var(--nav-clearance);
+      padding-left:clamp(0px, calc((100vw - 1280px) * .2), 32px)}
+.rail{width:var(--rail-w);flex:0 0 var(--rail-w);position:sticky;top:var(--nav-clearance);height:calc(100vh - var(--nav-clearance));overflow-y:auto;padding:18px 14px 60px 22px;border-right:1px solid var(--line)}
+/* 左パディング＝レールと本文の間隔。1024px → 1280px にかけて 24 → 56px。
+   これも狭い画面では縮めて本文幅に回す。 */
+.main{flex:1 1 auto;min-width:0;
+      padding:0 clamp(24px, calc(24px + (100vw - 1024px) * .125), 56px) 110px}
+/* 本文列 860px。760px では display 数式が 6 本はみ出していた（解答の入れ子
+   パディングで、.sol の中は本文列より 132px 狭い箱になる）。全 82 本が収まる
+   最小幅は実測 853px（§43.2）。中央寄せをやめて左揃えにし、余りは右へ。 */
+body.is-article .main > .lesson-hero,
+body.is-article .main > section:not(.rail),
+body.is-article .main > .foot{max-width:860px;margin-left:0;margin-right:auto;padding-left:0;padding-right:0}
+.rail .brand{font-weight:400;font-size:15px;line-height:1.45;margin:2px 0 4px}
+.rail .brand small{display:block;font-size:10px;font-weight:500;color:var(--ink-faint);letter-spacing:.2em;margin-top:6px}
+.progress-wrap{height:2px;background:var(--line);border-radius:99px;margin:16px 0 18px;overflow:hidden}
+.progress-bar{height:100%;width:0;background:linear-gradient(90deg,var(--accent),#a8c9ff);transition:width .15s linear}
+.toc{list-style:none;margin:0;padding:0;font-size:12.5px;color:var(--ink-soft)}
+.toc .part{font-size:10px;letter-spacing:.2em;color:var(--ink-faint);margin:16px 0 5px;padding-left:2px}
+.toc a{display:block;text-decoration:none;color:var(--ink-soft);padding:4px 10px;border-radius:999px;transition:color var(--dur) var(--ease),background var(--dur) var(--ease)}
+.toc a:hover{color:var(--ink);background:var(--surface-2)}
+.toc a.active{color:var(--ink);background:var(--accent-tint)}
+.toc a .n{font-size:10.5px;color:var(--ink-faint);margin-right:8px;font-variant-numeric:tabular-nums}
+.toc a.active .n{color:var(--accent)}
+
+/* --- 記事の導入部。`.hero` は index.html 専用で、style.css が
+   `.hero h1/.hero p/.hero .eyebrow` に黒い text-shadow をかけるため使えない（§36）。 --- */
+.lesson-hero{padding:64px 0 34px;border-bottom:1px solid var(--line)}
+.lesson-hero h1{font-weight:300;font-size:clamp(28px,4vw,48px);line-height:1.25;letter-spacing:-.02em;margin:0 0 22px}
+.lesson-hero h1 .sub{display:block;font-size:.52em;font-weight:300;color:var(--ink-soft);letter-spacing:0;margin-top:12px}
+.lesson-hero p{color:var(--ink-soft);margin:0 0 12px}
+.lesson-hero .lead{font-size:16.5px;color:var(--ink-soft)}
+/* .eyebrow 本体は style.css の共通コンポーネント。色と余白だけ上書きする
+   （共通の --text-tertiary は 11px の小さな文字で 3.66:1 と AA を割るため） */
+.eyebrow{color:var(--ink-faint);margin-bottom:18px}
+
+section{border-bottom:1px solid var(--line-soft);scroll-margin-top:var(--nav-clearance)}
+/* 縦の余白も共通ルールに勝つ必要がある（先頭セクションも2つ目以降も同じ 56px） */
+body.is-article .main > section:not(.rail),
+body.is-article .main > section:not(.rail) ~ section:not(.rail){padding-top:56px;padding-bottom:12px}
+.sec-head{display:flex;align-items:baseline;gap:14px;margin-bottom:10px}
+.sec-head .idx{font-size:.72rem;font-weight:500;letter-spacing:.2em;color:var(--ink-faint);padding-top:4px;flex:0 0 auto;font-variant-numeric:tabular-nums}
+.sec-head .idx::after{content:' —'}
+body.is-article main h2{font-weight:400;font-size:clamp(21px,2.6vw,28px);line-height:1.3;letter-spacing:-.01em;margin:0}
+body.is-article main h3{font-weight:400;font-size:17px;margin:30px 0 6px;color:var(--ink)}
+body.is-article main h4{font-weight:500;font-size:14.5px;margin:18px 0 4px;color:var(--ink)}
+body.is-article main p{margin:10px 0;color:var(--ink-soft)}
+body.is-article main ul,body.is-article main ol{margin:10px 0;padding-left:1.3em;color:var(--ink-soft)}
+li{margin:4px 0}
+strong{font-weight:500;color:var(--ink)}
+code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);border-radius:6px;padding:1px 6px;color:var(--accent-deep)}
+
+.box{border-radius:var(--radius-md);padding:16px 20px;margin:18px 0;border:1px solid var(--line);background:var(--surface)}
+.box .lab{font-size:.7rem;letter-spacing:.14em;font-weight:500;display:block;margin-bottom:6px}
+.box p{max-width:none}
+.box p:first-of-type{margin-top:2px}.box p:last-child{margin-bottom:0}
+/* 枠線は必ずトークン経由にすること。ここに直書きすると lesson-theme.css の
+   ライト上書きが効かず、暗い背景用の明るい色がライトでパステルになる（§41）。 */
+.box.principle{background:var(--key-tint);border-color:var(--key-line)}.box.principle .lab{color:var(--key)}
+.box.target{background:var(--good-tint);border-color:var(--good-line)}.box.target .lab{color:var(--good)}
+.box.warn{background:var(--amber-tint);border-color:var(--amber-line)}.box.warn .lab{color:var(--amber)}
+.box.teach{background:var(--teach-tint);border-color:var(--teach-line)}.box.teach .lab{color:var(--teach)}
+.box.teach .lab::before{content:"◎ "}
+
+.table-scroll{overflow-x:auto;margin:14px 0}
+.mini-table{width:100%;border-collapse:collapse;font-size:14px;margin:0;color:var(--ink-soft)}
+.mini-table th,.mini-table td{border:1px solid var(--line);padding:9px 11px;text-align:left;vertical-align:top}
+.mini-table th{background:var(--surface-2);font-weight:500;color:var(--ink)}
+
+.fig{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-lg);padding:18px 18px 12px;margin:20px 0}
+.fig > svg{width:100%;height:auto;display:block}
+.fig svg text{font-family:var(--font-body)}
+.fig figcaption{font-size:13px;color:var(--ink-soft);margin-top:10px;line-height:1.8;max-width:none}
+
+.step{margin:18px 0}
+.step .sh{display:flex;gap:10px;align-items:baseline;font-weight:500;color:var(--ink);margin-bottom:2px}
+.step .sn{font-size:11px;font-weight:500;color:#06142e;background:var(--accent);border-radius:999px;padding:1px 10px;flex:0 0 auto}
+.transfer{background:var(--surface-2);border:1px solid var(--line);border-radius:var(--radius-md);padding:14px 18px;margin:18px 0}
+.transfer .lab{font-size:.7rem;letter-spacing:.14em;color:var(--accent);font-weight:500;display:block;margin-bottom:5px}
+.transfer p{max-width:none}
+.foot{padding:34px 0 0;color:var(--ink-faint);font-size:12.5px}
+.foot p{color:var(--ink-faint);max-width:none}
+
+/* --- この記事だけの部品（コマンドのコピー枠・出力例・分解表・スクショ） --- */
+.mini-table code{white-space:nowrap}
+.anat td:first-child{white-space:nowrap;width:1%}
+.anat caption{caption-side:top;text-align:left;font-size:.7rem;letter-spacing:.14em;color:var(--accent);font-weight:500;padding:0 0 6px}
+.fig > img{width:100%;height:auto;display:block;border-radius:10px;border:1px solid var(--line)}
+.fig.zoom{max-width:560px}
+/* コピーできるコマンド。コピーされるのは data-copy の文字列だけ（先頭の $ は付けない） */
+.cmdbox{display:flex;align-items:center;gap:10px;margin:12px 0;background:rgba(255,255,255,.055);border:1px solid var(--line);border-radius:14px;padding:5px 8px 5px 18px}
+.cmdbox code.cmd{flex:1 1 auto;min-width:0;display:block;font-family:var(--mono);font-size:14px;color:#ececec;background:none;border:0;border-radius:0;padding:12px 0;overflow-x:auto;white-space:pre}
+.copy{flex:0 0 auto;display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:9px;border:0;background:transparent;color:var(--ink-faint);cursor:pointer;transition:color .2s,background .2s}
+.copy:hover{color:var(--ink);background:var(--surface-2)}
+.copy svg{display:block}
+.copy .ic-check{display:none}
+.copy.done{color:var(--good)}
+.copy.done .ic-copy{display:none}.copy.done .ic-check{display:block}
+/* 出力例（コピー対象外） */
+.out{display:block;font-family:var(--mono);font-size:12.5px;background:#06080d;border:1px dashed var(--line-strong);border-radius:var(--radius-sm);padding:10px 14px;margin:10px 0;color:#9ff0cf;white-space:pre-wrap;overflow-wrap:anywhere}
+.out .lab{display:block;font-family:var(--font-body);font-size:.68rem;letter-spacing:.14em;color:var(--ink-faint);margin-bottom:4px}
+/* 1-2 の完成版から変わった部品（1-3 も同じ）：ステップ見出しは flex をやめ、ラベルを行内に置く（長い見出しの折り返しを本文と同じ流れに） */
+.step .sh{display:block}
+.step .sh .sn{display:inline-block;margin-right:10px}
+/* 共通の記事ルール（style.css と上の `body.is-article main …`）のほうが詳細度が高く、元の教材の値が
+   負けていたところを、詳細度を上げて元の値に戻す（DESIGN.md §137.2）。 */
+body.is-article main .lesson-hero h1{margin-bottom:22px}
+body.is-article main .lesson-hero p{margin:0 0 12px}
+body.is-article main h3{line-height:1.9;letter-spacing:normal}
+body.is-article main .foot p{color:var(--ink-faint)}
+
+/* モバイル：レールを引き出しに。`.menu-btn` は位置だけを持ち、見た目は
+   共通コンポーネントの `.btn` を併用する。 */
+.menu-btn{display:none}
+.scrim{display:none}
+@media (max-width:900px){
+  .rail{position:fixed;left:0;top:0;height:100vh;z-index:1100;transform:translateX(-100%);transition:transform .25s var(--ease);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);padding-top:28px}
+  body.nav-open .rail{transform:translateX(0)}
+  .main{padding:0 20px 90px}
+  .menu-btn{display:inline-flex;position:fixed;bottom:18px;right:18px;z-index:1050;background:var(--nav-bg);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);color:var(--ink)}
+  .scrim{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:1090}
+  body.nav-open .scrim{display:block}
+  .lesson-hero{padding-top:40px}
+}
+@media print{
+  body{background:#fff;color:#000}
+  header,.rail,.menu-btn,.scrim,#starfield,footer{display:none!important}
+  .wrap{display:block;padding-top:0}
+  .copy{display:none!important}
+}
+</style>
+<style>/* 図解（1-3 から）：スマホでは図だけ横にスクロール */
+.fig.dg{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.fig.dg>svg{min-width:620px}
+.fig.dg figcaption{min-width:0}
+.box .fig.dg{background:rgba(0,0,0,.18)}
+@media (max-width:700px){.fig.dg::before{content:'← 図は横にスクロールできます →';display:block;font-size:11px;color:var(--ink-faint);text-align:center;margin:-4px 0 6px;position:sticky;left:0}}
+</style>
+<style>/* 問題（物理数学のページと同じ部品）：drill＝問題、attempt＝自分の答えを出してから、sol＝解答 */
+.attempt{background:var(--surface);border:1px solid var(--amber-line);border-radius:var(--radius-lg);padding:18px 22px;margin:20px 0}
+.attempt .lab{font-size:.7rem;letter-spacing:.14em;color:var(--amber);font-weight:500;display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.attempt .lab::before{content:"✎"}
+.controls{display:flex;flex-wrap:wrap;gap:10px;margin:14px 0 4px}
+.ctl-btn{font-family:var(--font-body,inherit);font-size:12.5px;font-weight:500;border:1px solid var(--line);background:transparent;color:var(--ink-soft);padding:7px 16px;border-radius:var(--radius-pill,999px);cursor:pointer;transition:color var(--dur,.2s) var(--ease),border-color var(--dur,.2s) var(--ease),background var(--dur,.2s) var(--ease)}
+.ctl-btn:hover{color:var(--ink);border-color:var(--line-strong);background:var(--surface-2)}
+.sol{display:none;border:1px solid var(--line);border-left:2px solid var(--accent);border-radius:0 var(--radius-md) var(--radius-md) 0;background:var(--surface-2);padding:8px 20px 16px;margin:12px 0}
+.sol p{max-width:none}
+.drill{background:var(--surface);border:1px solid var(--line);border-left:2px solid var(--accent);border-radius:0 var(--radius-md) var(--radius-md) 0;padding:14px 20px;margin:16px 0}
+.drill .qn{font-size:11px;font-weight:500;color:#06142e;background:var(--accent);border-radius:999px;padding:2px 11px;margin-right:8px}
+.drill p{max-width:none}
+.drill p:first-child{margin-top:2px}
+.drill .attempt{background:transparent;border-style:dashed}
+@media (max-width:700px){.drill{padding:12px 14px}.attempt{padding:14px 14px}.sol{padding:8px 12px 14px}}
+@media print{.sol{display:block!important}}
+</style>
+<script>document.addEventListener('DOMContentLoaded',function(){document.querySelectorAll('[data-sol]').forEach(function(btn){btn.addEventListener('click',function(){var sol=btn.closest('.attempt').querySelector('.sol');var open=sol.style.display==='block';sol.style.display=open?'none':'block';if(!btn.dataset.show)btn.dataset.show=btn.textContent;btn.textContent=open?btn.dataset.show:'閉じる';});});});</script>
+<style>/* 原理・導出・言えること の枠（本文の中に1つずつ置く）：原理＝青・導出＝緑・言えること＝橙 */
+.road{margin:18px 0;border:1px solid;border-radius:var(--radius-md);overflow:hidden}
+.road .rh{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:4px 12px;padding:9px 16px;font-weight:700;font-size:14.5px;line-height:1.6}
+.road .rh .tag{font-size:11px;font-weight:600;letter-spacing:.08em;white-space:nowrap}
+.road .rb{padding:8px 16px 12px}
+.road .rb p{max-width:none;margin:5px 0}
+.road .rk{display:inline-block;font-family:var(--mono);font-size:12px;font-weight:700;border-radius:6px;padding:1px 7px;margin-right:9px}
+.road .st{font-size:14px;color:var(--ink-soft)}
+.road .use{font-size:12.5px;font-weight:600}
+.road .chg{font-size:13px;color:var(--ink-faint);border-left:2px solid var(--line);padding-left:10px}
+.road.p{border-color:rgba(77,148,255,.55);background:rgba(77,148,255,.05)}.road.p .rh{background:rgba(77,148,255,.20);color:#cfe0ff}.road.p .rk{background:rgba(77,148,255,.30);color:#e4eeff}
+.road.d{border-color:rgba(114,227,173,.55);background:rgba(114,227,173,.05)}.road.d .rh{background:rgba(114,227,173,.18);color:#c9f7e2}.road.d .rk{background:rgba(114,227,173,.28);color:#e2fbef}.road.d .use{color:#9ff0cf}
+.road.c{border-color:rgba(255,180,107,.55);background:rgba(255,180,107,.05)}.road.c .rh{background:rgba(255,180,107,.20);color:#ffe0c2}.road.c .rk{background:rgba(255,180,107,.30);color:#fff0e0}.road.c .use{color:#ffd3a3}
+.drill .qt{font-size:11px;font-weight:600;border-radius:999px;padding:2px 10px;margin-right:8px;border:1px solid}
+.drill .qt.re{color:#9ff0cf;border-color:rgba(114,227,173,.55);background:rgba(114,227,173,.10)}
+.drill .qt.ap{color:#ffd3a3;border-color:rgba(255,180,107,.55);background:rgba(255,180,107,.10)}
+.sol .qu{font-size:12.5px;font-weight:600;color:var(--ink-faint)}
+</style>
+<!-- ━━━ B'. この記事で足した部品（組み込んだ後もこのページに残る）━━━━━━━━━━━━━━━━━━━━━━━━━━
+     ひな形に無い部品がどうしても要るときだけ、ここに書く。:root の変数を使い、新しい色は直書きしない。
+     足したら、完成したときの報告に「足した部品」として名前を書く。 -->
+<style>/* この記事で足した部品：なし */</style>
+<!-- ━━━ C. 教材共通のテーマ（css/lesson-theme.css）の代わり ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+     サイトでは、ページの style の後ろに css/lesson-theme.css が読まれる。その中で記事に効いている部分を同じ値で写したもの。
+     組み込むと消え、サイトの lesson-theme.css に置き換わる。★ ここも書き換えない。 -->
+<style id="standin-lesson-theme">
+:root{
+  --ink:var(--text-primary);
+  --line:var(--hairline);
+  --line-strong:var(--hairline-strong);
+  --on-accent:#001227;
+  --footer-bg:rgba(0,0,0,.6);
+  --rail-bg:rgba(8,8,12,.96);
+  color-scheme:dark;
+}
+.step .sn,.drill .qn{color:var(--on-accent)}
+@media (max-width:900px){.rail{background:var(--rail-bg)}}
+mjx-container:not([display="true"]){display:inline-block;max-width:100%;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;vertical-align:bottom}
+mjx-container[display="true"]{display:block;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch}
+.box,.drill,.sol,.attempt,.hint,.step{min-width:0}
+.step .sh{display:block}
+.step .sh .sn{display:inline-block;margin-right:10px}
+@media (max-width:1024px){mjx-container[display="true"]{padding-bottom:5px}}
+@media (max-width:600px){mjx-container[display="true"]{font-size:92%}}
+</style>
+</head>
+<body data-page="study" class="is-article" data-node="cyber_X-Y">
+<!-- ━━━ 単体表示用のヘッダー（組み込むと消え、サイトのヘッダー #site-nav に置き換わる）。
+     「講座一覧」のボタンはこの1つだけ。記事の中に、ほかの「講座一覧」や戻るボタンを作らない
+     （サイトでは、目次レールの上の「← サイバーセキュリティ基礎」1本になる）。 -->
+<div class="standin-header" aria-label="単体表示用のヘッダー">
+  <span class="standin-logo">Academic Gates</span>
+  <span class="standin-note">（単体表示用のヘッダー。サイトでは共通のヘッダーに置き換わる）</span>
+  <a class="btn" href="cyber.html">講座一覧 <span class="btn-disc" aria-hidden="true">→</span></a>
+</div>
+
+<!-- ━━━ ここから下（menuBtn・scrim・.wrap の中）は、サイトのページと同じ形。
+     組み込みでは、レールの .brand と .toc の中身、<main> の中身（dg-sprite・.lesson-hero・section・.foot）が使われる。 -->
+<button class="menu-btn btn" id="menuBtn" aria-controls="rail" aria-expanded="false">この記事の目次 <span class="btn-disc" aria-hidden="true">≡</span></button>
+<div class="scrim" id="scrim"></div>
+<div class="wrap">
+  <!-- 戻る導線は、サイトではレール上部の「← サイバーセキュリティ基礎」（自動で入る）と、末尾の前後リンク（自動で入る）。ここには書かない。 -->
+  <nav class="rail" id="rail">
+    <div class="brand">X-Y　節の題<small>サイバーセキュリティ基礎 ／ X章 章の題</small></div>
+    <div class="progress-wrap"><div class="progress-bar" id="pbar"></div></div>
+    <ul class="toc" id="toc">
+      <!-- 部分けの見出し（li.part）の下に、その部の節を並べる。番号（.n）は 01 からの2桁。href は section の id と同じ -->
+      <li class="part">基礎概念</li>
+      <li><a href="#s1"><span class="n">01</span>最初の小節の題</a></li>
+      <li class="part">手を動かす</li>
+      <li><a href="#s2"><span class="n">02</span>端末で確かめる</a></li>
+      <li class="part">仕上げ</li>
+      <li><a href="#s3"><span class="n">03</span>まとめとチェック</a></li>
+    </ul>
+  </nav>
+
+  <main class="main">
+    <!-- 図のアイコン（#i-pc #i-router #i-globe #i-server #i-person #i-term）と矢印（url(#m-blue) など6色）。消さない・中身を変えない -->
+    <svg class="dg-sprite" width="0" height="0" style="position:absolute;width:0;height:0;overflow:hidden" aria-hidden="true" focusable="false"><defs>
+<symbol id="i-pc" viewBox="0 0 64 64"><rect x="11" y="9" width="42" height="30" rx="3.5" fill="currentColor" fill-opacity=".14" stroke="currentColor" stroke-width="2.4"/><rect x="16" y="14" width="32" height="20" rx="1.5" fill="currentColor" fill-opacity=".10"/><path d="M5 45h54l-4 7H9z" fill="currentColor" fill-opacity=".22" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/><path d="M27 48.5h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+<symbol id="i-router" viewBox="0 0 64 64"><path d="M18 30L13 10M46 30l5-20" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><rect x="6" y="30" width="52" height="20" rx="5" fill="currentColor" fill-opacity=".16" stroke="currentColor" stroke-width="2.4"/><circle cx="17" cy="40" r="2.4" fill="currentColor"/><circle cx="26" cy="40" r="2.4" fill="currentColor"/><circle cx="35" cy="40" r="2.4" fill="currentColor"/><circle cx="47" cy="40" r="2.4" fill="currentColor" fill-opacity=".5"/></symbol>
+<symbol id="i-globe" viewBox="0 0 64 64"><circle cx="32" cy="32" r="23" fill="currentColor" fill-opacity=".12" stroke="currentColor" stroke-width="2.4"/><ellipse cx="32" cy="32" rx="10" ry="23" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9 32h46M13 20h38M13 44h38" stroke="currentColor" stroke-width="2" fill="none"/></symbol>
+<symbol id="i-server" viewBox="0 0 64 64"><rect x="12" y="7" width="40" height="14" rx="3" fill="currentColor" fill-opacity=".16" stroke="currentColor" stroke-width="2.4"/><rect x="12" y="25" width="40" height="14" rx="3" fill="currentColor" fill-opacity=".16" stroke="currentColor" stroke-width="2.4"/><rect x="12" y="43" width="40" height="14" rx="3" fill="currentColor" fill-opacity=".16" stroke="currentColor" stroke-width="2.4"/><circle cx="19" cy="14" r="2" fill="currentColor"/><circle cx="19" cy="32" r="2" fill="currentColor"/><circle cx="19" cy="50" r="2" fill="currentColor"/><path d="M30 14h16M30 32h16M30 50h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+<symbol id="i-person" viewBox="0 0 64 64"><circle cx="32" cy="20" r="10" fill="currentColor" fill-opacity=".16" stroke="currentColor" stroke-width="2.4"/><path d="M12 56c2-12 10-18 20-18s18 6 20 18z" fill="currentColor" fill-opacity=".16" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/></symbol>
+<symbol id="i-term" viewBox="0 0 64 64"><rect x="6" y="10" width="52" height="44" rx="5" fill="currentColor" fill-opacity=".12" stroke="currentColor" stroke-width="2.4"/><path d="M6 20h52" stroke="currentColor" stroke-width="2"/><path d="M15 30l7 6-7 6M27 43h12" stroke="currentColor" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<marker id="m-blue" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L10,5 L0,10 z" fill="#4d94ff"/></marker><marker id="m-green" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L10,5 L0,10 z" fill="#72e3ad"/></marker><marker id="m-amber" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L10,5 L0,10 z" fill="#ffb46b"/></marker><marker id="m-purple" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L10,5 L0,10 z" fill="#a48bff"/></marker><marker id="m-pink" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L10,5 L0,10 z" fill="#ff6fa5"/></marker><marker id="m-gray" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L10,5 L0,10 z" fill="rgba(255,255,255,.55)"/></marker></defs></svg>
+    <div class="lesson-hero">
+      <div class="eyebrow">サイバーセキュリティ基礎 ／ X章 章の題 ／ SECTION X-Y</div>
+      <h1>X-Y　節の題<span class="sub">副題（この節で何ができるようになるかを1行で）</span></h1>
+      <p class="lead">導入の1段落目。画面に出てくる具体的なもの（<code>192.168.128.3</code> のような値）から入り、この節で扱うことにつなげる。</p>
+      <p>導入の2段落目。この節で学ぶこと、どの仮想マシンで何を確かめるかを書く。略語は初出で（MAC：Media Access Control：媒体アクセス制御）の形で開く。</p>
+    </div>
+
+    <!-- §01 -->
+    <section id="s1">
+      <div class="sec-head"><span class="idx">§01</span><h2>最初の小節の題</h2></div>
+
+      <div class="box target"><span class="lab">この節で押さえること</span>
+      <ul style="margin:6px 0 0">
+        <li>この節の要点を、<strong>言い切りの1文</strong>で。</li>
+        <li>要点は3〜5個。</li>
+      </ul></div>
+
+      <p>本文の段落。強調は <strong>strong</strong>、コマンド名・値・ファイル名は <code>code</code> で書く。本文の中のリンクは <a href="cyber_0-1.html">0-1「ビット・バイトと2進数・16進数」</a> のように、公開済みの節にだけ付ける。</p>
+
+      <div class="road p"><div class="rh"><span><span class="rk">P1</span>原理を1文で</span><span class="tag">原理 ― 覚える</span></div><div class="rb"><p class="st"><strong>どんな決まりか</strong>：設計上の約束／規格／数学の定義、のどれか。</p><p class="st"><strong>由来</strong>：いつ・誰が・どの規格（RFC 番号など）で決めたか。</p></div></div>
+
+      <div class="table-scroll"><table class="mini-table">
+        <thead><tr><th>見出し</th><th>見出し</th><th>見出し</th></tr></thead>
+        <tbody>
+          <tr><td>セル</td><td>セル</td><td>セル</td></tr>
+          <tr><td>セル</td><td>セル</td><td><strong>強調したいセル</strong></td></tr>
+        </tbody>
+      </table></div>
+
+      <figure class="fig dg">
+        <svg viewBox="0 0 760 170" role="img" aria-label="図の内容を1文で（読み上げ用）"><use href="#i-pc" x="60" y="40" width="64" height="64" style="color:#4d94ff"/><text x="92" y="128" text-anchor="middle" fill="#fff" font-size="15" font-weight="600">Kali</text><text x="92" y="147" text-anchor="middle" fill="#a8c9ff" font-size="12.5" font-weight="500" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">192.168.128.2</text><line x1="150" y1="72" x2="590" y2="72" stroke="#72e3ad" stroke-width="1.8" marker-end="url(#m-green)"/><rect x="290" y="40" width="160" height="26" rx="9" fill="#72e3ad" fill-opacity=".13" stroke="#72e3ad" stroke-width="1.5"/><text x="370" y="58" text-anchor="middle" fill="#9ff0cf" font-size="12.5" font-weight="600">送る</text><use href="#i-server" x="606" y="40" width="64" height="64" style="color:#ffb46b"/><text x="638" y="128" text-anchor="middle" fill="#fff" font-size="15" font-weight="600">Parrot</text><text x="638" y="147" text-anchor="middle" fill="#ffd3a3" font-size="12.5" font-weight="500" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">192.168.128.3</text></svg>
+        <figcaption><strong>図1</strong>　図の説明。色の意味（青が Kali、橙が Parrot など）と、どこを見ればよいかを書く。</figcaption>
+      </figure>
+
+      <div class="box teach"><span class="lab">補足の囲みの題</span>
+      <p>本筋から少し外れる説明（用語の由来、「なぜ〜なのか」）。</p></div>
+
+      <div class="box warn"><span class="lab">注意の囲みの題</span>
+      <p>よくある誤解、取り違えやすい点、失敗しやすい操作。</p></div>
+
+      <div class="road d"><div class="rh"><span><span class="rk">D1</span>原理から導けることを1文で</span><span class="tag">導出 ― 自分で導ける</span></div><div class="rb"><p class="use">使う原理：P1</p><p class="st"><strong>導き方</strong>：P1 からどう導くか。</p><p class="chg">原理がちがったら：前提を変えると結論がどう変わるか。</p></div></div>
+
+      <h3>計算ドリル（§01・全1問）</h3>
+
+      <div class="drill"><p><span class="qn">問1</span><span class="qt re">再現：D1</span>問題文。(a)・(b) のように小問に分けてよい。</p>
+      <div class="attempt" style="margin:10px 0 4px"><span class="lab">自分の答えを出してから</span>
+      <div class="controls"><button class="ctl-btn" data-sol>解答を見る</button></div>
+      <div class="sol"><p class="qu">使う：P1・D1</p><p>(a) 手計算の過程と答え <strong>答え</strong></p><p style="font-size:13.5px;color:var(--ink-faint)">補足（どこで出てくる数か、など）。手計算の問題の解答に、確かめるためのコマンドは書かない。</p></div></div></div>
+
+      <div class="drill"><p><span class="qn">問2</span><span class="qt ap">応用：P1 → C1</span>応用問題の問題文。</p>
+      <div class="attempt" style="margin:10px 0 4px"><span class="lab">自分の答えを出してから</span>
+      <div class="controls"><button class="ctl-btn" data-sol>解答を見る</button></div>
+      <div class="sol"><p class="qu">使う：P1 → C1</p><p>解答。</p></div></div></div>
+
+      <div class="road c"><div class="rh"><span><span class="rk">C1</span>言えること（セキュリティの意味）を1文で</span><span class="tag">言えること ― 説明できる</span></div><div class="rb"><p class="use">根拠：D1</p><p class="st">なぜそう言えるか、どの章につながるか。</p></div></div>
+    </section>
+
+    <!-- §02 -->
+    <section id="s2">
+      <div class="sec-head"><span class="idx">§02</span><h2>端末で確かめる（Kali × Parrot）</h2></div>
+
+      <p>演習の前置き：どの仮想マシンの端末で行うか、通信するか（する場合は Host-Only の内部ネットワーク 192.168.128.0/24 の中だけで行うこと）を書く。演習は、自分が管理する環境（自分の仮想マシンやラボ）の中だけで行う。</p>
+
+      <h3>手順1：手順の題</h3>
+      <div class="step">
+        <span class="sh"><span class="sn">COMMAND</span>このコマンドで何をするか</span>
+        <div class="cmdbox" data-copy="ip -br addr show eth1"><code class="cmd">ip -br addr show eth1</code></div>
+      </div>
+      <div class="table-scroll"><table class="mini-table anat">
+        <caption>コマンドの分解</caption>
+        <thead><tr><th>部分</th><th>意味</th></tr></thead>
+        <tbody>
+          <tr><td><code>ip</code></td><td>コマンドの名前と、何をするコマンドか。</td></tr>
+          <tr><td><code>-br</code></td><td><strong>brief</strong>（簡潔）。オプションの意味と、元の英語。</td></tr>
+          <tr><td><code>eth1</code></td><td>自分の環境に合わせて変える部分なら、そう書く。</td></tr>
+        </tbody>
+      </table></div>
+      <div class="out"><span class="lab">出力例</span>eth1             UP             192.168.128.2/24</div>
+      <div class="table-scroll"><table class="mini-table anat">
+        <caption>出力の読み方</caption>
+        <thead><tr><th>出力</th><th>意味</th></tr></thead>
+        <tbody>
+          <tr><td><code>UP</code></td><td>出力の各部分が何を表すか。</td></tr>
+          <tr><td><code>192.168.128.2/24</code></td><td>…</td></tr>
+        </tbody>
+      </table></div>
+
+      <h3>手順2：端末を2つ使うとき</h3>
+      <div class="step">
+        <span class="sh"><span class="sn">端末A</span>見張る側（Kali）</span>
+        <div class="cmdbox" data-copy="sudo tcpdump -i eth1 -n icmp"><code class="cmd">sudo tcpdump -i eth1 -n icmp</code></div>
+      </div>
+      <div class="step">
+        <span class="sh"><span class="sn">端末B</span>送る側（Kali）</span>
+        <div class="cmdbox" data-copy="ping -c 1 192.168.128.3"><code class="cmd">ping -c 1 192.168.128.3</code></div>
+      </div>
+
+      <figure class="fig">
+        <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNDAwIiBoZWlnaHQ9IjcyOCIgdmlld0JveD0iMCAwIDE0MDAgNzI4Ij4KPHJlY3Qgd2lkdGg9IjE0MDAiIGhlaWdodD0iNzI4IiBmaWxsPSIjMWIyMjMwIi8+CjxyZWN0IHg9IjExMiIgeT0iNzMiIHdpZHRoPSIxMTc2IiBoZWlnaHQ9IjU4MiIgcng9IjE0IiBmaWxsPSIjMGQxMTE3IiBzdHJva2U9IiMzYTQyNTAiIHN0cm9rZS13aWR0aD0iMyIvPgo8cmVjdCB4PSIxMTIiIHk9IjczIiB3aWR0aD0iMTE3NiIgaGVpZ2h0PSI1MSIgcng9IjE0IiBmaWxsPSIjMjYyZDNhIi8+Cjx0ZXh0IHg9IjE2OCIgeT0iMjE4IiBmb250LWZhbWlseT0ibW9ub3NwYWNlIiBmb250LXNpemU9IjMzIiBmaWxsPSIjOWZmMGNmIj4kIOOCs+ODnuODs+ODieOBruS+izwvdGV4dD4KPHRleHQgeD0iMTY4IiB5PSIyNzciIGZvbnQtZmFtaWx5PSJtb25vc3BhY2UiIGZvbnQtc2l6ZT0iMzMiIGZpbGw9IiNkMGQ2ZTAiPuWHuuWKm+OBruS+izwvdGV4dD4KPHJlY3QgeD0iMTQ3IiB5PSIxNzUiIHdpZHRoPSI1ODgiIGhlaWdodD0iMTI0IiBmaWxsPSJub25lIiBzdHJva2U9IiNmZjNiM2IiIHN0cm9rZS13aWR0aD0iNiIvPgo8cmVjdCB4PSI3NDIiIHk9IjE3NSIgd2lkdGg9IjIyNCIgaGVpZ2h0PSI2MiIgcng9IjgiIGZpbGw9IiNmZjNiM2IiLz4KPHRleHQgeD0iODU0IiB5PSIyMTgiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXdlaWdodD0iNzAwIiBmb250LXNpemU9IjM2IiBmaWxsPSIjZmZmIj7ikaA8L3RleHQ+Cjx0ZXh0IHg9IjcwMCIgeT0iNTgyIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIzNiIgZmlsbD0iIzZiNzU4NSI+6KaL5pys44Gu55S75YOP77yIMTQwMMOXNzI477yJ44CC5pys54mp44Gu44K544Kv44Oq44O844Oz44K344On44OD44OI44Gr5beu44GX5pu/44GI44KLPC90ZXh0Pgo8L3N2Zz4=" data-file="cyber_X-Y_s02.jpg" width="1400" height="728" loading="lazy" alt="Kali のデスクトップ。端末に、手順1の ip -br addr show eth1 の結果が表示されている">
+        <figcaption>操作した順に番号を付けています。<br>
+          <strong>赤枠①</strong>：手順1。何が写っているか（値も書く）。</figcaption>
+      </figure>
+      <figure class="fig zoom">
+        <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4MDAiIGhlaWdodD0iNDAwIiB2aWV3Qm94PSIwIDAgODAwIDQwMCI+CjxyZWN0IHdpZHRoPSI4MDAiIGhlaWdodD0iNDAwIiBmaWxsPSIjMWIyMjMwIi8+CjxyZWN0IHg9IjY0IiB5PSI0MCIgd2lkdGg9IjY3MiIgaGVpZ2h0PSIzMjAiIHJ4PSIxNCIgZmlsbD0iIzBkMTExNyIgc3Ryb2tlPSIjM2E0MjUwIiBzdHJva2Utd2lkdGg9IjMiLz4KPHJlY3QgeD0iNjQiIHk9IjQwIiB3aWR0aD0iNjcyIiBoZWlnaHQ9IjI4IiByeD0iMTQiIGZpbGw9IiMyNjJkM2EiLz4KPHRleHQgeD0iOTYiIHk9IjEyMCIgZm9udC1mYW1pbHk9Im1vbm9zcGFjZSIgZm9udC1zaXplPSIxOCIgZmlsbD0iIzlmZjBjZiI+JCDjgrPjg57jg7Pjg4njga7kvos8L3RleHQ+Cjx0ZXh0IHg9Ijk2IiB5PSIxNTIiIGZvbnQtZmFtaWx5PSJtb25vc3BhY2UiIGZvbnQtc2l6ZT0iMTgiIGZpbGw9IiNkMGQ2ZTAiPuWHuuWKm+OBruS+izwvdGV4dD4KPHJlY3QgeD0iODQiIHk9Ijk2IiB3aWR0aD0iMzM2IiBoZWlnaHQ9IjY4IiBmaWxsPSJub25lIiBzdHJva2U9IiNmZjNiM2IiIHN0cm9rZS13aWR0aD0iNiIvPgo8cmVjdCB4PSI0MjQiIHk9Ijk2IiB3aWR0aD0iMTI4IiBoZWlnaHQ9IjM0IiByeD0iOCIgZmlsbD0iI2ZmM2IzYiIvPgo8dGV4dCB4PSI0ODgiIHk9IjEyMCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtd2VpZ2h0PSI3MDAiIGZvbnQtc2l6ZT0iMjAiIGZpbGw9IiNmZmYiPuKRoDwvdGV4dD4KPHRleHQgeD0iNDAwIiB5PSIzMjAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXNpemU9IjIwIiBmaWxsPSIjNmI3NTg1Ij7mi6HlpKfjga7opovmnKzvvIg4MDDDlzQwMO+8iTwvdGV4dD4KPC9zdmc+" data-file="cyber_X-Y_s02_2.png" width="800" height="400" loading="lazy" alt="手順1の結果の拡大。eth1 の行に 192.168.128.2/24 が表示されている">
+        <figcaption><strong>拡大</strong>：上の画像の赤枠①を大きくしたもの。</figcaption>
+      </figure>
+
+      <div class="box warn"><span class="lab">うまくいかないとき</span>
+      <ul style="margin:6px 0 0">
+        <li>出やすいエラーと、その原因・直し方。</li>
+      </ul></div>
+
+      <div class="box warn"><span class="lab">後片付け</span>
+      <p>演習で動かしたもの（待ち受け・記録）を止める手順。</p></div>
+    </section>
+
+    <!-- §03 -->
+    <section id="s3">
+      <div class="sec-head"><span class="idx">§03</span><h2>まとめとチェック</h2></div>
+
+      <ul>
+        <li>この節の要点を、本文の言葉で短く。</li>
+      </ul>
+
+      <div class="box principle"><span class="lab">最終チェック</span>
+      <ul style="margin:8px 0 0">
+        <li><strong>何も見ずに</strong>、原理 P1 を書き出し、D1 を導き、C1 を説明できるか</li>
+        <li>確かめる項目を、どの小節で扱ったかと一緒に（§01）</li>
+      </ul></div>
+
+      <!-- 「次へ」の囲み。行き先の節がまだ公開されていなければリンクを付けない（見出しと文だけ）。公開済みなら本文の先頭にリンク -->
+      <div class="transfer"><span class="lab">次へ：X-Z 次の節の題</span>
+      <p>次の節で扱うことを1〜2文で。</p></div>
+      <div class="transfer"><span class="lab">前へ：0-1 ビット・バイトと2進数・16進数</span>
+      <p><a href="cyber_0-1.html">0-1「ビット・バイトと2進数・16進数」</a>：前の節の内容を1文で。</p></div>
+
+      <div class="foot"><p>Academic Gates ／ サイバーセキュリティ基礎 X章 章の題 ／ X-Y「節の題」。演習をどの環境で行ったか（例：演習は Kali Linux × Parrot OS の仮想ラボで行い、パケットの送受信は Host-Only の内部ネットワーク（192.168.128.0/24。外部の LAN からは切り離されている）の中だけで実施しています）。自分が管理していないネットワークや機器には、この講座の操作を行わないでください。</p></div>
+    </section>
+
+  </main>
+</div>
+<!-- ━━━ 単体表示用のフッター（組み込むと消え、サイトのフッター #site-footer に置き換わる） -->
+<div class="standin-footer">Academic Gates（単体表示用のフッター。サイトでは共通のフッターに置き換わる）</div>
+<script>
+/* コマンドのコピー（アイコンボタンを付ける） */
+var COPY_ICONS='<svg class="ic-copy" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M15 9V6.5A2.5 2.5 0 0 0 12.5 4h-6A2.5 2.5 0 0 0 4 6.5v6A2.5 2.5 0 0 0 6.5 15H9"/></svg>'
+  +'<svg class="ic-check" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+document.querySelectorAll('.cmdbox').forEach(function(box){
+  var text=box.getAttribute('data-copy');
+  var btn=document.createElement('button');
+  btn.type='button';btn.className='copy';btn.title='コピー';btn.setAttribute('aria-label','コマンドをコピー');
+  btn.innerHTML=COPY_ICONS;box.appendChild(btn);
+  function ok(){btn.classList.add('done');btn.title='コピーしました';setTimeout(function(){btn.classList.remove('done');btn.title='コピー'},1600)}
+  function fallback(){
+    var t=document.createElement('textarea');t.value=text;t.setAttribute('readonly','');
+    t.style.position='fixed';t.style.opacity='0';document.body.appendChild(t);t.select();
+    try{document.execCommand('copy');ok()}catch(e){}
+    document.body.removeChild(t);
+  }
+  btn.addEventListener('click',function(){
+    if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(text).then(ok,fallback)}else{fallback()}
+  });
+});
+
+/* 目次の追従 */
+var links=[].slice.call(document.querySelectorAll('.toc a[href^="#"]'));
+var secs=links.map(function(a){return document.querySelector(a.getAttribute('href'))});
+var pbar=document.getElementById('pbar');
+function onScroll(){
+  // getBoundingClientRect を使う（offsetTop ではない）。style.css の
+  // `main{position:relative}` で <main> が offsetParent になるため（§36）。
+  var idx=0;
+  secs.forEach(function(s,i){ if(s&&s.getBoundingClientRect().top<=140) idx=i; });
+  // 最後の節は短く、見出しが 140px まで上がる前にページの底に着く。底に着いたら最後を光らせる
+  if(window.innerHeight+window.scrollY>=document.documentElement.scrollHeight-2) idx=secs.length-1;
+  links.forEach(function(a){a.classList.remove('active')});
+  if(links[idx]) links[idx].classList.add('active');
+  var h=document.documentElement.scrollHeight-window.innerHeight;
+  pbar.style.width=(h>0?(window.scrollY/h*100):0)+'%';
+}
+window.addEventListener('scroll',onScroll,{passive:true});
+window.addEventListener('resize',onScroll); onScroll();
+var body=document.body,mb=document.getElementById('menuBtn'),scrim=document.getElementById('scrim');
+mb.addEventListener('click',function(){var o=body.classList.toggle('nav-open');mb.setAttribute('aria-expanded',o)});
+scrim.addEventListener('click',function(){body.classList.remove('nav-open')});
+document.getElementById('toc').addEventListener('click',function(e){if(e.target.closest('a'))body.classList.remove('nav-open')});
+</script>
+</body>
+</html>
