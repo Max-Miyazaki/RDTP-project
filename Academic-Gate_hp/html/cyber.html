@@ -8,22 +8,18 @@
     <link rel="alternate" hreflang="x-default" href="https://max-phy.jp/Academic-Gate_hp/html/cyber.html">
     <title>サイバーセキュリティ基礎｜情報科学 - Academic Gates</title>
     <meta name="description" content="Kali Linux と Parrot OS を使い、実務でよく使われる攻防の手法を手を動かしながら学ぶ実践演習シリーズ。偵察・スキャン・パケット解析・L2攻防・サービス攻防・検知と防御の設計まで、全7部20章・66節。">
-    <link rel="stylesheet" href="../css/style.css?v=r189">
+    <link rel="stylesheet" href="../css/style.css?v=r190">
     <link rel="icon" href="../../favicon.ico" sizes="32x32">
     <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="../../apple-touch-icon.png">
-    <style>
-        /* 章の説明（いまは 0章だけ）。グリッドの中で全幅にし、章の見出しのすぐ下に置く */
-        .toc-part .study-grid > .toc-ch-lead { grid-column: 1 / -1; margin: -0.25rem 0 0.25rem; font-size: 0.9rem; color: var(--text-secondary); }
-    </style>
 </head>
 <body data-page="study" data-node="cyber">
     <canvas id="starfield" aria-hidden="true"></canvas>
 <div id="site-nav"><noscript><nav class="noscript-nav" aria-label="メインナビゲーション"><a href="index.html">ホーム</a><a href="self-intro.html">自己紹介</a><a href="study.html">勉強の軌跡</a><a href="videos.html">動画</a><a href="blog.html">ブログ</a><a href="sns.html">各種SNS</a></nav></noscript></div>
     <!-- サイバーセキュリティ基礎の目次（DESIGN.md §137）。物理数学の目次（phys-math.html）と同じ作り。
-         部（.toc-part）→ 章（.study-grid の h3）→ 節（.study-card の h4）の3段。部が増えたぶんだけ見出しを1段下げた。
-         ★ 節のページがあれば <a class="study-card" href="cyber_N-M.html">、無ければ <div>（layout.js が「準備中」の札を付ける）。
-           節を書き上げたら、その節の div を a に変えるだけ。制作用の札（「次はここ」「台本あり」など）は置かない。
+         部（.toc-part）→ 章（.toc-ch の h3）→ 節の行（.toc-list の .toc-row）の3段。右にプレビュー（§141）。
+         ★ 節のページがあれば <a class="toc-row" href="cyber_N-M.html">、無ければ <div class="toc-row">（layout.js が「準備中」の札を付ける）。
+           節を書き上げたら、その節の div を a に変えるだけ。プレビューの §の見出しは記事から自動で読む。制作用の札（「次はここ」「台本あり」など）は置かない。
          ★ 量（部・章・節の数）はページに出さない（§136 の方針）。meta description には残してある（2026-11-12 の改訂で 7部20章・66節。0章は準備編）。 -->
     <main>
         <div class="page-header">
@@ -42,365 +38,214 @@
             <p class="toc-note__warn"><strong>演習は、自分が管理する環境（自分の仮想マシンやラボ）の中だけで行ってください。</strong>他人のシステムやネットワークに、許可なくスキャンや侵入を行うことは、不正アクセス禁止法などの法律に違反します。</p>
         </div>
 
-        <section class="toc-part" aria-labelledby="part-1">
-            <div class="toc-part__head"><span class="toc-part__no">部 I</span><h2 id="part-1">基礎 — ネットワークとセキュリティの土台</h2></div>
-            <section class="study-grid">
-                <h3>0章 準備編：コンピューターの基礎</h3>
-                <p class="toc-ch-lead">1章より前に読む土台。16進数やバイトの計算、Linux の操作、メモリの基礎をここで固めます</p>
-                <a class="study-card" href="cyber_0-1.html">
-                    <h4>0-1 ビット・バイトと2進数・16進数</h4>
-                    <p>MAC アドレスやポート番号を、バイトと16進数で読めるようにする</p>
-                </a>
-                <div class="study-card">
-                    <h4>0-2 文字とデータの表し方（文字コード・16進ダンプ）</h4>
-                    <p>文字コードと xxd で、ファイルやパケットの中身を16進数で見る</p>
-                </div>
-                <div class="study-card">
-                    <h4>0-3 Linux の基本操作</h4>
-                    <p>ファイル操作・パイプ・sudo・権限など、演習で使う操作の土台</p>
-                </div>
-                <div class="study-card">
-                    <h4>0-4 プロセスとメモリ</h4>
-                    <p>プログラムがメモリのどこで動くかを、ps と /proc で確かめる</p>
-                </div>
+        <!-- 目次：左が節の行、右がプレビュー（PC のみ。js/toc-preview.js）。DESIGN.md §141 -->
+        <div class="toc-layout" data-unit="節">
+            <div class="toc-layout__list">
+            <section class="toc-part" aria-labelledby="part-1">
+                <div class="toc-part__head"><span class="toc-part__no">部 I</span><h2 id="part-1">基礎 — ネットワークとセキュリティの土台</h2></div>
+                <section class="toc-ch">
+                    <h3>0章 準備編：コンピューターの基礎</h3>
+                    <p class="toc-ch__lead">1章より前に読む土台。16進数やバイトの計算、Linux の操作、メモリの基礎をここで固めます</p>
+                    <ol class="toc-list">
+                        <li><a class="toc-row" href="cyber_0-1.html"><span class="toc-row__no">0-1</span><span class="toc-row__title">ビット・バイトと2進数・16進数</span><span class="toc-row__desc">MAC アドレスやポート番号を、バイトと16進数で読めるようにする</span></a></li>
+                        <li><div class="toc-row"><span class="toc-row__no">0-2</span><span class="toc-row__title">文字とデータの表し方（文字コード・16進ダンプ）</span><span class="toc-row__desc">文字コードと xxd で、ファイルやパケットの中身を16進数で見る</span></div></li>
+                        <li><div class="toc-row"><span class="toc-row__no">0-3</span><span class="toc-row__title">Linux の基本操作</span><span class="toc-row__desc">ファイル操作・パイプ・sudo・権限など、演習で使う操作の土台</span></div></li>
+                        <li><div class="toc-row"><span class="toc-row__no">0-4</span><span class="toc-row__title">プロセスとメモリ</span><span class="toc-row__desc">プログラムがメモリのどこで動くかを、ps と /proc で確かめる</span></div></li>
+                    </ol>
+                </section>
+                <section class="toc-ch">
+                    <h3>1章 ネットワークの仕組み</h3>
+                    <ol class="toc-list">
+                        <li><a class="toc-row" href="cyber_1-1.html"><span class="toc-row__no">1-1</span><span class="toc-row__title">パケットとIP：通信で実際に起きていること</span><span class="toc-row__desc">データはどう分割・配送されるか。IPアドレスの役割</span></a></li>
+                        <li><a class="toc-row" href="cyber_1-2.html"><span class="toc-row__no">1-2</span><span class="toc-row__title">TCPとポート、3-wayハンドシェイク</span><span class="toc-row__desc">確実な通信の仕組みと、接続を結ぶ3回のあいさつ</span></a></li>
+                        <li><a class="toc-row" href="cyber_1-3.html"><span class="toc-row__no">1-3</span><span class="toc-row__title">UDP・ICMP と主要プロトコル</span><span class="toc-row__desc">TCP以外の通信と、ping の正体</span></a></li>
+                        <li><a class="toc-row" href="cyber_1-4.html"><span class="toc-row__no">1-4</span><span class="toc-row__title">階層モデル（OSI / TCP-IP）で全体を捉える</span><span class="toc-row__desc">通信を階層で整理し、各ツールがどこを見るか把握する</span></a></li>
+                    </ol>
+                </section>
+                <section class="toc-ch">
+                    <h3>2章 演習環境とツールの基礎</h3>
+                    <ol class="toc-list">
+                        <li><div class="toc-row"><span class="toc-row__no">2-1</span><span class="toc-row__title">演習ラボの全体像</span><span class="toc-row__desc">Kali/Parrot、ホストオンリーの L2 セグメント、デュアルNIC</span></div></li>
+                        <li><div class="toc-row"><span class="toc-row__no">2-2</span><span class="toc-row__title">ネットワーク設定とサービス管理の基礎</span><span class="toc-row__desc">ip / ss / systemctl など、攻防に必須のコマンド</span></div></li>
+                        <li><div class="toc-row"><span class="toc-row__no">2-3</span><span class="toc-row__title">レッド／ブルー／パープルチーム</span><span class="toc-row__desc">攻撃者・防御者・両者をつなぐ視点</span></div></li>
+                    </ol>
+                </section>
             </section>
-            <section class="study-grid">
-                <h3>1章 ネットワークの仕組み</h3>
-                <a class="study-card" href="cyber_1-1.html">
-                    <h4>1-1 パケットとIP：通信で実際に起きていること</h4>
-                    <p>データはどう分割・配送されるか。IPアドレスの役割</p>
-                </a>
-                <a class="study-card" href="cyber_1-2.html">
-                    <h4>1-2 TCPとポート、3-wayハンドシェイク</h4>
-                    <p>確実な通信の仕組みと、接続を結ぶ3回のあいさつ</p>
-                </a>
-                <a class="study-card" href="cyber_1-3.html">
-                    <h4>1-3 UDP・ICMP と主要プロトコル</h4>
-                    <p>TCP以外の通信と、ping の正体</p>
-                </a>
-                <a class="study-card" href="cyber_1-4.html">
-                    <h4>1-4 階層モデル（OSI / TCP-IP）で全体を捉える</h4>
-                    <p>通信を階層で整理し、各ツールがどこを見るか把握する</p>
-                </a>
-            </section>
-            <section class="study-grid">
-                <h3>2章 演習環境とツールの基礎</h3>
-                <div class="study-card">
-                    <h4>2-1 演習ラボの全体像</h4>
-                    <p>Kali/Parrot、ホストオンリーの L2 セグメント、デュアルNIC</p>
-                </div>
-                <div class="study-card">
-                    <h4>2-2 ネットワーク設定とサービス管理の基礎</h4>
-                    <p>ip / ss / systemctl など、攻防に必須のコマンド</p>
-                </div>
-                <div class="study-card">
-                    <h4>2-3 レッド／ブルー／パープルチーム</h4>
-                    <p>攻撃者・防御者・両者をつなぐ視点</p>
-                </div>
-            </section>
-        </section>
 
-        <section class="toc-part" aria-labelledby="part-2">
-            <div class="toc-part__head"><span class="toc-part__no">部 II</span><h2 id="part-2">偵察 — 攻撃の入口と、その検知</h2></div>
-            <section class="study-grid">
-                <h3>3章 情報収集（フットプリンティング）</h3>
-                <div class="study-card">
-                    <h4>3-1 パッシブ偵察</h4>
-                    <p>通信せずに集められる公開情報</p>
-                </div>
-                <div class="study-card">
-                    <h4>3-2 アクティブ偵察の基礎</h4>
-                    <p>能動的に探る手法と、相手に残る痕跡</p>
-                </div>
-                <div class="study-card">
-                    <h4>3-3 ソーシャルエンジニアリングとフィッシング</h4>
-                    <p>人をだます攻撃の見分け方と、SPF / DKIM / DMARC の仕組み</p>
-                </div>
+            <section class="toc-part" aria-labelledby="part-2">
+                <div class="toc-part__head"><span class="toc-part__no">部 II</span><h2 id="part-2">偵察 — 攻撃の入口と、その検知</h2></div>
+                <section class="toc-ch">
+                    <h3>3章 情報収集（フットプリンティング）</h3>
+                    <ol class="toc-list">
+                        <li><div class="toc-row"><span class="toc-row__no">3-1</span><span class="toc-row__title">パッシブ偵察</span><span class="toc-row__desc">通信せずに集められる公開情報</span></div></li>
+                        <li><div class="toc-row"><span class="toc-row__no">3-2</span><span class="toc-row__title">アクティブ偵察の基礎</span><span class="toc-row__desc">能動的に探る手法と、相手に残る痕跡</span></div></li>
+                        <li><div class="toc-row"><span class="toc-row__no">3-3</span><span class="toc-row__title">ソーシャルエンジニアリングとフィッシング</span><span class="toc-row__desc">人をだます攻撃の見分け方と、SPF / DKIM / DMARC の仕組み</span></div></li>
+                    </ol>
+                </section>
+                <section class="toc-ch">
+                    <h3>4章 ホスト発見とポートスキャン</h3>
+                    <ol class="toc-list">
+                        <li><div class="toc-row"><span class="toc-row__no">4-1</span><span class="toc-row__title">ホスト発見（ping sweep / ARP スキャン）</span><span class="toc-row__desc">ネットワーク上の生きているホストを見つける</span></div></li>
+                        <li><div class="toc-row"><span class="toc-row__no">4-2</span><span class="toc-row__title">SYNスキャンの攻防（教科書レベル）</span><span class="toc-row__desc">ハーフオープンの仕組みを可視化し、検知・遮断する</span></div></li>
+                        <li><div class="toc-row"><span class="toc-row__no">4-3</span><span class="toc-row__title">各種スキャン手法の比較</span><span class="toc-row__desc">-sT / -sU / -sF / -sN それぞれの挙動と使い分け</span></div></li>
+                        <li><div class="toc-row"><span class="toc-row__no">4-4</span><span class="toc-row__title">サービス・OS 特定とバナーグラビング</span><span class="toc-row__desc">-sV / -A / -O で相手の正体を突き止める</span></div></li>
+                    </ol>
+                </section>
+                <section class="toc-ch">
+                    <h3>5章 スキャンの検知と防御</h3>
+                    <ol class="toc-list">
+                        <li><div class="toc-row"><span class="toc-row__no">5-1</span><span class="toc-row__title">tcpdump / tshark でスキャンを観測する</span><span class="toc-row__desc">スキャンされている“生の姿”をパケットで見る</span></div></li>
+                        <li><div class="toc-row"><span class="toc-row__no">5-2</span><span class="toc-row__title">スキャン検知のしきい値設計</span><span class="toc-row__desc">正常通信と攻撃をどう線引きするか</span></div></li>
+                        <li><div class="toc-row"><span class="toc-row__no">5-3</span><span class="toc-row__title">nftables でレート制限・ドロップ</span><span class="toc-row__desc">速すぎるノックを間引く防御</span></div></li>
+                    </ol>
+                </section>
             </section>
-            <section class="study-grid">
-                <h3>4章 ホスト発見とポートスキャン</h3>
-                <div class="study-card">
-                    <h4>4-1 ホスト発見（ping sweep / ARP スキャン）</h4>
-                    <p>ネットワーク上の生きているホストを見つける</p>
-                </div>
-                <div class="study-card">
-                    <h4>4-2 SYNスキャンの攻防（教科書レベル）</h4>
-                    <p>ハーフオープンの仕組みを可視化し、検知・遮断する</p>
-                </div>
-                <div class="study-card">
-                    <h4>4-3 各種スキャン手法の比較</h4>
-                    <p>-sT / -sU / -sF / -sN それぞれの挙動と使い分け</p>
-                </div>
-                <div class="study-card">
-                    <h4>4-4 サービス・OS 特定とバナーグラビング</h4>
-                    <p>-sV / -A / -O で相手の正体を突き止める</p>
-                </div>
-            </section>
-            <section class="study-grid">
-                <h3>5章 スキャンの検知と防御</h3>
-                <div class="study-card">
-                    <h4>5-1 tcpdump / tshark でスキャンを観測する</h4>
-                    <p>スキャンされている“生の姿”をパケットで見る</p>
-                </div>
-                <div class="study-card">
-                    <h4>5-2 スキャン検知のしきい値設計</h4>
-                    <p>正常通信と攻撃をどう線引きするか</p>
-                </div>
-                <div class="study-card">
-                    <h4>5-3 nftables でレート制限・ドロップ</h4>
-                    <p>速すぎるノックを間引く防御</p>
-                </div>
-            </section>
-        </section>
 
-        <section class="toc-part" aria-labelledby="part-3">
-            <div class="toc-part__head"><span class="toc-part__no">部 III</span><h2 id="part-3">パケット解析 — 通信を「見る」</h2></div>
-            <section class="study-grid">
-                <h3>6章 パケットキャプチャ</h3>
-                <div class="study-card">
-                    <h4>6-1 tcpdump / tshark の基礎</h4>
-                    <p>キャプチャ・フィルタ・保存の基本操作</p>
-                </div>
-                <div class="study-card">
-                    <h4>6-2 Wireshark の読み方と表示フィルタ</h4>
-                    <p>表示フィルタとハンドシェイクの可視化</p>
-                </div>
+            <section class="toc-part" aria-labelledby="part-3">
+                <div class="toc-part__head"><span class="toc-part__no">部 III</span><h2 id="part-3">パケット解析 — 通信を「見る」</h2></div>
+                <section class="toc-ch">
+                    <h3>6章 パケットキャプチャ</h3>
+                    <ol class="toc-list">
+                        <li><div class="toc-row"><span class="toc-row__no">6-1</span><span class="toc-row__title">tcpdump / tshark の基礎</span><span class="toc-row__desc">キャプチャ・フィルタ・保存の基本操作</span></div></li>
+                        <li><div class="toc-row"><span class="toc-row__no">6-2</span><span class="toc-row__title">Wireshark の読み方と表示フィルタ</span><span class="toc-row__desc">表示フィルタとハンドシェイクの可視化</span></div></li>
+                    </ol>
+                </section>
+                <section class="toc-ch">
+                    <h3>7章 プロトコルの観察</h3>
+                    <ol class="toc-list">
+                        <li><div class="toc-row"><span class="toc-row__no">7-1</span><span class="toc-row__title">TCP / UDP / ICMP の挙動をパケットで追う</span><span class="toc-row__desc">各プロトコルの動きを実際のパケットで確認する</span></div></li>
+                        <li><div class="toc-row"><span class="toc-row__no">7-2</span><span class="toc-row__title">平文プロトコルの盗聴と暗号化の重要性</span><span class="toc-row__desc">HTTP / FTP / telnet がなぜ危険か、暗号化の意味</span></div></li>
+                        <li><div class="toc-row"><span class="toc-row__no">7-3</span><span class="toc-row__title">暗号と TLS（HTTPS と証明書）</span><span class="toc-row__desc">HTTPS が盗聴となりすましを防ぐ仕組みを、パケットで観察する</span></div></li>
+                    </ol>
+                </section>
             </section>
-            <section class="study-grid">
-                <h3>7章 プロトコルの観察</h3>
-                <div class="study-card">
-                    <h4>7-1 TCP / UDP / ICMP の挙動をパケットで追う</h4>
-                    <p>各プロトコルの動きを実際のパケットで確認する</p>
-                </div>
-                <div class="study-card">
-                    <h4>7-2 平文プロトコルの盗聴と暗号化の重要性</h4>
-                    <p>HTTP / FTP / telnet がなぜ危険か、暗号化の意味</p>
-                </div>
-                <div class="study-card">
-                    <h4>7-3 暗号と TLS（HTTPS と証明書）</h4>
-                    <p>HTTPS が盗聴となりすましを防ぐ仕組みを、パケットで観察する</p>
-                </div>
-            </section>
-        </section>
 
-        <section class="toc-part" aria-labelledby="part-4">
-            <div class="toc-part__head"><span class="toc-part__no">部 IV</span><h2 id="part-4">L2・ネットワークの攻防</h2></div>
-            <section class="study-grid">
-                <h3>8章 ARP と中間者攻撃（MITM）</h3>
-                <div class="study-card">
-                    <h4>8-1 ARP の仕組みと ARP スプーフィング</h4>
-                    <p>同一セグメントの“なりすまし”の原理と観測</p>
-                </div>
-                <div class="study-card">
-                    <h4>8-2 MITM の検知と防御</h4>
-                    <p>静的ARP・arpwatch で中間者を防ぐ</p>
-                </div>
+            <section class="toc-part" aria-labelledby="part-4">
+                <div class="toc-part__head"><span class="toc-part__no">部 IV</span><h2 id="part-4">L2・ネットワークの攻防</h2></div>
+                <section class="toc-ch">
+                    <h3>8章 ARP と中間者攻撃（MITM）</h3>
+                    <ol class="toc-list">
+                        <li><div class="toc-row"><span class="toc-row__no">8-1</span><span class="toc-row__title">ARP の仕組みと ARP スプーフィング</span><span class="toc-row__desc">同一セグメントの“なりすまし”の原理と観測</span></div></li>
+                        <li><div class="toc-row"><span class="toc-row__no">8-2</span><span class="toc-row__title">MITM の検知と防御</span><span class="toc-row__desc">静的ARP・arpwatch で中間者を防ぐ</span></div></li>
+                    </ol>
+                </section>
+                <section class="toc-ch">
+                    <h3>9章 その他のネットワーク脅威</h3>
+                    <ol class="toc-list">
+                        <li><div class="toc-row"><span class="toc-row__no">9-1</span><span class="toc-row__title">DHCP / DNS スプーフィング</span><span class="toc-row__desc">名前解決・アドレス配布を悪用する手口と対策</span></div></li>
+                        <li><div class="toc-row"><span class="toc-row__no">9-2</span><span class="toc-row__title">ネットワーク分離（VLAN / セグメンテーション）</span><span class="toc-row__desc">被害を封じ込める設計の考え方</span></div></li>
+                        <li><div class="toc-row"><span class="toc-row__no">9-3</span><span class="toc-row__title">DoS / DDoS の原理と緩和</span><span class="toc-row__desc">SYN フラッドや反射・増幅攻撃の原理と、レート制限などの緩和策</span></div></li>
+                    </ol>
+                </section>
             </section>
-            <section class="study-grid">
-                <h3>9章 その他のネットワーク脅威</h3>
-                <div class="study-card">
-                    <h4>9-1 DHCP / DNS スプーフィング</h4>
-                    <p>名前解決・アドレス配布を悪用する手口と対策</p>
-                </div>
-                <div class="study-card">
-                    <h4>9-2 ネットワーク分離（VLAN / セグメンテーション）</h4>
-                    <p>被害を封じ込める設計の考え方</p>
-                </div>
-                <div class="study-card">
-                    <h4>9-3 DoS / DDoS の原理と緩和</h4>
-                    <p>SYN フラッドや反射・増幅攻撃の原理と、レート制限などの緩和策</p>
-                </div>
-            </section>
-        </section>
 
-        <section class="toc-part" aria-labelledby="part-5">
-            <div class="toc-part__head"><span class="toc-part__no">部 V</span><h2 id="part-5">サービスへの攻撃と防御（原理・検知・対策）</h2></div>
-            <section class="study-grid">
-                <h3>10章 認証への攻撃</h3>
-                <div class="study-card">
-                    <h4>10-1 ブルートフォースの原理</h4>
-                    <p>総当たりで何が起きているか</p>
-                </div>
-                <div class="study-card">
-                    <h4>10-2 認証ログの読み方と fail2ban</h4>
-                    <p>失敗ログの読み方と自動遮断</p>
-                </div>
-                <div class="study-card">
-                    <h4>10-3 パスワードとハッシュの安全な扱い</h4>
-                    <p>漏洩するとなぜ危険か、守り方</p>
-                </div>
+            <section class="toc-part" aria-labelledby="part-5">
+                <div class="toc-part__head"><span class="toc-part__no">部 V</span><h2 id="part-5">サービスへの攻撃と防御（原理・検知・対策）</h2></div>
+                <section class="toc-ch">
+                    <h3>10章 認証への攻撃</h3>
+                    <ol class="toc-list">
+                        <li><div class="toc-row"><span class="toc-row__no">10-1</span><span class="toc-row__title">ブルートフォースの原理</span><span class="toc-row__desc">総当たりで何が起きているか</span></div></li>
+                        <li><div class="toc-row"><span class="toc-row__no">10-2</span><span class="toc-row__title">認証ログの読み方と fail2ban</span><span class="toc-row__desc">失敗ログの読み方と自動遮断</span></div></li>
+                        <li><div class="toc-row"><span class="toc-row__no">10-3</span><span class="toc-row__title">パスワードとハッシュの安全な扱い</span><span class="toc-row__desc">漏洩するとなぜ危険か、守り方</span></div></li>
+                    </ol>
+                </section>
+                <section class="toc-ch">
+                    <h3>11章 Web アプリケーションの脆弱性</h3>
+                    <ol class="toc-list">
+                        <li><div class="toc-row"><span class="toc-row__no">11-1</span><span class="toc-row__title">SQL インジェクションの原理と安全なコード</span><span class="toc-row__desc">なぜ刺さるのか、プリペアドステートメントで直す</span></div></li>
+                        <li><div class="toc-row"><span class="toc-row__no">11-2</span><span class="toc-row__title">XSS / CSRF の原理と対策</span><span class="toc-row__desc">ブラウザを狙う攻撃の原理と防御</span></div></li>
+                        <li><div class="toc-row"><span class="toc-row__no">11-3</span><span class="toc-row__title">アクセス制御とセッション管理の不備</span><span class="toc-row__desc">番号の書き換えで他人のデータが見える・セッションが乗っ取られる仕組みと対策</span></div></li>
+                        <li><div class="toc-row"><span class="toc-row__no">11-4</span><span class="toc-row__title">コマンドインジェクション・パストラバーサル・SSRF</span><span class="toc-row__desc">入力がコマンドやファイルの場所として解釈される危険と、安全な書き方</span></div></li>
+                        <li><div class="toc-row"><span class="toc-row__no">11-5</span><span class="toc-row__title">入力検証・WAF による防御</span><span class="toc-row__desc">不正な入力を弾く防御層</span></div></li>
+                    </ol>
+                </section>
+                <section class="toc-ch">
+                    <h3>12章 既知脆弱性とエクスプロイト</h3>
+                    <ol class="toc-list">
+                        <li><div class="toc-row"><span class="toc-row__no">12-1</span><span class="toc-row__title">脆弱性・CVE・パッチ管理の基礎</span><span class="toc-row__desc">脆弱性とは何か、どう管理するか</span></div></li>
+                        <li><div class="toc-row"><span class="toc-row__no">12-2</span><span class="toc-row__title">C 言語と機械語の読み方</span><span class="toc-row__desc">12・14章に必要な C 言語と、objdump での逆アセンブルの読み方</span></div></li>
+                        <li><div class="toc-row"><span class="toc-row__no">12-3</span><span class="toc-row__title">メモリ破壊：バッファオーバーフローの原理と防御</span><span class="toc-row__desc">長い入力でメモリが壊れる仕組みと、カナリア・NX・ASLR による防御</span></div></li>
+                        <li><div class="toc-row"><span class="toc-row__no">12-4</span><span class="toc-row__title">エクスプロイトの仕組み（原理理解）</span><span class="toc-row__desc">原理を理解し、検知・防御につなげる</span></div></li>
+                        <li><div class="toc-row"><span class="toc-row__no">12-5</span><span class="toc-row__title">Metasploit の構造理解と、検知側の痕跡</span><span class="toc-row__desc">検知側から見た攻撃の痕跡を読む</span></div></li>
+                    </ol>
+                </section>
             </section>
-            <section class="study-grid">
-                <h3>11章 Web アプリケーションの脆弱性</h3>
-                <div class="study-card">
-                    <h4>11-1 SQL インジェクションの原理と安全なコード</h4>
-                    <p>なぜ刺さるのか、プリペアドステートメントで直す</p>
-                </div>
-                <div class="study-card">
-                    <h4>11-2 XSS / CSRF の原理と対策</h4>
-                    <p>ブラウザを狙う攻撃の原理と防御</p>
-                </div>
-                <div class="study-card">
-                    <h4>11-3 アクセス制御とセッション管理の不備</h4>
-                    <p>番号の書き換えで他人のデータが見える・セッションが乗っ取られる仕組みと対策</p>
-                </div>
-                <div class="study-card">
-                    <h4>11-4 コマンドインジェクション・パストラバーサル・SSRF</h4>
-                    <p>入力がコマンドやファイルの場所として解釈される危険と、安全な書き方</p>
-                </div>
-                <div class="study-card">
-                    <h4>11-5 入力検証・WAF による防御</h4>
-                    <p>不正な入力を弾く防御層</p>
-                </div>
-            </section>
-            <section class="study-grid">
-                <h3>12章 既知脆弱性とエクスプロイト</h3>
-                <div class="study-card">
-                    <h4>12-1 脆弱性・CVE・パッチ管理の基礎</h4>
-                    <p>脆弱性とは何か、どう管理するか</p>
-                </div>
-                <div class="study-card">
-                    <h4>12-2 C 言語と機械語の読み方</h4>
-                    <p>12・14章に必要な C 言語と、objdump での逆アセンブルの読み方</p>
-                </div>
-                <div class="study-card">
-                    <h4>12-3 メモリ破壊：バッファオーバーフローの原理と防御</h4>
-                    <p>長い入力でメモリが壊れる仕組みと、カナリア・NX・ASLR による防御</p>
-                </div>
-                <div class="study-card">
-                    <h4>12-4 エクスプロイトの仕組み（原理理解）</h4>
-                    <p>原理を理解し、検知・防御につなげる</p>
-                </div>
-                <div class="study-card">
-                    <h4>12-5 Metasploit の構造理解と、検知側の痕跡</h4>
-                    <p>検知側から見た攻撃の痕跡を読む</p>
-                </div>
-            </section>
-        </section>
 
-        <section class="toc-part" aria-labelledby="part-6">
-            <div class="toc-part__head"><span class="toc-part__no">部 VI</span><h2 id="part-6">侵入後 — ポストエクスプロイトと、その防御</h2></div>
-            <section class="study-grid">
-                <h3>13章 権限昇格・横展開の理解と防御</h3>
-                <div class="study-card">
-                    <h4>13-1 権限昇格の原理と対策</h4>
-                    <p>原理と、最小権限の原則による対策</p>
-                </div>
-                <div class="study-card">
-                    <h4>13-2 横展開（ラテラルムーブメント）の理解と防御</h4>
-                    <p>セグメント分離・監視による封じ込め</p>
-                </div>
+            <section class="toc-part" aria-labelledby="part-6">
+                <div class="toc-part__head"><span class="toc-part__no">部 VI</span><h2 id="part-6">侵入後 — ポストエクスプロイトと、その防御</h2></div>
+                <section class="toc-ch">
+                    <h3>13章 権限昇格・横展開の理解と防御</h3>
+                    <ol class="toc-list">
+                        <li><div class="toc-row"><span class="toc-row__no">13-1</span><span class="toc-row__title">権限昇格の原理と対策</span><span class="toc-row__desc">原理と、最小権限の原則による対策</span></div></li>
+                        <li><div class="toc-row"><span class="toc-row__no">13-2</span><span class="toc-row__title">横展開（ラテラルムーブメント）の理解と防御</span><span class="toc-row__desc">セグメント分離・監視による封じ込め</span></div></li>
+                    </ol>
+                </section>
+                <section class="toc-ch">
+                    <h3>14章 マルウェアと永続化・痕跡</h3>
+                    <ol class="toc-list">
+                        <li><div class="toc-row"><span class="toc-row__no">14-1</span><span class="toc-row__title">マルウェアの種類と仕組み</span><span class="toc-row__desc">感染・居座り・司令塔との通信まで、マルウェアの動きの流れ</span></div></li>
+                        <li><div class="toc-row"><span class="toc-row__no">14-2</span><span class="toc-row__title">マルウェアの静的解析</span><span class="toc-row__desc">実行せずに調べる。strings・objdump・YARA で特徴をつかむ</span></div></li>
+                        <li><div class="toc-row"><span class="toc-row__no">14-3</span><span class="toc-row__title">マルウェアの動的解析</span><span class="toc-row__desc">隔離した環境で動かし、システムコールと通信から痕跡を集める</span></div></li>
+                        <li><div class="toc-row"><span class="toc-row__no">14-4</span><span class="toc-row__title">永続化手法の理解と検知</span><span class="toc-row__desc">居座りの手口を理解し、検知する</span></div></li>
+                        <li><div class="toc-row"><span class="toc-row__no">14-5</span><span class="toc-row__title">ログ改ざん・痕跡消去と、改ざん検知</span><span class="toc-row__desc">改ざんをどう見抜くか（ファイル整合性監視）</span></div></li>
+                    </ol>
+                </section>
             </section>
-            <section class="study-grid">
-                <h3>14章 マルウェアと永続化・痕跡</h3>
-                <div class="study-card">
-                    <h4>14-1 マルウェアの種類と仕組み</h4>
-                    <p>感染・居座り・司令塔との通信まで、マルウェアの動きの流れ</p>
-                </div>
-                <div class="study-card">
-                    <h4>14-2 マルウェアの静的解析</h4>
-                    <p>実行せずに調べる。strings・objdump・YARA で特徴をつかむ</p>
-                </div>
-                <div class="study-card">
-                    <h4>14-3 マルウェアの動的解析</h4>
-                    <p>隔離した環境で動かし、システムコールと通信から痕跡を集める</p>
-                </div>
-                <div class="study-card">
-                    <h4>14-4 永続化手法の理解と検知</h4>
-                    <p>居座りの手口を理解し、検知する</p>
-                </div>
-                <div class="study-card">
-                    <h4>14-5 ログ改ざん・痕跡消去と、改ざん検知</h4>
-                    <p>改ざんをどう見抜くか（ファイル整合性監視）</p>
-                </div>
-            </section>
-        </section>
 
-        <section class="toc-part" aria-labelledby="part-7">
-            <div class="toc-part__head"><span class="toc-part__no">部 VII</span><h2 id="part-7">検知と防御の設計（ブルーチーム）</h2></div>
-            <section class="study-grid">
-                <h3>15章 侵入検知システム（IDS / IPS）</h3>
-                <div class="study-card">
-                    <h4>15-1 IDS/IPS の仕組み（Suricata 入門）</h4>
-                    <p>侵入検知システムの基本</p>
-                </div>
-                <div class="study-card">
-                    <h4>15-2 検知ルールの作成と閾値設定</h4>
-                    <p>何を・どの基準で検知するか</p>
-                </div>
-                <div class="study-card">
-                    <h4>15-3 回避手法の理解と、検知の強化</h4>
-                    <p>すり抜けを理解し、守りを固める</p>
-                </div>
+            <section class="toc-part" aria-labelledby="part-7">
+                <div class="toc-part__head"><span class="toc-part__no">部 VII</span><h2 id="part-7">検知と防御の設計（ブルーチーム）</h2></div>
+                <section class="toc-ch">
+                    <h3>15章 侵入検知システム（IDS / IPS）</h3>
+                    <ol class="toc-list">
+                        <li><div class="toc-row"><span class="toc-row__no">15-1</span><span class="toc-row__title">IDS/IPS の仕組み（Suricata 入門）</span><span class="toc-row__desc">侵入検知システムの基本</span></div></li>
+                        <li><div class="toc-row"><span class="toc-row__no">15-2</span><span class="toc-row__title">検知ルールの作成と閾値設定</span><span class="toc-row__desc">何を・どの基準で検知するか</span></div></li>
+                        <li><div class="toc-row"><span class="toc-row__no">15-3</span><span class="toc-row__title">回避手法の理解と、検知の強化</span><span class="toc-row__desc">すり抜けを理解し、守りを固める</span></div></li>
+                    </ol>
+                </section>
+                <section class="toc-ch">
+                    <h3>16章 ログと監視</h3>
+                    <ol class="toc-list">
+                        <li><div class="toc-row"><span class="toc-row__no">16-1</span><span class="toc-row__title">ログの集約（SIEM 的な考え方）</span><span class="toc-row__desc">散らばったログを一箇所に集めて相関させる</span></div></li>
+                        <li><div class="toc-row"><span class="toc-row__no">16-2</span><span class="toc-row__title">ログから侵入を追跡する</span><span class="toc-row__desc">痕跡をつないで全体像を描く</span></div></li>
+                        <li><div class="toc-row"><span class="toc-row__no">16-3</span><span class="toc-row__title">アラート設計と運用</span><span class="toc-row__desc">鳴らしすぎず、見逃さない</span></div></li>
+                    </ol>
+                </section>
+                <section class="toc-ch">
+                    <h3>17章 サーバー・サービスの要塞化（ハードニング）</h3>
+                    <ol class="toc-list">
+                        <li><div class="toc-row"><span class="toc-row__no">17-1</span><span class="toc-row__title">SSH サーバーの安全設定</span><span class="toc-row__desc">鍵認証と設定の最小化</span></div></li>
+                        <li><div class="toc-row"><span class="toc-row__no">17-2</span><span class="toc-row__title">Web サーバー／サービスの安全設定</span><span class="toc-row__desc">不要サービスの停止と堅牢化</span></div></li>
+                        <li><div class="toc-row"><span class="toc-row__no">17-3</span><span class="toc-row__title">最小権限・パッチ管理・構成管理の基本</span><span class="toc-row__desc">守りの土台となる運用</span></div></li>
+                    </ol>
+                </section>
+                <section class="toc-ch">
+                    <h3>18章 防御の設計とまとめ</h3>
+                    <ol class="toc-list">
+                        <li><div class="toc-row"><span class="toc-row__no">18-1</span><span class="toc-row__title">ファイアウォール設計（nftables 多層フィルタ）</span><span class="toc-row__desc">層で守るルールの組み立て</span></div></li>
+                        <li><div class="toc-row"><span class="toc-row__no">18-2</span><span class="toc-row__title">多層防御とサイバーキルチェーン</span><span class="toc-row__desc">攻撃の流れ全体を俯瞰する</span></div></li>
+                        <li><div class="toc-row"><span class="toc-row__no">18-3</span><span class="toc-row__title">中小企業のための実践セキュリティチェックリスト</span><span class="toc-row__desc">現場で使える実践リスト</span></div></li>
+                    </ol>
+                </section>
+                <section class="toc-ch">
+                    <h3>19章 総合演習（キャップストーン）</h3>
+                    <ol class="toc-list">
+                        <li><div class="toc-row"><span class="toc-row__no">19-1</span><span class="toc-row__title">攻撃シナリオ通し</span><span class="toc-row__desc">偵察から侵入痕跡まで（攻撃側視点）</span></div></li>
+                        <li><div class="toc-row"><span class="toc-row__no">19-2</span><span class="toc-row__title">防御シナリオ通し</span><span class="toc-row__desc">検知・遮断・追跡（防御側視点）</span></div></li>
+                        <li><div class="toc-row"><span class="toc-row__no">19-3</span><span class="toc-row__title">攻防の突き合わせ</span><span class="toc-row__desc">パープルチーム演習</span></div></li>
+                    </ol>
+                </section>
             </section>
-            <section class="study-grid">
-                <h3>16章 ログと監視</h3>
-                <div class="study-card">
-                    <h4>16-1 ログの集約（SIEM 的な考え方）</h4>
-                    <p>散らばったログを一箇所に集めて相関させる</p>
-                </div>
-                <div class="study-card">
-                    <h4>16-2 ログから侵入を追跡する</h4>
-                    <p>痕跡をつないで全体像を描く</p>
-                </div>
-                <div class="study-card">
-                    <h4>16-3 アラート設計と運用</h4>
-                    <p>鳴らしすぎず、見逃さない</p>
-                </div>
-            </section>
-            <section class="study-grid">
-                <h3>17章 サーバー・サービスの要塞化（ハードニング）</h3>
-                <div class="study-card">
-                    <h4>17-1 SSH サーバーの安全設定</h4>
-                    <p>鍵認証と設定の最小化</p>
-                </div>
-                <div class="study-card">
-                    <h4>17-2 Web サーバー／サービスの安全設定</h4>
-                    <p>不要サービスの停止と堅牢化</p>
-                </div>
-                <div class="study-card">
-                    <h4>17-3 最小権限・パッチ管理・構成管理の基本</h4>
-                    <p>守りの土台となる運用</p>
-                </div>
-            </section>
-            <section class="study-grid">
-                <h3>18章 防御の設計とまとめ</h3>
-                <div class="study-card">
-                    <h4>18-1 ファイアウォール設計（nftables 多層フィルタ）</h4>
-                    <p>層で守るルールの組み立て</p>
-                </div>
-                <div class="study-card">
-                    <h4>18-2 多層防御とサイバーキルチェーン</h4>
-                    <p>攻撃の流れ全体を俯瞰する</p>
-                </div>
-                <div class="study-card">
-                    <h4>18-3 中小企業のための実践セキュリティチェックリスト</h4>
-                    <p>現場で使える実践リスト</p>
-                </div>
-            </section>
-            <section class="study-grid">
-                <h3>19章 総合演習（キャップストーン）</h3>
-                <div class="study-card">
-                    <h4>19-1 攻撃シナリオ通し</h4>
-                    <p>偵察から侵入痕跡まで（攻撃側視点）</p>
-                </div>
-                <div class="study-card">
-                    <h4>19-2 防御シナリオ通し</h4>
-                    <p>検知・遮断・追跡（防御側視点）</p>
-                </div>
-                <div class="study-card">
-                    <h4>19-3 攻防の突き合わせ</h4>
-                    <p>パープルチーム演習</p>
-                </div>
-            </section>
-        </section>
+            </div>
+            <aside class="toc-preview"></aside>
+        </div>
 
     </main>
     <div id="site-footer"><noscript><nav class="noscript-nav" aria-label="フッターナビゲーション"><a href="index.html">ホーム</a><a href="self-intro.html">自己紹介</a><a href="study.html">勉強の軌跡</a><a href="videos.html">動画</a><a href="blog.html">ブログ</a><a href="sns.html">各種SNS</a></nav></noscript></div>
-    <script src="../js/i18n.js?v=r189"></script>
-    <script src="../js/disciplines.js?v=r189"></script>
-    <script src="../js/layout.js?v=r189"></script>
-    <script src="../js/main.js?v=r189"></script>
-    <script src="../js/starfield.js?v=r189"></script>
+    <script src="../js/i18n.js?v=r190"></script>
+    <script src="../js/disciplines.js?v=r190"></script>
+    <script src="../js/layout.js?v=r190"></script>
+    <script src="../js/toc-preview.js?v=r190"></script>
+    <script src="../js/main.js?v=r190"></script>
+    <script src="../js/starfield.js?v=r190"></script>
 </body>
 </html>
