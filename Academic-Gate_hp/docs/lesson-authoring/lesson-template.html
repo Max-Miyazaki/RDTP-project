@@ -1,18 +1,26 @@
 <!DOCTYPE html>
 <!-- 記事の種類：共通（日本語・英語）
-     ↑ 「共通（日本語・英語）」「日本語限定」「英語限定」のどれか1つにする。サイバーセキュリティ基礎の記事はふつう「共通」 -->
-<!-- サイバーセキュリティ基礎 節のひな形（2026-11-18。元：html/cyber_0-1.html r189。正本は docs/lesson-authoring/）。
+     ↑ 「共通（日本語・英語）」「日本語限定」「英語限定」のどれか1つにする -->
+<!-- 教材の記事の汎用ひな形（2026-11-18。元：html/cyber_0-1.html r189。正本は docs/lesson-authoring/lesson-template.html）。
+     「▼ オプション」の印のある部分は分野によって使う部品。使わないときは「▲ … ここまで」の行まで消す。
      ★ 注釈の中に、生のスタイルタグやスクリプトタグを書かない（組み込みで本物のタグとして残り、CSS が丸ごと捨てられる。DESIGN.md §137.2） -->
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>X-Y 節の題｜サイバーセキュリティ基礎 X章 | Academic Gates</title>
-<meta name="description" content="この節の内容を2〜3文で。何を学び、どの端末で何を確かめるか。サイバーセキュリティ基礎 X章／X-Y。">
+<title>X-Y 節の題｜シリーズ名 X章 | Academic Gates</title>
+<meta name="description" content="この節の内容を2〜3文で。シリーズ名 X章／X-Y。">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;500&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
-<!-- 読む順はサイトと同じ：A. サイト共通 → B. ページの style → C. 教材共通のテーマ -->
+<!-- ▼ オプション：数学・物理系「数式」の読み込み（物理数学の記事と同じ MathJax。設定はローダーより前） -->
+<script>
+window.MathJax={tex:{inlineMath:[['\\(','\\)']],displayMath:[['\\[','\\]']],tags:'none'},svg:{fontCache:'global'},options:{skipHtmlTags:['script','noscript','style','textarea','pre','code']}};
+</script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"
+        onerror="this.onerror=null;var s=document.createElement('script');s.async=true;s.src='https://unpkg.com/mathjax@3/es5/tex-svg.js';document.head.appendChild(s);"></script>
+<!-- ▲ オプション：数学・物理系「数式」の読み込み ここまで -->
+<!-- 読む順はサイトと同じ：A. サイト共通 → B. ページの style → B'. この記事で足した部品 → C. 教材共通のテーマ -->
 <!-- ━━━ A. サイト共通（css/style.css）の代わり ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
      単体で開いたときにサイトと同じ見た目にするためだけのもの。組み込むと、このブロックは消え、
      サイトの css/style.css に置き換わる。★ ここは書き換えない（変えてもサイトには反映されない）。 -->
@@ -91,9 +99,9 @@ body.is-article main ul{color:var(--text-secondary);margin-left:var(--space-3);l
 @media (max-width:600px){.standin-header .standin-note{display:none}}
 </style>
 <!-- ━━━ B. ページの style（組み込んだ後もこのページに残る）━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-     公開中の cyber_0-1.html と同じ。★ 書き換えない。:root の変数もこのまま使う。 -->
+     公開中の cyber_0-1.html と同じ。共通の部品と、技術系（コマンド・出力例・分解表）・原理の枠の部品を含む。★ 書き換えない。 -->
 <style>
-/* サイバーセキュリティ基礎の節 — 記事固有のスタイル（公開中の cyber_0-1.html の style と同じ。DESIGN.md §137）。
+/* 教材の記事 — 記事固有のスタイル（公開中の cyber_0-1.html の style と同じ。DESIGN.md §137・§140）。
    共通部分は css/style.css と lesson-theme.css が持つ（DESIGN.md §35, §36）。
    構造（レール・ボックス・図・表）は物理数学の教材と同じルールを使い、
    この記事にだけあるもの（コマンドのコピー枠・出力例・分解表・スクショ）を末尾に足す。 */
@@ -304,8 +312,91 @@ body.is-article main .foot p{color:var(--ink-faint)}
 .sol .qu{font-size:12.5px;font-weight:600;color:var(--ink-faint)}
 </style>
 <!-- ━━━ B'. この記事で足した部品（組み込んだ後もこのページに残る）━━━━━━━━━━━━━━━━━━━━━━━━━━
-     ひな形に無い部品がどうしても要るときだけ、ここに書く。:root の変数を使い、新しい色は直書きしない。
-     足したら、完成したときの報告に「足した部品」として名前を書く。 -->
+     下の2つはオプションの部品の CSS。使わない部品の CSS は消す。
+     ひな形に無い部品がどうしても要るときは、最後の style に書く（:root の変数を使い、新しい色は直書きしない）。足したら報告する。 -->
+<!-- ▼ オプション：数学・物理系「数式」の CSS（物理数学の記事と同じ） -->
+<style>/* 数式（物理数学の記事 phys-math_10-2.html と同じ。DESIGN.md §46） */
+mjx-container{color:var(--ink)}
+mjx-container[display="true"]{margin:14px 0!important;overflow-x:auto;overflow-y:hidden;padding:2px 0}
+/* 別行立て数式だけ、入れ子のパディングの外へ広げる（§46）。
+   解答や色付きボックスの中の数式は、section → .drill(20) → .attempt(22) →
+   .sol(20) と積み上がるパディングで、本文列より最大 132px 狭い箱に入っていた。
+   1024px では 82本中 6本がはみ出し、最大 +127px。**文章の字下げはそのまま**に、
+   数式だけを外へ出す。
+   値は「祖先のパディングの合計 − 8px」。8px 残すのは枠線に重ねないため。
+   全量（合計そのまま）だと .sol 左端の青いアクセントバーの上に分数が乗る。
+   はみ出しが無い幅では見た目が変わらない（箱が左右対称に広がるだけで中身は
+   中央揃えのまま。1440px で適用前後のピクセル差 0 を確認済み）。
+   !important は既存の margin:14px 0!important を上書きするため。
+   新しい入れ子を足すときは、この表に1行足すこと（現在 .hint の中に別行立ては無い）。
+     .box 20 / .drill 20 / .attempt 22 / .sol 20 */
+.box mjx-container[display="true"],
+.drill > mjx-container[display="true"]{margin:14px -12px!important}
+.attempt mjx-container[display="true"]{margin:14px -14px!important}
+.drill .attempt mjx-container[display="true"],
+.attempt .sol mjx-container[display="true"]{margin:14px -34px!important}
+.drill .attempt .sol mjx-container[display="true"]{margin:14px -54px!important}
+@media (max-width:900px){
+  /* 案A（§46.1）の負マージンをここで切る。マージンは固定 px なので、箱そのものが
+     狭いこの帯では数式が .sol の枠を大きく飛び出し、点線の .attempt 枠まで越えて
+     見える。390px では 28本が枠を横切っていた。はみ出し本数は 36→42 に増えるが、
+     どれも数式ごとの横スクロールで読める。§46.4 */
+  .box mjx-container[display="true"],
+  .drill > mjx-container[display="true"],
+  .attempt mjx-container[display="true"],
+  .drill .attempt mjx-container[display="true"],
+  .attempt .sol mjx-container[display="true"],
+  .drill .attempt .sol mjx-container[display="true"]{margin:14px 0!important}
+}
+</style>
+<script>/* 数式：閉じていた解答を開いたとき、中の数式を組み直す（物理数学の記事と同じ） */
+document.addEventListener('DOMContentLoaded',function(){document.querySelectorAll('[data-sol]').forEach(function(btn){btn.addEventListener('click',function(){var sol=btn.closest('.attempt').querySelector('.sol');if(sol.style.display==='block'&&window.MathJax&&MathJax.typesetPromise)MathJax.typesetPromise([sol]);});});});
+</script>
+<!-- ▲ オプション：数学・物理系「数式」の CSS ここまで -->
+<!-- ▼ オプション：人文・社会系の部品の CSS -->
+<style>/* --- 人文・社会系の部品（2026-11-18 に作った。DESIGN.md §140）。既存のトークンだけを使い、色・角丸・字の大きさは既存の部品に合わせる ---
+   .cite  本文の注番号（上付きの [1]。参考文献の一覧の同じ番号へ飛ぶ）
+   .refs  参考文献の一覧（番号付き。各項目の id は ref-1, ref-2 …）
+   .quote 引用（左に線。下に出典）
+   .src   図表の下の出典の行
+   .asof  「いつ時点の情報か」の札
+   .timeline 年表（左に縦線と点）
+   .positions 主な立場を並べる（同じ形の囲みを並べ、どれかを強調しない）
+   .box.opinion 筆者の意見（事実の説明と分ける） */
+.cite{font-size:.72em;line-height:0;vertical-align:super;margin:0 1px;font-variant-numeric:tabular-nums;white-space:nowrap}
+body.is-article main .cite a{color:var(--accent);text-decoration:none;padding:0 1px}
+body.is-article main .cite a:hover{color:var(--ink)}
+body.is-article main .refs{list-style:none;counter-reset:ref;margin:12px 0 0;padding:0;font-size:13.5px;color:var(--ink-soft)}
+.refs li{counter-increment:ref;position:relative;padding:6px 0 6px 2.6em;margin:0;border-top:1px solid var(--line-soft);line-height:1.8;scroll-margin-top:var(--nav-clearance)}
+.refs li:first-child{border-top:0}
+.refs li::before{content:"[" counter(ref) "]";position:absolute;left:0;top:6px;color:var(--ink-faint);font-variant-numeric:tabular-nums}
+.refs li:target{background:var(--accent-tint);border-radius:var(--radius-sm)}
+.refs .acc{color:var(--ink-faint)}
+body.is-article main .refs a{overflow-wrap:anywhere}
+.quote{margin:18px 0;padding:6px 0 6px 18px;border-left:2px solid var(--teach-line)}
+body.is-article main .quote p{color:var(--ink);margin:6px 0;max-width:none}
+.quote .by{display:block;font-size:12.5px;color:var(--ink-faint);margin-top:4px}
+body.is-article main .src{font-size:12.5px;color:var(--ink-faint);margin:6px 0 0;max-width:none}
+.asof{display:inline-block;font-size:11px;font-weight:500;letter-spacing:.06em;color:var(--amber);border:1px solid var(--amber-line);background:var(--amber-tint);border-radius:999px;padding:0 9px;margin:0 4px;white-space:nowrap;vertical-align:1px}
+body.is-article main .timeline{list-style:none;margin:18px 0;padding:0;position:relative}
+.timeline::before{content:"";position:absolute;left:7.2em;top:6px;bottom:6px;width:1px;background:var(--line)}
+.timeline li{display:grid;grid-template-columns:7.2em 1fr;gap:0 20px;margin:0;padding:6px 0;position:relative}
+.timeline li::after{content:"";position:absolute;left:calc(7.2em - 4px);top:16px;width:9px;height:9px;border-radius:50%;background:var(--bg);border:2px solid var(--accent)}
+.timeline .y{font-variant-numeric:tabular-nums;font-weight:500;color:var(--ink);text-align:right;padding-right:8px;font-size:14px;line-height:1.5;padding-top:4px;overflow-wrap:anywhere}
+.timeline .ev{color:var(--ink-soft);font-size:14.5px;min-width:0}
+.timeline .ev strong{color:var(--ink)}
+.positions{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin:18px 0}
+.positions .pos{border:1px solid var(--line);border-radius:var(--radius-md);background:var(--surface);padding:14px 18px}
+.positions .pos .lab{display:block;font-size:.7rem;letter-spacing:.14em;font-weight:500;color:var(--ink-faint);margin-bottom:4px}
+body.is-article main .positions .pos h4{margin:0 0 4px;font-size:15px}
+body.is-article main .positions .pos p{margin:6px 0;font-size:14px;max-width:none}
+.box.opinion{background:transparent;border-style:dashed;border-color:var(--line-strong)}
+.box.opinion .lab{color:var(--ink-soft)}
+.box.opinion .lab::before{content:"✎ "}
+@media (max-width:560px){.timeline::before{left:5.6em}.timeline li{grid-template-columns:5.6em 1fr;gap:0 16px}.timeline li::after{left:calc(5.6em - 4px)}.timeline .y{font-size:13px}}
+@media print{.refs li:target{background:none}}
+</style>
+<!-- ▲ オプション：人文・社会系の部品の CSS ここまで -->
 <style>/* この記事で足した部品：なし */</style>
 <!-- ━━━ C. 教材共通のテーマ（css/lesson-theme.css）の代わり ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
      サイトでは、ページの style の後ろに css/lesson-theme.css が読まれる。その中で記事に効いている部分を同じ値で写したもの。
@@ -331,38 +422,39 @@ mjx-container[display="true"]{display:block;overflow-x:auto;overflow-y:hidden;-w
 @media (max-width:600px){mjx-container[display="true"]{font-size:92%}}
 </style>
 </head>
-<body data-page="study" class="is-article" data-node="cyber_X-Y">
+<body data-page="study" class="is-article" data-node="slug_X-Y">
 <!-- ━━━ 単体表示用のヘッダー（組み込むと消え、サイトのヘッダー #site-nav に置き換わる）。
      「講座一覧」のボタンはこの1つだけ。記事の中に、ほかの「講座一覧」や戻るボタンを作らない
-     （サイトでは、目次レールの上の「← サイバーセキュリティ基礎」1本になる）。 -->
+     （サイトでは、目次レールの上の「← シリーズ名」1本になる）。 -->
 <div class="standin-header" aria-label="単体表示用のヘッダー">
   <span class="standin-logo">Academic Gates</span>
   <span class="standin-note">（単体表示用のヘッダー。サイトでは共通のヘッダーに置き換わる）</span>
-  <a class="btn" href="cyber.html">講座一覧 <span class="btn-disc" aria-hidden="true">→</span></a>
+  <a class="btn" href="series.html">講座一覧 <span class="btn-disc" aria-hidden="true">→</span></a>
 </div>
 
 <!-- ━━━ ここから下（menuBtn・scrim・.wrap の中）は、サイトのページと同じ形。
-     組み込みでは、レールの .brand と .toc の中身、<main> の中身（dg-sprite・.lesson-hero・section・.foot）が使われる。 -->
+     組み込みでは、レールの .brand と .toc の中身、<main> の中身（dg-sprite・.lesson-hero・section・.foot）が使われる。
+     「▼ オプション」の印のある部分は、その分野で使うときだけ残す。使わないときは「▲ … ここまで」の行まで消す。 -->
 <button class="menu-btn btn" id="menuBtn" aria-controls="rail" aria-expanded="false">この記事の目次 <span class="btn-disc" aria-hidden="true">≡</span></button>
 <div class="scrim" id="scrim"></div>
 <div class="wrap">
-  <!-- 戻る導線は、サイトではレール上部の「← サイバーセキュリティ基礎」（自動で入る）と、末尾の前後リンク（自動で入る）。ここには書かない。 -->
+  <!-- 戻る導線は、サイトではレール上部の「← シリーズ名」（自動で入る）と、末尾の前後リンク（自動で入る）。ここには書かない。 -->
   <nav class="rail" id="rail">
-    <div class="brand">X-Y　節の題<small>サイバーセキュリティ基礎 ／ X章 章の題</small></div>
+    <div class="brand">X-Y　節の題<small>シリーズ名 ／ X章 章の題</small></div>
     <div class="progress-wrap"><div class="progress-bar" id="pbar"></div></div>
     <ul class="toc" id="toc">
-      <!-- 部分けの見出し（li.part）の下に、その部の節を並べる。番号（.n）は 01 からの2桁。href は section の id と同じ -->
-      <li class="part">基礎概念</li>
+      <!-- 部分けの見出し（li.part）の下に、その部の小節を並べる。番号（.n）は 01 からの2桁。href は section の id と同じ -->
+      <li class="part">基礎</li>
       <li><a href="#s1"><span class="n">01</span>最初の小節の題</a></li>
-      <li class="part">手を動かす</li>
-      <li><a href="#s2"><span class="n">02</span>端末で確かめる</a></li>
+      <li class="part">深める</li>
+      <li><a href="#s2"><span class="n">02</span>分野ごとの部品の見本</a></li>
       <li class="part">仕上げ</li>
       <li><a href="#s3"><span class="n">03</span>まとめとチェック</a></li>
     </ul>
   </nav>
 
   <main class="main">
-    <!-- 図のアイコン（#i-pc #i-router #i-globe #i-server #i-person #i-term）と矢印（url(#m-blue) など6色）。消さない・中身を変えない -->
+    <!-- 図の矢印（url(#m-blue) など6色）とアイコン（#i-pc #i-router #i-globe #i-server #i-person #i-term）。消さない・中身を変えない -->
     <svg class="dg-sprite" width="0" height="0" style="position:absolute;width:0;height:0;overflow:hidden" aria-hidden="true" focusable="false"><defs>
 <symbol id="i-pc" viewBox="0 0 64 64"><rect x="11" y="9" width="42" height="30" rx="3.5" fill="currentColor" fill-opacity=".14" stroke="currentColor" stroke-width="2.4"/><rect x="16" y="14" width="32" height="20" rx="1.5" fill="currentColor" fill-opacity=".10"/><path d="M5 45h54l-4 7H9z" fill="currentColor" fill-opacity=".22" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/><path d="M27 48.5h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
 <symbol id="i-router" viewBox="0 0 64 64"><path d="M18 30L13 10M46 30l5-20" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><rect x="6" y="30" width="52" height="20" rx="5" fill="currentColor" fill-opacity=".16" stroke="currentColor" stroke-width="2.4"/><circle cx="17" cy="40" r="2.4" fill="currentColor"/><circle cx="26" cy="40" r="2.4" fill="currentColor"/><circle cx="35" cy="40" r="2.4" fill="currentColor"/><circle cx="47" cy="40" r="2.4" fill="currentColor" fill-opacity=".5"/></symbol>
@@ -372,13 +464,13 @@ mjx-container[display="true"]{display:block;overflow-x:auto;overflow-y:hidden;-w
 <symbol id="i-term" viewBox="0 0 64 64"><rect x="6" y="10" width="52" height="44" rx="5" fill="currentColor" fill-opacity=".12" stroke="currentColor" stroke-width="2.4"/><path d="M6 20h52" stroke="currentColor" stroke-width="2"/><path d="M15 30l7 6-7 6M27 43h12" stroke="currentColor" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></symbol>
 <marker id="m-blue" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L10,5 L0,10 z" fill="#4d94ff"/></marker><marker id="m-green" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L10,5 L0,10 z" fill="#72e3ad"/></marker><marker id="m-amber" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L10,5 L0,10 z" fill="#ffb46b"/></marker><marker id="m-purple" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L10,5 L0,10 z" fill="#a48bff"/></marker><marker id="m-pink" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L10,5 L0,10 z" fill="#ff6fa5"/></marker><marker id="m-gray" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L10,5 L0,10 z" fill="rgba(255,255,255,.55)"/></marker></defs></svg>
     <div class="lesson-hero">
-      <div class="eyebrow">サイバーセキュリティ基礎 ／ X章 章の題 ／ SECTION X-Y</div>
+      <div class="eyebrow">シリーズ名 ／ X章 章の題 ／ SECTION X-Y</div>
       <h1>X-Y　節の題<span class="sub">副題（この節で何ができるようになるかを1行で）</span></h1>
-      <p class="lead">導入の1段落目。画面に出てくる具体的なもの（<code>192.168.128.3</code> のような値）から入り、この節で扱うことにつなげる。</p>
-      <p>導入の2段落目。この節で学ぶこと、どの仮想マシンで何を確かめるかを書く。略語は初出で（MAC：Media Access Control：媒体アクセス制御）の形で開く。</p>
+      <p class="lead">導入の1段落目。読者が目にする具体的なものから入り、この節で扱うことにつなげる。</p>
+      <p>導入の2段落目。この節で学ぶこと、何を確かめるかを書く。略語は初出で（MAC：Media Access Control：媒体アクセス制御）の形で開く。</p>
     </div>
 
-    <!-- §01 -->
+    <!-- §01 共通の部品 -->
     <section id="s1">
       <div class="sec-head"><span class="idx">§01</span><h2>最初の小節の題</h2></div>
 
@@ -388,9 +480,7 @@ mjx-container[display="true"]{display:block;overflow-x:auto;overflow-y:hidden;-w
         <li>要点は3〜5個。</li>
       </ul></div>
 
-      <p>本文の段落。強調は <strong>strong</strong>、コマンド名・値・ファイル名は <code>code</code> で書く。本文の中のリンクは <a href="cyber_0-1.html">0-1「ビット・バイトと2進数・16進数」</a> のように、公開済みの節にだけ付ける。</p>
-
-      <div class="road p"><div class="rh"><span><span class="rk">P1</span>原理を1文で</span><span class="tag">原理 ― 覚える</span></div><div class="rb"><p class="st"><strong>どんな決まりか</strong>：設計上の約束／規格／数学の定義、のどれか。</p><p class="st"><strong>由来</strong>：いつ・誰が・どの規格（RFC 番号など）で決めたか。</p></div></div>
+      <p>本文の段落。強調は <strong>strong</strong>、名前・値・記号は <code>code</code> で書く。本文の中のリンクは、公開済みの節（または <a href="#s3">同じページの §03</a>）にだけ付ける。</p>
 
       <div class="table-scroll"><table class="mini-table">
         <thead><tr><th>見出し</th><th>見出し</th><th>見出し</th></tr></thead>
@@ -401,40 +491,57 @@ mjx-container[display="true"]{display:block;overflow-x:auto;overflow-y:hidden;-w
       </table></div>
 
       <figure class="fig dg">
-        <svg viewBox="0 0 760 170" role="img" aria-label="図の内容を1文で（読み上げ用）"><use href="#i-pc" x="60" y="40" width="64" height="64" style="color:#4d94ff"/><text x="92" y="128" text-anchor="middle" fill="#fff" font-size="15" font-weight="600">Kali</text><text x="92" y="147" text-anchor="middle" fill="#a8c9ff" font-size="12.5" font-weight="500" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">192.168.128.2</text><line x1="150" y1="72" x2="590" y2="72" stroke="#72e3ad" stroke-width="1.8" marker-end="url(#m-green)"/><rect x="290" y="40" width="160" height="26" rx="9" fill="#72e3ad" fill-opacity=".13" stroke="#72e3ad" stroke-width="1.5"/><text x="370" y="58" text-anchor="middle" fill="#9ff0cf" font-size="12.5" font-weight="600">送る</text><use href="#i-server" x="606" y="40" width="64" height="64" style="color:#ffb46b"/><text x="638" y="128" text-anchor="middle" fill="#fff" font-size="15" font-weight="600">Parrot</text><text x="638" y="147" text-anchor="middle" fill="#ffd3a3" font-size="12.5" font-weight="500" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">192.168.128.3</text></svg>
-        <figcaption><strong>図1</strong>　図の説明。色の意味（青が Kali、橙が Parrot など）と、どこを見ればよいかを書く。</figcaption>
+        <svg viewBox="0 0 760 150" role="img" aria-label="図の内容を1文で（読み上げ用）"><rect x="40" y="40" width="200" height="56" rx="12" fill="#4d94ff" fill-opacity=".10" stroke="#4d94ff" stroke-width="1.5"/><text x="140" y="74" text-anchor="middle" fill="#a8c9ff" font-size="15" font-weight="600">原因</text><line x1="244" y1="68" x2="510" y2="68" stroke="#72e3ad" stroke-width="1.8" marker-end="url(#m-green)"/><rect x="300" y="38" width="150" height="24" rx="9" fill="#72e3ad" fill-opacity=".13" stroke="#72e3ad" stroke-width="1.5"/><text x="375" y="55" text-anchor="middle" fill="#9ff0cf" font-size="12.5" font-weight="600">つながり</text><rect x="520" y="40" width="200" height="56" rx="12" fill="#ffb46b" fill-opacity=".10" stroke="#ffb46b" stroke-width="1.5"/><text x="620" y="74" text-anchor="middle" fill="#ffd3a3" font-size="15" font-weight="600">結果</text><text x="380" y="128" text-anchor="middle" fill="rgba(255,255,255,.72)" font-size="12.5">図の中の補足の文字（11.5 以上）</text></svg>
+        <figcaption><strong>図1</strong>　図の説明。色の意味（青が原因、橙が結果など）と、どこを見ればよいかを書く。</figcaption>
       </figure>
 
       <div class="box teach"><span class="lab">補足の囲みの題</span>
       <p>本筋から少し外れる説明（用語の由来、「なぜ〜なのか」）。</p></div>
 
       <div class="box warn"><span class="lab">注意の囲みの題</span>
-      <p>よくある誤解、取り違えやすい点、失敗しやすい操作。</p></div>
+      <p>よくある誤解、取り違えやすい点。</p></div>
 
-      <div class="road d"><div class="rh"><span><span class="rk">D1</span>原理から導けることを1文で</span><span class="tag">導出 ― 自分で導ける</span></div><div class="rb"><p class="use">使う原理：P1</p><p class="st"><strong>導き方</strong>：P1 からどう導くか。</p><p class="chg">原理がちがったら：前提を変えると結論がどう変わるか。</p></div></div>
+      <h3>確認問題（§01・全1問）</h3>
 
-      <h3>計算ドリル（§01・全1問）</h3>
-
-      <div class="drill"><p><span class="qn">問1</span><span class="qt re">再現：D1</span>問題文。(a)・(b) のように小問に分けてよい。</p>
+      <div class="drill"><p><span class="qn">問1</span>問題文。(a)・(b) のように小問に分けてよい。</p>
       <div class="attempt" style="margin:10px 0 4px"><span class="lab">自分の答えを出してから</span>
       <div class="controls"><button class="ctl-btn" data-sol>解答を見る</button></div>
-      <div class="sol"><p class="qu">使う：P1・D1</p><p>(a) 手計算の過程と答え <strong>答え</strong></p><p style="font-size:13.5px;color:var(--ink-faint)">補足（どこで出てくる数か、など）。手計算で解く問題の解答に、確認用のコマンドは書かない。</p></div></div></div>
-
-      <div class="drill"><p><span class="qn">問2</span><span class="qt ap">応用：P1 → C1</span>応用問題の問題文。</p>
-      <div class="attempt" style="margin:10px 0 4px"><span class="lab">自分の答えを出してから</span>
-      <div class="controls"><button class="ctl-btn" data-sol>解答を見る</button></div>
-      <div class="sol"><p class="qu">使う：P1 → C1</p><p>解答。</p></div></div></div>
-
-      <div class="road c"><div class="rh"><span><span class="rk">C1</span>言えること（セキュリティの意味）を1文で</span><span class="tag">言えること ― 説明できる</span></div><div class="rb"><p class="use">根拠：D1</p><p class="st">なぜそう言えるか、どの章につながるか。</p></div></div>
+      <div class="sol"><p>(a) 答えと、その理由 <strong>答え</strong></p><p style="font-size:13.5px;color:var(--ink-faint)">補足（本文のどこで扱ったか、など）。</p></div></div></div>
     </section>
 
-    <!-- §02 -->
+    <!-- §02 分野ごとのオプションの部品 -->
     <section id="s2">
-      <div class="sec-head"><span class="idx">§02</span><h2>端末で確かめる（Kali × Parrot）</h2></div>
+      <div class="sec-head"><span class="idx">§02</span><h2>分野ごとの部品の見本</h2></div>
 
-      <p>演習の前置き：どの仮想マシンの端末で行うか、通信するか（する場合は Host-Only の内部ネットワーク 192.168.128.0/24 の中だけで行うこと）を書く。演習は、自分が管理する環境（自分の仮想マシンやラボ）の中だけで行う。</p>
+      <p>この小節は、分野ごとのオプションの部品の見本を並べたもの。使う部品だけを、本文の必要な場所に移して使う。</p>
 
+      <!-- ▼ オプション：数学・物理系「数式」（使わないときは「ここまで」の行まで消す） -->
+      <h3>数式</h3>
+      <p>単発の値や記号はインライン \(f(5)=25\) で書く。等号が2つ以上つながる式変形は、別行立てにする。</p>
+      \[ (x+h)^2-x^2=2xh+h^2=h(2x+h) \]
+      <p>式の後ろの説明は、別の段落にする。</p>
+      <div class="drill"><p><span class="qn">問2</span>\(f(x)=x^2\) の、\(x\) から \(x+h\) までの平均変化率を求めよ。</p>
+      <div class="attempt" style="margin:10px 0 4px"><span class="lab">自分の答えを出してから</span>
+      <div class="controls"><button class="ctl-btn" data-sol>解答を見る</button></div>
+      <div class="sol"><p>(a)</p>
+      \[ \frac{(x+h)^2-x^2}{h}=\frac{2xh+h^2}{h}=2x+h \]
+      <p style="margin:4px 0"><span style="font-size:13.5px;color:var(--ink-faint)">補足は小さい字で別の段落に。</span></p></div></div></div>
+      <!-- ▲ オプション：数学・物理系「数式」 ここまで -->
+
+      <!-- ▼ オプション：数学・物理系「原理・導出・言えることの枠」（使わないときは「ここまで」の行まで消す） -->
+      <h3>原理・導出・言えること</h3>
+      <div class="road p"><div class="rh"><span><span class="rk">P1</span>原理を1文で</span><span class="tag">原理 ― 覚える</span></div><div class="rb"><p class="st"><strong>どんな決まりか</strong>：定義／法則／規格／設計上の約束、のどれか。</p><p class="st"><strong>由来</strong>：いつ・誰が・何で決めたか。</p></div></div>
+      <div class="road d"><div class="rh"><span><span class="rk">D1</span>原理から導けることを1文で</span><span class="tag">導出 ― 自分で導ける</span></div><div class="rb"><p class="use">使う原理：P1</p><p class="st"><strong>導き方</strong>：P1 からどう導くか。</p><p class="chg">原理がちがったら：前提を変えると結論がどう変わるか。</p></div></div>
+      <div class="road c"><div class="rh"><span><span class="rk">C1</span>言えることを1文で</span><span class="tag">言えること ― 説明できる</span></div><div class="rb"><p class="use">根拠：D1</p><p class="st">なぜそう言えるか、どこにつながるか。</p></div></div>
+      <div class="drill"><p><span class="qn">問3</span><span class="qt re">再現：D1</span>再現問題の札の見本。<span class="qt ap">応用：P1 → C1</span>は応用問題の札。</p>
+      <div class="attempt" style="margin:10px 0 4px"><span class="lab">自分の答えを出してから</span>
+      <div class="controls"><button class="ctl-btn" data-sol>解答を見る</button></div>
+      <div class="sol"><p class="qu">使う：P1・D1</p><p>解答。</p></div></div></div>
+      <!-- ▲ オプション：数学・物理系「原理・導出・言えることの枠」 ここまで -->
+
+      <!-- ▼ オプション：技術系「コマンド・出力例・分解表・スクリーンショット」（使わないときは「ここまで」の行まで消す） -->
       <h3>手順1：手順の題</h3>
+      <p>演習の前置き：どの環境（自分の仮想マシンなど）の端末で行うか、通信するかを書く。演習は、自分が管理する環境の中だけで行う。</p>
       <div class="step">
         <span class="sh"><span class="sn">COMMAND</span>このコマンドで何をするか</span>
         <div class="cmdbox" data-copy="ip -br addr show eth1"><code class="cmd">ip -br addr show eth1</code></div>
@@ -454,37 +561,62 @@ mjx-container[display="true"]{display:block;overflow-x:auto;overflow-y:hidden;-w
         <thead><tr><th>出力</th><th>意味</th></tr></thead>
         <tbody>
           <tr><td><code>UP</code></td><td>出力の各部分が何を表すか。</td></tr>
-          <tr><td><code>192.168.128.2/24</code></td><td>…</td></tr>
         </tbody>
       </table></div>
-
-      <h3>手順2：端末を2つ使うとき</h3>
       <div class="step">
-        <span class="sh"><span class="sn">端末A</span>見張る側（Kali）</span>
-        <div class="cmdbox" data-copy="sudo tcpdump -i eth1 -n icmp"><code class="cmd">sudo tcpdump -i eth1 -n icmp</code></div>
-      </div>
-      <div class="step">
-        <span class="sh"><span class="sn">端末B</span>送る側（Kali）</span>
+        <span class="sh"><span class="sn">端末A</span>端末を2つ使うときの札（端末A・端末B）</span>
         <div class="cmdbox" data-copy="ping -c 1 192.168.128.3"><code class="cmd">ping -c 1 192.168.128.3</code></div>
       </div>
-
       <figure class="fig">
-        <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNDAwIiBoZWlnaHQ9IjcyOCIgdmlld0JveD0iMCAwIDE0MDAgNzI4Ij4KPHJlY3Qgd2lkdGg9IjE0MDAiIGhlaWdodD0iNzI4IiBmaWxsPSIjMWIyMjMwIi8+CjxyZWN0IHg9IjExMiIgeT0iNzMiIHdpZHRoPSIxMTc2IiBoZWlnaHQ9IjU4MiIgcng9IjE0IiBmaWxsPSIjMGQxMTE3IiBzdHJva2U9IiMzYTQyNTAiIHN0cm9rZS13aWR0aD0iMyIvPgo8cmVjdCB4PSIxMTIiIHk9IjczIiB3aWR0aD0iMTE3NiIgaGVpZ2h0PSI1MSIgcng9IjE0IiBmaWxsPSIjMjYyZDNhIi8+Cjx0ZXh0IHg9IjE2OCIgeT0iMjE4IiBmb250LWZhbWlseT0ibW9ub3NwYWNlIiBmb250LXNpemU9IjMzIiBmaWxsPSIjOWZmMGNmIj4kIOOCs+ODnuODs+ODieOBruS+izwvdGV4dD4KPHRleHQgeD0iMTY4IiB5PSIyNzciIGZvbnQtZmFtaWx5PSJtb25vc3BhY2UiIGZvbnQtc2l6ZT0iMzMiIGZpbGw9IiNkMGQ2ZTAiPuWHuuWKm+OBruS+izwvdGV4dD4KPHJlY3QgeD0iMTQ3IiB5PSIxNzUiIHdpZHRoPSI1ODgiIGhlaWdodD0iMTI0IiBmaWxsPSJub25lIiBzdHJva2U9IiNmZjNiM2IiIHN0cm9rZS13aWR0aD0iNiIvPgo8cmVjdCB4PSI3NDIiIHk9IjE3NSIgd2lkdGg9IjIyNCIgaGVpZ2h0PSI2MiIgcng9IjgiIGZpbGw9IiNmZjNiM2IiLz4KPHRleHQgeD0iODU0IiB5PSIyMTgiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXdlaWdodD0iNzAwIiBmb250LXNpemU9IjM2IiBmaWxsPSIjZmZmIj7ikaA8L3RleHQ+Cjx0ZXh0IHg9IjcwMCIgeT0iNTgyIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIzNiIgZmlsbD0iIzZiNzU4NSI+6KaL5pys44Gu55S75YOP77yIMTQwMMOXNzI477yJ44CC5pys54mp44Gu44K544Kv44Oq44O844Oz44K344On44OD44OI44Gr5beu44GX5pu/44GI44KLPC90ZXh0Pgo8L3N2Zz4=" data-file="cyber_X-Y_s02.jpg" width="1400" height="728" loading="lazy" alt="Kali のデスクトップ。端末に、手順1の ip -br addr show eth1 の結果が表示されている">
+        <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNDAwIiBoZWlnaHQ9IjcyOCIgdmlld0JveD0iMCAwIDE0MDAgNzI4Ij4KPHJlY3Qgd2lkdGg9IjE0MDAiIGhlaWdodD0iNzI4IiBmaWxsPSIjMWIyMjMwIi8+CjxyZWN0IHg9IjExMiIgeT0iNzMiIHdpZHRoPSIxMTc2IiBoZWlnaHQ9IjU4MiIgcng9IjE0IiBmaWxsPSIjMGQxMTE3IiBzdHJva2U9IiMzYTQyNTAiIHN0cm9rZS13aWR0aD0iMyIvPgo8cmVjdCB4PSIxMTIiIHk9IjczIiB3aWR0aD0iMTE3NiIgaGVpZ2h0PSI1MSIgcng9IjE0IiBmaWxsPSIjMjYyZDNhIi8+Cjx0ZXh0IHg9IjE2OCIgeT0iMjE4IiBmb250LWZhbWlseT0ibW9ub3NwYWNlIiBmb250LXNpemU9IjMzIiBmaWxsPSIjOWZmMGNmIj4kIOOCs+ODnuODs+ODieOBruS+izwvdGV4dD4KPHRleHQgeD0iMTY4IiB5PSIyNzciIGZvbnQtZmFtaWx5PSJtb25vc3BhY2UiIGZvbnQtc2l6ZT0iMzMiIGZpbGw9IiNkMGQ2ZTAiPuWHuuWKm+OBruS+izwvdGV4dD4KPHJlY3QgeD0iMTQ3IiB5PSIxNzUiIHdpZHRoPSI1ODgiIGhlaWdodD0iMTI0IiBmaWxsPSJub25lIiBzdHJva2U9IiNmZjNiM2IiIHN0cm9rZS13aWR0aD0iNiIvPgo8cmVjdCB4PSI3NDIiIHk9IjE3NSIgd2lkdGg9IjIyNCIgaGVpZ2h0PSI2MiIgcng9IjgiIGZpbGw9IiNmZjNiM2IiLz4KPHRleHQgeD0iODU0IiB5PSIyMTgiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXdlaWdodD0iNzAwIiBmb250LXNpemU9IjM2IiBmaWxsPSIjZmZmIj7ikaA8L3RleHQ+Cjx0ZXh0IHg9IjcwMCIgeT0iNTgyIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIzNiIgZmlsbD0iIzZiNzU4NSI+6KaL5pys44Gu55S75YOP77yIMTQwMMOXNzI477yJ44CC5pys54mp44Gu44K544Kv44Oq44O844Oz44K344On44OD44OI44Gr5beu44GX5pu/44GI44KLPC90ZXh0Pgo8L3N2Zz4=" data-file="slug_X-Y_s02.jpg" width="1400" height="728" loading="lazy" alt="Kali のデスクトップ。端末に、手順1の ip -br addr show eth1 の結果が表示されている">
         <figcaption>操作した順に番号を付けています。<br>
           <strong>赤枠①</strong>：手順1。何が写っているか（値も書く）。</figcaption>
       </figure>
       <figure class="fig zoom">
-        <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4MDAiIGhlaWdodD0iNDAwIiB2aWV3Qm94PSIwIDAgODAwIDQwMCI+CjxyZWN0IHdpZHRoPSI4MDAiIGhlaWdodD0iNDAwIiBmaWxsPSIjMWIyMjMwIi8+CjxyZWN0IHg9IjY0IiB5PSI0MCIgd2lkdGg9IjY3MiIgaGVpZ2h0PSIzMjAiIHJ4PSIxNCIgZmlsbD0iIzBkMTExNyIgc3Ryb2tlPSIjM2E0MjUwIiBzdHJva2Utd2lkdGg9IjMiLz4KPHJlY3QgeD0iNjQiIHk9IjQwIiB3aWR0aD0iNjcyIiBoZWlnaHQ9IjI4IiByeD0iMTQiIGZpbGw9IiMyNjJkM2EiLz4KPHRleHQgeD0iOTYiIHk9IjEyMCIgZm9udC1mYW1pbHk9Im1vbm9zcGFjZSIgZm9udC1zaXplPSIxOCIgZmlsbD0iIzlmZjBjZiI+JCDjgrPjg57jg7Pjg4njga7kvos8L3RleHQ+Cjx0ZXh0IHg9Ijk2IiB5PSIxNTIiIGZvbnQtZmFtaWx5PSJtb25vc3BhY2UiIGZvbnQtc2l6ZT0iMTgiIGZpbGw9IiNkMGQ2ZTAiPuWHuuWKm+OBruS+izwvdGV4dD4KPHJlY3QgeD0iODQiIHk9Ijk2IiB3aWR0aD0iMzM2IiBoZWlnaHQ9IjY4IiBmaWxsPSJub25lIiBzdHJva2U9IiNmZjNiM2IiIHN0cm9rZS13aWR0aD0iNiIvPgo8cmVjdCB4PSI0MjQiIHk9Ijk2IiB3aWR0aD0iMTI4IiBoZWlnaHQ9IjM0IiByeD0iOCIgZmlsbD0iI2ZmM2IzYiIvPgo8dGV4dCB4PSI0ODgiIHk9IjEyMCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtd2VpZ2h0PSI3MDAiIGZvbnQtc2l6ZT0iMjAiIGZpbGw9IiNmZmYiPuKRoDwvdGV4dD4KPHRleHQgeD0iNDAwIiB5PSIzMjAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXNpemU9IjIwIiBmaWxsPSIjNmI3NTg1Ij7mi6HlpKfjga7opovmnKzvvIg4MDDDlzQwMO+8iTwvdGV4dD4KPC9zdmc+" data-file="cyber_X-Y_s02_2.png" width="800" height="400" loading="lazy" alt="手順1の結果の拡大。eth1 の行に 192.168.128.2/24 が表示されている">
+        <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4MDAiIGhlaWdodD0iNDAwIiB2aWV3Qm94PSIwIDAgODAwIDQwMCI+CjxyZWN0IHdpZHRoPSI4MDAiIGhlaWdodD0iNDAwIiBmaWxsPSIjMWIyMjMwIi8+CjxyZWN0IHg9IjY0IiB5PSI0MCIgd2lkdGg9IjY3MiIgaGVpZ2h0PSIzMjAiIHJ4PSIxNCIgZmlsbD0iIzBkMTExNyIgc3Ryb2tlPSIjM2E0MjUwIiBzdHJva2Utd2lkdGg9IjMiLz4KPHJlY3QgeD0iNjQiIHk9IjQwIiB3aWR0aD0iNjcyIiBoZWlnaHQ9IjI4IiByeD0iMTQiIGZpbGw9IiMyNjJkM2EiLz4KPHRleHQgeD0iOTYiIHk9IjEyMCIgZm9udC1mYW1pbHk9Im1vbm9zcGFjZSIgZm9udC1zaXplPSIxOCIgZmlsbD0iIzlmZjBjZiI+JCDjgrPjg57jg7Pjg4njga7kvos8L3RleHQ+Cjx0ZXh0IHg9Ijk2IiB5PSIxNTIiIGZvbnQtZmFtaWx5PSJtb25vc3BhY2UiIGZvbnQtc2l6ZT0iMTgiIGZpbGw9IiNkMGQ2ZTAiPuWHuuWKm+OBruS+izwvdGV4dD4KPHJlY3QgeD0iODQiIHk9Ijk2IiB3aWR0aD0iMzM2IiBoZWlnaHQ9IjY4IiBmaWxsPSJub25lIiBzdHJva2U9IiNmZjNiM2IiIHN0cm9rZS13aWR0aD0iNiIvPgo8cmVjdCB4PSI0MjQiIHk9Ijk2IiB3aWR0aD0iMTI4IiBoZWlnaHQ9IjM0IiByeD0iOCIgZmlsbD0iI2ZmM2IzYiIvPgo8dGV4dCB4PSI0ODgiIHk9IjEyMCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtd2VpZ2h0PSI3MDAiIGZvbnQtc2l6ZT0iMjAiIGZpbGw9IiNmZmYiPuKRoDwvdGV4dD4KPHRleHQgeD0iNDAwIiB5PSIzMjAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXNpemU9IjIwIiBmaWxsPSIjNmI3NTg1Ij7mi6HlpKfjga7opovmnKzvvIg4MDDDlzQwMO+8iTwvdGV4dD4KPC9zdmc+" data-file="slug_X-Y_s02_2.png" width="800" height="400" loading="lazy" alt="手順1の結果の拡大。eth1 の行に 192.168.128.2/24 が表示されている">
         <figcaption><strong>拡大</strong>：上の画像の赤枠①を大きくしたもの。</figcaption>
       </figure>
-
       <div class="box warn"><span class="lab">うまくいかないとき</span>
       <ul style="margin:6px 0 0">
         <li>出やすいエラーと、その原因・直し方。</li>
       </ul></div>
+      <!-- ▲ オプション：技術系「コマンド・出力例・分解表・スクリーンショット」 ここまで -->
 
-      <div class="box warn"><span class="lab">後片付け</span>
-      <p>演習で動かしたもの（待ち受け・記録）を止める手順。</p></div>
+      <!-- ▼ オプション：人文・社会系「出典の参照・引用・年表・図表・立場の比較・意見」（使わないときは「ここまで」の行まで消す） -->
+      <h3>出典の参照と、時点</h3>
+      <p>事実・数字・年号・引用には、出典の番号を付ける。<span class="cite"><a href="#ref-1">[1]</a></span> 同じ文に2つの出典があれば並べる。<span class="cite"><a href="#ref-1">[1]</a><a href="#ref-2">[2]</a></span> 時間とともに変わる情報には、いつ時点の情報かを書く。<span class="asof">2026年11月時点</span></p>
+
+      <h3>引用</h3>
+      <blockquote class="quote">
+        <p>引用する文。原文のまま、改めずに写す。長いときは「（中略）」で省く。</p>
+        <span class="by">― 著者名『書名』（出版年）、ページ<span class="cite"><a href="#ref-2">[2]</a></span></span>
+      </blockquote>
+
+      <h3>年表</h3>
+      <ol class="timeline">
+        <li><span class="y">1945年</span><span class="ev"><strong>出来事の名前</strong>。何が起き、なぜ重要か。<span class="cite"><a href="#ref-1">[1]</a></span></span></li>
+        <li><span class="y">1990〜1995年</span><span class="ev">年が幅を持つときは「1990年代」「1990〜1995年」のように書く。</span></li>
+        <li><span class="y">2026年</span><span class="ev">最近の出来事は、時点を添える。<span class="asof">2026年11月時点</span></span></li>
+      </ol>
+
+      <h3>図表と出典</h3>
+      <div class="table-scroll"><table class="mini-table">
+        <caption>表の題（単位）</caption>
+        <thead><tr><th>項目</th><th>2020年</th><th>2025年</th></tr></thead>
+        <tbody><tr><td>統計の項目</td><td>12.3</td><td>14.5</td></tr></tbody>
+      </table></div>
+      <p class="src">出典：作成者「資料名」（公表年）をもとに作成。<span class="cite"><a href="#ref-2">[2]</a></span></p>
+
+      <h3>立場の比較</h3>
+      <p>意見が分かれるテーマでは、主な立場を、それぞれの支持者が納得する形で、同じ形・同じ分量で並べる。</p>
+      <div class="positions">
+        <div class="pos"><span class="lab">立場 A</span><h4>立場の名前</h4><p>主張の中心と、その根拠。支持者が使う言葉で書く。<span class="cite"><a href="#ref-1">[1]</a></span></p></div>
+        <div class="pos"><span class="lab">立場 B</span><h4>立場の名前</h4><p>主張の中心と、その根拠。<span class="cite"><a href="#ref-2">[2]</a></span></p></div>
+      </div>
+
+      <div class="box opinion"><span class="lab">筆者の意見</span>
+      <p>筆者の意見を書くときだけ、この囲みに入れる。事実の説明とは分け、「私は〜と考える」のように意見であることが分かる書き方にする。</p></div>
+      <!-- ▲ オプション：人文・社会系「出典の参照・引用・年表・図表・立場の比較・意見」 ここまで -->
     </section>
 
     <!-- §03 -->
@@ -497,17 +629,23 @@ mjx-container[display="true"]{display:block;overflow-x:auto;overflow-y:hidden;-w
 
       <div class="box principle"><span class="lab">最終チェック</span>
       <ul style="margin:8px 0 0">
-        <li><strong>何も見ずに</strong>、原理 P1 を書き出し、D1 を導き、C1 を説明できるか</li>
         <li>確かめる項目を、どの小節で扱ったかと一緒に（§01）</li>
       </ul></div>
 
-      <!-- 「次へ」の囲み。行き先の節がまだ公開されていなければリンクを付けない（見出しと文だけ）。公開済みなら本文の先頭にリンク -->
+      <!-- ▼ オプション：人文・社会系「参考文献の一覧」（使わないときは「ここまで」の行まで消す） -->
+      <h3>参考文献</h3>
+      <ol class="refs">
+        <li id="ref-1">著者名『書名』出版社、出版年、ページ。</li>
+        <li id="ref-2">作成者「資料名・ページ名」（公表年月日）、<a href="https://example.com/">https://example.com/</a> <span class="acc">（2026年11月18日閲覧）</span></li>
+      </ol>
+      <!-- ▲ オプション：人文・社会系「参考文献の一覧」 ここまで -->
+
+      <!-- 「次へ」の囲み。行き先の節がまだ公開されていなければリンクを付けない（見出しと文だけ）。公開済みなら本文の先頭にリンク：
+           <p><a href="slug_X-Z.html">X-Z「次の節の題」</a>：…</p> -->
       <div class="transfer"><span class="lab">次へ：X-Z 次の節の題</span>
       <p>次の節で扱うことを1〜2文で。</p></div>
-      <div class="transfer"><span class="lab">前へ：0-1 ビット・バイトと2進数・16進数</span>
-      <p><a href="cyber_0-1.html">0-1「ビット・バイトと2進数・16進数」</a>：前の節の内容を1文で。</p></div>
 
-      <div class="foot"><p>Academic Gates ／ サイバーセキュリティ基礎 X章 章の題 ／ X-Y「節の題」。演習をどの環境で行ったか（例：演習は Kali Linux × Parrot OS の仮想ラボで行い、パケットの送受信は Host-Only の内部ネットワーク（192.168.128.0/24。外部の LAN からは切り離されている）の中だけで実施しています）。自分が管理していないネットワークや機器には、この講座の操作を行わないでください。</p></div>
+      <div class="foot"><p>Academic Gates ／ シリーズ名 X章 章の題 ／ X-Y「節の題」。（分野ごとの断り書き：演習の環境、出典の時点など）</p></div>
     </section>
 
   </main>
