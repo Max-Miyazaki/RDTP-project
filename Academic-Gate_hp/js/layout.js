@@ -142,6 +142,13 @@
         'cyber_0-1':       { label: 'SECTION 0-1',  href: 'cyber_0-1.html',        parent: 'cyber:ch0',
                              title: '0-1　ビット・バイトと2進数・16進数',
                              titleEn: '0-1　Bits, Bytes, Binary and Hexadecimal' },
+        'cyber_0-2':       { label: 'SECTION 0-2',  href: 'cyber_0-2.html',        parent: 'cyber:ch0',
+                             title: '0-2　文字とデータの表し方',
+                             titleEn: '0-2　Representing Characters and Data' },
+        // 0-3 はまだ書いていない。soon で前後リンクとパネルに「準備中」として出す（0-1 → 0-2 → 0-3〈準備中〉）。書いたら soon を href に変える
+        'cyber_0-3':       { label: 'SECTION 0-3',  soon: true,                    parent: 'cyber:ch0',
+                             title: '0-3　Linux の基本操作',
+                             titleEn: '0-3　Linux Basics' },
         'cyber:ch1':       { label: '1章 ネットワークの仕組み',                     parent: 'cyber',
                              en: 'Ch. 1 How Networks Work' },
         'cyber_1-1':       { label: 'SECTION 1-1',  href: 'cyber_1-1.html',        parent: 'cyber:ch1',

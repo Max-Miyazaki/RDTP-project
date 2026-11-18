@@ -10,7 +10,7 @@
      題：ビット・バイトと2進数・16進数
      説明：MAC・ポートをバイトと16進数で読む
      ↑ 見本の値。この記事の値に書き換える。部の無いシリーズは「部：なし」 -->
-<!-- 版：2026-11-18-8（指示書と同じ版。改訂の記録は指示書の末尾）
+<!-- 版：2026-11-18-9（指示書と同じ版。改訂の記録は指示書の末尾）
      教材の記事の汎用ひな形（2026-11-18。元：html/cyber_0-1.html r189。正本は docs/lesson-authoring/lesson-template.html）。
      「▼ オプション」の印のある部分は分野によって使う部品。使わないときは「▲ … ここまで」の行まで消す。
      ★ 注釈の中に、生のスタイルタグやスクリプトタグを書かない（組み込みで本物のタグとして残り、CSS が丸ごと捨てられる。DESIGN.md §137.2） -->
@@ -61,7 +61,10 @@ window.MathJax={tex:{inlineMath:[['\\(','\\)']],displayMath:[['\\[','\\]']],tags
   --dur:.32s;
 }
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-html{scroll-behavior:smooth;scroll-padding-top:var(--nav-clearance);-webkit-text-size-adjust:100%}
+/* サイトの style.css は html にも scroll-padding-top を持つが、サイトでは js/main.js がアンカーのスクロールを受け持つ（ヘッダーの高さ＋40px で止める）。
+   単体表示では main.js が無いので、html の scroll-padding と section の scroll-margin が足されて 184px で止まり、
+   目次レールの強調が1つ前の項目に残っていた（DESIGN.md §137.9）。単体表示では scroll-padding を 0 にし、section の scroll-margin（92px）だけで止める */
+html{scroll-behavior:smooth;scroll-padding-top:0;-webkit-text-size-adjust:100%}
 section,h1,h2,h3,h4,.eyebrow{scroll-margin-top:var(--nav-clearance)}
 body{font-family:var(--font-body);font-weight:400;font-size:1rem;line-height:1.75;color:var(--text-primary);background:var(--bg);min-height:100vh;position:relative;overflow-x:hidden;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
 /* 背景の光（サイトの body::before と同じ）。星空はサイトの starfield.js が描くので、ここでは描かない */
