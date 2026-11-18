@@ -3918,3 +3918,357 @@ a.sd-theme {
     line-height: 1.75;
     color: var(--text-secondary);
 }
+
+/* ===========================================================================
+   シリーズの目次：節の行とプレビュー（cyber.html・phys-math.html。DESIGN.md §141）
+   大きな節カード（.study-card）をやめ、横長の行（.toc-row）にした。PC では右に
+   プレビュー欄（.toc-preview。sticky）を置き、行にカーソルかフォーカスが来ると、
+   その節の説明・§の見出し・「読む →」を出す（js/toc-preview.js）。
+   - 行：<ol class="toc-list"><li><a class="toc-row" href="…">（公開）または <div class="toc-row">（準備中）
+     中身は .toc-row__no（番号）・.toc-row__title（題）・.toc-row__desc（説明の1行）
+   - 「準備中」の札（.toc-row__soon）は layout.js が入れる（手で書かない。.study-card と同じ判定）
+   - 768px 以下はプレビューを出さず、行を2段（番号と題／説明は2行まで）にする
+   - 量や進捗の数字は出さない（§136）
+   =========================================================================== */
+.toc-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) clamp(260px, 28vw, 360px);
+    gap: var(--space-6);
+    align-items: start;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 var(--gutter) var(--space-16);
+}
+
+/* 部の見出しと章は、目次の列の中では自前の幅・余白を持たない（列の左端に揃える） */
+.toc-layout .toc-part__head {
+    max-width: none;
+    padding: 0;
+}
+
+.toc-ch {
+    margin: 0 0 var(--space-6);
+}
+
+.toc-part .toc-ch:last-child {
+    margin-bottom: 0;
+}
+
+.toc-ch > h2,
+.toc-ch > h3 {
+    font-size: 1.1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    color: var(--text-primary);
+    margin-bottom: 0.6rem;
+}
+
+.toc-ch__lead {
+    max-width: none;
+    margin: -0.2rem 0 0.75rem;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+.toc-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+/* 節の行：余白の少ない横長の長方形。PC では「番号・題・説明」を1行に並べ、はみ出した分は …
+   （全文はプレビューで見せる。文字はそのまま DOM にあるので、読み上げでは全文が読まれる） */
+.toc-row {
+    display: flex;
+    align-items: baseline;
+    gap: 0.9rem;
+    min-height: 46px;
+    padding: 0.6rem 1rem;
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius-sm);
+    background: var(--surface);
+    color: inherit;
+    transition: background var(--dur) var(--ease), border-color var(--dur) var(--ease);
+}
+
+.toc-row__no {
+    flex: 0 0 3.2em;
+    font-size: 0.82rem;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.02em;
+    color: var(--spec-glow);
+}
+
+.toc-row__title {
+    flex: 0 1 auto;
+    max-width: 62%;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 0.98rem;
+    color: var(--text-primary);
+    transition: color var(--dur) var(--ease);
+}
+
+.toc-row__desc {
+    flex: 1 1 0;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+/* 公開済みの行：カーソル・フォーカス・プレビュー中で、行がひと段明るくなる。
+   押せる面の光（§74 の枠の光と拡大）は、行が密に並ぶので使わない。地と枠と題の色だけ */
+@media (hover: hover) {
+    a.toc-row[href]:hover {
+        background: var(--surface-hot, rgba(255, 255, 255, .07));
+        border-color: var(--hairline-strong);
+    }
+
+    a.toc-row[href]:hover .toc-row__title {
+        color: var(--spec-glow);
+    }
+}
+
+a.toc-row[href]:focus-visible,
+a.toc-row[href].is-previewed {
+    background: var(--surface-hot, rgba(255, 255, 255, .07));
+    border-color: var(--hairline-strong);
+}
+
+a.toc-row[href]:focus-visible .toc-row__title,
+a.toc-row[href].is-previewed .toc-row__title {
+    color: var(--spec-glow);
+}
+
+/* 準備中の行：リンクなし。破線（.study-card.is-soon と同じ合図）、文字を控えめに、右端に小さく「準備中」 */
+.toc-row.is-soon {
+    border-style: dashed;
+    background: transparent;
+    cursor: default;
+}
+
+.toc-row.is-soon .toc-row__no {
+    color: var(--text-tertiary);
+}
+
+.toc-row.is-soon .toc-row__title {
+    color: var(--text-secondary);
+}
+
+.toc-row.is-soon .toc-row__desc {
+    color: var(--text-tertiary);
+}
+
+.toc-row.is-soon.is-previewed {
+    border-color: var(--hairline-strong);
+}
+
+.toc-row__soon {
+    flex: 0 0 auto;
+    margin-left: auto;
+    font-size: 0.72rem;
+    letter-spacing: 0.06em;
+    white-space: nowrap;
+    color: var(--text-secondary);
+}
+
+/* --- プレビュー欄（PC）。スクロールしても見える位置に固定 --- */
+.toc-preview {
+    position: sticky;
+    top: calc(var(--nav-clearance) + var(--space-2));
+}
+
+.toc-preview__card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+    min-height: 320px;
+    padding: var(--space-3);
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius-md);
+    background: rgba(10, 10, 14, 0.72);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+}
+
+.toc-preview__card.is-soon {
+    border-style: dashed;
+}
+
+.toc-preview__kicker {
+    max-width: none;
+    font-size: 0.72rem;
+    line-height: 1.6;
+    letter-spacing: 0.04em;
+    color: var(--text-secondary);
+}
+
+.toc-preview__no {
+    font-size: 0.78rem;
+    letter-spacing: 0.14em;
+    font-variant-numeric: tabular-nums;
+    color: var(--spec-glow);
+}
+
+.toc-preview__card.is-soon .toc-preview__no {
+    color: var(--text-secondary);
+}
+
+.toc-preview__title {
+    font-size: 1.15rem;
+    font-weight: 400;
+    line-height: 1.45;
+    color: var(--text-primary);
+}
+
+.toc-preview__desc {
+    max-width: none;
+    font-size: 0.88rem;
+    line-height: 1.75;
+    color: var(--text-secondary);
+}
+
+.toc-preview__status {
+    align-self: flex-start;
+    padding: 0.1rem 0.7rem;
+    font-size: 0.72rem;
+    letter-spacing: 0.06em;
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius-pill);
+    color: var(--text-secondary);
+}
+
+.toc-preview__card:not(.is-soon) .toc-preview__status {
+    border-color: color-mix(in srgb, var(--spec-glow) 45%, transparent);
+    color: var(--spec-glow);
+}
+
+.toc-preview__card.is-soon .toc-preview__status {
+    border-style: dashed;
+}
+
+.toc-preview__secs {
+    margin-top: 0.3rem;
+    padding-top: 0.7rem;
+    border-top: 1px solid var(--hairline);
+}
+
+.toc-preview__secs[hidden] {
+    display: none;
+}
+
+.toc-preview__lab {
+    max-width: none;
+    margin-bottom: 0.35rem;
+    font-size: 0.72rem;
+    letter-spacing: 0.14em;
+    color: var(--text-secondary);
+}
+
+.toc-preview__secs ol {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    font-size: 0.84rem;
+    line-height: 1.55;
+    color: var(--text-secondary);
+}
+
+.toc-preview__secs li {
+    display: flex;
+    gap: 0.6rem;
+}
+
+.toc-preview__secs .n {
+    flex: 0 0 auto;
+    font-variant-numeric: tabular-nums;
+    color: var(--text-tertiary);
+}
+
+.toc-preview__secs.is-loading ol {
+    opacity: 0.5;
+}
+
+.toc-preview__read {
+    align-self: flex-start;
+    margin-top: 0.4rem;
+}
+
+/* 切り替えのとき、中身だけを短く出す（行の間を動いても、欄そのものは消えない） */
+.toc-preview__card.is-swapping > * {
+    animation: tocPreviewIn 0.16s var(--ease);
+}
+
+@keyframes tocPreviewIn {
+    from { opacity: 0.35; transform: translateY(3px); }
+    to { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .toc-preview__card.is-swapping > * {
+        animation: none;
+    }
+
+    .toc-row,
+    .toc-row__title {
+        transition: none;
+    }
+}
+
+/* --- 768px 以下：プレビューを出さず、行を2段に --- */
+@media (max-width: 768px) {
+    .toc-layout {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .toc-preview {
+        display: none;
+    }
+
+    .toc-row {
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr) auto;
+        column-gap: 0.75rem;
+        row-gap: 0.15rem;
+        align-items: baseline;
+        min-height: 56px;
+        padding: 0.65rem 0.9rem;
+    }
+
+    .toc-row__no {
+        grid-column: 1;
+        grid-row: 1;
+    }
+
+    .toc-row__title {
+        grid-column: 2;
+        grid-row: 1;
+        max-width: none;
+        white-space: normal;
+        overflow: visible;
+        line-height: 1.5;
+    }
+
+    .toc-row__soon {
+        grid-column: 3;
+        grid-row: 1;
+    }
+
+    .toc-row__desc {
+        grid-column: 2 / -1;
+        grid-row: 2;
+        white-space: normal;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+        line-clamp: 2;
+        line-height: 1.6;
+    }
+}

@@ -409,20 +409,22 @@
         Object.keys(CRUMBS).forEach(function (k) {
             if (CRUMBS[k].href) byHref[CRUMBS[k].href] = k;
         });
-        [].forEach.call(document.querySelectorAll('.study-card'), function (c) {
+        // シリーズの目次の行（.toc-row。§141）も同じ判定。札は行の右端（.toc-row__soon）
+        [].forEach.call(document.querySelectorAll('.study-card, .toc-row'), function (c) {
+            var row = c.classList.contains('toc-row');
             var href = c.getAttribute('href');
             var soon = !href;
             if (href) {
                 // ③ 行き先が反対の言語の限定ページなら、カードごと出さない。
                 //    いまの言語の版がまだ無い共通ページなら「準備中」にして、リンクを外す（§139）
-                if (!I18N.listed(href)) { c.remove(); return; }
+                if (!I18N.listed(href)) { (row && c.parentNode.tagName === 'LI' ? c.parentNode : c).remove(); return; }
                 if (!I18N.href(href)) { c.removeAttribute('href'); soon = true; }
                 var k = byHref[href.split('#')[0]];
                 soon = soon || !!(k && CRUMBS[k].soon);
             }
-            if (!soon || c.querySelector('.card-soon')) return;
+            if (!soon || c.querySelector('.card-soon, .toc-row__soon')) return;
             c.classList.add('is-soon');
-            c.insertAdjacentHTML('beforeend', '<span class="card-soon">' + I18N.t('soon') + '</span>');
+            c.insertAdjacentHTML('beforeend', '<span class="' + (row ? 'toc-row__soon' : 'card-soon') + '">' + I18N.t('soon') + '</span>');
         });
     }
 

@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>物理数学｜物理学 - Academic Gates</title>
     <meta name="description" content="物理数学の教材。章ごとに、公式の暗記ではなく定義から導けることを目標にした節を並べています。">
-    <link rel="stylesheet" href="../css/style.css?v=r189">
+    <link rel="stylesheet" href="../css/style.css?v=r190">
     <link rel="icon" href="../../favicon.ico" sizes="32x32">
     <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="../../apple-touch-icon.png">
@@ -19,167 +19,107 @@
             <p>物理を記述するための計算道具を一通り揃える。</p>
         </div>
 
-        <!-- 章は見出し（平文）、節がカード＝行き先。節カードのサブ説明は、記事が
-             すでに持っている副題（<span class="sub">）をそのまま使っている。
-             章が増えたら、h2「2章 …」の節をこの下に足すだけ（§39）。
+        <!-- 章は見出し（平文）、記事は行（.toc-row）＝行き先。行の説明は、記事が
+             すでに持っている副題（span.sub）をそのまま使っている。
+             章が増えたら、h2「N章 …」の .toc-ch をこの下に足すだけ。プレビューの §の見出しは記事から自動で読む（§141）。
              番号付きの eyebrow（`01 — Chapter 1`）は §70.1 で廃止した。 -->
-        <section class="study-grid">
-            <h2>1章 微分</h2>
+        <!-- 目次：左が節の行、右がプレビュー（PC のみ。js/toc-preview.js）。DESIGN.md §141 -->
+        <div class="toc-layout" data-unit="記事">
+            <div class="toc-layout__list">
+            <section class="toc-ch">
+                <h2>1章 微分</h2>
+                <ol class="toc-list">
+                    <li><a class="toc-row" href="phys-math_1-1.html"><span class="toc-row__no">1-1</span><span class="toc-row__title">微分の基礎</span><span class="toc-row__desc">変化する世界を、どうやって調べるか</span></a></li>
+                    <li><a class="toc-row" href="phys-math_1-2.html"><span class="toc-row__no">1-2</span><span class="toc-row__title">物理でよく使う関数の微分</span><span class="toc-row__desc">道具はもう揃っている。あとは当てはめるだけ</span></a></li>
+                </ol>
+            </section>
 
-            <a class="study-card" href="phys-math_1-1.html">
-                <h3>1-1 微分の基礎</h3>
-                <p>変化する世界を、どうやって調べるか</p>
-            </a>
+            <section class="toc-ch">
+                <h2>2章 積分</h2>
+                <ol class="toc-list">
+                    <li><a class="toc-row" href="phys-math_2-1.html"><span class="toc-row__no">2-1</span><span class="toc-row__title">積分の基礎</span><span class="toc-row__desc">変化のしかたから、元の量を取り戻す</span></a></li>
+                    <li><a class="toc-row" href="phys-math_2-2.html"><span class="toc-row__no">2-2</span><span class="toc-row__title">積分の技法</span><span class="toc-row__desc">微分の規則を、逆向きに使う</span></a></li>
+                </ol>
+            </section>
 
-            <a class="study-card" href="phys-math_1-2.html">
-                <h3>1-2 物理でよく使う関数の微分</h3>
-                <p>道具はもう揃っている。あとは当てはめるだけ</p>
-            </a>
-        </section>
+            <section class="toc-ch">
+                <h2>3章 近似と展開</h2>
+                <ol class="toc-list">
+                    <li><a class="toc-row" href="phys-math_3-1.html"><span class="toc-row__no">3-1</span><span class="toc-row__title">近似と展開</span><span class="toc-row__desc">小さい量を、どこまで捨ててよいか</span></a></li>
+                </ol>
+            </section>
 
-        <section class="study-grid">
-            <h2>2章 積分</h2>
+            <section class="toc-ch">
+                <h2>4章 複素数とオイラーの公式</h2>
+                <ol class="toc-list">
+                    <li><a class="toc-row" href="phys-math_4-1.html"><span class="toc-row__no">4-1</span><span class="toc-row__title">複素数とオイラーの公式</span><span class="toc-row__desc">回転を、数の掛け算として書く</span></a></li>
+                    <li><a class="toc-row" href="phys-math_4-2.html"><span class="toc-row__no">4-2</span><span class="toc-row__title">複素数で振動を扱う</span><span class="toc-row__desc">回る矢印として、振動を書く</span></a></li>
+                </ol>
+            </section>
 
-            <a class="study-card" href="phys-math_2-1.html">
-                <h3>2-1 積分の基礎</h3>
-                <p>変化のしかたから、元の量を取り戻す</p>
-            </a>
+            <section class="toc-ch">
+                <h2>5章 常微分方程式</h2>
+                <ol class="toc-list">
+                    <li><a class="toc-row" href="phys-math_5-1.html"><span class="toc-row__no">5-1</span><span class="toc-row__title">1階の微分方程式</span><span class="toc-row__desc">傾きの情報から、関数そのものを復元する</span></a></li>
+                    <li><a class="toc-row" href="phys-math_5-2.html"><span class="toc-row__no">5-2</span><span class="toc-row__title">2階線形微分方程式</span><span class="toc-row__desc">運動方程式を、実際に解く</span></a></li>
+                    <li><a class="toc-row" href="phys-math_5-3.html"><span class="toc-row__no">5-3</span><span class="toc-row__title">強制振動と共鳴</span><span class="toc-row__desc">右辺が 0 でない方程式を解く</span></a></li>
+                </ol>
+            </section>
 
-            <a class="study-card" href="phys-math_2-2.html">
-                <h3>2-2 積分の技法</h3>
-                <p>微分の規則を、逆向きに使う</p>
-            </a>
-        </section>
+            <section class="toc-ch">
+                <h2>6章 多変数関数の微分</h2>
+                <ol class="toc-list">
+                    <li><a class="toc-row" href="phys-math_6-1.html"><span class="toc-row__no">6-1</span><span class="toc-row__title">偏微分と全微分</span><span class="toc-row__desc">1つだけ動かして、残りは止めておく</span></a></li>
+                    <li><a class="toc-row" href="phys-math_6-2.html"><span class="toc-row__no">6-2</span><span class="toc-row__title">多変数微分の応用</span><span class="toc-row__desc">順序を入れ替えられることの、思わぬ威力</span></a></li>
+                </ol>
+            </section>
 
-        <section class="study-grid">
-            <h2>3章 近似と展開</h2>
+            <section class="toc-ch">
+                <h2>7章 多重積分と座標系</h2>
+                <ol class="toc-list">
+                    <li><a class="toc-row" href="phys-math_7-1.html"><span class="toc-row__no">7-1</span><span class="toc-row__title">重積分</span><span class="toc-row__desc">細かく切って足す、を平面と空間へ</span></a></li>
+                    <li><a class="toc-row" href="phys-math_7-2.html"><span class="toc-row__no">7-2</span><span class="toc-row__title">座標系の取り替えとヤコビアン</span><span class="toc-row__desc">形に合った座標で、積分を軽くする</span></a></li>
+                </ol>
+            </section>
 
-            <a class="study-card" href="phys-math_3-1.html">
-                <h3>3-1 近似と展開</h3>
-                <p>小さい量を、どこまで捨ててよいか</p>
-            </a>
-        </section>
+            <section class="toc-ch">
+                <h2>8章 ベクトル解析</h2>
+                <ol class="toc-list">
+                    <li><a class="toc-row" href="phys-math_8-1.html"><span class="toc-row__no">8-1</span><span class="toc-row__title">ベクトルと場</span><span class="toc-row__desc">各点に数を、各点に矢印を</span></a></li>
+                    <li><a class="toc-row" href="phys-math_8-2.html"><span class="toc-row__no">8-2</span><span class="toc-row__title">grad</span><span class="toc-row__desc">坂の向きと急さを、1本の矢印に</span></a></li>
+                    <li><a class="toc-row" href="phys-math_8-3.html"><span class="toc-row__no">8-3</span><span class="toc-row__title">div と rot</span><span class="toc-row__desc">湧き出しと回り具合を、各点で測る</span></a></li>
+                    <li><a class="toc-row" href="phys-math_8-4.html"><span class="toc-row__no">8-4</span><span class="toc-row__title">ガウスの定理とストークスの定理</span><span class="toc-row__desc">小さな箱と輪を、積み上げる</span></a></li>
+                </ol>
+            </section>
 
-        <section class="study-grid">
-            <h2>4章 複素数とオイラーの公式</h2>
+            <section class="toc-ch">
+                <h2>9章 線形代数の物理的な使い方</h2>
+                <ol class="toc-list">
+                    <li><a class="toc-row" href="phys-math_9-1.html"><span class="toc-row__no">9-1</span><span class="toc-row__title">行列は線形変換</span><span class="toc-row__desc">数の表ではなく、ベクトルを動かす操作</span></a></li>
+                    <li><a class="toc-row" href="phys-math_9-2.html"><span class="toc-row__no">9-2</span><span class="toc-row__title">固有値と対角化</span><span class="toc-row__desc">変換にとって自然な軸を探す</span></a></li>
+                    <li><a class="toc-row" href="phys-math_9-3.html"><span class="toc-row__no">9-3</span><span class="toc-row__title">物理で出会う行列</span><span class="toc-row__desc">名前の付いた行列と、その性質</span></a></li>
+                    <li><a class="toc-row" href="phys-math_9-4.html"><span class="toc-row__no">9-4</span><span class="toc-row__title">添字で計算する行列の公式</span><span class="toc-row__desc">成分に戻せば、行列の公式は数の計算になる</span></a></li>
+                </ol>
+            </section>
 
-            <a class="study-card" href="phys-math_4-1.html">
-                <h3>4-1 複素数とオイラーの公式</h3>
-                <p>回転を、数の掛け算として書く</p>
-            </a>
+            <section class="toc-ch">
+                <h2>10章 変分法</h2>
+                <ol class="toc-list">
+                    <li><a class="toc-row" href="phys-math_10-1.html"><span class="toc-row__no">10-1</span><span class="toc-row__title">変分法</span><span class="toc-row__desc">関数を動かして、積分を最小にする</span></a></li>
+                    <li><a class="toc-row" href="phys-math_10-2.html"><span class="toc-row__no">10-2</span><span class="toc-row__title">条件付きの変分と場の変分</span><span class="toc-row__desc">条件を足し、動かすものを空間に広げる</span></a></li>
+                </ol>
+            </section>
+            </div>
+            <aside class="toc-preview"></aside>
+        </div>
 
-            <a class="study-card" href="phys-math_4-2.html">
-                <h3>4-2 複素数で振動を扱う</h3>
-                <p>回る矢印として、振動を書く</p>
-            </a>
-        </section>
-
-        <section class="study-grid">
-            <h2>5章 常微分方程式</h2>
-
-            <a class="study-card" href="phys-math_5-1.html">
-                <h3>5-1 1階の微分方程式</h3>
-                <p>傾きの情報から、関数そのものを復元する</p>
-            </a>
-
-            <a class="study-card" href="phys-math_5-2.html">
-                <h3>5-2 2階線形微分方程式</h3>
-                <p>運動方程式を、実際に解く</p>
-            </a>
-
-            <a class="study-card" href="phys-math_5-3.html">
-                <h3>5-3 強制振動と共鳴</h3>
-                <p>右辺が 0 でない方程式を解く</p>
-            </a>
-        </section>
-
-        <section class="study-grid">
-            <h2>6章 多変数関数の微分</h2>
-
-            <a class="study-card" href="phys-math_6-1.html">
-                <h3>6-1 偏微分と全微分</h3>
-                <p>1つだけ動かして、残りは止めておく</p>
-            </a>
-
-            <a class="study-card" href="phys-math_6-2.html">
-                <h3>6-2 多変数微分の応用</h3>
-                <p>順序を入れ替えられることの、思わぬ威力</p>
-            </a>
-        </section>
-
-        <section class="study-grid">
-            <h2>7章 多重積分と座標系</h2>
-
-            <a class="study-card" href="phys-math_7-1.html">
-                <h3>7-1 重積分</h3>
-                <p>細かく切って足す、を平面と空間へ</p>
-            </a>
-            <a class="study-card" href="phys-math_7-2.html">
-                <h3>7-2 座標系の取り替えとヤコビアン</h3>
-                <p>形に合った座標で、積分を軽くする</p>
-            </a>
-        </section>
-
-        <section class="study-grid">
-            <h2>8章 ベクトル解析</h2>
-
-            <a class="study-card" href="phys-math_8-1.html">
-                <h3>8-1 ベクトルと場</h3>
-                <p>各点に数を、各点に矢印を</p>
-            </a>
-            <a class="study-card" href="phys-math_8-2.html">
-                <h3>8-2 grad</h3>
-                <p>坂の向きと急さを、1本の矢印に</p>
-            </a>
-            <a class="study-card" href="phys-math_8-3.html">
-                <h3>8-3 div と rot</h3>
-                <p>湧き出しと回り具合を、各点で測る</p>
-            </a>
-            <a class="study-card" href="phys-math_8-4.html">
-                <h3>8-4 ガウスの定理とストークスの定理</h3>
-                <p>小さな箱と輪を、積み上げる</p>
-            </a>
-        </section>
-
-        <section class="study-grid">
-            <h2>9章 線形代数の物理的な使い方</h2>
-
-            <a class="study-card" href="phys-math_9-1.html">
-                <h3>9-1 行列は線形変換</h3>
-                <p>数の表ではなく、ベクトルを動かす操作</p>
-            </a>
-            <a class="study-card" href="phys-math_9-2.html">
-                <h3>9-2 固有値と対角化</h3>
-                <p>変換にとって自然な軸を探す</p>
-            </a>
-            <a class="study-card" href="phys-math_9-3.html">
-                <h3>9-3 物理で出会う行列</h3>
-                <p>名前の付いた行列と、その性質</p>
-            </a>
-            <a class="study-card" href="phys-math_9-4.html">
-                <h3>9-4 添字で計算する行列の公式</h3>
-                <p>成分に戻せば、行列の公式は数の計算になる</p>
-            </a>
-        </section>
-
-        <section class="study-grid">
-            <h2>10章 変分法</h2>
-
-            <a class="study-card" href="phys-math_10-1.html">
-                <h3>10-1 変分法</h3>
-                <p>関数を動かして、積分を最小にする</p>
-            </a>
-            <a class="study-card" href="phys-math_10-2.html">
-                <h3>10-2 条件付きの変分と場の変分</h3>
-                <p>条件を足し、動かすものを空間に広げる</p>
-            </a>
-        </section>
     </main>
     <div id="site-footer"><noscript><nav class="noscript-nav" aria-label="フッターナビゲーション"><a href="index.html">ホーム</a><a href="self-intro.html">自己紹介</a><a href="study.html">勉強の軌跡</a><a href="videos.html">動画</a><a href="blog.html">ブログ</a><a href="sns.html">各種SNS</a></nav></noscript></div>
-    <script src="../js/i18n.js?v=r189"></script>
-    <script src="../js/disciplines.js?v=r189"></script>
-    <script src="../js/layout.js?v=r189"></script>
-    <script src="../js/main.js?v=r189"></script>
-    <script src="../js/starfield.js?v=r189"></script>
+    <script src="../js/i18n.js?v=r190"></script>
+    <script src="../js/disciplines.js?v=r190"></script>
+    <script src="../js/layout.js?v=r190"></script>
+    <script src="../js/toc-preview.js?v=r190"></script>
+    <script src="../js/main.js?v=r190"></script>
+    <script src="../js/starfield.js?v=r190"></script>
 </body>
 </html>
