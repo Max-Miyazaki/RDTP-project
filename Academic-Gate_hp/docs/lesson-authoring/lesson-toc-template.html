@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<!-- シリーズの目次ページのひな形（2026-11-18。元：公開中の html/cyber.html r190。DESIGN.md §140.7・§141。正本は docs/lesson-authoring/lesson-toc-template.html）。
+     ★ サイトの担当が、新しいシリーズを組み込むときに使う（記事を書くチャットは目次ページを作らない。<接頭辞>_series.md を渡すだけ）。
+     ★ html/<接頭辞>.html として置く前提のパス（../css、../js）。docs/ に置いたまま開いても CSS は読めない。
+     置き換えるもの：<接頭辞>・シリーズ名・学問名・説明・部・章・行。?v=rNN はいまの番号に（tools/bump.sh がそろえる）。
+     英語版（html/en/<接頭辞>.html）は tools/make-en.sh で写し、文を英訳し、data-unit を英語に（節 → section、記事 → article）。
+     ★ 注釈の中に、生のスタイルタグやスクリプトタグを書かない（DESIGN.md §137.2） -->
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>シリーズ名｜学問名 - Academic Gates</title>
+    <meta name="description" content="シリーズの説明を1〜2文で。（部・章・節の数はここだけに書いてよい。ページには出さない。§136）">
+    <link rel="stylesheet" href="../css/style.css?v=r190">
+    <link rel="icon" href="../../favicon.ico" sizes="32x32">
+    <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+</head>
+<!-- data-node は layout.js の CRUMBS のシリーズの行のキー（＝接頭辞）。「← 学問名」とサイトの階層パネルはここから出る -->
+<body data-page="study" data-node="prefix">
+    <canvas id="starfield" aria-hidden="true"></canvas>
+<div id="site-nav"><noscript><nav class="noscript-nav" aria-label="メインナビゲーション"><a href="index.html">ホーム</a><a href="self-intro.html">自己紹介</a><a href="study.html">勉強の軌跡</a><a href="videos.html">動画</a><a href="blog.html">ブログ</a><a href="sns.html">各種SNS</a></nav></noscript></div>
+    <!-- シリーズの目次（DESIGN.md §141）。部（.toc-part）→ 章（.toc-ch の h3）→ 節の行（.toc-list の .toc-row）。右にプレビュー（PC のみ）。
+         ★ 節のページがあれば <a class="toc-row" href="prefix_N-M.html">、無ければ <div class="toc-row">（layout.js が「準備中」の札を付ける）。
+           節を書き上げたら、その節の div を a に変えるだけ。プレビューの §の見出しは記事の目次レールから自動で読む。
+         ★ 部の無いシリーズは .toc-part を使わず、.toc-layout__list の直下に .toc-ch を並べ、章の見出しを h2 にする（phys-math.html の形）。
+         ★ 量（部・章・節の数）はページに出さない（§136）。制作用の札（「次はここ」など）は置かない。 -->
+    <main>
+        <div class="page-header">
+            <h1>シリーズ名</h1>
+            <p class="toc-sub">副題（1行）</p>
+            <p>リード文。このシリーズで何を、どう学ぶか。</p>
+        </div>
+
+        <!-- 任意：シリーズの読み方・注意（演習の注意など）。要らなければこのブロックごと消す -->
+        <div class="toc-note">
+            <p class="toc-note__lab">このシリーズの読み方</p>
+            <p>読み方の説明。</p>
+            <p class="toc-note__warn"><strong>注意の1文。</strong>補足。</p>
+        </div>
+
+        <!-- 目次：左が節の行、右がプレビュー（PC のみ。js/toc-preview.js）。DESIGN.md §141 -->
+        <div class="toc-layout" data-unit="節">
+            <div class="toc-layout__list">
+                <section class="toc-part" aria-labelledby="part-1">
+                    <div class="toc-part__head"><span class="toc-part__no">部 I</span><h2 id="part-1">部の題</h2></div>
+                    <section class="toc-ch">
+                        <h3>1章 章の題</h3>
+                        <!-- 任意：章の説明（1〜2文）。要らなければ消す -->
+                        <p class="toc-ch__lead">章の説明。</p>
+                        <ol class="toc-list">
+                            <li><a class="toc-row" href="prefix_1-1.html"><span class="toc-row__no">1-1</span><span class="toc-row__title">公開した節の題</span><span class="toc-row__desc">目次に載せる説明の一行</span></a></li>
+                            <li><div class="toc-row"><span class="toc-row__no">1-2</span><span class="toc-row__title">まだ書いていない節の題</span><span class="toc-row__desc">目次に載せる説明の一行</span></div></li>
+                        </ol>
+                    </section>
+                    <section class="toc-ch">
+                        <h3>2章 章の題</h3>
+                        <ol class="toc-list">
+                            <li><div class="toc-row"><span class="toc-row__no">2-1</span><span class="toc-row__title">節の題</span><span class="toc-row__desc">目次に載せる説明の一行</span></div></li>
+                        </ol>
+                    </section>
+                </section>
+            </div>
+            <aside class="toc-preview"></aside>
+        </div>
+
+    </main>
+    <div id="site-footer"><noscript><nav class="noscript-nav" aria-label="フッターナビゲーション"><a href="index.html">ホーム</a><a href="self-intro.html">自己紹介</a><a href="study.html">勉強の軌跡</a><a href="videos.html">動画</a><a href="blog.html">ブログ</a><a href="sns.html">各種SNS</a></nav></noscript></div>
+    <script src="../js/i18n.js?v=r190"></script>
+    <script src="../js/disciplines.js?v=r190"></script>
+    <script src="../js/layout.js?v=r190"></script>
+    <script src="../js/toc-preview.js?v=r190"></script>
+    <script src="../js/main.js?v=r190"></script>
+    <script src="../js/starfield.js?v=r190"></script>
+</body>
+</html>

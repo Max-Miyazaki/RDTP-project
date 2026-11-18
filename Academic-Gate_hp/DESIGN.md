@@ -8514,8 +8514,9 @@ claude.ai の別のチャットで教材の記事を書くとき、最初から�
 |---|---|
 | `docs/lesson-authoring/lesson-authoring-guide.md` | 指示書。サイトのすべての教材が対象。リポジトリを見られない相手が、これだけで書けるように書いた（目次は冒頭） |
 | `docs/lesson-authoring/lesson-template.html` | 汎用のひな形（元：公開中の `cyber_0-1.html`、r189）。分野によって使う部品は「オプション」の印で囲んである（§140.6） |
+| `docs/lesson-authoring/lesson-toc-template.html` | シリーズの目次ページの見本（元：公開中の `cyber.html`、r190。§141 の形）。新しいシリーズを組み込むときに html/ へ写す（§140.7・§140.8） |
 
-- **リポジトリの2つが正本**。ダウンロードフォルダ（`~/Downloads/lesson-authoring-guide.md`・`lesson-template.html`）にあるものは写しで、チャットに渡すのは写しのほう。
+- **リポジトリの3つが正本**。ダウンロードフォルダ（`~/Downloads/lesson-authoring-guide.md`・`lesson-template.html`・`lesson-toc-template.html`）にあるものは写しで、チャットに渡すのは写しのほう。
   正本を直したら写しを作り直す（写しを直接直さない）
 - ひな形の `<head>` の CSS はサイトと同じ順：A（css/style.css の代わり）→ B（ページの style。公開中の cyber_0-1.html と同じ）＋B'（オプションの CSS と、その記事で足した部品）→ C（css/lesson-theme.css の代わり）。
   A と C は単体で開いたときのためだけのもので、組み込むと消える。各ブロックの頭の注釈にそう書いてある
@@ -8611,9 +8612,14 @@ claude.ai の別のチャットで教材の記事を書くとき、最初から�
 2. **学問のページ**：その学問に `page` が無ければ `study_<key>.html` を作る（`study_informatics.html` を土台に、`.study-grid` にシリーズのカード1枚）。
    `js/disciplines.js` の学問に `page`・`intro`/`introEn`・`start`（最初の節。`href`・`label`・`labelEn`）を足す
    → ホームの学問の樹と勉強の軌跡で、その学問が実線のリンクになる（名前の位置・枝の形は変わらない）
-3. **目次のページ** `<接頭辞>.html`：部があれば `cyber.html`（部 `h2.toc-part` → 章 `h3` → 節カード `h4`）、無ければ `phys-math.html`（章 `h2` → 節カード `h3`）を土台に。
-   公開した節だけ `<a class="study-card" href="…">`、ほかは `<div class="study-card">`（layout.js が「準備中」を付ける）。部・章・節の数は書かない（§136）。
-   title は `シリーズ名｜学問名 - Academic Gates`
+3. **目次のページ** `<接頭辞>.html`：`docs/lesson-authoring/lesson-toc-template.html` を `html/<接頭辞>.html` に写して作る（§141 の形。古い節カード `.study-card` は使わない）
+   - `<div class="toc-layout" data-unit="節">`（記事を「記事」と呼ぶシリーズは `記事`）の中に、`.toc-layout__list`（部 `.toc-part` → 章 `.toc-ch` → `<ol class="toc-list">` の行）と空の `<aside class="toc-preview">`。
+     部の無いシリーズは `.toc-part` を使わず `.toc-ch` を並べ、章を `h2` に（phys-math.html の形）
+   - 行は `<接頭辞>_series.md` の各節から：公開した節だけ `<a class="toc-row" href="…">`、ほかは `<div class="toc-row">`（layout.js が「準備中」を付ける）。
+     中身は `.toc-row__no`・`.toc-row__title`・`.toc-row__desc`（説明の一行）。章の説明があれば `.toc-ch__lead`
+   - 末尾のスクリプトは layout.js の後に `js/toc-preview.js`。プレビューの §の見出しは記事の目次レールから読むので、目次の側にデータは要らない
+   - 部・章・節の数は書かない（§136）。title は `シリーズ名｜学問名 - Academic Gates`。英語版は make-en.sh で写して英訳し、`data-unit` を英語に（section / article）
+   - 確かめる：1440・1024・768・390 で横に送れない、プレビュー（未選択・公開済み・準備中）、「準備中」の札の数、コンソールエラー 0
 4. **サイトの階層（`js/layout.js` の CRUMBS）**：学問の行（`'<key>': { label, href: 'study_<key>.html', parent: 'study', en }`。addDisciplines() が大分類の下へ付け替える）、
    シリーズの行（`href: '<接頭辞>.html'`、`unit: '節'`・`unitEn: 'section'`、`en`）、章の行（その章の節を書いたときに足す）、節の行（`title`・`titleEn`）。
    右のサイトの階層パネル、レールの「← シリーズ名」、末尾の前後リンクは、この表から自動で出る
@@ -8679,3 +8685,22 @@ claude.ai の別のチャットで教材の記事を書くとき、最初から�
   行の上を速く動かしても欄が空になるフレーム 0、Tab のフォーカスで切り替わる、768・390 では欄を出さない、reduced motion で動き無し
 - コントラスト（黒の地で）：最小 4.92（準備中の行の番号・説明、--text-tertiary）
 - check-i18n 0件、check-pages（全ページ）
+
+## 140.8 指示書を、サイトの階層と目次の新しい形式に合わせた（2026-11-18、r190）
+
+§141（目次を「節の行とプレビュー」に）の公開を受けて、指示書とひな形を直した（区分なし。docs と DESIGN.md だけ）。
+
+- 指示書 §3 を「サイトの階層・ファイル名・番号・リンク」にし、次を足した
+  - サイトの階層の図と表（勉強の軌跡 → 学問のページ → シリーズの目次（部 → 章）→ 節の記事。誰が作るか）
+  - 記事の冒頭の「階層」の注釈（学問・シリーズ・部・章・節・題・目次に載せる説明の一行）。既存のシリーズはこれだけ、新しいシリーズは `<接頭辞>_series.md` も
+  - 題と説明の一行の長さの目安：幅 1024px の実際の目次で、省略されずに1行に入る長さを測った（題だけで 日本語21字・英語45字、題＋説明で 日本語32〜33字・英語65〜68字）。
+    目安は「日本語 題15字前後・最大20字、合わせて32字以内」「英語 題30字前後・最大45字、合わせて65字以内」。769〜1023px は列が狭く（行 384px）、もっと短くなる
+  - 階層との食い違いをなくす表（data-node・eyebrow・title・h1・.brand・description・.transfer を階層の注釈と同じに。パンくずと前後リンクはサイトが作る）
+- §5 に「目次レールの項目名は、目次ページのプレビューの『この節で学ぶこと』にそのまま出る」と、項目名の書き方（短く内容の分かる言葉で、全角15字前後・最大20字、「名詞 — 補足」、最後は「まとめとチェック」）
+- §4 の `<接頭辞>_series.md` に章の説明・各節の英語の説明の一行。§11 にパンくずを書かないこと。§14 のチェックリストに階層の注釈・長さ・レールの項目名
+- 付録D：シリーズの目次ページの形とマークアップの見本
+- ひな形：`lesson-template.html` の冒頭に「階層」の注釈を足した（それ以外は変えていない）。新しく `lesson-toc-template.html`（目次ページの見本。html/ に置く前提のパス。
+  公開中の cyber.html と同じ部品で、ページとして開いてコンソールエラー 0、プレビュー・「準備中」・390 で欄なしを確かめた）
+- 写し：`~/Downloads/lesson-authoring-guide.md`・`lesson-template.html`・`lesson-toc-template.html`
+- 古いカード（`.study-card`）での目次の作り方は、指示書には書いていなかった。§140.7 の手順3を新しい形式に書き直した
+
